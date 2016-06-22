@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RevitToolkit2016</name>
+    </assembly>
+    <members>
+        <member name="T:RevitToolkit.Elements.Column">
+            <summary>
+            A Revit column
+            </summary>
+        </member>
+        <member name="M:RevitToolkit.Elements.Column.ToBHomBar(Autodesk.Revit.DB.FamilyInstance)">
+            <summary>
+            Create BHoM Bar from Revit Column
+            </summary>
+        </member>
+        <member name="T:RevitToolkit.Elements.Floor">
+            <summary>
+            A Revit floor
+            </summary>
+        </member>
+        <member name="M:RevitToolkit.Elements.Floor.ByCurves(System.Collections.Generic.List{Autodesk.DesignScript.Geometry.Curve},Revit.Elements.FloorType,Revit.Elements.Level,System.Boolean)">
+            <summary>
+            Creates floor based on Curves
+            </summary>
+            <param name="Curves">Curves</param>
+            <param name="FloorType">Floor Type</param>
+            <param name="Level">Level</param>
+            <param name="Structural">Is floor structural element</param>
+            <returns name="Floor">Floor</returns>
+            <search>
+            Create floor, create floor
+            </search>
+        </member>
+        <member name="M:RevitToolkit.Elements.Floor.ToBHomPanel(Autodesk.Revit.DB.Floor)">
+            <summary>
+            Create BHoM Panel from Revit Floor
+            </summary>
+        </member>
+        <member name="T:RevitToolkit.Elements.Wall">
+            <summary>
+            A Revit Wal
+            </summary>
+        </member>
+        <member name="M:RevitToolkit.Elements.Wall.ToBHomPanel(Autodesk.Revit.DB.Wall)">
+            <summary>
+            Create BHoM Panel from Revit Wall
+            </summary>
+        </member>
+        <member name="T:RevitToolkit.Global.GeometryConverter">
+            <summary>
+            Convert between revit geometry and BHoM Geometry
+            </summary>
+        </member>
+        <member name="M:RevitToolkit.Global.GeometryConverter.RoundPoint(BHoM.Geometry.Point,System.Int32)">
+            <summary></summary>
+        </member>
+        <member name="M:RevitToolkit.Global.GeometryConverter.Convert(Autodesk.Revit.DB.XYZ)">
+            <summary></summary>
+        </member>
+        <member name="M:RevitToolkit.Global.GeometryConverter.Convert(BHoM.Geometry.Point)">
+            <summary></summary>
+        </member>
+        <member name="M:RevitToolkit.Global.GeometryConverter.Convert(System.Collections.Generic.IEnumerable{Autodesk.Revit.DB.XYZ})">
+            <summary></summary>
+        </member>
+        <member name="M:RevitToolkit.Global.GeometryConverter.Convert(Autodesk.Revit.DB.Curve)">
+            <summary></summary>
+        </member>
+        <member name="T:RevitToolkit.Materials.Material">
+            <summary>
+            A Revit Material
+            </summary>
+        </member>
+        <member name="M:RevitToolkit.Materials.Material.ToBHoMMaterial(Autodesk.Revit.DB.Material)">
+            <summary>
+            Create BHoM Material from Revit Material
+            </summary>
+        </member>
+        <member name="T:RevitToolkit.Section_Properties.SectionProperty">
+            <summary>
+            A Revit Section Property
+            </summary>
+        </member>
+        <member name="M:RevitToolkit.Section_Properties.SectionProperty.ToBHoMSectionProperty(System.Object)">
+            <summary>
+            Create BHoM Section from Revit Section
+            </summary>
+        </member>
+    </members>
+</doc>
