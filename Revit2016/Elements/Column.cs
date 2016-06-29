@@ -56,9 +56,9 @@ namespace RevitToolkit.Elements
                 }
             }
 
-            BHoM.Structural.Node startNode = new BHoM.Structural.Node(scale * cStart.X, scale * cStart.Y, scale * cStart.Z); // TODO - Need to check for existing nodes
-            BHoM.Structural.Node endNode = new BHoM.Structural.Node(scale * cEnd.X, scale * cEnd.Y, scale * cEnd.Z);
-            BHoM.Structural.Bar bar = new BHoM.Structural.Bar(startNode, endNode);
+            BHoM.Geometry.Point startPoint = new BHoM.Geometry.Point(scale * cStart.X, scale * cStart.Y, scale * cStart.Z); // TODO - Need to check for existing nodes
+            BHoM.Geometry.Point endPoint = new BHoM.Geometry.Point(scale * cEnd.X, scale * cEnd.Y, scale * cEnd.Z);
+            BHoM.Structural.Bar bar = new BHoM.Structural.Bar(startPoint, endPoint);
 
             bar.CustomData["RevitId"] = column.Id;
             Autodesk.Revit.DB.Material material = document.GetElement(column.StructuralMaterialId) as Autodesk.Revit.DB.Material;
