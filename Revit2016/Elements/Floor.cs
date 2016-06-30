@@ -40,18 +40,42 @@ namespace RevitToolkit.Elements
         /// </summary>
         public static object ToBHomPanel(Autodesk.Revit.DB.Floor floor)
         {
-            // Get floor Contour
+            // Get Floor Geometry
+            double scale = RevitToolkit.Global.GeometryConverter.FeetToMetre;
+            GeometryElement geometry = floor.get_Geometry(new Options());
+            BoundingBoxXYZ box = geometry.GetBoundingBox();
+            XYZ center = (box.Max + box.Min) / 2;
+   
+            BHoM.Geometry.Group<BHoM.Geometry.Curve> edges = new BHoM.Geometry.Group<BHoM.Geometry.Curve>();
+            foreach (GeometryObject obj in geometry) 
+            {
+                Solid solid = obj as Solid;
+                if (solid != null)
+                {
+                    foreach (Edge edge in solid.Edges)
+                    {
+                        Curve curve = edge.AsCurve();
+                        XYZ cStart = curve.GetEndPoint(0);
+                        XYZ cEnd = curve.GetEndPoint(1);
+                        edges.Add(new BHoM.Geometry.Line(scale * cStart.X, scale * cStart.Y, scale * center.Z, scale * cEnd.X, scale * cEnd.Y, scale * center.Z));
+                    }
+                }
+            }
+
+            /*// Get floor Contour
             Autodesk.Revit.DB.Document document = floor.Document;
             Transaction t = new Transaction(document);
             t.Start("Get Floor Model Lines");
             ICollection<ElementId> ids = document.Delete(floor.Id);
             t.RollBack();
             t.Dispose();
-
+            
             // Get floor elevation
             double scale = RevitToolkit.Global.GeometryConverter.FeetToMetre;
             ElementId levelId = floor.LookupParameter("Level").AsElementId();
             double z = scale * ((document.GetElement(levelId) as Autodesk.Revit.DB.Level).ProjectElevation + floor.LookupParameter("Height Offset From Level").AsDouble());
+
+            
 
             // Convert contour into BHoM Geometry
             BHoM.Geometry.Group<BHoM.Geometry.Curve> edges = new BHoM.Geometry.Group<BHoM.Geometry.Curve>();
@@ -65,7 +89,7 @@ namespace RevitToolkit.Elements
                     XYZ cEnd = curve.GetEndPoint(1);
                     edges.Add(new BHoM.Geometry.Line(scale*cStart.X, scale*cStart.Y, z, scale*cEnd.X, scale*cEnd.Y, z));
                 }
-            }
+            }*/
 
             // Create Panel
             BHoM.Structural.Panel panel = new BHoM.Structural.Panel(edges);
