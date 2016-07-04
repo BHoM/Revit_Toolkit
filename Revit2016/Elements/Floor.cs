@@ -45,8 +45,8 @@ namespace RevitToolkit.Elements
             GeometryElement geometry = floor.get_Geometry(new Options());
             BoundingBoxXYZ box = geometry.GetBoundingBox();
             XYZ center = (box.Max + box.Min) / 2;
-   
-            BHoM.Geometry.Group<BHoM.Geometry.Curve> edges = new BHoM.Geometry.Group<BHoM.Geometry.Curve>();
+
+            /*BHoM.Geometry.Group<BHoM.Geometry.Curve> edges = new BHoM.Geometry.Group<BHoM.Geometry.Curve>();
             foreach (GeometryObject obj in geometry) 
             {
                 Solid solid = obj as Solid;
@@ -57,10 +57,45 @@ namespace RevitToolkit.Elements
                         Curve curve = edge.AsCurve();
                         XYZ cStart = curve.GetEndPoint(0);
                         XYZ cEnd = curve.GetEndPoint(1);
+                        if (cStart.Z > center.Z && cEnd.Z > center.Z)
+                            edges.Add(new BHoM.Geometry.Line(scale * cStart.X, scale * cStart.Y, scale * center.Z, scale * cEnd.X, scale * cEnd.Y, scale * center.Z));
+                    }
+                }
+            }*/
+
+            double maxArea = 0;
+            Face maxFace = null;
+            BHoM.Geometry.Group<BHoM.Geometry.Curve> edges = new BHoM.Geometry.Group<BHoM.Geometry.Curve>();
+            foreach (GeometryObject obj in geometry)
+            {
+                Solid solid = obj as Solid;
+                if (solid != null)
+                {
+                    foreach (Face face in solid.Faces)
+                    {
+                        if (face.Area > maxArea)
+                        {
+                            maxArea = face.Area;
+                            maxFace = face;
+                        }
+                    }
+                }
+            }
+
+            if (maxFace != null)
+            {
+                foreach (EdgeArray array in maxFace.EdgeLoops)
+                {
+                    foreach (Edge edge in array)
+                    {
+                        Curve curve = edge.AsCurve();
+                        XYZ cStart = curve.GetEndPoint(0);
+                        XYZ cEnd = curve.GetEndPoint(1);
                         edges.Add(new BHoM.Geometry.Line(scale * cStart.X, scale * cStart.Y, scale * center.Z, scale * cEnd.X, scale * cEnd.Y, scale * center.Z));
                     }
                 }
             }
+
 
             /*// Get floor Contour
             Autodesk.Revit.DB.Document document = floor.Document;
@@ -96,6 +131,7 @@ namespace RevitToolkit.Elements
             panel.ThicknessProperty = new BHoM.Structural.ConstantThickness(floor.Name);
             panel.ThicknessProperty.Thickness = scale * floor.LookupParameter("Thickness").AsDouble();
             panel.CustomData["RevitId"] = floor.Id;
+            panel.CustomData["RevitType"] = "Floor";
 
             return panel;
         }
