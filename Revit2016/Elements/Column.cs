@@ -9,7 +9,7 @@ using RevitToolkit.Global;
 using RevitToolkit.Materials;
 using RevitServices.Transactions;
 using Autodesk.DesignScript.Interfaces;
-
+using Autodesk.Revit.DB;
 
 namespace RevitToolkit.Elements
 {
@@ -32,7 +32,7 @@ namespace RevitToolkit.Elements
             Autodesk.Revit.DB.XYZ cEnd = new Autodesk.Revit.DB.XYZ();
             double scale = RevitToolkit.Global.GeometryConverter.FeetToMetre;
 
-            if (c != null)
+            /*if (c != null)
             {
                 cStart = c.GetEndPoint(0);
                 cEnd = c.GetEndPoint(1);
@@ -58,9 +58,32 @@ namespace RevitToolkit.Elements
 
             BHoM.Geometry.Point startPoint = new BHoM.Geometry.Point(scale * cStart.X, scale * cStart.Y, scale * cStart.Z); // TODO - Need to check for existing nodes
             BHoM.Geometry.Point endPoint = new BHoM.Geometry.Point(scale * cEnd.X, scale * cEnd.Y, scale * cEnd.Z);
-            BHoM.Structural.Bar bar = new BHoM.Structural.Bar(startPoint, endPoint);
+            */
 
+            
+            GeometryElement geometry = column.get_Geometry(new Options());
+            BoundingBoxXYZ box = geometry.GetBoundingBox();
+            XYZ center = (box.Max + box.Min) / 2;
+            BHoM.Geometry.Point startPoint = new BHoM.Geometry.Point(scale * center.X, scale * center.Y, scale * box.Min.Z);
+            BHoM.Geometry.Point endPoint = new BHoM.Geometry.Point(scale * center.X, scale * center.Y, scale * box.Max.Z);
+
+
+            /*foreach (GeometryObject obj in geometry)
+            {
+                Line line = obj as Line;
+                if (line != null)
+                {
+                    cStart = line.GetEndPoint(0);
+                    cEnd = line.GetEndPoint(1);
+                    startPoint = new BHoM.Geometry.Point(cStart.X, cStart.Y, cStart.Z);
+                    endPoint = new BHoM.Geometry.Point(cEnd.X, cEnd.Y, cEnd.Z);
+                }
+            }*/
+
+            BHoM.Structural.Bar bar = new BHoM.Structural.Bar(startPoint, endPoint);
             bar.CustomData["RevitId"] = column.Id;
+            bar.CustomData["RevitType"] = "Column";
+
             Autodesk.Revit.DB.Material material = document.GetElement(column.StructuralMaterialId) as Autodesk.Revit.DB.Material;
             //bar.Material = RevitToolkit.Materials.Material.ToBHoMMaterial(material);
             bar.OrientationAngle = 0; // TODO - Not sure what this is
