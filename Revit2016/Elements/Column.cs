@@ -86,7 +86,8 @@ namespace RevitToolkit.Elements
 
             Autodesk.Revit.DB.Material material = document.GetElement(column.StructuralMaterialId) as Autodesk.Revit.DB.Material;
             //bar.Material = RevitToolkit.Materials.Material.ToBHoMMaterial(material);
-            bar.OrientationAngle = column.LookupParameter("Cross-Section Rotation").AsDouble();
+            Autodesk.Revit.DB.Parameter rotationParam = column.LookupParameter("Cross-Section Rotation");
+            bar.OrientationAngle = (rotationParam == null) ? 0 : rotationParam.AsDouble();
             bar.SectionProperty = RevitToolkit.Section_Properties.SectionProperty.ToBHoMSectionProperty(null); //TODO - found proper way to extract section from revit element
             return bar;
         }
