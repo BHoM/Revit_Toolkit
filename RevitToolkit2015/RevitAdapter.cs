@@ -9,7 +9,7 @@ using Autodesk.Revit.DB;
 using BH = BHoM.Structural;
 using BHoM.Global;
 
-namespace Revit2015IO
+namespace RevitToolkit2015
 {
     public class RevitAdapter : IStructuralAdapter
     {

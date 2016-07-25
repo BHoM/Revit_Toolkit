@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using BHoM.Structural.SectionProperties;
 using BH = BHoM.Geometry;
 using SP = BHoM.Structural.SectionProperties;
-namespace Revit2015IO
+
+namespace RevitToolkit2015
 {
     public class SectionIO
     {

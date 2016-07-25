@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BHoM.Global;
 
-namespace Revit2015IO
+namespace RevitToolkit2015
 {
     public class PanelIO
     {
@@ -41,10 +41,12 @@ namespace Revit2015IO
                         }
                     }
                 }
+
                 if (thicknessManager[floor.FloorType.Name] == null)
                 {
                     thicknessManager.Add(floor.FloorType.Name, SectionIO.GetThicknessProperty(floor, document));
                 }
+
                 BH.ThicknessProperty thickness = thicknessManager[floor.FloorType.Name];
                 List<Geom.Curve> crvs = Geom.Curve.Join(curves);
                 crvs.Sort(delegate (Geom.Curve c1, Geom.Curve c2)
@@ -52,7 +54,10 @@ namespace Revit2015IO
                     return c2.Length.CompareTo(c1.Length);
                 });
 
-                BH.Panel panel = new BHoM.Structural.Panel(new Geom.Group<Geom.Curve>(crvs));             
+                BH.Panel panel = new BHoM.Structural.Panel(new Geom.Group<Geom.Curve>(crvs));
+                panelManager.Add(floor.Id.IntegerValue.ToString(), panel);
+                panel.ThicknessProperty = thickness;
+                panels.Add(panel);
             }
 
             return true;
@@ -117,7 +122,7 @@ namespace Revit2015IO
                         thicknessManager.Add(wall.WallType.Name, SectionIO.GetThicknessProperty(wall, document));
                     }
                     BH.ThicknessProperty thickness = thicknessManager[wall.WallType.Name];
-                    BH.Panel panel = new BHoM.Structural.Panel(Geom.Curve.Join(curves)[0]);
+                    BH.Panel panel = new BHoM.Structural.Panel(Geom.Curve.Join(curves));
                     panelManager.Add(wall.Id.IntegerValue.ToString(), panel);
                     panel.ThicknessProperty = thickness;
                     panels.Add(panel);
