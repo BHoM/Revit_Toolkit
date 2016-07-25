@@ -23,7 +23,7 @@
     <WarningLevel>4</WarningLevel>
     <StartAction>Program</StartAction>
     <StartProgram>C:\Program Files\Autodesk\Revit 2015\Revit.exe</StartProgram>
-    <DocumentationFile>..\Build.xml</DocumentationFile>
+    <DocumentationFile>..\Build\RevitToolkit2016.XML</DocumentationFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -145,21 +145,17 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Elements\Column.cs" />
-    <Compile Include="Elements\Floor.cs" />
-    <Compile Include="Elements\Wall.cs" />
-    <Compile Include="Global\GeometryConverter.cs" />
-    <Compile Include="Global\Utils.cs" />
-    <Compile Include="Materials\Material.cs" />
+    <Compile Include="BarIO.cs" />
+    <Compile Include="GeometryUtils.cs" />
+    <Compile Include="PanelIO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Section Properties\SectionProperty.cs" />
+    <Compile Include="RevitAdapter.cs" />
+    <Compile Include="SectionIO.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Geometry\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
