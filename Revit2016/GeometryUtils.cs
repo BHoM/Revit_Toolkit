@@ -15,12 +15,12 @@ namespace Revit2016IO
 
         public static string PointLocation(BH.Point point, int decimals)
         {
-            return Math.Round(point.X, decimals) + "," + Math.Round(point.Y, decimals) + "," + Math.Round(point.Z, decimals);
+            return Math.Round(point.X, decimals) + ";" + Math.Round(point.Y, decimals) + ";" + Math.Round(point.Z, decimals);
         }
 
         public static string PointLocation(BH.Vector point, int decimals)
         {
-            return Math.Round(point.X, decimals) + "," + Math.Round(point.Y, decimals) + "," + Math.Round(point.Z, decimals);
+            return Math.Round(point.X, decimals) + ";" + Math.Round(point.Y, decimals) + ";" + Math.Round(point.Z, decimals);
         }
 
         public static BH.Vector ConvertVector(XYZ v)
