@@ -1,18 +1,22 @@
 ﻿using Autodesk.Revit.DB;
-using BH = BHoM.Structural;
-using Geom = BHoM.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BHoM.Global;
+using BHoMB = BHoM.Base;
+using BHoMG = BHoM.Geometry;
+using BHoME = BHoM.Structural.Elements;
+using BHoMP = BHoM.Structural.Properties;
 
-namespace Revit2016IO
+using Revit2016_Adapter.Geometry;
+using Revit2016_Adapter.Structural.Properties;
+
+namespace Revit2016_Adapter.Structural.Elements
 {
     public class PanelIO
     {
-        public static bool GetSlabs(out List<BH.Panel> panels, Document document, int rounding = 9)
+        public static bool GetSlabs(out List<BHoME.Panel> panels, Document document, int rounding = 9)
         {
             ICollection<Floor> floors = new FilteredElementCollector(document).OfClass(typeof(Floor)).Cast<Floor>().ToList();
             panels = RevitSlabsToBHoMPanels(floors, rounding);
@@ -20,15 +24,15 @@ namespace Revit2016IO
         }
 
 
-        public static List<BH.Panel> RevitSlabsToBHoMPanels(ICollection<Floor> floors, int rounding = 9)
+        public static List<BHoME.Panel> RevitSlabsToBHoMPanels(ICollection<Floor> floors, int rounding = 9)
         {
-            List<BH.Panel> panels = new List<BH.Panel>();
+            List<BHoME.Panel> panels = new List<BHoME.Panel>();
 
-            ObjectManager<string, BH.Panel> panelManager = new ObjectManager<string, BH.Panel>("Revit Number", FilterOption.UserData);
-            ObjectManager<BH.ThicknessProperty> thicknessManager = new ObjectManager<BHoM.Structural.ThicknessProperty>();
+            BHoMB.ObjectManager<string, BHoME.Panel> panelManager = new BHoMB.ObjectManager<string, BHoME.Panel>("Revit Number", BHoMB.FilterOption.UserData);
+            BHoMB.ObjectManager<BHoMP.PanelProperty> thicknessManager = new BHoMB.ObjectManager<BHoMP.PanelProperty>();
             foreach (Floor floor in floors)
             {
-                Geom.Group<Geom.Curve> curves = new BHoM.Geometry.Group<BHoM.Geometry.Curve>();
+                BHoMG.Group<BHoMG.Curve> curves = new BHoMG.Group<BHoMG.Curve>();
                 GeometryElement geometry = floor.get_Geometry(new Options());
                 foreach (GeometryObject obj in geometry)
                 {
@@ -52,25 +56,25 @@ namespace Revit2016IO
                 {
                     thicknessManager.Add(floor.FloorType.Name, SectionIO.GetThicknessProperty(floor, floor.Document));
                 }
-                BH.ThicknessProperty thickness = thicknessManager[floor.FloorType.Name];
-                List<Geom.Curve> crvs = Geom.Curve.Join(curves);
-                crvs.Sort(delegate (Geom.Curve c1, Geom.Curve c2)
+                BHoMP.PanelProperty thickness = thicknessManager[floor.FloorType.Name];
+                List<BHoMG.Curve> crvs = BHoMG.Curve.Join(curves);
+                crvs.Sort(delegate (BHoMG.Curve c1, BHoMG.Curve c2)
                 {
                     return c2.Length.CompareTo(c1.Length);
                 });
 
-                BHoM.Structural.Panel panel = new BHoM.Structural.Panel(new Geom.Group<Geom.Curve>(crvs));
+                BHoME.Panel panel = new BHoME.Panel(new BHoMG.Group<BHoMG.Curve>(crvs));
                 panelManager.Add(floor.Id.IntegerValue.ToString(), panel);
-                panel.ThicknessProperty = thickness;
+                panel.PanelProperty = thickness;
                 panels.Add(panel);
             }
 
             return panels;
         }
 
-        private static bool IsInside(Geom.Curve c, List<Geom.Curve> crvs)
+        private static bool IsInside(BHoMG.Curve c, List<BHoMG.Curve> crvs)
         {
-            List<Geom.Point> pnts = c.ControlPoints.ToList();
+            List<BHoMG.Point> pnts = c.ControlPoints.ToList();
             for (int i = 0; i < crvs.Count; i++)
             {
                 if (!crvs[i].Equals(c))
@@ -84,19 +88,19 @@ namespace Revit2016IO
             return false;
         }
 
-        public static bool GetWalls(out List<BH.Panel> panels, Document document, int rounding)
+        public static bool GetWalls(out List<BHoME.Panel> panels, Document document, int rounding)
         {
             ICollection<Wall> walls = new FilteredElementCollector(document).OfClass(typeof(Wall)).Cast<Wall>().ToList();
             panels = RevitWallsToBHoMPanels(walls, rounding);
             return true;
         }
 
-        public static List<BH.Panel> RevitWallsToBHoMPanels(ICollection<Wall> walls, int rounding = 9)
+        public static List<BHoME.Panel> RevitWallsToBHoMPanels(ICollection<Wall> walls, int rounding = 9)
         {
-            List<BH.Panel> panels = new List<BH.Panel>();
+            List<BHoME.Panel> panels = new List<BHoME.Panel>();
 
-            ObjectManager<string, BH.Panel> panelManager = new ObjectManager<string, BH.Panel>("Revit Number", FilterOption.UserData);
-            ObjectManager<BH.ThicknessProperty> thicknessManager = new ObjectManager<BHoM.Structural.ThicknessProperty>();
+            BHoMB.ObjectManager<string, BHoME.Panel> panelManager = new BHoMB.ObjectManager<string, BHoME.Panel>("Revit Number", BHoMB.FilterOption.UserData);
+            BHoMB.ObjectManager<BHoMP.PanelProperty> thicknessManager = new BHoMB.ObjectManager<BHoMP.PanelProperty>();
             foreach (Wall wall in walls)
             {
                 if (wall.Location is LocationCurve)
@@ -110,7 +114,7 @@ namespace Revit2016IO
                     double baseOffset = wall.LookupParameter("Base Offset").AsDouble();
                     double topOffset = wall.LookupParameter("Top Offset").AsDouble();
 
-                    Geom.Group<Geom.Curve> curves = new BHoM.Geometry.Group<BHoM.Geometry.Curve>();
+                    BHoMG.Group<BHoMG.Curve> curves = new BHoMG.Group<BHoM.Geometry.Curve>();
                     if (baseConst.IntegerValue > 0 && topConst.IntegerValue > 0)
                     {
                         double baseLevel = (document.GetElement(baseConst) as Level).ProjectElevation + baseOffset;
@@ -123,20 +127,20 @@ namespace Revit2016IO
                         XYZ topPoint1 = new XYZ(p2.X, p2.Y, topLevel);
                         XYZ topPoint2 = new XYZ(p1.X, p1.Y, topLevel);
 
-                        curves.Add(new Geom.Line(GeometryUtils.Convert(basePoint1, rounding), GeometryUtils.Convert(basePoint2, rounding)));
-                        curves.Add(new Geom.Line(GeometryUtils.Convert(basePoint2, rounding), GeometryUtils.Convert(topPoint1, rounding)));
-                        curves.Add(new Geom.Line(GeometryUtils.Convert(topPoint1, rounding), GeometryUtils.Convert(topPoint2, rounding)));
-                        curves.Add(new Geom.Line(GeometryUtils.Convert(topPoint2, rounding), GeometryUtils.Convert(basePoint1, rounding)));
+                        curves.Add(new BHoMG.Line(GeometryUtils.Convert(basePoint1, rounding), GeometryUtils.Convert(basePoint2, rounding)));
+                        curves.Add(new BHoMG.Line(GeometryUtils.Convert(basePoint2, rounding), GeometryUtils.Convert(topPoint1, rounding)));
+                        curves.Add(new BHoMG.Line(GeometryUtils.Convert(topPoint1, rounding), GeometryUtils.Convert(topPoint2, rounding)));
+                        curves.Add(new BHoMG.Line(GeometryUtils.Convert(topPoint2, rounding), GeometryUtils.Convert(basePoint1, rounding)));
                     }
 
                     if (thicknessManager[wall.WallType.Name] == null)
                     {
                         thicknessManager.Add(wall.WallType.Name, SectionIO.GetThicknessProperty(wall, document));
                     }
-                    BH.ThicknessProperty thickness = thicknessManager[wall.WallType.Name];
-                    BH.Panel panel = new BHoM.Structural.Panel(Geom.Curve.Join(curves));
+                    BHoMP.PanelProperty thickness = thicknessManager[wall.WallType.Name];
+                    BHoME.Panel panel = new BHoME.Panel(BHoMG.Curve.Join(curves));
                     panelManager.Add(wall.Id.IntegerValue.ToString(), panel);
-                    panel.ThicknessProperty = thickness;
+                    panel.PanelProperty = thickness;
                     panels.Add(panel);
                 }
             }

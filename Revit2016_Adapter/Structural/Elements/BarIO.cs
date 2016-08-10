@@ -1,36 +1,38 @@
 ﻿using Autodesk.Revit.DB;
-using BHoM.Global;
-using BHoM.Structural;
-using BHoM.Structural.SectionProperties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH = BHoM.Geometry;
+using BHoMB = BHoM.Base;
+using BHoMG = BHoM.Geometry;
+using BHoME = BHoM.Structural.Elements;
+using BHoMP = BHoM.Structural.Properties;
 
-namespace Revit2016IO
+using Revit2016_Adapter.Geometry;
+using Revit2016_Adapter.Structural.Properties;
+
+namespace Revit2016_Adapter.Structural.Elements
 {
-
     public class BarIO
     {
-        public static bool GetBeams(out List<Bar> bars, Document document, int rounding = 9)
+        public static bool GetBeams(out List<BHoME.Bar> bars, Document document, int rounding = 9)
         {
             ICollection<FamilyInstance> framing = new FilteredElementCollector(document).OfClass(typeof(FamilyInstance)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilyInstance>().ToList();
             bars = RevitBeamsToBHomBars(framing, rounding);
             return true;
         }
 
-        public static List<Bar> RevitBeamsToBHomBars(ICollection<FamilyInstance> framing, int rounding = 9)
+        public static List<BHoME.Bar> RevitBeamsToBHomBars(ICollection<FamilyInstance> framing, int rounding = 9)
         {
-            List<Bar> bars = new List<Bar>();
-            BH.Curve barCentreline = null;
+            List<BHoME.Bar> bars = new List<BHoME.Bar>();
+            BHoMG.Curve barCentreline = null;
 
-            ObjectManager<string, Node> nodes = new ObjectManager<string, Node>("RevitLocation", FilterOption.UserData);
-            ObjectManager<string, Bar> barManager = new ObjectManager<string, Bar>("Revit Number", FilterOption.UserData);
-            ObjectManager<SectionProperty> sections = new ObjectManager<SectionProperty>();
-            BH.Point p1;
-            BH.Point p2;
+            BHoMB.ObjectManager<string, BHoME.Node> nodes = new BHoMB.ObjectManager<string, BHoME.Node>("RevitLocation", BHoMB.FilterOption.UserData);
+            BHoMB.ObjectManager<string, BHoME.Bar> barManager = new BHoMB.ObjectManager<string, BHoME.Bar>("Revit Number", BHoMB.FilterOption.UserData);
+            BHoMB.ObjectManager<BHoMP.SectionProperty> sections = new BHoMB.ObjectManager<BHoMP.SectionProperty>();
+            BHoMG.Point p1;
+            BHoMG.Point p2;
 
             foreach (FamilyInstance beam in framing)
             {
@@ -39,14 +41,14 @@ namespace Revit2016IO
                     barCentreline = GeometryUtils.Convert((beam.Location as LocationCurve).Curve, rounding);
                     p1 = barCentreline.StartPoint;
                     p2 = barCentreline.EndPoint;
-                    Node n1 = nodes[GeometryUtils.PointLocation(p1, 3)];
-                    Node n2 = nodes[GeometryUtils.PointLocation(p2, 3)];
+                    BHoME.Node n1 = nodes[GeometryUtils.PointLocation(p1, 3)];
+                    BHoME.Node n2 = nodes[GeometryUtils.PointLocation(p2, 3)];
 
-                    if (n1 == null) n1 = nodes.Add(GeometryUtils.PointLocation(barCentreline.StartPoint, 3), new Node(p1.X, p1.Y, p1.Z));
+                    if (n1 == null) n1 = nodes.Add(GeometryUtils.PointLocation(barCentreline.StartPoint, 3), new BHoME.Node(p1.X, p1.Y, p1.Z));
 
-                    if (n2 == null) n2 = nodes.Add(GeometryUtils.PointLocation(barCentreline.EndPoint, 3), new Node(p2.X, p2.Y, p2.Z));
+                    if (n2 == null) n2 = nodes.Add(GeometryUtils.PointLocation(barCentreline.EndPoint, 3), new BHoME.Node(p2.X, p2.Y, p2.Z));
 
-                    Bar bar = new Bar(n1, n2);
+                    BHoME.Bar bar = new BHoME.Bar(n1, n2);
                     if (sections[beam.Symbol.Name] == null)
                     {
                         sections.Add(beam.Symbol.Name, SectionIO.GetSectionProperty(beam.Symbol, false));
@@ -65,23 +67,23 @@ namespace Revit2016IO
         }
 
 
-        public static bool GetColumns(out List<Bar> bars, Document document, int rounding = 9)
+        public static bool GetColumns(out List<BHoME.Bar> bars, Document document, int rounding = 9)
         {
             ICollection<FamilyInstance> columns = new FilteredElementCollector(document).OfClass(typeof(FamilyInstance)).OfCategory(BuiltInCategory.OST_StructuralColumns).Cast<FamilyInstance>().ToList();
             bars = RevitColumnsToBHomBars(columns, rounding);
             return true;
         }
 
-        public static List<Bar> RevitColumnsToBHomBars(ICollection<FamilyInstance> columns, int rounding = 9)
+        public static List<BHoME.Bar> RevitColumnsToBHomBars(ICollection<FamilyInstance> columns, int rounding = 9)
         {
-            List<Bar> bars = new List<Bar>();
-            BH.Curve barCentreline = null;
+            List<BHoME.Bar> bars = new List<BHoME.Bar>();
+            BHoMG.Curve barCentreline = null;
 
-            ObjectManager<string, Node> nodes = new ObjectManager<string, Node>("RevitLocation", FilterOption.UserData);
-            ObjectManager<string, Bar> barManager = new ObjectManager<string, Bar>("Revit Number", FilterOption.UserData);
-            ObjectManager<SectionProperty> sections = new ObjectManager<SectionProperty>();
-            BH.Point p1 = null;
-            BH.Point p2 = null;
+            BHoMB.ObjectManager<string, BHoME.Node> nodes = new BHoMB.ObjectManager<string, BHoME.Node>("RevitLocation", BHoMB.FilterOption.UserData);
+            BHoMB.ObjectManager<string, BHoME.Bar> barManager = new BHoMB.ObjectManager<string, BHoME.Bar>("Revit Number", BHoMB.FilterOption.UserData);
+            BHoMB.ObjectManager<BHoMP.SectionProperty> sections = new BHoMB.ObjectManager<BHoMP.SectionProperty>();
+            BHoMG.Point p1 = null;
+            BHoMG.Point p2 = null;
             double rotation = 0;
             foreach (FamilyInstance column in columns)
             {
@@ -119,14 +121,14 @@ namespace Revit2016IO
                         rotation = column.FacingOrientation.AngleTo(new XYZ(0, 1, 0)) * mulipler;
                     }
 
-                    Node n1 = nodes[GeometryUtils.PointLocation(p1, 3)];
-                    Node n2 = nodes[GeometryUtils.PointLocation(p2, 3)];
+                    BHoME.Node n1 = nodes[GeometryUtils.PointLocation(p1, 3)];
+                    BHoME.Node n2 = nodes[GeometryUtils.PointLocation(p2, 3)];
 
-                    if (n1 == null) n1 = nodes.Add(GeometryUtils.PointLocation(p1, 3), new Node(p1.X, p1.Y, p1.Z));
+                    if (n1 == null) n1 = nodes.Add(GeometryUtils.PointLocation(p1, 3), new BHoME.Node(p1.X, p1.Y, p1.Z));
 
-                    if (n2 == null) n2 = nodes.Add(GeometryUtils.PointLocation(p2, 3), new Node(p2.X, p2.Y, p2.Z));
+                    if (n2 == null) n2 = nodes.Add(GeometryUtils.PointLocation(p2, 3), new BHoME.Node(p2.X, p2.Y, p2.Z));
 
-                    Bar bar = new Bar(n1, n2);
+                    BHoME.Bar bar = new BHoME.Bar(n1, n2);
 
                     if (sections[column.Symbol.Name] == null)
                     {

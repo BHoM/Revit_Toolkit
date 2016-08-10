@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH = BHoM.Geometry;
 
-namespace Revit2016IO
+namespace Revit2016_Adapter.Geometry
 {
     public class GeometryUtils
     {
