@@ -118,7 +118,7 @@ namespace Revit2016_Adapter.Structural.Elements
 
                     BHoMG.Group<BHoMG.Curve> perimeter = new BHoMG.Group<BHoMG.Curve>(new List<BHoMG.Curve>() { line1, line2, line3, line4 });
 
-                    string propertyName = "Wall:" + thickness;
+                    string propertyName = "Wall: " + (thickness * 1000) + " mm";
 
                     if (thicknessManager[propertyName] == null)
                     {
