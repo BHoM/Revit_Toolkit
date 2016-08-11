@@ -1,7 +1,9 @@
 ﻿using Autodesk.Revit.DB;
+using BHoM.Base;
 using BHoM.Global;
 using BHoM.Structural;
-using BHoM.Structural.SectionProperties;
+using BHoM.Structural.Elements;
+using BHoM.Structural.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
