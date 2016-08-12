@@ -63,7 +63,12 @@ namespace Revit2016_Adapter.Structural.Properties
 
         public static BHoMP.SectionProperty GetSectionProperty(FamilySymbol symbol, bool IsColumn)
         {
-            BHoMP.SectionProperty sectionProperty = BHoMP.SectionProperty.LoadFromDB(symbol.Name);
+            BHoMP.SectionProperty sectionProperty = null;
+            try
+            {
+                BHoMP.SectionProperty.LoadFromDB(symbol.Name);
+            }
+            catch { }
             XYZ direction = IsColumn ? new XYZ(0, 0, 1) : new XYZ(1, 0, 0);
 
             if (sectionProperty == null)
