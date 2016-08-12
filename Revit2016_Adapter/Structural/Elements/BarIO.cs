@@ -105,7 +105,7 @@ namespace Revit2016_Adapter.Structural.Elements
                     BHoMG.Vector direction = BHoMG.Vector.CrossProduct(up, normal);
 
                     direction.Unitize();
-                    direction = direction * (col.SectionProperty.TotalDepth / 2);
+                    direction = direction * length / 2;
                     
                     BHoMG.Line line1 = col.Line.DuplicateCurve() as BHoMG.Line;
                     BHoMG.Line line2 = col.Line.DuplicateCurve() as BHoMG.Line;
