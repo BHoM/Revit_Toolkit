@@ -205,7 +205,7 @@ namespace Revit2016_Adapter.Structural.Elements
                             p1 = GeometryUtils.Convert(baseElevation, rounding);
                             p2 = GeometryUtils.Convert(topElevation, rounding);
                         }
-                        int mulipler = column.FacingOrientation.DotProduct(new XYZ(0, 1, 0)) > 0 ? 1 : -1;
+                        int mulipler = column.FacingOrientation.DotProduct(new XYZ(1, 0, 0)) < 0 ? 1 : -1;
                         rotation = column.FacingOrientation.AngleTo(new XYZ(0, 1, 0)) * mulipler;
                     }
 
