@@ -1,5 +1,5 @@
 ﻿using Autodesk.Revit.DB;
-using BH = BHoM.Structural;
+using BH = BHoM.Structural.Elements;
 using Geom = BHoM.Geometry;
 using System;
 using System.Collections.Generic;
@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BHoM.Global;
+using BHoM.Base;
+using BHoM.Structural.Properties;
 
 namespace RevitToolkit2015
 {
@@ -18,7 +20,7 @@ namespace RevitToolkit2015
             ICollection<Floor> floors = new FilteredElementCollector(document).OfClass(typeof(Floor)).Cast<Floor>().ToList();
 
             ObjectManager<string, BH.Panel> panelManager = new ObjectManager<string, BH.Panel>("Revit Number", FilterOption.UserData);
-            ObjectManager<BH.ThicknessProperty> thicknessManager = new ObjectManager<BHoM.Structural.ThicknessProperty>();
+            ObjectManager<PanelProperty> thicknessManager = new ObjectManager<PanelProperty>();
             foreach (Floor floor in floors)
             {
                 Geom.Group<Geom.Curve> curves = new BHoM.Geometry.Group<BHoM.Geometry.Curve>();

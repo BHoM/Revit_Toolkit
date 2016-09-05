@@ -16,9 +16,23 @@ namespace Revit2016_Adapter.Structural.Elements
 {
     public class BarIO
     {
-        public static bool GetBeams(out List<BHoME.Bar> bars, Document document, int rounding = 9)
+        public static bool GetBeams(out List<BHoME.Bar> bars, Document document, List<string> ids = null, int rounding = 9)
         {
-            ICollection<FamilyInstance> framing = new FilteredElementCollector(document).OfClass(typeof(FamilyInstance)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilyInstance>().ToList();
+            ICollection<FamilyInstance> framing = null;
+            if (ids == null)
+                framing = new FilteredElementCollector(document).OfClass(typeof(FamilyInstance)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilyInstance>().ToList();
+            else
+            {
+                framing = new List<FamilyInstance>();
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    FamilyInstance instance = document.GetElement(new ElementId(int.Parse(ids[i]))) as FamilyInstance;
+                    if (instance != null && instance.StructuralType == Autodesk.Revit.DB.Structure.StructuralType.Beam || instance.StructuralType == Autodesk.Revit.DB.Structure.StructuralType.Brace)
+                    {
+                        framing.Add(instance);
+                    }
+                }
+            }
             bars = RevitBeamsToBHomBars(framing, rounding);
             return true;
         }
@@ -29,8 +43,9 @@ namespace Revit2016_Adapter.Structural.Elements
             BHoMG.Curve barCentreline = null;
 
             BHoMB.ObjectManager<string, BHoME.Node> nodes = new BHoMB.ObjectManager<string, BHoME.Node>("RevitLocation", BHoMB.FilterOption.UserData);
-            BHoMB.ObjectManager<string, BHoME.Bar> barManager = new BHoMB.ObjectManager<string, BHoME.Bar>("Revit Number", BHoMB.FilterOption.UserData);
+            BHoMB.ObjectManager<string, BHoME.Bar> barManager = new BHoMB.ObjectManager<string, BHoME.Bar>(Base.RevitUtils.REVIT_ID_KEY, BHoMB.FilterOption.UserData);
             BHoMB.ObjectManager<BHoMP.SectionProperty> sections = new BHoMB.ObjectManager<BHoMP.SectionProperty>();
+            Dictionary<BHoM.Materials.MaterialType, BHoM.Materials.Material> materials = new Dictionary<BHoM.Materials.MaterialType, BHoM.Materials.Material>();
             BHoMG.Point p1;
             BHoMG.Point p2;
 
@@ -56,6 +71,14 @@ namespace Revit2016_Adapter.Structural.Elements
                     bar.SectionProperty = sections[beam.Symbol.Name];
                     double rotation = beam.LookupParameter("Cross-Section Rotation").AsDouble() * 180 / Math.PI;
 
+                    BHoM.Materials.Material material = null;
+                    BHoM.Materials.MaterialType matKey = GetMaterialType(beam.StructuralMaterialType);
+                    if (!materials.TryGetValue(matKey, out material))
+                    {
+                        material = BHoM.Materials.Material.Default(matKey);
+                        materials.Add(matKey, material);
+                    }
+                    bar.Material = material;
                     bar.SectionProperty = sections[beam.Symbol.Name];
                     bar.OrientationAngle = rotation;
                     bars.Add(bar);
@@ -66,10 +89,23 @@ namespace Revit2016_Adapter.Structural.Elements
             return bars;
         }
 
-
-        public static bool GetColumns(out List<BHoME.Bar> bars, Document document, int rounding = 9)
+        public static bool GetColumns(out List<BHoME.Bar> bars, Document document, List<string> ids = null, int rounding = 9)
         {
-            ICollection<FamilyInstance> columns = new FilteredElementCollector(document).OfClass(typeof(FamilyInstance)).OfCategory(BuiltInCategory.OST_StructuralColumns).Cast<FamilyInstance>().ToList();
+           ICollection<FamilyInstance> columns = null;
+            if (ids == null)
+                columns = new FilteredElementCollector(document).OfClass(typeof(FamilyInstance)).OfCategory(BuiltInCategory.OST_StructuralColumns).Cast<FamilyInstance>().ToList();
+            else
+            {
+                columns = new List<FamilyInstance>();
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    FamilyInstance instance = document.GetElement(new ElementId(int.Parse(ids[i]))) as FamilyInstance;
+                    if (instance != null && instance.StructuralType == Autodesk.Revit.DB.Structure.StructuralType.Column)
+                    {
+                        columns.Add(instance);
+                    }
+                }
+            }
             bars = RevitColumnsToBHomBars(columns, rounding);
             return true;
         }
@@ -122,7 +158,7 @@ namespace Revit2016_Adapter.Structural.Elements
 
                     if (thicknessManager[propertyName] == null)
                     {
-                        thicknessManager.Add(propertyName, new BHoMP.ConstantThickness(propertyName, thickness));
+                        thicknessManager.Add(propertyName, new BHoMP.ConstantThickness(propertyName, thickness, BHoM.Structural.Properties.PanelType.Wall));
                     }
 
                     BHoME.Panel panel = new BHoME.Panel(perimeter);
@@ -142,6 +178,8 @@ namespace Revit2016_Adapter.Structural.Elements
                             panelManager.Add(col[key].ToString(), panel);
                             break;
                     }
+
+
 
                     BHoMP.PanelProperty property = thicknessManager[propertyName];
                     panel.PanelProperty = property;
@@ -168,8 +206,9 @@ namespace Revit2016_Adapter.Structural.Elements
             BHoMG.Curve barCentreline = null;
 
             BHoMB.ObjectManager<string, BHoME.Node> nodes = new BHoMB.ObjectManager<string, BHoME.Node>("RevitLocation", BHoMB.FilterOption.UserData);
-            BHoMB.ObjectManager<string, BHoME.Bar> barManager = new BHoMB.ObjectManager<string, BHoME.Bar>("Revit Number", BHoMB.FilterOption.UserData);
+            BHoMB.ObjectManager<string, BHoME.Bar> barManager = new BHoMB.ObjectManager<string, BHoME.Bar>(Base.RevitUtils.REVIT_ID_KEY, BHoMB.FilterOption.UserData);
             BHoMB.ObjectManager<BHoMP.SectionProperty> sections = new BHoMB.ObjectManager<BHoMP.SectionProperty>();
+            Dictionary<BHoM.Materials.MaterialType, BHoM.Materials.Material> materials = new Dictionary<BHoM.Materials.MaterialType, BHoM.Materials.Material>();
             BHoMG.Point p1 = null;
             BHoMG.Point p2 = null;
             double rotation = 0;
@@ -205,8 +244,8 @@ namespace Revit2016_Adapter.Structural.Elements
                             p1 = GeometryUtils.Convert(baseElevation, rounding);
                             p2 = GeometryUtils.Convert(topElevation, rounding);
                         }
-                        int mulipler = column.FacingOrientation.DotProduct(new XYZ(1, 0, 0)) < 0 ? 1 : -1;
-                        rotation = column.FacingOrientation.AngleTo(new XYZ(0, 1, 0)) * mulipler;
+                        int multiplier = column.FacingOrientation.DotProduct(new XYZ(1, 0, 0)) < 0 ? 1 : -1;
+                        rotation = column.FacingOrientation.AngleTo(new XYZ(0, 1, 0)) * multiplier;
                     }
 
                     BHoME.Node n1 = nodes[GeometryUtils.PointLocation(p1, 3)];
@@ -223,7 +262,15 @@ namespace Revit2016_Adapter.Structural.Elements
                         sections.Add(column.Symbol.Name, SectionIO.GetSectionProperty(column.Symbol, true));
                     }
 
+                    BHoM.Materials.Material material = null;
+                    BHoM.Materials.MaterialType matKey = GetMaterialType(column.StructuralMaterialType);
+                    if (!materials.TryGetValue(matKey, out material))
+                    {
+                        material = BHoM.Materials.Material.Default(matKey);
+                        materials.Add(matKey, material);
+                    }
 
+                    bar.Material = material;
                     bar.SectionProperty = sections[column.Symbol.Name];
                     bar.OrientationAngle = rotation;
                     barManager.Add(column.Id.ToString(), bar);
@@ -237,5 +284,138 @@ namespace Revit2016_Adapter.Structural.Elements
             return bars;
         }
 
+        public static BHoM.Materials.MaterialType GetMaterialType(Autodesk.Revit.DB.Structure.StructuralMaterialType type)
+        {
+            switch (type)
+            {
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Aluminum:
+                    return BHoM.Materials.MaterialType.Aluminium;
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete:
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.PrecastConcrete:
+                    return BHoM.Materials.MaterialType.Concrete;
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
+                    return BHoM.Materials.MaterialType.Steel;
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood:
+                    return BHoM.Materials.MaterialType.Timber;
+                default:
+                    return BHoM.Materials.MaterialType.Concrete;
+            }
+        }
+
+        public static bool GetPiles(out List<BHoME.Bar> bars, Document document, List<string> ids = null, int rounding = 9)
+        {
+            ICollection<FamilyInstance> foundations = null;
+            if (ids == null)
+                foundations = new FilteredElementCollector(document).OfClass(typeof(FamilyInstance)).OfCategory(BuiltInCategory.OST_StructuralFoundation).Cast<FamilyInstance>().ToList();
+            else
+            {
+                foundations = new List<FamilyInstance>();
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    FamilyInstance instance = document.GetElement(new ElementId(int.Parse(ids[i]))) as FamilyInstance;
+                    if (instance != null && instance.StructuralType == Autodesk.Revit.DB.Structure.StructuralType.Footing)
+                    {
+                        foundations.Add(instance);
+                    }
+                }
+            }
+            bars = RevitPilesToBHoMBars(foundations, rounding);
+            return true;
+        }
+
+        public static List<BHoME.Bar> RevitPilesToBHoMBars(ICollection<FamilyInstance> foundations, int rounding = 9)
+        {
+            List<BHoME.Bar> bars = new List<BHoME.Bar>();
+            BHoMB.ObjectManager<string, BHoME.Bar> barManager = new BHoMB.ObjectManager<string, BHoME.Bar>(Base.RevitUtils.REVIT_ID_KEY, BHoMB.FilterOption.UserData);
+            BHoMB.ObjectManager<BHoMP.SectionProperty> sections = new BHoMB.ObjectManager<BHoMP.SectionProperty>();
+            BHoMB.ObjectManager<string, BHoME.Node> nodes = new BHoMB.ObjectManager<string, BHoME.Node>("RevitLocation", BHoMB.FilterOption.UserData);
+            Dictionary<BHoM.Materials.MaterialType, BHoM.Materials.Material> materials = new Dictionary<BHoM.Materials.MaterialType, BHoM.Materials.Material>();
+            BHoMG.Point p1 = null;
+            BHoMG.Point p2 = null;
+
+            foreach (FamilyInstance foundation in foundations)
+            { 
+                Parameter param = foundation.LookupParameter("Host");
+                if (param != null)
+                {
+                    if (foundation.Location is LocationPoint)
+                    {
+                        try
+                        {
+                            double depth = foundation.LookupParameter("Pile Depth").AsDouble();
+                            double diameter = foundation.Symbol.LookupParameter("Pile Diameter").AsDouble() * GeometryUtils.FeetToMetre;
+                            double offset = foundation.LookupParameter("Offset").AsDouble();
+
+                            XYZ rP1 = (foundation.Location as LocationPoint).Point;
+
+                            double topElevation = 0;// rP1.Z - offset;
+                            ElementId levelId = null;
+
+                            if (foundation.HostFace != null)
+                            {
+                                ElementId reference = foundation.HostFace.ElementId;
+                                Element e = foundation.Document.GetElement(reference);
+                                if (e != null)
+                                {
+                                    topElevation = e.LookupParameter("Elevation at Top").AsDouble();
+                                }
+                            }
+                            else if (foundation.SuperComponent != null)
+                            {
+                                Element e = foundation.SuperComponent as FamilyInstance;
+                                if (e != null)
+                                {
+                                    topElevation = e.LookupParameter("Elevation at Top").AsDouble();
+                                }
+                            }
+                            else
+                            { 
+                                topElevation = (foundation.Location as LocationPoint).Point.Z - offset;
+                            }
+
+
+                            XYZ basePoint = new XYZ(rP1.X, rP1.Y, topElevation - depth);
+                            XYZ topPoint = new XYZ(rP1.X, rP1.Y, topElevation);
+
+                            p1 = GeometryUtils.Convert(basePoint, rounding);
+                            p2 = GeometryUtils.Convert(topPoint, rounding);
+
+                            if (sections[foundation.Symbol.Name] == null)
+                            {
+                                sections.Add(foundation.Symbol.Name, BHoMP.SectionProperty.CreateCircularSection(diameter));
+                            }
+
+                            BHoME.Node n1 = nodes[GeometryUtils.PointLocation(p1, 3)];
+                            BHoME.Node n2 = nodes[GeometryUtils.PointLocation(p2, 3)];
+
+                            if (n1 == null) n1 = nodes.Add(GeometryUtils.PointLocation(p1, 3), new BHoME.Node(p1.X, p1.Y, p1.Z));
+
+                            if (n2 == null) n2 = nodes.Add(GeometryUtils.PointLocation(p2, 3), new BHoME.Node(p2.X, p2.Y, p2.Z));
+
+                            BHoME.Bar bar = new BHoME.Bar(n1, n2);
+
+                            BHoM.Materials.Material material = null;
+                            BHoM.Materials.MaterialType matKey = GetMaterialType(foundation.StructuralMaterialType);
+                            if (!materials.TryGetValue(matKey, out material))
+                            {
+                                material = BHoM.Materials.Material.Default(matKey);
+                                materials.Add(matKey, material);
+                            }
+
+                            bar.Material = material;
+                            bar.SectionProperty = sections[foundation.Symbol.Name];
+                            bar.StructuralUsage = BHoM.Structural.Elements.BarStructuralUsage.Pile;
+                            barManager.Add(foundation.Id.ToString(), bar);
+                            bars.Add(bar);
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
+                }
+            }
+            return bars;
+        }
     }
 }

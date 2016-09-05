@@ -16,9 +16,24 @@ namespace Revit2016_Adapter.Structural.Elements
 {
     public class PanelIO
     {
-        public static bool GetSlabs(out List<BHoME.Panel> panels, Document document, int rounding = 9)
+        public static bool GetSlabs(out List<BHoME.Panel> panels, Document document,List<string> ids = null, int rounding = 9)
         {
-            ICollection<Floor> floors = new FilteredElementCollector(document).OfClass(typeof(Floor)).Cast<Floor>().ToList();
+            ICollection<Floor> floors = null;
+            if (ids == null)
+                floors = new FilteredElementCollector(document).OfClass(typeof(Floor)).Cast<Floor>().ToList();
+            else
+            {
+                floors = new List<Floor>();
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    Floor instance = document.GetElement(new ElementId(int.Parse(ids[i]))) as Floor;
+                    if (instance != null)
+                    {
+                        floors.Add(instance);
+                    }
+                }
+            }
+
             panels = RevitSlabsToBHoMPanels(floors, rounding);
             return true;
         }
@@ -39,7 +54,7 @@ namespace Revit2016_Adapter.Structural.Elements
                     if (obj is Solid)
                     {
                         foreach (Face face in (obj as Solid).Faces)
-                            if (face is PlanarFace && (face as PlanarFace).Normal.AngleTo(XYZ.BasisZ) < Math.PI / 6)
+                            if (face is PlanarFace && (face as PlanarFace).FaceNormal.AngleTo(XYZ.BasisZ) < Math.PI / 6)
                             {
                                 foreach (EdgeArray curveArray in face.EdgeLoops)
                                 {
@@ -88,10 +103,48 @@ namespace Revit2016_Adapter.Structural.Elements
             return false;
         }
 
-        public static bool GetWalls(out List<BHoME.Panel> panels, Document document, int rounding)
+        public static bool GetWalls(out List<BHoME.Panel> panels, Document document, List<string> ids = null, int rounding = 9)
         {
-            ICollection<Wall> walls = new FilteredElementCollector(document).OfClass(typeof(Wall)).Cast<Wall>().ToList();
+            ICollection<Wall> walls = null;
+            if (ids == null)
+                walls = new FilteredElementCollector(document).OfClass(typeof(Wall)).Cast<Wall>().ToList();
+            else
+            {
+                walls = new List<Wall>();
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    Wall instance = document.GetElement(new ElementId(int.Parse(ids[i]))) as Wall;
+                    if (instance != null)
+                    {
+                        walls.Add(instance);
+                    }
+                }
+            }
+            
             panels = RevitWallsToBHoMPanels(walls, rounding);
+            return true;
+        }
+
+        public static bool GetFoundations(out List<BHoME.Panel> panels, Document document, List<string> ids = null, int rounding = 9)
+        {
+            List<FamilyInstance> foundations = null;
+            if (ids == null)
+            {
+                foundations = new FilteredElementCollector(document).OfClass(typeof(FamilyInstance)).OfCategory(BuiltInCategory.OST_StructuralFoundation).Cast<FamilyInstance>().ToList();
+            }
+            else
+            {
+                foundations = new List<FamilyInstance>();
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    FamilyInstance instance = document.GetElement(new ElementId(int.Parse(ids[i]))) as FamilyInstance;
+                    if (instance != null && instance.StructuralType == Autodesk.Revit.DB.Structure.StructuralType.Footing)
+                    {
+                        foundations.Add(instance);
+                    }
+                }
+            }
+            panels = RevitFoundationsToBHoMPanels(foundations, rounding);
             return true;
         }
 
@@ -147,5 +200,67 @@ namespace Revit2016_Adapter.Structural.Elements
 
             return panels;
         }
+
+        public static List<BHoME.Panel> RevitFoundationsToBHoMPanels(ICollection<FamilyInstance> foundations, int rounding = 9)
+        {
+            List<BHoME.Panel> panels = new List<BHoME.Panel>();
+
+            BHoMB.ObjectManager<string, BHoME.Panel> panelManager = new BHoMB.ObjectManager<string, BHoME.Panel>("Revit Number", BHoMB.FilterOption.UserData);
+            BHoMB.ObjectManager<BHoMP.PanelProperty> thicknessManager = new BHoMB.ObjectManager<BHoMP.PanelProperty>();
+            foreach (FamilyInstance foundation in foundations)
+            {
+                BHoMG.Group<BHoMG.Curve> curves = new BHoMG.Group<BHoMG.Curve>();
+                GeometryElement geometry = foundation.get_Geometry(new Options());
+                Transform transform = null;
+
+                foreach (GeometryObject obj in geometry)
+                {
+                    if (obj is Solid)
+                    {
+                        foreach (Face face in (obj as Solid).Faces)
+                        {
+                            if (face is PlanarFace && (face as PlanarFace).FaceNormal.AngleTo(XYZ.BasisZ) < Math.PI / 6)
+                            {
+                                foreach (EdgeArray curveArray in face.EdgeLoops)
+                                {
+                                    foreach (Edge c in curveArray)
+                                    {
+                                        curves.Add(GeometryUtils.Convert(c.AsCurve(), rounding));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if (obj is GeometryInstance)
+                    {
+                        transform = (obj as GeometryInstance).Transform;
+                    }
+                }
+               
+                Parameter param = foundation.LookupParameter("Host");
+                if (param == null)
+                {
+                    //Not accurate
+                    double elevation = foundation.LookupParameter("Elevation at Top").AsDouble() * GeometryUtils.FeetToMetre;
+                    BHoMG.Plane plane = new BHoM.Geometry.Plane(new BHoM.Geometry.Point(0, 0, elevation), BHoMG.Vector.ZAxis());
+                    curves.Project(plane);                 
+                
+                    if (thicknessManager[foundation.Symbol.Name] == null)
+                    {
+                        thicknessManager.Add(foundation.Symbol.Name, SectionIO.GetFoundationProperty(foundation, foundation.Document));
+                    }
+
+                    BHoMP.PanelProperty thickness = thicknessManager[foundation.Symbol.Name];                  
+
+                    BHoME.Panel panel = new BHoME.Panel(curves);
+                    panelManager.Add(foundation.Id.IntegerValue.ToString(), panel);
+                    panel.PanelProperty = thickness;
+                    panels.Add(panel);
+                }
+            }
+
+            return panels;
+        }
+
     }
 }

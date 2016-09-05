@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BHoM.Structural.SectionProperties;
+using BHoM.Structural.Properties;
 using BH = BHoM.Geometry;
-using SP = BHoM.Structural.SectionProperties;
+using SP = BHoM.Structural.Properties;
 
 namespace RevitToolkit2015
 {
@@ -21,15 +21,15 @@ namespace RevitToolkit2015
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete:
                     return IsColumn ? SP.SectionType.ConcreteColumn : SP.SectionType.ConcreteBeam;
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
-                    return BHoM.Structural.SectionProperties.SectionType.Steel;
+                    return SP.SectionType.Steel;
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood:
-                    return BHoM.Structural.SectionProperties.SectionType.Timber;
+                    return SP.SectionType.Timber;
                 default:
-                    return BHoM.Structural.SectionProperties.SectionType.Steel;
+                    return SP.SectionType.Steel;
             }
         }
 
-        public static BHoM.Structural.SectionProperties.ShapeType GetShapeType(Autodesk.Revit.DB.Structure.StructuralSections.StructuralSectionShape type)
+        public static SP.ShapeType GetShapeType(Autodesk.Revit.DB.Structure.StructuralSections.StructuralSectionShape type)
         {
             switch (type)
             {
@@ -56,7 +56,7 @@ namespace RevitToolkit2015
         }
 
 
-        public static BHoM.Structural.SectionProperties.SectionProperty GetSectionProperty(FamilySymbol symbol, bool IsColumn)
+        public static SP.SectionProperty GetSectionProperty(FamilySymbol symbol, bool IsColumn)
         {
             SectionProperty sectionProperty = SectionProperty.LoadFromDB(symbol.Name);
             XYZ direction = IsColumn ? new XYZ(0, 0, 1) : new XYZ(1, 0, 0);
@@ -96,7 +96,7 @@ namespace RevitToolkit2015
                     curves.Transform(BH.Transform.Rotation(BH.Point.Origin, BH.Vector.YAxis(), -Math.PI / 2));
                 }
 
-                BHoM.Structural.SectionProperties.ShapeType type = symbol.Family.HasStructuralSection() ? GetShapeType(symbol.Family.StructuralSectionShape) : ShapeType.Rectangle;
+                SP.ShapeType type = symbol.Family.HasStructuralSection() ? GetShapeType(symbol.Family.StructuralSectionShape) : ShapeType.Rectangle;
                 sectionProperty = new SectionProperty(curves, type, GetSectionType(symbol.Family.StructuralMaterialType, IsColumn));
             }
             return sectionProperty;

@@ -17,22 +17,22 @@ namespace Revit2016_Adapter.Structural.Properties
 {
     public class SectionIO
     {
-        public static BHoMP.SectionType GetSectionType(Autodesk.Revit.DB.Structure.StructuralMaterialType matType, bool IsColumn)
-        {
-            switch (matType)
-            {
-                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Aluminum:
-                    return BHoMP.SectionType.Aluminium;
-                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete:
-                    return IsColumn ? BHoMP.SectionType.ConcreteColumn : BHoMP.SectionType.ConcreteBeam;
-                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
-                    return BHoMP.SectionType.Steel;
-                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood:
-                    return BHoMP.SectionType.Timber;
-                default:
-                    return BHoMP.SectionType.Steel;
-            }
-        }
+        //public static BHoMP.SectionType GetSectionType(Autodesk.Revit.DB.Structure.StructuralMaterialType matType, bool IsColumn)
+        //{
+        //    switch (matType)
+        //    {
+        //        case Autodesk.Revit.DB.Structure.StructuralMaterialType.Aluminum:
+        //            return BHoMP.SectionType.Aluminium;
+        //        case Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete:
+        //            return IsColumn ? BHoMP.SectionType.ConcreteColumn : BHoMP.SectionType.ConcreteBeam;
+        //        case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
+        //            return BHoMP.SectionType.Steel;
+        //        case Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood:
+        //            return BHoMP.SectionType.Timber;
+        //        default:
+        //            return BHoMP.SectionType.Steel;
+        //    }
+        //}
 
         public static BHoMP.ShapeType GetShapeType(Autodesk.Revit.DB.Structure.StructuralSections.StructuralSectionShape type)
         {
@@ -80,7 +80,7 @@ namespace Revit2016_Adapter.Structural.Properties
                     {
                         foreach (Face face in (obj as Solid).Faces)
                         {
-                            if (face is PlanarFace && (face as PlanarFace).Normal.Normalize().IsAlmostEqualTo(direction, 0.001) || (face as PlanarFace).Normal.Normalize().IsAlmostEqualTo(-direction, 0.001))
+                            if (face is PlanarFace && (face as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(direction, 0.001) || (face as PlanarFace).Normal.Normalize().IsAlmostEqualTo(-direction, 0.001))
                             {
                                 foreach (EdgeArray curveArray in (face as PlanarFace).EdgeLoops)
                                 {
@@ -107,7 +107,7 @@ namespace Revit2016_Adapter.Structural.Properties
                 }
 
                 BHoMP.ShapeType type = symbol.Family.HasStructuralSection() ? GetShapeType(symbol.Family.StructuralSectionShape) : BHoMP.ShapeType.Rectangle;
-                sectionProperty = new BHoMP.SectionProperty(curves, type, GetSectionType(symbol.Family.StructuralMaterialType, IsColumn));
+                sectionProperty = new BHoMP.SectionProperty(curves, type);
             }
             return sectionProperty;
         }
@@ -124,7 +124,7 @@ namespace Revit2016_Adapter.Structural.Properties
                     //m.
                 }
             }
-            return new BHoMP.ConstantThickness(wall.WallType.Name, thickness);
+            return new BHoMP.ConstantThickness(wall.WallType.Name, thickness, BHoM.Structural.Properties.PanelType.Wall);
         }
 
         public static BHoMP.PanelProperty GetThicknessProperty(Floor floor, Document document)
@@ -139,7 +139,25 @@ namespace Revit2016_Adapter.Structural.Properties
                     //m.
                 }
             }
-            return new BHoMP.ConstantThickness(floor.FloorType.Name, thickness);
+            return new BHoMP.ConstantThickness(floor.FloorType.Name, thickness, BHoM.Structural.Properties.PanelType.Slab);
+        }
+
+        internal static BHoMP.PanelProperty GetFoundationProperty(FamilyInstance foundation, Document document)
+        {
+            if (foundation.Symbol.Category.Name.Contains("Foundation "))
+            {
+                double thickness = foundation.LookupParameter("Thickness").AsDouble() * GeometryUtils.FeetToMetre;
+                return new BHoMP.ConstantThickness(foundation.Symbol.Name, thickness, BHoM.Structural.Properties.PanelType.Slab);
+            }
+            else
+            {
+                double thickness = foundation.Symbol.LookupParameter("Pile Cap Depth").AsDouble() * GeometryUtils.FeetToMetre;
+                double pileDiam = foundation.Symbol.LookupParameter("Pile Diameter").AsDouble() * GeometryUtils.FeetToMetre;
+                double pileDepth = foundation.LookupParameter("Pile Depth").AsDouble() * GeometryUtils.FeetToMetre;
+                BHoMP.ConstantThickness pileCap = new BHoMP.ConstantThickness(foundation.Symbol.Name, thickness, BHoM.Structural.Properties.PanelType.PileCap);
+                return pileCap;
+            }
+
         }
     }
 }

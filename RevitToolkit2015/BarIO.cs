@@ -23,7 +23,7 @@ namespace RevitToolkit2015
             BH.Curve barCentreline = null;
 
             ObjectManager<string, Node> nodes = new ObjectManager<string, Node>("RevitLocation", FilterOption.UserData);
-            ObjectManager<string, Bar> barManager = new ObjectManager<string, Bar>("Revit Number", FilterOption.UserData);
+            ObjectManager<string, Bar> barManager = new ObjectManager<string, Bar>(RevitUtils, FilterOption.UserData);
             ObjectManager<SectionProperty> sections = new ObjectManager<SectionProperty>();
             BH.Point p1;
             BH.Point p2;
@@ -48,7 +48,7 @@ namespace RevitToolkit2015
                         sections.Add(beam.Symbol.Name, SectionIO.GetSectionProperty(beam.Symbol, false));
                     }
                     bar.SectionProperty = sections[beam.Symbol.Name];
-                    double rotation = beam.LookupParameter("Cross-Section Rotation").AsDouble() * 180 / Math.PI;
+                    double rotation = beam.LookupParameter("Cross-Section Rotation").AsDouble();
 
                     bar.SectionProperty = sections[beam.Symbol.Name];
                     bar.OrientationAngle = rotation;

@@ -11,8 +11,9 @@ using BHoME = BHoM.Structural.Elements;
 
 using Revit2016_Adapter.Structural.Elements;
 using Revit2016_Adapter.Geometry;
+using BHoM.Structural.Interface;
 
-namespace Revit2016_Adapter.Structural.Interface
+namespace Revit2016_Adapter.Structural
 {
     public partial class RevitAdapter : BHoM.Structural.Interface.IElementAdapter
     {
@@ -33,19 +34,55 @@ namespace Revit2016_Adapter.Structural.Interface
             }
         }
 
-        public bool GetBars(out List<BHoME.Bar> bars, string option = "")
+        public ObjectSelection Selection
+        {
+            get; set;
+        }
+
+        public List<string> GetNodes(out List<BHoME.Node> nodes, List<string> ids = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<string> GetBars(out List<BHoME.Bar> bars, List<string> ids = null)
         {
             bars = new List<BHoME.Bar>();
 
             List<BHoME.Bar> barList = null;
-            BarIO.GetBeams(out barList, m_Revit, m_Rounding);
+            BarIO.GetBeams(out barList, m_Revit, ids, m_Rounding);
             bars.AddRange(barList);
-            BarIO.GetColumns(out barList, m_Revit, m_Rounding);
+            BarIO.GetColumns(out barList, m_Revit, ids, m_Rounding);
             bars.AddRange(barList);
-            return true;
+            BarIO.GetPiles(out barList, m_Revit, ids, m_Rounding);
+            bars.AddRange(barList);
+            List<string> outids = new List<string>();
+            for (int i = 0; i < bars.Count; i++)
+            {
+                outids.Add(bars[i][Base.RevitUtils.REVIT_ID_KEY].ToString());
+            }
+            return outids;
         }
 
-        public bool GetLevels(out List<BHoME.Storey> levels, string options = "")
+        public List<string> GetPanels(out List<BHoME.Panel> panels, List<string> ids = null)
+        {
+            panels = new List<BHoME.Panel>();
+
+            List<BHoME.Panel> barList = null;
+            PanelIO.GetSlabs(out barList, m_Revit, ids);
+            panels.AddRange(barList);
+            PanelIO.GetWalls(out barList, m_Revit, ids);
+            panels.AddRange(barList);
+            PanelIO.GetFoundations(out barList, m_Revit, ids);
+            panels.AddRange(barList);
+            return ids;
+        }
+
+        public List<string> GetOpenings(out List<BHoME.Opening> opening, List<string> ids = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<string> GetLevels(out List<BHoME.Storey> levels, List<string> ids = null)
         {
             BHoMB.ObjectManager<BHoME.Storey> stories = new BHoMB.ObjectManager<BHoME.Storey>();
             List<Level> revitLevels = new FilteredElementCollector(m_Revit).OfClass(typeof(Level)).Cast<Level>().ToList();
@@ -69,10 +106,10 @@ namespace Revit2016_Adapter.Structural.Interface
                 stories.Add(revitLevels[i].Name, storey);
             }
             levels = stories.ToList();
-            return true;
+            return ids;
         }
 
-        public bool GetGrids(out List<BHoME.Grid> grids, string options = "")
+        public List<string> GetGrids(out List<BHoME.Grid> grids, List<string> ids = null)
         {
             BHoMB.ObjectManager<BHoME.Grid> bhGrids = new BHoMB.ObjectManager<BHoME.Grid>();
             List<Autodesk.Revit.DB.Grid> revitGrids = new FilteredElementCollector(m_Revit).OfClass(typeof(Autodesk.Revit.DB.Grid)).Cast<Autodesk.Revit.DB.Grid>().ToList();
@@ -87,77 +124,55 @@ namespace Revit2016_Adapter.Structural.Interface
                 }
             }
             grids = bhGrids.ToList();
-            return true;
+            return ids;
         }
 
-        public bool GetLoadcases(out List<ICase> cases)
+        List<string> IElementAdapter.GetLoadcases(out List<ICase> cases)
         {
             throw new NotImplementedException();
         }
 
-        public bool GetLoads(out List<ILoad> loads, string option = "")
+        public bool GetLoads(out List<ILoad> loads, List<string> ids = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool GetNodes(out List<BHoME.Node> nodes, string option = "")
+        public bool SetNodes(List<BHoME.Node> nodes, out List<string> ids)
         {
             throw new NotImplementedException();
         }
 
-        public bool GetOpenings(out List<BHoME.Opening> opening, string option = "")
+        public bool SetBars(List<BHoME.Bar> bars, out List<string> ids)
         {
             throw new NotImplementedException();
         }
 
-        public bool GetPanels(out List<BHoME.Panel> panels, string option = "")
-        {
-            panels = new List<BHoME.Panel>();
-
-            List<BHoME.Panel> barList = null;
-            PanelIO.GetSlabs(out barList, m_Revit, m_Rounding);
-            panels.AddRange(barList);
-            PanelIO.GetWalls(out barList, m_Revit, m_Rounding);
-            panels.AddRange(barList);
-            return true;
-        }
-
-        public bool SetBars(List<BHoME.Bar> bars, out List<string> ids, string option = "")
+        public bool SetPanels(List<BHoME.Panel> panels, out List<string> ids)
         {
             throw new NotImplementedException();
         }
 
-        public bool SetLevels(List<BHoME.Storey> stores, out List<string> ids, string option = "")
+        public bool SetOpenings(List<BHoME.Opening> opening, out List<string> ids)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SetLevels(List<BHoME.Storey> stores, out List<string> ids)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SetGrids(List<BHoME.Grid> grid, out List<string> ids)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SetLoads(List<ILoad> loads)
         {
             throw new NotImplementedException();
         }
 
         public bool SetLoadcases(List<ICase> cases)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool SetLoads(List<ILoad> loads, string option = "")
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool SetNodes(List<BHoME.Node> nodes, out List<string> ids, string option = "")
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool SetOpenings(List<BHoME.Opening> opening, out List<string> ids, string option = "")
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool SetPanels(List<BHoME.Panel> panels, out List<string> ids, string option = "")
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool SetGrids(List<BHoME.Grid> grid, out List<string> ids, string option = "")
         {
             throw new NotImplementedException();
         }
