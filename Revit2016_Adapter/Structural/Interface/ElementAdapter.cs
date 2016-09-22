@@ -85,7 +85,22 @@ namespace Revit2016_Adapter.Structural
         public List<string> GetLevels(out List<BHoME.Storey> levels, List<string> ids = null)
         {
             BHoMB.ObjectManager<BHoME.Storey> stories = new BHoMB.ObjectManager<BHoME.Storey>();
-            List<Level> revitLevels = new FilteredElementCollector(m_Revit).OfClass(typeof(Level)).Cast<Level>().ToList();
+            List<Level> revitLevels = null; // new FilteredElementCollector(m_Revit).OfClass(typeof(Level)).Cast<Level>().ToList();
+
+            if (ids == null)
+                revitLevels = new FilteredElementCollector(m_Revit).OfClass(typeof(Level)).Cast<Level>().ToList();
+            else
+            {
+                revitLevels = new List<Level>();
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    Level instance = m_Revit.GetElement(new ElementId(int.Parse(ids[i]))) as Level;
+                    if (instance != null)
+                    {
+                        revitLevels.Add(instance);
+                    }
+                }
+            }
 
             revitLevels.Sort(delegate (Level l1, Level l2)
             {
@@ -112,7 +127,22 @@ namespace Revit2016_Adapter.Structural
         public List<string> GetGrids(out List<BHoME.Grid> grids, List<string> ids = null)
         {
             BHoMB.ObjectManager<BHoME.Grid> bhGrids = new BHoMB.ObjectManager<BHoME.Grid>();
-            List<Autodesk.Revit.DB.Grid> revitGrids = new FilteredElementCollector(m_Revit).OfClass(typeof(Autodesk.Revit.DB.Grid)).Cast<Autodesk.Revit.DB.Grid>().ToList();
+            List<Autodesk.Revit.DB.Grid> revitGrids = null;// 
+
+            if (ids == null)
+                revitGrids = new FilteredElementCollector(m_Revit).OfClass(typeof(Autodesk.Revit.DB.Grid)).Cast<Autodesk.Revit.DB.Grid>().ToList();
+            else
+            {
+                revitGrids = new List<Grid>();
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    Grid instance = m_Revit.GetElement(new ElementId(int.Parse(ids[i]))) as Grid;
+                    if (instance != null)
+                    {
+                        revitGrids.Add(instance);
+                    }
+                }
+            }
 
             foreach (Autodesk.Revit.DB.Grid grid in revitGrids)
             {

@@ -104,7 +104,9 @@ namespace Cobra2016.Structural.Forms
             ICollection<AD.Level> levels = new AD.FilteredElementCollector(m_Document).OfClass(typeof(AD.Level)).Cast<AD.Level>().ToList();
             foreach (AD.Level level in levels)
             {
-                listViewLevels.Items.Add(new ListViewItem(new string[] { level.Name, Math.Round(level.ProjectElevation * GeometryUtils.FeetToMetre, 3).ToString() }));
+                ListViewItem item = new ListViewItem(new string[] { level.Name, Math.Round(level.ProjectElevation * GeometryUtils.FeetToMetre, 3).ToString() });
+                item.Name = level.Id.ToString();
+                listViewLevels.Items.Add(item);
             }
         }
 
@@ -117,7 +119,9 @@ namespace Cobra2016.Structural.Forms
                 if (location is AD.Line)
                 {
                     AD.Line c = location as AD.Line;
-                    listViewGrids.Items.Add(new ListViewItem(new string[] { grid.Name, ToString(c.Direction), GeometryUtils.PointLocation(GeometryUtils.Convert(c.Origin), 3) }));
+                    ListViewItem item = new ListViewItem(new string[] { grid.Name, ToString(c.Direction), GeometryUtils.PointLocation(GeometryUtils.Convert(c.Origin), 3) });
+                    item.Name = grid.Id.ToString();
+                    listViewGrids.Items.Add(item);
                 }
             }
         }

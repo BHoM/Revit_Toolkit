@@ -34,7 +34,8 @@
     <Reference Include="BHoM">
       <HintPath>..\..\BHoM\build\BHoM.dll</HintPath>
     </Reference>
-    <Reference Include="Etabs_Adapter">
+    <Reference Include="Etabs_Adapter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\ETABS_Toolkit\Build\Etabs_Adapter.dll</HintPath>
     </Reference>
     <Reference Include="RevitAPI">
@@ -109,9 +110,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>Copy "$(TargetPath)" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2016\$(TargetFileName)"
-
-Copy "$(TargetDir)Revit2016_Adapter.dll" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2016\Revit2016_Adapter.dll"
+    <PostBuildEvent>Copy "$(TargetDir)*.dll" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2016\*.dll"
 
 Copy "$(TargetDir)Files\Structural.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2016\Structural.Addin"</PostBuildEvent>
   </PropertyGroup>

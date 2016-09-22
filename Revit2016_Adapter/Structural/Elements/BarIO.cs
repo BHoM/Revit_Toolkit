@@ -72,13 +72,15 @@ namespace Revit2016_Adapter.Structural.Elements
                     double rotation = beam.LookupParameter("Cross-Section Rotation").AsDouble() * 180 / Math.PI;
 
                     BHoM.Materials.Material material = null;
-                    BHoM.Materials.MaterialType matKey = GetMaterialType(beam.StructuralMaterialType);
+                    BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(beam.StructuralMaterialType);
+
                     if (!materials.TryGetValue(matKey, out material))
                     {
                         material = BHoM.Materials.Material.Default(matKey);
                         materials.Add(matKey, material);
                     }
-                    bar.Material = material;
+
+                    if (bar.SectionProperty != null) bar.SectionProperty.Material = material;
                     bar.SectionProperty = sections[beam.Symbol.Name];
                     bar.OrientationAngle = rotation;
                     bars.Add(bar);
@@ -263,15 +265,15 @@ namespace Revit2016_Adapter.Structural.Elements
                     }
 
                     BHoM.Materials.Material material = null;
-                    BHoM.Materials.MaterialType matKey = GetMaterialType(column.StructuralMaterialType);
+                    BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(column.StructuralMaterialType);
                     if (!materials.TryGetValue(matKey, out material))
                     {
                         material = BHoM.Materials.Material.Default(matKey);
                         materials.Add(matKey, material);
                     }
 
-                    bar.Material = material;
                     bar.SectionProperty = sections[column.Symbol.Name];
+                    if (bar.SectionProperty != null) bar.SectionProperty.Material = material;
                     bar.OrientationAngle = rotation;
                     barManager.Add(column.Id.ToString(), bar);
                     bars.Add(bar);
@@ -284,23 +286,7 @@ namespace Revit2016_Adapter.Structural.Elements
             return bars;
         }
 
-        public static BHoM.Materials.MaterialType GetMaterialType(Autodesk.Revit.DB.Structure.StructuralMaterialType type)
-        {
-            switch (type)
-            {
-                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Aluminum:
-                    return BHoM.Materials.MaterialType.Aluminium;
-                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete:
-                case Autodesk.Revit.DB.Structure.StructuralMaterialType.PrecastConcrete:
-                    return BHoM.Materials.MaterialType.Concrete;
-                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
-                    return BHoM.Materials.MaterialType.Steel;
-                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood:
-                    return BHoM.Materials.MaterialType.Timber;
-                default:
-                    return BHoM.Materials.MaterialType.Concrete;
-            }
-        }
+       
 
         public static bool GetPiles(out List<BHoME.Bar> bars, Document document, List<string> ids = null, int rounding = 9)
         {
@@ -395,15 +381,15 @@ namespace Revit2016_Adapter.Structural.Elements
                             BHoME.Bar bar = new BHoME.Bar(n1, n2);
 
                             BHoM.Materials.Material material = null;
-                            BHoM.Materials.MaterialType matKey = GetMaterialType(foundation.StructuralMaterialType);
+                            BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(foundation.StructuralMaterialType);
                             if (!materials.TryGetValue(matKey, out material))
                             {
                                 material = BHoM.Materials.Material.Default(matKey);
                                 materials.Add(matKey, material);
                             }
 
-                            bar.Material = material;
                             bar.SectionProperty = sections[foundation.Symbol.Name];
+                            if (bar.SectionProperty != null) bar.SectionProperty.Material = material;
                             bar.StructuralUsage = BHoM.Structural.Elements.BarStructuralUsage.Pile;
                             barManager.Add(foundation.Id.ToString(), bar);
                             bars.Add(bar);
