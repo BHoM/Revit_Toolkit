@@ -66,9 +66,12 @@ namespace Revit2016_Adapter.Structural.Properties
             BHoMP.SectionProperty sectionProperty = null;
             try
             {
-                BHoMP.SectionProperty.LoadFromDB(symbol.Name);
+                sectionProperty = BHoMP.SectionProperty.LoadFromDB(symbol.Name);
             }
-            catch { }
+            catch
+            {
+
+            }
             XYZ direction = IsColumn ? new XYZ(0, 0, 1) : new XYZ(1, 0, 0);
 
             if (sectionProperty == null)

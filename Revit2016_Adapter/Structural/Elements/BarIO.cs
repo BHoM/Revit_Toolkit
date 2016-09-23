@@ -69,7 +69,7 @@ namespace Revit2016_Adapter.Structural.Elements
                         sections.Add(beam.Symbol.Name, SectionIO.GetSectionProperty(beam.Symbol, false));
                     }
                     bar.SectionProperty = sections[beam.Symbol.Name];
-                    double rotation = beam.LookupParameter("Cross-Section Rotation").AsDouble() * 180 / Math.PI;
+                    double rotation = -beam.LookupParameter("Cross-Section Rotation").AsDouble();
 
                     BHoM.Materials.Material material = null;
                     BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(beam.StructuralMaterialType);
@@ -225,7 +225,7 @@ namespace Revit2016_Adapter.Structural.Elements
                         barCentreline = GeometryUtils.Convert((column.Location as LocationCurve).Curve, rounding);
                         p1 = barCentreline.StartPoint;
                         p2 = barCentreline.EndPoint;
-                        rotation = column.LookupParameter("Cross-Section Rotation").AsDouble();
+                        rotation = -column.LookupParameter("Cross-Section Rotation").AsDouble();
                     }
                     else if (column.Location is LocationPoint)
                     {
