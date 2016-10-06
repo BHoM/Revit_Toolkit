@@ -206,5 +206,35 @@ namespace Revit2016_Adapter.Structural
         {
             throw new NotImplementedException();
         }
+
+        public List<string> GetRigidLinks(out List<BHoME.RigidLink> links, List<string> ids = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<string> GetGroups(out List<BHoMB.IGroup> groups, List<string> ids = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SetRigidLinks(List<BHoME.RigidLink> rigidLinks, out List<string> ids)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SetGroups(List<BHoMB.IGroup> groups, out List<string> ids)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<string> GetFEMeshes(out List<BHoME.FEMesh> meshes, List<string> ids = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SetFEMeshes(List<BHoME.FEMesh> meshes, out List<string> ids)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

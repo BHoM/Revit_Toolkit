@@ -44,7 +44,7 @@ namespace Revit2016_Adapter.Structural.Elements
             List<BHoME.Panel> panels = new List<BHoME.Panel>();
             BHoM.Materials.Material material = BHoM.Materials.Material.Default(BHoM.Materials.MaterialType.Concrete);
 
-            BHoMB.ObjectManager<string, BHoME.Panel> panelManager = new BHoMB.ObjectManager<string, BHoME.Panel>("Revit Number", BHoMB.FilterOption.UserData);
+            BHoMB.ObjectManager<string, BHoME.Panel> panelManager = new BHoMB.ObjectManager<string, BHoME.Panel>(Base.RevitUtils.REVIT_ID_KEY, BHoMB.FilterOption.UserData);
             BHoMB.ObjectManager<BHoMP.PanelProperty> thicknessManager = new BHoMB.ObjectManager<BHoMP.PanelProperty>();
             foreach (Floor floor in floors)
             {
@@ -82,7 +82,7 @@ namespace Revit2016_Adapter.Structural.Elements
                 BHoME.Panel panel = new BHoME.Panel(new BHoMG.Group<BHoMG.Curve>(crvs));
                 panelManager.Add(floor.Id.IntegerValue.ToString(), panel);
                 panel.PanelProperty = thickness;
-                panel.Material = material;
+                if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
                 panels.Add(panel);
             }
 
@@ -155,7 +155,7 @@ namespace Revit2016_Adapter.Structural.Elements
             List<BHoME.Panel> panels = new List<BHoME.Panel>();
             BHoM.Materials.Material material = BHoM.Materials.Material.Default(BHoM.Materials.MaterialType.Concrete);
 
-            BHoMB.ObjectManager<string, BHoME.Panel> panelManager = new BHoMB.ObjectManager<string, BHoME.Panel>("Revit Number", BHoMB.FilterOption.UserData);
+            BHoMB.ObjectManager<string, BHoME.Panel> panelManager = new BHoMB.ObjectManager<string, BHoME.Panel>(Base.RevitUtils.REVIT_ID_KEY, BHoMB.FilterOption.UserData);
             BHoMB.ObjectManager<BHoMP.PanelProperty> thicknessManager = new BHoMB.ObjectManager<BHoMP.PanelProperty>();
 
             if (walls.Count > 0)
@@ -247,7 +247,7 @@ namespace Revit2016_Adapter.Structural.Elements
 
                         panelManager.Add(wall.Id.IntegerValue.ToString(), panel);
                         panel.PanelProperty = thickness;
-                        panel.Material = material;
+                        if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
                         panels.Add(panel);
                     }
                 }
@@ -260,7 +260,7 @@ namespace Revit2016_Adapter.Structural.Elements
             List<BHoME.Panel> panels = new List<BHoME.Panel>();
             BHoM.Materials.Material material = BHoM.Materials.Material.Default(BHoM.Materials.MaterialType.Concrete);
 
-            BHoMB.ObjectManager<string, BHoME.Panel> panelManager = new BHoMB.ObjectManager<string, BHoME.Panel>("Revit Number", BHoMB.FilterOption.UserData);
+            BHoMB.ObjectManager<string, BHoME.Panel> panelManager = new BHoMB.ObjectManager<string, BHoME.Panel>(Base.RevitUtils.REVIT_ID_KEY, BHoMB.FilterOption.UserData);
             BHoMB.ObjectManager<BHoMP.PanelProperty> thicknessManager = new BHoMB.ObjectManager<BHoMP.PanelProperty>();
             foreach (FamilyInstance foundation in foundations)
             {
@@ -310,7 +310,7 @@ namespace Revit2016_Adapter.Structural.Elements
                     BHoME.Panel panel = new BHoME.Panel(curves);
                     panelManager.Add(foundation.Id.IntegerValue.ToString(), panel);
                     panel.PanelProperty = thickness;
-                    panel.Material = material;
+                    if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
                     panels.Add(panel);
                 }
             }

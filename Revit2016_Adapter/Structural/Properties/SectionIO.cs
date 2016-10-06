@@ -66,7 +66,7 @@ namespace Revit2016_Adapter.Structural.Properties
             BHoMP.SectionProperty sectionProperty = null;
             try
             {
-                sectionProperty = BHoMP.SectionProperty.LoadFromDB(symbol.Name);
+                sectionProperty = BHoMP.SectionProperty.LoadFromSteelSectionDB(symbol.Name);
             }
             catch
             {
@@ -109,8 +109,9 @@ namespace Revit2016_Adapter.Structural.Properties
                     curves.Transform(BHoMG.Transform.Rotation(BHoMG.Point.Origin, BHoMG.Vector.YAxis(), -Math.PI / 2));
                 }
 
-                BHoMP.ShapeType type = symbol.Family.HasStructuralSection() ? GetShapeType(symbol.Family.StructuralSectionShape) : BHoMP.ShapeType.Rectangle;
-                sectionProperty = new BHoMP.SectionProperty(curves, type);
+                BHoMP.ShapeType type = symbol.Family.CanHaveStructuralSection() ? GetShapeType(symbol.Family.StructuralSectionShape) : BHoMP.ShapeType.Rectangle;
+                BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(symbol.StructuralMaterialType);
+                sectionProperty = BHoMP.SectionProperty.CreateSection(curves, type, matKey);              
             }
             return sectionProperty;
         }
