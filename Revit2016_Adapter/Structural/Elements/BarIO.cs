@@ -185,7 +185,7 @@ namespace Revit2016_Adapter.Structural.Elements
 
                     BHoMP.PanelProperty property = thicknessManager[propertyName];
                     panel.PanelProperty = property;
-                    panel.Material = col.Material;
+                    if (panel.PanelProperty != null) panel.PanelProperty.Material = col.Material;
                     panels.Add(panel);
 
                     BHoM.Global.Project.ActiveProject.RemoveObject(col.BHoM_Guid);
@@ -262,18 +262,9 @@ namespace Revit2016_Adapter.Structural.Elements
                     if (sections[column.Symbol.Name] == null)
                     {
                         sections.Add(column.Symbol.Name, SectionIO.GetSectionProperty(column.Symbol, true));
-                    }
-
-                    BHoM.Materials.Material material = null;
-                    BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(column.StructuralMaterialType);
-                    if (!materials.TryGetValue(matKey, out material))
-                    {
-                        material = BHoM.Materials.Material.Default(matKey);
-                        materials.Add(matKey, material);
-                    }
+                    }                  
 
                     bar.SectionProperty = sections[column.Symbol.Name];
-                    if (bar.SectionProperty != null) bar.SectionProperty.Material = material;
                     bar.OrientationAngle = rotation;
                     barManager.Add(column.Id.ToString(), bar);
                     bars.Add(bar);
