@@ -264,56 +264,64 @@ namespace Revit2016_Adapter.Structural.Elements
             BHoMB.ObjectManager<BHoMP.PanelProperty> thicknessManager = new BHoMB.ObjectManager<BHoMP.PanelProperty>();
             foreach (FamilyInstance foundation in foundations)
             {
-                BHoMG.Group<BHoMG.Curve> curves = new BHoMG.Group<BHoMG.Curve>();
-                GeometryElement geometry = foundation.get_Geometry(new Options());
-                Transform transform = null;
-
-                foreach (GeometryObject obj in geometry)
+                try
                 {
-                    if (obj is Solid)
+                    BHoMG.Group<BHoMG.Curve> curves = new BHoMG.Group<BHoMG.Curve>();
+                    GeometryElement geometry = foundation.get_Geometry(new Options());
+                    Transform transform = null;
+
+                    foreach (GeometryObject obj in geometry)
                     {
-                        foreach (Face face in (obj as Solid).Faces)
+                        if (obj is Solid)
                         {
-                            if (face is PlanarFace && (face as PlanarFace).FaceNormal.AngleTo(XYZ.BasisZ) < Math.PI / 6)
+                            foreach (Face face in (obj as Solid).Faces)
                             {
-                                foreach (EdgeArray curveArray in face.EdgeLoops)
+                                if (face is PlanarFace && (face as PlanarFace).FaceNormal.AngleTo(XYZ.BasisZ) < Math.PI / 6)
                                 {
-                                    foreach (Edge c in curveArray)
+                                    foreach (EdgeArray curveArray in face.EdgeLoops)
                                     {
-                                        curves.Add(GeometryUtils.Convert(c.AsCurve(), rounding));
+                                        foreach (Edge c in curveArray)
+                                        {
+                                            curves.Add(GeometryUtils.Convert(c.AsCurve(), rounding));
+                                        }
                                     }
                                 }
                             }
                         }
+                        else if (obj is GeometryInstance)
+                        {
+                            transform = (obj as GeometryInstance).Transform;
+                        }
                     }
-                    else if (obj is GeometryInstance)
+
+                    Parameter param = foundation.LookupParameter("Host");
+                    if (param == null)
                     {
-                        transform = (obj as GeometryInstance).Transform;
+                        //Not accurate
+                        double elevation = foundation.LookupParameter("Elevation at Top").AsDouble() * GeometryUtils.FeetToMetre;
+                        BHoMG.Plane plane = new BHoM.Geometry.Plane(new BHoM.Geometry.Point(0, 0, elevation), BHoMG.Vector.ZAxis());
+                        curves.Project(plane);
+
+                        if (thicknessManager[foundation.Symbol.Name] == null)
+                        {
+                            thicknessManager.Add(foundation.Symbol.Name, SectionIO.GetFoundationProperty(foundation, foundation.Document));
+                        }
+
+                        BHoMP.PanelProperty thickness = thicknessManager[foundation.Symbol.Name];
+
+                        BHoME.Panel panel = new BHoME.Panel(curves);
+                        panelManager.Add(foundation.Id.IntegerValue.ToString(), panel);
+                        panel.PanelProperty = thickness;
+                        if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
+                        panels.Add(panel);
                     }
                 }
-               
-                Parameter param = foundation.LookupParameter("Host");
-                if (param == null)
+                catch (Exception ex)
                 {
-                    //Not accurate
-                    double elevation = foundation.LookupParameter("Elevation at Top").AsDouble() * GeometryUtils.FeetToMetre;
-                    BHoMG.Plane plane = new BHoM.Geometry.Plane(new BHoM.Geometry.Point(0, 0, elevation), BHoMG.Vector.ZAxis());
-                    curves.Project(plane);                 
-                
-                    if (thicknessManager[foundation.Symbol.Name] == null)
-                    {
-                        thicknessManager.Add(foundation.Symbol.Name, SectionIO.GetFoundationProperty(foundation, foundation.Document));
-                    }
 
-                    BHoMP.PanelProperty thickness = thicknessManager[foundation.Symbol.Name];                  
-
-                    BHoME.Panel panel = new BHoME.Panel(curves);
-                    panelManager.Add(foundation.Id.IntegerValue.ToString(), panel);
-                    panel.PanelProperty = thickness;
-                    if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
-                    panels.Add(panel);
                 }
             }
+                
 
             return panels;
         }

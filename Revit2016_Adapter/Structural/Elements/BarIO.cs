@@ -357,10 +357,7 @@ namespace Revit2016_Adapter.Structural.Elements
                             p1 = GeometryUtils.Convert(basePoint, rounding);
                             p2 = GeometryUtils.Convert(topPoint, rounding);
 
-                            if (sections[foundation.Symbol.Name] == null)
-                            {
-                                sections.Add(foundation.Symbol.Name, BHoMP.SectionProperty.CreateCircularSection(diameter));
-                            }
+                          
 
                             BHoME.Node n1 = nodes[GeometryUtils.PointLocation(p1, 3)];
                             BHoME.Node n2 = nodes[GeometryUtils.PointLocation(p2, 3)];
@@ -370,17 +367,21 @@ namespace Revit2016_Adapter.Structural.Elements
                             if (n2 == null) n2 = nodes.Add(GeometryUtils.PointLocation(p2, 3), new BHoME.Node(p2.X, p2.Y, p2.Z));
 
                             BHoME.Bar bar = new BHoME.Bar(n1, n2);
-
-                            BHoM.Materials.Material material = null;
-                            BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(foundation.StructuralMaterialType);
-                            if (!materials.TryGetValue(matKey, out material))
+                            if (sections[foundation.Symbol.Name] == null)
                             {
-                                material = BHoM.Materials.Material.Default(matKey);
-                                materials.Add(matKey, material);
+                                BHoM.Materials.Material material = null;
+                                BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(foundation.StructuralMaterialType);
+                                if (!materials.TryGetValue(matKey, out material))
+                                {
+                                    material = BHoM.Materials.Material.Default(matKey);
+                                    materials.Add(matKey, material);
+                                }
+                                sections.Add(foundation.Symbol.Name, BHoMP.SectionProperty.CreateCircularSection(matKey, diameter));
+                                
+                                if (bar.SectionProperty != null) bar.SectionProperty.Material = material;
                             }
 
                             bar.SectionProperty = sections[foundation.Symbol.Name];
-                            if (bar.SectionProperty != null) bar.SectionProperty.Material = material;
                             bar.StructuralUsage = BHoM.Structural.Elements.BarStructuralUsage.Pile;
                             barManager.Add(foundation.Id.ToString(), bar);
                             bars.Add(bar);
