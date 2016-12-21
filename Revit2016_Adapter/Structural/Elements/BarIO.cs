@@ -275,9 +275,7 @@ namespace Revit2016_Adapter.Structural.Elements
                 }
             }
             return bars;
-        }
-
-       
+        }       
 
         public static bool GetPiles(out List<BHoME.Bar> bars, Document document, List<string> ids = null, int rounding = 9)
         {

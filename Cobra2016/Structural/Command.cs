@@ -8,6 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using BHoM.Global;
+using BHoM.Base;
+using BHoM.Structural.Elements;
+using Revit2016_Adapter.Structural;
+using BHoM.Structural;
+
 namespace Cobra2016.Structural
 {
     [Transaction(TransactionMode.Automatic)]
@@ -18,6 +24,24 @@ namespace Cobra2016.Structural
         {
             new ExportForm(commandData.Application.ActiveUIDocument.Document).ShowDialog();
 
+            return Result.Succeeded;
+        }
+    }
+
+    [Transaction(TransactionMode.Manual)]
+    [Regeneration(RegenerationOption.Manual)]
+    public class ImportCommand : IExternalCommand
+    {
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            string filename = Path.Combine(Path.GetTempPath(), "RevitExchange");
+            FileIO fileIO = new FileIO(Path.Combine(filename, "In"), Path.Combine(filename, "Out"));
+
+            List<FEMesh> mesh = null;
+            fileIO.GetFEMeshes(out mesh);
+            RevitAdapter adapter = new RevitAdapter(commandData.Application.ActiveUIDocument.Document, 3);
+            List<string> id = new List<string>();
+            adapter.SetFEMeshes(mesh, out id);
             return Result.Succeeded;
         }
     }

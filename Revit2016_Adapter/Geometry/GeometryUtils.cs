@@ -38,6 +38,30 @@ namespace Revit2016_Adapter.Geometry
             return new XYZ(point.X * MetreToFeet, point.Y * MetreToFeet, point.Z * MetreToFeet);
         }
 
+        internal static IList<GeometryObject> Convert(BH.Mesh mesh, ElementId materialId)
+        {
+            TessellatedShapeBuilder builder = new TessellatedShapeBuilder();
+
+            builder.OpenConnectedFaceSet(true);
+
+            List<XYZ> vertices = new List<XYZ>();
+            foreach (BH.Face face in mesh.Faces)
+            {
+                vertices.Clear();
+                for (int i = 0; i < face.Indices.Length; i++)
+                {
+                    vertices.Add(GeometryUtils.Convert(mesh.Vertices[face.Indices[i]]));
+                }
+                builder.AddFace(new TessellatedFace(vertices, materialId));
+            }
+
+            builder.CloseConnectedFaceSet();
+
+            TessellatedShapeBuilderResult result = builder.Build(TessellatedShapeBuilderTarget.Solid, TessellatedShapeBuilderFallback.Abort, ElementId.InvalidElementId);
+
+            return result.GetGeometricalObjects();
+        }
+
         internal static List<BH.Point> Convert(IEnumerable<XYZ> points, int rounding)
         {
             List<BH.Point> bhPoints = new List<BHoM.Geometry.Point>();

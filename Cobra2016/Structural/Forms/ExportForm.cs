@@ -32,7 +32,7 @@ namespace Cobra2016.Structural.Forms
         {
             InitializeComponent();
             m_Document = document;
-            m_Filename = Path.Combine(Path.GetTempPath(), "RevitExport.txt");
+            m_Filename = Path.Combine(Path.GetTempPath(), "RevitExchange");
             checkRound.Checked = true;
             checkBox1.Checked = true;
             textLevelTolerance.Text = "500";
@@ -155,7 +155,7 @@ namespace Cobra2016.Structural.Forms
             }
             else
             {
-                m_Filename = Path.Combine(Path.GetTempPath(), "RevitExport.txt");
+                m_Filename = Path.Combine(Path.GetTempPath(), "RevitExchange");
                 textFilename.Enabled = false;
                 buttonBrowse.Enabled = false;
             }
@@ -288,12 +288,13 @@ namespace Cobra2016.Structural.Forms
             {
                 case "File":
                 case "Rhino":
-                    using (StreamWriter fs = new StreamWriter(m_Filename))
-                    {
-                        string json = BHoM.Global.Project.ActiveProject.ToJSON();
-                        fs.WriteLine(json);
-                        fs.Close();
-                    }
+                    Export(new BHoM.Structural.FileIO(Path.Combine(m_Filename,"In"), Path.Combine(m_Filename, "Out")));
+                    //using (StreamWriter fs = new StreamWriter(m_Filename))
+                    //{
+                    //    string json = BHoM.Global.Project.ActiveProject.ToJSON();
+                    //    fs.WriteLine(json);
+                    //    fs.Close();
+                    //}
                     break;
                 case "Etabs":
                     Export(new Etabs_Adapter.Structural.Interface.EtabsAdapter(m_Filename));

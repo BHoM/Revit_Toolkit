@@ -23,7 +23,7 @@ namespace RevitToolkit2015
             BH.Curve barCentreline = null;
 
             ObjectManager<string, Node> nodes = new ObjectManager<string, Node>("RevitLocation", FilterOption.UserData);
-            ObjectManager<string, Bar> barManager = new ObjectManager<string, Bar>(RevitUtils., FilterOption.UserData);
+            ObjectManager<string, Bar> barManager = new ObjectManager<string, Bar>("RevitLocation", FilterOption.UserData);
             ObjectManager<SectionProperty> sections = new ObjectManager<SectionProperty>();
             BH.Point p1;
             BH.Point p2;

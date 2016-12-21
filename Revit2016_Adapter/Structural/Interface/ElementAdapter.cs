@@ -162,7 +162,7 @@ namespace Revit2016_Adapter.Structural
             throw new NotImplementedException();
         }
 
-        public bool GetLoads(out List<ILoad> loads, List<string> ids = null)
+        public bool GetLoads(out List<ILoad> loads, List<Loadcase> ids = null)
         {
             throw new NotImplementedException();
         }
@@ -233,6 +233,11 @@ namespace Revit2016_Adapter.Structural
         }
 
         public bool SetFEMeshes(List<BHoME.FEMesh> meshes, out List<string> ids)
+        {
+            return MeshIO.SetMesh(m_Revit, meshes, out ids);
+        }
+
+        public bool Run()
         {
             throw new NotImplementedException();
         }

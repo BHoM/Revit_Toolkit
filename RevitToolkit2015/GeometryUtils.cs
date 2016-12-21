@@ -71,6 +71,30 @@ namespace RevitToolkit2015
             return null;
         }
 
+        internal static IList<GeometryObject> Convert(BH.Mesh mesh, ElementId materialId)
+        {
+            TessellatedShapeBuilder builder = new TessellatedShapeBuilder();
+
+            builder.OpenConnectedFaceSet(true);
+
+            List<XYZ> vertices = new List<XYZ>();
+            foreach (BH.Face face in mesh.Faces)
+            {
+                vertices.Clear();
+                for (int i = 0; i < face.Indices.Length; i++)
+                {
+                    vertices.Add(GeometryUtils.Convert(mesh.Vertices[face.Indices[i]]));
+                }
+                builder.AddFace(new TessellatedFace(vertices, materialId));
+            }
+
+            builder.CloseConnectedFaceSet();
+
+            TessellatedShapeBuilderResult result = builder.Build(TessellatedShapeBuilderTarget.Mesh, TessellatedShapeBuilderFallback.Abort, ElementId.InvalidElementId);
+
+            return result.GetGeometricalObjects();            
+        }
+
         public static bool IsHorizontal(BH.Plane p)
         {
             return BH.Vector.VectorAngle(p.Normal, BH.Vector.ZAxis()) < Math.PI / 48;          

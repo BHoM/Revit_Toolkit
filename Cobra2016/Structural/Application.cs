@@ -24,9 +24,11 @@ namespace Cobra2016.Structural
             RibbonPanel importExport = application.CreateRibbonPanel(Resource.StructuralTab, "Import/Export");
 
             RibbonItemData exportGeometry = new PushButtonData("Export Geometry", "Export", Assembly.GetExecutingAssembly().Location, "Cobra" + Resource.Version + ".Structural.ExportCommand");
+            RibbonItemData importGeometry = new PushButtonData("Import Geometry", "Import", Assembly.GetExecutingAssembly().Location, "Cobra" + Resource.Version + ".Structural.ImportCommand");
             RibbonItemData setParams = new PushButtonData("SetParams", "Set Parameters", Assembly.GetExecutingAssembly().Location, "Cobra" + Resource.Version + ".Structural.SetParameters");
 
             importExport.AddItem(exportGeometry);
+            importExport.AddItem(importGeometry);
             importExport.AddItem(setParams);
 
             return Result.Succeeded;
