@@ -25,7 +25,7 @@ namespace Revit2016_Adapter.Base
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood:
                     return BHoM.Materials.MaterialType.Timber;
                 default:
-                    return BHoM.Materials.MaterialType.Concrete;
+                    return BHoM.Materials.MaterialType.Steel;
             }
         }
 

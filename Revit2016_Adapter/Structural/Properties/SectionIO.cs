@@ -110,7 +110,7 @@ namespace Revit2016_Adapter.Structural.Properties
                 }
 
                 BHoMP.ShapeType type = symbol.Family.CanHaveStructuralSection() ? GetShapeType(symbol.Family.StructuralSectionShape) : BHoMP.ShapeType.Rectangle;
-                BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(symbol.StructuralMaterialType);
+                BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(symbol.Family.StructuralMaterialType);
                 sectionProperty = BHoMP.SectionProperty.CreateSection(curves, type, matKey);              
             }
             return sectionProperty;

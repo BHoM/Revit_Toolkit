@@ -54,8 +54,6 @@ namespace Cobra2016.Structural
         {
             Document doc = commandData.Application.ActiveUIDocument.Document;
             string path = Path.Combine(Path.GetTempPath(), "RevitParams.csv");
-            List<BHoM.Structural.Elements.Panel> pan = new List<BHoM.Structural.Elements.Panel>();
-            Revit2016_Adapter.Structural.Elements.PanelIO.GetWalls(out pan, doc);
 
             using (StreamReader fs = new StreamReader(path))
             {

@@ -57,7 +57,6 @@ namespace Cobra2016.Structural.Forms
             treeViewSelection.Nodes.Add("Foundations", "Foundations");
             treeViewSelection.Nodes.Add("Floors", "Floors");
             treeViewSelection.Nodes.Add("Walls", "Walls");
-
             foreach (AD.FamilyInstance beam in beams)
             {
                 AddChild(beam.Id.ToString(), beam.Symbol.Name, treeViewSelection.Nodes["Beams"]);
@@ -84,10 +83,13 @@ namespace Cobra2016.Structural.Forms
             }
 
             treeViewSelection.CollapseAll();
+
             foreach (TreeNode node in treeViewSelection.Nodes)
             {
                 node.Checked = true;
             }
+
+            treeViewSelection.Sort();
         }
 
         private void AddChild(string data, string parent, TreeNode node)

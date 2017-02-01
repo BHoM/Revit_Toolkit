@@ -68,6 +68,7 @@ namespace Revit2016_Adapter.Structural.Elements
                     {
                         sections.Add(beam.Symbol.Name, SectionIO.GetSectionProperty(beam.Symbol, false));
                     }
+                   
                     bar.SectionProperty = sections[beam.Symbol.Name];
                     double rotation = -beam.LookupParameter("Cross-Section Rotation").AsDouble();
 
@@ -378,11 +379,15 @@ namespace Revit2016_Adapter.Structural.Elements
                                 
                                 if (bar.SectionProperty != null) bar.SectionProperty.Material = material;
                             }
-
                             bar.SectionProperty = sections[foundation.Symbol.Name];
                             bar.StructuralUsage = BHoM.Structural.Elements.BarStructuralUsage.Pile;
                             barManager.Add(foundation.Id.ToString(), bar);
                             bars.Add(bar);
+                            Parameter Mark = null;
+                            if ((Mark = foundation.LookupParameter("Mark")) != null)
+                            {
+                                bar.CustomData.Add("Mark", Mark.AsString());
+                            }
                         }
                         catch (Exception ex)
                         {
