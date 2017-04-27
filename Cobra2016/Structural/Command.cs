@@ -28,23 +28,118 @@ namespace Cobra2016.Structural
         }
     }
 
-    [Transaction(TransactionMode.Manual)]
+    [Transaction(TransactionMode.Automatic)]
     [Regeneration(RegenerationOption.Manual)]
     public class ImportCommand : IExternalCommand
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             string filename = Path.Combine(Path.GetTempPath(), "RevitExchange");
-            FileIO fileIO = new FileIO(Path.Combine(filename, "In"), Path.Combine(filename, "Out"));
 
-            List<FEMesh> mesh = null;
-            fileIO.GetFEMeshes(out mesh);
-            RevitAdapter adapter = new RevitAdapter(commandData.Application.ActiveUIDocument.Document, 3);
-            List<string> id = new List<string>();
-            adapter.SetFEMeshes(mesh, out id);
+            Document doc = commandData.Application.ActiveUIDocument.Document;
+            Document familyDoc = commandData.Application.Application.NewFamilyDocument(@"L:\BH-Revit\Revit2016\Family Templates\English\Metric Structural Framing - Beams and Braces.rft");
+            Transaction remove = new Transaction(familyDoc, "Remove Existing Extrusions");
+            remove.Start();
+            IList<Element> list= new FilteredElementCollector(familyDoc).OfClass(typeof(Extrusion)).ToElements(); 
+            foreach (Element element in list)
+            {
+                familyDoc.Delete(element.Id);
+            }
+
+            remove.Commit();
+
+
+            ReferencePlane rightPlanes = new FilteredElementCollector(familyDoc).OfClass(typeof(ReferencePlane)).First(e=>e.Name == "Right") as ReferencePlane;
+            ReferencePlane leftPlanes = new FilteredElementCollector(familyDoc).OfClass(typeof(ReferencePlane)).First(e => e.Name == "Left") as ReferencePlane;
+            View view = new FilteredElementCollector(familyDoc).OfClass(typeof(View)).First(e => e.Name == "Front") as View;
+
+            double rightX = rightPlanes.GetPlane().Origin.X;
+            double length = rightPlanes.GetPlane().Origin.X - leftPlanes.GetPlane().Origin.X;
+
+            //
+
+            //CurveArray c = new CurveArray();
+            //c.Append(Line.CreateBound(new XYZ(rightX, 0, 0), new XYZ(rightX, 0, 1)));
+            //c.Append(Line.CreateBound(new XYZ(rightX, 0, 1), new XYZ(rightX, 1, 1)));
+            //c.Append(Line.CreateBound(new XYZ(rightX, 1, 1), new XYZ(rightX, 1, 0)));
+            //c.Append(Line.CreateBound(new XYZ(rightX, 1, 0), new XYZ(rightX, 0, 0)));
+
+
+            BHoM.Structural.Properties.SectionProperty section = BHoM.Structural.Properties.SectionProperty.LoadFromSteelSectionDB("UC254x254x89");
+
+
+
+           // arr.Append(c);
+            CurveArrArray arr = Revit2016_Adapter.Geometry.GeometryUtils.Convert(section.Edges);
+
+            Transaction create = new Transaction(familyDoc, "Create Extrusion");
+            create.Start();            
+            Extrusion val = familyDoc.FamilyCreate.NewExtrusion(true, arr, SketchPlane.Create(familyDoc, rightPlanes.Id), length);            
+            create.Commit();
+            
+            Transaction align = new Transaction(familyDoc, "Create Alignment");
+            align.Start();
+            familyDoc.FamilyCreate.NewAlignment(view, GetFace(familyDoc, val, leftPlanes).Reference, leftPlanes.GetReference());
+            familyDoc.FamilyCreate.NewAlignment(view, GetFace(familyDoc, val, rightPlanes).Reference, rightPlanes.GetReference());
+
+            FamilyParameter p = familyDoc.FamilyManager.get_Parameter("Structural Material");
+
+            familyDoc.FamilyManager.Set(p, Revit2016_Adapter.Base.RevitUtils.GetMaterial(familyDoc, BHoM.Materials.MaterialType.Steel).Id);
+            List<Family> fams = new FilteredElementCollector(familyDoc).OfClass(typeof(Family)).Cast<Family>().ToList();
+
+            if (fams.Count > 0)
+            {
+                Parameter par = fams[0].LookupParameter("Material for Model Behavior");
+                par.Set(1);
+                //1 Steel
+                //2 Concrete
+                //3 Prescast
+                //4 Wood
+                //5 Other
+            }
+
+            align.Commit();
+
+            familyDoc.SaveAs(@"C:\Users\edalton\Desktop\test.rft");
+            Family fam = null;
+            doc.LoadFamily(@"C:\Users\edalton\Desktop\text.rft", out fam);
+
+            File.Delete(@"C:\Users\edalton\Desktop\test.rft");
+
             return Result.Succeeded;
         }
+
+        PlanarFace GetFace(Document doc, Extrusion box, ReferencePlane plane)
+        {
+            Options o = new Options();
+            o.ComputeReferences = true;
+            GeometryElement geom = box.get_Geometry(o);
+            Plane p = plane.GetPlane();
+            foreach (GeometryObject obj in geom)
+            {
+                if(obj is Solid)
+                {
+                    Solid s = obj as Solid;
+                    foreach (Autodesk.Revit.DB.Face face in s.Faces)
+                    {
+                        PlanarFace pFace = face as PlanarFace;
+                        double angle = pFace.FaceNormal.AngleTo(p.Normal);
+                        double dotProduct = pFace.FaceNormal.DotProduct(p.Normal);
+                        if ((dotProduct > 0 && angle < 0.001 && angle > -0.001) || dotProduct < 0 && angle < Math.PI + 0.001 && angle > Math.PI - 0.001)
+                        {
+                            if (pFace.Origin.X == p.Origin.X)
+                            {
+                                return pFace;
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        }
     }
+
+
 
     [Transaction(TransactionMode.Automatic)]
     [Regeneration(RegenerationOption.Manual)]
