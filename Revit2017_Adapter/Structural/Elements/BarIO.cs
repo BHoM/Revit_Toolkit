@@ -16,6 +16,27 @@ namespace Revit2017_Adapter.Structural.Elements
 {
     public class BarIO
     {
+        public static bool SetBars(List<BHoME.Bar> bars, List<Level> revitLevels, Document document, out List<string> ids)
+        {
+            Dictionary<string, FamilySymbol> sections = new Dictionary<string, FamilySymbol>();
+            ids = new List<string>();
+            foreach (BHoME.Bar bar in bars)
+            {
+                Curve c = GeometryUtils.Convert(bar.Line);
+                Level level = LevelIO.GetLevel(revitLevels, (c.GetEndPoint(0) + c.GetEndPoint(1)).Z);
+                FamilySymbol symbol = null;
+                if (!sections.TryGetValue(bar.SectionProperty.Name, out symbol))
+                {
+                    symbol = SectionIO.GetFamilySymbol(document, bar);
+                    sections.Add(bar.SectionProperty.Name, symbol);
+                }
+                Element instance = document.Create.NewFamilyInstance(c, symbol, level, Revit2017_Adapter.Base.RevitUtils.StructuralType(bar.StructuralUsage));
+                Revit2017_Adapter.Base.RevitUtils.SetElementParameter(instance, "z Justification", (int)BeamSystemJustifyType.Center);
+                ids.Add(instance.Id.ToString());
+            }
+            return true;
+        }
+
         public static bool GetBeams(out List<BHoME.Bar> bars, Document document, List<string> ids = null, int rounding = 9)
         {
             ICollection<FamilyInstance> framing = null;
@@ -53,46 +74,39 @@ namespace Revit2017_Adapter.Structural.Elements
             {
                 if (beam.Location is LocationCurve)
                 {
-                    try
+                    barCentreline = GeometryUtils.Convert((beam.Location as LocationCurve).Curve, rounding);
+                    p1 = barCentreline.StartPoint;
+                    p2 = barCentreline.EndPoint;
+                    BHoME.Node n1 = nodes[GeometryUtils.PointLocation(p1, 3)];
+                    BHoME.Node n2 = nodes[GeometryUtils.PointLocation(p2, 3)];
+
+                    if (n1 == null) n1 = nodes.Add(GeometryUtils.PointLocation(barCentreline.StartPoint, 3), new BHoME.Node(p1.X, p1.Y, p1.Z));
+
+                    if (n2 == null) n2 = nodes.Add(GeometryUtils.PointLocation(barCentreline.EndPoint, 3), new BHoME.Node(p2.X, p2.Y, p2.Z));
+
+                    BHoME.Bar bar = new BHoME.Bar(n1, n2);
+                    if (sections[beam.Symbol.Name] == null)
                     {
-                        barCentreline = GeometryUtils.Convert((beam.Location as LocationCurve).Curve, rounding);
-                        p1 = barCentreline.StartPoint;
-                        p2 = barCentreline.EndPoint;
-                        BHoME.Node n1 = nodes[GeometryUtils.PointLocation(p1, 3)];
-                        BHoME.Node n2 = nodes[GeometryUtils.PointLocation(p2, 3)];
-
-                        if (n1 == null) n1 = nodes.Add(GeometryUtils.PointLocation(barCentreline.StartPoint, 3), new BHoME.Node(p1.X, p1.Y, p1.Z));
-
-                        if (n2 == null) n2 = nodes.Add(GeometryUtils.PointLocation(barCentreline.EndPoint, 3), new BHoME.Node(p2.X, p2.Y, p2.Z));
-
-                        BHoME.Bar bar = new BHoME.Bar(n1, n2);
-                        if (sections[beam.Symbol.Name] == null)
-                        {
-                            sections.Add(beam.Symbol.Name, SectionIO.GetSectionProperty(beam.Symbol, false));
-                        }
-
-                        bar.SectionProperty = sections[beam.Symbol.Name];
-                        double rotation = -beam.LookupParameter("Cross-Section Rotation").AsDouble();
-
-                        BHoM.Materials.Material material = null;
-                        BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(beam.StructuralMaterialType);
-
-                        if (!materials.TryGetValue(matKey, out material))
-                        {
-                            material = BHoM.Materials.Material.Default(matKey);
-                            materials.Add(matKey, material);
-                        }
-
-                        if (bar.SectionProperty != null) bar.SectionProperty.Material = material;
-                        bar.SectionProperty = sections[beam.Symbol.Name];
-                        bar.OrientationAngle = rotation;
-                        bars.Add(bar);
-                        barManager.Add(beam.Id.ToString(), bar);
+                        sections.Add(beam.Symbol.Name, SectionIO.GetSectionProperty(beam.Symbol, false));
                     }
-                    catch (Exception e)
+                   
+                    bar.SectionProperty = sections[beam.Symbol.Name];
+                    double rotation = -beam.LookupParameter("Cross-Section Rotation").AsDouble();
+
+                    BHoM.Materials.Material material = null;
+                    BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(beam.StructuralMaterialType);
+
+                    if (!materials.TryGetValue(matKey, out material))
                     {
-
+                        material = BHoM.Materials.Material.Default(matKey);
+                        materials.Add(matKey, material);
                     }
+
+                    if (bar.SectionProperty != null) bar.SectionProperty.Material = material;
+                    bar.SectionProperty = sections[beam.Symbol.Name];
+                    bar.OrientationAngle = rotation;
+                    bars.Add(bar);
+                    barManager.Add(beam.Id.ToString(), bar);
                 }
             }
 

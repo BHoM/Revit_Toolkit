@@ -56,20 +56,8 @@ namespace Cobra2016.Structural
             double rightX = rightPlanes.GetPlane().Origin.X;
             double length = rightPlanes.GetPlane().Origin.X - leftPlanes.GetPlane().Origin.X;
 
-            //
-
-            //CurveArray c = new CurveArray();
-            //c.Append(Line.CreateBound(new XYZ(rightX, 0, 0), new XYZ(rightX, 0, 1)));
-            //c.Append(Line.CreateBound(new XYZ(rightX, 0, 1), new XYZ(rightX, 1, 1)));
-            //c.Append(Line.CreateBound(new XYZ(rightX, 1, 1), new XYZ(rightX, 1, 0)));
-            //c.Append(Line.CreateBound(new XYZ(rightX, 1, 0), new XYZ(rightX, 0, 0)));
-
-
             BHoM.Structural.Properties.SectionProperty section = BHoM.Structural.Properties.SectionProperty.LoadFromSteelSectionDB("UC254x254x89");
 
-
-
-           // arr.Append(c);
             CurveArrArray arr = Revit2016_Adapter.Geometry.GeometryUtils.Convert(section.Edges);
 
             Transaction create = new Transaction(familyDoc, "Create Extrusion");

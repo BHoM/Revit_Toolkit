@@ -12,6 +12,20 @@ namespace Revit2017_Adapter.Geometry
     {
         public const double FeetToMetre = 0.3048;
         public const double MetreToFeet = 3.28084;
+        public static double MeterToFeet(double dub)
+        {
+            return UnitUtils.ConvertToInternalUnits(dub, DisplayUnitType.DUT_METERS);
+        }
+
+        public static double MmToFeet(double dub)
+        {
+            return UnitUtils.ConvertToInternalUnits(dub, DisplayUnitType.DUT_MILLIMETERS);
+        }
+        public static double FeetToMeter(double dub)
+        {
+            return UnitUtils.ConvertFromInternalUnits(dub, DisplayUnitType.DUT_METERS);
+        }
+
 
         public static string PointLocation(BH.Point point, int decimals)
         {
@@ -30,37 +44,39 @@ namespace Revit2017_Adapter.Geometry
 
         public static BH.Point Convert(XYZ point, int rounding = 9)
         {
-            return new BHoM.Geometry.Point(Math.Round(point.X * FeetToMetre, rounding), Math.Round(point.Y * FeetToMetre, rounding), Math.Round(point.Z * FeetToMetre, rounding));
+            return new BHoM.Geometry.Point(Math.Round(FeetToMeter(point.X), rounding), Math.Round(FeetToMeter(point.Y), rounding), Math.Round(FeetToMeter(point.Z), rounding));
         }
 
         public static XYZ Convert(BH.Point point)
         {
-            return new XYZ(point.X * MetreToFeet, point.Y * MetreToFeet, point.Z * MetreToFeet);
+            return new XYZ(MeterToFeet(point.X), MeterToFeet(point.Y), MeterToFeet(point.Z)); ;
         }
 
-        //internal static IList<GeometryObject> Convert(BH.Mesh mesh, ElementId materialId)
-        //{
-        //    TessellatedShapeBuilder builder = new TessellatedShapeBuilder();
+        internal static IList<GeometryObject> Convert(BH.Mesh mesh, ElementId materialId)
+        {
+            TessellatedShapeBuilder builder = new TessellatedShapeBuilder();
 
-        //    builder.OpenConnectedFaceSet(true);
+            builder.OpenConnectedFaceSet(true);
 
-        //    List<XYZ> vertices = new List<XYZ>();
-        //    foreach (BH.Face face in mesh.Faces)
-        //    {
-        //        vertices.Clear();
-        //        for (int i = 0; i < face.Indices.Length; i++)
-        //        {
-        //            vertices.Add(GeometryUtils.Convert(mesh.Vertices[face.Indices[i]]));
-        //        }
-        //        builder.AddFace(new TessellatedFace(vertices, materialId));
-        //    }
+            List<XYZ> vertices = new List<XYZ>();
+            foreach (BH.Face face in mesh.Faces)
+            {
+                vertices.Clear();
+                for (int i = 0; i < face.Indices.Length; i++)
+                {
+                    vertices.Add(GeometryUtils.Convert(mesh.Vertices[face.Indices[i]]));
+                }
+                builder.AddFace(new TessellatedFace(vertices, materialId));
+            }
 
-        //    builder.CloseConnectedFaceSet();
-            
-        //    TessellatedShapeBuilderResult result = builder.Build(TessellatedShapeBuilderTarget.Solid, TessellatedShapeBuilderFallback.Abort, ElementId.InvalidElementId);
-
-        //    return result.GetGeometricalObjects();
-        //}
+            builder.CloseConnectedFaceSet();
+            builder.Target = TessellatedShapeBuilderTarget.Solid;
+            builder.Fallback = TessellatedShapeBuilderFallback.Abort;
+            builder.GraphicsStyleId = ElementId.InvalidElementId;
+            builder.Build();
+            TessellatedShapeBuilderResult result = builder.GetBuildResult();
+            return result.GetGeometricalObjects();
+        }
 
         internal static List<BH.Point> Convert(IEnumerable<XYZ> points, int rounding)
         {
@@ -71,6 +87,17 @@ namespace Revit2017_Adapter.Geometry
             }
             return bhPoints;
         }
+
+        internal static IEnumerable<XYZ> Convert(List<BH.Point> points)
+        {
+            List<XYZ> bhPoints = new List<XYZ>();
+            foreach (BH.Point point in points)
+            {
+                bhPoints.Add(Convert(point));
+            }
+            return bhPoints;
+        }
+
 
         internal static BH.Curve Convert(Curve curve, int rounding)
         {
@@ -95,9 +122,46 @@ namespace Revit2017_Adapter.Geometry
             return null;
         }
 
+        internal static Curve Convert(BH.Curve curve)
+        {
+            if (curve is BH.Line)
+            {
+                return Line.CreateBound(Convert(curve.StartPoint), Convert(curve.EndPoint));
+            }
+            else if (curve is BH.Arc)
+            {
+                BH.Arc arc = curve as BH.Arc;
+
+                return Arc.Create(Convert(arc.StartPoint), Convert(arc.EndPoint), Convert(arc.MiddlePoint));
+            }
+            else
+            {
+                BH.Curve spline = curve as BH.Curve;
+                return NurbSpline.Create(Convert(spline.ControlPoints).ToList(), spline.Weights, spline.Knots, spline.Degree, spline.IsClosed(), true);
+            }
+        }
+
+        public static CurveArrArray Convert(BH.Group<BH.Curve> curves)
+        {
+            List<BH.Curve> loops = BH.Curve.Join(curves);
+
+            CurveArrArray revitCurves = new CurveArrArray();
+
+            foreach (BH.Curve perimeterCurve in loops)
+            {
+                CurveArray revitPerimeter = new CurveArray();
+                foreach (BH.Curve segment in perimeterCurve.Explode())
+                {
+                    revitPerimeter.Append(Convert(segment));
+                }
+                revitCurves.Append(revitPerimeter);
+            }
+            return revitCurves;
+        }
+
         public static bool IsHorizontal(BH.Plane p)
         {
-            return BH.Vector.VectorAngle(p.Normal, BH.Vector.ZAxis()) < Math.PI / 48;          
+            return BH.Vector.VectorAngle(p.Normal, BH.Vector.ZAxis()) < Math.PI / 48;
         }
 
         public static bool IsVertical(BH.Plane p)
@@ -109,7 +173,7 @@ namespace Revit2017_Adapter.Geometry
         public static BH.Group<BH.Curve> SnapTo(BH.Group<BH.Curve> curves, BH.Plane plane, double tolerance)
         {
             BH.Group<BH.Curve> result = new BH.Group<BH.Curve>();
-            for(int i = 0; i < curves.Count; i++)
+            for (int i = 0; i < curves.Count; i++)
             {
                 List<BH.Curve> segments = curves[i].Explode();
                 for (int j = 0; j < segments.Count; j++)

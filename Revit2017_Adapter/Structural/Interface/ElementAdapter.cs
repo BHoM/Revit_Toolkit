@@ -235,7 +235,6 @@ namespace Revit2017_Adapter.Structural
         public bool SetFEMeshes(List<BHoME.FEMesh> meshes, out List<string> ids)
         {
             throw new NotImplementedException();
-            //return MeshIO.SetMesh(m_Revit, meshes, out ids);
         }
 
         public bool Run()

@@ -117,12 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="StructuralTab" xml:space="preserve">
-    <value>BH Structural</value>
-    <comment>Revit Structural tab name</comment>
+  <data name="BeamTemplate" xml:space="preserve">
+    <value>@"L:\BH-Revit\Revit2016\Family Templates\English\Metric Structural Framing - Beams and Braces.rft"</value>
   </data>
-  <data name="Version" xml:space="preserve">
-    <value>2017</value>
-    <comment>Revit Version</comment>
+  <data name="ColumnTemplate" xml:space="preserve">
+    <value>@"L:\BH-Revit\Revit2016\Family Templates\English\Metric Structural Column.rft</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="FamilyPathDB" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Base\FamilyPathDB.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

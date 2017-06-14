@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revit2017_Adapter", "Revit2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cobra2017", "Cobra2017\Cobra2017.csproj", "{E8022CAD-94B9-45F2-B030-442DA3DAE600}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportVenueEvent_Cobra", "SportVenueEvent_Cobra\SportVenueEvent_Cobra.csproj", "{CD2953A3-C11F-4A25-B7AF-3175B09E2C09}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{E8022CAD-94B9-45F2-B030-442DA3DAE600}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8022CAD-94B9-45F2-B030-442DA3DAE600}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8022CAD-94B9-45F2-B030-442DA3DAE600}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD2953A3-C11F-4A25-B7AF-3175B09E2C09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD2953A3-C11F-4A25-B7AF-3175B09E2C09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD2953A3-C11F-4A25-B7AF-3175B09E2C09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD2953A3-C11F-4A25-B7AF-3175B09E2C09}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
