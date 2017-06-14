@@ -202,7 +202,7 @@ namespace Revit2016_Adapter.Structural.Properties
                     {
                         foreach (Face face in (obj as Solid).Faces)
                         {
-                            if (face is PlanarFace && (face as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(direction, 0.001) || (face as PlanarFace).Normal.Normalize().IsAlmostEqualTo(-direction, 0.001))
+                            if (face is PlanarFace && (face as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(direction, 0.001) || (face as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(-direction, 0.001))
                             {
                                 foreach (EdgeArray curveArray in (face as PlanarFace).EdgeLoops)
                                 {

@@ -77,5 +77,14 @@ namespace Revit2016_Adapter.Properties {
                 return ResourceManager.GetString("ColumnTemplate", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {&quot;__Type__&quot;:&quot;System.Collections.Generic.Dictionary`2[System.String,System.String]&quot;,&quot;CHS&quot;: &quot;L:\\BH-Revit\\Revit2017\\Libraries\\UK\\_BH Library\\BH Structures\\BH Structural\\Structural Framing\\Steel\\_Circular Hollow Sections.rfa&quot;, &quot;Generic&quot; : &quot;L:\\BH-Revit\\Revit2017\\Family Templates\\English\\Metric Generic Model.rft&quot;,&quot;RHS&quot;: &quot;L:\\BH-Revit\\Revit2017\\Libraries\\UK\\_BH Library\\BH Structures\\BH Structural\\Structural Framing\\Steel\\_Rectangular Hollow Sections.rfa&quot;,&quot;SFB&quot;: &quot;L:\\BH-Revit\\Revit2017\\Lib [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string FamilyPathDB {
+            get {
+                return ResourceManager.GetString("FamilyPathDB", resourceCulture);
+            }
+        }
     }
 }
