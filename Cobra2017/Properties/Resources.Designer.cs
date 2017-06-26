@@ -61,6 +61,26 @@ namespace Cobra2017.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BHoM_Download {
+            get {
+                object obj = ResourceManager.GetObject("BHoM_Download", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BHoM_Uppload {
+            get {
+                object obj = ResourceManager.GetObject("BHoM_Uppload", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to BH Structural.
         /// </summary>
         internal static string StructuralTab {

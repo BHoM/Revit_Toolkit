@@ -48,7 +48,7 @@ namespace SportVenueEvent_Cobra.Engine.Convert
 
             // Get familysymbol from document
 
-            FamilySymbol familySymbol = RevitUtils.GetFamilySymbolfromDocument(typeName, m_document);
+            FamilySymbol familySymbol = familySymbol = (FamilySymbol)RevitUtils.GetElement(m_document, typeof(FamilySymbol), typeName);
 
             // Get familysymbol from path
 
@@ -69,7 +69,7 @@ namespace SportVenueEvent_Cobra.Engine.Convert
 
             if (familySymbol == null)
             {
-                FamilySymbol familyParentType = RevitUtils.GetFamilySymbolfromDocument(FamilyName, m_document);
+                FamilySymbol familyParentType = familySymbol = (FamilySymbol)RevitUtils.GetElement(m_document, typeof(FamilySymbol), typeName);
                 if (familySymbol != null)
                 {
                     // Create new familytype by duplicating Parent type;
@@ -96,7 +96,7 @@ namespace SportVenueEvent_Cobra.Engine.Convert
                         newFamilyType.GetParameters("FrontHeight")[0].Set(RevitGeometry.MmToFeet(double.Parse(SplitName.ToList()[6])));
                         newFamilyType.GetParameters("Chamfer")[0].Set(RevitGeometry.MeterToFeet(BHobj.Chamfer));
                     }
-                    familySymbol = RevitUtils.GetFamilySymbolfromDocument(typeName, m_document);
+                    familySymbol = familySymbol = (FamilySymbol)RevitUtils.GetElement(m_document, typeof(FamilySymbol), typeName);
                 }
             }
 
@@ -105,11 +105,10 @@ namespace SportVenueEvent_Cobra.Engine.Convert
 
             FamilyInstance beam = m_document.Create.NewFamilyInstance(RevitGeometry.Write(BHobj.Bar.Line), familySymbol, (Level)RevitUtils.GetElement(m_document, typeof(Level), lvl), Autodesk.Revit.DB.Structure.StructuralType.Beam);
             RevitUtils.DisableEndJoin(beam);
-
-            string[] paramnames = { "StartAngle", "EndAngle", "z Justification" };
-            string[] paramvalues = { (BHobj.StartAngle * (180 / Math.PI)).ToString(), (BHobj.EndAngle * (180 / Math.PI)).ToString(), "2" };
-            RevitUtils.SetLookupParameter(beam, paramnames.ToList(), paramvalues.ToList());
-            return beam;
+            RevitUtils.SetElementParameter(beam, BuiltInParameter.Z_JUSTIFICATION, "2");
+            RevitUtils.SetElementParameter(beam, "EndAngle", RevitGeometry.RadToDeg(BHobj.StartAngle).ToString());
+            RevitUtils.SetElementParameter(beam, "StartAngle", RevitGeometry.RadToDeg(BHobj.StartAngle).ToString());
+            return beam.Id;
         }
 
         /**********************************************/
@@ -121,7 +120,7 @@ namespace SportVenueEvent_Cobra.Engine.Convert
 
             string typeName = BHobj.Name;
 
-            FamilySymbol familySymbol = RevitUtils.GetFamilySymbolfromDocument(typeName, m_document);
+            FamilySymbol familySymbol = familySymbol = (FamilySymbol)RevitUtils.GetElement(m_document, typeof(FamilySymbol), typeName);
 
             // Get familysymbol from path.
 
@@ -142,15 +141,33 @@ namespace SportVenueEvent_Cobra.Engine.Convert
                 if (!familySymbol.IsActive)
                 { familySymbol.Activate(); m_document.Regenerate(); }
 
-                RevitUtils.SetLookupParameter(familySymbol, "Type Mark", BHobj.Name.ToString());
+                RevitUtils.SetElementParameter(familySymbol, "Type Mark", BHobj.Name.ToString());
 
                 XYZ locpt = RevitGeometry.Write(BHobj.Location);
                 XYZ oript = RevitGeometry.Write(BHobj.Orientation,false);
                 Level level = (Level)RevitUtils.GetElement(m_document, typeof(Level), lvl);
                 
-                FamilyInstance inst = m_document.Create.NewFamilyInstance(locpt, familySymbol,  oript, level,  Autodesk.Revit.DB.Structure.StructuralType.Beam);
-                RevitUtils.SetLookupParameter(inst, "Reference Level", level.Id.ToString());
-                return inst;
+                FamilyInstance inst = m_document.Create.NewFamilyInstance(new XYZ(locpt.X,locpt.Y,locpt.Z - level.Elevation), familySymbol,  level,  Autodesk.Revit.DB.Structure.StructuralType.Beam);
+                ElementTransformUtils.RotateElement(m_document, inst.Id, Line.CreateBound(locpt, new XYZ(locpt.X, locpt.Y, locpt.Z + 10)), oript.AngleOnPlaneTo(XYZ.BasisX, - XYZ.BasisZ));
+                //Transform trans = inst.GetTransform();
+                //trans = Transform.CreateRotation(XYZ.BasisZ, oript.AngleOnPlaneTo(XYZ.BasisX,XYZ.BasisZ));
+
+                if (BHobj.Bars != null)
+                {
+                    RevitUtils.SetElementParameter(inst, "BeamLength", BHobj.Bars[0].Length.ToString());
+                }
+                RevitUtils.SetElementParameter(inst, BuiltInParameter.INSTANCE_REFERENCE_LEVEL_PARAM, level.Id);
+
+                Material mat = RevitUtils.GetMaterial(m_document, "Precast Concrete");
+                if (mat != null)
+                {
+                    Parameter param = inst.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
+                    if (param != null)
+                    {
+                        RevitUtils.SetElementParameter(inst, BuiltInParameter.STRUCTURAL_MATERIAL_PARAM, mat.Id);
+                    }
+                }
+                return inst.Id.IntegerValue;
                 
             }
             return null;

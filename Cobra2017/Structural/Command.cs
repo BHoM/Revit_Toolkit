@@ -42,21 +42,8 @@ namespace Cobra2017.Structural
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            string filename = Path.Combine(Path.Combine(Path.GetTempPath(), "RevitExchange"),"In");
+            new ImportForm(commandData.Application.ActiveUIDocument.Document).ShowDialog();
 
-            List<BHoMObject> objlist = new List<BHoMObject>();
-            using (StreamReader fs = new StreamReader(Path.Combine(filename, "Bar" + ".txt")))
-            {
-                objlist = BHoM.Base.BHoMJSON.ReadPackage(fs.ReadToEnd()).Cast<BHoMObject>().ToList();
-                fs.Close();
-            }
-
-            Autodesk.Revit.UI.UIApplication app = commandData.Application;
-            Document doc = app.ActiveUIDocument.Document;
-            foreach (BHoMObject obj in objlist)
-            {
-                Engine.Convert.RevitElement.Write(obj, doc);
-            }
             return Result.Succeeded;
         }
     }

@@ -43,11 +43,14 @@ namespace Engine.Convert
         /// </summary>
         public static object Write(BHoM.Structural.Elements.Bar BHobj, Document m_document, string lvl = null)
         {
-            BHP.SteelSection secProp = (BHP.SteelSection)BHobj.SectionProperty;
-            string typeName = secProp.Name;
-            typeName = typeName.Replace(" ","");
 
-            
+            string secName = BHobj.SectionProperty.Name;
+            if (secName.Contains("RHSH"))
+            {
+                secName = secName.Replace("RHSH", "RHS");
+            }
+            string typeName = secName.Replace(" ", "");
+
             // Get Level
             if (lvl == null)
             {
@@ -62,7 +65,7 @@ namespace Engine.Convert
 
             if (familySymbol == null)
             {
-                string[] divname = secProp.Name.Split(' ');
+                string[] divname = secName.Split(' ');
                 familySymbol = RevitUtils.GetFamilySymbolfromPath(typeName,divname[0], m_document);
             }
 
@@ -78,7 +81,7 @@ namespace Engine.Convert
                     // Get familysymbol from path
                     if (familySymbol == null)
                     {
-                        string[] divname = secProp.Name.Split(' ');
+                        string[] divname = secName.Split(' ');
                         familySymbol = RevitUtils.GetFamilySymbolfromPath(typeName, divname[0], m_document);
                     }
                 }
@@ -106,7 +109,7 @@ namespace Engine.Convert
                 RevitUtils.DisableEndJoin(beam);
 
                 string[] paramnames = { "Cross-Section Rotation", "z Justification" };
-                string[] paramvalues = { (BHobj.OrientationAngle * (180 / Math.PI)).ToString(), "1" };
+                string[] paramvalues = { UnitUtils.ConvertToInternalUnits(BHobj.OrientationAngle,DisplayUnitType.DUT_RADIANS).ToString(), "1" };
                 RevitUtils.SetLookupParameter(beam, paramnames.ToList(), paramvalues.ToList());
                 return beam;
             }

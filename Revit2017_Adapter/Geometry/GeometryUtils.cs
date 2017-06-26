@@ -144,6 +144,7 @@ namespace Revit2017_Adapter.Geometry
         public static CurveArrArray Convert(BH.Group<BH.Curve> curves)
         {
             List<BH.Curve> loops = BH.Curve.Join(curves);
+            //List<BH.Curve> loops = curves.ToList();
 
             CurveArrArray revitCurves = new CurveArrArray();
 

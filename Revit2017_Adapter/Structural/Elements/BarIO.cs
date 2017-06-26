@@ -31,7 +31,7 @@ namespace Revit2017_Adapter.Structural.Elements
                     sections.Add(bar.SectionProperty.Name, symbol);
                 }
                 Element instance = document.Create.NewFamilyInstance(c, symbol, level, Revit2017_Adapter.Base.RevitUtils.StructuralType(bar.StructuralUsage));
-                Revit2017_Adapter.Base.RevitUtils.SetElementParameter(instance, "z Justification", (int)BeamSystemJustifyType.Center);
+                Revit2017_Adapter.Base.RevitUtils.SetElementParameter(instance, "z Justification", BeamSystemJustifyType.Center.ToString());
                 ids.Add(instance.Id.ToString());
             }
             return true;

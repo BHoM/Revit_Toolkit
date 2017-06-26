@@ -61,7 +61,7 @@ namespace Revit2017_Adapter.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to @&quot;L:\BH-Revit\Revit2016\Family Templates\English\Metric Structural Framing - Beams and Braces.rft&quot;.
+        ///   Looks up a localized string similar to L:\BH-Revit\Revit2017\Family Templates\English\Metric Structural Framing - Beams and Braces.rft.
         /// </summary>
         internal static string BeamTemplate {
             get {
@@ -70,7 +70,16 @@ namespace Revit2017_Adapter.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to @&quot;L:\BH-Revit\Revit2016\Family Templates\English\Metric Structural Column.rft.
+        ///   Looks up a localized string similar to L:\BH-Revit\Revit2017\Libraries\UK\_BH Library\BH Structures\BH Structural\Structural Framing\Steel\_Circular Hollow Sections.rfa.
+        /// </summary>
+        internal static string CHS {
+            get {
+                return ResourceManager.GetString("CHS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to L:\BH-Revit\Revit2017\Family Templates\English\Metric Structural Column.rft.
         /// </summary>
         internal static string ColumnTemplate {
             get {
@@ -79,11 +88,92 @@ namespace Revit2017_Adapter.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {&quot;__Type__&quot;:&quot;System.Collections.Generic.Dictionary`2[System.String,System.String]&quot;,&quot;CHS&quot;: &quot;L:\\BH-Revit\\Revit2017\\Libraries\\UK\\_BH Library\\BH Structures\\BH Structural\\Structural Framing\\Steel\\_Circular Hollow Sections.rfa&quot;, &quot;Generic&quot; : &quot;L:\\BH-Revit\\Revit2017\\Family Templates\\English\\Metric Generic Model.rft&quot;,&quot;RHS&quot;: &quot;L:\\BH-Revit\\Revit2017\\Libraries\\UK\\_BH Library\\BH Structures\\BH Structural\\Structural Framing\\Steel\\_Rectangular Hollow Sections.rfa&quot;,&quot;SFB&quot;: &quot;L:\\BH-Revit\\Revit2017\\Lib [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to L:\BH-Revit\Revit2017\Family Templates\English\Metric Structural Framing - Complex and Trusses.rft.
         /// </summary>
-        internal static string FamilyPathDB {
+        internal static string ComplexFramingTemplate {
             get {
-                return ResourceManager.GetString("FamilyPathDB", resourceCulture);
+                return ResourceManager.GetString("ComplexFramingTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to L:\BH-Revit\Revit2017\Family Templates\English\Metric Generic Model.rft.
+        /// </summary>
+        internal static string GenericTemplate {
+            get {
+                return ResourceManager.GetString("GenericTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to L:\BH-Revit\Revit2017\Libraries\UK\_BH Library\BH Structures\BH Structural\Structural Framing\Steel\_Rectangular Hollow Sections.rfa.
+        /// </summary>
+        internal static string RHS {
+            get {
+                return ResourceManager.GetString("RHS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to L:\BH-Revit\Revit2017\Libraries\UK\_BH Library\BH Structures\BH Structural\Structural Framing\Steel\_SFB-Beams.rfa.
+        /// </summary>
+        internal static string SFB {
+            get {
+                return ResourceManager.GetString("SFB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to L:\BH-Revit\Revit2017\Libraries\UK\_BH Library\BH Structures\BH Structural\Structural Framing\Steel\_Square Hollow Sections.rfa.
+        /// </summary>
+        internal static string SHS {
+            get {
+                return ResourceManager.GetString("SHS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to L:\BH-Revit\Revit2017\Libraries\UK\_BH Library\BH Structures\BH Structural\Structural Framing\Steel\_T-Tees from Universal Beams.rfa.
+        /// </summary>
+        internal static string TUB {
+            get {
+                return ResourceManager.GetString("TUB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to L:\BH-Revit\Revit2017\Libraries\UK\_BH Library\BH Structures\BH Structural\Structural Framing\Steel\_T-Tees from Universal Columns.rfa.
+        /// </summary>
+        internal static string TUC {
+            get {
+                return ResourceManager.GetString("TUC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to L:\BH-Revit\Revit2017\Libraries\UK\_BH Library\BH Structures\BH Structural\Structural Framing\Steel\_UB-Universal Beams.rfa.
+        /// </summary>
+        internal static string UB {
+            get {
+                return ResourceManager.GetString("UB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to L:\BH-Revit\Revit2017\Libraries\UK\_BH Library\BH Structures\BH Structural\Structural Framing\Steel\_UBP-Universal Bearing Pile.rfa.
+        /// </summary>
+        internal static string UBP {
+            get {
+                return ResourceManager.GetString("UBP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to L:\BH-Revit\Revit2017\Libraries\UK\_BH Library\BH Structures\BH Structural\Structural Framing\Steel\_UC-Universal Columns.rfa.
+        /// </summary>
+        internal static string UC {
+            get {
+                return ResourceManager.GetString("UC", resourceCulture);
             }
         }
     }

@@ -10,16 +10,33 @@ namespace Engine.Convert
 {
     public static partial class RevitGeometry
     {
+        /**********************************************/
+        /****  Units                               ****/
+        /**********************************************/
 
+        //Meter
+        /// <summary>
+        /// Converts Revit Internal Units (Feet) to Meter.
+        /// </summary>
         public static double FeetToMeter(double dub)
         {
             return DBG.UnitUtils.ConvertFromInternalUnits(dub, DBG.DisplayUnitType.DUT_METERS);
+        }
+
+        //Radians
+        /// <summary>
+        /// Converts Revit Internal Units (Degrees) to  Radians.
+        /// </summary>
+        public static double DegToRad(double dub)
+        {
+            return DBG.UnitUtils.ConvertFromInternalUnits(dub, DBG.DisplayUnitType.DUT_RADIANS);
         }
 
         /**********************************************/
         /****  Generic                             ****/
         /**********************************************/
 
+        // Geometry
         /// <summary>
         /// Identifies Revit Geometry to use appropriate converter.
         /// </summary>
@@ -48,6 +65,7 @@ namespace Engine.Convert
         /**********************************************/
         /****  Curves                              ****/
         /**********************************************/
+
         // Line
         /// <summary>
         /// Converts Revit Line to BHoM Line.
@@ -57,7 +75,6 @@ namespace Engine.Convert
             return new BHG.Line(Read(line.GetEndPoint(0)), Read(line.GetEndPoint(1)));
         }
 
-        /**********************************************/
         // Polyline
         /// <summary>
         /// Converts Revit Polyline to BHoM Polyline.
@@ -75,6 +92,7 @@ namespace Engine.Convert
         /**********************************************/
         /****  Points & Vectors                    ****/
         /**********************************************/
+
         // Point
         /// <summary>
         /// Converts Revit XYZ to BHoM Point.
@@ -84,7 +102,6 @@ namespace Engine.Convert
             return new BHG.Point(FeetToMeter(pt.X), FeetToMeter(pt.Y), FeetToMeter(pt.Z));
         }
 
-        /**********************************************/
         // Vector
         /// <summary>
         /// Converts Revit XYZ to BHoM Vector. Either in Meter or in original units.
@@ -99,6 +116,15 @@ namespace Engine.Convert
             {
                 return new BHG.Vector(Vector.X, Vector.Y, Vector.Z);
             }
+        }
+
+        // Plane
+        /// <summary>
+        /// Converts Revit Plane to BHoM Plane.
+        /// </summary>
+        public static BHG.Plane Read(DBG.Plane pln)
+        {
+            return new BHG.Plane(Read(pln.Origin),Read(pln.Normal, false));
         }
     }
 }
