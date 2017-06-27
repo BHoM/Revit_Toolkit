@@ -120,6 +120,8 @@ namespace Revit2017_Adapter.Base
             {
                 case BHoM.Structural.Elements.BarStructuralUsage.Beam:
                     return Autodesk.Revit.DB.Structure.StructuralType.Beam;
+                case BHoM.Structural.Elements.BarStructuralUsage.Undefined:
+                    return Autodesk.Revit.DB.Structure.StructuralType.Beam;
                 case BHoM.Structural.Elements.BarStructuralUsage.Brace:
                     return Autodesk.Revit.DB.Structure.StructuralType.Brace;
                 case BHoM.Structural.Elements.BarStructuralUsage.Column:
@@ -301,7 +303,7 @@ namespace Revit2017_Adapter.Base
             familyDoc.FamilyManager.Set(familyDoc.FamilyManager.get_Parameter("Structural Material"), GetMaterial(familyDoc, BHobj.Material.Type).Id);
             SetElementParameter(familyDoc.OwnerFamily, BuiltInParameter.FAMILY_STRUCT_MATERIAL_TYPE, RevitMaterialBehaviourIndex(RevitMaterialClass(BHobj.Material.Type)).ToString());
             align.Commit();
-            string name = BHobj.SectionProperty.Name.Replace(" ","_");
+            string name = new SectionPropertyName(BHobj.SectionProperty.Name).typeName[0];
             ReloadFamily(familyDoc, doc, name);
             return (FamilySymbol)GetElement(doc, typeof(FamilySymbol), name);
         }
