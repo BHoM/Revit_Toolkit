@@ -184,9 +184,9 @@ namespace Engine.Convert
         /// <summary>
         /// Converts BHoM NurbCurve to Revit NurbSpline.
         /// </summary>
-        public static DBG.NurbSpline Write(BHG.NurbCurve spline)
+        public static DBG.Curve Write(BHG.NurbCurve spline)
         {
-                return (DBG.NurbSpline)DBG.NurbSpline.CreateCurve(spline.Degree, spline.Knots, Write(spline.ControlPoints).ToList());
+                return DBG.NurbSpline.CreateCurve(spline.Degree, spline.Knots, Write(spline.ControlPoints).ToList());
         }
 
         /**********************************************/
@@ -293,7 +293,6 @@ namespace Engine.Convert
             }
             return revitCurves;
         }
-
         public static bool CheckClosed(DBG.CurveArrArray arr)
         {
             foreach (DBG.CurveArray crvarr in arr)
@@ -352,5 +351,30 @@ namespace Engine.Convert
             return crvarrarr;
         }
 
+        public static bool IsHorizontal(BHG.Plane p)
+        {
+            return BHG.Vector.VectorAngle(p.Normal, BHG.Vector.ZAxis()) < Math.PI / 48;
+        }
+        public static bool IsHorizontal(BHG.Group<BHG.Curve> curves)
+        {
+            double z = curves[0].ControlPoints[0].Z;
+            foreach (BHG.Curve crv in curves)
+            {
+                foreach (BHG.Point pt in crv.ControlPoints)
+                {
+                    if (Math.Abs(pt.Z - z) > 0.001)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public static bool IsVertical(BHG.Plane p)
+        {
+            double angle = BHG.Vector.VectorAngle(p.Normal, BHG.Vector.ZAxis());
+            return angle > Math.PI / 2 - Math.PI / 48 && angle < Math.PI / 2 + Math.PI / 48;
+        }
     }
 }

@@ -30,9 +30,12 @@ namespace Engine.Convert
             {
                 return Write(BHobj as BHoM.Structural.Elements.Bar, m_document, lvl);
             }
+            if (BHobj is BHoM.Structural.Elements.Panel)
+            {
+                return Write(BHobj as BHoM.Structural.Elements.Panel, m_document, lvl);
+            }
             return null;
         }
-
 
         /**********************************************/
         /****  Bar                                 ****/
@@ -90,5 +93,32 @@ namespace Engine.Convert
             }
             return null;
         }
+
+        /**********************************************/
+        /****  Panel                               ****/
+        /**********************************************/
+        /// <summary>
+        /// BHomPanel to Revit Element.
+        /// </summary>
+        public static object Write(BHoM.Structural.Elements.Panel BHobj, Document m_document, string lvl = null)
+        {
+            if (RevitGeometry.IsHorizontal(BHobj.External_Contours))
+            {
+                Floor floor = m_document.Create.NewFloor(RevitGeometry.Write(BHobj.External_Contours).get_Item(0), true);
+                if (BHobj.Internal_Contours != null)
+                {
+                    CurveArrArray crvarr = RevitGeometry.Write(BHobj.Internal_Contours);
+                    for (int i = 0; i < crvarr.Size; i++)
+                    {
+                        m_document.Regenerate();
+                        m_document.Create.NewOpening(floor, crvarr.get_Item(i), false);
+                    }
+                 }
+                 return floor.Id.IntegerValue;
+            }
+            return null;
+        }
+
+
     }
 }

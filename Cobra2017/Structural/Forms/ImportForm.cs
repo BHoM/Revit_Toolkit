@@ -55,13 +55,15 @@ namespace Cobra2017.Structural.Forms
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string filename = Path.Combine(Path.Combine(Path.GetTempPath(), "RevitExchange"), "In");
-
+            string[] files = Directory.GetFiles(Path.Combine(Path.Combine(Path.GetTempPath(), "RevitExchange"), "In"));
             List<BHoMObject> objlist = new List<BHoMObject>();
-            using (StreamReader fs = new StreamReader(Path.Combine(filename, "Bar" + ".txt")))
+            foreach (string path in files)
             {
-                objlist = BHoM.Base.BHoMJSON.ReadPackage(fs.ReadToEnd()).Cast<BHoMObject>().ToList();
-                fs.Close();
+                using (StreamReader fs = new StreamReader(path))
+                {
+                    objlist.AddRange(BHoM.Base.BHoMJSON.ReadPackage(fs.ReadToEnd()).Cast<BHoMObject>().ToList());
+                    fs.Close();
+                }
             }
             foreach (BHoMObject obj in objlist)
             {
