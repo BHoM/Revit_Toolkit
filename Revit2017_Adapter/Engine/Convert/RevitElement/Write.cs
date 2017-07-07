@@ -66,7 +66,7 @@ namespace Engine.Convert
                 }
                 else
                 {
-                    level = RevitUtils.GetLevel(m_document, BHobj.StartPoint.Z);
+                    level = RevitUtils.GetLevel(m_document, BHobj.StartPoint.Z, 2);
                 }
 
                 if (!familySymbol.IsActive)
@@ -102,6 +102,8 @@ namespace Engine.Convert
         /// </summary>
         public static object Write(BHoM.Structural.Elements.Panel BHobj, Document m_document, string lvl = null)
         {
+
+            // Check if floor.
             if (RevitGeometry.IsHorizontal(BHobj.External_Contours))
             {
                 Floor floor = m_document.Create.NewFloor(RevitGeometry.Write(BHobj.External_Contours).get_Item(0), true);
@@ -116,9 +118,56 @@ namespace Engine.Convert
                  }
                  return floor.Id.IntegerValue;
             }
+
+            // Check if Vertical Wall.
+            if (RevitGeometry.IsVertical(BHobj.External_Contours))
+            {
+                Wall wall = null;
+                if (BHobj.External_Contours.Count == 4)
+                {
+                    if (RevitGeometry.CurveVerticalorHorizontal(BHobj.External_Contours))
+                    {
+                        Level lvlbot = RevitUtils.GetLevel(m_document, BHobj.External_Contours.Bounds().Min.Z, 2);
+                        Level lvltop = RevitUtils.GetLevel(m_document, BHobj.External_Contours.Bounds().Max.Z, 2);
+                        Curve botcrv = null;
+                        foreach (BHoM.Geometry.Curve crv in BHobj.External_Contours)
+                        {
+                            if (crv.StartPoint.Z == BHobj.External_Contours.Bounds().Min.Z && crv.EndPoint.Z == BHobj.External_Contours.Bounds().Min.Z)
+                            {
+                                botcrv = RevitGeometry.Write(crv);
+                            }
+                        }
+                        IList<Element> walltypes = RevitUtils.GetElement(m_document, typeof(WallType));
+                        WallType walltype = (WallType)walltypes[0];
+                        if (BHobj.PanelProperty != null)
+                        {
+                            foreach (WallType type in walltypes)
+                            {
+                                if (type.Width == BHobj.PanelProperty.Thickness)
+                                {
+                                    walltype = type;
+                                }
+                            }
+                        }
+                        wall = Wall.Create(m_document,botcrv, walltype.Id, lvlbot.Id, BHobj.External_Contours.Bounds().Extents.Z, BHobj.External_Contours.Bounds().Min.Z - lvlbot.ProjectElevation,false,true);
+
+                        RevitUtils.SetElementParameter(wall, "Top Constraint", lvltop.Id);
+                        RevitUtils.SetElementParameter(wall, BuiltInParameter.WALL_TOP_OFFSET, (BHobj.External_Contours.Bounds().Max.Z - lvltop.ProjectElevation).ToString());
+                    }
+                }
+
+                if (BHobj.Internal_Contours != null)
+                {
+                    CurveArrArray crvarr = RevitGeometry.Write(BHobj.Internal_Contours);
+                    for (int i = 0; i < crvarr.Size; i++)
+                    {
+                        m_document.Regenerate();
+                        m_document.Create.NewOpening(wall, crvarr.get_Item(i), false);
+                    }
+                }
+                return wall.Id.IntegerValue;
+            }
             return null;
         }
-
-
     }
 }

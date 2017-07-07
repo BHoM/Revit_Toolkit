@@ -329,20 +329,63 @@ namespace Revit2017_Adapter.Base
         }
 
         /// <summary>
-        /// Get Revit Level from elevation.
+        /// Get Revit Level from elevation,
+        /// 0 = Closest Below,
+        /// 1 = Closest Above,
+        /// 2 = Closest
         /// </summary>
-        public static Level GetLevel(Document doc, double elevation)
+        public static Level GetLevel(Document doc, double elevation, int mode)
         {
             List<Element> elelist = new FilteredElementCollector(doc).OfClass(typeof(Level)).ToList();
-            Dictionary<double,Level> lvldic = new Dictionary<double, Level>();
-            
+            SortedDictionary<double, Level> lvldic = new SortedDictionary<double, Level>();
             foreach (Element lvl in elelist)
             {
                 Level level = (Level)lvl;
-                lvldic.Add(level.get_Parameter(BuiltInParameter.LEVEL_ELEV).AsDouble(),level);
+                lvldic.Add(level.ProjectElevation, level);
             }
             List<Level> lvllist = lvldic.Values.ToList();
-            return Revit2017_Adapter.Structural.Elements.LevelIO.GetLevel(lvllist, elevation);
+
+            switch (mode)
+            {
+                case 0:
+                    for (int i = 0; i < lvllist.Count; i++)
+                    {
+                        if (lvllist[i].ProjectElevation > elevation)
+                        {
+                            return lvllist[i - 1];
+                        }
+                    }
+                    return lvllist.Last();
+
+                case 1:
+                    for (int i = 0; i < lvllist.Count; i++)
+                    {
+                        if (lvllist[i].ProjectElevation > elevation)
+                        {
+                            return lvllist[i];
+                        }
+                    }
+                    return lvllist.Last();
+
+                case 2:
+                    int index = 0;
+                    double dist = lvllist[0].ProjectElevation;
+                    for (int i = 1; i < lvllist.Count; i++)
+                    {
+                        if (Math.Abs(lvllist[i].ProjectElevation - elevation) < Math.Abs(dist - elevation))
+                        {
+                            dist = Math.Abs(lvllist[i].ProjectElevation - elevation);
+                            index = i;
+                        }
+                    }
+                    return lvllist[index];
+
+                default:
+                    return lvllist.Last();
+            }   
+
+            
+            
         }
 
         /**********************************************/
@@ -540,6 +583,5 @@ namespace Revit2017_Adapter.Base
             familyDoc.Close(false);
             projectDoc.LoadFamily(filename);
         }
-
     }
 }

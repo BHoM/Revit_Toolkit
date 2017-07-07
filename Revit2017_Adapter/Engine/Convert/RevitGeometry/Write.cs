@@ -197,15 +197,15 @@ namespace Engine.Convert
         /// <summary>
         /// Converts BHoM Point to Revit XYZ.
         /// </summary>
-        public static DBG.XYZ Write(BHG.Point pt)
-        {
-            return new DBG.XYZ(MeterToFeet(pt.X), MeterToFeet(pt.Y), MeterToFeet(pt.Z));
-        }
+        //public static DBG.XYZ Write(BHG.Point pt)
+        //{
+        //    return new DBG.XYZ(MeterToFeet(pt.X), MeterToFeet(pt.Y), MeterToFeet(pt.Z));
+        //}
 
         /// <summary>
         /// Converts BHoM Point to Revit XYZ with rounding.
         /// </summary>
-        public static DBG.XYZ Write(BHG.Point point, int rounding = 9)
+        public static DBG.XYZ Write(BHG.Point point, int rounding = 3)
         {
             return new DBG.XYZ(MeterToFeet(Math.Round(point.X,rounding)), MeterToFeet(Math.Round(point.Y, rounding)), MeterToFeet(Math.Round(point.Z, rounding)));
         }
@@ -214,20 +214,20 @@ namespace Engine.Convert
         /// <summary>
         /// Converts List of BHoM Point to List of Revit XYZ.
         /// </summary>
-        public static IEnumerable<DBG.XYZ> Write(List<BHG.Point> points)
-        {
-            List<DBG.XYZ> bhPoints = new List<DBG.XYZ>();
-            foreach (BHG.Point point in points)
-            {
-                bhPoints.Add(Write(point));
-            }
-            return bhPoints;
-        }
+        //public static IEnumerable<DBG.XYZ> Write(List<BHG.Point> points)
+        //{
+        //    List<DBG.XYZ> bhPoints = new List<DBG.XYZ>();
+        //    foreach (BHG.Point point in points)
+        //    {
+        //        bhPoints.Add(Write(point));
+        //    }
+        //    return bhPoints;
+        //}
 
         /// <summary>
         /// Converts List of BHoM Point to List of Revit XYZ with rounding.
         /// </summary>
-        public static IEnumerable<DBG.XYZ> Write(List<BHG.Point> points, int rounding = 9)
+        public static IEnumerable<DBG.XYZ> Write(List<BHG.Point> points, int rounding = 3)
         {
             List<DBG.XYZ> bhPoints = new List<DBG.XYZ>();
             foreach (BHG.Point point in points)
@@ -334,7 +334,6 @@ namespace Engine.Convert
             }
             return true;
         }
-
         public static DBG.CurveArrArray EdgesToCurves(DBG.EdgeArrayArray edgarrarr)
         {
             DBG.CurveArrArray crvarrarr = new DBG.CurveArrArray();
@@ -350,7 +349,6 @@ namespace Engine.Convert
             bool bo = CheckClosed(crvarrarr);
             return crvarrarr;
         }
-
         public static bool IsHorizontal(BHG.Plane p)
         {
             return BHG.Vector.VectorAngle(p.Normal, BHG.Vector.ZAxis()) < Math.PI / 48;
@@ -370,11 +368,46 @@ namespace Engine.Convert
             }
             return true;
         }
-
         public static bool IsVertical(BHG.Plane p)
         {
             double angle = BHG.Vector.VectorAngle(p.Normal, BHG.Vector.ZAxis());
             return angle > Math.PI / 2 - Math.PI / 48 && angle < Math.PI / 2 + Math.PI / 48;
+        }
+        public static bool IsVertical(BHG.Group<BHG.Curve> curves)
+        {
+            List<BHG.Curve> loops = BHG.Curve.Join(curves);
+            BHG.Plane pln = null;
+            loops[0].TryGetPlane(out pln);
+            if (IsVertical(pln) != true)
+            {
+                return false;
+            }
+            foreach (BHG.Point pt in loops[0].ControlPoints)
+            {
+                if (pln.DistanceTo(pt) > 0.001)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public static bool CurveVerticalorHorizontal(BHG.Group<BHG.Curve> curves)
+        {
+            foreach (BHG.Curve crv in curves)
+            {
+                BHG.Point pt = crv.ControlPoints[0];
+                foreach (BHG.Point ptc in crv.ControlPoints)
+                {
+                    if (ptc.Z != pt.Z)
+                    {
+                        if (ptc.X !=pt.X || ptc.Y != pt.Y)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
         }
     }
 }
