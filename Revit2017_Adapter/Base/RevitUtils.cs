@@ -284,14 +284,14 @@ namespace Revit2017_Adapter.Base
             View view = (View)GetElement(familyDoc, typeof(View), "Front");
 
             CurveArrArray arr = Engine.Convert.RevitGeometry.OrientSectionToYZPlane(BHobj.SectionProperty.Edges, Engine.Convert.RevitGeometry.Read(rightPlane.GetPlane()));
-            if (Engine.Convert.RevitGeometry.CheckPlanar(arr, rightPlane.GetPlane()) != true)
-            {
-                return null;
-            }
-            if (Engine.Convert.RevitGeometry.CheckClosed(arr) != true)
-            {
-                return null;
-            }
+            //if (Engine.Convert.RevitGeometry.CheckPlanar(arr, rightPlane.GetPlane()) != true)
+            //{
+            //    return null;
+            //}
+            //if (Engine.Convert.RevitGeometry.CheckClosed(arr) != true)
+            //{
+            //    return null;
+            //}
 
             Extrusion val = CreateExtrusion(familyDoc, arr, rightPlane.GetPlane(), rightPlane.GetPlane().Origin.X - leftPlane.GetPlane().Origin.X);
 

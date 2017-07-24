@@ -171,13 +171,13 @@ namespace Engine.Convert
         /// <summary>
         /// Converts BHoM Circle to Revit Arc.
         /// </summary>
-        public static DBG.Arc Write(BHG.Circle cir)
+        public static DBG.Ellipse Write(BHG.Circle cir)
         {
             BHG.Vector Xaxis = cir.Centre - cir.StartPoint;
-            BHG.Vector Yaxis = BHG.Vector.CrossProduct(cir.Plane.Normal, Xaxis);
+            BHG.Vector Yaxis = BHG.Vector.CrossProduct(BHG.Vector.CrossProduct(cir.Centre - cir.PointAt(cir.Domain[1]/4), Xaxis), Xaxis);
             Xaxis.Unitize();
             Yaxis.Unitize();
-            return DBG.Arc.Create(Write(cir.Centre), cir.Radius, 0.0, 2.0 * Math.PI, Write(Xaxis, false),Write(Yaxis,false));
+            return DBG.Ellipse.Create(Write(cir.Centre), MeterToFeet(cir.Radius), MeterToFeet(cir.Radius), Write(Xaxis, false),Write(Yaxis,false),0,1);
         }
 
         // NurbCurve
@@ -320,20 +320,20 @@ namespace Engine.Convert
             }
             return true;
         }
-        public static bool CheckPlanar(DBG.CurveArrArray arr, DBG.Plane pln)
-        {
-            foreach (DBG.CurveArray crvarr in arr)
-            {
-                foreach (DBG.Curve crv in crvarr)
-                {
-                    if ((crv.GetEndPoint(0).X - pln.Origin.X > 0.001) || (crv.GetEndPoint(1).X - pln.Origin.X > 0.001))
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
+        //public static bool CheckPlanar(DBG.CurveArrArray arr, DBG.Plane pln)
+        //{
+        //    foreach (DBG.CurveArray crvarr in arr)
+        //    {
+        //        foreach (DBG.Curve crv in crvarr)
+        //        {
+        //            if ((crv.GetEndPoint(0).X - pln.Origin.X > 0.001) || (crv.GetEndPoint(1).X - pln.Origin.X > 0.001))
+        //            {
+        //                return false;
+        //            }
+        //        }
+        //    }
+        //    return true;
+        //}
         public static DBG.CurveArrArray EdgesToCurves(DBG.EdgeArrayArray edgarrarr)
         {
             DBG.CurveArrArray crvarrarr = new DBG.CurveArrArray();
