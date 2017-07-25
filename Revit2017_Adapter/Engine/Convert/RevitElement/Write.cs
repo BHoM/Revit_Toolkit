@@ -90,7 +90,7 @@ namespace Engine.Convert
                     FamilyInstance beam = m_document.Create.NewFamilyInstance(RevitGeometry.Write(BHobj.Line), familySymbol, level, RevitUtils.StructuralType(BHobj.StructuralUsage));
                     RevitUtils.DisableEndJoin(beam);
                     RevitUtils.SetElementParameter(beam, BuiltInParameter.Z_JUSTIFICATION, "1");
-                    RevitUtils.SetElementParameter(beam, BuiltInParameter.STRUCTURAL_BEAM_ORIENTATION, RevitGeometry.RadToDeg(BHobj.OrientationAngle).ToString());
+                    RevitUtils.SetElementParameter(beam, BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, RevitGeometry.RadToDeg(BHobj.OrientationAngle).ToString());
                     return beam.Id.IntegerValue;
                 }
             }
