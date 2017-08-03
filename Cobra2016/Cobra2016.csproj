@@ -16,11 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-<<<<<<< HEAD
     <OutputPath>..\Build\Cobra2016\</OutputPath>
-=======
-    <OutputPath>..\Build\2016\</OutputPath>
->>>>>>> refs/remotes/origin/Support-for-2015
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
