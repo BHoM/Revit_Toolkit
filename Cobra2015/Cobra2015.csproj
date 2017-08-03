@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E8022CAD-94B9-45F2-B030-442DA3DAE600}</ProjectGuid>
+    <ProjectGuid>{9C8FF5F9-98A4-47DA-AD3A-CCED672445D4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cobra2017</RootNamespace>
-    <AssemblyName>Cobra2017</AssemblyName>
+    <RootNamespace>Cobra2015</RootNamespace>
+    <AssemblyName>Cobra2015</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -16,15 +16,11 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-<<<<<<< HEAD
-    <OutputPath>..\Build\Cobra2017\</OutputPath>
-=======
-    <OutputPath>..\Build\2017\</OutputPath>
->>>>>>> refs/remotes/origin/Support-for-2015
+    <OutputPath>..\Build\2015\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\Build\2017\Cobra2017.xml</DocumentationFile>
+    <DocumentationFile>..\Build\2015\Cobra2015.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,18 +31,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BHoM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
+    <Reference Include="BHoM">
+      <HintPath>..\..\BHoM\build\BHoM.dll</HintPath>
     </Reference>
-    <Reference Include="PresentationCore" />
+    <Reference Include="Etabs_Adapter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ETABS_Toolkit\Build\Etabs_Adapter.dll</HintPath>
+    </Reference>
     <Reference Include="RevitAPI">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2017\RevitAPI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2015\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPIUI">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2017\RevitAPIUI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2015\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Robot_Adapter">
+      <HintPath>..\..\Robot_Toolkit\Build\Robot_Adapter.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -79,22 +80,11 @@
     <Compile Include="Structural\Forms\ExportForm.designer.cs">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Structural\Forms\ImportForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Structural\Forms\ImportForm.Designer.cs">
-      <DependentUpon>ImportForm.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Files\Structural.Addin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <EmbeddedResource Include="Resources\BHoM_Uppload.png" />
-    <EmbeddedResource Include="Resources\BHoM_Download.png" />
-    <EmbeddedResource Include="Structural\Forms\ImportForm.resx">
-      <DependentUpon>ImportForm.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -113,16 +103,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Revit2017_Adapter\Revit2017_Adapter.csproj">
-      <Project>{074540bb-a398-4f9a-90ac-a2dc10a3b080}</Project>
-      <Name>Revit2017_Adapter</Name>
+    <ProjectReference Include="..\Revit2015_Adapter\Revit2015_Adapter.csproj">
+      <Project>{b727f09f-5288-4e72-909a-58887281aa8d}</Project>
+      <Name>Revit2015_Adapter</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>Copy "$(TargetDir)*.dll" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2017\*.dll"
+    <PostBuildEvent>Copy "$(TargetDir)*.dll" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2015\*.dll"
 
-Copy "$(TargetDir)Files\Structural.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2017\Structural.Addin"</PostBuildEvent>
+Copy "$(TargetDir)Files\Structural.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2015\Structural.Addin"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -9,34 +9,13 @@ using BHoMG = BHoM.Geometry;
 using BHoME = BHoM.Structural.Elements;
 using BHoMP = BHoM.Structural.Properties;
 
-using Revit2017_Adapter.Geometry;
-using Revit2017_Adapter.Structural.Properties;
+using Revit2015_Adapter.Geometry;
+using Revit2015_Adapter.Structural.Properties;
 
-namespace Revit2017_Adapter.Structural.Elements
+namespace Revit2015_Adapter.Structural.Elements
 {
     public class BarIO
     {
-        public static bool SetBars(List<BHoME.Bar> bars, List<Level> revitLevels, Document document, out List<string> ids)
-        {
-            Dictionary<string, FamilySymbol> sections = new Dictionary<string, FamilySymbol>();
-            ids = new List<string>();
-            foreach (BHoME.Bar bar in bars)
-            {
-                Curve c = GeometryUtils.Convert(bar.Line);
-                Level level = LevelIO.GetLevel(revitLevels, (c.GetEndPoint(0) + c.GetEndPoint(1)).Z);
-                FamilySymbol symbol = null;
-                if (!sections.TryGetValue(bar.SectionProperty.Name, out symbol))
-                {
-                    symbol = SectionIO.GetFamilySymbol(document, bar);
-                    sections.Add(bar.SectionProperty.Name, symbol);
-                }
-                Element instance = document.Create.NewFamilyInstance(c, symbol, level, Revit2017_Adapter.Base.RevitUtils.StructuralType(bar.StructuralUsage));
-                Revit2017_Adapter.Base.RevitUtils.SetElementParameter(instance, "z Justification", BeamSystemJustifyType.Center.ToString());
-                ids.Add(instance.Id.ToString());
-            }
-            return true;
-        }
-
         public static bool GetBeams(out List<BHoME.Bar> bars, Document document, List<string> ids = null, int rounding = 9)
         {
             ICollection<FamilyInstance> framing = null;
@@ -105,7 +84,6 @@ namespace Revit2017_Adapter.Structural.Elements
                     if (bar.SectionProperty != null) bar.SectionProperty.Material = material;
                     bar.SectionProperty = sections[beam.Symbol.Name];
                     bar.OrientationAngle = rotation;
-                    Revit2017_Adapter.Base.RevitUtils.GetRevitParameters(beam, bar);
                     bars.Add(bar);
                     barManager.Add(beam.Id.ToString(), bar);
                 }
@@ -285,9 +263,8 @@ namespace Revit2017_Adapter.Structural.Elements
                     if (sections[column.Symbol.Name] == null)
                     {
                         sections.Add(column.Symbol.Name, SectionIO.GetSectionProperty(column.Symbol, true));
-                    }
+                    }                  
 
-                    Revit2017_Adapter.Base.RevitUtils.GetRevitParameters(column, bar);
                     bar.SectionProperty = sections[column.Symbol.Name];
                     bar.OrientationAngle = rotation;
                     barManager.Add(column.Id.ToString(), bar);
@@ -342,16 +319,8 @@ namespace Revit2017_Adapter.Structural.Elements
                         try
                         {
                             double depth = foundation.LookupParameter("Pile Depth").AsDouble();
-                            double diameter = (param = foundation.Symbol.LookupParameter("Pile Diameter")) != null ? param.AsDouble() * GeometryUtils.FeetToMetre : 1;
-                            double offset = 0;
-                            if ((param = foundation.LookupParameter("Offset")) != null)
-                            {
-                                offset = param.AsDouble();
-                            }
-                            else if ((param = foundation.LookupParameter("Height Offset From Level")) != null)
-                            {
-                                offset = param.AsDouble();
-                            }
+                            double diameter = foundation.Symbol.LookupParameter("Pile Diameter").AsDouble() * GeometryUtils.FeetToMetre;
+                            double offset = foundation.LookupParameter("Offset").AsDouble();
 
                             XYZ rP1 = (foundation.Location as LocationPoint).Point;
 
@@ -415,17 +384,10 @@ namespace Revit2017_Adapter.Structural.Elements
                             barManager.Add(foundation.Id.ToString(), bar);
                             bars.Add(bar);
                             Parameter Mark = null;
-                            if ((Mark = foundation.LookupParameter("Mark")) != null && Mark.AsString() != null)
+                            if ((Mark = foundation.LookupParameter("Mark")) != null)
                             {
                                 bar.CustomData.Add("Mark", Mark.AsString());
                             }
-                            //Parameter Mark = null;
-                            //if ((Mark = foundation.LookupParameter("Mark")) != null)
-                            //{
-                            //    bar.CustomData.Add("Mark", Mark.AsString());
-                            //}
-
-                            Revit2017_Adapter.Base.RevitUtils.GetRevitParameters(foundation, bar);
                         }
                         catch (Exception ex)
                         {

@@ -9,133 +9,14 @@ using BHoMG = BHoM.Geometry;
 using BHoME = BHoM.Structural.Elements;
 using BHoMP = BHoM.Structural.Properties;
 
-using Revit2017_Adapter.Geometry;
-using Revit2017_Adapter.Structural.Properties;
-using System.IO;
+using Revit2015_Adapter.Geometry;
+using Revit2015_Adapter.Structural.Properties;
 
-namespace Revit2017_Adapter.Structural.Properties
+
+namespace Revit2015_Adapter.Structural.Properties
 {
     public class SectionIO
     {
-        public static string GetTemplate(BHoME.Bar member)
-        {
-            switch (member.StructuralUsage)
-            {
-                case BHoM.Structural.Elements.BarStructuralUsage.Column:
-                    return Revit2017_Adapter.Properties.Resources.ColumnTemplate;
-                default:
-                    return Revit2017_Adapter.Properties.Resources.BeamTemplate;
-            }
-        }
-
-        public static string GetFamilyName(BHoME.Bar property)
-        {
-            return property.StructuralUsage + " - " + property.SectionProperty.Name;
-        }
-        public static FamilySymbol GetFamilySymbol(Document revitDoc, BHoME.Bar property)
-        {
-            Element family = new FilteredElementCollector(revitDoc).OfClass(typeof(Family)).FirstOrDefault(e => e.Name == GetFamilyName(property));
-            if (family != null && family.Name == GetFamilyName(property))
-            {
-                foreach (ElementId symbolId in (family as Family).GetFamilySymbolIds())
-                {
-                    FamilySymbol symbol = revitDoc.GetElement(symbolId) as FamilySymbol;
-                    if (symbol.Name == property.SectionProperty.Name)
-                    {
-                        return symbol;
-                    }
-                }
-            }
-
-            return CreateFamily(revitDoc, property);
-        }
-
-        public static FamilySymbol CreateFamily(Document revitDoc, BHoME.Bar property)
-        {
-            Document familyDoc = revitDoc.Application.NewFamilyDocument(GetTemplate(property));
-            Transaction remove = new Transaction(familyDoc, "Remove Existing Extrusions");
-            remove.Start();
-            IList<Element> list = new FilteredElementCollector(familyDoc).OfClass(typeof(Extrusion)).ToElements();
-            foreach (Element element in list)
-            {
-                familyDoc.Delete(element.Id);
-            }
-
-            remove.Commit();
-
-            ReferencePlane rightPlanes = new FilteredElementCollector(familyDoc).OfClass(typeof(ReferencePlane)).First(e => e.Name == "Right") as ReferencePlane;
-            ReferencePlane leftPlanes = new FilteredElementCollector(familyDoc).OfClass(typeof(ReferencePlane)).First(e => e.Name == "Left") as ReferencePlane;
-            View view = new FilteredElementCollector(familyDoc).OfClass(typeof(View)).First(e => e.Name == "Front") as View;
-
-            double rightX = rightPlanes.GetPlane().Origin.X;
-            double length = rightPlanes.GetPlane().Origin.X - leftPlanes.GetPlane().Origin.X;
-
-            BHoMG.Group<BHoMG.Curve> edges = property.SectionProperty.Edges.DuplicateGroup();
-
-            BHoMG.Transform t = BHoMG.Transform.Rotation(BHoMG.Point.Origin, BHoMG.Vector.ZAxis(), Math.PI / 2);
-            edges.Transform(t);
-            edges.Project(new BHoMG.Plane(GeometryUtils.Convert(rightPlanes.GetPlane().Origin), BHoMG.Vector.XAxis()));
-
-            Transaction create = new Transaction(familyDoc, "Create Extrusion");
-            create.Start();
-            Extrusion val = familyDoc.FamilyCreate.NewExtrusion(true, GeometryUtils.Convert(edges), SketchPlane.Create(familyDoc, rightPlanes.Id), length);
-            create.Commit();
-
-            Transaction align = new Transaction(familyDoc, "Create Alignment");
-            align.Start();
-            familyDoc.FamilyCreate.NewAlignment(view, GetReferenceFace(familyDoc, val, leftPlanes).Reference, leftPlanes.GetReference());
-            familyDoc.FamilyCreate.NewAlignment(view, GetReferenceFace(familyDoc, val, rightPlanes).Reference, rightPlanes.GetReference());
-            FamilyParameter p = familyDoc.FamilyManager.get_Parameter("Material for Model Behavior");
-            familyDoc.FamilyManager.Set(p, 0);
-            align.Commit();
-
-            string familyName = Path.Combine(Path.GetTempPath(), GetFamilyName(property) + ".rft");
-            familyDoc.SaveAs(familyName);
-            Family f = null;
-            Transaction load = new Transaction(revitDoc, "Load " + familyName);
-
-            load.Start();
-            revitDoc.LoadFamily(familyName, out f);
-            load.Commit();
-
-            File.Delete(familyName);
-            familyDoc.Close();
-
-            FamilySymbol symbol = revitDoc.GetElement(f.GetFamilySymbolIds().First()) as FamilySymbol;
-            symbol.Name = property.SectionProperty.Name;
-            //symbol.
-            return symbol;
-        }
-
-        static PlanarFace GetReferenceFace(Document doc, Extrusion box, ReferencePlane plane)
-        {
-            Options o = new Options();
-            o.ComputeReferences = true;
-            GeometryElement geom = box.get_Geometry(o);
-            Plane p = plane.GetPlane();
-            foreach (GeometryObject obj in geom)
-            {
-                if (obj is Solid)
-                {
-                    Solid s = obj as Solid;
-                    foreach (Autodesk.Revit.DB.Face face in s.Faces)
-                    {
-                        PlanarFace pFace = face as PlanarFace;
-                        double angle = pFace.FaceNormal.AngleTo(p.Normal);
-                        double dotProduct = pFace.FaceNormal.DotProduct(p.Normal);
-                        if ((dotProduct > 0 && angle < 0.001 && angle > -0.001) || dotProduct < 0 && angle < Math.PI + 0.001 && angle > Math.PI - 0.001)
-                        {
-                            if (pFace.Origin.X == p.Origin.X)
-                            {
-                                return pFace;
-                            }
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
         //public static BHoMP.SectionType GetSectionType(Autodesk.Revit.DB.Structure.StructuralMaterialType matType, bool IsColumn)
         //{
         //    switch (matType)
@@ -202,7 +83,7 @@ namespace Revit2017_Adapter.Structural.Properties
                     {
                         foreach (Face face in (obj as Solid).Faces)
                         {
-                            if (face is PlanarFace && (face as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(direction, 0.001) || (face as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(-direction, 0.001))
+                            if (face is PlanarFace && (face as PlanarFace).Normal.Normalize().IsAlmostEqualTo(direction, 0.001) || (face as PlanarFace).Normal.Normalize().IsAlmostEqualTo(-direction, 0.001))
                             {
                                 foreach (EdgeArray curveArray in (face as PlanarFace).EdgeLoops)
                                 {
@@ -228,9 +109,9 @@ namespace Revit2017_Adapter.Structural.Properties
                     curves.Transform(BHoMG.Transform.Rotation(BHoMG.Point.Origin, BHoMG.Vector.YAxis(), -Math.PI / 2));
                 }
 
-                BHoMP.ShapeType type = symbol.Family.CanHaveStructuralSection() ? GetShapeType(symbol.Family.StructuralSectionShape) : BHoMP.ShapeType.Rectangle;
+                BHoMP.ShapeType type = symbol.Family.HasStructuralSection() ? GetShapeType(symbol.Family.StructuralSectionShape) : BHoMP.ShapeType.Rectangle;
                 BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(symbol.Family.StructuralMaterialType);
-                sectionProperty = BHoMP.SectionProperty.CreateSection(curves, type, matKey);
+                sectionProperty = BHoMP.SectionProperty.CreateSection(curves, type, matKey);              
             }
             return sectionProperty;
         }
@@ -267,21 +148,20 @@ namespace Revit2017_Adapter.Structural.Properties
 
         internal static BHoMP.PanelProperty GetFoundationProperty(FamilyInstance foundation, Document document)
         {
-            Parameter param = null;
             if (foundation.Symbol.Category.Name.Contains("Foundation "))
             {
-                double thickness = (param = foundation.LookupParameter("Thickness")) != null ? param.AsDouble() * GeometryUtils.FeetToMetre : 0;
+                double thickness = foundation.LookupParameter("Thickness").AsDouble() * GeometryUtils.FeetToMetre;
                 return new BHoMP.ConstantThickness(foundation.Symbol.Name, thickness, BHoM.Structural.Properties.PanelType.Slab);
             }
             else
             {
-  
-                double thickness = (param = foundation.Symbol.LookupParameter("Pile Cap Depth")) != null ? param.AsDouble() * GeometryUtils.FeetToMetre : 0;
-                //double pileDiam = (param = foundation.Symbol.LookupParameter("Pile Diameter")) != null ? param.AsDouble() * GeometryUtils.FeetToMetre 0;
-                //double pileDepth = foundation.LookupParameter("Pile Depth").AsDouble() * GeometryUtils.FeetToMetre;
+                double thickness = foundation.Symbol.LookupParameter("Pile Cap Depth").AsDouble() * GeometryUtils.FeetToMetre;
+                double pileDiam = foundation.Symbol.LookupParameter("Pile Diameter").AsDouble() * GeometryUtils.FeetToMetre;
+                double pileDepth = foundation.LookupParameter("Pile Depth").AsDouble() * GeometryUtils.FeetToMetre;
                 BHoMP.ConstantThickness pileCap = new BHoMP.ConstantThickness(foundation.Symbol.Name, thickness, BHoM.Structural.Properties.PanelType.PileCap);
                 return pileCap;
             }
+
         }
     }
 }

@@ -95,7 +95,7 @@ namespace Revit2017_Adapter.Base
                     return Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete;
             }
         }
-
+        
         internal static BHoM.Structural.Elements.BarStructuralUsage StructuralType(Autodesk.Revit.DB.Structure.StructuralType type)
         {
             switch (type)
@@ -180,6 +180,43 @@ namespace Revit2017_Adapter.Base
         /// <summary>
         /// Get Material from Document.
         /// </summary>
+        public static void GetRevitParameters(Element element, BHoM.Base.BHoMObject bhomObj)
+        {
+            foreach (Parameter p in element.Parameters)
+            {
+                if (p.HasValue && p.Definition.ParameterType != ParameterType.Invalid)
+                {
+                    try
+                    {
+                        switch (p.StorageType)
+                        {
+                            case StorageType.Double:
+                                bhomObj.CustomData.Add(p.Definition.Name, p.AsDouble());
+                                break;
+                            case StorageType.ElementId:
+                                bhomObj.CustomData.Add(p.Definition.Name, p.AsElementId().IntegerValue);
+                                break;
+                            case StorageType.Integer:
+                                bhomObj.CustomData.Add(p.Definition.Name, p.AsInteger());
+                                break;
+                            default:
+                                string s = p.AsString();
+                                if (!string.IsNullOrEmpty(s))
+                                {
+                                    bhomObj.CustomData.Add(p.Definition.Name, s);
+                                }
+                                break;
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+            }
+        }
+        
         public static Autodesk.Revit.DB.Material GetMaterial(Document revit, BHoM.Materials.MaterialType type)
         {
             foreach (Material m in GetElement(revit,typeof(Material)))
