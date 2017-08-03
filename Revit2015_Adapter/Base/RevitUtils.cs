@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Revit2017_Adapter.Base
+namespace Revit2015_Adapter.Base
 {
     public class RevitUtils
     {
@@ -43,43 +43,6 @@ namespace Revit2017_Adapter.Base
                     return Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood;
                 default:
                     return Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete;
-            }
-        }
-
-        public static void GetRevitParameters(Element element, BHoM.Base.BHoMObject bhomObj)
-        {
-            foreach (Parameter p in element.Parameters)
-            {
-                if (p.HasValue && p.Definition.ParameterType != ParameterType.Invalid)
-                {
-                    try
-                    {
-                        switch (p.StorageType)
-                        {
-                            case StorageType.Double:
-                                bhomObj.CustomData.Add(p.Definition.Name, p.AsDouble());
-                                break;
-                            case StorageType.ElementId:
-                                bhomObj.CustomData.Add(p.Definition.Name, p.AsElementId().IntegerValue);
-                                break;
-                            case StorageType.Integer:
-                                bhomObj.CustomData.Add(p.Definition.Name, p.AsInteger());
-                                break;
-                            default:
-                                string s = p.AsString();
-                                if (!string.IsNullOrEmpty(s))
-                                {
-                                    bhomObj.CustomData.Add(p.Definition.Name, s);
-                                }
-                                break;
-                        }
-
-                    }
-                    catch (Exception ex)
-                    {
-
-                    }
-                }
             }
         }
 

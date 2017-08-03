@@ -9,11 +9,11 @@ using BHoMG = BHoM.Geometry;
 using BHoME = BHoM.Structural.Elements;
 using BHoMP = BHoM.Structural.Properties;
 
-using Revit2017_Adapter.Geometry;
-using Revit2017_Adapter.Structural.Properties;
+using Revit2015_Adapter.Geometry;
+using Revit2015_Adapter.Structural.Properties;
 
 
-namespace Revit2017_Adapter.Structural.Properties
+namespace Revit2015_Adapter.Structural.Properties
 {
     public class SectionIO
     {
@@ -83,7 +83,7 @@ namespace Revit2017_Adapter.Structural.Properties
                     {
                         foreach (Face face in (obj as Solid).Faces)
                         {
-                            if (face is PlanarFace && (face as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(direction, 0.001) || (face as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(-direction, 0.001))
+                            if (face is PlanarFace && (face as PlanarFace).Normal.Normalize().IsAlmostEqualTo(direction, 0.001) || (face as PlanarFace).Normal.Normalize().IsAlmostEqualTo(-direction, 0.001))
                             {
                                 foreach (EdgeArray curveArray in (face as PlanarFace).EdgeLoops)
                                 {
@@ -109,7 +109,7 @@ namespace Revit2017_Adapter.Structural.Properties
                     curves.Transform(BHoMG.Transform.Rotation(BHoMG.Point.Origin, BHoMG.Vector.YAxis(), -Math.PI / 2));
                 }
 
-                BHoMP.ShapeType type = symbol.Family.CanHaveStructuralSection() ? GetShapeType(symbol.Family.StructuralSectionShape) : BHoMP.ShapeType.Rectangle;
+                BHoMP.ShapeType type = symbol.Family.HasStructuralSection() ? GetShapeType(symbol.Family.StructuralSectionShape) : BHoMP.ShapeType.Rectangle;
                 BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(symbol.Family.StructuralMaterialType);
                 sectionProperty = BHoMP.SectionProperty.CreateSection(curves, type, matKey);              
             }
@@ -148,21 +148,20 @@ namespace Revit2017_Adapter.Structural.Properties
 
         internal static BHoMP.PanelProperty GetFoundationProperty(FamilyInstance foundation, Document document)
         {
-            Parameter param = null;
             if (foundation.Symbol.Category.Name.Contains("Foundation "))
             {
-                double thickness = (param = foundation.LookupParameter("Thickness")) != null ? param.AsDouble() * GeometryUtils.FeetToMetre : 0;
+                double thickness = foundation.LookupParameter("Thickness").AsDouble() * GeometryUtils.FeetToMetre;
                 return new BHoMP.ConstantThickness(foundation.Symbol.Name, thickness, BHoM.Structural.Properties.PanelType.Slab);
             }
             else
             {
-  
-                double thickness = (param = foundation.Symbol.LookupParameter("Pile Cap Depth")) != null ? param.AsDouble() * GeometryUtils.FeetToMetre : 0;
-                //double pileDiam = (param = foundation.Symbol.LookupParameter("Pile Diameter")) != null ? param.AsDouble() * GeometryUtils.FeetToMetre 0;
-                //double pileDepth = foundation.LookupParameter("Pile Depth").AsDouble() * GeometryUtils.FeetToMetre;
+                double thickness = foundation.Symbol.LookupParameter("Pile Cap Depth").AsDouble() * GeometryUtils.FeetToMetre;
+                double pileDiam = foundation.Symbol.LookupParameter("Pile Diameter").AsDouble() * GeometryUtils.FeetToMetre;
+                double pileDepth = foundation.LookupParameter("Pile Depth").AsDouble() * GeometryUtils.FeetToMetre;
                 BHoMP.ConstantThickness pileCap = new BHoMP.ConstantThickness(foundation.Symbol.Name, thickness, BHoM.Structural.Properties.PanelType.PileCap);
                 return pileCap;
             }
+
         }
     }
 }

@@ -9,10 +9,10 @@ using BHoMG = BHoM.Geometry;
 using BHoME = BHoM.Structural.Elements;
 using BHoMP = BHoM.Structural.Properties;
 
-using Revit2017_Adapter.Geometry;
-using Revit2017_Adapter.Structural.Properties;
+using Revit2015_Adapter.Geometry;
+using Revit2015_Adapter.Structural.Properties;
 
-namespace Revit2017_Adapter.Structural.Elements
+namespace Revit2015_Adapter.Structural.Elements
 {
     public class PanelIO
     {
@@ -48,58 +48,42 @@ namespace Revit2017_Adapter.Structural.Elements
             BHoMB.ObjectManager<BHoMP.PanelProperty> thicknessManager = new BHoMB.ObjectManager<BHoMP.PanelProperty>();
             foreach (Floor floor in floors)
             {
-                try
+                BHoMG.Group<BHoMG.Curve> curves = new BHoMG.Group<BHoMG.Curve>();
+                GeometryElement geometry = floor.get_Geometry(new Options());
+                foreach (GeometryObject obj in geometry)
                 {
-                    BHoMG.Group<BHoMG.Curve> curves = new BHoMG.Group<BHoMG.Curve>();
-                    GeometryElement geometry = floor.get_Geometry(new Options());
-                    foreach (GeometryObject obj in geometry)
+                    if (obj is Solid)
                     {
-                        if (obj is Solid)
-                        {
-                            foreach (Face face in (obj as Solid).Faces)
-                                if (face is PlanarFace && (face as PlanarFace).FaceNormal.AngleTo(XYZ.BasisZ) < Math.PI / 12)
+                        foreach (Face face in (obj as Solid).Faces)
+                            if (face is PlanarFace && (face as PlanarFace).Normal.AngleTo(XYZ.BasisZ) < Math.PI / 6)
+                            {
+                                foreach (EdgeArray curveArray in face.EdgeLoops)
                                 {
-                                    foreach (EdgeArray curveArray in face.EdgeLoops)
+                                    foreach (Edge c in curveArray)
                                     {
-                                        foreach (Edge c in curveArray)
-                                        {
-                                            curves.Add(GeometryUtils.Convert(c.AsCurve(), rounding));
-                                        }
-                                    }                            
+                                        curves.Add(GeometryUtils.Convert(c.AsCurve(), rounding));
+                                    }
                                 }
-                        }
+                                break;
+                            }
                     }
-                    if (thicknessManager[floor.FloorType.Name] == null)
-                    {
-                        thicknessManager.Add(floor.FloorType.Name, SectionIO.GetThicknessProperty(floor, floor.Document));
-                    }
-
-                    
-
-                    BHoMP.PanelProperty thickness = thicknessManager[floor.FloorType.Name];
-                    List<BHoMG.Curve> crvs = BHoMG.Curve.Join(curves);
-                    Parameter p = floor.LookupParameter("Elevation at Top");
-
-                    if (p != null)
-                    {
-                        BHoMG.Plane plane = BHoMG.Plane.XY(p.AsDouble() * GeometryUtils.FeetToMetre);
-                        curves = new BHoMG.Group<BHoMG.Curve>(crvs);
-                        curves.Project(plane);
-                    }
-
-                    BHoME.Panel panel = new BHoME.Panel(curves);
-                  
-                    panelManager.Add(floor.Id.IntegerValue.ToString(), panel);
-                    panel.PanelProperty = thickness;
-                    if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
-
-                    Revit2017_Adapter.Base.RevitUtils.GetRevitParameters(floor, panel);
-                    panels.Add(panel);
                 }
-                catch (Exception ex)
+                if (thicknessManager[floor.FloorType.Name] == null)
                 {
-
+                    thicknessManager.Add(floor.FloorType.Name, SectionIO.GetThicknessProperty(floor, floor.Document));
                 }
+                BHoMP.PanelProperty thickness = thicknessManager[floor.FloorType.Name];
+                List<BHoMG.Curve> crvs = BHoMG.Curve.Join(curves);
+                crvs.Sort(delegate (BHoMG.Curve c1, BHoMG.Curve c2)
+                {
+                    return c2.Length.CompareTo(c1.Length);
+                });
+
+                BHoME.Panel panel = new BHoME.Panel(new BHoMG.Group<BHoMG.Curve>(crvs));
+                panelManager.Add(floor.Id.IntegerValue.ToString(), panel);
+                panel.PanelProperty = thickness;
+                if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
+                panels.Add(panel);
             }
 
             return panels;
@@ -264,7 +248,6 @@ namespace Revit2017_Adapter.Structural.Elements
                         panelManager.Add(wall.Id.IntegerValue.ToString(), panel);
                         panel.PanelProperty = thickness;
                         if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
-                        Revit2017_Adapter.Base.RevitUtils.GetRevitParameters(wall, panel);
                         panels.Add(panel);
                     }
                 }
@@ -283,37 +266,37 @@ namespace Revit2017_Adapter.Structural.Elements
             {
                 try
                 {
-                    Parameter param = foundation.LookupParameter("Host");
-                    if (param == null)
-                    {
-                        BHoMG.Group<BHoMG.Curve> curves = new BHoMG.Group<BHoMG.Curve>();
-                        GeometryElement geometry = foundation.get_Geometry(new Options());
-                        Transform transform = null;
+                    BHoMG.Group<BHoMG.Curve> curves = new BHoMG.Group<BHoMG.Curve>();
+                    GeometryElement geometry = foundation.get_Geometry(new Options());
+                    Transform transform = null;
 
-                        foreach (GeometryObject obj in geometry)
+                    foreach (GeometryObject obj in geometry)
+                    {
+                        if (obj is Solid)
                         {
-                            if (obj is Solid)
+                            foreach (Face face in (obj as Solid).Faces)
                             {
-                                foreach (Face face in (obj as Solid).Faces)
+                                if (face is PlanarFace && (face as PlanarFace).Normal.AngleTo(XYZ.BasisZ) < Math.PI / 6)
                                 {
-                                    if (face is PlanarFace && (face as PlanarFace).FaceNormal.AngleTo(XYZ.BasisZ) < Math.PI / 6)
+                                    foreach (EdgeArray curveArray in face.EdgeLoops)
                                     {
-                                        foreach (EdgeArray curveArray in face.EdgeLoops)
+                                        foreach (Edge c in curveArray)
                                         {
-                                            foreach (Edge c in curveArray)
-                                            {
-                                                curves.Add(GeometryUtils.Convert(c.AsCurve(), rounding));
-                                            }
+                                            curves.Add(GeometryUtils.Convert(c.AsCurve(), rounding));
                                         }
                                     }
                                 }
                             }
-                            else if (obj is GeometryInstance)
-                            {
-                                transform = (obj as GeometryInstance).Transform;
-                            }
                         }
+                        else if (obj is GeometryInstance)
+                        {
+                            transform = (obj as GeometryInstance).Transform;
+                        }
+                    }
 
+                    Parameter param = foundation.LookupParameter("Host");
+                    if (param == null)
+                    {
                         //Not accurate
                         double elevation = foundation.LookupParameter("Elevation at Top").AsDouble() * GeometryUtils.FeetToMetre;
                         BHoMG.Plane plane = new BHoM.Geometry.Plane(new BHoM.Geometry.Point(0, 0, elevation), BHoMG.Vector.ZAxis());
@@ -331,7 +314,6 @@ namespace Revit2017_Adapter.Structural.Elements
                         panel.PanelProperty = thickness;
                         if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
                         panels.Add(panel);
-                        Revit2017_Adapter.Base.RevitUtils.GetRevitParameters(foundation, panel);
                     }
                 }
                 catch (Exception ex)
@@ -339,7 +321,8 @@ namespace Revit2017_Adapter.Structural.Elements
 
                 }
             }
-               
+                
+
             return panels;
         }
     }
