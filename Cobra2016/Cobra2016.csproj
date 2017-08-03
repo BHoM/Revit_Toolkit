@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Build\2016\</OutputPath>
+    <OutputPath>..\Build\Cobra2016\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,12 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BHoM">
-      <HintPath>..\..\BHoM\build\BHoM.dll</HintPath>
-    </Reference>
-    <Reference Include="Etabs_Adapter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="BHoM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ETABS_Toolkit\Build\Etabs_Adapter.dll</HintPath>
+      <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
     </Reference>
     <Reference Include="RevitAPI">
       <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2016\RevitAPI.dll</HintPath>

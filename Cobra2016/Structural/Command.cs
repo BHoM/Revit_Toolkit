@@ -28,23 +28,32 @@ namespace Cobra2016.Structural
         }
     }
 
-    [Transaction(TransactionMode.Manual)]
+    [Transaction(TransactionMode.Automatic)]
     [Regeneration(RegenerationOption.Manual)]
     public class ImportCommand : IExternalCommand
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            string filename = Path.Combine(Path.GetTempPath(), "RevitExchange");
-            FileIO fileIO = new FileIO(Path.Combine(filename, "In"), Path.Combine(filename, "Out"));
+            string filename = Path.Combine(Path.Combine(Path.GetTempPath(), "RevitExchange"), "In");
 
-            List<FEMesh> mesh = null;
-            fileIO.GetFEMeshes(out mesh);
-            RevitAdapter adapter = new RevitAdapter(commandData.Application.ActiveUIDocument.Document, 3);
-            List<string> id = new List<string>();
-            adapter.SetFEMeshes(mesh, out id);
+            List<BHoMObject> objlist = new List<BHoMObject>();
+            using (StreamReader fs = new StreamReader(Path.Combine(filename, "Bar" + ".txt")))
+            {
+                objlist = BHoM.Base.BHoMJSON.ReadPackage(fs.ReadToEnd()).Cast<BHoMObject>().ToList();
+                fs.Close();
+            }
+
+            Autodesk.Revit.UI.UIApplication app = commandData.Application;
+            Document doc = app.ActiveUIDocument.Document;
+            foreach (BHoMObject obj in objlist)
+            {
+                Engine.Convert.RevitElement.Write(obj, doc);
+            }
             return Result.Succeeded;
         }
     }
+
+
 
     [Transaction(TransactionMode.Automatic)]
     [Regeneration(RegenerationOption.Manual)]

@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Build\2017\</OutputPath>
+    <OutputPath>..\Build\Cobra2017\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,13 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BHoM">
-      <HintPath>..\..\BHoM\build\BHoM.dll</HintPath>
-    </Reference>
-    <Reference Include="Etabs_Adapter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="BHoM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ETABS_Toolkit\Build\Etabs_Adapter.dll</HintPath>
+      <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="RevitAPI">
       <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2017\RevitAPI.dll</HintPath>
       <Private>False</Private>
@@ -45,9 +43,6 @@
     <Reference Include="RevitAPIUI">
       <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2017\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="Robot_Adapter">
-      <HintPath>..\..\Robot_Toolkit\Build\Robot_Adapter.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -80,11 +75,22 @@
     <Compile Include="Structural\Forms\ExportForm.designer.cs">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Structural\Forms\ImportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Structural\Forms\ImportForm.Designer.cs">
+      <DependentUpon>ImportForm.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Files\Structural.Addin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Resources\BHoM_Uppload.png" />
+    <EmbeddedResource Include="Resources\BHoM_Download.png" />
+    <EmbeddedResource Include="Structural\Forms\ImportForm.resx">
+      <DependentUpon>ImportForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

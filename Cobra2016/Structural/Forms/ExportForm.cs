@@ -298,12 +298,12 @@ namespace Cobra2016.Structural.Forms
                     //    fs.Close();
                     //}
                     break;
-                case "Etabs":
-                    Export(new Etabs_Adapter.Structural.Interface.EtabsAdapter(m_Filename));
-                    break;
-                case "Robot":
-                    Export(new Robot_Adapter.Structural.Interface.RobotAdapter());
-                    break;
+                //case "Etabs":
+                //    Export(new Etabs_Adapter.Structural.Interface.EtabsAdapter(m_Filename));
+                //    break;
+                //case "Robot":
+                //    Export(new Robot_Adapter.Structural.Interface.RobotAdapter());
+                //    break;
             }
 
             BHoM.Global.Project.ActiveProject.Clear();

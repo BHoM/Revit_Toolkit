@@ -16,6 +16,27 @@ namespace Revit2017_Adapter.Structural.Elements
 {
     public class BarIO
     {
+        public static bool SetBars(List<BHoME.Bar> bars, List<Level> revitLevels, Document document, out List<string> ids)
+        {
+            Dictionary<string, FamilySymbol> sections = new Dictionary<string, FamilySymbol>();
+            ids = new List<string>();
+            foreach (BHoME.Bar bar in bars)
+            {
+                Curve c = GeometryUtils.Convert(bar.Line);
+                Level level = LevelIO.GetLevel(revitLevels, (c.GetEndPoint(0) + c.GetEndPoint(1)).Z);
+                FamilySymbol symbol = null;
+                if (!sections.TryGetValue(bar.SectionProperty.Name, out symbol))
+                {
+                    symbol = SectionIO.GetFamilySymbol(document, bar);
+                    sections.Add(bar.SectionProperty.Name, symbol);
+                }
+                Element instance = document.Create.NewFamilyInstance(c, symbol, level, Revit2017_Adapter.Base.RevitUtils.StructuralType(bar.StructuralUsage));
+                Revit2017_Adapter.Base.RevitUtils.SetElementParameter(instance, "z Justification", BeamSystemJustifyType.Center.ToString());
+                ids.Add(instance.Id.ToString());
+            }
+            return true;
+        }
+
         public static bool GetBeams(out List<BHoME.Bar> bars, Document document, List<string> ids = null, int rounding = 9)
         {
             ICollection<FamilyInstance> framing = null;
@@ -393,6 +414,11 @@ namespace Revit2017_Adapter.Structural.Elements
                             bar.StructuralUsage = BHoM.Structural.Elements.BarStructuralUsage.Pile;
                             barManager.Add(foundation.Id.ToString(), bar);
                             bars.Add(bar);
+                            Parameter Mark = null;
+                            if ((Mark = foundation.LookupParameter("Mark")) != null && Mark.AsString() != null)
+                            {
+                                bar.CustomData.Add("Mark", Mark.AsString());
+                            }
                             //Parameter Mark = null;
                             //if ((Mark = foundation.LookupParameter("Mark")) != null)
                             //{

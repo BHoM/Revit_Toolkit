@@ -72,6 +72,17 @@ namespace Revit2016_Adapter.Geometry
             return bhPoints;
         }
 
+        internal static IEnumerable<XYZ> Convert(List<BH.Point>  points)
+        {
+            List<XYZ> bhPoints = new List<XYZ>();
+            foreach (BH.Point point in points)
+            {
+                bhPoints.Add(Convert(point));
+            }
+            return bhPoints;
+        }
+
+
         internal static BH.Curve Convert(Curve curve, int rounding)
         {
             if (curve is Line)
@@ -93,6 +104,43 @@ namespace Revit2016_Adapter.Geometry
                 return new BH.Circle((ellipse.RadiusX + ellipse.RadiusY) / 2, new BH.Plane(Convert(ellipse.Center, rounding), new BH.Vector(Convert(ellipse.Normal, rounding))));
             }
             return null;
+        }
+
+        internal static Curve Convert(BH.Curve curve)
+        {
+            if (curve is BH.Line)
+            {
+                return Line.CreateBound(Convert(curve.StartPoint), Convert(curve.EndPoint));
+            }
+            else if (curve is BH.Arc)
+            {
+                BH.Arc arc = curve as BH.Arc;
+                return Arc.Create(Convert(arc.StartPoint), Convert(arc.EndPoint), Convert(arc.MiddlePoint));
+            }
+            else
+            {
+                BH.Curve spline = curve as BH.Curve;
+                return NurbSpline.Create(Convert(spline.ControlPoints).ToList(), spline.Weights, spline.Knots, spline.Degree, spline.IsClosed(), true);
+            }
+        }
+
+        public static CurveArrArray Convert(BH.Group<BH.Curve> curves)
+        {
+            //List<BH.Curve> loops = BH.Curve.Join(curves);
+            List<BH.Curve> loops = curves.ToList();
+
+            CurveArrArray revitCurves = new CurveArrArray();
+
+            foreach (BH.Curve perimeterCurve in loops)
+            {
+                CurveArray revitPerimeter = new CurveArray();
+                foreach (BH.Curve segment in perimeterCurve.Explode())
+                {
+                    revitPerimeter.Append(Convert(segment));
+                }
+                revitCurves.Append(revitPerimeter);
+            }
+            return revitCurves;
         }
 
         public static bool IsHorizontal(BH.Plane p)

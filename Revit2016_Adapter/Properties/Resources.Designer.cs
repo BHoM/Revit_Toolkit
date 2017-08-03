@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Cobra2017.Properties {
+namespace Revit2016_Adapter.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Cobra2017.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Cobra2017.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Revit2016_Adapter.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,40 +61,29 @@ namespace Cobra2017.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized string similar to @&quot;L:\BH-Revit\Revit2016\Family Templates\English\Metric Structural Framing - Beams and Braces.rft&quot;.
         /// </summary>
-        internal static System.Drawing.Bitmap BHoM_Download {
+        internal static string BeamTemplate {
             get {
-                object obj = ResourceManager.GetObject("BHoM_Download", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("BeamTemplate", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized string similar to @&quot;L:\BH-Revit\Revit2016\Family Templates\English\Metric Structural Column.rft.
         /// </summary>
-        internal static System.Drawing.Bitmap BHoM_Uppload {
+        internal static string ColumnTemplate {
             get {
-                object obj = ResourceManager.GetObject("BHoM_Uppload", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("ColumnTemplate", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BH Structural.
+        ///   Looks up a localized string similar to {&quot;__Type__&quot;:&quot;System.Collections.Generic.Dictionary`2[System.String,System.String]&quot;,&quot;CHS&quot;: &quot;L:\\BH-Revit\\Revit2017\\Libraries\\UK\\_BH Library\\BH Structures\\BH Structural\\Structural Framing\\Steel\\_Circular Hollow Sections.rfa&quot;, &quot;Generic&quot; : &quot;L:\\BH-Revit\\Revit2017\\Family Templates\\English\\Metric Generic Model.rft&quot;,&quot;RHS&quot;: &quot;L:\\BH-Revit\\Revit2017\\Libraries\\UK\\_BH Library\\BH Structures\\BH Structural\\Structural Framing\\Steel\\_Rectangular Hollow Sections.rfa&quot;,&quot;SFB&quot;: &quot;L:\\BH-Revit\\Revit2017\\Lib [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string StructuralTab {
+        internal static string FamilyPathDB {
             get {
-                return ResourceManager.GetString("StructuralTab", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 2017.
-        /// </summary>
-        internal static string Version {
-            get {
-                return ResourceManager.GetString("Version", resourceCulture);
+                return ResourceManager.GetString("FamilyPathDB", resourceCulture);
             }
         }
     }

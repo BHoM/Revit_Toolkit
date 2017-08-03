@@ -57,6 +57,7 @@ namespace Revit2017_Adapter.Structural.Elements
                         if (obj is Solid)
                         {
                             foreach (Face face in (obj as Solid).Faces)
+
                                 if (face is PlanarFace && (face as PlanarFace).FaceNormal.AngleTo(XYZ.BasisZ) < Math.PI / 12)
                                 {
                                     foreach (EdgeArray curveArray in face.EdgeLoops)
@@ -65,7 +66,8 @@ namespace Revit2017_Adapter.Structural.Elements
                                         {
                                             curves.Add(GeometryUtils.Convert(c.AsCurve(), rounding));
                                         }
-                                    }                            
+                                    }
+                                    break;
                                 }
                         }
                     }
