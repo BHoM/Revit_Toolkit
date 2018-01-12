@@ -53,39 +53,46 @@ namespace Revit2017_Adapter.Structural.Elements
             {
                 if (beam.Location is LocationCurve)
                 {
-                    barCentreline = GeometryUtils.Convert((beam.Location as LocationCurve).Curve, rounding);
-                    p1 = barCentreline.StartPoint;
-                    p2 = barCentreline.EndPoint;
-                    BHoME.Node n1 = nodes[GeometryUtils.PointLocation(p1, 3)];
-                    BHoME.Node n2 = nodes[GeometryUtils.PointLocation(p2, 3)];
-
-                    if (n1 == null) n1 = nodes.Add(GeometryUtils.PointLocation(barCentreline.StartPoint, 3), new BHoME.Node(p1.X, p1.Y, p1.Z));
-
-                    if (n2 == null) n2 = nodes.Add(GeometryUtils.PointLocation(barCentreline.EndPoint, 3), new BHoME.Node(p2.X, p2.Y, p2.Z));
-
-                    BHoME.Bar bar = new BHoME.Bar(n1, n2);
-                    if (sections[beam.Symbol.Name] == null)
+                    try
                     {
-                        sections.Add(beam.Symbol.Name, SectionIO.GetSectionProperty(beam.Symbol, false));
+                        barCentreline = GeometryUtils.Convert((beam.Location as LocationCurve).Curve, rounding);
+                        p1 = barCentreline.StartPoint;
+                        p2 = barCentreline.EndPoint;
+                        BHoME.Node n1 = nodes[GeometryUtils.PointLocation(p1, 3)];
+                        BHoME.Node n2 = nodes[GeometryUtils.PointLocation(p2, 3)];
+
+                        if (n1 == null) n1 = nodes.Add(GeometryUtils.PointLocation(barCentreline.StartPoint, 3), new BHoME.Node(p1.X, p1.Y, p1.Z));
+
+                        if (n2 == null) n2 = nodes.Add(GeometryUtils.PointLocation(barCentreline.EndPoint, 3), new BHoME.Node(p2.X, p2.Y, p2.Z));
+
+                        BHoME.Bar bar = new BHoME.Bar(n1, n2);
+                        if (sections[beam.Symbol.Name] == null)
+                        {
+                            sections.Add(beam.Symbol.Name, SectionIO.GetSectionProperty(beam.Symbol, false));
+                        }
+
+                        bar.SectionProperty = sections[beam.Symbol.Name];
+                        double rotation = -beam.LookupParameter("Cross-Section Rotation").AsDouble();
+
+                        BHoM.Materials.Material material = null;
+                        BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(beam.StructuralMaterialType);
+
+                        if (!materials.TryGetValue(matKey, out material))
+                        {
+                            material = BHoM.Materials.Material.Default(matKey);
+                            materials.Add(matKey, material);
+                        }
+
+                        if (bar.SectionProperty != null) bar.SectionProperty.Material = material;
+                        bar.SectionProperty = sections[beam.Symbol.Name];
+                        bar.OrientationAngle = rotation;
+                        bars.Add(bar);
+                        barManager.Add(beam.Id.ToString(), bar);
                     }
-                   
-                    bar.SectionProperty = sections[beam.Symbol.Name];
-                    double rotation = -beam.LookupParameter("Cross-Section Rotation").AsDouble();
-
-                    BHoM.Materials.Material material = null;
-                    BHoM.Materials.MaterialType matKey = Base.RevitUtils.GetMaterialType(beam.StructuralMaterialType);
-
-                    if (!materials.TryGetValue(matKey, out material))
+                    catch (Exception e)
                     {
-                        material = BHoM.Materials.Material.Default(matKey);
-                        materials.Add(matKey, material);
-                    }
 
-                    if (bar.SectionProperty != null) bar.SectionProperty.Material = material;
-                    bar.SectionProperty = sections[beam.Symbol.Name];
-                    bar.OrientationAngle = rotation;
-                    bars.Add(bar);
-                    barManager.Add(beam.Id.ToString(), bar);
+                    }
                 }
             }
 
@@ -384,7 +391,7 @@ namespace Revit2017_Adapter.Structural.Elements
                             barManager.Add(foundation.Id.ToString(), bar);
                             bars.Add(bar);
                             Parameter Mark = null;
-                            if ((Mark = foundation.LookupParameter("Mark")) != null)
+                            if ((Mark = foundation.LookupParameter("Mark")) != null && Mark.AsString() != null)
                             {
                                 bar.CustomData.Add("Mark", Mark.AsString());
                             }

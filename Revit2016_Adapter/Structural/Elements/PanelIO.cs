@@ -48,42 +48,43 @@ namespace Revit2016_Adapter.Structural.Elements
             BHoMB.ObjectManager<BHoMP.PanelProperty> thicknessManager = new BHoMB.ObjectManager<BHoMP.PanelProperty>();
             foreach (Floor floor in floors)
             {
-                BHoMG.Group<BHoMG.Curve> curves = new BHoMG.Group<BHoMG.Curve>();
-                GeometryElement geometry = floor.get_Geometry(new Options());
-                foreach (GeometryObject obj in geometry)
+                try
                 {
-                    if (obj is Solid)
+                    BHoMG.Group<BHoMG.Curve> curves = new BHoMG.Group<BHoMG.Curve>();
+                    GeometryElement geometry = floor.get_Geometry(new Options());
+                    foreach (GeometryObject obj in geometry)
                     {
-                        foreach (Face face in (obj as Solid).Faces)
-                            if (face is PlanarFace && (face as PlanarFace).FaceNormal.AngleTo(XYZ.BasisZ) < Math.PI / 6)
-                            {
-                                foreach (EdgeArray curveArray in face.EdgeLoops)
+                        if (obj is Solid)
+                        {
+                            foreach (Face face in (obj as Solid).Faces)
+                                if (face is PlanarFace && (face as PlanarFace).FaceNormal.AngleTo(XYZ.BasisZ) < Math.PI / 6)
                                 {
-                                    foreach (Edge c in curveArray)
+                                    foreach (EdgeArray curveArray in face.EdgeLoops)
                                     {
-                                        curves.Add(GeometryUtils.Convert(c.AsCurve(), rounding));
+                                        foreach (Edge c in curveArray)
+                                        {
+                                            curves.Add(GeometryUtils.Convert(c.AsCurve(), rounding));
+                                        }
                                     }
+                                    break;
                                 }
-                                break;
-                            }
+                        }
                     }
+                    if (thicknessManager[floor.FloorType.Name] == null)
+                    {
+                        thicknessManager.Add(floor.FloorType.Name, SectionIO.GetThicknessProperty(floor, floor.Document));
+                    }
+                    BHoMP.PanelProperty thickness = thicknessManager[floor.FloorType.Name];
+                    BHoME.Panel panel = new BHoME.Panel(curves);
+                    panelManager.Add(floor.Id.IntegerValue.ToString(), panel);
+                    panel.PanelProperty = thickness;
+                    if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
+                    panels.Add(panel);
                 }
-                if (thicknessManager[floor.FloorType.Name] == null)
+                catch
                 {
-                    thicknessManager.Add(floor.FloorType.Name, SectionIO.GetThicknessProperty(floor, floor.Document));
-                }
-                BHoMP.PanelProperty thickness = thicknessManager[floor.FloorType.Name];
-                List<BHoMG.Curve> crvs = BHoMG.Curve.Join(curves);
-                crvs.Sort(delegate (BHoMG.Curve c1, BHoMG.Curve c2)
-                {
-                    return c2.Length.CompareTo(c1.Length);
-                });
 
-                BHoME.Panel panel = new BHoME.Panel(new BHoMG.Group<BHoMG.Curve>(crvs));
-                panelManager.Add(floor.Id.IntegerValue.ToString(), panel);
-                panel.PanelProperty = thickness;
-                if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
-                panels.Add(panel);
+                }
             }
 
             return panels;

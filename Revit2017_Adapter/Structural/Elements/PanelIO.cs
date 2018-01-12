@@ -48,42 +48,43 @@ namespace Revit2017_Adapter.Structural.Elements
             BHoMB.ObjectManager<BHoMP.PanelProperty> thicknessManager = new BHoMB.ObjectManager<BHoMP.PanelProperty>();
             foreach (Floor floor in floors)
             {
-                BHoMG.Group<BHoMG.Curve> curves = new BHoMG.Group<BHoMG.Curve>();
-                GeometryElement geometry = floor.get_Geometry(new Options());
-                foreach (GeometryObject obj in geometry)
+                try
                 {
-                    if (obj is Solid)
+                    BHoMG.Group<BHoMG.Curve> curves = new BHoMG.Group<BHoMG.Curve>();
+                    GeometryElement geometry = floor.get_Geometry(new Options());
+                    foreach (GeometryObject obj in geometry)
                     {
-                        foreach (Face face in (obj as Solid).Faces)
-                            if (face is PlanarFace && (face as PlanarFace).FaceNormal.AngleTo(XYZ.BasisZ) < Math.PI / 6)
-                            {
-                                foreach (EdgeArray curveArray in face.EdgeLoops)
+                        if (obj is Solid)
+                        {
+                            foreach (Face face in (obj as Solid).Faces)
+                                if (face is PlanarFace && (face as PlanarFace).FaceNormal.AngleTo(XYZ.BasisZ) < Math.PI / 6)
                                 {
-                                    foreach (Edge c in curveArray)
+                                    foreach (EdgeArray curveArray in face.EdgeLoops)
                                     {
-                                        curves.Add(GeometryUtils.Convert(c.AsCurve(), rounding));
+                                        foreach (Edge c in curveArray)
+                                        {
+                                            curves.Add(GeometryUtils.Convert(c.AsCurve(), rounding));
+                                        }
                                     }
+                                    break;
                                 }
-                                break;
-                            }
+                        }
                     }
+                    if (thicknessManager[floor.FloorType.Name] == null)
+                    {
+                        thicknessManager.Add(floor.FloorType.Name, SectionIO.GetThicknessProperty(floor, floor.Document));
+                    }
+                    BHoMP.PanelProperty thickness = thicknessManager[floor.FloorType.Name];
+                    BHoME.Panel panel = new BHoME.Panel(curves);
+                    panelManager.Add(floor.Id.IntegerValue.ToString(), panel);
+                    panel.PanelProperty = thickness;
+                    if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
+                    panels.Add(panel);
                 }
-                if (thicknessManager[floor.FloorType.Name] == null)
+                catch
                 {
-                    thicknessManager.Add(floor.FloorType.Name, SectionIO.GetThicknessProperty(floor, floor.Document));
-                }
-                BHoMP.PanelProperty thickness = thicknessManager[floor.FloorType.Name];
-                List<BHoMG.Curve> crvs = BHoMG.Curve.Join(curves);
-                crvs.Sort(delegate (BHoMG.Curve c1, BHoMG.Curve c2)
-                {
-                    return c2.Length.CompareTo(c1.Length);
-                });
 
-                BHoME.Panel panel = new BHoME.Panel(new BHoMG.Group<BHoMG.Curve>(crvs));
-                panelManager.Add(floor.Id.IntegerValue.ToString(), panel);
-                panel.PanelProperty = thickness;
-                if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
-                panels.Add(panel);
+                }
             }
 
             return panels;
@@ -182,73 +183,80 @@ namespace Revit2017_Adapter.Structural.Elements
 
                 foreach (Wall wall in walls)
                 {
-                    if (wall.Location is LocationCurve)
+                    try
                     {
-                        Document document = wall.Document;
-                        Curve c = (wall.Location as LocationCurve).Curve;
-
-                        ElementId baseConst = wall.LookupParameter("Base Constraint").AsElementId();
-                        ElementId topConst = wall.LookupParameter("Top Constraint").AsElementId();
-
-                        double baseOffset = wall.LookupParameter("Base Offset").AsDouble();
-                        double topOffset = wall.LookupParameter("Top Offset").AsDouble();
-
-                        BHoMG.Curve perimeter = null;
-                        BHoMG.Plane wallPlane = null;
-
-                        if (baseConst.IntegerValue > 0 && topConst.IntegerValue > 0)
+                        if (wall.Location is LocationCurve)
                         {
-                            double baseLevel = (document.GetElement(baseConst) as Level).ProjectElevation + baseOffset;
-                            double topLevel = (document.GetElement(topConst) as Level).ProjectElevation + topOffset;
+                            Document document = wall.Document;
+                            Curve c = (wall.Location as LocationCurve).Curve;
 
-                            XYZ p1 = c.GetEndPoint(0);
-                            XYZ p2 = c.GetEndPoint(1);
-                            List<BHoMG.Point> pts = new List<BHoMG.Point>();
-                            pts.Add(GeometryUtils.Convert(new XYZ(p1.X, p1.Y, baseLevel), rounding));
-                            pts.Add(GeometryUtils.Convert(new XYZ(p2.X, p2.Y, baseLevel), rounding));
-                            pts.Add(GeometryUtils.Convert(new XYZ(p2.X, p2.Y, topLevel), rounding));
-                            pts.Add(GeometryUtils.Convert(new XYZ(p1.X, p1.Y, topLevel), rounding));
-                            pts.Add(pts[0]);
-                            perimeter = new BHoMG.Polyline(pts);
-                            wallPlane = new BHoMG.Plane(pts[0], pts[1], pts[2]);
-                        }
+                            ElementId baseConst = wall.LookupParameter("Base Constraint").AsElementId();
+                            ElementId topConst = wall.LookupParameter("Top Constraint").AsElementId();
 
-                        if (thicknessManager[wall.WallType.Name] == null)
-                        {
-                            thicknessManager.Add(wall.WallType.Name, SectionIO.GetThicknessProperty(wall, document));
-                        }
+                            double baseOffset = wall.LookupParameter("Base Offset").AsDouble();
+                            double topOffset = wall.LookupParameter("Top Offset").AsDouble();
 
-                        BHoMP.PanelProperty thickness = thicknessManager[wall.WallType.Name];
-                        BHoME.Panel panel = new BHoME.Panel(new List<BHoMG.Curve>() { perimeter });
+                            BHoMG.Curve perimeter = null;
+                            BHoMG.Plane wallPlane = null;
 
-                        List<FamilyInstance> openings = null;
-
-                        if (doorMap.TryGetValue(wall.Id, out openings))
-                        {
-                            BHoMG.Vector direction = BHoMG.Vector.CrossProduct(wallPlane.Normal, BHoMG.Vector.ZAxis());
-                            foreach (FamilyInstance opening in openings)
+                            if (baseConst.IntegerValue > 0 && topConst.IntegerValue > 0)
                             {
-                                double width = opening.Symbol.LookupParameter("Width").AsDouble() * GeometryUtils.FeetToMetre;
-                                double height = opening.Symbol.LookupParameter("Height").AsDouble() * GeometryUtils.FeetToMetre;
-                                if (opening.Location is LocationPoint)
+                                double baseLevel = (document.GetElement(baseConst) as Level).ProjectElevation + baseOffset;
+                                double topLevel = (document.GetElement(topConst) as Level).ProjectElevation + topOffset;
+
+                                XYZ p1 = c.GetEndPoint(0);
+                                XYZ p2 = c.GetEndPoint(1);
+                                List<BHoMG.Point> pts = new List<BHoMG.Point>();
+                                pts.Add(GeometryUtils.Convert(new XYZ(p1.X, p1.Y, baseLevel), rounding));
+                                pts.Add(GeometryUtils.Convert(new XYZ(p2.X, p2.Y, baseLevel), rounding));
+                                pts.Add(GeometryUtils.Convert(new XYZ(p2.X, p2.Y, topLevel), rounding));
+                                pts.Add(GeometryUtils.Convert(new XYZ(p1.X, p1.Y, topLevel), rounding));
+                                pts.Add(pts[0]);
+                                perimeter = new BHoMG.Polyline(pts);
+                                wallPlane = new BHoMG.Plane(pts[0], pts[1], pts[2]);
+                            }
+
+                            if (thicknessManager[wall.WallType.Name] == null)
+                            {
+                                thicknessManager.Add(wall.WallType.Name, SectionIO.GetThicknessProperty(wall, document));
+                            }
+
+                            BHoMP.PanelProperty thickness = thicknessManager[wall.WallType.Name];
+                            BHoME.Panel panel = new BHoME.Panel(new List<BHoMG.Curve>() { perimeter });
+
+                            List<FamilyInstance> openings = null;
+
+                            if (doorMap.TryGetValue(wall.Id, out openings))
+                            {
+                                BHoMG.Vector direction = BHoMG.Vector.CrossProduct(wallPlane.Normal, BHoMG.Vector.ZAxis());
+                                foreach (FamilyInstance opening in openings)
                                 {
-                                    BHoMG.Point location = GeometryUtils.Convert((opening.Location as LocationPoint).Point);
-                                    List<BHoMG.Point> pts = new List<BHoMG.Point>();
-                                    pts.Add(location - direction * width / 2);
-                                    pts.Add(location + direction * width / 2);
-                                    pts.Add(pts[1] + new BHoMG.Vector(0, 0, height));
-                                    pts.Add(pts[0] + new BHoMG.Vector(0, 0, height));
-                                    pts.Add(pts[0]);
-                                    perimeter = new BHoMG.Polyline(pts);
-                                    panel.Internal_Contours.Add(perimeter);
+                                    double width = opening.Symbol.LookupParameter("Width").AsDouble() * GeometryUtils.FeetToMetre;
+                                    double height = opening.Symbol.LookupParameter("Height").AsDouble() * GeometryUtils.FeetToMetre;
+                                    if (opening.Location is LocationPoint)
+                                    {
+                                        BHoMG.Point location = GeometryUtils.Convert((opening.Location as LocationPoint).Point);
+                                        List<BHoMG.Point> pts = new List<BHoMG.Point>();
+                                        pts.Add(location - direction * width / 2);
+                                        pts.Add(location + direction * width / 2);
+                                        pts.Add(pts[1] + new BHoMG.Vector(0, 0, height));
+                                        pts.Add(pts[0] + new BHoMG.Vector(0, 0, height));
+                                        pts.Add(pts[0]);
+                                        perimeter = new BHoMG.Polyline(pts);
+                                        panel.Internal_Contours.Add(perimeter);
+                                    }
                                 }
                             }
-                        }
 
-                        panelManager.Add(wall.Id.IntegerValue.ToString(), panel);
-                        panel.PanelProperty = thickness;
-                        if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
-                        panels.Add(panel);
+                            panelManager.Add(wall.Id.IntegerValue.ToString(), panel);
+                            panel.PanelProperty = thickness;
+                            if (panel.PanelProperty != null) panel.PanelProperty.Material = material;
+                            panels.Add(panel);
+                        }
+                    }
+                    catch
+                    {
+
                     }
                 }
             }
