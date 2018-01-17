@@ -9,6 +9,7 @@ using BH.oM.Environmental.Properties;
 using BH.oM.Geometry;
 
 using Autodesk.Revit.DB;
+using BH.oM.Structural.Elements;
 
 namespace BH.Engine.Revit
 {
@@ -74,13 +75,29 @@ namespace BH.Engine.Revit
             {
                 ICurve aICurve = (BuildingElement.BuildingElementGeometry as BuildingElementCurve).ICurve;
 
-                throw new NotImplementedException();
-                //Wall aWall = Wall.Create(Document, ToRevitCurve(aICurve), );
+                Storey aStorey = BuildingElement.Storey;
+                if (aStorey == null)
+                    return null;
 
-                //return aWall;
+                List<Level> aLevelList = new FilteredElementCollector(Document).OfClass(typeof(Level)).Cast<Level>().ToList();
+
+                Level aLevel = aLevelList.Find(x => x.Elevation == aStorey.Elevation);
+                if (aLevel == null)
+                    aLevel = aStorey.ToRevitStorey(Document);
+
+                Wall aWall = Wall.Create(Document, ToRevitCurve(aICurve), aLevel.Id, false);
+
+                return aWall;
             }
 
             return null;
+        }
+
+        public static Level ToRevitStorey(this Storey Storey, Document Document)
+        {
+            Level aLevel = Level.Create(Document, Storey.Elevation);
+            aLevel.Name = Storey.Name;
+            return aLevel;
         }
     }
 }
