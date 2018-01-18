@@ -14,6 +14,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cobra2017", "Cobra2017\Cobra2017.csproj", "{E8022CAD-94B9-45F2-B030-442DA3DAE600}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revit2018_Adapter", "Revit2018_Adapter\Revit2018_Adapter.csproj", "{C2BD93AF-8853-4685-8BD4-223055DE1CC6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4DFAF9C8-9770-4E5A-818D-EB4DAB665145} = {4DFAF9C8-9770-4E5A-818D-EB4DAB665145}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revit2018_Engine", "Revit2018_Engine\Revit2018_Engine.csproj", "{4DFAF9C8-9770-4E5A-818D-EB4DAB665145}"
 EndProject

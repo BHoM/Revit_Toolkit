@@ -65,16 +65,16 @@ namespace BH.Engine.Revit
         public static BuildingElementCurve FromRevitBuildingElementCurve(this Wall Wall)
         {
             LocationCurve aLocationCurve = Wall.Location as LocationCurve;
-            BuildingElementCurve aBuildingElementCurve = new BuildingElementCurve()
+            BuildingElementCurve aBuildingElementCurve = new BuildingElementCurve
             {
-                ICurve = FromRevit(aLocationCurve)
+                Curve = FromRevit(aLocationCurve)
             };
             return aBuildingElementCurve;
         }
 
         public static BuildingElement FromRevitBuildingElement(this Wall Wall)
         {
-            BuildingElementProperties aBuildingElementProperties = FromRevit(Wall.WallType);
+            BuildingElementProperties aBuildingElementProperties = Wall.WallType.FromRevit();
 
             return Create.BuildingElement(aBuildingElementProperties, FromRevitBuildingElementCurve(Wall), FromRevit(Wall.Document.GetElement(Wall.LevelId) as Level));
         }
@@ -171,7 +171,7 @@ namespace BH.Engine.Revit
                         aBuildingElmementList.Add(aBuildingElement);
                     }
 
-            return new Space()
+            return new Space
             {
                 Storey = aStorey,
                 BuildingElements = aBuildingElmementList,
@@ -257,7 +257,7 @@ namespace BH.Engine.Revit
                 }
             }
 
-            return new Space()
+            return new Space
             {
                 Storey = aStorey,
                 BuildingElements = aBuildingElmementList,
@@ -268,70 +268,23 @@ namespace BH.Engine.Revit
 
         }
 
-        public static Building FromRevit(this Document Document, bool GenerateSpaces, bool Spaces3D)
+        public static Building FromRevit(this Document Document)
         {
             List<SiteLocation> aSiteLocationList = new FilteredElementCollector(Document).OfClass(typeof(SiteLocation)).Cast<SiteLocation>().ToList();
             aSiteLocationList.RemoveAll(x => x == null || x.Category == null);
 
-            double aElevation = 0;
-            double aLongitude = 0;
-            double aLatitude = 0;
-            if (aSiteLocationList.Count > 0)
+            if (aSiteLocationList.Count < 1)
+                return null;
+
+            SiteLocation aSiteLocation = aSiteLocationList.First();
+
+            return new Building
             {
-                SiteLocation aSiteLocation = aSiteLocationList.First();
-                aElevation = aSiteLocation.Elevation;
-                aLongitude = aSiteLocation.Longitude;
-                aLatitude = aSiteLocation.Latitude;
-            }
-
-            List<BuildingElementProperties> aBuildingElementPropertiesList = new FilteredElementCollector(Document).OfClass(typeof(WallType)).ToList().ConvertAll(x => ((WallType)x).FromRevit());
-
-            List<Level> aLevelList = new FilteredElementCollector(Document).OfClass(typeof(Level)).Cast<Level>().ToList();
-            List<Storey> aStoreyList = new List<Storey>();
-            if (aLevelList != null && aLevelList.Count > 0)
-                aStoreyList =  aLevelList.ConvertAll(x => FromRevit(x));
-
-            List<SpatialElement> aSpatialElementList = new FilteredElementCollector(Document).OfCategory(BuiltInCategory.OST_MEPSpaces).Cast<SpatialElement>().ToList();
-            aSpatialElementList.RemoveAll(x => x.Area < 0.001);
-
-
-            Building aBuilidng = new Building()
-            {
-                Elevation = aElevation,
-                Longitude = aLongitude,
-                Latitude = aLatitude
+                Elevation = aSiteLocation.Elevation,
+                Longitude = aSiteLocation.Longitude,
+                Latitude = aSiteLocation.Latitude,
+                Location = new oM.Geometry.Point()
             };
-
-            aBuilidng.Add(aStoreyList);
-
-            if(GenerateSpaces)
-            {
-                SpatialElementBoundaryOptions aSpatialElementBoundaryOptions = new SpatialElementBoundaryOptions();
-                aSpatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
-                aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = true;
-
-                if (Spaces3D)
-                {
-                    SpatialElementGeometryCalculator aSpatialElementGeometryCalculator = new SpatialElementGeometryCalculator(Document, aSpatialElementBoundaryOptions);
-                    foreach (SpatialElement aSpatialElement in aSpatialElementList)
-                    {
-                        Space aSpace = aSpatialElement.FromRevit(aSpatialElementGeometryCalculator, aBuildingElementPropertiesList, aStoreyList);
-                        if (aSpace != null)
-                            aBuilidng.Add(aSpace);
-                    }
-                }
-                else
-                {
-                    foreach (SpatialElement aSpatialElement in aSpatialElementList)
-                    {
-                        Space aSpace = aSpatialElement.FromRevit(aSpatialElementBoundaryOptions, aBuildingElementPropertiesList, aStoreyList);
-                        if (aSpace != null)
-                            aBuilidng.Add(aSpace);
-                    }
-                }
-            }
-
-            return aBuilidng;
         }
     }
 }
