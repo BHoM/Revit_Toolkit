@@ -16,17 +16,18 @@ using Autodesk.Revit.DB;
 
 namespace BH.Adapter.Revit
 {
-    public partial class RevitAdapter : BHoMAdapter
+    public partial class RevitAdapter
     {
-        public Building ReadBuilidng(Document Document, bool GenerateSpaces, bool Spaces3D)
+
+        public Building ReadBuilidng(bool GenerateSpaces, bool Spaces3D)
         {
-            Building aBuilding = Document.FromRevit();
+            Building aBuilding = m_Document.FromRevit();
 
             //Adding BuilidngElementProperties
-            aBuilding.BuildingElementProperties = new FilteredElementCollector(Document).OfClass(typeof(WallType)).ToList().ConvertAll(x => ((WallType)x).FromRevit());
+            aBuilding.BuildingElementProperties = new FilteredElementCollector(m_Document).OfClass(typeof(WallType)).ToList().ConvertAll(x => ((WallType)x).FromRevit());
 
             //Adding Storeys
-            List<Level> aLevelList = new FilteredElementCollector(Document).OfClass(typeof(Level)).Cast<Level>().ToList();
+            List<Level> aLevelList = new FilteredElementCollector(m_Document).OfClass(typeof(Level)).Cast<Level>().ToList();
             List<Storey> aStoreyList = new List<Storey>();
             if (aLevelList != null && aLevelList.Count > 0)
                 aStoreyList = aLevelList.ConvertAll(x => x.FromRevit());
@@ -34,7 +35,7 @@ namespace BH.Adapter.Revit
 
 
             //Adding Spaces
-            List<SpatialElement> aSpatialElementList = new FilteredElementCollector(Document).OfCategory(BuiltInCategory.OST_MEPSpaces).Cast<SpatialElement>().ToList();
+            List<SpatialElement> aSpatialElementList = new FilteredElementCollector(m_Document).OfCategory(BuiltInCategory.OST_MEPSpaces).Cast<SpatialElement>().ToList();
             aSpatialElementList.RemoveAll(x => x.Area < 0.001);
 
 
@@ -48,7 +49,7 @@ namespace BH.Adapter.Revit
                 if (Spaces3D)
                 {
                     //3D geometry
-                    SpatialElementGeometryCalculator aSpatialElementGeometryCalculator = new SpatialElementGeometryCalculator(Document, aSpatialElementBoundaryOptions);
+                    SpatialElementGeometryCalculator aSpatialElementGeometryCalculator = new SpatialElementGeometryCalculator(m_Document, aSpatialElementBoundaryOptions);
                     foreach (SpatialElement aSpatialElement in aSpatialElementList)
                     {
                         Space aSpace = aSpatialElement.FromRevit(aSpatialElementGeometryCalculator, aBuilding.BuildingElementProperties, aStoreyList);

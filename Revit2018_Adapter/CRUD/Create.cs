@@ -12,9 +12,10 @@ using BH.Engine.Environment;
 using BH.oM.Base;
 
 using Autodesk.Revit.DB;
+
 namespace BH.Adapter.Revit
 {
-    public partial class RevitAdapter : BHoMAdapter
+    public partial class RevitAdapter
     {
         protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {
