@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+   <AddIn Type="Application">
+      <Assembly>RevitLookup.dll</Assembly>
+      <ClientId>833910cc-aaa4-44f6-98a5-6ac9e8d6edf2</ClientId>
+      <FullClassName>Revit2018_Test.Test</FullClassName>
+      <Name>Revit 2018 Test</Name>
+      <VendorId>BHE</VendorId>
+      <VendorDescription>BuroHappold</VendorDescription>	  
+   </AddIn>
+</RevitAddIns>

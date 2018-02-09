@@ -72,7 +72,7 @@ namespace BH.Adapter.Revit
             return aBuilding;
         }
 
-        protected override IEnumerable<IObject> Read(Type type, IList ids)
+        protected override IEnumerable<BHoMObject> Read(Type type, IList ids) //Chnage to IObject
         {
             throw new NotImplementedException();
         }

@@ -19,6 +19,16 @@ namespace BH.Adapter.Revit
     {
         protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {
+            using (Transaction aTransaction = new Transaction(m_Document, "Create"))
+            {
+                aTransaction.Start();
+                foreach(BHoMObject aBHOMObject in objects)
+                {
+
+                }
+                aTransaction.Commit();
+            }
+
             throw new NotImplementedException();
         }
     }
