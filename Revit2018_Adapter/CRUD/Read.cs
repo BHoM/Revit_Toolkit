@@ -18,7 +18,6 @@ namespace BH.Adapter.Revit
 {
     public partial class RevitAdapter
     {
-
         public Building ReadBuilidng(bool GenerateSpaces, bool Spaces3D)
         {
             Building aBuilding = m_Document.FromRevit();

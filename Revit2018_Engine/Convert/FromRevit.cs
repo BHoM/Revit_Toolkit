@@ -218,7 +218,9 @@ namespace BH.Engine.Revit
             {
                 foreach (SpatialElementBoundarySubface aSpatialElementBoundarySubface in aSpatialElementGeometryResults.GetBoundaryFaceInfo(aFace))
                 {
-                    Face aFace_BuildingElement = aSpatialElementBoundarySubface.GetBoundingElementFace();
+                    //Face aFace_Subface = aSpatialElementBoundarySubface.GetBoundingElementFace();
+                    Face aFace_Subface = aSpatialElementBoundarySubface.GetSubface();
+                    //Face aFace_Subface = aSpatialElementBoundarySubface.GetSpatialElementFace();
                     LinkElementId aLinkElementId = aSpatialElementBoundarySubface.SpatialBoundaryElement;
                     Document aDocument = null;
                     if (aLinkElementId.LinkInstanceId != ElementId.InvalidElementId)
@@ -226,11 +228,16 @@ namespace BH.Engine.Revit
                     else
                         aDocument = SpatialElement.Document;
 
-                    Element aElement = aDocument.GetElement(aLinkElementId.LinkedElementId);
-                    ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
+                    Element aElement = null;
+                    ElementType aElementType = null;
+                    if(aLinkElementId.LinkedElementId != ElementId.InvalidElementId)
+                    {
+                        aElement = aDocument.GetElement(aLinkElementId.LinkedElementId);
+                        aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
+                    }
 
                     BuildingElementProperties aBuildingElementProperties = null;
-                    if (BuildingElementProperties != null)
+                    if (aElementType != null && BuildingElementProperties != null)
                     {
                         foreach (BuildingElementProperties aBuildingElementProperties_Temp in BuildingElementProperties)
                         {
@@ -242,18 +249,19 @@ namespace BH.Engine.Revit
                         }
                     }
 
-                    foreach (CurveLoop aCurveLoop in aFace_BuildingElement.GetEdgesAsCurveLoops())
-                    {
-                        if (aElement is Wall)
+                    if (aFace_Subface != null)
+                        foreach (CurveLoop aCurveLoop in aFace_Subface.GetEdgesAsCurveLoops())
                         {
-                            if (aBuildingElementProperties == null)
-                                aBuildingElementProperties = (aElement as Wall).WallType.FromRevit();
+                            if (aElement is Wall)
+                            {
+                                if (aBuildingElementProperties == null)
+                                    aBuildingElementProperties = (aElement as Wall).WallType.FromRevit();
 
-                            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementPanel(aCurveLoop.FromRevit()));
-                            aBuildingElement.Storey = aStorey;
-                            aBuildingElmementList.Add(aBuildingElement);
+                                BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementPanel(aCurveLoop.FromRevit()));
+                                aBuildingElement.Storey = aStorey;
+                                aBuildingElmementList.Add(aBuildingElement);
+                            }
                         }
-                    }
                 }
             }
 

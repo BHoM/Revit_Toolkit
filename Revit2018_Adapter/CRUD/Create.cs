@@ -24,7 +24,11 @@ namespace BH.Adapter.Revit
                 aTransaction.Start();
                 foreach(BHoMObject aBHOMObject in objects)
                 {
-
+                    if(aBHOMObject is BuildingElement)
+                    {
+                        BuildingElement aBuildingElement = aBHOMObject as BuildingElement;
+                        aBuildingElement.ToRevit(m_Document);
+                    }
                 }
                 aTransaction.Commit();
             }
