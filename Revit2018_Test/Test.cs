@@ -5,6 +5,10 @@ using System.Windows;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.DB;
 
+using BH.Adapter.Revit;
+
+using BH.oM.Environmental.Elements;
+
 namespace Revit2018_Test
 {
     /// <remarks>
@@ -42,6 +46,11 @@ namespace Revit2018_Test
     {
         public Result Execute(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
+            RevitAdapter pRevitAdapter = new RevitAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
+
+            Building Building = pRevitAdapter.ReadBuilidng(true, true);
+
+
             return Result.Succeeded;
         }
     }

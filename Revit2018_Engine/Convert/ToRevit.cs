@@ -4,12 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using BH.oM.Structural.Elements;
+
 using BH.oM.Environmental.Elements;
 using BH.oM.Environmental.Properties;
 using BH.oM.Geometry;
 
+using BH.Engine.Environment;
+
 using Autodesk.Revit.DB;
-using BH.oM.Structural.Elements;
 
 namespace BH.Engine.Revit
 {
@@ -108,7 +111,8 @@ namespace BH.Engine.Revit
             if (aLevel == null)
                 aLevel = aStorey.ToRevit(Document);
 
-            ICurve aICurve = BuildingElement.BuildingElementGeometry.Curve;
+            if (BuildingElement.BuildingElementGeometry == null)
+                return null;
 
             Element aElement = null;
             switch (BuildingElement.BuildingElementProperties.BuildingElementType)
@@ -116,10 +120,18 @@ namespace BH.Engine.Revit
                 case BuidingElementType.Ceiling:
                     break;
                 case BuidingElementType.Floor:
+                    if(BuildingElement.BuildingElementGeometry is BuildingElementPanel)
+                    {
+                        BuildingElementPanel aBuildingElementPanel = BuildingElement.BuildingElementGeometry as BuildingElementPanel;
+                        aElement = Document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(), false);
+                    }
                     break;
                 case BuidingElementType.Roof:
                     break;
                 case BuidingElementType.Wall:
+                    ICurve aICurve = BuildingElement.BuildingElementGeometry.Bottom();
+                    if (aICurve != null)
+                        return null;
                     aElement = Wall.Create(Document, ToRevit(aICurve), aLevel.Id, false);
                     break;
             }
