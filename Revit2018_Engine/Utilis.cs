@@ -31,6 +31,87 @@ namespace BH.Engine.Revit
 
                 return null;
             }
+
+            public static void CopyCustomData(BHoMObject BHoMObject, Element Element)
+            {
+                if (BHoMObject == null || Element == null)
+                    return;
+
+                foreach (KeyValuePair<string, object> aKeyValuePair in BHoMObject.CustomData)
+                {
+                    Parameter aParameter = Element.LookupParameter(aKeyValuePair.Key);
+                    if(aParameter != null && !aParameter.IsReadOnly)
+                        CopyParameter(aParameter, aKeyValuePair.Value);
+                }
+            }
+
+            public static void CopyParameter(Parameter Parameter, object Value)
+            {
+                if (Parameter == null)
+                    return;
+
+                switch (Parameter.StorageType)
+                {
+                    case StorageType.Double:
+                        if(Value is double || Value is int)
+                        {
+                            Parameter.Set((double)Value);
+                        }
+                        else if(Value is bool)
+                        {
+                            if ((bool)Value)
+                                Parameter.Set(1.0);
+                            else
+                                Parameter.Set(0.0);
+                        }
+                        break;
+                    case StorageType.ElementId:
+                        if (Value is int)
+                        {
+                            Parameter.Set(new ElementId((int)Value));
+                        }
+                        else if(Value is string)
+                        {
+                            int aInt ;
+                            if(int.TryParse((string)Value, out aInt))
+                            {
+                                Parameter.Set(new ElementId(aInt));
+                            }
+
+                        }
+                        break;
+                    case StorageType.Integer:
+                        if (Value is double || Value is int)
+                        {
+                            Parameter.Set((int)Value);
+                        }
+                        else if (Value is bool)
+                        {
+                            if ((bool)Value)
+                                Parameter.Set(1);
+                            else
+                                Parameter.Set(0);
+                        }
+                        break;
+
+                    case StorageType.String:
+                        if(Value == null)
+                        {
+                            string aString = null;
+                            Parameter.Set(aString);
+                        }
+                        if (Value is string)
+                        {
+                            Parameter.Set((string)Value);
+                        }
+                        else
+                        {
+                            Parameter.Set(Value.ToString());
+                        }
+                        break;
+
+                }
+            }
         }
 
         public static class BHoM
@@ -52,10 +133,52 @@ namespace BH.Engine.Revit
                 return null;
             }
 
-            public static void AssignIdentifiers(BHoMObject BHoMObject, Element Element)
+            public static void CopyIdentifiers(BHoMObject BHoMObject, Element Element)
             {
+                if (BHoMObject == null || Element == null)
+                    return;
+
                 BHoMObject.CustomData.Add("ElementId", Element.Id.IntegerValue);
                 BHoMObject.CustomData.Add("UniqueId", Element.UniqueId);
+            }
+
+            public static void CopyCustomData(BHoMObject BHoMObject, Element Element)
+            {
+                if (BHoMObject == null || Element == null)
+                    return;
+
+                foreach (Parameter aParameter in Element.ParametersMap)
+                {
+                    if (BHoMObject.CustomData.ContainsKey(aParameter.Definition.Name))
+                        continue;
+
+                    object aValue = null;
+                    switch (aParameter.StorageType)
+                    {
+                        case StorageType.Double:
+                            aValue = aParameter.AsDouble();      
+                            break;
+                        case StorageType.ElementId:
+                            ElementId aElementId = aParameter.AsElementId();
+                            if (aElementId != null)
+                                aValue = aElementId.IntegerValue;
+                            break;
+                        case StorageType.Integer:
+                            if (aParameter.Definition.ParameterType == ParameterType.YesNo)
+                                aValue = aParameter.AsInteger() == 1;
+                            else
+                                aValue = aParameter.AsInteger();
+                            break;
+                        case StorageType.String:
+                            aValue = aParameter.AsString();
+                            break;
+                        case StorageType.None:
+                            aValue = aParameter.AsValueString();
+                            break;
+                    }
+
+                    BHoMObject.CustomData.Add(aParameter.Definition.Name, aValue);
+                }
             }
         }
     }

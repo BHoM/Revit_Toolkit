@@ -76,76 +76,86 @@ namespace BH.Engine.Revit
             return aBuildingElementCurve;
         }
 
-        public static BuildingElement FromRevitBuildingElement(this Wall Wall)
+        public static BuildingElement FromRevitBuildingElement(this Wall Wall, bool CopyCustomData = true)
         {
             BuildingElementProperties aBuildingElementProperties = Wall.WallType.FromRevit();
 
             BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, FromRevitBuildingElementCurve(Wall), FromRevit(Wall.Document.GetElement(Wall.LevelId) as Level));
 
-            Utilis.BHoM.AssignIdentifiers(aBuildingElement, Wall);
+            Utilis.BHoM.CopyIdentifiers(aBuildingElement, Wall);
+            if (CopyCustomData)
+                Utilis.BHoM.CopyCustomData(aBuildingElement, Wall);
 
             return aBuildingElement;
         }
 
-        public static BuildingElementProperties FromRevit(this WallType WallType)
+        public static BuildingElementProperties FromRevit(this WallType WallType, bool CopyCustomData = true)
         {
             BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Wall, WallType.Name);
 
-            Utilis.BHoM.AssignIdentifiers(aBuildingElementProperties, WallType);
+            Utilis.BHoM.CopyIdentifiers(aBuildingElementProperties, WallType);
+            if (CopyCustomData)
+                Utilis.BHoM.CopyCustomData(aBuildingElementProperties, WallType);
 
             return aBuildingElementProperties;
         }
 
-        public static BuildingElementProperties FromRevit(this FloorType FloorType)
+        public static BuildingElementProperties FromRevit(this FloorType FloorType, bool CopyCustomData = true)
         {
             BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Floor, FloorType.Name);
 
-            Utilis.BHoM.AssignIdentifiers(aBuildingElementProperties, FloorType);
+            Utilis.BHoM.CopyIdentifiers(aBuildingElementProperties, FloorType);
+            if (CopyCustomData)
+                Utilis.BHoM.CopyCustomData(aBuildingElementProperties, FloorType);
 
             return aBuildingElementProperties;
         }
 
-        public static BuildingElementProperties FromRevit(this CeilingType CeilingType)
+        public static BuildingElementProperties FromRevit(this CeilingType CeilingType, bool CopyCustomData = true)
         {
             BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Ceiling, CeilingType.Name);
 
-            Utilis.BHoM.AssignIdentifiers(aBuildingElementProperties, CeilingType);
+            Utilis.BHoM.CopyIdentifiers(aBuildingElementProperties, CeilingType);
+            if (CopyCustomData)
+                Utilis.BHoM.CopyCustomData(aBuildingElementProperties, CeilingType);
 
             return aBuildingElementProperties;
         }
 
-        public static BuildingElementProperties FromRevit(this RoofType RoofType)
+        public static BuildingElementProperties FromRevit(this RoofType RoofType, bool CopyCustomData = true)
         {
             BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Roof, RoofType.Name);
 
-            Utilis.BHoM.AssignIdentifiers(aBuildingElementProperties, RoofType);
+            Utilis.BHoM.CopyIdentifiers(aBuildingElementProperties, RoofType);
+            if (CopyCustomData)
+                Utilis.BHoM.CopyCustomData(aBuildingElementProperties, RoofType);
 
             return aBuildingElementProperties;
         }
 
-        public static Storey FromRevit(this Level Level)
+        public static Storey FromRevit(this Level Level, bool CopyCustomData = true)
         {
             Storey aStorey = Structure.Create.Storey(Level.Name, Level.Elevation, 0);
 
-            Utilis.BHoM.AssignIdentifiers(aStorey, Level);
+            Utilis.BHoM.CopyIdentifiers(aStorey, Level);
+            if (CopyCustomData)
+                Utilis.BHoM.CopyCustomData(aStorey, Level);
 
             return aStorey;
         }
 
-        public static Space FromRevit(this SpatialElement SpatialElement)
+        public static Space FromRevit(this SpatialElement SpatialElement, bool CopyCustomData = true)
         {
             SpatialElementBoundaryOptions aSpatialElementBoundaryOptions = new SpatialElementBoundaryOptions();
             aSpatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
             aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = false;
 
-            Space aSpace = FromRevit(SpatialElement, aSpatialElementBoundaryOptions, null, null);
-
-            Utilis.BHoM.AssignIdentifiers(aSpace, SpatialElement);
+            Space aSpace = FromRevit(SpatialElement, aSpatialElementBoundaryOptions, null, null, CopyCustomData);
 
             return aSpace;
         }
 
-        public static Space FromRevit(this SpatialElement SpatialElement, SpatialElementBoundaryOptions SpatialElementBoundaryOptions, IEnumerable<BuildingElementProperties> BuildingElementProperties, IEnumerable<Storey> Storeys)
+        public static Space FromRevit(this SpatialElement SpatialElement, SpatialElementBoundaryOptions SpatialElementBoundaryOptions, IEnumerable<BuildingElementProperties> BuildingElementProperties, IEnumerable<Storey> Storeys, bool CopyCustomData = true)
         {
             if (SpatialElement == null || SpatialElementBoundaryOptions == null)
                 return null;
@@ -202,10 +212,13 @@ namespace BH.Engine.Revit
                         }
 
                         BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementCurve(aICurve), aStorey);
+                        Utilis.BHoM.CopyIdentifiers(aBuildingElement, aElement);
+                        if (CopyCustomData)
+                            Utilis.BHoM.CopyCustomData(aBuildingElement, aElement);
                         aBuildingElmementList.Add(aBuildingElement);
                     }
 
-            return new Space
+            Space aSpace = new Space
             {
                 Storey = aStorey,
                 BuildingElements = aBuildingElmementList,
@@ -213,9 +226,15 @@ namespace BH.Engine.Revit
                 Location = (SpatialElement.Location as LocationPoint).FromRevit()
 
             };
+
+            Utilis.BHoM.CopyIdentifiers(aSpace, SpatialElement);
+            if (CopyCustomData)
+                Utilis.BHoM.CopyCustomData(aSpace, SpatialElement);
+
+            return aSpace;
         }
 
-        public static Space FromRevit(this SpatialElement SpatialElement, SpatialElementGeometryCalculator SpatialElementGeometryCalculator, IEnumerable<BuildingElementProperties> BuildingElementProperties, IEnumerable<Storey> Storeys)
+        public static Space FromRevit(this SpatialElement SpatialElement, SpatialElementGeometryCalculator SpatialElementGeometryCalculator, IEnumerable<BuildingElementProperties> BuildingElementProperties, IEnumerable<Storey> Storeys, bool CopyCustomData = true)
         {
             if (SpatialElement == null || SpatialElementGeometryCalculator == null)
                 return null;
@@ -244,7 +263,7 @@ namespace BH.Engine.Revit
             }
 
             if (aStorey == null)
-                aStorey = SpatialElement.Level.FromRevit();
+                aStorey = SpatialElement.Level.FromRevit(CopyCustomData);
 
 
             List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
@@ -253,8 +272,8 @@ namespace BH.Engine.Revit
                 foreach (SpatialElementBoundarySubface aSpatialElementBoundarySubface in aSpatialElementGeometryResults.GetBoundaryFaceInfo(aFace))
                 {
                     //Face aFace_Subface = aSpatialElementBoundarySubface.GetBoundingElementFace();
-                    Face aFace_Subface = aSpatialElementBoundarySubface.GetSubface();
-                    //Face aFace_Subface = aSpatialElementBoundarySubface.GetSpatialElementFace();
+                    //Face aFace_Subface = aSpatialElementBoundarySubface.GetSubface();
+                    Face aFace_Subface = aSpatialElementBoundarySubface.GetSpatialElementFace();
                     LinkElementId aLinkElementId = aSpatialElementBoundarySubface.SpatialBoundaryElement;
                     Document aDocument = null;
                     if (aLinkElementId.LinkInstanceId != ElementId.InvalidElementId)
@@ -292,23 +311,26 @@ namespace BH.Engine.Revit
                             if(aBuildingElementProperties == null)
                             {
                                 if (aElement is Wall)
-                                    aBuildingElementProperties = (aElement as Wall).WallType.FromRevit();
+                                    aBuildingElementProperties = (aElement as Wall).WallType.FromRevit(CopyCustomData);
                                 else if(aElement is Floor)
-                                    aBuildingElementProperties = (aElement as Floor).FloorType.FromRevit();
+                                    aBuildingElementProperties = (aElement as Floor).FloorType.FromRevit(CopyCustomData);
                                 else if (aElement is Ceiling)
-                                    aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as CeilingType).FromRevit();
+                                    aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as CeilingType).FromRevit(CopyCustomData);
                                 else if (aElement is FootPrintRoof || aElement is ExtrusionRoof)
-                                    aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as RoofType).FromRevit();
+                                    aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as RoofType).FromRevit(CopyCustomData);
                             }
 
                             aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementPanel(aCurveLoop.FromRevit()));
                             aBuildingElement.Storey = aStorey;
+                            Utilis.BHoM.CopyIdentifiers(aBuildingElement, aElement);
+                            if (CopyCustomData)
+                                Utilis.BHoM.CopyCustomData(aBuildingElement, aElement);
                             aBuildingElmementList.Add(aBuildingElement);                                
                         }
                 }
             }
 
-            return new Space
+            Space aSpace = new Space
             {
                 Storey = aStorey,
                 BuildingElements = aBuildingElmementList,
@@ -317,9 +339,15 @@ namespace BH.Engine.Revit
 
             };
 
+            Utilis.BHoM.CopyIdentifiers(aSpace, SpatialElement);
+            if (CopyCustomData)
+                Utilis.BHoM.CopyCustomData(aSpace, SpatialElement);
+
+            return aSpace;
+
         }
 
-        public static Building FromRevit(this Document Document)
+        public static Building FromRevit(this Document Document, bool CopyCustomData = true)
         {
             List<SiteLocation> aSiteLocationList = new FilteredElementCollector(Document).OfClass(typeof(SiteLocation)).Cast<SiteLocation>().ToList();
             aSiteLocationList.RemoveAll(x => x == null || x.Category == null);
@@ -337,8 +365,9 @@ namespace BH.Engine.Revit
                 Location = new oM.Geometry.Point()
             };
 
-            aBuilding.CustomData.Add("ElementId", aSiteLocation.Id.IntegerValue);
-            aBuilding.CustomData.Add("UniqueId", aSiteLocation.UniqueId);
+            Utilis.BHoM.CopyIdentifiers(aBuilding, aSiteLocation);
+            if (CopyCustomData)
+                Utilis.BHoM.CopyCustomData(aBuilding, aSiteLocation);
 
             return aBuilding;
 

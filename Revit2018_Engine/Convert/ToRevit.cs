@@ -206,8 +206,6 @@ namespace BH.Engine.Revit
         /**** Private Methods                           ****/
         /***************************************************/
 
-        
-
         private static void SetParameters(ElementType ElementType, BuildingElementProperties BuildingElementProperties, bool IncludeLayers = true)
         {
             ElementType.Name = BuildingElementProperties.Name;
