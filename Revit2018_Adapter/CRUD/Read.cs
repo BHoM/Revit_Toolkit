@@ -43,7 +43,7 @@ namespace BH.Adapter.Revit
             {
                 SpatialElementBoundaryOptions aSpatialElementBoundaryOptions = new SpatialElementBoundaryOptions();
                 aSpatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
-                aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = false;
+                aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = true;
 
                 if (Spaces3D)
                 {
