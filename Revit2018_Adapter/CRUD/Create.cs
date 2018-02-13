@@ -27,13 +27,13 @@ namespace BH.Adapter.Revit
                     if(aBHOMObject is BuildingElement)
                     {
                         BuildingElement aBuildingElement = aBHOMObject as BuildingElement;
-                        aBuildingElement.ToRevit(m_Document);
+                        Element aElement = aBuildingElement.ToRevit(m_Document, true, true);
                     }
                 }
                 aTransaction.Commit();
             }
 
-            throw new NotImplementedException();
+            return true;
         }
     }
 }

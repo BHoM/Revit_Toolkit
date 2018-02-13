@@ -43,7 +43,7 @@ namespace BH.Adapter.Revit
             {
                 SpatialElementBoundaryOptions aSpatialElementBoundaryOptions = new SpatialElementBoundaryOptions();
                 aSpatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
-                aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = true;
+                aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = false;
 
                 if (Spaces3D)
                 {
@@ -69,6 +69,16 @@ namespace BH.Adapter.Revit
             }
 
             return aBuilding;
+        }
+
+        public BuildingElement ReadBuildingElement(ElementId ElementId)
+        {
+            Element aElement = m_Document.GetElement(ElementId);
+
+            if (aElement is Wall)
+                return (aElement as Wall).FromRevitBuildingElement();
+
+            return null;
         }
 
         protected override IEnumerable<BHoMObject> Read(Type type, IList ids) //Chnage to IObject

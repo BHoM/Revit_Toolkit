@@ -34,7 +34,8 @@
     <Reference Include="BHoM">
       <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
     </Reference>
-    <Reference Include="Environment_Engine">
+    <Reference Include="Environment_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Engine\Build\Environment_Engine.dll</HintPath>
     </Reference>
     <Reference Include="Geometry_Engine">
@@ -60,6 +61,7 @@
     <Compile Include="Convert\FromRevit.cs" />
     <Compile Include="Convert\ToRevit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilis.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
