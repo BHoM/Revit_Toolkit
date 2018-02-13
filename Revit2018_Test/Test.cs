@@ -50,7 +50,6 @@ namespace Revit2018_Test
 
             Building Building = pRevitAdapter.ReadBuilidng(true, true);
 
-
             return Result.Succeeded;
         }
     }

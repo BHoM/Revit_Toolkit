@@ -27,6 +27,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Legacy", "Legacy", "{B0CFDF21-48B7-433C-A0AC-64023A1E441D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revit2018_Test", "Revit2018_Test\Revit2018_Test.csproj", "{09699A82-1026-432C-A68F-DAD6F4565865}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C2BD93AF-8853-4685-8BD4-223055DE1CC6} = {C2BD93AF-8853-4685-8BD4-223055DE1CC6}
+		{4DFAF9C8-9770-4E5A-818D-EB4DAB665145} = {4DFAF9C8-9770-4E5A-818D-EB4DAB665145}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

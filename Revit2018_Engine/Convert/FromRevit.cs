@@ -12,6 +12,10 @@ namespace BH.Engine.Revit
 {
     public static partial class Convert
     {
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
+
         public static oM.Geometry.Point FromRevit(this XYZ XYZ)
         {
             return Geometry.Create.Point(XYZ.X, XYZ.Y, XYZ.Z);
@@ -76,30 +80,56 @@ namespace BH.Engine.Revit
         {
             BuildingElementProperties aBuildingElementProperties = Wall.WallType.FromRevit();
 
-            return Create.BuildingElement(aBuildingElementProperties, FromRevitBuildingElementCurve(Wall), FromRevit(Wall.Document.GetElement(Wall.LevelId) as Level));
+            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, FromRevitBuildingElementCurve(Wall), FromRevit(Wall.Document.GetElement(Wall.LevelId) as Level));
+
+            Utilis.BHoM.AssignIdentifiers(aBuildingElement, Wall);
+
+            return aBuildingElement;
         }
 
         public static BuildingElementProperties FromRevit(this WallType WallType)
         {
-            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuidingElementType.Wall, WallType.Name);
+            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Wall, WallType.Name);
+
+            Utilis.BHoM.AssignIdentifiers(aBuildingElementProperties, WallType);
+
             return aBuildingElementProperties;
         }
 
         public static BuildingElementProperties FromRevit(this FloorType FloorType)
         {
-            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuidingElementType.Floor, FloorType.Name);
+            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Floor, FloorType.Name);
+
+            Utilis.BHoM.AssignIdentifiers(aBuildingElementProperties, FloorType);
+
             return aBuildingElementProperties;
         }
 
         public static BuildingElementProperties FromRevit(this CeilingType CeilingType)
         {
-            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuidingElementType.Ceiling, CeilingType.Name);
+            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Ceiling, CeilingType.Name);
+
+            Utilis.BHoM.AssignIdentifiers(aBuildingElementProperties, CeilingType);
+
+            return aBuildingElementProperties;
+        }
+
+        public static BuildingElementProperties FromRevit(this RoofType RoofType)
+        {
+            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Roof, RoofType.Name);
+
+            Utilis.BHoM.AssignIdentifiers(aBuildingElementProperties, RoofType);
+
             return aBuildingElementProperties;
         }
 
         public static Storey FromRevit(this Level Level)
         {
-            return Structure.Create.Storey(Level.Name, Level.Elevation, 0);
+            Storey aStorey = Structure.Create.Storey(Level.Name, Level.Elevation, 0);
+
+            Utilis.BHoM.AssignIdentifiers(aStorey, Level);
+
+            return aStorey;
         }
 
         public static Space FromRevit(this SpatialElement SpatialElement)
@@ -108,7 +138,11 @@ namespace BH.Engine.Revit
             aSpatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
             aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = false;
 
-            return FromRevit(SpatialElement, aSpatialElementBoundaryOptions, null, null);
+            Space aSpace = FromRevit(SpatialElement, aSpatialElementBoundaryOptions, null, null);
+
+            Utilis.BHoM.AssignIdentifiers(aSpace, SpatialElement);
+
+            return aSpace;
         }
 
         public static Space FromRevit(this SpatialElement SpatialElement, SpatialElementBoundaryOptions SpatialElementBoundaryOptions, IEnumerable<BuildingElementProperties> BuildingElementProperties, IEnumerable<Storey> Storeys)
@@ -229,12 +263,14 @@ namespace BH.Engine.Revit
                         aDocument = SpatialElement.Document;
 
                     Element aElement = null;
-                    ElementType aElementType = null;
                     if(aLinkElementId.LinkedElementId != ElementId.InvalidElementId)
-                    {
                         aElement = aDocument.GetElement(aLinkElementId.LinkedElementId);
+                    else
+                        aElement = aDocument.GetElement(aLinkElementId.HostElementId);
+
+                    ElementType aElementType = null;
+                    if (aElement != null)
                         aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
-                    }
 
                     BuildingElementProperties aBuildingElementProperties = null;
                     if (aElementType != null && BuildingElementProperties != null)
@@ -252,15 +288,22 @@ namespace BH.Engine.Revit
                     if (aFace_Subface != null)
                         foreach (CurveLoop aCurveLoop in aFace_Subface.GetEdgesAsCurveLoops())
                         {
-                            if (aElement is Wall)
+                            BuildingElement aBuildingElement = null;
+                            if(aBuildingElementProperties == null)
                             {
-                                if (aBuildingElementProperties == null)
+                                if (aElement is Wall)
                                     aBuildingElementProperties = (aElement as Wall).WallType.FromRevit();
-
-                                BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementPanel(aCurveLoop.FromRevit()));
-                                aBuildingElement.Storey = aStorey;
-                                aBuildingElmementList.Add(aBuildingElement);
+                                else if(aElement is Floor)
+                                    aBuildingElementProperties = (aElement as Floor).FloorType.FromRevit();
+                                else if (aElement is Ceiling)
+                                    aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as CeilingType).FromRevit();
+                                else if (aElement is FootPrintRoof || aElement is ExtrusionRoof)
+                                    aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as RoofType).FromRevit();
                             }
+
+                            aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementPanel(aCurveLoop.FromRevit()));
+                            aBuildingElement.Storey = aStorey;
+                            aBuildingElmementList.Add(aBuildingElement);                                
                         }
                 }
             }
@@ -286,14 +329,21 @@ namespace BH.Engine.Revit
 
             SiteLocation aSiteLocation = aSiteLocationList.First();
 
-            return new Building
+            Building aBuilding = new Building
             {
                 Elevation = aSiteLocation.Elevation,
                 Longitude = aSiteLocation.Longitude,
                 Latitude = aSiteLocation.Latitude,
                 Location = new oM.Geometry.Point()
             };
+
+            aBuilding.CustomData.Add("ElementId", aSiteLocation.Id.IntegerValue);
+            aBuilding.CustomData.Add("UniqueId", aSiteLocation.UniqueId);
+
+            return aBuilding;
+
         }
+
     }
 }
  

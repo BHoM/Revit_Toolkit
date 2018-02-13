@@ -10,7 +10,15 @@ namespace BH.Adapter.Revit
 {
     public partial class RevitAdapter : BHoMAdapter
     {
+        /***************************************************/
+        /**** Private Properties                        ****/
+        /***************************************************/
+
         private Document m_Document;
+
+        /***************************************************/
+        /**** Public Constructors                       ****/
+        /***************************************************/
 
         public RevitAdapter(Document Document)
         {
