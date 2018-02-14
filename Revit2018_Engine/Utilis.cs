@@ -142,6 +142,23 @@ namespace BH.Engine.Revit
                 BHoMObject.CustomData.Add("UniqueId", Element.UniqueId);
             }
 
+            public static string GetUniqueId(BHoMObject BHoMObject)
+            {
+                if (BHoMObject == null)
+                    return null;
+
+                object aValue = null;
+                if(BHoMObject.CustomData.TryGetValue("UniqueId", out aValue))
+                {
+                    if (aValue is string)
+                        return (string)aValue;
+                    else
+                        return null;
+                }
+
+                return null;
+            }
+
             public static void CopyCustomData(BHoMObject BHoMObject, Element Element)
             {
                 if (BHoMObject == null || Element == null)

@@ -83,50 +83,77 @@ namespace BH.Engine.Revit
             return aCurveArray;
         }
 
-        public static ElementType ToRevit(this BuildingElementProperties BuildingElementProperties, Document Document, bool Override = true, bool IncludeLayers = true)
+        /// <summary>
+        /// Creates or Finds existing Revit ElementType from BuildingElementProperies 
+        /// </summary>
+        /// <param name="BuildingElementProperties">BHoM BuildingElementProperties</param>
+        /// <param name="Document">Revit Document</param>
+        /// <param name="CopyCustomData">Copy Custom Data - all parameters values copied to BHoMObject CustomData if set to true</param>
+        /// <param name="Override">Find and override existing Revit ElementType</param>
+        /// <param name="IncludeLayers">Copy Compound structure of BuildingElement (if applicable) </param>
+        /// <returns name="ElementType">Revit ElementType</returns>
+        /// <search>
+        /// Convert, ToRevit, BHoM BuildingElementProperties, Revit ElementType
+        /// </search>
+        public static ElementType ToRevit(this BuildingElementProperties BuildingElementProperties, Document Document, bool CopyCustomData = true)
         {
             if (BuildingElementProperties == null || Document == null)
                 return null;
 
             Type aType = Utilis.Revit.GetType(BuildingElementProperties.BuildingElementType);
 
-            ElementType aElementType = new FilteredElementCollector(Document).OfClass(aType).First() as ElementType;
+            List<ElementType> aElementTypeList = new FilteredElementCollector(Document).OfClass(aType).Cast<ElementType>().ToList();
+            if (aElementTypeList == null || aElementTypeList.Count < 1)
+                return null;
 
+            ElementType aElementType = null;
+            aElementType = aElementTypeList.First() as ElementType;
             aElementType = aElementType.Duplicate(BuildingElementProperties.Name);
 
-            SetParameters(aElementType, BuildingElementProperties, IncludeLayers);
+            if (CopyCustomData)
+                Utilis.Revit.CopyCustomData(BuildingElementProperties, aElementType);
 
             return aElementType;
         }
 
-        public static Element ToRevit(this BuildingElement BuildingElement, Document Document, bool Override = true, bool IncludeLayers = true)
+        public static Element ToRevit(this BuildingElement BuildingElement, Document Document, bool CopyCustomData = true)
         {
             if (BuildingElement == null || BuildingElement.BuildingElementProperties == null || Document == null)
                 return null;
 
-            Storey aStorey = BuildingElement.Storey;
-            if (aStorey == null)
-                return null;
+            //Get Level
+            Level aLevel = null;
+            if(BuildingElement.Storey != null)
+            {
+                List<Level> aLevelList = new FilteredElementCollector(Document).OfClass(typeof(Level)).Cast<Level>().ToList();
+                if (aLevelList != null && aLevelList.Count > 0)
+                    aLevel = aLevelList.Find(x => x.Name == BuildingElement.Storey.Name);
+            }
 
-            Level aLevel = aStorey.ToRevit(Document, Override);
-
-            if (BuildingElement.BuildingElementGeometry == null)
-                return null;
+            //Get ElementType
+            ElementType aElementType = null;
+            Type aType = Utilis.Revit.GetType(BuildingElement.BuildingElementProperties.BuildingElementType);
+            List<ElementType> aElementTypeList = new FilteredElementCollector(Document).OfClass(aType).Cast<ElementType>().ToList();
+            if (aElementTypeList != null && aElementTypeList.Count > 0)
+            {
+                aElementType = aElementTypeList.Find(x => x.Name == BuildingElement.BuildingElementProperties.Name);
+                if (aElementType == null)
+                    aElementType = aElementTypeList.First();
+            }
 
             Element aElement = null;
-
-            ElementType aElementType = BuildingElement.BuildingElementProperties.ToRevit(Document, Override, IncludeLayers);
 
             switch (BuildingElement.BuildingElementProperties.BuildingElementType)
             {
                 case BuildingElementType.Ceiling:
                     break;
                 case BuildingElementType.Floor:
-                    if(BuildingElement.BuildingElementGeometry is BuildingElementPanel)
+                    if (BuildingElement.BuildingElementGeometry is BuildingElementPanel)
                     {
                         BuildingElementPanel aBuildingElementPanel = BuildingElement.BuildingElementGeometry as BuildingElementPanel;
                         aElement = Document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(), false);
-                        aElement.ChangeTypeId(aElementType.Id);
+                        if(aElementType != null)
+                            aElement.ChangeTypeId(aElementType.Id);
                     }
                     break;
                 case BuildingElementType.Roof:
@@ -134,7 +161,8 @@ namespace BH.Engine.Revit
                     {
                         BuildingElementPanel aBuildingElementPanel = BuildingElement.BuildingElementGeometry as BuildingElementPanel;
                         ModelCurveArray aModelCurveArray = new ModelCurveArray();
-                        aElement = Document.Create.NewFootPrintRoof(aBuildingElementPanel.PolyCurve.ToRevit(), aLevel, aElementType as RoofType, out aModelCurveArray);
+                        if (aElementType != null)
+                            aElement = Document.Create.NewFootPrintRoof(aBuildingElementPanel.PolyCurve.ToRevit(), aLevel, aElementType as RoofType, out aModelCurveArray);
                     }
                     break;
                 case BuildingElementType.Wall:
@@ -142,62 +170,46 @@ namespace BH.Engine.Revit
                     if (aICurve != null)
                         return null;
                     aElement = Wall.Create(Document, ToRevit(aICurve), aLevel.Id, false);
-                    aElement.ChangeTypeId(aElementType.Id);
+                    if (aElementType != null)
+                        aElement.ChangeTypeId(aElementType.Id);
                     break;
             }
-            
+
+            if (CopyCustomData)
+                Utilis.Revit.CopyCustomData(BuildingElement, aElement);
 
             return aElement;
         }
 
-        public static Level ToRevit(this Storey Storey, Document Document, bool Override = true)
+        public static Level ToRevit(this Storey Storey, Document Document, bool CopyCustomData = true)
         {
-            Element aElement = null;
-            if (Override)
-            {
-                List<Element> aElementList = new FilteredElementCollector(Document).OfClass(typeof(Level)).ToList();
-                aElement = aElementList.Find(x => x.Name == Storey.Name);
-            }
+            Element aElement = Level.Create(Document, Storey.Elevation);
+            aElement.Name = Storey.Name;
 
-            if (aElement == null)
-            {
-                aElement = Level.Create(Document, Storey.Elevation);
-                aElement.Name = Storey.Name;
-            }
+            if (CopyCustomData)
+                Utilis.Revit.CopyCustomData(Storey, aElement);
 
             return aElement as Level;
         }
 
-        public static Material ToRevit(this IMaterial Material, Document Document, bool Override = true)
+        public static Material ToRevit(this IMaterial Material, Document Document)
         {
-            Element aElement = null;
-            if(Override)
-            {
-                List<Element> aElementList = new FilteredElementCollector(Document).OfClass(typeof(Material)).ToList();
-                aElement = aElementList.Find(x => x.Name == Material.Name);
-            }
-
-            if(aElement == null)
-            {
-                ElementId aElementId = Autodesk.Revit.DB.Material.Create(Document, Material.Name);
-                return Document.GetElement(aElementId) as Material;
-            }
-
-            return aElement as Material;
+            ElementId aElementId = Autodesk.Revit.DB.Material.Create(Document, Material.Name);
+            return Document.GetElement(aElementId) as Material;
         }
 
-        public static CompoundStructureLayer ToRevit(this ConstructionLayer ConstructionLayer, Document Document, bool Override = true)
+        public static CompoundStructureLayer ToRevit(this ConstructionLayer ConstructionLayer, Document Document)
         {
             MaterialFunctionAssignment aMaterialFunctionAssignment = GetMaterialFunctionAssignment(ConstructionLayer);
 
-            return new CompoundStructureLayer(ConstructionLayer.Thickness, aMaterialFunctionAssignment, ConstructionLayer.Material.ToRevit(Document, Override).Id);
+            return new CompoundStructureLayer(ConstructionLayer.Thickness, aMaterialFunctionAssignment, ConstructionLayer.Material.ToRevit(Document).Id);
         }
 
-        public static CompoundStructure ToRevit(IEnumerable<ConstructionLayer> ConstructionLayers, Document Document, bool Override = true)
+        public static CompoundStructure ToRevit(IEnumerable<ConstructionLayer> ConstructionLayers, Document Document)
         {
             List<CompoundStructureLayer> aCompoundStructureLayerList = new List<CompoundStructureLayer>();
             foreach (ConstructionLayer aConstructionLayer in ConstructionLayers)
-                aCompoundStructureLayerList.Add(aConstructionLayer.ToRevit(Document, Override));
+                aCompoundStructureLayerList.Add(aConstructionLayer.ToRevit(Document));
 
             return CompoundStructure.CreateSimpleCompoundStructure(aCompoundStructureLayerList);
         }
@@ -205,29 +217,6 @@ namespace BH.Engine.Revit
         /***************************************************/
         /**** Private Methods                           ****/
         /***************************************************/
-
-        private static void SetParameters(ElementType ElementType, BuildingElementProperties BuildingElementProperties, bool IncludeLayers = true)
-        {
-            ElementType.Name = BuildingElementProperties.Name;
-
-
-            if (ElementType is CeilingType)
-            {
-
-            }
-            else if (ElementType is FloorType)
-            {
-
-            }
-            else if (ElementType is RoofType)
-            {
-
-            }
-            else if (ElementType is WallType)
-            {
-
-            }
-        }
 
         private static MaterialFunctionAssignment GetMaterialFunctionAssignment(ConstructionLayer ConstructionLayer)
         {
