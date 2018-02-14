@@ -27,13 +27,69 @@ namespace BH.Adapter.Revit
                     if(aBHOMObject is BuildingElement)
                     {
                         BuildingElement aBuildingElement = aBHOMObject as BuildingElement;
-                        Element aElement = aBuildingElement.ToRevit(m_Document, true, true);
+                        Create(aBuildingElement, true, replaceAll);
                     }
                 }
                 aTransaction.Commit();
             }
 
             return true;
+        }
+
+        public bool Create(BuildingElement BuildingElement, bool CopyCustomData, bool Replace = false)
+        {
+            if (BuildingElement.BuildingElementProperties == null)
+                return false;
+
+            List<Element> aElementList = null;
+            Element aElement = null;
+
+            //Set ElementType
+            Type aType = Utilis.Revit.GetType(BuildingElement.BuildingElementProperties.BuildingElementType);
+            aElementList = new FilteredElementCollector(m_Document).OfClass(aType).ToList();
+            if (aElementList == null && aElementList.Count < 1)
+                return false;
+
+            aElement = aElementList.Find(x => x.Name == BuildingElement.BuildingElementProperties.Name);
+            if (aElement == null)
+                aElement = BuildingElement.BuildingElementProperties.ToRevit(m_Document, CopyCustomData);
+
+            //Set Level
+            if (BuildingElement.Storey != null)
+            {
+                aElementList = new FilteredElementCollector(m_Document).OfClass(typeof(Level)).ToList();
+                if (aElementList == null || aElementList.Count < 1)
+                {
+                    aElement = aElementList.Find(x => x.Name == BuildingElement.Storey.Name);
+                    if(aElement == null)
+                        BuildingElement.Storey.ToRevit(m_Document, CopyCustomData);
+                } 
+            }
+
+            if (Replace)
+                Delete(BuildingElement);
+
+            BuildingElement.ToRevit(m_Document, CopyCustomData);
+
+            return true;
+        }
+
+        public bool Delete(BHoMObject BHoMObject)
+        {
+            string aUniqueId = Utilis.BHoM.GetUniqueId(BHoMObject);
+            if (aUniqueId != null)
+            {
+                Element aElement = m_Document.GetElement(aUniqueId);
+                if (aElement != null)
+                {
+                    ICollection<ElementId> aElemenIds = m_Document.Delete(aElement.Id);
+                    if (aElemenIds.Count > 0)
+                        return true;
+                }
+                    
+            }
+
+            return false;
         }
     }
 }
