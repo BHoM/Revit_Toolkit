@@ -40,7 +40,7 @@ namespace BH.Engine.Revit
                 return null;
             }
 
-            public static void CopyCustomData(BHoMObject BHoMObject, Element Element)
+            public static void CopyCustomData(BHoMObject BHoMObject, Element Element, IEnumerable<BuiltInParameter> BuiltInParameters_Ignore = null)
             {
                 if (BHoMObject == null || Element == null)
                     return;
@@ -48,7 +48,11 @@ namespace BH.Engine.Revit
                 foreach (KeyValuePair<string, object> aKeyValuePair in BHoMObject.CustomData)
                 {
                     Parameter aParameter = Element.LookupParameter(aKeyValuePair.Key);
-                    if(aParameter != null && !aParameter.IsReadOnly)
+
+                    if (BuiltInParameters_Ignore != null && aParameter.Id.IntegerValue < 0 && BuiltInParameters_Ignore.Contains((BuiltInParameter)aParameter.Id.IntegerValue))
+                        continue;
+
+                    if (aParameter != null && !aParameter.IsReadOnly)
                         CopyParameter(aParameter, aKeyValuePair.Value);
                 }
             }
@@ -108,7 +112,7 @@ namespace BH.Engine.Revit
                             string aString = null;
                             Parameter.Set(aString);
                         }
-                        if (Value is string)
+                        else if (Value is string)
                         {
                             Parameter.Set((string)Value);
                         }

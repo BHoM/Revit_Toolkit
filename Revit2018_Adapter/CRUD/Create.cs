@@ -102,6 +102,9 @@ namespace BH.Adapter.Revit
 
         private bool Create(BuildingElement BuildingElement, bool CopyCustomData = true, bool Replace = false)
         {
+            if (BuildingElement == null)
+                return false;
+
             if (BuildingElement.BuildingElementProperties == null)
                 return false;
 
@@ -122,6 +125,9 @@ namespace BH.Adapter.Revit
 
         private bool Create(Storey Storey, bool CopyCustomData = true, bool Replace = false)
         {
+            if (Storey == null)
+                return false;
+
             if (Replace)
                 Delete(Storey);
 
@@ -144,6 +150,9 @@ namespace BH.Adapter.Revit
 
         private bool Create(BuildingElementProperties BuildingElementProperties, bool CopyCustomData = true, bool Replace = false)
         {
+            if (BuildingElementProperties == null)
+                return false;
+
             if (Replace)
                 Delete(BuildingElementProperties);
 
