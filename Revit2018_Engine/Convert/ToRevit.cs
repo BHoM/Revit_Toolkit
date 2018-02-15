@@ -25,7 +25,7 @@ namespace BH.Engine.Revit
         /***************************************************/
 
         /// <summary>
-        /// Get Revit Point from BHoM Point
+        /// Gets Revit Point from BHoM Point
         /// </summary>
         /// <param name="Point">BHoM Point</param>
         /// <returns name="Point">Revit Point</returns>
@@ -37,11 +37,27 @@ namespace BH.Engine.Revit
             return new XYZ(Point.X, Point.Y, Point.Z);
         }
 
+        /// <summary>
+        /// Gets Revit Point (XYZ) from BHoM Vector
+        /// </summary>
+        /// <param name="Vector">BHoM Point</param>
+        /// <returns name="Point">Revit Point (XYZ)</returns>
+        /// <search>
+        /// Convert, ToRevit, BHoM Vector, Revit Point, XYZ 
+        /// </search>
         public static XYZ ToRevit(this Vector Vector)
         {
             return new XYZ(Vector.X, Vector.Y, Vector.Z);
         }
 
+        /// <summary>
+        /// Gets Revit Curve from BHoM ICurve
+        /// </summary>
+        /// <param name="ICurve">BHoM ICurve</param>
+        /// <returns name="Curve">Revit Curve</returns>
+        /// <search>
+        /// Convert, ToRevit, BHoM ICurve, Revit Curve 
+        /// </search>
         public static Curve ToRevit(this ICurve ICurve)
         {
             if (ICurve is oM.Geometry.Line)
@@ -71,6 +87,14 @@ namespace BH.Engine.Revit
             return null;
         }
 
+        /// <summary>
+        /// Gets Revit CurveArray from BHoM PolyCurve
+        /// </summary>
+        /// <param name="PolyCurve">BHoM PolyCurve</param>
+        /// <returns name="CurveArray">Revit CurveArray</returns>
+        /// <search>
+        /// Convert, ToRevit, BHoM PolyCurve, Revit CurveArray 
+        /// </search>
         public static CurveArray ToRevit(this PolyCurve PolyCurve)
         {
             if (PolyCurve == null)
@@ -84,13 +108,11 @@ namespace BH.Engine.Revit
         }
 
         /// <summary>
-        /// Creates or Finds existing Revit ElementType from BuildingElementProperies 
+        /// Creates Revit ElementType from BHoM BuildingElementProperties
         /// </summary>
         /// <param name="BuildingElementProperties">BHoM BuildingElementProperties</param>
         /// <param name="Document">Revit Document</param>
         /// <param name="CopyCustomData">Copy Custom Data - all parameters values copied to BHoMObject CustomData if set to true</param>
-        /// <param name="Override">Find and override existing Revit ElementType</param>
-        /// <param name="IncludeLayers">Copy Compound structure of BuildingElement (if applicable) </param>
         /// <returns name="ElementType">Revit ElementType</returns>
         /// <search>
         /// Convert, ToRevit, BHoM BuildingElementProperties, Revit ElementType
@@ -117,6 +139,16 @@ namespace BH.Engine.Revit
             return aElementType;
         }
 
+        /// <summary>
+        /// Gets Revit Element from BHoM BuildingElement
+        /// </summary>
+        /// <param name="BuildingElement">BHoM PolyCurve</param>
+        /// <param name="Document">Revit Document</param>
+        /// <param name="CopyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
+        /// <returns name="CurveArray">Revit CurveArray</returns>
+        /// <search>
+        /// Convert, ToRevit, BHoM BuildingElement, Revit Element 
+        /// </search>
         public static Element ToRevit(this BuildingElement BuildingElement, Document Document, bool CopyCustomData = true)
         {
             if (BuildingElement == null || BuildingElement.BuildingElementProperties == null || Document == null)
@@ -148,19 +180,25 @@ namespace BH.Engine.Revit
             switch (BuildingElement.BuildingElementProperties.BuildingElementType)
             {
                 case BuildingElementType.Ceiling:
+                    //TODO: Create Ceiling from BuildingElement
                     break;
                 case BuildingElementType.Floor:
                     if (BuildingElement.BuildingElementGeometry is BuildingElementPanel)
                     {
                         BuildingElementPanel aBuildingElementPanel = BuildingElement.BuildingElementGeometry as BuildingElementPanel;
-                        aElement = Document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(), false);
+                        
                         if(aElementType != null)
-                            aElement.ChangeTypeId(aElementType.Id);
+                            aElement = Document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(), aElementType as FloorType, aLevel, false);
+                        else
+                            aElement = Document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(), false);                            
                     }
+                    aBuiltInParameters = new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM };
                     break;
                 case BuildingElementType.Roof:
                     if (BuildingElement.BuildingElementGeometry is BuildingElementPanel)
                     {
+                        //TODO: Check Roof creation
+
                         BuildingElementPanel aBuildingElementPanel = BuildingElement.BuildingElementGeometry as BuildingElementPanel;
                         ModelCurveArray aModelCurveArray = new ModelCurveArray();
                         if (aElementType != null)
@@ -185,6 +223,16 @@ namespace BH.Engine.Revit
             return aElement;
         }
 
+        /// <summary>
+        /// Gets Revit Level from BHoM Storey
+        /// </summary>
+        /// <param name="Storey">BHoM Storey</param>
+        /// <param name="Document">Revit Document</param>
+        /// <param name="CopyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
+        /// <returns name="Level">Revit Level</returns>
+        /// <search>
+        /// Convert, ToRevit, BHoM Storey, Revit Level 
+        /// </search>
         public static Level ToRevit(this Storey Storey, Document Document, bool CopyCustomData = true)
         {
             Element aElement = Level.Create(Document, Storey.Elevation);
@@ -196,12 +244,30 @@ namespace BH.Engine.Revit
             return aElement as Level;
         }
 
+        /// <summary>
+        /// Gets Revit Material from BHoM IMaterial
+        /// </summary>
+        /// <param name="Material">BHoM Material</param>
+        /// <param name="Document">Revit Document</param>
+        /// <returns name="Material">Revit Material</returns>
+        /// <search>
+        /// Convert, ToRevit, BHoM Material, Revit Material, IMaterial
+        /// </search>
         public static Material ToRevit(this IMaterial Material, Document Document)
         {
             ElementId aElementId = Autodesk.Revit.DB.Material.Create(Document, Material.Name);
             return Document.GetElement(aElementId) as Material;
         }
 
+        /// <summary>
+        /// Gets Revit CompoundStructureLayer from BHoM ConstructionLayer
+        /// </summary>
+        /// <param name="ConstructionLayer">BHoM ConstructionLayer</param>
+        /// <param name="Document">Revit Document</param>
+        /// <returns name="CompoundStructureLayer">Revit CompoundStructureLayer</returns>
+        /// <search>
+        /// Convert, ToRevit, BHoM ConstructionLayer, Revit CompoundStructureLayer
+        /// </search>
         public static CompoundStructureLayer ToRevit(this ConstructionLayer ConstructionLayer, Document Document)
         {
             MaterialFunctionAssignment aMaterialFunctionAssignment = GetMaterialFunctionAssignment(ConstructionLayer);
@@ -209,6 +275,15 @@ namespace BH.Engine.Revit
             return new CompoundStructureLayer(ConstructionLayer.Thickness, aMaterialFunctionAssignment, ConstructionLayer.Material.ToRevit(Document).Id);
         }
 
+        /// <summary>
+        /// Gets Revit CompoundStructure from BHoM ConstructionLayers
+        /// </summary>
+        /// <param name="ConstructionLayers">BHoM ConstructionLayers collection</param>
+        /// <param name="Document">Revit Document</param>
+        /// <returns name="CompoundStructure">Revit CompoundStructure</returns>
+        /// <search>
+        /// Convert, ToRevit, BHoM ConstructionLayer, Revit CompoundStructure, ConstructionLayers
+        /// </search>
         public static CompoundStructure ToRevit(IEnumerable<ConstructionLayer> ConstructionLayers, Document Document)
         {
             List<CompoundStructureLayer> aCompoundStructureLayerList = new List<CompoundStructureLayer>();

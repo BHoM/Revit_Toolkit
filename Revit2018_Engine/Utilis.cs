@@ -23,6 +23,18 @@ namespace BH.Engine.Revit
         /// </summary>
         public static class Revit
         {
+            /***************************************************/
+            /**** Public Methods                            ****/
+            /***************************************************/
+
+            /// <summary>
+            /// Get Revit class type from BHoM BuildingElementType.
+            /// </summary>
+            /// <param name="BuildingElementType">BHoM BuildingElementType</param>
+            /// <returns name="Type">Revit class Type</returns>
+            /// <search>
+            /// Utilis, GetType, Revit, Get Type, BuildingElementType
+            /// </search>
             public static Type GetType(BuildingElementType BuildingElementType)
             {
                 switch (BuildingElementType)
@@ -40,6 +52,15 @@ namespace BH.Engine.Revit
                 return null;
             }
 
+            /// <summary>
+            /// Copy Revit ELement parameters to BHoMObject CustomData. Only parameters with unique names will be copied. If Revit Element has more than two parameters with the same name first parameters returned by Element.LookupParameter function will be returned. Built-In Parameters from BuiltInParameters_Ignore collection wil be ignored
+            /// </summary>
+            /// <param name="BHoMObject">Destination BHoMObject</param>
+            /// <param name="Element">Source Revit Element</param>
+            /// <param name="BuiltInParameters_Ignore">Collection of Built-In Revit Parameters to be excluded from copy</param>
+            /// <search>
+            /// Utilis, CopyCustomData, Revit, Copy Custom Data, BHoMObject, Element
+            /// </search>
             public static void CopyCustomData(BHoMObject BHoMObject, Element Element, IEnumerable<BuiltInParameter> BuiltInParameters_Ignore = null)
             {
                 if (BHoMObject == null || Element == null)
@@ -57,6 +78,14 @@ namespace BH.Engine.Revit
                 }
             }
 
+            /// <summary>
+            /// Copy Value to Revit Parameter. If parameter has units then value needs to be in Revit internal units: use UnitUtils.ConvertToInternalUnits (Autodesk.Revit.DB) to convert units
+            /// </summary>
+            /// <param name="Parameter">Revit Parameter</param>
+            /// <param name="Value">Value for parameter to be set. StorageType: 1. Double - Value type of double, int, bool, string 2. ElementId - Value type of int, string, 3. Integer - Value type of double, int, bool, string 4. String - value type of string, object</param>
+            /// <search>
+            /// Utilis, CopyParameter, Revit, Copy Parameter, Parameter
+            /// </search>
             public static void CopyParameter(Parameter Parameter, object Value)
             {
                 if (Parameter == null)
@@ -75,6 +104,12 @@ namespace BH.Engine.Revit
                                 Parameter.Set(1.0);
                             else
                                 Parameter.Set(0.0);
+                        }
+                        else if(Value is string)
+                        {
+                            double aDouble = double.NaN;
+                            if (double.TryParse((string)Value, out aDouble))
+                                Parameter.Set(aDouble);
                         }
                         break;
                     case StorageType.ElementId:
@@ -104,6 +139,12 @@ namespace BH.Engine.Revit
                             else
                                 Parameter.Set(0);
                         }
+                        else if (Value is string)
+                        {
+                            int aInt = 0;
+                            if (int.TryParse((string)Value, out aInt))
+                                Parameter.Set(aInt);
+                        }
                         break;
 
                     case StorageType.String:
@@ -125,6 +166,16 @@ namespace BH.Engine.Revit
                 }
             }
 
+            /// <summary>
+            /// Gets ElementId list from UniqueIds collection
+            /// </summary>
+            /// <param name="Document">Revit Document</param>
+            /// <param name="UniqueIds">Unique Ids collection</param>
+            /// <param name="RemoveNulls">Remove nulls or empty values from result</param>
+            /// <returns name="ElementIds">ElementId List</returns>
+            /// <search>
+            /// Utilis, GetElementIdList, Revit, Get ElementId List, Parameter
+            /// </search>
             public static List<ElementId> GetElementIdList(Document Document, IEnumerable<string> UniqueIds, bool RemoveNulls)
             {
                 if (Document == null || UniqueIds == null)
@@ -150,6 +201,8 @@ namespace BH.Engine.Revit
 
                 return aElementIdList;
             }
+
+            /***************************************************/
         }
 
         /// <summary>
@@ -157,6 +210,18 @@ namespace BH.Engine.Revit
         /// </summary>
         public static class BHoM
         {
+            /***************************************************/
+            /**** Public Methods                            ****/
+            /***************************************************/
+
+            /// <summary>
+            /// Gets BuildingElementType from Revit BuiltInCategory. If no match then null will be returned.
+            /// </summary>
+            /// <param name="BuiltInCategory">Revit BuiltInCategory</param>
+            /// <returns name="BuildingElementType">BHoM BuildingElementType</returns>
+            /// <search>
+            /// Utilis, BHoM, GetBuildingElementType, Get BuildingElementType, BuiltInCategory, Revit
+            /// </search>
             public static BuildingElementType? GetBuildingElementType(BuiltInCategory BuiltInCategory)
             {
                 switch(BuiltInCategory)
@@ -174,6 +239,14 @@ namespace BH.Engine.Revit
                 return null;
             }
 
+            /// <summary>
+            /// Copies Revit Identifiers to BHoMObject CustomData. Key: "ElementId" Value: Element.Id.IntegerValue (storage type int), Key: "UniqueId" Value: Element.UniqueId (storage type string)
+            /// </summary>
+            /// <param name="BHoMObject">BHoMObject</param>
+            /// <param name="Element">Revit Element</param>
+            /// <search>
+            /// Utilis, BHoM, CopyIdentifiers, Revit, Copy Identifiers, BHoMObject
+            /// </search>
             public static void CopyIdentifiers(BHoMObject BHoMObject, Element Element)
             {
                 if (BHoMObject == null || Element == null)
@@ -183,6 +256,13 @@ namespace BH.Engine.Revit
                 BHoMObject.CustomData.Add("UniqueId", Element.UniqueId);
             }
 
+            /// <summary>
+            /// Removes Revit Identifiers from BHoMObject CustomData. Key: "ElementId", Key: "UniqueId"
+            /// </summary>
+            /// <param name="BHoMObject">BHoMObject</param>
+            /// <search>
+            /// Utilis, BHoM, RemoveIdentifiers, Remove Identifiers, BHoMObject
+            /// </search>
             public static void RemoveIdentifiers(BHoMObject BHoMObject)
             {
                 if (BHoMObject == null)
@@ -193,6 +273,14 @@ namespace BH.Engine.Revit
 
             }
 
+            /// <summary>
+            /// Reads Revit UniqueId from BHoMObject CustomData. Key: "UniqueId"
+            /// </summary>
+            /// <param name="BHoMObject">BHoMObject</param>
+            /// <returns name="UniqueId">Revit UniqueId</returns>
+            /// <search>
+            /// Utilis, BHoM, GetUniqueId, Get UniqueId, BHoMObject
+            /// </search>
             public static string GetUniqueId(BHoMObject BHoMObject)
             {
                 if (BHoMObject == null)
@@ -210,6 +298,14 @@ namespace BH.Engine.Revit
                 return null;
             }
 
+            /// <summary>
+            /// Reads Revit ElementId from BHoMObject CustomData. Key: "ElementId"
+            /// </summary>
+            /// <param name="BHoMObject">BHoMObject</param>
+            /// <returns name="ElementId">Revit ElementId</returns>
+            /// <search>
+            /// Utilis, BHoM, GetElemenId, Get ElemenId, BHoMObject
+            /// </search>
             public static ElementId GetElemenId(BHoMObject BHoMObject)
             {
                 if (BHoMObject == null)
@@ -237,6 +333,15 @@ namespace BH.Engine.Revit
                 return null;
             }
 
+            /// <summary>
+            /// Reads Revit UniqueIds from BHoMObjects CustomData. Key: "UniqueId"
+            /// </summary>
+            /// <param name="BHoMObjects">BHoMObject collection</param>
+            /// <param name="RemoveNulls">Removes nulls from result list</param>
+            /// <returns name="UniqueIds">UniqueId List</returns>
+            /// <search>
+            /// Utilis, BHoM, GetUniqueIdList, Get UniqueId List, BHoMObject
+            /// </search>
             public static List<string> GetUniqueIdList(IEnumerable<BHoMObject> BHoMObjects, bool RemoveNulls = true)
             {
                 if (BHoMObjects == null)
@@ -255,6 +360,14 @@ namespace BH.Engine.Revit
                 return aUniqueIdList;
             }
 
+            /// <summary>
+            /// Copy values from BHoMObject CustomData to Revit Element parameters
+            /// </summary>
+            /// <param name="BHoMObject">Source BHoMObject</param>
+            /// <param name="Element">Destination Revit Element</param>
+            /// <search>
+            /// Utilis, BHoM, CopyCustomData,  BHoMObject, Revit, Element, Copy CustomData
+            /// </search>
             public static void CopyCustomData(BHoMObject BHoMObject, Element Element)
             {
                 if (BHoMObject == null || Element == null)
@@ -294,6 +407,14 @@ namespace BH.Engine.Revit
                 }
             }
 
+            /// <summary>
+            /// Gets BHoM class type for given Element
+            /// </summary>
+            /// <param name="Element">Revit Element</param>
+            /// <returns name="Type">BHoM class Type</returns>
+            /// <search>
+            /// Utilis, BHoM, GetType,  BHoMObject, Revit, Element, Get Type
+            /// </search>
             public static Type GetType(Element Element)
             {
                 if (Element is CeilingType)
@@ -317,6 +438,8 @@ namespace BH.Engine.Revit
 
                 return null;
             }
+
+            /***************************************************/
         }
     }
 }

@@ -52,6 +52,7 @@ namespace BH.Adapter.Revit
         /// Create, BHoMObjects, BHoMObject, Revit, Document
         /// </search>
         public bool Create(IEnumerable<BHoMObject> BHoMObjects, bool CopyCustomData = true, bool Replace = false)
+        //TODO: Change input BHoMObjects to IEnumerable<IObject>
         {
             if (m_Document == null || BHoMObjects == null && BHoMObjects.Count() < 1)
                 return false;

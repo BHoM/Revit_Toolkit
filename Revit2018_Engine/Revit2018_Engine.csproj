@@ -58,7 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Convert\FromRevit.cs" />
+    <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Convert\ToRevit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilis.cs" />
