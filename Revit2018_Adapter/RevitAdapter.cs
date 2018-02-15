@@ -20,6 +20,13 @@ namespace BH.Adapter.Revit
         /**** Public Constructors                       ****/
         /***************************************************/
 
+        /// <summary>
+        /// Create RevitAdapter for given Revit Document
+        /// </summary>
+        /// <param name="Document">Revit Document</param>
+        /// <search>
+        /// Create, RevitAdapter, Constructor, Document
+        /// </search>
         public RevitAdapter(Document Document)
         {
             m_Document = Document;

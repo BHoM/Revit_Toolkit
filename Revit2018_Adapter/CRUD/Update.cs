@@ -8,6 +8,12 @@ namespace BH.Adapter.Revit
 {
     public partial class RevitAdapter
     {
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
 
+        //TODO: Define methods for RevitAdapter Update
+
+        /***************************************************/
     }
 }
