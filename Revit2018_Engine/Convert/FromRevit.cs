@@ -10,6 +10,9 @@ using BH.Engine.Environment;
 
 namespace BH.Engine.Revit
 {
+    /// <summary>
+    /// BHoM RevitAdapter
+    /// </summary>
     public static partial class Convert
     {
         /***************************************************/

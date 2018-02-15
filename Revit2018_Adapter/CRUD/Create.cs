@@ -19,6 +19,16 @@ namespace BH.Adapter.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        /// <summary>
+        /// Create BHoMObject in Revit Document. BHoMObject is linked to Revit element by CustomData parameter called "UniqueId". Use Utilis.BHoM.CopyIdentifiers to include necessary information in BHoMObject
+        /// </summary>
+        /// <param name="BHoMObject">BHoMObjects</param>
+        /// <param name="CopyCustomData">Transfer BHoMObject CustomData to Revit Element Parameters</param>
+        /// <param name="Replace">Replace exisiting Revit Element. Existing elements will be matched by CustomData parameter called "UniqueId".</param>
+        /// <returns name="Succeeded">Create succeeded</returns>
+        /// <search>
+        /// Create, BHoMObject, Revit, Document
+        /// </search>
         public bool Create(BHoMObject BHoMObject, bool CopyCustomData = true, bool Replace = false)
         {
             bool aResult = false;
@@ -31,6 +41,16 @@ namespace BH.Adapter.Revit
             return aResult;
         }
 
+        /// <summary>
+        /// Create BHoMObjects in Revit Document. BHoMObjects are linked to Revit elements by CustomData parameter called "UniqueId". Use Utilis.BHoM.CopyIdentifiers to include necessary information in BHoMObject
+        /// </summary>
+        /// <param name="BHoMObjects">BHoMObjects collection</param>
+        /// <param name="CopyCustomData">Transfer BHoMObjects CustomData to Revit Elements Parameters</param>
+        /// <param name="Replace">Replace exisiting Revit Elements. Existing elements will be matched by CustomData parameter called "UniqueId".</param>
+        /// <returns name="Succeeded">Create succeeded</returns>
+        /// <search>
+        /// Create, BHoMObjects, BHoMObject, Revit, Document
+        /// </search>
         public bool Create(IEnumerable<BHoMObject> BHoMObjects, bool CopyCustomData = true, bool Replace = false)
         {
             if (m_Document == null || BHoMObjects == null && BHoMObjects.Count() < 1)
@@ -51,6 +71,15 @@ namespace BH.Adapter.Revit
         /**** Protected Methods                         ****/
         /***************************************************/
 
+        /// <summary>
+        /// Create BHoMObjects in Revit Document. BHoMObjects are linked to Revit elements by CustomData parameter called "UniqueId". Use Utilis.BHoM.CopyIdentifiers to include necessary information in BHoMObject
+        /// </summary>
+        /// <param name="objects">BHoMObjects collection</param>
+        /// <param name="replaceAll">Replace exisiting Revit Elements. Existing elements will be matched by CustomData parameter called "UniqueId".</param>
+        /// <returns name="Succeeded">Create succeeded</returns>
+        /// <search>
+        /// Create, BHoMObjects, BHoMObject, Revit, Document
+        /// </search>
         protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {
             if (m_Document == null || objects == null)

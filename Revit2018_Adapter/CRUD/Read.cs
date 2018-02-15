@@ -16,6 +16,9 @@ using Autodesk.Revit.DB;
 
 namespace BH.Adapter.Revit
 {
+    /// <summary>
+    /// BHoM RevitAdapter
+    /// </summary>
     public partial class RevitAdapter
     {
         /***************************************************/
