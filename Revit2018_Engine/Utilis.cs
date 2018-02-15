@@ -13,8 +13,14 @@ using BH.oM.Environmental.Elements;
 
 namespace BH.Engine.Revit
 {
+    /// <summary>
+    /// BHoM Revit Engine Utilities
+    /// </summary>
     public static class Utilis
     {
+        /// <summary>
+        /// Utilities for Revit objects
+        /// </summary>
         public static class Revit
         {
             public static Type GetType(BuildingElementType BuildingElementType)
@@ -142,6 +148,9 @@ namespace BH.Engine.Revit
             }
         }
 
+        /// <summary>
+        /// Utilities for BHoM objects
+        /// </summary>
         public static class BHoM
         {
             public static BuildingElementType? GetBuildingElementType(BuiltInCategory BuiltInCategory)
