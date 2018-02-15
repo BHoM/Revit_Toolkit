@@ -112,6 +112,7 @@ namespace BH.Engine.Revit
 
             if (CopyCustomData)
                 Utilis.Revit.CopyCustomData(BuildingElementProperties, aElementType);
+                
 
             return aElementType;
         }
@@ -143,6 +144,7 @@ namespace BH.Engine.Revit
 
             Element aElement = null;
 
+            BuiltInParameter[] aBuiltInParameters = null;
             switch (BuildingElement.BuildingElementProperties.BuildingElementType)
             {
                 case BuildingElementType.Ceiling:
@@ -167,16 +169,18 @@ namespace BH.Engine.Revit
                     break;
                 case BuildingElementType.Wall:
                     ICurve aICurve = BuildingElement.BuildingElementGeometry.Bottom();
-                    if (aICurve != null)
+                    if (aICurve == null)
                         return null;
                     aElement = Wall.Create(Document, ToRevit(aICurve), aLevel.Id, false);
                     if (aElementType != null)
                         aElement.ChangeTypeId(aElementType.Id);
+
+                    aBuiltInParameters = new BuiltInParameter[] {BuiltInParameter.WALL_BASE_CONSTRAINT };
                     break;
             }
 
             if (CopyCustomData)
-                Utilis.Revit.CopyCustomData(BuildingElement, aElement);
+                Utilis.Revit.CopyCustomData(BuildingElement, aElement, aBuiltInParameters);
 
             return aElement;
         }
@@ -187,7 +191,7 @@ namespace BH.Engine.Revit
             aElement.Name = Storey.Name;
 
             if (CopyCustomData)
-                Utilis.Revit.CopyCustomData(Storey, aElement);
+                Utilis.Revit.CopyCustomData(Storey, aElement, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
 
             return aElement as Level;
         }
