@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 using Autodesk.Revit.DB;
 
-using BH.oM.Environmental.Elements;
 using BH.oM.Base;
+using BH.oM.Environmental.Properties;
+using BH.oM.Environmental.Elements;
+
 
 namespace BH.Engine.Revit
 {
@@ -112,6 +114,32 @@ namespace BH.Engine.Revit
 
                 }
             }
+
+            public static List<ElementId> GetElementIdList(Document Document, IEnumerable<string> UniqueIds, bool RemoveNulls)
+            {
+                if (Document == null || UniqueIds == null)
+                    return null;
+
+
+                List<ElementId> aElementIdList = new List<ElementId>();
+                foreach (string aUniqueId in UniqueIds)
+                {
+                    if(string.IsNullOrEmpty(aUniqueId))
+                    {
+                        Element aElement = Document.GetElement(aUniqueId);
+                        if(aElement != null)
+                        {
+                            aElementIdList.Add(aElement.Id);
+                            continue;
+                        }
+                    }
+
+                    if (!RemoveNulls)
+                        aElementIdList.Add(null);
+                }
+
+                return aElementIdList;
+            }
         }
 
         public static class BHoM
@@ -142,6 +170,16 @@ namespace BH.Engine.Revit
                 BHoMObject.CustomData.Add("UniqueId", Element.UniqueId);
             }
 
+            public static void RemoveIdentifiers(BHoMObject BHoMObject)
+            {
+                if (BHoMObject == null)
+                    return;
+
+                BHoMObject.CustomData.Remove("ElementId");
+                BHoMObject.CustomData.Remove("UniqueId");
+
+            }
+
             public static string GetUniqueId(BHoMObject BHoMObject)
             {
                 if (BHoMObject == null)
@@ -157,6 +195,51 @@ namespace BH.Engine.Revit
                 }
 
                 return null;
+            }
+
+            public static ElementId GetElemenId(BHoMObject BHoMObject)
+            {
+                if (BHoMObject == null)
+                    return null;
+
+                object aValue = null;
+                if (BHoMObject.CustomData.TryGetValue("ElementId", out aValue))
+                {
+                    if (aValue is string)
+                    {
+                        int aInt = -1;
+                        if (int.TryParse((string)aValue, out aInt))
+                            return new ElementId(aInt);
+                    }
+                    else if(aValue is int)
+                    {
+                        return new ElementId((int)aValue);
+                    }
+                    else
+                    {
+                        return null;
+                    } 
+                }
+
+                return null;
+            }
+
+            public static List<string> GetUniqueIdList(IEnumerable<BHoMObject> BHoMObjects, bool RemoveNulls = true)
+            {
+                if (BHoMObjects == null)
+                    return null;
+
+                List<string> aUniqueIdList = new List<string>();
+                foreach (BHoMObject aBHoMObject in BHoMObjects)
+                {
+                    string aUniqueId = GetUniqueId(aBHoMObject);
+                    if (string.IsNullOrEmpty(aUniqueId) && RemoveNulls)
+                        continue;
+
+                    aUniqueIdList.Add(aUniqueId);
+                }
+
+                return aUniqueIdList;
             }
 
             public static void CopyCustomData(BHoMObject BHoMObject, Element Element)
@@ -196,6 +279,30 @@ namespace BH.Engine.Revit
 
                     BHoMObject.CustomData.Add(aParameter.Definition.Name, aValue);
                 }
+            }
+
+            public static Type GetType(Element Element)
+            {
+                if (Element is CeilingType)
+                    return typeof(BuildingElementProperties);
+                if (Element is WallType)
+                    return typeof(BuildingElementProperties);
+                if (Element is FloorType)
+                    return typeof(BuildingElementProperties);
+                if (Element is RoofType)
+                    return typeof(BuildingElementProperties);
+                if (Element.GetType().IsAssignableFrom(typeof(SpatialElement)))
+                    return typeof(Space);
+                if (Element is Wall)
+                    return typeof(BuildingElement);
+                if (Element is Ceiling)
+                    return typeof(BuildingElement);
+                if (Element.GetType().IsAssignableFrom(typeof(RoofBase)))
+                    return typeof(BuildingElement);
+                if (Element is Floor)
+                    return typeof(BuildingElement);
+
+                return null;
             }
         }
     }

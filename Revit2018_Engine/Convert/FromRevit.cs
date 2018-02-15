@@ -76,7 +76,35 @@ namespace BH.Engine.Revit
             return aBuildingElementCurve;
         }
 
-        public static BuildingElement FromRevitBuildingElement(this Wall Wall, bool CopyCustomData = true)
+        /***************************************************/
+
+        public static Building FromRevit(this Document Document, bool CopyCustomData = true)
+        {
+            List<SiteLocation> aSiteLocationList = new FilteredElementCollector(Document).OfClass(typeof(SiteLocation)).Cast<SiteLocation>().ToList();
+            aSiteLocationList.RemoveAll(x => x == null || x.Category == null);
+
+            if (aSiteLocationList.Count < 1)
+                return null;
+
+            SiteLocation aSiteLocation = aSiteLocationList.First();
+
+            Building aBuilding = new Building
+            {
+                Elevation = aSiteLocation.Elevation,
+                Longitude = aSiteLocation.Longitude,
+                Latitude = aSiteLocation.Latitude,
+                Location = new oM.Geometry.Point()
+            };
+
+            Utilis.BHoM.CopyIdentifiers(aBuilding, aSiteLocation);
+            if (CopyCustomData)
+                Utilis.BHoM.CopyCustomData(aBuilding, aSiteLocation);
+
+            return aBuilding;
+
+        }
+
+        public static BuildingElement FromRevit(this Wall Wall, bool CopyCustomData = true)
         {
             BuildingElementProperties aBuildingElementProperties = Wall.WallType.FromRevit();
 
@@ -143,6 +171,8 @@ namespace BH.Engine.Revit
 
             return aStorey;
         }
+
+        /***************************************************/
 
         public static Space FromRevit(this SpatialElement SpatialElement, bool CopyCustomData = true)
         {
@@ -347,31 +377,9 @@ namespace BH.Engine.Revit
 
         }
 
-        public static Building FromRevit(this Document Document, bool CopyCustomData = true)
-        {
-            List<SiteLocation> aSiteLocationList = new FilteredElementCollector(Document).OfClass(typeof(SiteLocation)).Cast<SiteLocation>().ToList();
-            aSiteLocationList.RemoveAll(x => x == null || x.Category == null);
-
-            if (aSiteLocationList.Count < 1)
-                return null;
-
-            SiteLocation aSiteLocation = aSiteLocationList.First();
-
-            Building aBuilding = new Building
-            {
-                Elevation = aSiteLocation.Elevation,
-                Longitude = aSiteLocation.Longitude,
-                Latitude = aSiteLocation.Latitude,
-                Location = new oM.Geometry.Point()
-            };
-
-            Utilis.BHoM.CopyIdentifiers(aBuilding, aSiteLocation);
-            if (CopyCustomData)
-                Utilis.BHoM.CopyCustomData(aBuilding, aSiteLocation);
-
-            return aBuilding;
-
-        }
+        /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
 
     }
 }

@@ -18,6 +18,10 @@ namespace BH.Adapter.Revit
 {
     public partial class RevitAdapter
     {
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
+
         public Building ReadBuilidng(bool GenerateSpaces, bool Spaces3D)
         {
             Building aBuilding = m_Document.FromRevit();
@@ -76,10 +80,64 @@ namespace BH.Adapter.Revit
             Element aElement = m_Document.GetElement(ElementId);
 
             if (aElement is Wall)
-                return (aElement as Wall).FromRevitBuildingElement();
+                return (aElement as Wall).FromRevit();
 
             return null;
         }
+
+        public BHoMObject Read(ElementId ElementId)
+        {
+            if (m_Document == null || ElementId == null || ElementId == ElementId.InvalidElementId)
+                return null;
+
+            Element aElement = m_Document.GetElement(ElementId);
+
+            if (aElement == null)
+                return null; 
+
+            Type aType = Utilis.BHoM.GetType(aElement);
+            if (aType == null)
+                return null;
+
+            return (aElement as dynamic).FromRevit();
+        }
+
+        public IEnumerable<BHoMObject> Read(IEnumerable<ElementId> ElementIds, bool RemoveNulls = true)
+        {
+            if (m_Document == null || ElementIds == null)
+                return null;
+
+            List<BHoMObject> aResult = new List<BHoMObject>();
+            foreach (ElementId aElementId in ElementIds)
+            {
+                BHoMObject aBHoMObject = Read(aElementId);
+                if (aBHoMObject == null && RemoveNulls)
+                    continue;
+
+                aResult.Add(aBHoMObject);
+            }
+
+            return aResult;
+        }
+
+        public IEnumerable<BHoMObject> Read(BuiltInCategory BuiltInCategory, bool RemoveNulls = true)
+        {
+            return Read(new BuiltInCategory[] { BuiltInCategory }, RemoveNulls);
+        }
+
+        public IEnumerable<BHoMObject> Read(IEnumerable<BuiltInCategory> BuiltInCategories, bool RemoveNulls = true)
+        {
+            if (m_Document == null || BuiltInCategories == null || BuiltInCategories.Count() < 1)
+                return null;
+
+            ICollection<ElementId> aElementIdList = new FilteredElementCollector(m_Document).WherePasses(new LogicalOrFilter(BuiltInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
+
+            return Read(aElementIdList, RemoveNulls);
+        }
+
+        /***************************************************/
+        /**** Protected Methods                         ****/
+        /***************************************************/
 
         protected override IEnumerable<BHoMObject> Read(Type type, IList ids) //Chnage to IObject
         {
