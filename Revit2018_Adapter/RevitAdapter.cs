@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Autodesk.Revit.DB;
+using BH.Engine.Revit;
 
 namespace BH.Adapter.Revit
 {
@@ -23,13 +24,15 @@ namespace BH.Adapter.Revit
         /// <summary>
         /// Create RevitAdapter for given Revit Document
         /// </summary>
-        /// <param name="Document">Revit Document</param>
+        /// <param name="document">Revit Document</param>
         /// <search>
         /// Create, RevitAdapter, Constructor, Document
         /// </search>
-        public RevitAdapter(Document Document)
+        public RevitAdapter(Document document)
         {
-            m_Document = Document;
+            AdapterId = Utilis.AdapterId;
+
+            m_Document = document;
         }
     }
 }

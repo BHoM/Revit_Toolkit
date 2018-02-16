@@ -90,9 +90,22 @@ namespace Revit2018_Test
                 aIndex++;
             }
 
+            IEnumerable<BHoMObject> aBHoMObjectList_Read = null;
 
+            //Read BHoM objects using Revit BuiltInCategory
+            aBHoMObjectList_Read = pRevitAdapter.Read(BuiltInCategory.OST_Walls);
 
+            //Read BHoM objects using Revit BuiltInCategories
+            aBHoMObjectList_Read = pRevitAdapter.Read(new List<BuiltInCategory>() { BuiltInCategory.OST_Walls, BuiltInCategory.OST_Floors });
 
+            //Read BHoM objects using BHoM class types
+            aBHoMObjectList_Read = pRevitAdapter.Read(new List<Type>() {typeof(BuildingElement)});
+            
+            //Read BHoM objects using Revit class types
+            aBHoMObjectList_Read = pRevitAdapter.Read(new List<Type>() { typeof(Wall), typeof(Floor) });
+
+            //Read BHoM objects using Revit class types and Revit UniqueIds
+            aBHoMObjectList_Read = pRevitAdapter.Read(new List<Type>() { typeof(Wall)}, new string[] { "c89b6638-12ef-4554-b3dd-fb14cb5beae4-00000ba1", "c9ad41eb-e7a9-4848-ad61-43cba875a8b3-0000096f" });
 
             return Result.Succeeded;
         }
