@@ -28,13 +28,13 @@ namespace BH.Adapter.Revit
         /// <summary>
         /// Generates BHoM Building from Revit Document
         /// </summary>
-        /// <param name="GenerateSpaces">Generate BHoM Spaces from Revit Spaces</param>
-        /// <param name="Spaces3D">if sets to true then Spaces wil be transylated to BuildingElementPlanes (3D) otherwise Spaces transylated to BuildingElementCurves (2D)</param>
+        /// <param name="generateSpaces">Generate BHoM Spaces from Revit Spaces</param>
+        /// <param name="spaces3D">if sets to true then Spaces wil be transylated to BuildingElementPlanes (3D) otherwise Spaces transylated to BuildingElementCurves (2D)</param>
         /// <returns name="Building">BHoM Building</returns>
         /// <search>
         /// RevitAdapter, ReadBuilidng, Read Builidng, Revit 
         /// </search>
-        public Building ReadBuilidng(bool GenerateSpaces, bool Spaces3D)
+        public Building ReadBuilidng(bool generateSpaces, bool spaces3D)
         {
             Building aBuilding = m_Document.ToBHoM();
 
@@ -55,13 +55,13 @@ namespace BH.Adapter.Revit
 
 
             //Adding Spaces
-            if (GenerateSpaces)
+            if (generateSpaces)
             {
                 SpatialElementBoundaryOptions aSpatialElementBoundaryOptions = new SpatialElementBoundaryOptions();
                 aSpatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
                 aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = true;
 
-                if (Spaces3D)
+                if (spaces3D)
                 {
                     //3D geometry
                     SpatialElementGeometryCalculator aSpatialElementGeometryCalculator = new SpatialElementGeometryCalculator(m_Document, aSpatialElementBoundaryOptions);
@@ -90,35 +90,40 @@ namespace BH.Adapter.Revit
         /// <summary>
         /// Generates BHoM BuildingElement from Revit Element by given ElementId
         /// </summary>
-        /// <param name="ElementId">ElementId of Revit Element to be read</param>
+        /// <param name="elementId">ElementId of Revit Element to be read</param>
         /// <returns name="BuildingElement">BHoM BuildingElement</returns>
         /// <search>
         /// RevitAdapter, ReadBuildingElement, Read BuildingElement, Revit, ElementId, BHoMObject, BHoM
         /// </search>
-        public BuildingElement ReadBuildingElement(ElementId ElementId)
+        public IEnumerable<BuildingElement> ReadBuildingElements(ElementId elementId)
         {
-            Element aElement = m_Document.GetElement(ElementId);
+            Element aElement = m_Document.GetElement(elementId);
 
-            if (aElement is Wall)
-                return (aElement as Wall).ToBHoM();
+            Type aType = Utilis.BHoM.GetType(aElement);
+            if (aType != typeof(BuildingElement))
+                return null;
 
-            return null;
+            IEnumerable<BHoMObject> aResult = Read(elementId);
+            if (aResult == null)
+                return null;
+
+            return aResult.Cast<BuildingElement>();
         }
 
         /// <summary>
         /// Generates BHoMObject from Revit Element by given ElementId
         /// </summary>
-        /// <param name="ElementId">ElementId of Revit Element to be read</param>
+        /// <param name="elementId">ElementId of Revit Element to be read</param>
         /// <returns name="BHoMObject">BHoMObject</returns>
         /// <search>
         /// RevitAdapter, Read, Revit, ElementId, BHoMObject, BHoM
         /// </search>
-        public BHoMObject Read(ElementId ElementId)
+        public BHoMObject ReadSingle(ElementId elementId)
         {
-            if (m_Document == null || ElementId == null || ElementId == ElementId.InvalidElementId)
+            if (m_Document == null || elementId == null || elementId == ElementId.InvalidElementId)
                 return null;
 
-            Element aElement = m_Document.GetElement(ElementId);
+            Element aElement = m_Document.GetElement(elementId);
 
             if (aElement == null)
                 return null; 
@@ -127,31 +132,77 @@ namespace BH.Adapter.Revit
             if (aType == null)
                 return null;
 
-            return (aElement as dynamic).FromRevit();
+            if (aElement is Floor)
+            {
+                List<BHoMObject> aResult = Engine.Revit.Convert.ToBHoM(aElement as dynamic, true);
+                if (aResult != null && aResult.Count > 0)
+                    return aResult.First();
+            }
+            else
+            {
+                
+                return Engine.Revit.Convert.ToBHoM(aElement as dynamic, true);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Generates BHoMObjects from Revit Element by given ElementId
+        /// </summary>
+        /// <param name="elementId">ElementId of Revit Element to be read</param>
+        /// <returns name="BHoMObjects">BHoMObjects collection</returns>
+        /// <search>
+        /// RevitAdapter, Read, Revit, ElementId, BHoMObjects, BHoM
+        /// </search>
+        public IEnumerable<BHoMObject> Read(ElementId elementId)
+        {
+            if (m_Document == null || elementId == null || elementId == ElementId.InvalidElementId)
+                return null;
+
+            Element aElement = m_Document.GetElement(elementId);
+
+            if (aElement == null)
+                return null;
+
+            Type aType = Utilis.BHoM.GetType(aElement);
+            if (aType == null)
+                return null;
+
+            if(aElement is Floor)
+            {
+                return Engine.Revit.Convert.ToBHoM(aElement as Floor, true);
+            }
+            else
+            {
+                List<BHoMObject> aResult = new List<BHoMObject>();
+                aResult.Add(Engine.Revit.Convert.ToBHoM(aElement as dynamic, true));
+                return aResult;
+            }
         }
 
         /// <summary>
         /// Generates BHoMObjects from Revit Elements by given ElementIds
         /// </summary>
-        /// <param name="ElementIds">ElementIds of Revit Elements to be read</param>
-        /// <param name="RemoveNulls">Removes nulls from result list</param>
+        /// <param name="elementIds">ElementIds of Revit Elements to be read</param>
         /// <returns name="BHoMObjects">BHoMObject collection</returns>
         /// <search>
         /// RevitAdapter, Read, Revit, ElementId, BHoMObject, BHoM, BHoMObjects
         /// </search>
-        public IEnumerable<BHoMObject> Read(IEnumerable<ElementId> ElementIds, bool RemoveNulls = true)
+        public IEnumerable<BHoMObject> Read(IEnumerable<ElementId> elementIds)
         {
-            if (m_Document == null || ElementIds == null)
+            if (m_Document == null || elementIds == null)
                 return null;
 
             List<BHoMObject> aResult = new List<BHoMObject>();
-            foreach (ElementId aElementId in ElementIds)
+            foreach (ElementId aElementId in elementIds)
             {
-                BHoMObject aBHoMObject = Read(aElementId);
-                if (aBHoMObject == null && RemoveNulls)
+                IEnumerable<BHoMObject> aBHoMObjects = Read(aElementId);
+                if (aBHoMObjects == null || aBHoMObjects.Count() < 1)
                     continue;
 
-                aResult.Add(aBHoMObject);
+                foreach(BHoMObject aBHoMObject in aBHoMObjects)
+                    aResult.Add(aBHoMObject);
             }
 
             return aResult;
@@ -160,34 +211,87 @@ namespace BH.Adapter.Revit
         /// <summary>
         /// Generates BHoMObjects from Revit Elements by given BuiltInCategory
         /// </summary>
-        /// <param name="BuiltInCategory">Revit BuiltInCategory</param>
-        /// <param name="RemoveNulls">Removes nulls from result list</param>
+        /// <param name="builtInCategory">Revit BuiltInCategory</param>
         /// <returns name="BHoMObjects">BHoMObject collection</returns>
         /// <search>
         /// RevitAdapter, Read, Revit, BuiltInCategory, BHoMObject, BHoM, BHoMObjects
         /// </search>
-        public IEnumerable<BHoMObject> Read(BuiltInCategory BuiltInCategory, bool RemoveNulls = true)
+        public IEnumerable<BHoMObject> Read(BuiltInCategory builtInCategory)
         {
-            return Read(new BuiltInCategory[] { BuiltInCategory }, RemoveNulls);
+            return Read(new BuiltInCategory[] { builtInCategory });
         }
 
         /// <summary>
         /// Generates BHoMObjects from Revit Elements by given BuiltInCategory
         /// </summary>
-        /// <param name="BuiltInCategories">Revit BuiltInCategories collection</param>
-        /// <param name="RemoveNulls">Removes nulls from result list</param>
+        /// <param name="builtInCategories">Revit BuiltInCategories collection</param>
         /// <returns name="BHoMObjects">BHoMObject collection</returns>
         /// <search>
         /// RevitAdapter, Read, Revit, BuiltInCategory, BHoMObject, BHoM, BHoMObjects, BuiltInCategories
         /// </search>
-        public IEnumerable<BHoMObject> Read(IEnumerable<BuiltInCategory> BuiltInCategories, bool RemoveNulls = true)
+        public IEnumerable<BHoMObject> Read(IEnumerable<BuiltInCategory> builtInCategories)
         {
-            if (m_Document == null || BuiltInCategories == null || BuiltInCategories.Count() < 1)
+            if (m_Document == null || builtInCategories == null || builtInCategories.Count() < 1)
                 return null;
 
-            ICollection<ElementId> aElementIdList = new FilteredElementCollector(m_Document).WherePasses(new LogicalOrFilter(BuiltInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
+            ICollection<ElementId> aElementIdList = new FilteredElementCollector(m_Document).WherePasses(new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
 
-            return Read(aElementIdList, RemoveNulls);
+            return Read(aElementIdList);
+        }
+
+        /// <summary>
+        /// Generates BHoMObjects from given class types. Class types have to inherits from Autodesk.Revit.DB.Element or BH.oM.Base.BHoMObject
+        /// </summary>
+        /// <param name="types">Revit or BHoM class types</param>
+        /// <param name="uniqueIds">Revit element UniqueIds to be read. all object from given class type is read if uniqueIds collection equals to null</param>
+        /// <returns name="BHoMObjects">BHoMObject collection</returns>
+        /// <search>
+        /// RevitAdapter, Read, Revit, BHoMObject, BHoM, BHoMObjects, 
+        /// </search>
+        public IEnumerable<BHoMObject> Read(IEnumerable<Type> types, IEnumerable<string> uniqueIds = null)
+        {
+            if (types == null || m_Document == null)
+                return null;
+
+            //Get Revit class types
+            List<Type> aTypeList = new List<Type>();
+            foreach(Type aType in types)
+            {
+                if (Utilis.Type.IsAssignableFromByFullName(typeof(Element), aType))
+                {
+                    if (!aTypeList.Contains(aType))
+                        aTypeList.Add(aType);
+                }
+                else if (Utilis.Type.IsAssignableFromByFullName(typeof(BHoMObject), aType))
+                {
+                    IEnumerable<Type> aTypes = Utilis.Revit.GetTypes(aType);
+                    if (aTypes != null)
+                    {
+                        foreach (Type aType_Temp in aTypes)
+                            if (!aTypeList.Contains(aType_Temp))
+                                aTypeList.Add(aType_Temp);
+                    }
+                       
+                }
+            }
+
+            if (aTypeList == null || aTypeList.Count < 1)
+                return null;
+
+            List<ElementId> aElementIdList = new List<ElementId>();
+            foreach (Element aElement in new FilteredElementCollector(m_Document).WherePasses(new LogicalOrFilter(aTypeList.ConvertAll(x => new ElementClassFilter(x) as ElementFilter))))
+            {
+                if (aElement == null)
+                    continue;
+
+                if (uniqueIds == null || uniqueIds.Contains(aElement.UniqueId))
+                    aElementIdList.Add(aElement.Id);
+            }
+
+            if (aElementIdList == null || aElementIdList.Count < 1)
+                return null;
+
+            return Read(aElementIdList);
         }
 
         /***************************************************/
@@ -197,18 +301,15 @@ namespace BH.Adapter.Revit
         /// <summary>
         /// Generates BHoMObjects from Revit Elements by given types and BHoM Ids??
         /// </summary>
-        /// <param name="type">BHoM type??</param>
-        /// <param name="ids">BHoM id collection??</param>
+        /// <param name="type">Object type</param>
+        /// <param name="ids">BHoM id collection</param>
         /// <returns name="BHoMObjects">BHoMObject collection</returns>
         /// <search>
         /// RevitAdapter, Read, Revit, BHoMObject, BHoM, BHoMObjects, BuiltInCategories
         /// </search>
         protected override IEnumerable<BHoMObject> Read(Type type, IList ids)
-        //TODO: Change output to IEnumerable<IObject>
         {
-            //TODO: Implement Method
-            throw new NotImplementedException();
-            
+            return Read(new Type[] { type }, ids.Cast<string>().ToList());
         }
     }
 }

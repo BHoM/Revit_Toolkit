@@ -20,48 +20,48 @@ namespace BH.Adapter.Revit
         /***************************************************/
 
         /// <summary>
-        /// Create BHoMObject in Revit Document. BHoMObject is linked to Revit element by CustomData parameter called "UniqueId". Use Utilis.BHoM.CopyIdentifiers to include necessary information in BHoMObject
+        /// Create BHoMObject in Revit Document. BHoMObject is linked to Revit element by CustomData parameter called by Utilis.AdapterId const. Use Utilis.BHoM.CopyIdentifiers to include necessary information in BHoMObject
         /// </summary>
-        /// <param name="BHoMObject">BHoMObjects</param>
-        /// <param name="CopyCustomData">Transfer BHoMObject CustomData to Revit Element Parameters</param>
-        /// <param name="Replace">Replace exisiting Revit Element. Existing elements will be matched by CustomData parameter called "UniqueId".</param>
+        /// <param name="bHoMObject">BHoMObjects</param>
+        /// <param name="copyCustomData">Transfer BHoMObject CustomData to Revit Element Parameters</param>
+        /// <param name="replace">Replace exisiting Revit Element. Existing elements will be matched by CustomData parameter called by Utilis.AdapterId const.</param>
         /// <returns name="Succeeded">Create succeeded</returns>
         /// <search>
         /// Create, BHoMObject, Revit, Document
         /// </search>
-        public bool Create(BHoMObject BHoMObject, bool CopyCustomData = true, bool Replace = false)
+        public bool Create(BHoMObject bHoMObject, bool copyCustomData = true, bool replace = false)
         {
             bool aResult = false;
             using (Transaction aTransaction = new Transaction(m_Document, "Create"))
             {
                 aTransaction.Start();
-                aResult = Create(BHoMObject as dynamic, CopyCustomData, Replace);
+                aResult = Create(bHoMObject as dynamic, copyCustomData, replace);
                 aTransaction.Commit();
             }
             return aResult;
         }
 
         /// <summary>
-        /// Create BHoMObjects in Revit Document. BHoMObjects are linked to Revit elements by CustomData parameter called "UniqueId". Use Utilis.BHoM.CopyIdentifiers to include necessary information in BHoMObject
+        /// Create BHoMObjects in Revit Document. BHoMObjects are linked to Revit elements by CustomData parameter called by Utilis.AdapterId const. Use Utilis.BHoM.CopyIdentifiers to include necessary information in BHoMObject
         /// </summary>
-        /// <param name="BHoMObjects">BHoMObjects collection</param>
-        /// <param name="CopyCustomData">Transfer BHoMObjects CustomData to Revit Elements Parameters</param>
-        /// <param name="Replace">Replace exisiting Revit Elements. Existing elements will be matched by CustomData parameter called "UniqueId".</param>
+        /// <param name="bHoMObjects">BHoMObjects collection</param>
+        /// <param name="copyCustomData">Transfer BHoMObjects CustomData to Revit Elements Parameters</param>
+        /// <param name="replace">Replace exisiting Revit Elements. Existing elements will be matched by CustomData parameter called by Utilis.AdapterId const.</param>
         /// <returns name="Succeeded">Create succeeded</returns>
         /// <search>
         /// Create, BHoMObjects, BHoMObject, Revit, Document
         /// </search>
-        public bool Create(IEnumerable<BHoMObject> BHoMObjects, bool CopyCustomData = true, bool Replace = false)
+        public bool Create(IEnumerable<BHoMObject> bHoMObjects, bool copyCustomData = true, bool replace = false)
         //TODO: Change input BHoMObjects to IEnumerable<IObject>
         {
-            if (m_Document == null || BHoMObjects == null && BHoMObjects.Count() < 1)
+            if (m_Document == null || bHoMObjects == null && bHoMObjects.Count() < 1)
                 return false;
 
             using (Transaction aTransaction = new Transaction(m_Document, "Create"))
             {
                 aTransaction.Start();
-                foreach (BHoMObject aBHOMObject in BHoMObjects)
-                    Create(aBHOMObject as dynamic, CopyCustomData, Replace);
+                foreach (BHoMObject aBHOMObject in bHoMObjects)
+                    Create(aBHOMObject as dynamic, copyCustomData, replace);
                 aTransaction.Commit();
             }
 
@@ -73,10 +73,10 @@ namespace BH.Adapter.Revit
         /***************************************************/
 
         /// <summary>
-        /// Create BHoMObjects in Revit Document. BHoMObjects are linked to Revit elements by CustomData parameter called "UniqueId". Use Utilis.BHoM.CopyIdentifiers to include necessary information in BHoMObject
+        /// Create BHoMObjects in Revit Document. BHoMObjects are linked to Revit elements by CustomData parameter called by Utilis.AdapterId const. Use Utilis.BHoM.CopyIdentifiers to include necessary information in BHoMObject
         /// </summary>
         /// <param name="objects">BHoMObjects collection</param>
-        /// <param name="replaceAll">Replace exisiting Revit Elements. Existing elements will be matched by CustomData parameter called "UniqueId".</param>
+        /// <param name="replaceAll">Replace exisiting Revit Elements. Existing elements will be matched by CustomData parameter called by Utilis.AdapterId const.</param>
         /// <returns name="Succeeded">Create succeeded</returns>
         /// <search>
         /// Create, BHoMObjects, BHoMObject, Revit, Document
@@ -101,71 +101,71 @@ namespace BH.Adapter.Revit
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private bool Create(BuildingElement BuildingElement, bool CopyCustomData = true, bool Replace = false)
+        private bool Create(BuildingElement buildingElement, bool copyCustomData = true, bool replace = false)
         {
-            if (BuildingElement == null)
+            if (buildingElement == null)
                 return false;
 
-            if (BuildingElement.BuildingElementProperties == null)
+            if (buildingElement.BuildingElementProperties == null)
                 return false;
 
             //Set ElementType
-            Create(BuildingElement.BuildingElementProperties, CopyCustomData, false);
+            Create(buildingElement.BuildingElementProperties, copyCustomData, false);
 
             //Set Level
-            if (BuildingElement.Storey != null)
-                Create(BuildingElement.Storey, CopyCustomData, false);
+            if (buildingElement.Storey != null)
+                Create(buildingElement.Storey, copyCustomData, false);
 
-            if (Replace)
-                Delete(BuildingElement);
+            if (replace)
+                Delete(buildingElement);
 
-            BuildingElement.ToRevit(m_Document, CopyCustomData);
+            buildingElement.ToRevit(m_Document, copyCustomData);
 
             return true;
         }
 
-        private bool Create(Storey Storey, bool CopyCustomData = true, bool Replace = false)
+        private bool Create(Storey storey, bool copyCustomData = true, bool replace = false)
         {
-            if (Storey == null)
+            if (storey == null)
                 return false;
 
-            if (Replace)
-                Delete(Storey);
+            if (replace)
+                Delete(storey);
 
             List<Element>  aElementList = new FilteredElementCollector(m_Document).OfClass(typeof(Level)).ToList();
             if (aElementList == null || aElementList.Count < 1)
             {
-                Storey.ToRevit(m_Document, CopyCustomData);
+                storey.ToRevit(m_Document, copyCustomData);
                 return true;
             }
 
-            Element aElement = aElementList.Find(x => x.Name == Storey.Name);
+            Element aElement = aElementList.Find(x => x.Name == storey.Name);
             if (aElement == null)
             {
-                Storey.ToRevit(m_Document, CopyCustomData);
+                storey.ToRevit(m_Document, copyCustomData);
                 return true;
             }
 
             return false;
         }
 
-        private bool Create(BuildingElementProperties BuildingElementProperties, bool CopyCustomData = true, bool Replace = false)
+        private bool Create(BuildingElementProperties buildingElementProperties, bool copyCustomData = true, bool replace = false)
         {
-            if (BuildingElementProperties == null)
+            if (buildingElementProperties == null)
                 return false;
 
-            if (Replace)
-                Delete(BuildingElementProperties);
+            if (replace)
+                Delete(buildingElementProperties);
 
-            Type aType = Utilis.Revit.GetType(BuildingElementProperties.BuildingElementType);
+            Type aType = Utilis.Revit.GetType(buildingElementProperties.BuildingElementType);
             List<Element> aElementList = new FilteredElementCollector(m_Document).OfClass(aType).ToList();
             if (aElementList == null && aElementList.Count < 1)
                 return false;
 
-            Element aElement = aElementList.Find(x => x.Name == BuildingElementProperties.Name);
+            Element aElement = aElementList.Find(x => x.Name == buildingElementProperties.Name);
             if (aElement == null)
             {
-                aElement = BuildingElementProperties.ToRevit(m_Document, CopyCustomData);
+                aElement = buildingElementProperties.ToRevit(m_Document, copyCustomData);
                 return true;
             }
 
