@@ -307,7 +307,7 @@ namespace BH.Adapter.Revit
         /// <search>
         /// RevitAdapter, Read, Revit, BHoMObject, BHoM, BHoMObjects, BuiltInCategories
         /// </search>
-        protected override IEnumerable<BHoMObject> Read(Type type, IList ids)
+        protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
         {
             return Read(new Type[] { type }, ids.Cast<string>().ToList());
         }

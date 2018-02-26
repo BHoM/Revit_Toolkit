@@ -89,7 +89,7 @@ namespace BH.Adapter.Revit
             using (Transaction aTransaction = new Transaction(m_Document, "Create"))
             {
                 aTransaction.Start();
-                foreach (BHoMObject aBHOMObject in objects)
+                foreach (IBHoMObject aBHOMObject in objects)
                     Create(aBHOMObject as dynamic, true, replaceAll);
                 aTransaction.Commit();
             }
@@ -171,5 +171,7 @@ namespace BH.Adapter.Revit
 
             return false;
         }
+
+        /***************************************************/
     }
 }
