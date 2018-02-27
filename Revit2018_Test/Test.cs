@@ -52,7 +52,7 @@ namespace Revit2018_Test
         public Result Execute(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
             //Path to the file with Level names (name per line)
-            string aPath = @"C:\Users\jziolkow\Desktop\LevelList.txt";
+            string aPath = @"C:\Users\inaslund\Documents\Revit sandbox\LevelList.txt";
 
             //Creating Revit Adapter for active Revit Document
             RevitAdapter pRevitAdapter = new RevitAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
