@@ -41,10 +41,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Engine\Build\Environment_Engine.dll</HintPath>
     </Reference>
-    <Reference Include="Revit2018_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Build\Revit2018_Engine.dll</HintPath>
-    </Reference>
     <Reference Include="RevitAPI">
       <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
       <Private>False</Private>
@@ -65,6 +61,12 @@
     <Compile Include="CRUD\Update.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RevitAdapter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Revit2018_Engine\Revit2018_Engine.csproj">
+      <Project>{4dfaf9c8-9770-4e5a-818d-eb4dab665145}</Project>
+      <Name>Revit2018_Engine</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
