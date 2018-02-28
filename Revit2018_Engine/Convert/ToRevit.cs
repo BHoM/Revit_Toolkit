@@ -16,7 +16,7 @@ namespace BH.Engine.Revit
 {
 
     /// <summary>
-    /// Convert to Revit
+    /// BHoM Revit Engine Convert Methods
     /// </summary>
     public static partial class Convert
     {
@@ -122,7 +122,7 @@ namespace BH.Engine.Revit
             if (buildingElementProperties == null || document == null)
                 return null;
 
-            Type aType = Utilis.Revit.GetType(buildingElementProperties.BuildingElementType);
+            Type aType = Query.RevitType(buildingElementProperties.BuildingElementType);
 
             List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(aType).Cast<ElementType>().ToList();
             if (aElementTypeList == null || aElementTypeList.Count < 1)
@@ -133,7 +133,7 @@ namespace BH.Engine.Revit
             aElementType = aElementType.Duplicate(buildingElementProperties.Name);
 
             if (copyCustomData)
-                Utilis.Revit.CopyCustomData(buildingElementProperties, aElementType);
+                Modify.SetParameters(aElementType, buildingElementProperties);
                 
 
             return aElementType;
@@ -165,7 +165,7 @@ namespace BH.Engine.Revit
 
             //Get ElementType
             ElementType aElementType = null;
-            Type aType = Utilis.Revit.GetType(buildingElement.BuildingElementProperties.BuildingElementType);
+            Type aType = Query.RevitType(buildingElement.BuildingElementProperties.BuildingElementType);
             List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(aType).Cast<ElementType>().ToList();
             if (aElementTypeList != null && aElementTypeList.Count > 0)
             {
@@ -218,7 +218,7 @@ namespace BH.Engine.Revit
             }
 
             if (copyCustomData)
-                Utilis.Revit.CopyCustomData(buildingElement, aElement, aBuiltInParameters);
+                Modify.SetParameters(aElement, buildingElement, aBuiltInParameters);
 
             return aElement;
         }
@@ -239,7 +239,7 @@ namespace BH.Engine.Revit
             aElement.Name = storey.Name;
 
             if (copyCustomData)
-                Utilis.Revit.CopyCustomData(storey, aElement, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
+                Modify.SetParameters(aElement, storey, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
 
             return aElement as Level;
         }
