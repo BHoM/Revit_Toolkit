@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Media.Imaging;
 using System.Windows;
+using System.Linq;
 
 using Autodesk.Revit.UI;
 using Autodesk.Revit.DB;
@@ -13,6 +14,7 @@ using BH.oM.Structural.Elements;
 using BH.Engine.Revit;
 using System.Collections.Generic;
 using BH.oM.Base;
+using BH.oM.DataManipulation.Queries;
 
 namespace Revit2018_Test
 {
@@ -57,6 +59,11 @@ namespace Revit2018_Test
             //Creating Revit Adapter for active Revit Document
             RevitAdapter pRevitAdapter = new RevitAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
 
+
+            FilterQuery query = new FilterQuery() { Type = typeof(BuildingElement) };
+
+            Building building = pRevitAdapter.Pull(query).Cast<Building>().First();
+
             //Reading existing Revit model and creating BHoM objects
             Building Building = pRevitAdapter.ReadBuilidng(true, true);
 
@@ -79,13 +86,14 @@ namespace Revit2018_Test
                     foreach (BuildingElement aBuildingElement in aSpace.BuildingElements)
                     {
                         //Coping BuilidngElement objects
-                        BuildingElement aBuildingElement_New = aBuildingElement.Copy(aStorey_New);
+                        BuildingElement aBuildingElement_New = aBuildingElement.Move(aStorey_New);
                         Utilis.BHoM.RemoveIdentifiers(aBuildingElement_New);
                         aBHoMObjectList.Add(aBuildingElement_New);
                     }
 
                 //Creating new Revit Elements from copied BHoMObjects
-                pRevitAdapter.Create(aBHoMObjectList, true, false);
+                pRevitAdapter.Push(aBHoMObjectList, "");
+                //pRevitAdapter.Create(aBHoMObjectList, true, false);
 
                 aIndex++;
             }

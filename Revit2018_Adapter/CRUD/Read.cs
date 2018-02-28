@@ -46,7 +46,7 @@ namespace BH.Adapter.Revit
             List<Storey> aStoreyList = new List<Storey>();
             if (aLevelList != null && aLevelList.Count > 0)
                 aStoreyList = aLevelList.ConvertAll(x => x.ToBHoM());
-            aBuilding.Add(aStoreyList);
+            aBuilding.Storeys.AddRange(aStoreyList);
 
 
             //Adding Spaces
@@ -69,7 +69,7 @@ namespace BH.Adapter.Revit
                     {
                         Space aSpace = aSpatialElement.ToBHoM(aSpatialElementGeometryCalculator, aBuilding.BuildingElementProperties, aStoreyList);
                         if (aSpace != null)
-                            aBuilding.Add(aSpace);
+                            aBuilding.Spaces.Add(aSpace);
                     }
                 }
                 else
@@ -79,7 +79,7 @@ namespace BH.Adapter.Revit
                     {
                         Space aSpace = aSpatialElement.ToBHoM(aSpatialElementBoundaryOptions, aBuilding.BuildingElementProperties, aStoreyList);
                         if (aSpace != null)
-                            aBuilding.Add(aSpace);
+                            aBuilding.Spaces.Add(aSpace);
                     }
                 }
             }
