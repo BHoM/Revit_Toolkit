@@ -60,18 +60,18 @@ namespace Revit2018_Test
             RevitAdapter pRevitAdapter = new RevitAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
 
 
-            FilterQuery query = new FilterQuery() { Type = typeof(BuildingElement) };
+            FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
 
-            Building building = pRevitAdapter.Pull(query).Cast<Building>().First();
+            Building building = pRevitAdapter.Pull(aFilterQuery).Cast<Building>().First();
 
             //Reading existing Revit model and creating BHoM objects
-            Building Building = pRevitAdapter.ReadBuilidng(true, true);
+            //Building Building = pRevitAdapter.ReadBuilidng(true, true);
 
             //Storey offset
             double aOffset = 9.84252;
 
             //Defining base Storey
-            Storey aStorey = Building.Storeys[0];
+            Storey aStorey = building.Storeys[0];
 
             double aIndex = 1;
             foreach(string aName in System.IO.File.ReadAllLines(aPath))
@@ -82,7 +82,7 @@ namespace Revit2018_Test
 
                 //Extracting Building Elements from Spaces on base Storey
                 List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
-                foreach (Space aSpace in Building.Spaces.FindAll(x => x.Storey == aStorey))
+                foreach (Space aSpace in building.Spaces.FindAll(x => x.Storey == aStorey))
                     foreach (BuildingElement aBuildingElement in aSpace.BuildingElements)
                     {
                         //Coping BuilidngElement objects
@@ -100,20 +100,24 @@ namespace Revit2018_Test
 
             IEnumerable<BHoMObject> aBHoMObjectList_Read = null;
 
+
+
             //Read BHoM objects using Revit BuiltInCategory
-            aBHoMObjectList_Read = pRevitAdapter.Read(BuiltInCategory.OST_Walls);
+            //aBHoMObjectList_Read = pRevitAdapter.Pull(BuiltInCategory.OST_Walls);
 
             //Read BHoM objects using Revit BuiltInCategories
-            aBHoMObjectList_Read = pRevitAdapter.Read(new List<BuiltInCategory>() { BuiltInCategory.OST_Walls, BuiltInCategory.OST_Floors });
+            //aBHoMObjectList_Read = pRevitAdapter.Read(new List<BuiltInCategory>() { BuiltInCategory.OST_Walls, BuiltInCategory.OST_Floors });
 
             //Read BHoM objects using BHoM class types
-            aBHoMObjectList_Read = pRevitAdapter.Read(new List<Type>() {typeof(BuildingElement)});
-            
+            aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
+            aBHoMObjectList_Read = pRevitAdapter.Pull(aFilterQuery).Cast<BHoMObject>().ToList();
+
             //Read BHoM objects using Revit class types
-            aBHoMObjectList_Read = pRevitAdapter.Read(new List<Type>() { typeof(Wall), typeof(Floor) });
+            aFilterQuery = new FilterQuery() { Type = typeof(Wall) };
+            aBHoMObjectList_Read = pRevitAdapter.Pull(aFilterQuery).Cast<BHoMObject>().ToList();
 
             //Read BHoM objects using Revit class types and Revit UniqueIds
-            aBHoMObjectList_Read = pRevitAdapter.Read(new List<Type>() { typeof(Wall)}, new string[] { "c89b6638-12ef-4554-b3dd-fb14cb5beae4-00000ba1", "c9ad41eb-e7a9-4848-ad61-43cba875a8b3-0000096f" });
+            //aBHoMObjectList_Read = pRevitAdapter.Read(new List<Type>() { typeof(Wall)}, new string[] { "c89b6638-12ef-4554-b3dd-fb14cb5beae4-00000ba1", "c9ad41eb-e7a9-4848-ad61-43cba875a8b3-0000096f" });
 
             return Result.Succeeded;
         }
