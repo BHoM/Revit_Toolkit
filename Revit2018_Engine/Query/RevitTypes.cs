@@ -41,6 +41,13 @@ namespace BH.Engine.Revit
                 aResult.Add(typeof(RoofBase));
                 return aResult;
             }
+            
+
+            if(Type == typeof(Building))
+            {
+                aResult.Add(typeof(SiteLocation));
+                return aResult;
+            }
 
             return null;
         }

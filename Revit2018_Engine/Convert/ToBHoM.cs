@@ -190,38 +190,32 @@ namespace BH.Engine.Revit
         /***************************************************/
 
         /// <summary>
-        /// Gets BHoM Building from Revit Document
+        /// Gets BHoM Building from Site Location
         /// </summary>
-        /// <param name="document">Revit Document</param>
-        /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
+        /// <param name="siteLocation">Revit Site Location</param>
+        /// <param name="copyCustomData">Copy parameters from Site Location to CustomData of BHoMObjects</param>
         /// <returns name="Building">BHoM Building</returns>
         /// <search>
-        /// Convert, ToBHoM, BHoM Building, Revit Document
+        /// Convert, ToBHoM, BHoM Building, Revit SiteLocation, Site Location
         /// </search>
-        public static Building ToBHoM(this Document document, bool copyCustomData = true)
+        public static Building ToBHoM(this SiteLocation siteLocation, bool copyCustomData = true)
         {
-            List<SiteLocation> aSiteLocationList = new FilteredElementCollector(document).OfClass(typeof(SiteLocation)).Cast<SiteLocation>().ToList();
-            aSiteLocationList.RemoveAll(x => x == null || x.Category == null);
-
-            if (aSiteLocationList.Count < 1)
+            if (siteLocation == null)
                 return null;
-
-            SiteLocation aSiteLocation = aSiteLocationList.First();
 
             Building aBuilding = new Building
             {
-                Elevation = aSiteLocation.Elevation,
-                Longitude = aSiteLocation.Longitude,
-                Latitude = aSiteLocation.Latitude,
+                Elevation = siteLocation.Elevation,
+                Longitude = siteLocation.Longitude,
+                Latitude = siteLocation.Latitude,
                 Location = new oM.Geometry.Point()
             };
 
-            aBuilding = Modify.SetIdentifiers(aBuilding, aSiteLocation) as Building;
+            aBuilding = Modify.SetIdentifiers(aBuilding, siteLocation) as Building;
             if (copyCustomData)
-                aBuilding = Modify.SetCustomData(aBuilding, aSiteLocation) as Building;
+                aBuilding = Modify.SetCustomData(aBuilding, siteLocation) as Building;
 
             return aBuilding;
-
         }
 
         /// <summary>
