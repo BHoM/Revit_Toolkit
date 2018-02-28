@@ -78,7 +78,7 @@ namespace Revit2018_Test
             {
                 //Coping base Storey
                 Storey aStorey_New = aStorey.Copy(aName, aOffset * aIndex);
-                Utilis.BHoM.RemoveIdentifiers(aStorey_New);
+                aStorey_New = BH.Engine.Revit.Modify.RemoveIdentifiers(aStorey_New) as Storey;
 
                 //Extracting Building Elements from Spaces on base Storey
                 List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
@@ -87,7 +87,7 @@ namespace Revit2018_Test
                     {
                         //Coping BuilidngElement objects
                         BuildingElement aBuildingElement_New = aBuildingElement.Move(aStorey_New);
-                        Utilis.BHoM.RemoveIdentifiers(aBuildingElement_New);
+                        aBuildingElement_New = BH.Engine.Revit.Modify.RemoveIdentifiers(aBuildingElement_New) as BuildingElement;
                         aBHoMObjectList.Add(aBuildingElement_New);
                     }
 

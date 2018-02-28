@@ -32,7 +32,7 @@ namespace BH.Adapter.Revit
             if (m_Document == null || bHoMObjects == null || bHoMObjects.Count() < 1)
                 return false;
 
-            List<ElementId> aElementIdList = Utilis.Revit.GetElementIdList(m_Document, Utilis.BHoM.GetUniqueIdList(bHoMObjects, true), true);
+            List<ElementId> aElementIdList = Query.ElementIds(m_Document, Query.UniqueIds(bHoMObjects, true), true);
 
             if (aElementIdList != null || aElementIdList.Count < 1)
                 return false;
@@ -175,7 +175,7 @@ namespace BH.Adapter.Revit
                     List<BuildingElementProperties> aBuildingElementPropertiesList = buildingElementProperties.ToList();
                     foreach(BuildingElementType aBuildingElementType in aBuildingElementPropertiesList.ConvertAll(x => x.BuildingElementType).Distinct())
                     {
-                        Type aType = Utilis.Revit.GetType(aBuildingElementType);
+                        Type aType = Query.RevitType(aBuildingElementType);
                         this.DeleteByName(aType, aBuildingElementPropertiesList.FindAll(x => x.BuildingElementType == aBuildingElementType));
                     }
                 } 
@@ -195,7 +195,7 @@ namespace BH.Adapter.Revit
 
         private bool DeleteByUniqueId(BHoMObject bHoMObject)
         {
-            string aUniqueId = Utilis.BHoM.GetUniqueId(bHoMObject);
+            string aUniqueId = Query.UniqueId(bHoMObject);
             if (aUniqueId != null)
             {
                 Element aElement = m_Document.GetElement(aUniqueId);

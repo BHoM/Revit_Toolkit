@@ -30,7 +30,7 @@ namespace BH.Adapter.Revit
         /// </search>
         public RevitAdapter(Document document)
         {
-            AdapterId = Utilis.AdapterId;
+            AdapterId = Engine.Revit.Convert.AdapterId;
 
             m_Document = document;
         }

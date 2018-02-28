@@ -157,7 +157,7 @@ namespace BH.Adapter.Revit
             if (replace)
                 Delete(buildingElementProperties);
 
-            Type aType = Utilis.Revit.GetType(buildingElementProperties.BuildingElementType);
+            Type aType = Query.RevitType(buildingElementProperties.BuildingElementType);
             List<Element> aElementList = new FilteredElementCollector(m_Document).OfClass(aType).ToList();
             if (aElementList == null && aElementList.Count < 1)
                 return false;

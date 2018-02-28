@@ -99,7 +99,7 @@ namespace BH.Adapter.Revit
         {
             Element aElement = m_Document.GetElement(elementId);
 
-            Type aType = Utilis.BHoM.GetType(aElement);
+            Type aType = Engine.Revit.Query.BHoMType(aElement);
             if (aType != typeof(BuildingElement))
                 return null;
 
@@ -128,7 +128,7 @@ namespace BH.Adapter.Revit
             if (aElement == null)
                 return null; 
 
-            Type aType = Utilis.BHoM.GetType(aElement);
+            Type aType = Engine.Revit.Query.BHoMType(aElement);
             if (aType == null)
                 return null;
 
@@ -165,7 +165,7 @@ namespace BH.Adapter.Revit
             if (aElement == null)
                 return null;
 
-            Type aType = Utilis.BHoM.GetType(aElement);
+            Type aType = Engine.Revit.Query.BHoMType(aElement);
             if (aType == null)
                 return null;
 
@@ -257,14 +257,14 @@ namespace BH.Adapter.Revit
             List<Type> aTypeList = new List<Type>();
             foreach(Type aType in types)
             {
-                if (Utilis.Type.IsAssignableFromByFullName(typeof(Element), aType))
+                if (Engine.Revit.Query.IsAssignableFromByFullName(typeof(Element), aType))
                 {
                     if (!aTypeList.Contains(aType))
                         aTypeList.Add(aType);
                 }
-                else if (Utilis.Type.IsAssignableFromByFullName(typeof(BHoMObject), aType))
+                else if (Engine.Revit.Query.IsAssignableFromByFullName(typeof(BHoMObject), aType))
                 {
-                    IEnumerable<Type> aTypes = Utilis.Revit.GetTypes(aType);
+                    IEnumerable<Type> aTypes = Engine.Revit.Query.RevitTypes(aType);
                     if (aTypes != null)
                     {
                         foreach (Type aType_Temp in aTypes)
