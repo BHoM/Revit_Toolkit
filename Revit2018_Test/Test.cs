@@ -60,47 +60,49 @@ namespace Revit2018_Test
             RevitAdapter pRevitAdapter = new RevitAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
 
 
-            FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
+            FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(Building) };
+            // Building building = pRevitAdapter.Pull(aFilterQuery).Cast<Building>().First();
 
-            Building building = pRevitAdapter.Pull(aFilterQuery).Cast<Building>().First();
+            Building building = pRevitAdapter.Pull(true, true);
 
-            //Reading existing Revit model and creating BHoM objects
-            //Building Building = pRevitAdapter.ReadBuilidng(true, true);
-
-            //Storey offset
-            double aOffset = 9.84252;
-
-            //Defining base Storey
-            Storey aStorey = building.Storeys[0];
-
-            double aIndex = 1;
-            foreach(string aName in System.IO.File.ReadAllLines(aPath))
+            if (building.Storeys != null && building.Storeys.Count > 0)
             {
-                //Coping base Storey
-                Storey aStorey_New = aStorey.Copy(aName, aOffset * aIndex);
-                aStorey_New = BH.Engine.Revit.Modify.RemoveIdentifiers(aStorey_New) as Storey;
+                //Reading existing Revit model and creating BHoM objects
+                //Building Building = pRevitAdapter.ReadBuilidng(true, true);
 
-                //Extracting Building Elements from Spaces on base Storey
-                List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
-                foreach (Space aSpace in building.Spaces.FindAll(x => x.Storey == aStorey))
-                    foreach (BuildingElement aBuildingElement in aSpace.BuildingElements)
-                    {
-                        //Coping BuilidngElement objects
-                        BuildingElement aBuildingElement_New = aBuildingElement.Move(aStorey_New);
-                        aBuildingElement_New = BH.Engine.Revit.Modify.RemoveIdentifiers(aBuildingElement_New) as BuildingElement;
-                        aBHoMObjectList.Add(aBuildingElement_New);
-                    }
+                //Storey offset
+                double aOffset = 9.84252;
 
-                //Creating new Revit Elements from copied BHoMObjects
-                pRevitAdapter.Push(aBHoMObjectList, "");
-                //pRevitAdapter.Create(aBHoMObjectList, true, false);
+                //Defining base Storey
+                Storey aStorey = building.Storeys[0];
 
-                aIndex++;
+                double aIndex = 1;
+                foreach (string aName in System.IO.File.ReadAllLines(aPath))
+                {
+                    //Coping base Storey
+                    Storey aStorey_New = aStorey.Copy(aName, aOffset * aIndex);
+                    aStorey_New = BH.Engine.Revit.Modify.RemoveIdentifiers(aStorey_New) as Storey;
+
+                    //Extracting Building Elements from Spaces on base Storey
+                    List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
+                    foreach (Space aSpace in building.Spaces.FindAll(x => x.Storey == aStorey))
+                        foreach (BuildingElement aBuildingElement in aSpace.BuildingElements)
+                        {
+                            //Coping BuilidngElement objects
+                            BuildingElement aBuildingElement_New = aBuildingElement.Move(aStorey_New);
+                            aBuildingElement_New = BH.Engine.Revit.Modify.RemoveIdentifiers(aBuildingElement_New) as BuildingElement;
+                            aBHoMObjectList.Add(aBuildingElement_New);
+                        }
+
+                    //Creating new Revit Elements from copied BHoMObjects
+                    pRevitAdapter.Push(aBHoMObjectList, "");
+                    //pRevitAdapter.Create(aBHoMObjectList, true, false);
+
+                    aIndex++;
+                }
             }
 
             IEnumerable<BHoMObject> aBHoMObjectList_Read = null;
-
-
 
             //Read BHoM objects using Revit BuiltInCategory
             //aBHoMObjectList_Read = pRevitAdapter.Pull(BuiltInCategory.OST_Walls);

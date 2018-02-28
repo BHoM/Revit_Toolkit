@@ -48,6 +48,8 @@ namespace BH.Engine.Revit
                 return typeof(BuildingElement);
             if (element is Floor)
                 return typeof(BuildingElement);
+            if (element is SiteLocation)
+                return typeof(Building);
 
             return null;
         }
