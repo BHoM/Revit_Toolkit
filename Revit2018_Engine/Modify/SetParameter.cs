@@ -19,7 +19,7 @@ namespace BH.Engine.Revit
         /***************************************************/
 
         /// <summary>
-        /// Copy Value to Revit Parameter. If parameter has units then value needs to be in Revit internal units: use UnitUtils.ConvertToInternalUnits (Autodesk.Revit.DB) to convert units
+        /// Mutable method, Copy Value to Revit Parameter. If parameter has units then value needs to be in Revit internal units: use UnitUtils.ConvertToInternalUnits (Autodesk.Revit.DB) to convert units
         /// </summary>
         /// <param name="parameter">Revit Parameter</param>
         /// <param name="value">Value for parameter to be set. StorageType: 1. Double - Value type of double, int, bool, string 2. ElementId - Value type of int, string, 3. Integer - Value type of double, int, bool, string 4. String - value type of string, object</param>

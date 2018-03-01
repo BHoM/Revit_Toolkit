@@ -25,6 +25,11 @@ namespace BH.Adapter.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+
+        /***************************************************/
+        /**** Protected Methods                         ****/
+        /***************************************************/
+
         /// <summary>
         /// Generates BHoM Building from Revit Document
         /// </summary>
@@ -34,7 +39,7 @@ namespace BH.Adapter.Revit
         /// <search>
         /// RevitAdapter, ReadBuilidng, Read Builidng, Revit 
         /// </search>
-        public Building Pull(bool generateSpaces, bool spaces3D)
+        protected Building Read(bool generateSpaces, bool spaces3D)
         {
             List<Element> aElementList = new FilteredElementCollector(m_Document).OfClass(typeof(SiteLocation)).ToList();
             if (aElementList == null || aElementList.Count < 1)
@@ -103,9 +108,9 @@ namespace BH.Adapter.Revit
         /// <search>
         /// RevitAdapter, Read, Revit, BuiltInCategory, BHoMObject, BHoM, BHoMObjects
         /// </search>
-        public IEnumerable<BHoMObject> Pull(BuiltInCategory builtInCategory)
+        protected IEnumerable<BHoMObject> Read(BuiltInCategory builtInCategory)
         {
-            return Pull(new BuiltInCategory[] { builtInCategory });
+            return Read(new BuiltInCategory[] { builtInCategory });
         }
 
         /// <summary>
@@ -116,14 +121,14 @@ namespace BH.Adapter.Revit
         /// <search>
         /// RevitAdapter, Read, Revit, BuiltInCategory, BHoMObject, BHoM, BHoMObjects, BuiltInCategories
         /// </search>
-        public IEnumerable<BHoMObject> Pull(IEnumerable<BuiltInCategory> builtInCategories)
+        protected IEnumerable<BHoMObject> Read(IEnumerable<BuiltInCategory> builtInCategories)
         {
             if (m_Document == null || builtInCategories == null || builtInCategories.Count() < 1)
                 return null;
 
             ICollection<ElementId> aElementIdList = new FilteredElementCollector(m_Document).WherePasses(new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
 
-            return Pull(aElementIdList);
+            return Read(aElementIdList);
         }
 
         /// <summary>
@@ -134,7 +139,7 @@ namespace BH.Adapter.Revit
         /// <search>
         /// RevitAdapter, Read, Revit, ElementId, BHoMObjects, BHoM
         /// </search>
-        public IEnumerable<BHoMObject> Pull(ElementId elementId)
+        protected IEnumerable<BHoMObject> Read(ElementId elementId)
         {
             if (m_Document == null || elementId == null || elementId == ElementId.InvalidElementId)
                 return null;
@@ -168,7 +173,7 @@ namespace BH.Adapter.Revit
         /// <search>
         /// RevitAdapter, Read, Revit, ElementId, BHoMObject, BHoM, BHoMObjects
         /// </search>
-        public IEnumerable<BHoMObject> Pull(IEnumerable<ElementId> elementIds)
+        protected IEnumerable<BHoMObject> Read(IEnumerable<ElementId> elementIds)
         {
             if (m_Document == null || elementIds == null)
                 return null;
@@ -176,7 +181,7 @@ namespace BH.Adapter.Revit
             List<BHoMObject> aResult = new List<BHoMObject>();
             foreach (ElementId aElementId in elementIds)
             {
-                IEnumerable<BHoMObject> aBHoMObjects = Pull(aElementId);
+                IEnumerable<BHoMObject> aBHoMObjects = Read(aElementId);
                 if (aBHoMObjects == null || aBHoMObjects.Count() < 1)
                     continue;
 
@@ -196,7 +201,7 @@ namespace BH.Adapter.Revit
         /// <search>
         /// RevitAdapter, Read, Revit, BHoMObject, BHoM, BHoMObjects, 
         /// </search>
-        protected IEnumerable<BHoMObject> Pull(IEnumerable<Type> types, IEnumerable<string> uniqueIds = null)
+        protected IEnumerable<BHoMObject> Read(IEnumerable<Type> types, IEnumerable<string> uniqueIds = null)
         {
             if (types == null || m_Document == null)
                 return null;
@@ -239,12 +244,8 @@ namespace BH.Adapter.Revit
             if (aElementIdList == null || aElementIdList.Count < 1)
                 return null;
 
-            return Pull(aElementIdList);
+            return Read(aElementIdList);
         }
-
-        /***************************************************/
-        /**** Protected Methods                         ****/
-        /***************************************************/
 
         /// <summary>
         /// Generates BHoM BuildingElement from Revit Element by given ElementId
@@ -262,7 +263,7 @@ namespace BH.Adapter.Revit
             if (aType != typeof(BuildingElement))
                 return null;
 
-            IEnumerable<BHoMObject> aResult = Pull(elementId);
+            IEnumerable<BHoMObject> aResult = Read(elementId);
             if (aResult == null)
                 return null;
 
@@ -318,9 +319,9 @@ namespace BH.Adapter.Revit
         protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
         {
             if(ids == null)
-                return Pull(new Type[] { type }, null);
+                return Read(new Type[] { type }, null);
             else
-                return Pull(new Type[] { type }, ids.Cast<string>().ToList());
+                return Read(new Type[] { type }, ids.Cast<string>().ToList());
         }
     }
 }
