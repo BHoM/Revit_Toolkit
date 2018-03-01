@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Revit2018External_Adapter
+namespace BH.Adapter.RevitLink
 {
-    public class Class1
+    public enum PackageType
     {
+        Push,
+        Pull
     }
 }
