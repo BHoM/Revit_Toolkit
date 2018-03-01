@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Revit2018External_Adapter")]
+[assembly: AssemblyTitle("RevitListener")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Buro Happold")]
-[assembly: AssemblyProduct("Revit2018External_Adapter")]
+[assembly: AssemblyProduct("RevitListener")]
 [assembly: AssemblyCopyright("Copyright © Buro Happold 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("6287cd04-f46b-4b5a-bd3e-9ea75e69ce66")]
+[assembly: Guid("928290e0-9cb8-4b96-bd7a-a2e4638824ac")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -31,7 +31,8 @@ namespace BH.Adapter.Revit
         public RevitAdapter(Document document)
         {
             AdapterId = Engine.Revit.Convert.AdapterId;
-
+            Config.UseAdapterId = false;
+            Config.ProcessInMemory = false;
             m_Document = document;
         }
     }
