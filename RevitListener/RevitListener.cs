@@ -58,6 +58,18 @@ namespace BH.Adapter.Revit
         }
 
         /***************************************************/
+        public void SetPorts(int inputPort, int outputPort)
+        {
+            //Not sure if needed
+            m_linkIn.DataObservers -= M_linkIn_DataObservers;
+
+            m_linkIn = new SocketLink_Tcp(inputPort);
+            m_linkIn.DataObservers += M_linkIn_DataObservers;
+
+            m_linkOut = new SocketLink_Tcp(outputPort);
+        }
+
+        /***************************************************/
         /**** Revit addin methods                       ****/
         /***************************************************/
 
@@ -73,7 +85,7 @@ namespace BH.Adapter.Revit
 
         public Result OnStartup(UIControlledApplication application)
         {
-            RibbonPanel aRibbonPanel = application.CreateRibbonPanel("RevitListen");
+            AddRibbonItems(application);
 
             //Define static instance of the listener
             Listener = this;
@@ -99,6 +111,19 @@ namespace BH.Adapter.Revit
             return Result.Succeeded;
         }
 
+        /***************************************************/
+
+        private void AddRibbonItems(UIControlledApplication application)
+        {
+            RibbonPanel aRibbonPanel = application.CreateRibbonPanel("RevitListen");
+
+            PushButton aPushButton = aRibbonPanel.AddItem(new PushButtonData("Update Ports", "Update Ports", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".UpdatePorts")) as PushButton;
+            //aPushButton.LargeImage = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(TestResource.Test.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            aPushButton.ToolTip = "Update the ports that revit is listening on for information from external softwares sending BHoM information";
+        }
+
+        /***************************************************/
+        /**** Data observer method                      ****/
         /***************************************************/
 
         private void M_linkIn_DataObservers(oM.Socket.DataPackage package)
