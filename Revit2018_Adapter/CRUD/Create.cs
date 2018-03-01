@@ -19,6 +19,11 @@ namespace BH.Adapter.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+
+        /***************************************************/
+        /**** Protected Methods                         ****/
+        /***************************************************/
+
         /// <summary>
         /// Create BHoMObject in Revit Document. BHoMObject is linked to Revit element by CustomData parameter called by Utilis.AdapterId const. Use Utilis.BHoM.CopyIdentifiers to include necessary information in BHoMObject
         /// </summary>
@@ -29,7 +34,7 @@ namespace BH.Adapter.Revit
         /// <search>
         /// Create, BHoMObject, Revit, Document
         /// </search>
-        public bool Create(BHoMObject bHoMObject, bool copyCustomData = true, bool replace = false)
+        protected bool Create(BHoMObject bHoMObject, bool copyCustomData = true, bool replace = false)
         {
             bool aResult = false;
             using (Transaction aTransaction = new Transaction(m_Document, "Create"))
@@ -51,8 +56,7 @@ namespace BH.Adapter.Revit
         /// <search>
         /// Create, BHoMObjects, BHoMObject, Revit, Document
         /// </search>
-        public bool Create(IEnumerable<BHoMObject> bHoMObjects, bool copyCustomData = true, bool replace = false)
-        //TODO: Change input BHoMObjects to IEnumerable<IObject>
+        protected bool Create(IEnumerable<BHoMObject> bHoMObjects, bool copyCustomData = true, bool replace = false)
         {
             if (m_Document == null || bHoMObjects == null && bHoMObjects.Count() < 1)
                 return false;
@@ -67,10 +71,6 @@ namespace BH.Adapter.Revit
 
             return true;
         }
-
-        /***************************************************/
-        /**** Protected Methods                         ****/
-        /***************************************************/
 
         /// <summary>
         /// Create BHoMObjects in Revit Document. BHoMObjects are linked to Revit elements by CustomData parameter called by Utilis.AdapterId const. Use Utilis.BHoM.CopyIdentifiers to include necessary information in BHoMObject
