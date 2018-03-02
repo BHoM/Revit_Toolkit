@@ -2,12 +2,15 @@
 using System.Linq;
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Structure;
 
 using BH.oM.Environmental.Properties;
 using BH.oM.Structural.Elements;
+using BH.oM.Structural.Properties;
 using BH.oM.Environmental.Elements;
 
 using BH.Engine.Environment;
+using BHS = BH.Engine.Structure;
 using BH.oM.Base;
 
 namespace BH.Engine.Revit
@@ -20,7 +23,7 @@ namespace BH.Engine.Revit
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-
+        
         /// <summary>
         /// Gets BHoM Point from Revit (XYZ) Point
         /// </summary>
@@ -257,6 +260,39 @@ namespace BH.Engine.Revit
             return aBuilding;
         }
 
+        /***************************************************/
+
+        public static BHoMObject ToBHoM(this FamilyInstance familyInstance, Discipline discipline = Discipline.Structural, bool copyCustomData = true)
+        {
+            switch (discipline)
+            {
+                case Discipline.Structural:
+                    {
+                        StructuralType structuralType = ((FamilyInstance)familyInstance).StructuralType;
+                        if (structuralType == StructuralType.Beam || structuralType == StructuralType.Brace || structuralType == StructuralType.Column)
+                        {
+                            AnalyticalModel analyticalModel = familyInstance.GetAnalyticalModel();
+                            if (analyticalModel == null) return null;
+
+                            oM.Geometry.Line barCurve = analyticalModel.GetCurve().ToBHoM() as oM.Geometry.Line;
+                            ISectionProperty aSectionProperty = familyInstance.Symbol.ToBHoM(discipline, copyCustomData) as ISectionProperty;
+                            aSectionProperty.Material = familyInstance.StructuralMaterialType.ToBHoM();
+
+                            Bar aBar = BHS.Create.Bar(barCurve, aSectionProperty);
+
+                            aBar = Modify.SetIdentifiers(aBar, familyInstance) as Bar;
+                            if (copyCustomData)
+                                aBar = Modify.SetCustomData(aBar, familyInstance) as Bar;
+
+                            return aBar;
+                        }
+                        return null;
+                    }
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Gets BHoM BuildingElement from Revit Wall
         /// </summary>
@@ -267,12 +303,17 @@ namespace BH.Engine.Revit
         /// <search>
         /// Convert, ToBHoM, BHoM BuildingElement, Revit Wall
         /// </search>
+        /// 
+
+        // split this to multiple panels? if a panel is separate here, it will cause issues in laundry? how about pulling back to revit?
+
         public static BHoMObject ToBHoM(this Wall wall, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             switch(discipline)
             {
                 case Discipline.Environmental:
                     {
+
                         BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
 
                         BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, ToBHoMBuildingElementCurve(wall), ToBHoM(wall.Document.GetElement(wall.LevelId) as Level, discipline, copyCustomData) as Storey);
@@ -282,6 +323,22 @@ namespace BH.Engine.Revit
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, wall) as BuildingElement;
 
                         return aBuildingElement;
+                    }
+
+                case Discipline.Structural:
+                    {
+                        Property2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData) as Property2D;
+
+                        List<oM.Geometry.ICurve> outlines = wall.GetBHOutlines().Select(p=>(oM.Geometry.ICurve)p).ToList();
+
+                        PanelPlanar aPanelPlanar = ModelLaundry.Create.PanelPlanar(outlines)[0];       // this is a temporary cheat!
+                        aPanelPlanar.Property = aProperty2D;
+
+                        aPanelPlanar = Modify.SetIdentifiers(aPanelPlanar, wall) as PanelPlanar;
+                        if (copyCustomData)
+                            aPanelPlanar = Modify.SetCustomData(aPanelPlanar, wall) as PanelPlanar;
+
+                        return aPanelPlanar;
                     }
             }
 
@@ -304,6 +361,9 @@ namespace BH.Engine.Revit
             {
                 case Discipline.Environmental:
                     {
+                        // we need the same like this for walls?
+
+
                         List<BHoMObject> aResult = new List<BHoMObject>();
                         BuildingElementProperties aBuildingElementProperties = floor.FloorType.ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
                         foreach (BuildingElementPanel aBuildingElementPanel in ToBHoMBuildingElementPanels(floor))
@@ -316,6 +376,27 @@ namespace BH.Engine.Revit
 
                             aResult.Add(aBuildingElement);
                         }
+                        return aResult;
+                    }
+                case Discipline.Structural:
+                    {
+                        Property2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData) as Property2D;
+
+                        List<oM.Geometry.ICurve> outlines = floor.GetBHOutlines().Select(p => (oM.Geometry.ICurve)p).ToList();
+
+                        List<BHoMObject> aResult = new List<BHoMObject>();
+                        List<PanelPlanar> aPanelsPlanar = ModelLaundry.Create.PanelPlanar(outlines);
+                        for (int i = 0; i < aPanelsPlanar.Count; i++)
+                        {
+                            PanelPlanar pp = aPanelsPlanar[i];
+                            pp.Property = aProperty2D;
+                            pp = Modify.SetIdentifiers(pp, floor) as PanelPlanar;
+
+                            if (copyCustomData)
+                                pp = Modify.SetCustomData(pp, floor) as PanelPlanar;
+                            aResult.Add(pp);
+                        }
+
                         return aResult;
                     }
             }
@@ -335,13 +416,45 @@ namespace BH.Engine.Revit
         /// </search>
         public static BHoMObject ToBHoM(this WallType wallType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
-            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Wall, wallType.Name);
+            switch (discipline)
+            {
+                case Discipline.Environmental:
+                    {
+                        BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Wall, wallType.Name);
 
-            aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, wallType) as BuildingElementProperties;
-            if (copyCustomData)
-                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, wallType) as BuildingElementProperties;
+                        aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, wallType) as BuildingElementProperties;
+                        if (copyCustomData)
+                            aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, wallType) as BuildingElementProperties;
 
-            return aBuildingElementProperties;
+                        return aBuildingElementProperties;
+                    }
+
+                case Discipline.Structural:
+                    {
+                        Document document = wallType.Document;
+                        double aThickness = wallType.LookupParameter("Thickness").AsDouble() * feetToMetre;
+
+                        oM.Common.Materials.Material aMaterial = new oM.Common.Materials.Material();
+                        foreach (ElementId id in wallType.GetMaterialIds(false))
+                        {
+                            Material m = document.GetElement(id) as Material;
+                            if (m != null)
+                            {
+                                aMaterial = m.ToBHoM();         // this is dangerous for multilayer panels?
+                            }
+                        }
+
+                        ConstantThickness aProperty2D = new ConstantThickness { Type = oM.Structural.Properties.PanelType.Wall, Thickness = aThickness, Material = aMaterial };
+
+                        aProperty2D = Modify.SetIdentifiers(aProperty2D, wallType) as ConstantThickness;
+                        if (copyCustomData)
+                            aProperty2D = Modify.SetCustomData(aProperty2D, wallType) as ConstantThickness;
+
+                        return aProperty2D;
+                    }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -356,13 +469,37 @@ namespace BH.Engine.Revit
         /// </search>
         public static BHoMObject ToBHoM(this FloorType floorType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
-            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Floor, floorType.Name);
+            switch (discipline)
+            {
+                case Discipline.Environmental:
+                    {
+                        BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Floor, floorType.Name);
 
-            aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, floorType) as BuildingElementProperties;
-            if (copyCustomData)
-                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, floorType) as BuildingElementProperties;
+                        aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, floorType) as BuildingElementProperties;
+                        if (copyCustomData)
+                            aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, floorType) as BuildingElementProperties;
 
-            return aBuildingElementProperties;
+                        return aBuildingElementProperties;
+                    }
+
+                case Discipline.Structural:
+                    {
+                        Document document = floorType.Document;
+                        double aThickness = floorType.LookupParameter("Thickness").AsDouble() * feetToMetre;
+                        Material m = (Material)document.GetElement(floorType.StructuralMaterialId);
+                        oM.Common.Materials.Material aMaterial = m.ToBHoM();
+                            
+                        ConstantThickness aProperty2D = new ConstantThickness { Type = oM.Structural.Properties.PanelType.Slab, Thickness = aThickness, Material = aMaterial };
+
+                        aProperty2D = Modify.SetIdentifiers(aProperty2D, floorType) as ConstantThickness;
+                        if (copyCustomData)
+                            aProperty2D = Modify.SetCustomData(aProperty2D, floorType) as ConstantThickness;
+
+                        return aProperty2D;
+                    }
+
+            }
+            return null;
         }
 
         /// <summary>
@@ -398,13 +535,96 @@ namespace BH.Engine.Revit
         /// </search>
         public static BHoMObject ToBHoM(this RoofType roofType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
-            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Roof, roofType.Name);
+            switch (discipline)
+            {
+                case Discipline.Environmental:
+                    {
+                        BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Roof, roofType.Name);
 
-            aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, roofType) as BuildingElementProperties;
-            if (copyCustomData)
-                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, roofType) as BuildingElementProperties;
+                        aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, roofType) as BuildingElementProperties;
+                        if (copyCustomData)
+                            aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, roofType) as BuildingElementProperties;
 
-            return aBuildingElementProperties;
+                        return aBuildingElementProperties;
+                    }
+
+                case Discipline.Structural:
+                    {
+                        Document document = roofType.Document;
+                        double aThickness = roofType.LookupParameter("Thickness").AsDouble() * feetToMetre;
+
+                        oM.Common.Materials.Material aMaterial = new oM.Common.Materials.Material();
+                        foreach (ElementId id in roofType.GetMaterialIds(false))
+                        {
+                            Material m = document.GetElement(id) as Material;
+                            if (m != null)
+                            {
+                                aMaterial = m.ToBHoM();         // this is dangerous for multilayer panels?
+                            }
+                        }
+
+                        ConstantThickness aProperty2D = new ConstantThickness { Type = oM.Structural.Properties.PanelType.Slab, Thickness = aThickness, Material = aMaterial };
+
+                        aProperty2D = Modify.SetIdentifiers(aProperty2D, roofType) as ConstantThickness;
+                        if (copyCustomData)
+                            aProperty2D = Modify.SetCustomData(aProperty2D, roofType) as ConstantThickness;
+
+                        return aProperty2D;
+                    }
+            }
+
+            return null;
+        }
+
+
+        public static ISectionProperty ToBHoM(this FamilySymbol familySymbol, Discipline discipline = Discipline.Structural, bool copyCustomData = true)
+        {
+            switch (discipline)
+            {
+                case Discipline.Structural:
+                    {
+                        // add sturctural section
+                    }
+            }
+
+            return null;
+        }
+
+
+        public static oM.Common.Materials.Material ToBHoM(this StructuralMaterialType structuralMaterialType)
+        {
+            switch (structuralMaterialType)
+            {
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Aluminum:
+                    return BH.Engine.Library.Query.Match("MaterialsEurope", "ALUM") as oM.Common.Materials.Material;
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete:
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.PrecastConcrete:
+                    return BH.Engine.Library.Query.Match("MaterialsEurope", "C30/37") as oM.Common.Materials.Material;
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
+                    return BH.Engine.Library.Query.Match("MaterialsEurope", "S355") as oM.Common.Materials.Material;
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood:
+                    return BH.Engine.Library.Query.Match("MaterialsEurope", "TIMBER") as oM.Common.Materials.Material;
+                default:
+                    return BH.Engine.Library.Query.Match("MaterialsEurope", "S355") as oM.Common.Materials.Material;
+            }
+        }
+
+
+        public static oM.Common.Materials.Material ToBHoM(this Material material)
+        {
+            switch (material.MaterialClass)
+            {
+                case "Aluminium":
+                    return BH.Engine.Library.Query.Match("MaterialsEurope", "ALUM") as oM.Common.Materials.Material;
+                case "Concrete":
+                    return BH.Engine.Library.Query.Match("MaterialsEurope", "C30/37") as oM.Common.Materials.Material;
+                case "Steel":
+                    return BH.Engine.Library.Query.Match("MaterialsEurope", "S355") as oM.Common.Materials.Material;
+                case "Wood":
+                    return BH.Engine.Library.Query.Match("MaterialsEurope", "TIMBER") as oM.Common.Materials.Material;
+                default:
+                    return BH.Engine.Library.Query.Match("MaterialsEurope", "S355") as oM.Common.Materials.Material;
+            }
         }
 
         /// <summary>
@@ -709,6 +929,26 @@ namespace BH.Engine.Revit
             }
             return aResult;
         }
+
+        /***************************************************/
+
+        private static List<oM.Geometry.Polyline> GetBHOutlines(this Wall wall)
+        {
+            List<Curve> curves = wall.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
+            List<oM.Geometry.Line> lines = curves.Select(c => (oM.Geometry.Line)c.ToBHoM()).ToList();
+            return Geometry.Modify.Join(lines);
+        }
+
+        /***************************************************/
+
+        private static List<oM.Geometry.Polyline> GetBHOutlines(this Floor floor)
+        {
+            List<Curve> curves = floor.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
+            List<oM.Geometry.Line> lines = curves.Select(c => (oM.Geometry.Line)c.ToBHoM()).ToList();
+            return Geometry.Modify.Join(lines);
+        }
+
+        private const double feetToMetre = 0.3048; // should be in BHoM?
     }
 }
  

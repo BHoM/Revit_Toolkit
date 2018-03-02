@@ -5,9 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Structure;
 
 using BH.oM.Environmental.Properties;
 using BH.oM.Environmental.Elements;
+using BH.oM.Structural.Elements;
+using BH.oM.Structural.Properties;
 
 namespace BH.Engine.Revit
 {
@@ -32,27 +35,42 @@ namespace BH.Engine.Revit
         {
             List<Type> aResult = new List<Type>();
 
+            //if (element is FamilyInstance)
+            //{
+            //    switch (((FamilyInstance)element).StructuralType)
+            //    {
+            //        case StructuralType.Beam:
+            //        case StructuralType.Column:
+            //        case StructuralType.Brace:
+            //            aResult.Add(typeof(Bar));
+            //            return aResult;
+            //    }
+            //}
+
             if (element is CeilingType)
             {
                 aResult.Add(typeof(BuildingElementProperties));
                 return aResult;
             }
-                
+
             if (element is WallType)
             {
                 aResult.Add(typeof(BuildingElementProperties));
+                aResult.Add(typeof(Property2D));
                 return aResult;
             }
 
             if (element is FloorType)
             {
                 aResult.Add(typeof(BuildingElementProperties));
+                aResult.Add(typeof(Property2D));
                 return aResult;
             }
 
             if (element is RoofType)
             {
                 aResult.Add(typeof(BuildingElementProperties));
+                aResult.Add(typeof(Property2D));
                 return aResult;
             }
 
@@ -65,6 +83,7 @@ namespace BH.Engine.Revit
             if (element is Wall)
             {
                 aResult.Add(typeof(BuildingElement));
+                aResult.Add(typeof(PanelPlanar));
                 return aResult;
             }
 
@@ -78,13 +97,14 @@ namespace BH.Engine.Revit
             if (element.GetType().IsAssignableFromByFullName(typeof(RoofBase)))
             {
                 aResult.Add(typeof(BuildingElement));
+                aResult.Add(typeof(PanelPlanar));
                 return aResult;
             }
 
             if (element is Floor)
             {
                 aResult.Add(typeof(BuildingElement));
-
+                aResult.Add(typeof(PanelPlanar));
                 return aResult;
             }
 
@@ -96,7 +116,7 @@ namespace BH.Engine.Revit
 
             if (element is Level)
             {
-                aResult.Add(typeof(oM.Structural.Elements.Storey));
+                aResult.Add(typeof(Storey));
                 return aResult;
             }
 
