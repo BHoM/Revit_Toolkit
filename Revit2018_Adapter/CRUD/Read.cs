@@ -88,16 +88,7 @@ namespace BH.Adapter.Revit
             if (aTypeList == null)
                 return null;
 
-            if (aElement is Floor)
-            {
-                return Engine.Revit.Convert.ToBHoM(aElement as Floor, discipline, true);
-            }
-            else
-            {
-                List<BHoMObject> aResult = new List<BHoMObject>();
-                aResult.Add(Engine.Revit.Convert.ToBHoM(aElement as dynamic, discipline, true));
-                return aResult;
-            }
+            return Engine.Revit.Convert.ToBHoM(aElement as dynamic, discipline, true);
         }
 
         /// <summary>
