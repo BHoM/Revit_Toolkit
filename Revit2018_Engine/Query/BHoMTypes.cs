@@ -84,6 +84,7 @@ namespace BH.Engine.Revit
             if (element is Floor)
             {
                 aResult.Add(typeof(BuildingElement));
+
                 return aResult;
             }
 
