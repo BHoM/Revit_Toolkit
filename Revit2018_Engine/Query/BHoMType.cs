@@ -38,18 +38,20 @@ namespace BH.Engine.Revit
                 return typeof(BuildingElementProperties);
             if (element is RoofType)
                 return typeof(BuildingElementProperties);
-            if (element.GetType().IsAssignableFrom(typeof(SpatialElement)))
+            if (element.GetType().IsAssignableFromByFullName(typeof(SpatialElement)))
                 return typeof(Space);
             if (element is Wall)
                 return typeof(BuildingElement);
             if (element is Ceiling)
                 return typeof(BuildingElement);
-            if (element.GetType().IsAssignableFrom(typeof(RoofBase)))
+            if (element.GetType().IsAssignableFromByFullName(typeof(RoofBase)))
                 return typeof(BuildingElement);
             if (element is Floor)
                 return typeof(BuildingElement);
             if (element is SiteLocation)
                 return typeof(Building);
+            if (element is Level)
+                return typeof(oM.Structural.Elements.Storey);
 
             return null;
         }

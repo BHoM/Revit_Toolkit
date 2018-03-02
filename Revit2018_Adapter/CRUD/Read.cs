@@ -210,12 +210,12 @@ namespace BH.Adapter.Revit
             List<Type> aTypeList = new List<Type>();
             foreach (Type aType in types)
             {
-                if (Engine.Revit.Query.IsAssignableFromByFullName(typeof(Element), aType))
+                if (Engine.Revit.Query.IsAssignableFromByFullName(aType, typeof(Element)))
                 {
                     if (!aTypeList.Contains(aType))
                         aTypeList.Add(aType);
                 }
-                else if (Engine.Revit.Query.IsAssignableFromByFullName(typeof(BHoMObject), aType))
+                else if (Engine.Revit.Query.IsAssignableFromByFullName(aType, typeof(BHoMObject)))
                 {
                     IEnumerable<Type> aTypes = Engine.Revit.Query.RevitTypes(aType);
                     if (aTypes != null)
