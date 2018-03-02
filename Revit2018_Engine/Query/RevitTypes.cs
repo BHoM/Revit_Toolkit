@@ -29,7 +29,7 @@ namespace BH.Engine.Revit
             if (Type == null)
                 return null;
 
-            if (!Query.IsAssignableFromByFullName(typeof(BHoMObject), Type))
+            if (!Query.IsAssignableFromByFullName(Type, typeof(BHoMObject)))
                 return null;
 
             List<System.Type> aResult = new List<System.Type>();
@@ -46,6 +46,18 @@ namespace BH.Engine.Revit
             if(Type == typeof(Building))
             {
                 aResult.Add(typeof(SiteLocation));
+                return aResult;
+            }
+
+            if (Type == typeof(oM.Structural.Elements.Storey))
+            {
+                aResult.Add(typeof(Level));
+                return aResult;
+            }
+
+            if (Type == typeof(Space))
+            {
+                aResult.Add(typeof(SpatialElement));
                 return aResult;
             }
 

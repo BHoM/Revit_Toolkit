@@ -6,8 +6,8 @@ using Autodesk.Revit.DB;
 using BH.oM.Environmental.Properties;
 using BH.oM.Structural.Elements;
 using BH.oM.Environmental.Elements;
+
 using BH.Engine.Environment;
-using System;
 
 namespace BH.Engine.Revit
 {
@@ -78,6 +78,19 @@ namespace BH.Engine.Revit
         }
 
         /// <summary>
+        /// Gets BHoM ICurve from Revit Edge
+        /// </summary>
+        /// <param name="edge">Revit Edge</param>
+        /// <returns name="Curve">BHoM Curve</returns>
+        /// <search>
+        /// Convert, ToBHoM, BHoM Curve, Revit Edge, Curve, ICurve
+        /// </search>
+        public static oM.Geometry.ICurve ToBHoM(this Autodesk.Revit.DB.Edge edge)
+        {
+            return ToBHoM(edge.AsCurve());
+        }
+
+        /// <summary>
         /// Gets BHoM PolyCurve from Revit CurveLoop
         /// </summary>
         /// <param name="curveLoop">Revit CurveLoop</param>
@@ -123,16 +136,26 @@ namespace BH.Engine.Revit
             EdgeArrayArray aEdgeArrayArray = planarFace.EdgeLoops;
             if (aEdgeArrayArray != null && aEdgeArrayArray.Size > 0)
             {
-                EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(0);
-                foreach (Autodesk.Revit.DB.Edge aEdge in aEdgeArray)
+                List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
+                for (int i=0; i < aEdgeArrayArray.Size; i++)
                 {
-                    Curve aCurve = aEdge.AsCurve();
-                    if(aCurve != null)
+                    EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
+                    List<oM.Geometry.ICurve> aCurveList = new List<oM.Geometry.ICurve>();
+                    foreach (Autodesk.Revit.DB.Edge aEdge in aEdgeArray)
                     {
+                        Curve aCurve = aEdge.AsCurve();
+                        if (aCurve != null)
+                            aCurveList.Add(aCurve.ToBHoM());
+                    }
 
+                    if (aCurveList != null && aCurveList.Count > 0)
+                    {
+                        BuildingElementPanel aBuildingElementPanel = new BuildingElementPanel();
+                        aBuildingElementPanel = aBuildingElementPanel.SetGeometry(Geometry.Create.PolyCurve(aCurveList));
+                        aResult.Add(aBuildingElementPanel);
                     }
                 }
-
+                return aResult;
             }
 
             return null;
@@ -299,7 +322,7 @@ namespace BH.Engine.Revit
         /// </search>
         public static BuildingElementProperties ToBHoM(this FloorType floorType, bool copyCustomData = true)
         {
-            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Wall, floorType.Name);
+            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Floor, floorType.Name);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, floorType) as BuildingElementProperties;
             if (copyCustomData)
@@ -319,7 +342,7 @@ namespace BH.Engine.Revit
         /// </search>
         public static BuildingElementProperties ToBHoM(this CeilingType ceilingType, bool copyCustomData = true)
         {
-            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Wall, ceilingType.Name);
+            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Ceiling, ceilingType.Name);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, ceilingType) as BuildingElementProperties;
             if (copyCustomData)
@@ -339,7 +362,7 @@ namespace BH.Engine.Revit
         /// </search>
         public static BuildingElementProperties ToBHoM(this RoofType roofType, bool copyCustomData = true)
         {
-            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Wall, roofType.Name);
+            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Roof, roofType.Name);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, roofType) as BuildingElementProperties;
             if (copyCustomData)

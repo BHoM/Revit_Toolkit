@@ -21,7 +21,7 @@ namespace BH.Engine.Revit
         /// <search>
         /// Query, BHoM, Revit, IsAssignableFromByFullName, Is Assignable From By Full Name, is assignable from by full name
         /// </search>
-        public static bool IsAssignableFromByFullName(this Type type, Type typeToCheck)
+        public static bool IsAssignableFromByFullName(this Type typeToCheck, Type type)
         {
             if (type == null || typeToCheck == null)
                 return false;

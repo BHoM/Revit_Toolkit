@@ -53,72 +53,29 @@ namespace Revit2018_Test
     {
         public Result Execute(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
-            //Path to the file with Level names (name per line)
-            //string aPath = @"C:\Users\inaslund\Documents\Revit sandbox\LevelList.txt";
-
             //Creating Revit Adapter for active Revit Document
             RevitAdapter pRevitAdapter = new RevitAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
 
-            FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(Building) };
-            Building building = pRevitAdapter.Pull(aFilterQuery).Cast<Building>().First();
+            FilterQuery aFilterQuery = null;
+            List<IBHoMObject> aBHoMObjectList = null;
 
-            //Building building = pRevitAdapter.Pull(true, true);
+            aFilterQuery = new FilterQuery() { Type = typeof(Space) };
+            aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
-            //if (building.Storeys != null && building.Storeys.Count > 0)
-            //{
-            //    //Reading existing Revit model and creating BHoM objects
-            //    //Building Building = pRevitAdapter.ReadBuilidng(true, true);
+            aFilterQuery = new FilterQuery() { Type = typeof(Storey) };
+            aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            Storey aStorey = aBHoMObjectList.First() as Storey;
+            aStorey = aStorey.Copy("Level 2", aStorey.Elevation + 9.84252);
 
-            //    //Storey offset
-            //    double aOffset = 9.84252;
-
-            //    //Defining base Storey
-            //    Storey aStorey = building.Storeys[0];
-
-            //    double aIndex = 1;
-            //    foreach (string aName in System.IO.File.ReadAllLines(aPath))
-            //    {
-            //        //Coping base Storey
-            //        Storey aStorey_New = aStorey.Copy(aName, aOffset * aIndex);
-            //        aStorey_New = BH.Engine.Revit.Modify.RemoveIdentifiers(aStorey_New) as Storey;
-
-            //        //Extracting Building Elements from Spaces on base Storey
-            //        List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
-            //        foreach (Space aSpace in building.Spaces.FindAll(x => x.Storey == aStorey))
-            //            foreach (BuildingElement aBuildingElement in aSpace.BuildingElements)
-            //            {
-            //                //Coping BuilidngElement objects
-            //                BuildingElement aBuildingElement_New = aBuildingElement.Move(aStorey_New);
-            //                aBuildingElement_New = BH.Engine.Revit.Modify.RemoveIdentifiers(aBuildingElement_New) as BuildingElement;
-            //                aBHoMObjectList.Add(aBuildingElement_New);
-            //            }
-
-            //        //Creating new Revit Elements from copied BHoMObjects
-            //        pRevitAdapter.Push(aBHoMObjectList, "");
-            //        //pRevitAdapter.Create(aBHoMObjectList, true, false);
-
-            //        aIndex++;
-            //    }
-            //}
-
-            IEnumerable<BHoMObject> aBHoMObjectList_Read = null;
-
-            //Read BHoM objects using Revit BuiltInCategory
-            //aBHoMObjectList_Read = pRevitAdapter.Pull(BuiltInCategory.OST_Walls);
-
-            //Read BHoM objects using Revit BuiltInCategories
-            //aBHoMObjectList_Read = pRevitAdapter.Read(new List<BuiltInCategory>() { BuiltInCategory.OST_Walls, BuiltInCategory.OST_Floors });
-
-            //Read BHoM objects using BHoM class types
             aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
-            aBHoMObjectList_Read = pRevitAdapter.Pull(aFilterQuery).Cast<BHoMObject>().ToList();
+            aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            List<IObject> aObjectList = new List<IObject>();
+            foreach (BuildingElement aBuildingElement in aBHoMObjectList)
+                aObjectList.Add(aBuildingElement.Move(aStorey));
 
-            //Read BHoM objects using Revit class types
-            aFilterQuery = new FilterQuery() { Type = typeof(Wall) };
-            aBHoMObjectList_Read = pRevitAdapter.Pull(aFilterQuery).Cast<BHoMObject>().ToList();
+            pRevitAdapter.Push(aObjectList);
 
-            //Read BHoM objects using Revit class types and Revit UniqueIds
-            //aBHoMObjectList_Read = pRevitAdapter.Read(new List<Type>() { typeof(Wall)}, new string[] { "c89b6638-12ef-4554-b3dd-fb14cb5beae4-00000ba1", "c9ad41eb-e7a9-4848-ad61-43cba875a8b3-0000096f" });
+
 
             return Result.Succeeded;
         }
