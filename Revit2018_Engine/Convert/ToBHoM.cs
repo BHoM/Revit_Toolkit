@@ -127,11 +127,12 @@ namespace BH.Engine.Revit
         /// Gets BHoM BuildingElementPanels from Revit PlanarFace
         /// </summary>
         /// <param name="planarFace">Revit PlanarFace</param>
+        /// <param name="discipline">BHoM Discipline</param>
         /// <returns name="BuildingElementPanel">BHoM BuildingElementPanels</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM BuildingElementPanel, Revit PlanarFace
         /// </search>
-        public static List<BuildingElementPanel> ToBHoM(this PlanarFace planarFace)
+        public static List<BuildingElementPanel> ToBHoM(this PlanarFace planarFace, Discipline discipline = Discipline.Environmental)
         {
             EdgeArrayArray aEdgeArrayArray = planarFace.EdgeLoops;
             if (aEdgeArrayArray != null && aEdgeArrayArray.Size > 0)
@@ -165,11 +166,12 @@ namespace BH.Engine.Revit
         /// Gets BHoM BuildingElementCurve from Revit Wall
         /// </summary>
         /// <param name="wall">Revit Wall</param>
+        /// <param name="discipline">BHoM Discipline</param>
         /// <returns name="BuildingElementCurve">BHoM BuildingElementCurve</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM BuildingElementCurve, Revit Wall, BuildingElementCurve
         /// </search>
-        public static BuildingElementCurve ToBHoMBuildingElementCurve(this Wall wall)
+        public static BuildingElementCurve ToBHoMBuildingElementCurve(this Wall wall, Discipline discipline = Discipline.Environmental)
         {
             LocationCurve aLocationCurve = wall.Location as LocationCurve;
             BuildingElementCurve aBuildingElementCurve = new BuildingElementCurve
@@ -183,11 +185,12 @@ namespace BH.Engine.Revit
         /// Gets BHoM BuildingElementPanels from Revit Floor
         /// </summary>
         /// <param name="floor">Revit Floor</param>
+        /// <param name="discipline">BHoM Discipline</param>
         /// <returns name="BuildingElementPanels">BHoM BuildingElementPanels</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM BuildingElementPanels, Revit Wall, BuildingElementPanel, ToBHoMBuildingElementPanels
         /// </search>
-        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this Floor floor)
+        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this Floor floor, Discipline discipline = Discipline.Environmental)
         {
             List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
             GeometryElement aGeometryElement = floor.get_Geometry(new Options());
@@ -216,12 +219,13 @@ namespace BH.Engine.Revit
         /// Gets BHoM Building from Site Location
         /// </summary>
         /// <param name="siteLocation">Revit Site Location</param>
+        /// <param name="discipline">BHoM Discipline</param>
         /// <param name="copyCustomData">Copy parameters from Site Location to CustomData of BHoMObjects</param>
         /// <returns name="Building">BHoM Building</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM Building, Revit SiteLocation, Site Location
         /// </search>
-        public static Building ToBHoM(this SiteLocation siteLocation, bool copyCustomData = true)
+        public static Building ToBHoM(this SiteLocation siteLocation, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             if (siteLocation == null)
                 return null;
@@ -245,12 +249,13 @@ namespace BH.Engine.Revit
         /// Gets BHoM BuildingElement from Revit Wall
         /// </summary>
         /// <param name="wall">Revit Wall</param>
+        /// <param name="discipline">BHoM Discipline</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="BuildingElement">BHoM BuildingElement</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM BuildingElement, Revit Wall
         /// </search>
-        public static BuildingElement ToBHoM(this Wall wall, bool copyCustomData = true)
+        public static BuildingElement ToBHoM(this Wall wall, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoM();
 
@@ -267,12 +272,13 @@ namespace BH.Engine.Revit
         /// Gets BHoM BuildingElement from Revit Floor
         /// </summary>
         /// <param name="floor">Revit Floor</param>
+        /// <param name="discipline">BHoM Discipline</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="BuildingElement">BHoM BuildingElement</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM BuildingElement, Revit Floor
         /// </search>
-        public static List<BuildingElement> ToBHoM(this Floor floor, bool copyCustomData = true)
+        public static List<BuildingElement> ToBHoM(this Floor floor, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             List<BuildingElement> aResult = new List<BuildingElement>();
 
@@ -295,12 +301,13 @@ namespace BH.Engine.Revit
         /// Gets BHoM BuildingElementProperties from Revit WallType
         /// </summary>
         /// <param name="wallType">Revit WallType</param>
+        /// <param name="discipline">BHoM Discipline</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="BuildingElementProperties">BHoM BuildingElementProperties</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM BuildingElement, Revit WallType
         /// </search>
-        public static BuildingElementProperties ToBHoM(this WallType wallType, bool copyCustomData = true)
+        public static BuildingElementProperties ToBHoM(this WallType wallType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Wall, wallType.Name);
 
@@ -315,12 +322,13 @@ namespace BH.Engine.Revit
         /// Gets BHoM BuildingElementProperties from Revit FloorType
         /// </summary>
         /// <param name="floorType">Revit FloorType</param>
+        /// <param name="discipline">BHoM Discipline</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="BuildingElementProperties">BHoM BuildingElementProperties</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM BuildingElement, Revit FloorType
         /// </search>
-        public static BuildingElementProperties ToBHoM(this FloorType floorType, bool copyCustomData = true)
+        public static BuildingElementProperties ToBHoM(this FloorType floorType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Floor, floorType.Name);
 
@@ -335,12 +343,13 @@ namespace BH.Engine.Revit
         /// Gets BHoM BuildingElementProperties from Revit CeilingType
         /// </summary>
         /// <param name="ceilingType">Revit FloorType</param>
+        /// <param name="discipline">BHoM Discipline</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="BuildingElementProperties">BHoM BuildingElementProperties</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM BuildingElement, Revit CeilingType
         /// </search>
-        public static BuildingElementProperties ToBHoM(this CeilingType ceilingType, bool copyCustomData = true)
+        public static BuildingElementProperties ToBHoM(this CeilingType ceilingType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Ceiling, ceilingType.Name);
 
@@ -355,12 +364,13 @@ namespace BH.Engine.Revit
         /// Gets BHoM BuildingElementProperties from Revit RoofType
         /// </summary>
         /// <param name="roofType">Revit FloorType</param>
+        /// <param name="discipline">BHoM Discipline</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="BuildingElementProperties">BHoM BuildingElementProperties</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM BuildingElement, Revit RoofType
         /// </search>
-        public static BuildingElementProperties ToBHoM(this RoofType roofType, bool copyCustomData = true)
+        public static BuildingElementProperties ToBHoM(this RoofType roofType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Roof, roofType.Name);
 
@@ -375,12 +385,13 @@ namespace BH.Engine.Revit
         /// Gets BHoM Storey from Revit Level
         /// </summary>
         /// <param name="Level">Revit Level</param>
+        /// <param name="discipline">BHoM Discipline</param>
         /// <param name="CopyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="Storey">BHoM Storey</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM Storey, Revit Level
         /// </search>
-        public static Storey ToBHoM(this Level Level, bool CopyCustomData = true)
+        public static Storey ToBHoM(this Level Level, Discipline discipline = Discipline.Environmental, bool CopyCustomData = true)
         {
             Storey aStorey = Structure.Create.Storey(Level.Name, Level.Elevation, 0);
 
@@ -397,18 +408,19 @@ namespace BH.Engine.Revit
         /// Gets BHoM Space from Revit SpatialElement
         /// </summary>
         /// <param name="spatialElement">Revit SpatialElement</param>
+        /// <param name="discipline">BHoM Discipline</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="Space">BHoM Space</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM Space, Revit SpatialElement
         /// </search>
-        public static Space ToBHoM(this SpatialElement spatialElement, bool copyCustomData = true)
+        public static Space ToBHoM(this SpatialElement spatialElement, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             SpatialElementBoundaryOptions aSpatialElementBoundaryOptions = new SpatialElementBoundaryOptions();
             aSpatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
             aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = false;
 
-            Space aSpace = ToBHoM(spatialElement, aSpatialElementBoundaryOptions, null, null, copyCustomData);
+            Space aSpace = ToBHoM(spatialElement, aSpatialElementBoundaryOptions, null, null, discipline, copyCustomData);
 
             return aSpace;
         }
@@ -420,12 +432,13 @@ namespace BH.Engine.Revit
         /// <param name="spatialElementBoundaryOptions">Revit SpatialElementBoundaryOptions</param>
         /// <param name="buildingElementProperties">Revit BuildingElementProperties</param>
         /// <param name="storeys">BHoM Storeys</param>
+        /// <param name="discipline">BHoM Discipline</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="Space">BHoM Space</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM Space, Revit SpatialElement
         /// </search>
-        public static Space ToBHoM(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, IEnumerable<BuildingElementProperties> buildingElementProperties, IEnumerable<Storey> storeys, bool copyCustomData = true)
+        public static Space ToBHoM(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, IEnumerable<BuildingElementProperties> buildingElementProperties, IEnumerable<Storey> storeys, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             if (spatialElement == null || spatialElementBoundaryOptions == null)
                 return null;
@@ -511,12 +524,13 @@ namespace BH.Engine.Revit
         /// <param name="spatialElementGeometryCalculator">Revit SpatialElementGeometryCalculator</param>
         /// <param name="buildingElementProperties">Revit BuildingElementProperties</param>
         /// <param name="storeys">BHoM Storeys</param>
+        /// <param name="discipline">BHoM Discipline</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="Space">BHoM Space</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM Space, Revit SpatialElement
         /// </search>
-        public static Space ToBHoM(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, IEnumerable<BuildingElementProperties> buildingElementProperties, IEnumerable<Storey> storeys, bool copyCustomData = true)
+        public static Space ToBHoM(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, IEnumerable<BuildingElementProperties> buildingElementProperties, IEnumerable<Storey> storeys, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             if (spatialElement == null || spatialElementGeometryCalculator == null)
                 return null;
@@ -545,7 +559,7 @@ namespace BH.Engine.Revit
             }
 
             if (aStorey == null)
-                aStorey = spatialElement.Level.ToBHoM(copyCustomData);
+                aStorey = spatialElement.Level.ToBHoM(discipline, copyCustomData);
 
 
             List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
@@ -593,13 +607,13 @@ namespace BH.Engine.Revit
                             if(aBuildingElementProperties == null)
                             {
                                 if (aElement is Wall)
-                                    aBuildingElementProperties = (aElement as Wall).WallType.ToBHoM(copyCustomData);
+                                    aBuildingElementProperties = (aElement as Wall).WallType.ToBHoM(discipline, copyCustomData);
                                 else if(aElement is Floor)
-                                    aBuildingElementProperties = (aElement as Floor).FloorType.ToBHoM(copyCustomData);
+                                    aBuildingElementProperties = (aElement as Floor).FloorType.ToBHoM(discipline, copyCustomData);
                                 else if (aElement is Ceiling)
-                                    aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as CeilingType).ToBHoM(copyCustomData);
+                                    aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as CeilingType).ToBHoM(discipline, copyCustomData);
                                 else if (aElement is FootPrintRoof || aElement is ExtrusionRoof)
-                                    aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as RoofType).ToBHoM(copyCustomData);
+                                    aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as RoofType).ToBHoM(discipline, copyCustomData);
                             }
 
                             aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementPanel(aCurveLoop.ToBHoM()));

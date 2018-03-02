@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Convert\AdapterId.cs" />
+    <Compile Include="Convert\Enums.cs" />
     <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Convert\ToRevit.cs" />
     <Compile Include="Modify\RemoveIdentifiers.cs" />
@@ -68,10 +69,11 @@
     <Compile Include="Modify\SetParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\BuildingElementType.cs" />
+    <Compile Include="Query\Dyscipline.cs" />
     <Compile Include="Query\ElementId.cs" />
     <Compile Include="Query\ElementIds.cs" />
     <Compile Include="Query\IsAssignableFromByFullName.cs" />
-    <Compile Include="Query\BHoMType.cs" />
+    <Compile Include="Query\BHoMTypes.cs" />
     <Compile Include="Query\IsHorizontal.cs" />
     <Compile Include="Query\IsVertical.cs" />
     <Compile Include="Query\IsZero.cs" />
