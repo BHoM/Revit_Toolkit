@@ -31,7 +31,7 @@ namespace BH.Adapter.Revit
                     //Return the pushed objects
                     listener.ReturnData(objs);
                 }
-                finally
+                catch
                 {
                     RevitListener.Listener.ReturnData(new object[] { });
                 }
