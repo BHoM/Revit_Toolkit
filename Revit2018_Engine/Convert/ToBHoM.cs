@@ -81,6 +81,21 @@ namespace BH.Engine.Revit
             return null;
         }
 
+        public static List<oM.Geometry.ICurve> ToBHoM(this List<Curve> curves)
+        {
+            return curves.Select(c => c.ToBHoM()).ToList();
+        }
+
+        public static List<oM.Geometry.ICurve> ToBHoM(this CurveArray curves)
+        {
+            List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
+            for (int i = 0; i < curves.Size; i++)
+            {
+                result.Add(curves.get_Item(i).ToBHoM());
+            }
+            return result;
+        }
+
         /// <summary>
         /// Gets BHoM ICurve from Revit Edge
         /// </summary>
@@ -275,8 +290,8 @@ namespace BH.Engine.Revit
                             if (analyticalModel == null) return null;
 
                             oM.Geometry.Line barCurve = analyticalModel.GetCurve().ToBHoM() as oM.Geometry.Line;
-                            ISectionProperty aSectionProperty = familyInstance.Symbol.ToBHoM(discipline, copyCustomData) as ISectionProperty;
-                            aSectionProperty.Material = familyInstance.StructuralMaterialType.ToBHoM();
+                            oM.Common.Materials.Material aMaterial = familyInstance.StructuralMaterialType.ToBHoM();
+                            ISectionProperty aSectionProperty = familyInstance.ToBHoMSection(aMaterial, copyCustomData) as ISectionProperty;
 
                             Bar aBar = BHS.Create.Bar(barCurve, aSectionProperty);
 
@@ -577,17 +592,31 @@ namespace BH.Engine.Revit
         }
 
 
-        public static ISectionProperty ToBHoM(this FamilySymbol familySymbol, Discipline discipline = Discipline.Structural, bool copyCustomData = true)
+        public static ISectionProperty ToBHoMSection(this FamilyInstance familyInstance, oM.Common.Materials.Material material, bool copyCustomData = true)
         {
-            switch (discipline)
+            try
             {
-                case Discipline.Structural:
+                ISectionProperty aSectionProperty;
+                string name = familyInstance.Symbol.Name;
+                aSectionProperty = BH.Engine.Library.Query.Match("UK_SteelSectionDimensions", name) as ISectionProperty;
+                if (aSectionProperty == null)
+                {
+                    List<oM.Geometry.ICurve> profileCurves = familyInstance.GetSweptProfile().GetSweptProfile().Curves.ToBHoM();
+                    if (material.Type == oM.Common.Materials.MaterialType.Concrete)
                     {
-                        // add sturctural section
+                        aSectionProperty = BHS.Create.ConcreteFreeFormSection(profileCurves, material, name);
                     }
+                    else
+                    {
+                        aSectionProperty = BHS.Create.SteelFreeFormSection(profileCurves, material, name);
+                    }
+                }
+                return aSectionProperty;
             }
-
-            return null;
+            catch
+            {
+                return null;
+            }
         }
 
 
