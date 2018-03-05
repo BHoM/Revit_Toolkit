@@ -450,7 +450,9 @@ namespace BH.Engine.Revit
                         aSpatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
                         aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = false;
 
-                        return ToBHoM(spatialElement, aSpatialElementBoundaryOptions, null, null, discipline, copyCustomData);
+                        SpatialElementGeometryCalculator aSpatialElementGeometryCalculator = new SpatialElementGeometryCalculator(spatialElement.Document, aSpatialElementBoundaryOptions);
+
+                        return ToBHoM(spatialElement, aSpatialElementGeometryCalculator, null, null, discipline, copyCustomData);
                     }
             }
             return null;
