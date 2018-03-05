@@ -290,8 +290,7 @@ namespace BH.Engine.Revit
                             if (analyticalModel == null) return null;
 
                             oM.Geometry.Line barCurve = analyticalModel.GetCurve().ToBHoM() as oM.Geometry.Line;
-                            oM.Common.Materials.Material aMaterial = familyInstance.StructuralMaterialType.ToBHoM();
-                            ISectionProperty aSectionProperty = familyInstance.ToBHoMSection(aMaterial, copyCustomData) as ISectionProperty;
+                            ISectionProperty aSectionProperty = familyInstance.ToBHoMSection(copyCustomData) as ISectionProperty;
 
                             Bar aBar = BHS.Create.Bar(barCurve, aSectionProperty);
 
@@ -578,23 +577,26 @@ namespace BH.Engine.Revit
         }
 
 
-        public static ISectionProperty ToBHoMSection(this FamilyInstance familyInstance, oM.Common.Materials.Material material, bool copyCustomData = true)
+        public static ISectionProperty ToBHoMSection(this FamilyInstance familyInstance, bool copyCustomData = true)
         {
             try
             {
+                oM.Common.Materials.Material aMaterial = familyInstance.StructuralMaterialType.ToBHoM();
                 ISectionProperty aSectionProperty;
                 string name = familyInstance.Symbol.Name;
                 aSectionProperty = BH.Engine.Library.Query.Match("UK_SteelSectionDimensions", name) as ISectionProperty;
                 if (aSectionProperty == null)
                 {
                     List<oM.Geometry.ICurve> profileCurves = familyInstance.GetSweptProfile().GetSweptProfile().Curves.ToBHoM();
-                    if (material.Type == oM.Common.Materials.MaterialType.Concrete)
+                    profileCurves = profileCurves.Select(c => Geometry.Modify.IScale(c, origin, feetToMetreVector)).ToList();
+                    
+                    if (aMaterial.Type == oM.Common.Materials.MaterialType.Concrete)
                     {
-                        aSectionProperty = BHS.Create.ConcreteFreeFormSection(profileCurves, material, name);
+                        aSectionProperty = BHS.Create.ConcreteFreeFormSection(profileCurves, aMaterial, name);
                     }
                     else
                     {
-                        aSectionProperty = BHS.Create.SteelFreeFormSection(profileCurves, material, name);
+                        aSectionProperty = BHS.Create.SteelFreeFormSection(profileCurves, aMaterial, name);
                     }
                 }
                 return aSectionProperty;
