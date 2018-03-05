@@ -88,7 +88,16 @@ namespace BH.Adapter.Revit
             if (aTypeList == null)
                 return null;
 
-            return Engine.Revit.Convert.ToBHoM(aElement as dynamic, discipline, true);
+            if (aElement is Floor)
+            {
+                return Engine.Revit.Convert.ToBHoM(aElement as Floor, discipline, true);
+            }
+            else
+            {
+                List<BHoMObject> aResult = new List<BHoMObject>();
+                aResult.Add(Engine.Revit.Convert.ToBHoM(aElement as dynamic, discipline, true));
+                return aResult;
+            }
         }
 
         /// <summary>
@@ -149,7 +158,7 @@ namespace BH.Adapter.Revit
                     {
                         foreach (Type aType_Temp in aTypes)
                             if (aTupleList.Find(x => x.Item1 == aType_Temp) == null)
-                                aTupleList.Add(new Tuple<Type, Discipline>(aType_Temp, aType_Temp.Discipline()));
+                                aTupleList.Add(new Tuple<Type, Discipline>(aType_Temp, aType.Discipline()));
                     }
 
                 }
