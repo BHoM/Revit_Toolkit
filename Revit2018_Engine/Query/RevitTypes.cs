@@ -47,7 +47,6 @@ namespace BH.Engine.Revit
             {
                 aResult.Add(typeof(Floor));
                 aResult.Add(typeof(Wall));
-                aResult.Add(typeof(RoofBase));
                 return aResult;
             }
             

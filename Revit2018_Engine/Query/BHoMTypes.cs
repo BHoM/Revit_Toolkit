@@ -37,7 +37,7 @@ namespace BH.Engine.Revit
 
             if (element is FamilyInstance)
             {
-                switch (((FamilyInstance)element).StructuralType)
+                switch ((element as FamilyInstance).StructuralType)
                 {
                     case StructuralType.Beam:
                     case StructuralType.Column:
@@ -97,7 +97,6 @@ namespace BH.Engine.Revit
             if (element.GetType().IsAssignableFromByFullName(typeof(RoofBase)))
             {
                 aResult.Add(typeof(BuildingElement));
-                aResult.Add(typeof(PanelPlanar));
                 return aResult;
             }
 
