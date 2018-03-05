@@ -35,17 +35,17 @@ namespace BH.Engine.Revit
         {
             List<Type> aResult = new List<Type>();
 
-            //if (element is FamilyInstance)
-            //{
-            //    switch (((FamilyInstance)element).StructuralType)
-            //    {
-            //        case StructuralType.Beam:
-            //        case StructuralType.Column:
-            //        case StructuralType.Brace:
-            //            aResult.Add(typeof(Bar));
-            //            return aResult;
-            //    }
-            //}
+            if (element is FamilyInstance)
+            {
+                switch (((FamilyInstance)element).StructuralType)
+                {
+                    case StructuralType.Beam:
+                    case StructuralType.Column:
+                    case StructuralType.Brace:
+                        aResult.Add(typeof(Bar));
+                        return aResult;
+                }
+            }
 
             if (element is CeilingType)
             {

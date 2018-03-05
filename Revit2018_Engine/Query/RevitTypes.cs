@@ -3,6 +3,7 @@
 using Autodesk.Revit.DB;
 
 using BH.oM.Environmental.Elements;
+using BH.oM.Structural.Elements;
 using BH.oM.Base;
 
 namespace BH.Engine.Revit
@@ -41,9 +42,22 @@ namespace BH.Engine.Revit
                 aResult.Add(typeof(RoofBase));
                 return aResult;
             }
-            
 
-            if(Type == typeof(Building))
+            if (Type == typeof(PanelPlanar))
+            {
+                aResult.Add(typeof(Floor));
+                aResult.Add(typeof(Wall));
+                aResult.Add(typeof(RoofBase));
+                return aResult;
+            }
+            
+            if (Type == typeof(Bar))
+            {
+                aResult.Add(typeof(FamilyInstance));
+                return aResult;
+            }
+
+            if (Type == typeof(Building))
             {
                 aResult.Add(typeof(SiteLocation));
                 return aResult;
