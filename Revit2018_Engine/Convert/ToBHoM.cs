@@ -447,15 +447,16 @@ namespace BH.Engine.Revit
                 case Discipline.Structural:
                     {
                         Document document = wallType.Document;
-                        double aThickness = wallType.LookupParameter("Thickness").AsDouble() * feetToMetre;
-
+                        double aThickness = 0;
                         oM.Common.Materials.Material aMaterial = new oM.Common.Materials.Material();
-                        foreach (ElementId id in wallType.GetMaterialIds(false))
+                        foreach (CompoundStructureLayer csl in wallType.GetCompoundStructure().GetLayers())
                         {
-                            Material m = document.GetElement(id) as Material;
-                            if (m != null)
+                            if (csl.Function == MaterialFunctionAssignment.Structure)
                             {
+                                aThickness = csl.Width * feetToMetre;
+                                Material m = document.GetElement(csl.MaterialId) as Material;
                                 aMaterial = m.ToBHoM();         // this is dangerous for multilayer panels?
+                                break;
                             }
                         }
 
@@ -500,9 +501,18 @@ namespace BH.Engine.Revit
                 case Discipline.Structural:
                     {
                         Document document = floorType.Document;
-                        double aThickness = floorType.LookupParameter("Thickness").AsDouble() * feetToMetre;
-                        Material m = (Material)document.GetElement(floorType.StructuralMaterialId);
-                        oM.Common.Materials.Material aMaterial = m.ToBHoM();
+                        double aThickness = 0;
+                        oM.Common.Materials.Material aMaterial = new oM.Common.Materials.Material();
+                        foreach (CompoundStructureLayer csl in floorType.GetCompoundStructure().GetLayers())
+                        {
+                            if (csl.Function == MaterialFunctionAssignment.Structure)
+                            {
+                                aThickness = csl.Width * feetToMetre;
+                                Material m = document.GetElement(csl.MaterialId) as Material;
+                                aMaterial = m.ToBHoM();         // this is dangerous for multilayer panels?
+                                break;
+                            }
+                        }
                             
                         ConstantThickness aProperty2D = new ConstantThickness { Type = oM.Structural.Properties.PanelType.Slab, Thickness = aThickness, Material = aMaterial };
 
@@ -561,30 +571,6 @@ namespace BH.Engine.Revit
                             aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, roofType) as BuildingElementProperties;
 
                         return aBuildingElementProperties;
-                    }
-
-                case Discipline.Structural:
-                    {
-                        Document document = roofType.Document;
-                        double aThickness = roofType.LookupParameter("Thickness").AsDouble() * feetToMetre;
-
-                        oM.Common.Materials.Material aMaterial = new oM.Common.Materials.Material();
-                        foreach (ElementId id in roofType.GetMaterialIds(false))
-                        {
-                            Material m = document.GetElement(id) as Material;
-                            if (m != null)
-                            {
-                                aMaterial = m.ToBHoM();         // this is dangerous for multilayer panels?
-                            }
-                        }
-
-                        ConstantThickness aProperty2D = new ConstantThickness { Type = oM.Structural.Properties.PanelType.Slab, Thickness = aThickness, Material = aMaterial };
-
-                        aProperty2D = Modify.SetIdentifiers(aProperty2D, roofType) as ConstantThickness;
-                        if (copyCustomData)
-                            aProperty2D = Modify.SetCustomData(aProperty2D, roofType) as ConstantThickness;
-
-                        return aProperty2D;
                     }
             }
 
@@ -962,7 +948,7 @@ namespace BH.Engine.Revit
         private static List<oM.Geometry.Polyline> GetBHOutlines(this Wall wall)
         {
             List<Curve> curves = wall.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
-            List<oM.Geometry.Line> lines = curves.Select(c => (oM.Geometry.Line)c.ToBHoM()).ToList();
+            List<oM.Geometry.Line> lines = curves.Select(c => BH.Engine.Geometry.Modify.Scale((oM.Geometry.Line)c.ToBHoM(), origin, feetToMetreVector)).ToList();
             return Geometry.Modify.Join(lines);
         }
 
@@ -971,11 +957,13 @@ namespace BH.Engine.Revit
         private static List<oM.Geometry.Polyline> GetBHOutlines(this Floor floor)
         {
             List<Curve> curves = floor.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
-            List<oM.Geometry.Line> lines = curves.Select(c => (oM.Geometry.Line)c.ToBHoM()).ToList();
+            List<oM.Geometry.Line> lines = curves.Select(c => BH.Engine.Geometry.Modify.Scale((oM.Geometry.Line)c.ToBHoM(), origin, feetToMetreVector)).ToList();
             return Geometry.Modify.Join(lines);
         }
-
-        private const double feetToMetre = 0.3048; // should be in BHoM?
+        
+        private static double feetToMetre = UnitUtils.ConvertFromInternalUnits(1, DisplayUnitType.DUT_METERS);
+        private static oM.Geometry.Point origin = new oM.Geometry.Point { X = 0, Y = 0, Z = 0 };
+        private static oM.Geometry.Vector feetToMetreVector = new oM.Geometry.Vector { X = feetToMetre, Y = feetToMetre, Z = feetToMetre };
     }
 }
  
