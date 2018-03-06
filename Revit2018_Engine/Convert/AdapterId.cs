@@ -11,14 +11,22 @@ namespace BH.Engine.Revit
     /// </summary>
     public static partial class Convert
     {
+        /***************************************************/
+        /**** Public Properties                         ****/
+        /***************************************************/
+
         /// <summary>
         /// RevitAdapter Id - CustomData Adapter object identification parameter name
         /// </summary>
         public const string AdapterId = "Revit_id";
 
+        /***************************************************/
+
         /// <summary>
         /// ElementId - CustomData Revit idetification parameter name
         /// </summary>
         public const string ElementId = "Revit_elementId";
+
+        /***************************************************/
     }
 }

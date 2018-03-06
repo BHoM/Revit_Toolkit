@@ -35,5 +35,7 @@ namespace BH.Adapter.Revit
             Config.ProcessInMemory = false;
             m_Document = document;
         }
+
+        /***************************************************/
     }
 }
