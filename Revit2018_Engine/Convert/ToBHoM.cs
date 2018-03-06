@@ -289,10 +289,20 @@ namespace BH.Engine.Revit
                             AnalyticalModel analyticalModel = familyInstance.GetAnalyticalModel();
                             if (analyticalModel == null) return null;
 
-                            oM.Geometry.Line barCurve = analyticalModel.GetCurve().ToBHoM() as oM.Geometry.Line;
+                            oM.Geometry.Line barCurve = Geometry.Modify.Scale(analyticalModel.GetCurve().ToBHoM() as oM.Geometry.Line, origin, feetToMetreVector);
                             ISectionProperty aSectionProperty = familyInstance.ToBHoMSection(barCurve, copyCustomData) as ISectionProperty;
 
+                            double rotation;
+                            if (familyInstance.Location is LocationPoint)
+                            {
+                                int multiplier = familyInstance.FacingOrientation.DotProduct(new XYZ(1, 0, 0)) < 0 ? 1 : -1;
+                                rotation = familyInstance.FacingOrientation.AngleTo(new XYZ(0, 1, 0)) * multiplier;
+                            }
+                            else rotation = -familyInstance.LookupParameter("Cross-Section Rotation").AsDouble();
+                            
                             Bar aBar = BHS.Create.Bar(barCurve, aSectionProperty);
+                            aBar.OrientationAngle = rotation;
+                            aBar.Offset = new Offset();
 
                             aBar = Modify.SetIdentifiers(aBar, familyInstance) as Bar;
                             if (copyCustomData)
@@ -587,11 +597,11 @@ namespace BH.Engine.Revit
                 if (aSectionProperty == null)
                 {
                     List<oM.Geometry.ICurve> profileCurves = new List<oM.Geometry.ICurve>();
-                    try
+                    if (familyInstance.HasSweptProfile())
                     {
                         profileCurves = familyInstance.GetSweptProfile().GetSweptProfile().Curves.ToBHoM();
                     }
-                    catch
+                    else
                     {
                         foreach (GeometryObject obj in familyInstance.Symbol.get_Geometry(new Options()))
                         {
