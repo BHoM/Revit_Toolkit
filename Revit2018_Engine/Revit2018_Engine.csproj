@@ -85,6 +85,7 @@
     <Compile Include="Query\IsZero.cs" />
     <Compile Include="Query\RevitType.cs" />
     <Compile Include="Query\RevitTypes.cs" />
+    <Compile Include="Query\Top.cs" />
     <Compile Include="Query\UniqueId.cs" />
     <Compile Include="Query\UniqueIds.cs" />
   </ItemGroup>

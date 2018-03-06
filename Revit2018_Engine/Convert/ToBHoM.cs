@@ -226,7 +226,7 @@ namespace BH.Engine.Revit
                 if (aSolid == null)
                     continue;
 
-                PlanarFace aPlanarFace = GetPlanarFace_Top(aSolid);
+                PlanarFace aPlanarFace = Query.Top(aSolid);
                 if (aPlanarFace == null)
                     continue;
 
@@ -606,7 +606,7 @@ namespace BH.Engine.Revit
             }
         }
 
-
+        //TODO: change return type to BHoMObject, add discipine as parameter
         public static oM.Common.Materials.Material ToBHoM(this StructuralMaterialType structuralMaterialType)
         {
             switch (structuralMaterialType)
@@ -625,7 +625,7 @@ namespace BH.Engine.Revit
             }
         }
 
-
+        //TODO: change return type to BHoMObject, add discipine as parameter
         public static oM.Common.Materials.Material ToBHoM(this Material material)
         {
             switch (material.MaterialClass)
@@ -932,22 +932,7 @@ namespace BH.Engine.Revit
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private static PlanarFace GetPlanarFace_Top(Solid solid)
-        {
-            PlanarFace aResult = null;
-            FaceArray aFaceArray = solid.Faces;
-            foreach (Face aFace in aFaceArray)
-            {
-                PlanarFace aPlanarFace = aFace as PlanarFace;
-                if (null != aPlanarFace && Query.IsHorizontal(aPlanarFace))
-                    if ((null == aResult) || (aResult.Origin.Z < aPlanarFace.Origin.Z))
-                        aResult = aPlanarFace;
-            }
-            return aResult;
-        }
-
-        /***************************************************/
-
+        //TODO: Move to Revit2018_Engine.Query
         private static List<oM.Geometry.Polyline> GetBHOutlines(this Wall wall)
         {
             List<Curve> curves = wall.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
@@ -957,6 +942,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
+        //TODO: Move to Revit2018_Engine.Query
         private static List<oM.Geometry.Polyline> GetBHOutlines(this Floor floor)
         {
             List<Curve> curves = floor.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
