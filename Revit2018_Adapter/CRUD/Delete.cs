@@ -48,6 +48,8 @@ namespace BH.Adapter.Revit
             return aResult;
         }
 
+        /***************************************************/
+
         /// <summary>
         /// Delete BHoMObject from Revit Document. BHoMObject has to be linked to Revit element by CustomData parameter called by Utilis.AdapterId const. Use Utilis.BHoM.CopyIdentifiers to include necessary information in BHoMObject
         /// </summary>
@@ -70,6 +72,8 @@ namespace BH.Adapter.Revit
             }
             return aResult;
         }
+
+        /***************************************************/
 
         /// <summary>
         /// Delete Storey from Revit Document. If DeleteByName set to false then Storey has to be linked to Revit Level by CustomData parameter called by Utilis.AdapterId const. Use Utilis.BHoM.CopyIdentifiers to include UniqueId in BHoMObject.
@@ -98,6 +102,8 @@ namespace BH.Adapter.Revit
             return aResult;
         }
 
+        /***************************************************/
+
         /// <summary>
         /// Delete Storeys from Revit Document. If DeleteByName set to false then Storeys have to be linked to Revit Levels by CustomData parameter called by Utilis.AdapterId const. Use Utilis.BHoM.CopyIdentifiers to include UniqueId in BHoMObject.
         /// </summary>
@@ -125,6 +131,8 @@ namespace BH.Adapter.Revit
             return aResult;
         }
 
+        /***************************************************/
+
         /// <summary>
         /// Delete ElementType from Revit Document. If DeleteByName set to false then BuildingElementProperties has to be linked to Revit ElementType by CustomData parameter called by Utilis.AdapterId const. Use Utilis.BHoM.CopyIdentifiers to include UniqueId in BHoMObject.
         /// </summary>
@@ -151,6 +159,8 @@ namespace BH.Adapter.Revit
             }
             return aResult;
         }
+
+        /***************************************************/
 
         /// <summary>
         /// Delete ElementTypes from Revit Document. If DeleteByName set to false then BuildingElementProperties have to be linked to Revit ElementTypes by CustomData parameter called by Utilis.AdapterId const. Use Utilis.BHoM.CopyIdentifiers to include UniqueId in BHoMObject.
@@ -206,6 +216,8 @@ namespace BH.Adapter.Revit
             return false;
         }
 
+        /***************************************************/
+
         private bool DeleteByName(Type type, BHoMObject bHoMObject)
         {
             if (type == null || bHoMObject == null)
@@ -218,6 +230,8 @@ namespace BH.Adapter.Revit
             Element aElement = aElementList.Find(x => x.Name == bHoMObject.Name);
             return Delete(aElement);
         }
+
+        /***************************************************/
 
         private bool DeleteByName(Type type, IEnumerable<BHoMObject> bHoMObjects)
         {
@@ -244,6 +258,8 @@ namespace BH.Adapter.Revit
             return Delete(aElementIdList);
         }
 
+        /***************************************************/
+
         private bool Delete(Element element)
         {
             if (element != null)
@@ -256,6 +272,8 @@ namespace BH.Adapter.Revit
             return false;
         }
 
+        /***************************************************/
+
         private bool Delete(ICollection<ElementId> elementIds)
         {
             if (elementIds != null && elementIds.Count() > 0)
@@ -267,5 +285,7 @@ namespace BH.Adapter.Revit
 
             return false;
         }
+
+        /***************************************************/
     }
 }

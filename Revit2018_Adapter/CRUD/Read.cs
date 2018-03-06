@@ -44,6 +44,8 @@ namespace BH.Adapter.Revit
             return Read(new BuiltInCategory[] { builtInCategory }, discipline);
         }
 
+        /***************************************************/
+
         /// <summary>
         /// Generates BHoMObjects from Revit Elements by given BuiltInCategory
         /// </summary>
@@ -100,6 +102,8 @@ namespace BH.Adapter.Revit
             }
         }
 
+        /***************************************************/
+
         /// <summary>
         /// Generates BHoMObjects from Revit Elements by given ElementIds
         /// </summary>
@@ -127,6 +131,8 @@ namespace BH.Adapter.Revit
 
             return aResult;
         }
+
+        /***************************************************/
 
         /// <summary>
         /// Generates BHoMObjects from given class types. Class types have to inherits from Autodesk.Revit.DB.Element or BH.oM.Base.BHoMObject
@@ -188,6 +194,8 @@ namespace BH.Adapter.Revit
             return aBHoMObjectList;
         }
 
+        /***************************************************/
+
         /// <summary>
         /// Generates BHoMObjects from Revit Elements by given types and BHoM Ids??
         /// </summary>
@@ -204,5 +212,7 @@ namespace BH.Adapter.Revit
             else
                 return Read(new Type[] { type }, ids.Cast<string>().ToList());
         }
+
+        /***************************************************/
     }
 }
