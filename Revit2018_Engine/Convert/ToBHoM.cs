@@ -290,7 +290,7 @@ namespace BH.Engine.Revit
                             if (analyticalModel == null) return null;
 
                             oM.Geometry.Line barCurve = analyticalModel.GetCurve().ToBHoM() as oM.Geometry.Line;
-                            ISectionProperty aSectionProperty = familyInstance.ToBHoMSection(copyCustomData) as ISectionProperty;
+                            ISectionProperty aSectionProperty = familyInstance.ToBHoMSection(barCurve, copyCustomData) as ISectionProperty;
 
                             Bar aBar = BHS.Create.Bar(barCurve, aSectionProperty);
 
@@ -576,7 +576,7 @@ namespace BH.Engine.Revit
         }
 
 
-        public static ISectionProperty ToBHoMSection(this FamilyInstance familyInstance, bool copyCustomData = true)
+        public static ISectionProperty ToBHoMSection(this FamilyInstance familyInstance, oM.Geometry.Line centreLine, bool copyCustomData = true)
         {
             try
             {
@@ -586,7 +586,36 @@ namespace BH.Engine.Revit
                 aSectionProperty = BH.Engine.Library.Query.Match("UK_SteelSectionDimensions", name) as ISectionProperty;
                 if (aSectionProperty == null)
                 {
-                    List<oM.Geometry.ICurve> profileCurves = familyInstance.GetSweptProfile().GetSweptProfile().Curves.ToBHoM();
+                    List<oM.Geometry.ICurve> profileCurves = new List<oM.Geometry.ICurve>();
+                    try
+                    {
+                        profileCurves = familyInstance.GetSweptProfile().GetSweptProfile().Curves.ToBHoM();
+                    }
+                    catch
+                    {
+                        foreach (GeometryObject obj in familyInstance.Symbol.get_Geometry(new Options()))
+                        {
+                            if (obj is Solid)
+                            {
+                                XYZ direction = (centreLine.ToRevit() as Line).Direction;
+                                foreach (Face face in (obj as Solid).Faces)
+                                {
+                                    if (face is PlanarFace && (face as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(direction, 0.001) || (face as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(-direction, 0.001))
+                                    {
+                                        foreach (EdgeArray curveArray in (face as PlanarFace).EdgeLoops)
+                                        {
+                                            foreach (Autodesk.Revit.DB.Edge c in curveArray)
+                                            {
+                                                profileCurves.Add(c.AsCurve().ToBHoM());
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
                     profileCurves = profileCurves.Select(c => Geometry.Modify.IScale(c, origin, feetToMetreVector)).ToList();
                     
                     if (aMaterial.Type == oM.Common.Materials.MaterialType.Concrete)
