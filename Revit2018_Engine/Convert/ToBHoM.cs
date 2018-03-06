@@ -318,9 +318,7 @@ namespace BH.Engine.Revit
         /// Convert, ToBHoM, BHoM BuildingElement, Revit Wall
         /// </search>
         /// 
-
-        // split this to multiple panels? if a panel is separate here, it will cause issues in laundry? how about pulling back to revit?
-
+        //TODO: split this to multiple panels? if a panel is separate here, it will cause issues in laundry? how about pulling back to revit?
         public static BHoMObject ToBHoM(this Wall wall, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             switch(discipline)
@@ -345,6 +343,7 @@ namespace BH.Engine.Revit
 
                         List<oM.Geometry.ICurve> outlines = wall.GetBHOutlines().Select(p=>(oM.Geometry.ICurve)p).ToList();
 
+                        //TODO: Move ModelLaundry Method to Engine. Remove ModelLaundry from Revit_Toolkit
                         PanelPlanar aPanelPlanar = ModelLaundry.Create.PanelPlanar(outlines)[0];       // this is a temporary cheat!
                         aPanelPlanar.Property = aProperty2D;
 
