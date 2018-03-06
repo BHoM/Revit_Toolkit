@@ -46,6 +46,8 @@ namespace BH.Adapter.Revit
             return aResult;
         }
 
+        /***************************************************/
+
         /// <summary>
         /// Create BHoMObjects in Revit Document. BHoMObjects are linked to Revit elements by CustomData parameter called by Utilis.AdapterId const. Use Utilis.BHoM.CopyIdentifiers to include necessary information in BHoMObject
         /// </summary>
@@ -71,6 +73,8 @@ namespace BH.Adapter.Revit
 
             return true;
         }
+        
+        /***************************************************/
 
         /// <summary>
         /// Create BHoMObjects in Revit Document. BHoMObjects are linked to Revit elements by CustomData parameter called by Utilis.AdapterId const. Use Utilis.BHoM.CopyIdentifiers to include necessary information in BHoMObject
@@ -124,6 +128,8 @@ namespace BH.Adapter.Revit
             return true;
         }
 
+        /***************************************************/
+
         private bool Create(Storey storey, bool copyCustomData = true, bool replace = false)
         {
             if (storey == null)
@@ -148,6 +154,8 @@ namespace BH.Adapter.Revit
 
             return false;
         }
+
+        /***************************************************/
 
         private bool Create(BuildingElementProperties buildingElementProperties, bool copyCustomData = true, bool replace = false)
         {
