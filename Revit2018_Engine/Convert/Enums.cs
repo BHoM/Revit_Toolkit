@@ -9,6 +9,7 @@ namespace BH.Engine.Revit
     public enum Discipline
     {
         Environmental,
-        Structural
+        Structural,
+        Architecture
     }
 }

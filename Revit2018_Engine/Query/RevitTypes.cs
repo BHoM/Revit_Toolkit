@@ -74,6 +74,12 @@ namespace BH.Engine.Revit
                 return aResult;
             }
 
+            if (Type == typeof(oM.Architecture.Elements.Grid))
+            {
+                aResult.Add(typeof(Grid));
+                return aResult;
+            }
+
             return null;
         }
 
