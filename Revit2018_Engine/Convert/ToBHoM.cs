@@ -349,8 +349,9 @@ namespace BH.Engine.Revit
 
                 case Discipline.Structural:
                     {
-                        Property2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData) as Property2D;
+                        string materialGrade = wall.GetMaterialGrade();
 
+                        Property2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, materialGrade) as Property2D;
                         List<oM.Geometry.ICurve> outlines = wall.GetBHOutlines().Select(p=>(oM.Geometry.ICurve)p).ToList();
 
                         //TODO: Move ModelLaundry Method to Engine. Remove ModelLaundry from Revit_Toolkit
@@ -403,8 +404,9 @@ namespace BH.Engine.Revit
                     }
                 case Discipline.Structural:
                     {
-                        Property2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData) as Property2D;
+                        string materialGrade = floor.GetMaterialGrade();
 
+                        Property2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData, materialGrade) as Property2D;
                         List<oM.Geometry.ICurve> outlines = floor.GetBHOutlines().Select(p => (oM.Geometry.ICurve)p).ToList();
 
                         List<BHoMObject> aResult = new List<BHoMObject>();
@@ -437,7 +439,7 @@ namespace BH.Engine.Revit
         /// <search>
         /// Convert, ToBHoM, BHoM BuildingElement, Revit WallType
         /// </search>
-        public static BHoMObject ToBHoM(this WallType wallType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
+        public static BHoMObject ToBHoM(this WallType wallType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, string materialGrade = null)
         {
             switch (discipline)
             {
@@ -463,7 +465,7 @@ namespace BH.Engine.Revit
                             {
                                 aThickness = csl.Width * feetToMetre;
                                 Material m = document.GetElement(csl.MaterialId) as Material;
-                                aMaterial = m.ToBHoM();         // this is dangerous for multilayer panels?
+                                aMaterial = m.ToBHoM(materialGrade);         // this is dangerous for multilayer panels?
                                 break;
                             }
                         }
@@ -491,7 +493,7 @@ namespace BH.Engine.Revit
         /// <search>
         /// Convert, ToBHoM, BHoM BuildingElement, Revit FloorType
         /// </search>
-        public static BHoMObject ToBHoM(this FloorType floorType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
+        public static BHoMObject ToBHoM(this FloorType floorType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, string materialGrade = null)
         {
             switch (discipline)
             {
@@ -517,7 +519,7 @@ namespace BH.Engine.Revit
                             {
                                 aThickness = csl.Width * feetToMetre;
                                 Material m = document.GetElement(csl.MaterialId) as Material;
-                                aMaterial = m.ToBHoM();         // this is dangerous for multilayer panels?
+                                aMaterial = m.ToBHoM(materialGrade);         // this is dangerous for multilayer panels?
                                 break;
                             }
                         }
@@ -590,7 +592,9 @@ namespace BH.Engine.Revit
         {
             try
             {
-                oM.Common.Materials.Material aMaterial = familyInstance.StructuralMaterialType.ToBHoM();
+                string materialGrade = familyInstance.GetMaterialGrade();
+
+                oM.Common.Materials.Material aMaterial = familyInstance.StructuralMaterialType.ToBHoM(materialGrade);
                 ISectionProperty aSectionProperty;
                 string name = familyInstance.Symbol.Name;
                 aSectionProperty = BH.Engine.Library.Query.Match("UK_SteelSectionDimensions", name) as ISectionProperty;
@@ -646,7 +650,7 @@ namespace BH.Engine.Revit
         }
 
         //TODO: change return type to BHoMObject, add discipine as parameter
-        public static oM.Common.Materials.Material ToBHoM(this StructuralMaterialType structuralMaterialType)
+        public static oM.Common.Materials.Material ToBHoM(this StructuralMaterialType structuralMaterialType, string materialGrade)
         {
             switch (structuralMaterialType)
             {
@@ -654,31 +658,71 @@ namespace BH.Engine.Revit
                     return BH.Engine.Library.Query.Match("MaterialsEurope", "ALUM") as oM.Common.Materials.Material;
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete:
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.PrecastConcrete:
+                    if (materialGrade != null)
+                    {
+                        foreach (IBHoMObject concrete in Library.Query.Match("MaterialsEurope", "Type", "2"))
+                        {
+                            if (materialGrade.Contains((concrete).Name))
+                            {
+                                return concrete as oM.Common.Materials.Material;
+                            }
+                        }
+                    }
                     return BH.Engine.Library.Query.Match("MaterialsEurope", "C30/37") as oM.Common.Materials.Material;
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
+                    if (materialGrade != null)
+                    {
+                        foreach (IBHoMObject steel in Library.Query.Match("MaterialsEurope", "Type", "1"))
+                        {
+                            if (materialGrade.Contains((steel).Name))
+                            {
+                                return steel as oM.Common.Materials.Material;
+                            }
+                        }
+                    }
                     return BH.Engine.Library.Query.Match("MaterialsEurope", "S355") as oM.Common.Materials.Material;
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood:
                     return BH.Engine.Library.Query.Match("MaterialsEurope", "TIMBER") as oM.Common.Materials.Material;
                 default:
-                    return BH.Engine.Library.Query.Match("MaterialsEurope", "S355") as oM.Common.Materials.Material;
+                    return new oM.Common.Materials.Material();
             }
         }
 
         //TODO: change return type to BHoMObject, add discipine as parameter
-        public static oM.Common.Materials.Material ToBHoM(this Material material)
+        public static oM.Common.Materials.Material ToBHoM(this Material material, string materialGrade)
         {
             switch (material.MaterialClass)
             {
                 case "Aluminium":
                     return BH.Engine.Library.Query.Match("MaterialsEurope", "ALUM") as oM.Common.Materials.Material;
                 case "Concrete":
+                    if (materialGrade != null)
+                    {
+                        foreach (IBHoMObject concrete in Library.Query.Match("MaterialsEurope", "Type", "2"))
+                        {
+                            if (materialGrade.Contains((concrete).Name))
+                            {
+                                return concrete as oM.Common.Materials.Material;
+                            }
+                        }
+                    }
                     return BH.Engine.Library.Query.Match("MaterialsEurope", "C30/37") as oM.Common.Materials.Material;
                 case "Steel":
+                    if (materialGrade != null)
+                    {
+                        foreach (IBHoMObject steel in Library.Query.Match("MaterialsEurope", "Type", "1"))
+                        {
+                            if (materialGrade.Contains((steel).Name))
+                            {
+                                return steel as oM.Common.Materials.Material;
+                            }
+                        }
+                    }
                     return BH.Engine.Library.Query.Match("MaterialsEurope", "S355") as oM.Common.Materials.Material;
                 case "Wood":
                     return BH.Engine.Library.Query.Match("MaterialsEurope", "TIMBER") as oM.Common.Materials.Material;
                 default:
-                    return BH.Engine.Library.Query.Match("MaterialsEurope", "S355") as oM.Common.Materials.Material;
+                    return new oM.Common.Materials.Material();
             }
         }
 
@@ -987,6 +1031,20 @@ namespace BH.Engine.Revit
             List<Curve> curves = floor.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
             List<oM.Geometry.Line> lines = curves.Select(c => BH.Engine.Geometry.Modify.Scale((oM.Geometry.Line)c.ToBHoM(), origin, feetToMetreVector)).ToList();
             return Geometry.Modify.Join(lines);
+        }
+
+        private static string GetMaterialGrade(this Element element)
+        {
+            string materialGrade;
+            try
+            {
+                materialGrade = element.LookupParameter("BHE_Material Grade").AsString();
+            }
+            catch
+            {
+                materialGrade = null;
+            }
+            return materialGrade;
         }
         
         private static double feetToMetre = UnitUtils.ConvertFromInternalUnits(1, DisplayUnitType.DUT_METERS);
