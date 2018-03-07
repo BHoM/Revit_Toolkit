@@ -38,6 +38,9 @@ namespace BH.Engine.Revit
             if (type.Namespace.StartsWith("BH.oM.Environmental"))
                 return Revit.Discipline.Environmental;
 
+            if (type.Namespace.StartsWith("BH.oM.Architecture"))
+                return Revit.Discipline.Architecture;
+
             return Revit.Discipline.Environmental;
         }
 
