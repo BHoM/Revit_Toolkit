@@ -119,6 +119,12 @@ namespace BH.Engine.Revit
                 return aResult;
             }
 
+            if (element is Grid)
+            {
+                aResult.Add(typeof(oM.Architecture.Elements.Grid));
+                return aResult;
+            }
+
             return null;
         }
     }

@@ -777,6 +777,20 @@ namespace BH.Engine.Revit
             return null;
         }
 
+        public static BHoMObject ToBHoM(this Grid grid, Discipline discipline = Discipline.Architecture, bool copyCustomData = true)
+        {
+            switch (discipline)
+            {
+                case Discipline.Architecture:
+                    {
+                        oM.Architecture.Elements.Grid aGrid = Architecture.Elements.Create.Grid(grid.Curve.ToBHoM());
+                        aGrid.Name = grid.Name;
+                        return aGrid;
+                    }
+            }
+            return null;
+        }
+
         /// <summary>
         /// Gets BHoM Space from Revit SpatialElement
         /// </summary>
