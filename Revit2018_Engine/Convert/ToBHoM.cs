@@ -660,7 +660,7 @@ namespace BH.Engine.Revit
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.PrecastConcrete:
                     if (materialGrade != null)
                     {
-                        foreach (IBHoMObject concrete in Library.Query.Match("MaterialsEurope", "Type", "2"))
+                        foreach (IBHoMObject concrete in Library.Query.Match("MaterialsEurope", "Type", "Concrete"))
                         {
                             if (materialGrade.Contains((concrete).Name))
                             {
@@ -672,7 +672,7 @@ namespace BH.Engine.Revit
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
                     if (materialGrade != null)
                     {
-                        foreach (IBHoMObject steel in Library.Query.Match("MaterialsEurope", "Type", "1"))
+                        foreach (IBHoMObject steel in Library.Query.Match("MaterialsEurope", "Type", "Steel"))
                         {
                             if (materialGrade.Contains((steel).Name))
                             {
@@ -698,7 +698,7 @@ namespace BH.Engine.Revit
                 case "Concrete":
                     if (materialGrade != null)
                     {
-                        foreach (IBHoMObject concrete in Library.Query.Match("MaterialsEurope", "Type", "2"))
+                        foreach (IBHoMObject concrete in Library.Query.Match("MaterialsEurope", "Type", "Concrete"))
                         {
                             if (materialGrade.Contains((concrete).Name))
                             {
@@ -710,7 +710,7 @@ namespace BH.Engine.Revit
                 case "Steel":
                     if (materialGrade != null)
                     {
-                        foreach (IBHoMObject steel in Library.Query.Match("MaterialsEurope", "Type", "1"))
+                        foreach (IBHoMObject steel in Library.Query.Match("MaterialsEurope", "Type", "Steel"))
                         {
                             if (materialGrade.Contains((steel).Name))
                             {
@@ -783,7 +783,8 @@ namespace BH.Engine.Revit
             {
                 case Discipline.Architecture:
                     {
-                        oM.Architecture.Elements.Grid aGrid = Architecture.Elements.Create.Grid(grid.Curve.ToBHoM());
+                        Line gridLine = grid.Curve as Line;
+                        oM.Architecture.Elements.Grid aGrid = Architecture.Elements.Create.Grid(Geometry.Modify.IScale(gridLine.ToBHoM(), origin, feetToMetreVector));
                         aGrid.Name = grid.Name;
                         return aGrid;
                     }
