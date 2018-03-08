@@ -353,8 +353,7 @@ namespace BH.Engine.Revit
 
                         Property2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, materialGrade) as Property2D;
                         List<oM.Geometry.ICurve> outlines = wall.GetBHOutlines().Select(p=>(oM.Geometry.ICurve)p).ToList();
-
-                        //TODO: Move ModelLaundry Method to Engine. Remove ModelLaundry from Revit_Toolkit
+                        
                         PanelPlanar aPanelPlanar = BHS.Create.PanelPlanar(outlines)[0];       // this is a temporary cheat!
                         aPanelPlanar.Property = aProperty2D;
 
@@ -593,7 +592,7 @@ namespace BH.Engine.Revit
             try
             {
                 string materialGrade = familyInstance.GetMaterialGrade();
-
+                
                 oM.Common.Materials.Material aMaterial = familyInstance.StructuralMaterialType.ToBHoM(materialGrade);
                 ISectionProperty aSectionProperty;
                 string name = familyInstance.Symbol.Name;
