@@ -629,12 +629,15 @@ namespace BH.Engine.Revit
             try
             {
                 string materialGrade = familyInstance.GetMaterialGrade();
-                
+
                 oM.Common.Materials.Material aMaterial = familyInstance.StructuralMaterialType.ToBHoM(materialGrade);
                 ISectionProperty aSectionProperty;
+                ISectionDimensions aSectionDimensions;
+
                 string name = familyInstance.Symbol.Name;
-                aSectionProperty = BH.Engine.Library.Query.Match("UK_SteelSectionDimensions", name) as ISectionProperty;
-                if (aSectionProperty == null)
+                aSectionDimensions = BH.Engine.Library.Query.Match("UK_SteelSectionDimensions", name) as ISectionDimensions;
+
+                if (aSectionDimensions == null)
                 {
                     List<oM.Geometry.ICurve> profileCurves = new List<oM.Geometry.ICurve>();
                     if (familyInstance.HasSweptProfile())
@@ -667,7 +670,7 @@ namespace BH.Engine.Revit
                         }
                     }
                     profileCurves = profileCurves.Select(c => Geometry.Modify.IScale(c, origin, feetToMetreVector)).ToList();
-                    
+
                     if (aMaterial.Type == oM.Common.Materials.MaterialType.Concrete)
                     {
                         aSectionProperty = BHS.Create.ConcreteFreeFormSection(profileCurves, aMaterial, name);
@@ -675,6 +678,18 @@ namespace BH.Engine.Revit
                     else
                     {
                         aSectionProperty = BHS.Create.SteelFreeFormSection(profileCurves, aMaterial, name);
+                    }
+                }
+                else
+                {
+
+                    if (aMaterial.Type == oM.Common.Materials.MaterialType.Concrete)
+                    {
+                        aSectionProperty = BHS.Create.ConcreteSectionFromDimensions(aSectionDimensions, aMaterial, name);
+                    }
+                    else
+                    {
+                        aSectionProperty = BHS.Create.SteelSectionFromDimensions(aSectionDimensions, aMaterial, name);
                     }
                 }
                 return aSectionProperty;
