@@ -94,6 +94,10 @@ namespace BH.Adapter.Revit
             {
                 return Engine.Revit.Convert.ToBHoM(aElement as Floor, discipline, true);
             }
+            else if (aElement is RoofBase)
+            {
+                return Engine.Revit.Convert.ToBHoM(aElement as RoofBase, discipline, true);
+            }
             else
             {
                 List<BHoMObject> aResult = new List<BHoMObject>();

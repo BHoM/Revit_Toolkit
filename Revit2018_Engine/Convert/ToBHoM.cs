@@ -218,9 +218,18 @@ namespace BH.Engine.Revit
         /// </search>
         public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this Floor floor)
         {
+            return ToBHoMBuildingElementPanels(floor.get_Geometry(new Options()));
+        }
+
+        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this RoofBase roofBase)
+        {
+            return ToBHoMBuildingElementPanels(roofBase.get_Geometry(new Options()));
+        }
+
+        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this GeometryElement geometryElement)
+        {
             List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
-            GeometryElement aGeometryElement = floor.get_Geometry(new Options());
-            foreach (GeometryObject aGeometryObject in aGeometryElement)
+            foreach (GeometryObject aGeometryObject in geometryElement)
             {
                 Solid aSolid = aGeometryObject as Solid;
                 if (aSolid == null)
@@ -421,6 +430,34 @@ namespace BH.Engine.Revit
                             aResult.Add(pp);
                         }
 
+                        return aResult;
+                    }
+            }
+
+            return null;
+        }
+
+        public static List<BHoMObject> ToBHoM(this RoofBase roofBase, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
+        {
+            switch (discipline)
+            {
+                case Discipline.Environmental:
+                    {
+                        // we need the same like this for walls?
+
+
+                        List<BHoMObject> aResult = new List<BHoMObject>();
+                        BuildingElementProperties aBuildingElementProperties = roofBase.RoofType.ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
+                        foreach (BuildingElementPanel aBuildingElementPanel in ToBHoMBuildingElementPanels(roofBase))
+                        {
+                            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aBuildingElementPanel, ToBHoM(roofBase.Document.GetElement(roofBase.LevelId) as Level, discipline) as Storey);
+
+                            aBuildingElement = Modify.SetIdentifiers(aBuildingElement, roofBase) as BuildingElement;
+                            if (copyCustomData)
+                                aBuildingElement = Modify.SetCustomData(aBuildingElement, roofBase) as BuildingElement;
+
+                            aResult.Add(aBuildingElement);
+                        }
                         return aResult;
                     }
             }
