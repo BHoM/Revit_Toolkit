@@ -62,18 +62,18 @@ namespace Revit2018_Test
             aFilterQuery = new FilterQuery() { Type = typeof(Space) };
             aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
-            aFilterQuery = new FilterQuery() { Type = typeof(Storey) };
-            aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
-            Storey aStorey = aBHoMObjectList.First() as Storey;
-            aStorey = aStorey.Copy("Level 2", aStorey.Elevation + 9.84252);
+            //aFilterQuery = new FilterQuery() { Type = typeof(Storey) };
+            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            //Storey aStorey = aBHoMObjectList.First() as Storey;
+            //aStorey = aStorey.Copy("Level 2", aStorey.Elevation + 9.84252);
 
-            aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
-            aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
-            List<IObject> aObjectList = new List<IObject>();
-            foreach (BuildingElement aBuildingElement in aBHoMObjectList)
-                aObjectList.Add(aBuildingElement.Move(aStorey));
+            //aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
+            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            //List<IObject> aObjectList = new List<IObject>();
+            //foreach (BuildingElement aBuildingElement in aBHoMObjectList)
+            //    aObjectList.Add(aBuildingElement.Move(aStorey));
 
-            pRevitAdapter.Push(aObjectList);
+            //pRevitAdapter.Push(aObjectList);
 
 
 
