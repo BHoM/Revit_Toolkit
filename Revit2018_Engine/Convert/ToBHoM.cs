@@ -982,9 +982,6 @@ namespace BH.Engine.Revit
                         {
                             foreach (SpatialElementBoundarySubface aSpatialElementBoundarySubface in aSpatialElementGeometryResults.GetBoundaryFaceInfo(aFace))
                             {
-                                //Face aFace_Subface = aSpatialElementBoundarySubface.GetBoundingElementFace();
-                                //Face aFace_Subface = aSpatialElementBoundarySubface.GetSubface();
-                                Face aFace_Subface = aSpatialElementBoundarySubface.GetSpatialElementFace();
                                 LinkElementId aLinkElementId = aSpatialElementBoundarySubface.SpatialBoundaryElement;
                                 Document aDocument = null;
                                 if (aLinkElementId.LinkInstanceId != Autodesk.Revit.DB.ElementId.InvalidElementId)
@@ -1015,8 +1012,15 @@ namespace BH.Engine.Revit
                                     }
                                 }
 
-                                if (aFace_Subface != null)
-                                    foreach (CurveLoop aCurveLoop in aFace_Subface.GetEdgesAsCurveLoops())
+                                //Face aFace_BoundingElementFace = aSpatialElementBoundarySubface.GetBoundingElementFace();
+                                //Face aFace_Subface = aSpatialElementBoundarySubface.GetSubface();
+                                //Face aFace_SpatialElementFace = aSpatialElementBoundarySubface.GetSpatialElementFace();
+                                Face aFace_BuildingElement = aSpatialElementBoundarySubface.GetSubface();
+                                if(aFace_BuildingElement == null)
+                                    aFace_BuildingElement = aSpatialElementBoundarySubface.GetSpatialElementFace();
+
+                                if (aFace_BuildingElement != null)
+                                    foreach (CurveLoop aCurveLoop in aFace_BuildingElement.GetEdgesAsCurveLoops())
                                     {
                                         BuildingElement aBuildingElement = null;
                                         if (aBuildingElementProperties == null)
