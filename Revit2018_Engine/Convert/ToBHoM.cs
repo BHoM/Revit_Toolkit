@@ -355,7 +355,7 @@ namespace BH.Engine.Revit
                         List<oM.Geometry.ICurve> outlines = wall.GetBHOutlines().Select(p=>(oM.Geometry.ICurve)p).ToList();
 
                         //TODO: Move ModelLaundry Method to Engine. Remove ModelLaundry from Revit_Toolkit
-                        PanelPlanar aPanelPlanar = ModelLaundry.Create.PanelPlanar(outlines)[0];       // this is a temporary cheat!
+                        PanelPlanar aPanelPlanar = BHS.Create.PanelPlanar(outlines)[0];       // this is a temporary cheat!
                         aPanelPlanar.Property = aProperty2D;
 
                         aPanelPlanar = Modify.SetIdentifiers(aPanelPlanar, wall) as PanelPlanar;
@@ -410,7 +410,7 @@ namespace BH.Engine.Revit
                         List<oM.Geometry.ICurve> outlines = floor.GetBHOutlines().Select(p => (oM.Geometry.ICurve)p).ToList();
 
                         List<BHoMObject> aResult = new List<BHoMObject>();
-                        List<PanelPlanar> aPanelsPlanar = ModelLaundry.Create.PanelPlanar(outlines);
+                        List<PanelPlanar> aPanelsPlanar = BHS.Create.PanelPlanar(outlines);
                         for (int i = 0; i < aPanelsPlanar.Count; i++)
                         {
                             PanelPlanar pp = aPanelsPlanar[i];
