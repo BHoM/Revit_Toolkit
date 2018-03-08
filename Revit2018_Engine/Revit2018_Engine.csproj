@@ -47,9 +47,6 @@
     <Reference Include="Library_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Library_Engine.dll</HintPath>
     </Reference>
-    <Reference Include="ModelLaundry_Engine">
-      <HintPath>..\..\ModelLaundry_Toolkit\Build\ModelLaundry_Engine.dll</HintPath>
-    </Reference>
     <Reference Include="RevitAPI">
       <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
       <Private>False</Private>
@@ -78,7 +75,7 @@
     <Compile Include="Modify\SetParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\BuildingElementType.cs" />
-    <Compile Include="Query\Dyscipline.cs" />
+    <Compile Include="Query\Discipline.cs" />
     <Compile Include="Query\ElementId.cs" />
     <Compile Include="Query\ElementIds.cs" />
     <Compile Include="Query\IsAssignableFromByFullName.cs" />
