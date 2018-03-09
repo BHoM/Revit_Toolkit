@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
+# Visual Studio Express 14 for Windows Desktop
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevitAdapter2015", "RevitToolkit2015\RevitAdapter2015.csproj", "{72678526-8648-4914-9FE6-33676C6760EB}"
@@ -43,11 +43,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{72678526-8648-4914-9FE6-33676C6760EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{72678526-8648-4914-9FE6-33676C6760EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72678526-8648-4914-9FE6-33676C6760EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72678526-8648-4914-9FE6-33676C6760EB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{348E19A4-A3FC-4558-93C6-2646820412A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{348E19A4-A3FC-4558-93C6-2646820412A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{348E19A4-A3FC-4558-93C6-2646820412A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{348E19A4-A3FC-4558-93C6-2646820412A1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D0479AF6-F551-46BA-B742-4BA9FA10029F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

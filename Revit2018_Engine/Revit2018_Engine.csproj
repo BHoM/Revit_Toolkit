@@ -83,6 +83,7 @@
     <Compile Include="Query\IsHorizontal.cs" />
     <Compile Include="Query\IsVertical.cs" />
     <Compile Include="Query\IsZero.cs" />
+    <Compile Include="Query\LookupParameter.cs" />
     <Compile Include="Query\RevitType.cs" />
     <Compile Include="Query\RevitTypes.cs" />
     <Compile Include="Query\Top.cs" />

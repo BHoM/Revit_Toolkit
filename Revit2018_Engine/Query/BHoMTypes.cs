@@ -11,6 +11,7 @@ using BH.oM.Environmental.Properties;
 using BH.oM.Environmental.Elements;
 using BH.oM.Structural.Elements;
 using BH.oM.Structural.Properties;
+using Autodesk.Revit.DB.Structure.StructuralSections;
 
 namespace BH.Engine.Revit
 {
@@ -127,7 +128,148 @@ namespace BH.Engine.Revit
 
             return null;
         }
-    }
 
-    /***************************************************/
+        /***************************************************/
+
+        public static List<Type> BHoMTypes(this StructuralSectionShape sectionShape)
+        {
+            int shapeNum = (int)sectionShape;
+            List<Type> aResult = new List<Type>();
+
+            if (shapeNum == 2)
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 5)
+            {
+                aResult.Add(typeof(TubeDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 6)
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 8)
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 9)
+            {
+                aResult.Add(typeof(StandardChannelSectionDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 11)
+            {
+                aResult.Add(typeof(StandardAngleSectionDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 12)
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 13)
+            {
+                aResult.Add(typeof(CircleDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 14)
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 15)
+            {
+                aResult.Add(typeof(TubeDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 16)
+            {
+                aResult.Add(typeof(FabricatedISectionDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 17)
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 19)
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 20)
+            {
+                aResult.Add(typeof(StandardChannelSectionDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 23)
+            {
+                aResult.Add(typeof(StandardAngleSectionDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 25)
+            {
+                aResult.Add(typeof(StandardZedSectionDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 31)
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 33)
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (shapeNum == 35)
+            {
+                aResult.Add(typeof(CircleDimensions));
+                return aResult;
+            }
+
+            return null;
+        }
+
+        /***************************************************/
+
+        //TODO: This will be finished Monday morning.
+
+        //public static List<Type> BHoMTypes(this string familyName)
+        //{
+        //    List<Type> aResult = new List<Type>();
+
+        //    if (familyName.EndsWith(""))
+        //    {
+        //        aResult.Add(typeof(RectangleSectionDimensions));
+        //        return aResult;
+        //    }
+
+        //    return null;
+        //}
+
+        /***************************************************/
+    }
 }
