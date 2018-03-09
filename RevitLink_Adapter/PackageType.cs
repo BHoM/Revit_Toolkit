@@ -9,6 +9,7 @@ namespace BH.Adapter.RevitLink
     public enum PackageType
     {
         Push,
-        Pull
+        Pull,
+        ConnectionCheck,
     }
 }

@@ -132,14 +132,31 @@ namespace BH.Adapter.Revit
 
             lock (m_packageLock)
             {
-                if (package.Data.Count < 3)
+                if (package.Data.Count < 1)
+                {
+                    ReturnData(new List<string> { "Cant handle empty package" });
                     return;
+                }
 
-                BH.Adapter.RevitLink.PackageType packageType = (BH.Adapter.RevitLink.PackageType)package.Data[0];
+                BH.Adapter.RevitLink.PackageType packageType = RevitLink.PackageType.ConnectionCheck;
+
+                try
+                {
+                    packageType = (BH.Adapter.RevitLink.PackageType)package.Data[0];
+                }
+                catch
+                {
+                    ReturnData(new List<string> { "Unrecognized package type" });
+                    return;
+                }
 
                 switch (packageType)
                 {
+                    case RevitLink.PackageType.ConnectionCheck:
+                        ReturnData(new List<object>());
+                        return;
                     case RevitLink.PackageType.Push:
+                        if (!CheckPackageSize(package)) return;
                         eve = m_pushEvent;  //Set the event to raise
                         LatestPackage = new List<IObject>();    //Clear the previous package list
                         //Add all objects to the list
@@ -150,10 +167,12 @@ namespace BH.Adapter.Revit
                         }
                         break;
                     case RevitLink.PackageType.Pull:
+                        if (!CheckPackageSize(package)) return;
                         eve = m_pullEvent;
                         LatestQuery = package.Data[1] as IQuery;
                         break;
                     default:
+                        ReturnData(new List<string> { "Unrecognized package type" });
                         return;
                 }
 
@@ -163,6 +182,18 @@ namespace BH.Adapter.Revit
             }
 
             eve.Raise();
+        }
+
+        /***************************************************/
+
+        private bool CheckPackageSize(oM.Socket.DataPackage package)
+        {
+            if (package.Data.Count < 3)
+            {
+                ReturnData(new List<string> { "Invalid Package" });
+                return false;
+            }
+            return true;
         }
 
         /***************************************************/
