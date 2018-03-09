@@ -254,22 +254,5 @@ namespace BH.Engine.Revit
         }
 
         /***************************************************/
-
-        //TODO: This will be finished Monday morning.
-
-        //public static List<Type> BHoMTypes(this string familyName)
-        //{
-        //    List<Type> aResult = new List<Type>();
-
-        //    if (familyName.EndsWith(""))
-        //    {
-        //        aResult.Add(typeof(RectangleSectionDimensions));
-        //        return aResult;
-        //    }
-
-        //    return null;
-        //}
-
-        /***************************************************/
     }
 }

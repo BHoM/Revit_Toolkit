@@ -1133,17 +1133,6 @@ namespace BH.Engine.Revit
 
         private static ISectionDimensions ToBHoMSectionDimensions(this FamilySymbol familySymbol)
         {
-
-            //TODO: To be finished Monday morning.
-            //string familyName = familySymbol.Family.Name;
-            //List<Type> aTypes = Engine.Revit.Query.BHoMTypes(familyName);
-
-            //if (aTypes.Count == 0)
-            //{
-            //    StructuralSectionShape sectionShape = (StructuralSectionShape)familySymbol.LookupParameter("Section Shape").AsInteger();
-            //    aTypes = Engine.Revit.Query.BHoMTypes(sectionShape);
-            //}
-
             StructuralSectionShape sectionShape = (StructuralSectionShape)familySymbol.LookupParameter("Section Shape").AsInteger();
             List<Type> aTypes = Engine.Revit.Query.BHoMTypes(sectionShape);
 
