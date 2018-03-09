@@ -47,6 +47,9 @@ namespace BH.Adapter.RevitLink
             //Reset the wait event
             m_waitEvent.Reset();
 
+            if (!CheckConnection())
+                return new List<IObject>();
+
             config = config == null ? new Dictionary<string, object>() : null;
 
             //Send data through the socket link
@@ -72,6 +75,10 @@ namespace BH.Adapter.RevitLink
         {
             //Reset the wait event
             m_waitEvent.Reset();
+
+
+            if (!CheckConnection())
+                return new List<object>();
 
             config = config == null ? new Dictionary<string, object>() : null;
 
@@ -135,6 +142,16 @@ namespace BH.Adapter.RevitLink
 
         /***************************************************/
 
+        private bool CheckConnection()
+        {
+            m_linkIn.SendData(new List<object> { PackageType.ConnectionCheck });
+
+            bool returned = m_waitEvent.WaitOne(TimeSpan.FromSeconds(5));
+            m_waitEvent.Reset();
+            return returned;
+        }
+
+        /***************************************************/
 
         protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {
