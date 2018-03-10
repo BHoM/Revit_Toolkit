@@ -126,7 +126,7 @@ namespace BH.Engine.Revit
                 return aResult;
             }
 
-            return null;
+            return null; //TODO: shouldn't it be aResult?
         }
 
         /***************************************************/
@@ -250,7 +250,7 @@ namespace BH.Engine.Revit
                 return aResult;
             }
 
-            return null;
+            return aResult;
         }
 
         /***************************************************/
