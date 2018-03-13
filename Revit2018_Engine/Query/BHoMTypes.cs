@@ -46,6 +46,15 @@ namespace BH.Engine.Revit
                         aResult.Add(typeof(Bar));
                         return aResult;
                 }
+
+                //Environmental Windows and Doors
+                switch((BuiltInCategory)element.Category.Id.IntegerValue)
+                {
+                    case BuiltInCategory.OST_Windows:
+                    case BuiltInCategory.OST_Doors:
+                        aResult.Add(typeof(BuildingElement));
+                        return aResult;
+                }
             }
 
             if (element is CeilingType)
@@ -117,6 +126,7 @@ namespace BH.Engine.Revit
             if (element is Level)
             {
                 aResult.Add(typeof(Storey));
+                aResult.Add(typeof(Level));
                 return aResult;
             }
 

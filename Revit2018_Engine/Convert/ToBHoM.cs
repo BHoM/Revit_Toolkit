@@ -323,6 +323,16 @@ namespace BH.Engine.Revit
                         }
                         return null;
                     }
+                case Discipline.Environmental:
+                    {
+                        //TODO: add code for Environmental FamilyInstances (Door, Window)
+                        return null;
+                    }
+                case Discipline.Architecture:
+                    {
+                        //TODO: add code for Architectural FamilyInstances
+                        return null;
+                    }
             }
 
             return null;
@@ -349,7 +359,7 @@ namespace BH.Engine.Revit
 
                         BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
 
-                        BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, ToBHoMBuildingElementCurve(wall), ToBHoM(wall.Document.GetElement(wall.LevelId) as Level, discipline, copyCustomData) as Storey);
+                        BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, ToBHoMBuildingElementCurve(wall), ToBHoM(wall.Document.GetElement(wall.LevelId) as Level, discipline, copyCustomData) as BH.oM.Architecture.Elements.Level);
 
                         aBuildingElement = Modify.SetIdentifiers(aBuildingElement, wall) as BuildingElement;
                         if (copyCustomData)
@@ -402,7 +412,7 @@ namespace BH.Engine.Revit
                         BuildingElementProperties aBuildingElementProperties = floor.FloorType.ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
                         foreach (BuildingElementPanel aBuildingElementPanel in ToBHoMBuildingElementPanels(floor))
                         {
-                            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aBuildingElementPanel, ToBHoM(floor.Document.GetElement(floor.LevelId) as Level, discipline) as Storey);
+                            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aBuildingElementPanel, ToBHoM(floor.Document.GetElement(floor.LevelId) as Level, discipline) as BH.oM.Architecture.Elements.Level);
 
                             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, floor) as BuildingElement;
                             if (copyCustomData)
@@ -452,7 +462,7 @@ namespace BH.Engine.Revit
                         BuildingElementProperties aBuildingElementProperties = roofBase.RoofType.ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
                         foreach (BuildingElementPanel aBuildingElementPanel in ToBHoMBuildingElementPanels(roofBase))
                         {
-                            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aBuildingElementPanel, ToBHoM(roofBase.Document.GetElement(roofBase.LevelId) as Level, discipline) as Storey);
+                            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aBuildingElementPanel, ToBHoM(roofBase.Document.GetElement(roofBase.LevelId) as Level, discipline) as BH.oM.Architecture.Elements.Level);
 
                             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, roofBase) as BuildingElement;
                             if (copyCustomData)
@@ -624,7 +634,6 @@ namespace BH.Engine.Revit
 
             return null;
         }
-
 
         public static ISectionProperty ToBHoMSection(this FamilyInstance familyInstance, oM.Geometry.Line centreLine, bool copyCustomData = true)
         {
@@ -799,13 +808,30 @@ namespace BH.Engine.Revit
         /// </search>
         public static BHoMObject ToBHoM(this Level Level, Discipline discipline = Discipline.Environmental, bool CopyCustomData = true)
         {
-            Storey aStorey = Structure.Create.Storey(Level.Name, Level.Elevation, 0);
+            switch(discipline)
+            {
+                case Discipline.Architecture:
+                case Discipline.Environmental:
+                    //TODO: Update constructor for Level to include Name
+                    oM.Architecture.Elements.Level aLevel = Architecture.Elements.Create.Level(Level.Elevation);
+                    aLevel.Name = Level.Name;
 
-            aStorey = Modify.SetIdentifiers(aStorey, Level) as Storey;
-            if (CopyCustomData)
-                aStorey = Modify.SetCustomData(aStorey, Level) as Storey;
+                    aLevel = Modify.SetIdentifiers(aLevel, Level) as oM.Architecture.Elements.Level;
+                    if (CopyCustomData)
+                        aLevel = Modify.SetCustomData(aLevel, Level) as oM.Architecture.Elements.Level;
 
-            return aStorey;
+                    return aLevel;
+                case Discipline.Structural:
+                    Storey aStorey = Structure.Create.Storey(Level.Name, Level.Elevation, 0);
+
+                    aStorey = Modify.SetIdentifiers(aStorey, Level) as Storey;
+                    if (CopyCustomData)
+                        aStorey = Modify.SetCustomData(aStorey, Level) as Storey;
+
+                    return aStorey;
+            }
+
+            return null;
         }
 
         /***************************************************/
@@ -815,12 +841,13 @@ namespace BH.Engine.Revit
         /// </summary>
         /// <param name="spatialElement">Revit SpatialElement</param>
         /// <param name="discipline">BHoM Discipline</param>
+        /// <param name="objects">BHoM Objects</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="Space">BHoM Space</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM Space, Revit SpatialElement
         /// </search>
-        public static BHoMObject ToBHoM(this SpatialElement spatialElement, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
+        public static BHoMObject ToBHoM(this SpatialElement spatialElement, Dictionary<ElementId, List<BHoMObject>> objects, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             switch (discipline)
             {
@@ -838,35 +865,19 @@ namespace BH.Engine.Revit
             return null;
         }
 
-        public static BHoMObject ToBHoM(this Grid grid, Discipline discipline = Discipline.Architecture, bool copyCustomData = true)
-        {
-            switch (discipline)
-            {
-                case Discipline.Architecture:
-                    {
-                        Line gridLine = grid.Curve as Line;
-                        oM.Architecture.Elements.Grid aGrid = Architecture.Elements.Create.Grid(Geometry.Modify.IScale(gridLine.ToBHoM(), origin, feetToMetreVector));
-                        aGrid.Name = grid.Name;
-                        return aGrid;
-                    }
-            }
-            return null;
-        }
-
         /// <summary>
         /// Gets BHoM Space from Revit SpatialElement
         /// </summary>
         /// <param name="spatialElement">Revit SpatialElement</param>
         /// <param name="spatialElementBoundaryOptions">Revit SpatialElementBoundaryOptions</param>
-        /// <param name="buildingElementProperties">Revit BuildingElementProperties</param>
-        /// <param name="storeys">BHoM Storeys</param>
+        /// <param name="objects"> BHoM Objects</param>
         /// <param name="discipline">BHoM Discipline</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="Space">BHoM Space</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM Space, Revit SpatialElement
         /// </search>
-        public static BHoMObject ToBHoM(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, IEnumerable<BuildingElementProperties> buildingElementProperties, IEnumerable<Storey> storeys, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
+        public static BHoMObject ToBHoM(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, Dictionary<ElementId, List<BHoMObject>> objects, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             switch(discipline)
             {
@@ -877,21 +888,21 @@ namespace BH.Engine.Revit
 
                         Document aDocument = spatialElement.Document;
 
-                        Storey aStorey = null;
-                        if (buildingElementProperties != null)
+                        oM.Architecture.Elements.Level aLevel = null;
+                        if (objects != null)
                         {
-                            foreach (Storey aStorey_Temp in storeys)
-                            {
-                                if (aStorey_Temp.Elevation == spatialElement.Level.Elevation)
-                                {
-                                    aStorey = aStorey_Temp;
-                                    break;
-                                }
-                            }
+                            List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
+                            if (objects.TryGetValue(spatialElement.LevelId, out aBHoMObjectList))
+                                if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
+                                    aLevel = aBHoMObjectList.First() as oM.Architecture.Elements.Level;
                         }
 
-                        if (aStorey == null)
-                            aStorey = spatialElement.Level.ToBHoM() as Storey;
+                        if (aLevel == null)
+                        {
+                            aLevel = spatialElement.Level.ToBHoM() as oM.Architecture.Elements.Level;
+                            if (objects != null)
+                                objects.Add(spatialElement.LevelId, new List<BHoMObject>(new BHoMObject[] { aLevel }));
+                        } 
 
                         List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
                         IList<IList<BoundarySegment>> aBoundarySegmentListList = spatialElement.GetBoundarySegments(spatialElementBoundaryOptions);
@@ -904,16 +915,12 @@ namespace BH.Engine.Revit
                                     ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
 
                                     BuildingElementProperties aBuildingElementProperties = null;
-                                    if (buildingElementProperties != null)
+                                    if (objects != null)
                                     {
-                                        foreach (BuildingElementProperties aBuildingElementProperties_Temp in buildingElementProperties)
-                                        {
-                                            if (aBuildingElementProperties_Temp.Name == aElementType.Name)
-                                            {
-                                                aBuildingElementProperties = aBuildingElementProperties_Temp;
-                                                break;
-                                            }
-                                        }
+                                        List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
+                                        if (objects.TryGetValue(aElementType.Id, out aBHoMObjectList))
+                                            if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
+                                                aBuildingElementProperties = aBHoMObjectList.First() as BuildingElementProperties;
                                     }
 
                                     if (aBuildingElementProperties == null)
@@ -924,9 +931,12 @@ namespace BH.Engine.Revit
                                             aBuildingElementProperties = (aElement as Floor).FloorType.ToBHoM() as BuildingElementProperties;
                                         else if (aElement is Ceiling)
                                             aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as CeilingType).ToBHoM() as BuildingElementProperties;
+
+                                        if (objects != null)
+                                            objects.Add(aElementType.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElementProperties }));
                                     }
 
-                                    BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementCurve(aICurve), aStorey);
+                                    BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementCurve(aICurve), aLevel);
                                     aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
                                     if (copyCustomData)
                                         aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement) as BuildingElement;
@@ -935,7 +945,7 @@ namespace BH.Engine.Revit
 
                         Space aSpace = new Space
                         {
-                            Storey = aStorey,
+                            Level = aLevel,
                             BuildingElements = aBuildingElmementList,
                             Name = spatialElement.Name,
                             Location = (spatialElement.Location as LocationPoint).ToBHoM()
@@ -959,14 +969,14 @@ namespace BH.Engine.Revit
         /// <param name="spatialElement">Revit SpatialElement</param>
         /// <param name="spatialElementGeometryCalculator">Revit SpatialElementGeometryCalculator</param>
         /// <param name="buildingElementProperties">Revit BuildingElementProperties</param>
-        /// <param name="storeys">BHoM Storeys</param>
+        /// <param name="levels">BHoM Levels</param>
         /// <param name="discipline">BHoM Discipline</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="Space">BHoM Space</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM Space, Revit SpatialElement
         /// </search>
-        public static BHoMObject ToBHoM(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, IEnumerable<BuildingElementProperties> buildingElementProperties, IEnumerable<Storey> storeys, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
+        public static BHoMObject ToBHoM(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, IEnumerable<BuildingElementProperties> buildingElementProperties, IEnumerable<oM.Architecture.Elements.Level> levels, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             switch(discipline)
             {
@@ -984,22 +994,21 @@ namespace BH.Engine.Revit
                         if (aSolid == null)
                             return null;
 
-
-                        Storey aStorey = null;
+                        oM.Architecture.Elements.Level aLevel = null;
                         if (buildingElementProperties != null)
                         {
-                            foreach (Storey aStorey_Temp in storeys)
+                            foreach (oM.Architecture.Elements.Level aLevel_Temp in levels)
                             {
-                                if (aStorey_Temp.Elevation == spatialElement.Level.Elevation)
+                                if (aLevel_Temp.Elevation == spatialElement.Level.Elevation)
                                 {
-                                    aStorey = aStorey_Temp;
+                                    aLevel = aLevel_Temp;
                                     break;
                                 }
                             }
                         }
 
-                        if (aStorey == null)
-                            aStorey = spatialElement.Level.ToBHoM(discipline, copyCustomData) as Storey;
+                        if (aLevel == null)
+                            aLevel = spatialElement.Level.ToBHoM(discipline, copyCustomData) as oM.Architecture.Elements.Level;
 
 
                         List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
@@ -1061,7 +1070,7 @@ namespace BH.Engine.Revit
                                         }
 
                                         aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementPanel(aCurveLoop.ToBHoM()));
-                                        aBuildingElement.Storey = aStorey;
+                                        aBuildingElement.Level = aLevel;
                                         aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
                                         if (copyCustomData)
                                             aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement) as BuildingElement;
@@ -1072,7 +1081,7 @@ namespace BH.Engine.Revit
 
                         Space aSpace = new Space
                         {
-                            Storey = aStorey,
+                            Level = aLevel,
                             BuildingElements = aBuildingElmementList,
                             Name = spatialElement.Name,
                             Location = (spatialElement.Location as LocationPoint).ToBHoM()
@@ -1089,6 +1098,23 @@ namespace BH.Engine.Revit
 
             return null;
 
+        }
+
+        /***************************************************/
+
+        public static BHoMObject ToBHoM(this Grid grid, Discipline discipline = Discipline.Architecture, bool copyCustomData = true)
+        {
+            switch (discipline)
+            {
+                case Discipline.Architecture:
+                    {
+                        Line gridLine = grid.Curve as Line;
+                        oM.Architecture.Elements.Grid aGrid = Architecture.Elements.Create.Grid(Geometry.Modify.IScale(gridLine.ToBHoM(), origin, feetToMetreVector));
+                        aGrid.Name = grid.Name;
+                        return aGrid;
+                    }
+            }
+            return null;
         }
 
         /***************************************************/
