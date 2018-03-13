@@ -254,6 +254,20 @@ namespace BH.Engine.Revit
 
         }
 
+        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this FamilyInstance familyInstance)
+        {
+            List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
+
+            //TODO: Get more realistic shape
+            BoundingBoxXYZ aBoundingBoxXYZ = familyInstance.get_BoundingBox(null);
+
+            XYZ aXYZ = aBoundingBoxXYZ.Transform.BasisZ.CrossProduct(aBoundingBoxXYZ.Max - aBoundingBoxXYZ.Min);
+
+            XYZ aXYZ_1 = aBoundingBoxXYZ.Transform.BasisX.CrossProduct(aBoundingBoxXYZ.Max - aBoundingBoxXYZ.Min);
+
+            return null;
+        }
+
         /***************************************************/
 
         /// <summary>
@@ -328,11 +342,12 @@ namespace BH.Engine.Revit
                     }
                 case Discipline.Environmental:
                     {
-                        //TODO: add code for Environmental FamilyInstances (Door, Window)
-                        if((BuiltInCategory)familyInstance.Category.Id.IntegerValue == BuiltInCategory.OST_Windows)
+                        BuildingElementType? aBuildingElementType = Query.BuildingElementType((BuiltInCategory)familyInstance.Category.Id.IntegerValue);
+                        if(aBuildingElementType.HasValue)
                         {
-                            Reference aReference = familyInstance.HostFace;
-                            familyInstance.Document.GetElement(aReference);
+                            List<BuildingElementPanel> aBuildingElementPanelList = ToBHoMBuildingElementPanels(familyInstance);
+                            if (aBuildingElementPanelList != null && aBuildingElementPanelList.Count > 0)
+                                return GetBuildingElement(familyInstance, aBuildingElementPanelList.First(), null, copyCustomData);
                         }
                         return null;
                     }
@@ -1158,8 +1173,6 @@ namespace BH.Engine.Revit
             if (hostObject == null)
                 return null;
 
-            Document aDocument = hostObject.Document;
-
             IList<ElementId> aElementIdList = hostObject.FindInserts(false, false, false, false);
             if (aElementIdList == null || aElementIdList.Count < 1)
                 return null;
@@ -1167,7 +1180,7 @@ namespace BH.Engine.Revit
             List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
             foreach (ElementId aElementId in aElementIdList)
             {
-                Element aElement_Hosted = aDocument.GetElement(aElementId);
+                Element aElement_Hosted = hostObject.Document.GetElement(aElementId);
                 if ((BuiltInCategory)aElement_Hosted.Category.Id.IntegerValue == BuiltInCategory.OST_Windows || (BuiltInCategory)aElement_Hosted.Category.Id.IntegerValue == BuiltInCategory.OST_Doors)
                 {
                     IntersectionResult aIntersectionResult = null;
@@ -1205,55 +1218,65 @@ namespace BH.Engine.Revit
                     aPointList.Add(aXYZ_Min.ToBHoM());
                     aPointList.Add(aXYZ_V.ToBHoM());
 
-                    ElementType aElementType = aDocument.GetElement(aElement_Hosted.GetTypeId()) as ElementType;
-                    BuildingElementProperties aBuildingElementProperties = null;
-                    if (objects != null)
-                    {
-                        List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
-                        if (objects.TryGetValue(aElementType.Id, out aBHoMObjectList))
-                            if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                                aBuildingElementProperties = aBHoMObjectList.First() as BuildingElementProperties;
-                    }
+                    BuildingElementPanel aBuildingElementPanel = Create.BuildingElementPanel(new oM.Geometry.Polyline[] { Geometry.Create.Polyline(aPointList) });
 
-                    if (aBuildingElementProperties == null)
-                    {
-                        BuildingElementType? aBuildingElementType = Query.BuildingElementType((BuiltInCategory)aElementType.Category.Id.IntegerValue);
-                        if (!aBuildingElementType.HasValue)
-                            continue;
-
-                        aBuildingElementProperties = Create.BuildingElementProperties(aBuildingElementType.Value, aElementType.Name);
-                        aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, aElementType) as BuildingElementProperties;
-                        if (copyCustomData)
-                            aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, aElementType) as BuildingElementProperties;
-
-                        if (objects != null)
-                            objects.Add(aElementType.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElementProperties }));
-                    }
-
-
-                    oM.Architecture.Elements.Level aLevel = GetLevel(aElement_Hosted, objects);
-                    if (aLevel == null)
-                        continue;
-
-                    BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementPanel(new oM.Geometry.Polyline[] { Geometry.Create.Polyline(aPointList) }));
-                    aBuildingElement.Level = aLevel;
-                    aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement_Hosted) as BuildingElement;
-                    if (copyCustomData)
-                        aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement_Hosted) as BuildingElement;
-                    aBuildingElmementList.Add(aBuildingElement);
-
-                    if (objects != null)
-                    {
-                        List<BHoMObject> aBHoMObjectList = null;
-                        if (objects.TryGetValue(aElement_Hosted.Id, out aBHoMObjectList))
-                            aBHoMObjectList.Add(aBuildingElement);
-                        else
-                            objects.Add(aElement_Hosted.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElement }));
-                    }
+                    BuildingElement aBuildingElement = GetBuildingElement(aElement_Hosted, aBuildingElementPanel, objects, copyCustomData);
+                    if (aBuildingElement != null)
+                        aBuildingElmementList.Add(aBuildingElement);
 
                 }
             }
             return aBuildingElmementList;
+        }
+
+        private static BuildingElement GetBuildingElement(Element element, BuildingElementPanel buildingElementPanel, Dictionary<ElementId, List<BHoMObject>> objects, bool copyCustomData = true)
+        {
+            ElementType aElementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
+            BuildingElementProperties aBuildingElementProperties = null;
+            if (objects != null)
+            {
+                List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
+                if (objects.TryGetValue(aElementType.Id, out aBHoMObjectList))
+                    if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
+                        aBuildingElementProperties = aBHoMObjectList.First() as BuildingElementProperties;
+            }
+
+            if (aBuildingElementProperties == null)
+            {
+                BuildingElementType? aBuildingElementType = Query.BuildingElementType((BuiltInCategory)aElementType.Category.Id.IntegerValue);
+                if (!aBuildingElementType.HasValue)
+                    return null;
+
+                aBuildingElementProperties = Create.BuildingElementProperties(aBuildingElementType.Value, aElementType.Name);
+                aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, aElementType) as BuildingElementProperties;
+                if (copyCustomData)
+                    aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, aElementType) as BuildingElementProperties;
+
+                if (objects != null)
+                    objects.Add(aElementType.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElementProperties }));
+            }
+
+
+            oM.Architecture.Elements.Level aLevel = GetLevel(element, objects);
+            if (aLevel == null)
+                return null;
+
+            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, buildingElementPanel);
+            aBuildingElement.Level = aLevel;
+            aBuildingElement = Modify.SetIdentifiers(aBuildingElement, element) as BuildingElement;
+            if (copyCustomData)
+                aBuildingElement = Modify.SetCustomData(aBuildingElement, element) as BuildingElement;
+
+            if (objects != null)
+            {
+                List<BHoMObject> aBHoMObjectList = null;
+                if (objects.TryGetValue(element.Id, out aBHoMObjectList))
+                    aBHoMObjectList.Add(aBuildingElement);
+                else
+                    objects.Add(element.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElement }));
+            }
+
+            return aBuildingElement;
         }
 
         private static oM.Architecture.Elements.Level GetLevel(Element Element, Dictionary<ElementId, List<BHoMObject>> objects)
