@@ -813,7 +813,7 @@ namespace BH.Engine.Revit
                 case Discipline.Architecture:
                 case Discipline.Environmental:
                     //TODO: Update constructor for Level to include Name
-                    oM.Architecture.Elements.Level aLevel = Architecture.Elements.Create.Level(Level.Elevation);
+                    oM.Architecture.Elements.Level aLevel = Architecture.Elements.Create.Level(Level.Elevation * feetToMetre);
                     aLevel.Name = Level.Name;
 
                     aLevel = Modify.SetIdentifiers(aLevel, Level) as oM.Architecture.Elements.Level;
