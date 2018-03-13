@@ -99,6 +99,11 @@ namespace BH.Adapter.Revit
             {
                 aResult = Engine.Revit.Convert.ToBHoM(aElement as RoofBase, discipline, true);
             }
+            else if (aElement is SpatialElement)
+            {
+                aResult = new List<BHoMObject>();
+                aResult.Add(Engine.Revit.Convert.ToBHoM(aElement as SpatialElement, objects, discipline, true));
+            }
             else
             {
                 aResult = new List<BHoMObject>();
