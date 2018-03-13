@@ -156,11 +156,11 @@ namespace BH.Engine.Revit
 
             //Get Level
             Level aLevel = null;
-            if(buildingElement.Storey != null)
+            if(buildingElement.Level != null)
             {
                 List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
                 if (aLevelList != null && aLevelList.Count > 0)
-                    aLevel = aLevelList.Find(x => x.Name == buildingElement.Storey.Name);
+                    aLevel = aLevelList.Find(x => x.Name == buildingElement.Level.Name);
             }
 
             //Get ElementType
@@ -240,6 +240,27 @@ namespace BH.Engine.Revit
 
             if (copyCustomData)
                 Modify.SetParameters(aElement, storey, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
+
+            return aElement as Level;
+        }
+
+        /// <summary>
+        /// Gets Revit Level from BHoM Storey
+        /// </summary>
+        /// <param name="level">BHoM Level</param>
+        /// <param name="document">Revit Document</param>
+        /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
+        /// <returns name="Level">Revit Level</returns>
+        /// <search>
+        /// Convert, ToRevit, BHoM Storey, Revit Level 
+        /// </search>
+        public static Level ToRevit(this oM.Architecture.Elements.Level level, Document document, bool copyCustomData = true)
+        {
+            Element aElement = Level.Create(document, level.Elevation);
+            aElement.Name = level.Name;
+
+            if (copyCustomData)
+                Modify.SetParameters(aElement, level, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
 
             return aElement as Level;
         }

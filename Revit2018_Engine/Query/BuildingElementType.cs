@@ -39,6 +39,10 @@ namespace BH.Engine.Revit
                     return BH.oM.Environmental.Elements.BuildingElementType.Roof;
                 case BuiltInCategory.OST_Walls:
                     return BH.oM.Environmental.Elements.BuildingElementType.Wall;
+                case BuiltInCategory.OST_Windows:
+                    return BH.oM.Environmental.Elements.BuildingElementType.Window;
+                case BuiltInCategory.OST_Doors:
+                    return BH.oM.Environmental.Elements.BuildingElementType.Door;
             }
 
             return null;

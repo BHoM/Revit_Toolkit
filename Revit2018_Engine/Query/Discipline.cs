@@ -20,7 +20,7 @@ namespace BH.Engine.Revit
         /***************************************************/
 
         /// <summary>
-        /// Returs discipline of BHoM type
+        /// Returs discipline of BHoM type. Default value: Revit.Discipline.Environmental
         /// </summary>
         /// <param name="type">Type</param>
         /// <returns name="ElementId">Revit ElementId</returns>

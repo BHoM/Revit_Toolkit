@@ -40,6 +40,7 @@ namespace BH.Engine.Revit
                 aResult.Add(typeof(Wall));
                 aResult.Add(typeof(Ceiling));
                 aResult.Add(typeof(RoofBase));
+                aResult.Add(typeof(FamilyInstance));
                 return aResult;
             }
 
@@ -62,7 +63,13 @@ namespace BH.Engine.Revit
                 return aResult;
             }
 
-            if (Type == typeof(oM.Structural.Elements.Storey))
+            if (Type == typeof(Storey))
+            {
+                aResult.Add(typeof(Level));
+                return aResult;
+            }
+
+            if (Type == typeof(oM.Architecture.Elements.Level))
             {
                 aResult.Add(typeof(Level));
                 return aResult;

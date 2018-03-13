@@ -117,8 +117,8 @@ namespace BH.Adapter.Revit
             Create(buildingElement.BuildingElementProperties, copyCustomData, false);
 
             //Set Level
-            if (buildingElement.Storey != null)
-                Create(buildingElement.Storey, copyCustomData, false);
+            if (buildingElement.Level != null)
+                Create(buildingElement.Level, copyCustomData, false);
 
             if (replace)
                 Delete(buildingElement);
@@ -149,6 +149,31 @@ namespace BH.Adapter.Revit
             if (aElement == null)
             {
                 storey.ToRevit(m_Document, copyCustomData);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool Create(oM.Architecture.Elements.Level level, bool copyCustomData = true, bool replace = false)
+        {
+            if (level == null)
+                return false;
+
+            if (replace)
+                Delete(level);
+
+            List<Element> aElementList = new FilteredElementCollector(m_Document).OfClass(typeof(Level)).ToList();
+            if (aElementList == null || aElementList.Count < 1)
+            {
+                level.ToRevit(m_Document, copyCustomData);
+                return true;
+            }
+
+            Element aElement = aElementList.Find(x => x.Name == level.Name);
+            if (aElement == null)
+            {
+                level.ToRevit(m_Document, copyCustomData);
                 return true;
             }
 

@@ -35,6 +35,10 @@ namespace BH.Engine.Revit
                     return typeof(RoofType);
                 case BH.oM.Environmental.Elements.BuildingElementType.Wall:
                     return typeof(WallType);
+                case BH.oM.Environmental.Elements.BuildingElementType.Door:
+                    return typeof(FamilyInstance);
+                case BH.oM.Environmental.Elements.BuildingElementType.Window:
+                    return typeof(FamilyInstance);
             }
 
             return null;
