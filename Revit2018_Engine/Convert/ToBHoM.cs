@@ -374,7 +374,7 @@ namespace BH.Engine.Revit
 
                         Property2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, materialGrade) as Property2D;
                         List<oM.Geometry.Polyline> outlines = wall.GetBHOutlines();
-                        
+
                         PanelPlanar aPanelPlanar = BHS.Create.PanelPlanar(outlines)[0];       // this is a temporary cheat!
                         aPanelPlanar.Property = aProperty2D;
 
@@ -642,7 +642,6 @@ namespace BH.Engine.Revit
                 string materialGrade = familyInstance.GetMaterialGrade();
 
                 oM.Common.Materials.Material aMaterial = familyInstance.StructuralMaterialType.ToBHoM(materialGrade);
-                ISectionProperty aSectionProperty;
                 ISectionDimensions aSectionDimensions;
 
                 string name = familyInstance.Symbol.Name;
@@ -652,7 +651,7 @@ namespace BH.Engine.Revit
                 {
                     aSectionDimensions = familyInstance.Symbol.ToBHoMSectionDimensions();
                 }
-                
+
                 if (aSectionDimensions != null)
                 {
                     //TODO: shouldn't we have AluminiumSection and TimberSection at least?
@@ -778,6 +777,7 @@ namespace BH.Engine.Revit
                     }
                     return BH.Engine.Library.Query.Match("MaterialsEurope", "C30/37") as oM.Common.Materials.Material;
                 case "Steel":
+                case "Metal":
                     if (materialGrade != null)
                     {
                         foreach (IBHoMObject steel in Library.Query.Match("MaterialsEurope", "Type", "Steel"))
@@ -1124,8 +1124,47 @@ namespace BH.Engine.Revit
         //TODO: Move to Revit2018_Engine.Query
         private static List<oM.Geometry.Polyline> GetBHOutlines(this Wall wall)
         {
-            List<Curve> curves = wall.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
-            List<oM.Geometry.Line> lines = curves.Select(c => BH.Engine.Geometry.Modify.Scale((oM.Geometry.Line)c.ToBHoM(), origin, feetToMetreVector)).ToList();
+            List<Curve> curves;
+            if (wall.GetAnalyticalModel() != null)
+            {
+                curves = wall.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
+            }
+            else
+            {
+                curves = new List<Curve>();
+                LocationCurve aLocationCurve = wall.Location as LocationCurve;
+                XYZ direction = (aLocationCurve.Curve as Line).Direction;
+                XYZ normal = new XYZ(-direction.Y, direction.X, 0);
+                foreach (GeometryObject obj in wall.get_Geometry(new Options()))
+                {
+                    if (obj is Solid)
+                    {
+                        foreach (PlanarFace face in (obj as Solid).Faces)
+                        {
+                            if (face.FaceNormal.IsAlmostEqualTo(normal))
+                            {
+                                EdgeArrayArray aEdgeArrayArray = face.EdgeLoops;
+                                if (aEdgeArrayArray != null && aEdgeArrayArray.Size > 0)
+                                {
+                                    for (int i = 0; i < aEdgeArrayArray.Size; i++)
+                                    {
+                                        EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
+                                        foreach (Autodesk.Revit.DB.Edge aEdge in aEdgeArray)
+                                        {
+                                            Curve aCurve = aEdge.AsCurve();
+                                            if (aCurve != null)
+                                                curves.Add(aCurve);
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            List<oM.Geometry.ICurve> crvs = curves.Select(c => c.ToBHoM()).ToList();
+            List<oM.Geometry.Line> lines = crvs.Discretize(8).Select(l => BH.Engine.Geometry.Modify.Scale(l, origin, feetToMetreVector)).ToList();
             return Geometry.Modify.Join(lines);
         }
 
@@ -1134,8 +1173,38 @@ namespace BH.Engine.Revit
         //TODO: Move to Revit2018_Engine.Query
         private static List<oM.Geometry.Polyline> GetBHOutlines(this Floor floor)
         {
-            List<Curve> curves = floor.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
-            List<oM.Geometry.Line> lines = curves.Select(c => BH.Engine.Geometry.Modify.Scale((oM.Geometry.Line)c.ToBHoM(), origin, feetToMetreVector)).ToList();
+            List<Curve> curves;
+            if (floor.GetAnalyticalModel() != null)
+            {
+                curves = floor.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
+            }
+            else
+            {
+                curves = new List<Curve>();
+                foreach (GeometryObject obj in floor.get_Geometry(new Options()))
+                {
+                    if (obj is Solid)
+                    {
+                        PlanarFace top = Query.Top(obj as Solid);
+                        EdgeArrayArray aEdgeArrayArray = top.EdgeLoops;
+                        if (aEdgeArrayArray != null && aEdgeArrayArray.Size > 0)
+                        {
+                            for (int i = 0; i < aEdgeArrayArray.Size; i++)
+                            {
+                                EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
+                                foreach (Autodesk.Revit.DB.Edge aEdge in aEdgeArray)
+                                {
+                                    Curve aCurve = aEdge.AsCurve();
+                                    if (aCurve != null)
+                                        curves.Add(aCurve);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            List<oM.Geometry.ICurve> crvs = curves.Select(c => c.ToBHoM()).ToList();
+            List<oM.Geometry.Line> lines = crvs.Discretize(8).Select(l => BH.Engine.Geometry.Modify.Scale(l, origin, feetToMetreVector)).ToList();
             return Geometry.Modify.Join(lines);
         }
 
@@ -1152,21 +1221,24 @@ namespace BH.Engine.Revit
             }
             return materialGrade;
         }
-        
-        private static double feetToMetre = UnitUtils.ConvertFromInternalUnits(1, DisplayUnitType.DUT_METERS);
-        private static oM.Geometry.Point origin = new oM.Geometry.Point { X = 0, Y = 0, Z = 0 };
-        private static oM.Geometry.Vector feetToMetreVector = new oM.Geometry.Vector { X = feetToMetre, Y = feetToMetre, Z = feetToMetre };
 
         private static ISectionDimensions ToBHoMSectionDimensions(this FamilySymbol familySymbol)
         {
+            string familyName = familySymbol.Family.Name;
             StructuralSectionShape sectionShape = (StructuralSectionShape)familySymbol.LookupParameter("Section Shape").AsInteger();
-            List<Type> aTypes = Engine.Revit.Query.BHoMTypes(sectionShape);
+            List<Type> aTypes = Engine.Revit.Query.BHoMTypes(familyName);
+            aTypes.AddRange(Engine.Revit.Query.BHoMTypes(sectionShape));
 
             if (aTypes.Count == 0) return null;
 
             if (aTypes.Contains(typeof(CircleDimensions)))
             {
-                double diameter = familySymbol.LookupParameterDouble(diameterNames, true);
+                double diameter;
+                StructuralSection section = familySymbol.GetStructuralSection();
+                if (section is StructuralSectionConcreteRound) diameter = (section as StructuralSectionConcreteRound).Diameter * feetToMetre;
+                else if (section is StructuralSectionConcreteRound) diameter = (section as StructuralSectionConcreteRound).Diameter * feetToMetre;
+                else diameter = familySymbol.LookupParameterDouble(diameterNames, true);
+
                 if (!double.IsNaN(diameter))
                 {
                     return new CircleDimensions(diameter);
@@ -1181,13 +1253,29 @@ namespace BH.Engine.Revit
 
             else if (aTypes.Contains(typeof(FabricatedISectionDimensions)))
             {
-                double height = familySymbol.LookupParameterDouble(heightNames, true);
-                double topFlangeWidth = familySymbol.LookupParameterDouble(topFlangeWidthNames, true);
-                double botFlangeWidth = familySymbol.LookupParameterDouble(botFlangeWidthNames, true);
-                double webThickness = familySymbol.LookupParameterDouble(webThicknessNames, true);
-                double topFlangeThickness = familySymbol.LookupParameterDouble(topFlangeThicknessNames, true);
-                double botFlangeThickness = familySymbol.LookupParameterDouble(botFlangeThicknessNames, true);
-                double weldSize = familySymbol.LookupParameterDouble(weldSizeNames1, true);
+                double height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize;
+                StructuralSection section = familySymbol.GetStructuralSection();
+                if (section is StructuralSectionIWelded)
+                {
+                    StructuralSectionIWelded sectionType = section as StructuralSectionIWelded;
+                    height = sectionType.Height * feetToMetre;
+                    topFlangeWidth = sectionType.TopFlangeWidth * feetToMetre;
+                    botFlangeWidth = sectionType.BottomFlangeWidth * feetToMetre;
+                    webThickness = sectionType.WebThickness * feetToMetre;
+                    topFlangeThickness = sectionType.TopFlangeThickness * feetToMetre;
+                    botFlangeThickness = sectionType.BottomFlangeThickness * feetToMetre;
+                    weldSize = 0;
+                }
+                else
+                {
+                    height = familySymbol.LookupParameterDouble(heightNames, true);
+                    topFlangeWidth = familySymbol.LookupParameterDouble(topFlangeWidthNames, true);
+                    botFlangeWidth = familySymbol.LookupParameterDouble(botFlangeWidthNames, true);
+                    webThickness = familySymbol.LookupParameterDouble(webThicknessNames, true);
+                    topFlangeThickness = familySymbol.LookupParameterDouble(topFlangeThicknessNames, true);
+                    botFlangeThickness = familySymbol.LookupParameterDouble(botFlangeThicknessNames, true);
+                    weldSize = familySymbol.LookupParameterDouble(weldSizeNames1, true);
+                }
 
                 if (double.IsNaN(weldSize))
                 {
@@ -1210,9 +1298,35 @@ namespace BH.Engine.Revit
 
             else if (aTypes.Contains(typeof(RectangleSectionDimensions)))
             {
-                double height = familySymbol.LookupParameterDouble(heightNames, true);
-                double width = familySymbol.LookupParameterDouble(widthNames, true);
-                double cornerRadius = familySymbol.LookupParameterDouble(cornerRadiusNames, true);
+                double height, width, cornerRadius;
+                StructuralSection section = familySymbol.GetStructuralSection();
+                if (section is StructuralSectionConcreteRectangle)
+                {
+                    StructuralSectionConcreteRectangle sectionType = section as StructuralSectionConcreteRectangle;
+                    height = sectionType.Height * feetToMetre;
+                    width = sectionType.Width * feetToMetre;
+                    cornerRadius = 0;
+                }
+                else if (section is StructuralSectionRectangularBar)
+                {
+                    StructuralSectionRectangularBar sectionType = section as StructuralSectionRectangularBar;
+                    height = sectionType.Height * feetToMetre;
+                    width = sectionType.Width * feetToMetre;
+                    cornerRadius = 0;
+                }
+                else if (section is StructuralSectionRectangleParameterized)
+                {
+                    StructuralSectionRectangleParameterized sectionType = section as StructuralSectionRectangleParameterized;
+                    height = sectionType.Height * feetToMetre;
+                    width = sectionType.Width * feetToMetre;
+                    cornerRadius = 0;
+                }
+                else
+                {
+                    height = familySymbol.LookupParameterDouble(heightNames, true);
+                    width = familySymbol.LookupParameterDouble(widthNames, true);
+                    cornerRadius = familySymbol.LookupParameterDouble(cornerRadiusNames, true);
+                }
 
                 if (double.IsNaN(cornerRadius)) cornerRadius = 0;
 
@@ -1224,12 +1338,38 @@ namespace BH.Engine.Revit
 
             else if (aTypes.Contains(typeof(StandardAngleSectionDimensions)))
             {
-                double height = familySymbol.LookupParameterDouble(heightNames, true);
-                double width = familySymbol.LookupParameterDouble(widthNames, true);
-                double webThickness = familySymbol.LookupParameterDouble(webThicknessNames, true);
-                double flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, true);
-                double rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, true);
-                double toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, true);
+                double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
+                StructuralSection section = familySymbol.GetStructuralSection();
+                if (section is StructuralSectionLAngle)
+                {
+                    StructuralSectionLAngle sectionType = section as StructuralSectionLAngle;
+                    height = sectionType.Height * feetToMetre;
+                    width = sectionType.Width * feetToMetre;
+                    webThickness = sectionType.WebThickness * feetToMetre;
+                    flangeThickness = sectionType.FlangeThickness * feetToMetre;
+                    rootRadius = sectionType.WebFillet * feetToMetre;
+                    toeRadius = sectionType.FlangeFillet * feetToMetre;
+                }
+                else if (section is StructuralSectionLProfile)
+                {
+                    //TODO: Implement cold-formed profiles?
+                    StructuralSectionLProfile sectionType = section as StructuralSectionLProfile;
+                    height = sectionType.Height * feetToMetre;
+                    width = sectionType.Width * feetToMetre;
+                    webThickness = sectionType.WallNominalThickness * feetToMetre;
+                    flangeThickness = sectionType.WallNominalThickness * feetToMetre;
+                    rootRadius = sectionType.InnerFillet * feetToMetre;
+                    toeRadius = 0;
+                }
+                else
+                {
+                    height = familySymbol.LookupParameterDouble(heightNames, true);
+                    width = familySymbol.LookupParameterDouble(widthNames, true);
+                    webThickness = familySymbol.LookupParameterDouble(webThicknessNames, true);
+                    flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, true);
+                    rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, true);
+                    toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, true);
+                }
 
                 if (double.IsNaN(rootRadius)) rootRadius = 0;
                 if (double.IsNaN(toeRadius)) toeRadius = 0;
@@ -1242,11 +1382,25 @@ namespace BH.Engine.Revit
 
             else if (aTypes.Contains(typeof(StandardBoxDimensions)))
             {
-                double height = familySymbol.LookupParameterDouble(heightNames, true);
-                double width = familySymbol.LookupParameterDouble(widthNames, true);
-                double thickness = familySymbol.LookupParameterDouble(wallThicknessNames, true);
-                double outerRadius = familySymbol.LookupParameterDouble(outerRadiusNames, true);
-                double innerRadius = familySymbol.LookupParameterDouble(innerRadiusNames, true);
+                double height, width, thickness, outerRadius, innerRadius;
+                StructuralSection section = familySymbol.GetStructuralSection();
+                if (section is StructuralSectionRectangleHSS)
+                {
+                    StructuralSectionRectangleHSS sectionType = section as StructuralSectionRectangleHSS;
+                    height = sectionType.Height * feetToMetre;
+                    width = sectionType.Width * feetToMetre;
+                    thickness = sectionType.WallNominalThickness * feetToMetre;
+                    outerRadius = sectionType.OuterFillet * feetToMetre;
+                    innerRadius = sectionType.InnerFillet * feetToMetre;
+                }
+                else
+                {
+                    height = familySymbol.LookupParameterDouble(heightNames, true);
+                    width = familySymbol.LookupParameterDouble(widthNames, true);
+                    thickness = familySymbol.LookupParameterDouble(wallThicknessNames, true);
+                    outerRadius = familySymbol.LookupParameterDouble(outerRadiusNames, true);
+                    innerRadius = familySymbol.LookupParameterDouble(innerRadiusNames, true);
+                }
 
                 if (double.IsNaN(outerRadius)) outerRadius = 0;
                 if (double.IsNaN(innerRadius)) innerRadius = 0;
@@ -1259,12 +1413,38 @@ namespace BH.Engine.Revit
 
             else if (aTypes.Contains(typeof(StandardChannelSectionDimensions)))
             {
-                double height = familySymbol.LookupParameterDouble(heightNames, true);
-                double flangeWidth = familySymbol.LookupParameterDouble(widthNames, true);
-                double webThickness = familySymbol.LookupParameterDouble(webThicknessNames, true);
-                double flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, true);
-                double rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, true);
-                double toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, true);
+                double height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius;
+                StructuralSection section = familySymbol.GetStructuralSection();
+                if (section is StructuralSectionCParallelFlange)
+                {
+                    StructuralSectionCParallelFlange sectionType = section as StructuralSectionCParallelFlange;
+                    height = sectionType.Height * feetToMetre;
+                    flangeWidth = sectionType.Width * feetToMetre;
+                    webThickness = sectionType.WebThickness * feetToMetre;
+                    flangeThickness = sectionType.FlangeThickness * feetToMetre;
+                    rootRadius = sectionType.WebFillet * feetToMetre;
+                    toeRadius = sectionType.FlangeFillet * feetToMetre;
+                }
+                else if (section is StructuralSectionCProfile)
+                {
+                    //TODO: Implement cold-formed profiles?
+                    StructuralSectionCProfile sectionType = section as StructuralSectionCProfile;
+                    height = sectionType.Height * feetToMetre;
+                    flangeWidth = sectionType.Width * feetToMetre;
+                    webThickness = sectionType.WallNominalThickness * feetToMetre;
+                    flangeThickness = sectionType.WallNominalThickness * feetToMetre;
+                    rootRadius = sectionType.InnerFillet * feetToMetre;
+                    toeRadius = 0;
+                }
+                else
+                {
+                    height = familySymbol.LookupParameterDouble(heightNames, true);
+                    flangeWidth = familySymbol.LookupParameterDouble(widthNames, true);
+                    webThickness = familySymbol.LookupParameterDouble(webThicknessNames, true);
+                    flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, true);
+                    rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, true);
+                    toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, true);
+                }
 
                 if (double.IsNaN(rootRadius)) rootRadius = 0;
                 if (double.IsNaN(toeRadius)) toeRadius = 0;
@@ -1277,12 +1457,37 @@ namespace BH.Engine.Revit
 
             else if (aTypes.Contains(typeof(StandardISectionDimensions)))
             {
-                double height = familySymbol.LookupParameterDouble(heightNames, true);
-                double width = familySymbol.LookupParameterDouble(widthNames, true);
-                double webThickness = familySymbol.LookupParameterDouble(webThicknessNames, true);
-                double flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, true);
-                double rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, true);
-                double toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, true);
+                double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
+                StructuralSection section = familySymbol.GetStructuralSection();
+                if (section is StructuralSectionIParallelFlange)
+                {
+                    StructuralSectionIParallelFlange sectionType = section as StructuralSectionIParallelFlange;
+                    height = sectionType.Height * feetToMetre;
+                    width = sectionType.Width * feetToMetre;
+                    webThickness = sectionType.WebThickness * feetToMetre;
+                    flangeThickness = sectionType.FlangeThickness * feetToMetre;
+                    rootRadius = sectionType.WebFillet * feetToMetre;
+                    toeRadius = sectionType.FlangeFillet * feetToMetre;
+                }
+                else if (section is StructuralSectionIWideFlange)
+                {
+                    StructuralSectionIWideFlange sectionType = section as StructuralSectionIWideFlange;
+                    height = sectionType.Height * feetToMetre;
+                    width = sectionType.Width * feetToMetre;
+                    webThickness = sectionType.WebThickness * feetToMetre;
+                    flangeThickness = sectionType.FlangeThickness * feetToMetre;
+                    rootRadius = sectionType.WebFillet * feetToMetre;
+                    toeRadius = 0;
+                }
+                else
+                {
+                    height = familySymbol.LookupParameterDouble(heightNames, true);
+                    width = familySymbol.LookupParameterDouble(widthNames, true);
+                    webThickness = familySymbol.LookupParameterDouble(webThicknessNames, true);
+                    flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, true);
+                    rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, true);
+                    toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, true);
+                }
 
                 if (double.IsNaN(rootRadius)) rootRadius = 0;
                 if (double.IsNaN(toeRadius)) toeRadius = 0;
@@ -1295,12 +1500,48 @@ namespace BH.Engine.Revit
 
             else if (aTypes.Contains(typeof(StandardTeeSectionDimensions)))
             {
-                double height = familySymbol.LookupParameterDouble(heightNames, true);
-                double width = familySymbol.LookupParameterDouble(widthNames, true);
-                double webThickness = familySymbol.LookupParameterDouble(webThicknessNames, true);
-                double flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, true);
-                double rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, true);
-                double toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, true);
+                double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
+
+                StructuralSection section = familySymbol.GetStructuralSection();
+                if (section is StructuralSectionISplitParallelFlange)
+                {
+                    StructuralSectionISplitParallelFlange sectionType = section as StructuralSectionISplitParallelFlange;
+                    height = sectionType.Height * feetToMetre;
+                    width = sectionType.Width * feetToMetre;
+                    webThickness = sectionType.WebThickness * feetToMetre;
+                    flangeThickness = sectionType.FlangeThickness * feetToMetre;
+                    rootRadius = sectionType.WebFillet * feetToMetre;
+                    toeRadius = sectionType.FlangeFillet * feetToMetre;
+                }
+                else if (section is StructuralSectionStructuralTees)
+                {
+                    StructuralSectionStructuralTees sectionType = section as StructuralSectionStructuralTees;
+                    height = sectionType.Height * feetToMetre;
+                    width = sectionType.Width * feetToMetre;
+                    webThickness = sectionType.WebThickness * feetToMetre;
+                    flangeThickness = sectionType.FlangeThickness * feetToMetre;
+                    rootRadius = sectionType.WebFillet * feetToMetre;
+                    toeRadius = sectionType.FlangeFillet * feetToMetre;
+                }
+                else if (section is StructuralSectionConcreteT)
+                {
+                    StructuralSectionConcreteT sectionType = section as StructuralSectionConcreteT;
+                    height = sectionType.Height * feetToMetre;
+                    width = (sectionType.Width + 2 * sectionType.CantileverLength) * feetToMetre;
+                    webThickness = sectionType.Width * feetToMetre;
+                    flangeThickness = sectionType.CantileverHeight * feetToMetre;
+                    rootRadius = 0;
+                    toeRadius = 0;
+                }
+                else
+                {
+                    height = familySymbol.LookupParameterDouble(heightNames, true);
+                    width = familySymbol.LookupParameterDouble(widthNames, true);
+                    webThickness = familySymbol.LookupParameterDouble(webThicknessNames, true);
+                    flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, true);
+                    rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, true);
+                    toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, true);
+                }
 
                 if (double.IsNaN(rootRadius)) rootRadius = 0;
                 if (double.IsNaN(toeRadius)) toeRadius = 0;
@@ -1313,12 +1554,27 @@ namespace BH.Engine.Revit
 
             else if (aTypes.Contains(typeof(StandardZedSectionDimensions)))
             {
-                double height = familySymbol.LookupParameterDouble(heightNames, true);
-                double flangeWidth = familySymbol.LookupParameterDouble(widthNames, true);
-                double webThickness = familySymbol.LookupParameterDouble(webThicknessNames, true);
-                double flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, true);
-                double rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, true);
-                double toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, true);
+                double height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius;
+                StructuralSection section = familySymbol.GetStructuralSection();
+                if (section is StructuralSectionZProfile)
+                {
+                    StructuralSectionZProfile sectionType = section as StructuralSectionZProfile;
+                    height = sectionType.Height * feetToMetre;
+                    flangeWidth = sectionType.BottomFlangeLength * feetToMetre;
+                    webThickness = sectionType.WallNominalThickness * feetToMetre;
+                    flangeThickness = sectionType.WallNominalThickness * feetToMetre;
+                    rootRadius = sectionType.InnerFillet * feetToMetre;
+                    toeRadius = 0;
+                }
+                else
+                {
+                    height = familySymbol.LookupParameterDouble(heightNames, true);
+                    flangeWidth = familySymbol.LookupParameterDouble(widthNames, true);
+                    webThickness = familySymbol.LookupParameterDouble(webThicknessNames, true);
+                    flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, true);
+                    rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, true);
+                    toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, true);
+                }
 
                 if (double.IsNaN(rootRadius)) rootRadius = 0;
                 if (double.IsNaN(toeRadius)) toeRadius = 0;
@@ -1331,8 +1587,25 @@ namespace BH.Engine.Revit
 
             else if (aTypes.Contains(typeof(TubeDimensions)))
             {
-                double thickness = familySymbol.LookupParameterDouble(wallThicknessNames, true);
-                double diameter = familySymbol.LookupParameterDouble(diameterNames, true);
+                double thickness, diameter;
+                StructuralSection section = familySymbol.GetStructuralSection();
+                if (section is StructuralSectionPipeStandard)
+                {
+                    StructuralSectionPipeStandard sectionType = section as StructuralSectionPipeStandard;
+                    thickness = sectionType.WallNominalThickness * feetToMetre;
+                    diameter = sectionType.Diameter * feetToMetre;
+                }
+                else if (section is StructuralSectionRoundHSS)
+                {
+                    StructuralSectionRoundHSS sectionType = section as StructuralSectionRoundHSS;
+                    thickness = sectionType.WallNominalThickness * feetToMetre;
+                    diameter = sectionType.Diameter * feetToMetre;
+                }
+                else
+                {
+                    thickness = familySymbol.LookupParameterDouble(wallThicknessNames, true);
+                    diameter = familySymbol.LookupParameterDouble(diameterNames, true);
+                }
                 if (!double.IsNaN(diameter) && !double.IsNaN(thickness))
                 {
                     return new TubeDimensions(diameter, thickness);
@@ -1348,25 +1621,52 @@ namespace BH.Engine.Revit
             return null;
         }
 
-        public static string[] diameterNames = { "BHE_Diameter", "Diameter", "diameter", "DIAMETER", "D", "d" };
-        public static string[] radiusNames = { "BHE_Radius", "Radius", "radius", "RADIUS", "R", "r" };
-        public static string[] heightNames = { "BHE_Height", "Height", "height", "HEIGHT", "H", "h", "d" };
-        public static string[] widthNames = { "BHE_Width", "Width", "width", "WIDTH", "b", "B", "w", "W", "bf" };
+        public static string[] diameterNames = { "BHE_Diameter", "Diameter", "d", "D", "OD" };
+        public static string[] radiusNames = { "BHE_Radius", "Radius", "r", "R" };
+        public static string[] heightNames = { "BHE_Height", "BHE_Depth", "Height", "Depth", "d", "h", "D", "H", "Ht", "b" };
+        public static string[] widthNames = { "b", "BHE_Width", "Width", "w", "B", "W", "bf", "D" };
         public static string[] cornerRadiusNames = { "Corner Radius", "r", "r1" };
-        public static string[] topFlangeWidthNames = { "Top Flange Width", "bt", "tf_b", "b1", "b", "B" };
-        public static string[] botFlangeWidthNames = { "Bottom Flange Width", "bb", "bf_b", "b2", "b", "B" };
-        public static string[] webThicknessNames = { "Web Thickness", "tw", "t" };
-        public static string[] topFlangeThicknessNames = { "Top Flange Thickness", "tft", "tf_t", "tf", "t", "T" };
-        public static string[] botFlangeThicknessNames = { "Bottom Flange Thickness", "tfb", "tf_b", "tf", "t", "T" };
-        public static string[] flangeThicknessNames = { "Flange Thickness", "tf", "T", "t" };
+        public static string[] topFlangeWidthNames = { "Top Flange Width", "bt", "bf_t", "bft", "b1", "b", "B", "Bt" };
+        public static string[] botFlangeWidthNames = { "Bottom Flange Width", "bb", "bf_b", "bfb", "b2", "b", "B", "Bb" };
+        public static string[] webThicknessNames = { "Web Thickness", "Stem Width", "tw", "t", "T" };
+        public static string[] topFlangeThicknessNames = { "Top Flange Thickness", "tft", "tf_t", "tf", "T", "t" };
+        public static string[] botFlangeThicknessNames = { "Bottom Flange Thickness", "tfb", "tf_b", "tf", "T", "t" };
+        public static string[] flangeThicknessNames = { "Flange Thickness", "Slab Depth", "tf", "T", "t" };
         public static string[] weldSizeNames1 = { "Weld Size" };                                            // weld size, diagonal
         public static string[] weldSizeNames2 = { "k" };                                                    // weld size counted from bar's vertical axis
-        public static string[] rootRadiusNames = { "Root Radius", "r", "r1", "R1" };
-        public static string[] toeRadiusNames = { "Toe Radius", "r2", "R2" };
-        public static string[] innerRadiusNames = { "Inner Radius", "r1", "R1" };
-        public static string[] outerRadiusNames = { "Outer Radius", "r2", "R2" };
-        public static string[] wallThicknessNames = { "Wall Nominal Thickness", "Wall Thickness", "t" };
+        public static string[] rootRadiusNames = { "Web Fillet", "Root Radius", "r", "r1", "tr", "kr", "R1", "R", "t" };
+        public static string[] toeRadiusNames = { "Flange Fillet", "Toe Radius", "r2", "R2", "t" };
+        public static string[] innerRadiusNames = { "Inner Fillet", "Inner Radius", "r1", "R1", "ri", "t" };
+        public static string[] outerRadiusNames = { "Outer Fillet", "Outer Radius", "r2", "R2", "ro", "tr" };
+        public static string[] wallThicknessNames = { "Wall Nominal Thickness", "Wall Thickness", "t", "T" };
 
+        private static List<oM.Geometry.Line> Discretize(this List<oM.Geometry.ICurve> curves, int segments)
+        {
+            List<oM.Geometry.Line> result = new List<oM.Geometry.Line>();
+            List<double> parameters = new List<double>();
+            double step = 1 / segments;
+            for (int i = 0; i < segments + 1; i++)
+            {
+                parameters.Add(step * i);
+            }
+            foreach (oM.Geometry.ICurve curve in curves)
+            {
+                if (curve is oM.Geometry.Line) result.Add(curve as oM.Geometry.Line);
+                else
+                {
+                    List<oM.Geometry.Point> points = parameters.Select(p => BH.Engine.Geometry.Query.IPointAtLength(curve, p)).ToList();
+                    for (int i = 0; i < segments; i++)
+                    {
+                        result.Add(new oM.Geometry.Line { Start = points[i], End = points[i + 1] });
+                    }
+                }
+            }
+            return result;
+        }
+
+        private static double feetToMetre = UnitUtils.ConvertFromInternalUnits(1, DisplayUnitType.DUT_METERS);
+        private static oM.Geometry.Point origin = new oM.Geometry.Point { X = 0, Y = 0, Z = 0 };
+        private static oM.Geometry.Vector feetToMetreVector = new oM.Geometry.Vector { X = feetToMetre, Y = feetToMetre, Z = feetToMetre };
     }
 }
  

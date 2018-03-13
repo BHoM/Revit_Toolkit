@@ -264,5 +264,650 @@ namespace BH.Engine.Revit
         }
 
         /***************************************************/
+
+        public static List<Type> BHoMTypes(this string familyName)
+        {
+            List<Type> aResult = new List<Type>();
+
+            if (familyName.EndsWith("_Concrete-RectangularBeam"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_ConcreteRectangular"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_ConcreteRectangularWithCL"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_ConcreteSquare"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_ConcreteSquareWithCL"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_Precast-RectangularBeam"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_Precast-RectangularColumn"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_ConcreteRectangular-PrecastWithCL"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_ConcreteRectangular-Precast"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_Precast-SquareColumnWithCL"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_Precast-SquareColumn"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_Precast-RectangularColumnWithCL"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName == "BHm_StructuralFraming_Timber")
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName == "BHm_StructuralColumns_Timber")
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_LaminatedVeneerLumber"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_ParallelStrandLumberWithCL"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_ParallelStrandLumber"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_Glulam(1)"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_Glulam(1)WithCL"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_Glulam(2)"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_Glulam(2)WithCL"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_DimensionLumber"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_DimensionLumberWithCL"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_TimberWithCL"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_Plate"))
+            {
+                aResult.Add(typeof(RectangleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_RSJ-RolledSteelJoists"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UC-UniversalColumns"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UC-UniversalColumns-Column"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UB-UniversalBeams"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UB-UniversalBeams-Column"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UBP-UniversalBearingPile"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UBP-UniversalBearingPile-Column"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_ASB-Beams"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UKC-UKColumns"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UKC-UKColumns-Column"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UKB-UKBeams"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UKB-UKBeams-Column"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UKBP-UKBearingPiles"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UKBP-UKBearingPiles-Column"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_IPN-Beams"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_IPN-Column"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_IPE-Beams"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_IPE-Column"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_H-WideFlangeBeams"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_H-WideFlange-Column"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_M-MiscellaneousWideFlange-Column"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_W-WideFlange-Column"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_HP-BearingPile-Column"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_RSJ-RolledSteelJoists-Column"))
+            {
+                aResult.Add(typeof(StandardISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_RoundBar"))
+            {
+                aResult.Add(typeof(CircleDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_ConcreteRound"))
+            {
+                aResult.Add(typeof(CircleDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_ConcreteRoundWithCL"))
+            {
+                aResult.Add(typeof(CircleDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_PlateGirder"))
+            {
+                aResult.Add(typeof(FabricatedISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_WeldedWideFlange"))
+            {
+                aResult.Add(typeof(FabricatedISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_WeldedReducedFlange"))
+            {
+                aResult.Add(typeof(FabricatedISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_Plate-Column"))
+            {
+                aResult.Add(typeof(FabricatedISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_WWF-WeldedWideFlange-Column"))
+            {
+                aResult.Add(typeof(FabricatedISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_WRF-WeldedReducedFlange-Column"))
+            {
+                aResult.Add(typeof(FabricatedISectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_L-Angles"))
+            {
+                aResult.Add(typeof(StandardAngleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_L-EqualLegAngles"))
+            {
+                aResult.Add(typeof(StandardAngleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_L-EqualLegAngles-Column"))
+            {
+                aResult.Add(typeof(StandardAngleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_L-UnequalLegAngles"))
+            {
+                aResult.Add(typeof(StandardAngleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_L-UnequalLegAngles-Column"))
+            {
+                aResult.Add(typeof(StandardAngleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UKA-UKAngles"))
+            {
+                aResult.Add(typeof(StandardAngleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UKA-UKAngles-Column"))
+            {
+                aResult.Add(typeof(StandardAngleSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_C-Channels"))
+            {
+                aResult.Add(typeof(StandardChannelSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UKPFC-ParallelFlangeChannels"))
+            {
+                aResult.Add(typeof(StandardChannelSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UKPFC-ParallelFlangeChannels-Column"))
+            {
+                aResult.Add(typeof(StandardChannelSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_PFC-ParallelFlangeChannels"))
+            {
+                aResult.Add(typeof(StandardChannelSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_PFC-ParallelFlangeChannels-Column"))
+            {
+                aResult.Add(typeof(StandardChannelSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_U-ParallelFlangeChannels"))
+            {
+                aResult.Add(typeof(StandardChannelSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_U-Channels"))
+            {
+                aResult.Add(typeof(StandardChannelSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_Precast-SingleTee"))
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UKT-UKTeesSplitfromUKC"))
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UKT-UKTeesSplitfromUKC-Column"))
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UKT-UKTeesSplitfromUKB"))
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_UKT-UKTeesSplitfromUKB-Column"))
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_T-TeesfromUniversalColumns"))
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_T-TeesfromUniversalColumns-Column"))
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_T-TeesfromUniversalBeams"))
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_T-TeesfromUniversalBeams-Column"))
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_MH-TeesfromH-Beams"))
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_T-Tees"))
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_MIPE-TeesfromIPE"))
+            {
+                aResult.Add(typeof(StandardTeeSectionDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_SquareHollowSections"))
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_SquareHollowSections-Column"))
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_RectangularHollowSections"))
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_RectangularHollowSections-Column"))
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_SHS-SquareHollowSections(Cold)"))
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_SHS-SquareHollowSections-Column(Cold)"))
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_SHS-SquareHollowSections"))
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_SHS-SquareHollowSections-Column"))
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_RHS-RectangularHollowSections(Cold)"))
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_RHS-RectangularHollowSections-Column(Cold)"))
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_RHS-RectangularHollowSections"))
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_RHS-RectangularHollowSections-Column"))
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_RectangularandSquareHollowSections"))
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_RectangularandSquareHollowSections-Column"))
+            {
+                aResult.Add(typeof(StandardBoxDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_CircularHollowSections"))
+            {
+                aResult.Add(typeof(TubeDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_CircularHollowSections-Column"))
+            {
+                aResult.Add(typeof(TubeDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_CHS-CircularHollowSections(Cold)"))
+            {
+                aResult.Add(typeof(TubeDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_CHS-CircularHollowSections-Column(Cold)"))
+            {
+                aResult.Add(typeof(TubeDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_CHS-CircularHollowSections"))
+            {
+                aResult.Add(typeof(TubeDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_CHS-CircularHollowSections-Column"))
+            {
+                aResult.Add(typeof(TubeDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_CircularHollowSections"))
+            {
+                aResult.Add(typeof(TubeDimensions));
+                return aResult;
+            }
+
+            if (familyName.EndsWith("_Pipe-Column"))
+            {
+                aResult.Add(typeof(TubeDimensions));
+                return aResult;
+            }
+
+            return null;
+        }
+
+        /***************************************************/
     }
 }
