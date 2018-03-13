@@ -859,7 +859,7 @@ namespace BH.Engine.Revit
 
                         SpatialElementGeometryCalculator aSpatialElementGeometryCalculator = new SpatialElementGeometryCalculator(spatialElement.Document, aSpatialElementBoundaryOptions);
 
-                        return ToBHoM(spatialElement, aSpatialElementGeometryCalculator, null, null, discipline, copyCustomData);
+                        return ToBHoM(spatialElement, aSpatialElementGeometryCalculator, objects, discipline, copyCustomData);
                     }
             }
             return null;
@@ -968,15 +968,14 @@ namespace BH.Engine.Revit
         /// </summary>
         /// <param name="spatialElement">Revit SpatialElement</param>
         /// <param name="spatialElementGeometryCalculator">Revit SpatialElementGeometryCalculator</param>
-        /// <param name="buildingElementProperties">Revit BuildingElementProperties</param>
-        /// <param name="levels">BHoM Levels</param>
+        /// <param name="objects">BHoM Objects</param>
         /// <param name="discipline">BHoM Discipline</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="Space">BHoM Space</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM Space, Revit SpatialElement
         /// </search>
-        public static BHoMObject ToBHoM(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, IEnumerable<BuildingElementProperties> buildingElementProperties, IEnumerable<oM.Architecture.Elements.Level> levels, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
+        public static BHoMObject ToBHoM(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, Dictionary<ElementId, List<BHoMObject>> objects, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
             switch(discipline)
             {
@@ -995,20 +994,20 @@ namespace BH.Engine.Revit
                             return null;
 
                         oM.Architecture.Elements.Level aLevel = null;
-                        if (buildingElementProperties != null)
+                        if (objects != null)
                         {
-                            foreach (oM.Architecture.Elements.Level aLevel_Temp in levels)
-                            {
-                                if (aLevel_Temp.Elevation == spatialElement.Level.Elevation)
-                                {
-                                    aLevel = aLevel_Temp;
-                                    break;
-                                }
-                            }
+                            List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
+                            if (objects.TryGetValue(spatialElement.LevelId, out aBHoMObjectList))
+                                if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
+                                    aLevel = aBHoMObjectList.First() as oM.Architecture.Elements.Level;
                         }
 
                         if (aLevel == null)
-                            aLevel = spatialElement.Level.ToBHoM(discipline, copyCustomData) as oM.Architecture.Elements.Level;
+                        {
+                            aLevel = spatialElement.Level.ToBHoM() as oM.Architecture.Elements.Level;
+                            if (objects != null)
+                                objects.Add(spatialElement.LevelId, new List<BHoMObject>(new BHoMObject[] { aLevel }));
+                        }
 
 
                         List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
@@ -1034,16 +1033,25 @@ namespace BH.Engine.Revit
                                     aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
 
                                 BuildingElementProperties aBuildingElementProperties = null;
-                                if (aElementType != null && buildingElementProperties != null)
+                                if (objects != null)
                                 {
-                                    foreach (BuildingElementProperties aBuildingElementProperties_Temp in buildingElementProperties)
-                                    {
-                                        if (aBuildingElementProperties_Temp.Name == aElementType.Name)
-                                        {
-                                            aBuildingElementProperties = aBuildingElementProperties_Temp;
-                                            break;
-                                        }
-                                    }
+                                    List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
+                                    if (objects.TryGetValue(aElementType.Id, out aBHoMObjectList))
+                                        if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
+                                            aBuildingElementProperties = aBHoMObjectList.First() as BuildingElementProperties;
+                                }
+
+                                if (aBuildingElementProperties == null)
+                                {
+                                    if (aElement is Wall)
+                                        aBuildingElementProperties = (aElement as Wall).WallType.ToBHoM() as BuildingElementProperties;
+                                    else if (aElement is Floor)
+                                        aBuildingElementProperties = (aElement as Floor).FloorType.ToBHoM() as BuildingElementProperties;
+                                    else if (aElement is Ceiling)
+                                        aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as CeilingType).ToBHoM() as BuildingElementProperties;
+
+                                    if (objects != null)
+                                        objects.Add(aElementType.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElementProperties }));
                                 }
 
                                 //Face aFace_BoundingElementFace = aSpatialElementBoundarySubface.GetBoundingElementFace();
