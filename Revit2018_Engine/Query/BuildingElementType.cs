@@ -32,17 +32,17 @@ namespace BH.Engine.Revit
             switch (builtInCategory)
             {
                 case BuiltInCategory.OST_Ceilings:
-                    return BH.oM.Environmental.Elements.BuildingElementType.Ceiling;
+                    return oM.Environmental.Elements.BuildingElementType.Ceiling;
                 case BuiltInCategory.OST_Floors:
-                    return BH.oM.Environmental.Elements.BuildingElementType.Floor;
+                    return oM.Environmental.Elements.BuildingElementType.Floor;
                 case BuiltInCategory.OST_Roofs:
-                    return BH.oM.Environmental.Elements.BuildingElementType.Roof;
+                    return oM.Environmental.Elements.BuildingElementType.Roof;
                 case BuiltInCategory.OST_Walls:
-                    return BH.oM.Environmental.Elements.BuildingElementType.Wall;
+                    return oM.Environmental.Elements.BuildingElementType.Wall;
                 case BuiltInCategory.OST_Windows:
-                    return BH.oM.Environmental.Elements.BuildingElementType.Window;
+                    return oM.Environmental.Elements.BuildingElementType.Window;
                 case BuiltInCategory.OST_Doors:
-                    return BH.oM.Environmental.Elements.BuildingElementType.Door;
+                    return oM.Environmental.Elements.BuildingElementType.Door;
             }
 
             return null;

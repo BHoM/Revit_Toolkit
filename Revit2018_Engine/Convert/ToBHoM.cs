@@ -290,6 +290,9 @@ namespace BH.Engine.Revit
 
         public static BHoMObject ToBHoM(this FamilyInstance familyInstance, Discipline discipline = Discipline.Structural, bool copyCustomData = true)
         {
+            if (familyInstance == null)
+                return null;
+
             switch (discipline)
             {
                 case Discipline.Structural:
@@ -326,6 +329,11 @@ namespace BH.Engine.Revit
                 case Discipline.Environmental:
                     {
                         //TODO: add code for Environmental FamilyInstances (Door, Window)
+                        if((BuiltInCategory)familyInstance.Category.Id.IntegerValue == BuiltInCategory.OST_Windows)
+                        {
+                            Reference aReference = familyInstance.HostFace;
+                            familyInstance.Document.GetElement(aReference);
+                        }
                         return null;
                     }
                 case Discipline.Architecture:
@@ -855,10 +863,10 @@ namespace BH.Engine.Revit
                     {
                         SpatialElementBoundaryOptions aSpatialElementBoundaryOptions = new SpatialElementBoundaryOptions();
                         aSpatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
-                        aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = false;
+                        aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = true;
 
                         SpatialElementGeometryCalculator aSpatialElementGeometryCalculator = new SpatialElementGeometryCalculator(spatialElement.Document, aSpatialElementBoundaryOptions);
-
+                        
                         return ToBHoM(spatialElement, aSpatialElementGeometryCalculator, objects, discipline, copyCustomData);
                     }
             }
@@ -941,6 +949,15 @@ namespace BH.Engine.Revit
                                     if (copyCustomData)
                                         aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement) as BuildingElement;
                                     aBuildingElmementList.Add(aBuildingElement);
+
+                                    if (objects != null)
+                                    {
+                                        List<BHoMObject> aBHoMObjectList = null;
+                                        if (objects.TryGetValue(aElement.Id, out aBHoMObjectList))
+                                            aBHoMObjectList.Add(aBuildingElement);
+                                        else
+                                            objects.Add(aElement.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElement }));
+                                    }
                                 }
 
                         Space aSpace = new Space
@@ -977,7 +994,7 @@ namespace BH.Engine.Revit
         /// </search>
         public static BHoMObject ToBHoM(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, Dictionary<ElementId, List<BHoMObject>> objects, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
-            switch(discipline)
+            switch (discipline)
             {
                 case Discipline.Environmental:
                     {
@@ -993,22 +1010,7 @@ namespace BH.Engine.Revit
                         if (aSolid == null)
                             return null;
 
-                        oM.Architecture.Elements.Level aLevel = null;
-                        if (objects != null)
-                        {
-                            List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
-                            if (objects.TryGetValue(spatialElement.LevelId, out aBHoMObjectList))
-                                if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                                    aLevel = aBHoMObjectList.First() as oM.Architecture.Elements.Level;
-                        }
-
-                        if (aLevel == null)
-                        {
-                            aLevel = spatialElement.Level.ToBHoM() as oM.Architecture.Elements.Level;
-                            if (objects != null)
-                                objects.Add(spatialElement.LevelId, new List<BHoMObject>(new BHoMObject[] { aLevel }));
-                        }
-
+                        oM.Architecture.Elements.Level aLevel = GetLevel(spatialElement, objects);
 
                         List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
                         foreach (Face aFace in aSolid.Faces)
@@ -1027,6 +1029,9 @@ namespace BH.Engine.Revit
                                     aElement = aDocument.GetElement(aLinkElementId.LinkedElementId);
                                 else
                                     aElement = aDocument.GetElement(aLinkElementId.HostElementId);
+
+                                if (aElement == null)
+                                    continue;
 
                                 ElementType aElementType = null;
                                 if (aElement != null)
@@ -1058,7 +1063,7 @@ namespace BH.Engine.Revit
                                 //Face aFace_Subface = aSpatialElementBoundarySubface.GetSubface();
                                 //Face aFace_SpatialElementFace = aSpatialElementBoundarySubface.GetSpatialElementFace();
                                 Face aFace_BuildingElement = aSpatialElementBoundarySubface.GetSubface();
-                                if(aFace_BuildingElement == null)
+                                if (aFace_BuildingElement == null)
                                     aFace_BuildingElement = aSpatialElementBoundarySubface.GetSpatialElementFace();
 
                                 if (aFace_BuildingElement != null)
@@ -1083,6 +1088,25 @@ namespace BH.Engine.Revit
                                         if (copyCustomData)
                                             aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement) as BuildingElement;
                                         aBuildingElmementList.Add(aBuildingElement);
+
+
+                                        //---- Get Hosted Building Elements -----------
+                                        List<BuildingElement> aBuildingElmementList_Hosted = GetHostedBuildingElementList(aElement as HostObject, aFace_BuildingElement, objects, copyCustomData);
+                                        if (aBuildingElmementList_Hosted != null && aBuildingElmementList_Hosted.Count > 0)
+                                            aBuildingElmementList.AddRange(aBuildingElmementList_Hosted);
+                                        //---------------------------------------------
+
+                                        if (objects != null)
+                                        {
+                                            List<BHoMObject> aBHoMObjectList = null;
+                                            if (objects.TryGetValue(aElement.Id, out aBHoMObjectList))
+                                                aBHoMObjectList.Add(aBuildingElement);
+                                            else
+                                                objects.Add(aElement.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElement }));
+                                        }
+
+
+
                                     }
                             }
                         }
@@ -1128,6 +1152,130 @@ namespace BH.Engine.Revit
         /***************************************************/
         /**** Private Methods                           ****/
         /***************************************************/
+
+        private static List<BuildingElement> GetHostedBuildingElementList(HostObject hostObject, Face face, Dictionary<ElementId, List<BHoMObject>> objects, bool copyCustomData = true)
+        {
+            if (hostObject == null)
+                return null;
+
+            Document aDocument = hostObject.Document;
+
+            IList<ElementId> aElementIdList = hostObject.FindInserts(false, false, false, false);
+            if (aElementIdList == null || aElementIdList.Count < 1)
+                return null;
+
+            List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
+            foreach (ElementId aElementId in aElementIdList)
+            {
+                Element aElement_Hosted = aDocument.GetElement(aElementId);
+                if ((BuiltInCategory)aElement_Hosted.Category.Id.IntegerValue == BuiltInCategory.OST_Windows || (BuiltInCategory)aElement_Hosted.Category.Id.IntegerValue == BuiltInCategory.OST_Doors)
+                {
+                    IntersectionResult aIntersectionResult = null;
+
+                    BoundingBoxXYZ aBoundingBoxXYZ = aElement_Hosted.get_BoundingBox(null);
+
+                    aIntersectionResult = face.Project(aBoundingBoxXYZ.Max);
+                    if (aIntersectionResult == null)
+                        continue;
+
+                    XYZ aXYZ_Max = aIntersectionResult.XYZPoint;
+                    UV aUV_Max = aIntersectionResult.UVPoint;
+
+                    aIntersectionResult = face.Project(aBoundingBoxXYZ.Min);
+                    if (aIntersectionResult == null)
+                        continue;
+
+                    XYZ aXYZ_Min = aIntersectionResult.XYZPoint;
+                    UV aUV_Min = aIntersectionResult.UVPoint;
+
+                    double aU = aUV_Max.U - aUV_Min.U;
+                    double aV = aUV_Max.V - aUV_Min.V;
+
+                    XYZ aXYZ_V = face.Evaluate(new UV(aUV_Max.U, aUV_Max.V - aV));
+                    if (aXYZ_V == null)
+                        continue;
+
+                    XYZ aXYZ_U = face.Evaluate(new UV(aUV_Max.U - aU, aUV_Max.V));
+                    if (aXYZ_U == null)
+                        continue;
+
+                    List<oM.Geometry.Point> aPointList = new List<oM.Geometry.Point>();
+                    aPointList.Add(aXYZ_Max.ToBHoM());
+                    aPointList.Add(aXYZ_U.ToBHoM());
+                    aPointList.Add(aXYZ_Min.ToBHoM());
+                    aPointList.Add(aXYZ_V.ToBHoM());
+
+                    ElementType aElementType = aDocument.GetElement(aElement_Hosted.GetTypeId()) as ElementType;
+                    BuildingElementProperties aBuildingElementProperties = null;
+                    if (objects != null)
+                    {
+                        List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
+                        if (objects.TryGetValue(aElementType.Id, out aBHoMObjectList))
+                            if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
+                                aBuildingElementProperties = aBHoMObjectList.First() as BuildingElementProperties;
+                    }
+
+                    if (aBuildingElementProperties == null)
+                    {
+                        BuildingElementType? aBuildingElementType = Query.BuildingElementType((BuiltInCategory)aElementType.Category.Id.IntegerValue);
+                        if (!aBuildingElementType.HasValue)
+                            continue;
+
+                        aBuildingElementProperties = Create.BuildingElementProperties(aBuildingElementType.Value, aElementType.Name);
+                        aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, aElementType) as BuildingElementProperties;
+                        if (copyCustomData)
+                            aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, aElementType) as BuildingElementProperties;
+
+                        if (objects != null)
+                            objects.Add(aElementType.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElementProperties }));
+                    }
+
+
+                    oM.Architecture.Elements.Level aLevel = GetLevel(aElement_Hosted, objects);
+                    if (aLevel == null)
+                        continue;
+
+                    BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementPanel(new oM.Geometry.Polyline[] { Geometry.Create.Polyline(aPointList) }));
+                    aBuildingElement.Level = aLevel;
+                    aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement_Hosted) as BuildingElement;
+                    if (copyCustomData)
+                        aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement_Hosted) as BuildingElement;
+                    aBuildingElmementList.Add(aBuildingElement);
+
+                    if (objects != null)
+                    {
+                        List<BHoMObject> aBHoMObjectList = null;
+                        if (objects.TryGetValue(aElement_Hosted.Id, out aBHoMObjectList))
+                            aBHoMObjectList.Add(aBuildingElement);
+                        else
+                            objects.Add(aElement_Hosted.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElement }));
+                    }
+
+                }
+            }
+            return aBuildingElmementList;
+        }
+
+        private static oM.Architecture.Elements.Level GetLevel(Element Element, Dictionary<ElementId, List<BHoMObject>> objects)
+        {
+            oM.Architecture.Elements.Level aLevel = null;
+            if (objects != null)
+            {
+                List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
+                if (objects.TryGetValue(Element.LevelId, out aBHoMObjectList))
+                    if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
+                        aLevel = aBHoMObjectList.First() as oM.Architecture.Elements.Level;
+            }
+
+            if (aLevel == null)
+            {
+                aLevel = (Element.Document.GetElement(Element.LevelId) as Level).ToBHoM() as oM.Architecture.Elements.Level;
+                if (objects != null)
+                    objects.Add(Element.LevelId, new List<BHoMObject>(new BHoMObject[] { aLevel }));
+            }
+
+            return aLevel;
+        }
 
         //TODO: Move to Revit2018_Engine.Query
         private static List<oM.Geometry.Polyline> GetBHOutlines(this Wall wall)
