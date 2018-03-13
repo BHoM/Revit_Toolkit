@@ -225,7 +225,12 @@ namespace BH.Adapter.Revit
 
             List<BHoMObject> aObjects = new List<BHoMObject>();
             foreach (KeyValuePair<ElementId, List<BHoMObject>> aKeyValuePair in aDictionary)
-                aObjects.AddRange(aKeyValuePair.Value);
+            {
+                if (aKeyValuePair.Value != null && aKeyValuePair.Value.Count > 0)
+                    foreach (BHoMObject aBHoMObject in aKeyValuePair.Value)
+                        if (aBHoMObject != null)
+                            aObjects.Add(aBHoMObject);
+            } 
 
             return aObjects;
         }
