@@ -78,11 +78,13 @@
     <Compile Include="Query\Discipline.cs" />
     <Compile Include="Query\ElementId.cs" />
     <Compile Include="Query\ElementIds.cs" />
+    <Compile Include="Query\HostedBuildingElements.cs" />
     <Compile Include="Query\IsAssignableFromByFullName.cs" />
     <Compile Include="Query\BHoMTypes.cs" />
     <Compile Include="Query\IsHorizontal.cs" />
     <Compile Include="Query\IsVertical.cs" />
     <Compile Include="Query\IsZero.cs" />
+    <Compile Include="Query\Level.cs" />
     <Compile Include="Query\LookupParameter.cs" />
     <Compile Include="Query\RevitType.cs" />
     <Compile Include="Query\RevitTypes.cs" />

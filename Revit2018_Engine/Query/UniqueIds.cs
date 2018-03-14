@@ -12,7 +12,7 @@ using Autodesk.Revit.DB;
 namespace BH.Engine.Revit
 {
     /// <summary>
-    /// BHoM Revit Engine Modify Methods
+    /// BHoM Revit Engine Query Methods
     /// </summary>
     public static partial class Query
     {
