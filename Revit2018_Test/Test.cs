@@ -65,6 +65,18 @@ namespace Revit2018_Test
             aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
             aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
+            aFilterQuery = new FilterQuery() { Type = typeof(PanelPlanar) };
+            aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+
+            aFilterQuery = new FilterQuery() { Type = typeof(Bar) };
+            aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+
+            aFilterQuery = new FilterQuery() { Type = typeof(BH.oM.Architecture.Elements.Grid) };
+            aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+
+            aFilterQuery = new FilterQuery() { Type = typeof(Beam) };
+            aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+
             //aFilterQuery = new FilterQuery() { Type = typeof(Storey) };
             //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
             //Storey aStorey = aBHoMObjectList.First() as Storey;
