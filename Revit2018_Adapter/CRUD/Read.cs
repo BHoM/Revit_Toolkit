@@ -233,7 +233,7 @@ namespace BH.Adapter.Revit
             {
                 if (aKeyValuePair.Value != null && aKeyValuePair.Value.Count > 0)
                     foreach (BHoMObject aBHoMObject in aKeyValuePair.Value)
-                        if (aBHoMObject != null)
+                        if (aBHoMObject != null && aBHoMObject.GetType() == type)
                             aObjects.Add(aBHoMObject);
             } 
 
