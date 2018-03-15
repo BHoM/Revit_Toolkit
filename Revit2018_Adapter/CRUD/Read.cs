@@ -106,8 +106,13 @@ namespace BH.Adapter.Revit
             }
             else
             {
+                object aObject = Engine.Revit.Convert.ToBHoM(aElement as dynamic, discipline, true);
+
                 aResult = new List<BHoMObject>();
-                aResult.Add(Engine.Revit.Convert.ToBHoM(aElement as dynamic, discipline, true));
+                if (aObject is BHoMObject)
+                    aResult.Add(aObject as BHoMObject);
+                else if (aObject is List<BHoMObject>)
+                    aResult.AddRange(aObject as List<BHoMObject>);                
             }
 
             if(aResult != null && aResult.Count > 0)

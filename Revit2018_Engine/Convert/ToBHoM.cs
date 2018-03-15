@@ -214,15 +214,14 @@ namespace BH.Engine.Revit
         /// <summary>
         /// Gets BHoM BuildingElementPanels from Revit Floor
         /// </summary>
-        /// <param name="floor">Revit Floor</param>
-        /// <param name="discipline">BHoM Discipline</param>
+        /// <param name="element">Revit Element</param>
         /// <returns name="BuildingElementPanels">BHoM BuildingElementPanels</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM BuildingElementPanels, Revit Wall, BuildingElementPanel, ToBHoMBuildingElementPanels
         /// </search>
-        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this Floor floor)
+        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this Element element)
         {
-            return ToBHoMBuildingElementPanels(floor.get_Geometry(new Options()));
+            return ToBHoMBuildingElementPanels(element.get_Geometry(new Options()));
         }
 
         public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this RoofBase roofBase)
@@ -482,6 +481,41 @@ namespace BH.Engine.Revit
                             aPanelPlanar = Modify.SetCustomData(aPanelPlanar, wall) as PanelPlanar;
 
                         return aPanelPlanar;
+                    }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets BHoM BuildingElement from Revit Ceiling
+        /// </summary>
+        /// <param name="ceiling">Revit Ceiling</param>
+        /// <param name="discipline">BHoM Discipline</param>
+        /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
+        /// <returns name="BuildingElement">BHoM BuildingElement</returns>
+        /// <search>
+        /// Convert, ToBHoM, BHoM BuildingElement, Revit Ceiling
+        /// </search>
+        public static List<BHoMObject> ToBHoM(this Ceiling ceiling, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
+        {
+            switch (discipline)
+            {
+                case Discipline.Environmental:
+                    {
+                        List<BHoMObject> aResult = new List<BHoMObject>();
+                        BuildingElementProperties aBuildingElementProperties = (ceiling.Document.GetElement( ceiling.GetTypeId()) as CeilingType).ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
+                        foreach (BuildingElementPanel aBuildingElementPanel in ToBHoMBuildingElementPanels(ceiling))
+                        {
+                            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aBuildingElementPanel, ToBHoM(ceiling.Document.GetElement(ceiling.LevelId) as Level, discipline) as BH.oM.Architecture.Elements.Level);
+
+                            aBuildingElement = Modify.SetIdentifiers(aBuildingElement, ceiling) as BuildingElement;
+                            if (copyCustomData)
+                                aBuildingElement = Modify.SetCustomData(aBuildingElement, ceiling) as BuildingElement;
+
+                            aResult.Add(aBuildingElement);
+                        }
+                        return aResult;
                     }
             }
 
