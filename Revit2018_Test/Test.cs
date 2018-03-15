@@ -59,8 +59,8 @@ namespace Revit2018_Test
             FilterQuery aFilterQuery = null;
             List<IBHoMObject> aBHoMObjectList = null;
 
-            //aFilterQuery = new FilterQuery() { Type = typeof(Space) };
-            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            aFilterQuery = new FilterQuery() { Type = typeof(Space) };
+            aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
             aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
             aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
