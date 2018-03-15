@@ -1174,15 +1174,20 @@ namespace BH.Engine.Revit
                                 if (aBuildingElementProperties == null)
                                 {
                                     if (aElement is Wall)
-                                        aBuildingElementProperties = (aElement as Wall).WallType.ToBHoM() as BuildingElementProperties;
+                                        aBuildingElementProperties = (aElementType as WallType).ToBHoM() as BuildingElementProperties;
                                     else if (aElement is Floor)
-                                        aBuildingElementProperties = (aElement as Floor).FloorType.ToBHoM() as BuildingElementProperties;
+                                        aBuildingElementProperties = (aElementType as FloorType).ToBHoM() as BuildingElementProperties;
                                     else if (aElement is Ceiling)
-                                        aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as CeilingType).ToBHoM() as BuildingElementProperties;
+                                        aBuildingElementProperties = (aElementType as CeilingType).ToBHoM() as BuildingElementProperties;
+                                    else if (Query.IsAssignableFromByFullName(aElement.GetType(), typeof(RoofBase)))
+                                        aBuildingElementProperties = (aElementType as RoofType).ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
 
-                                    if (objects != null)
+                                    if (objects != null && aBuildingElementProperties != null)
                                         objects.Add(aElementType.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElementProperties }));
                                 }
+
+                                if (aBuildingElementProperties == null)
+                                    continue;
 
                                 //Face aFace_BoundingElementFace = aSpatialElementBoundarySubface.GetBoundingElementFace();
                                 //Face aFace_Subface = aSpatialElementBoundarySubface.GetSubface();
@@ -1195,17 +1200,6 @@ namespace BH.Engine.Revit
                                     foreach (CurveLoop aCurveLoop in aFace_BuildingElement.GetEdgesAsCurveLoops())
                                     {
                                         BuildingElement aBuildingElement = null;
-                                        if (aBuildingElementProperties == null)
-                                        {
-                                            if (aElement is Wall)
-                                                aBuildingElementProperties = (aElement as Wall).WallType.ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
-                                            else if (aElement is Floor)
-                                                aBuildingElementProperties = (aElement as Floor).FloorType.ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
-                                            else if (aElement is Ceiling)
-                                                aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as CeilingType).ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
-                                            else if (aElement is FootPrintRoof || aElement is ExtrusionRoof)
-                                                aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as RoofType).ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
-                                        }
 
                                         aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementPanel(aCurveLoop.ToBHoM()));
                                         aBuildingElement.Level = aLevel;
@@ -1229,9 +1223,6 @@ namespace BH.Engine.Revit
                                             else
                                                 objects.Add(aElement.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElement }));
                                         }
-
-
-
                                     }
                             }
                         }
