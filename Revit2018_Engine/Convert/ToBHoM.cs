@@ -988,7 +988,7 @@ namespace BH.Engine.Revit
                     {
                         SpatialElementBoundaryOptions aSpatialElementBoundaryOptions = new SpatialElementBoundaryOptions();
                         aSpatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
-                        aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = true;
+                        aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = false;
 
                         SpatialElementGeometryCalculator aSpatialElementGeometryCalculator = new SpatialElementGeometryCalculator(spatialElement.Document, aSpatialElementBoundaryOptions);
                         
