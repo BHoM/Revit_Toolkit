@@ -76,6 +76,7 @@ namespace BH.Engine.Revit
                     aPointList.Add(aXYZ_U.ToBHoM());
                     aPointList.Add(aXYZ_Min.ToBHoM());
                     aPointList.Add(aXYZ_V.ToBHoM());
+                    aPointList.Add(aXYZ_Max.ToBHoM());
 
                     BuildingElementPanel aBuildingElementPanel = Create.BuildingElementPanel(new oM.Geometry.Polyline[] { Geometry.Create.Polyline(aPointList) });
 
