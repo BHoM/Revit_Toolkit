@@ -282,7 +282,7 @@ namespace BH.Engine.Revit
             aPointList.Add(aXYZ_2.ToBHoM());
             aPointList.Add(aXYZ_3.ToBHoM());
             aPointList.Add(aXYZ_4.ToBHoM());
-
+            aPointList.Add(aXYZ_1.ToBHoM());
 
             BuildingElementPanel aBuildingElementPanel = Create.BuildingElementPanel(new oM.Geometry.Polyline[] { Geometry.Create.Polyline(aPointList) });
             if (aBuildingElementPanel != null)
@@ -1212,7 +1212,25 @@ namespace BH.Engine.Revit
                                         //---- Get Hosted Building Elements -----------
                                         List<BuildingElement> aBuildingElmementList_Hosted = Query.HostedBuildingElements(aElement as HostObject, aFace_BuildingElement, objects, copyCustomData);
                                         if (aBuildingElmementList_Hosted != null && aBuildingElmementList_Hosted.Count > 0)
+                                        {
                                             aBuildingElmementList.AddRange(aBuildingElmementList_Hosted);
+
+                                            //------------ Cutting openings ----------------
+                                            BuildingElementPanel aBuildingElementPanel = aBuildingElement.BuildingElementGeometry as BuildingElementPanel;
+                                            if (aBuildingElementPanel == null)
+                                                continue;
+
+                                            foreach (BuildingElement aBuildingElement_Hosted in aBuildingElmementList_Hosted)
+                                            {
+                                                BuildingElementPanel aBuildingElementPanel_Hosted = aBuildingElement_Hosted.BuildingElementGeometry as BuildingElementPanel;
+                                                if (aBuildingElementPanel_Hosted == null)
+                                                    continue;
+
+                                                aBuildingElementPanel.Openings.Add(new BuildingElementOpening() { PolyCurve = aBuildingElementPanel_Hosted.PolyCurve });
+                                            }
+                                            //---------------------------------------------
+                                        }
+
                                         //---------------------------------------------
 
                                         if (objects != null)
