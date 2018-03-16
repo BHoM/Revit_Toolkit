@@ -19,7 +19,7 @@ namespace BH.Adapter.RevitLink
         /**** Constructors                              ****/
         /***************************************************/
 
-        public RevitLinkAdapter(int pushPort = 14128, int pullPort = 14129)
+        public RevitLinkAdapter(int pushPort = 14128, int pullPort = 14129, double maxMinutesToWait = 5)
         {
             m_linkIn = new SocketLink_Tcp(pushPort);
             m_linkOut = new SocketLink_Tcp(pullPort);
@@ -27,6 +27,8 @@ namespace BH.Adapter.RevitLink
 
             m_waitEvent = new ManualResetEvent(false);
             m_returnPackage = new List<object>();
+
+            m_waitTime = maxMinutesToWait;
         }
 
         private void M_linkOut_DataObservers(oM.Socket.DataPackage package)
@@ -56,7 +58,7 @@ namespace BH.Adapter.RevitLink
             m_linkIn.SendData(new List<object>() { PackageType.Push, objects.ToList(), config }, tag);
 
             //Wait until the return message has been recieved
-            m_waitEvent.WaitOne(TimeSpan.FromMinutes(1));
+            m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime));
 
             //Grab the return objects from the latest package
             List<IObject> returnObjs = m_returnPackage.Cast<IObject>().ToList();
@@ -89,7 +91,7 @@ namespace BH.Adapter.RevitLink
             m_linkIn.SendData(new List<object>() { PackageType.Pull, query as FilterQuery, config });
 
             //Wait until the return message has been recieved
-            m_waitEvent.WaitOne(TimeSpan.FromMinutes(1));
+            m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime));
 
             //Grab the return objects from the latest package
             List<object> returnObjs = new List<object>(m_returnPackage);
@@ -139,6 +141,7 @@ namespace BH.Adapter.RevitLink
 
         private ManualResetEvent m_waitEvent;
         private List<object> m_returnPackage;
+        private double m_waitTime;
 
         /***************************************************/
 
