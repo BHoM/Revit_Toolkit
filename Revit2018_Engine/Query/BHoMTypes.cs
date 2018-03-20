@@ -905,7 +905,7 @@ namespace BH.Engine.Revit
                 return aResult;
             }
 
-            return null;
+            return aResult;
         }
 
         /***************************************************/

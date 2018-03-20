@@ -1739,9 +1739,9 @@ namespace BH.Engine.Revit
         {
             string familyName = familySymbol.Family.Name;
             StructuralSectionShape sectionShape = (StructuralSectionShape)familySymbol.LookupParameter("Section Shape").AsInteger();
-            List<Type> aTypes = Engine.Revit.Query.BHoMTypes(familyName);
-            aTypes.AddRange(Engine.Revit.Query.BHoMTypes(sectionShape));
+            List<Type> aTypes = Engine.Revit.Query.BHoMTypes(sectionShape);
 
+            if (aTypes.Count == 0) aTypes.AddRange(Engine.Revit.Query.BHoMTypes(familyName));
             if (aTypes.Count == 0) return null;
 
             if (aTypes.Contains(typeof(CircleDimensions)))
