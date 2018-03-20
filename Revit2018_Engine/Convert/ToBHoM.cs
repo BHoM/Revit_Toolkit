@@ -14,6 +14,7 @@ using BH.Engine.Environment;
 using BHS = BH.Engine.Structure;
 using BH.oM.Base;
 using Autodesk.Revit.DB.Structure.StructuralSections;
+using Autodesk.Revit.DB.Analysis;
 
 namespace BH.Engine.Revit
 {
@@ -109,6 +110,23 @@ namespace BH.Engine.Revit
         public static oM.Geometry.ICurve ToBHoM(this Autodesk.Revit.DB.Edge edge)
         {
             return ToBHoM(edge.AsCurve());
+        }
+
+        /// <summary>
+        /// Gets BHoM ICurve from Revit Polyloop
+        /// </summary>
+        /// <param name="polyloop">Revit Polyloop</param>
+        /// <returns name="Curve">BHoM Curve</returns>
+        /// <search>
+        /// Convert, ToBHoM, BHoM Curve, Revit Polyloop, Curve, ICurve
+        /// </search>
+        public static oM.Geometry.Polyline ToBHoM(this Polyloop polyloop)
+        {
+            List<oM.Geometry.Point> aPointList = new List<oM.Geometry.Point>();
+            foreach (XYZ aXYZ in polyloop.GetPoints())
+                aPointList.Add(aXYZ.ToBHoM());
+
+            return Geometry.Create.Polyline(aPointList);
         }
 
         /// <summary>
@@ -360,19 +378,143 @@ namespace BH.Engine.Revit
             if (siteLocation == null)
                 return null;
 
-            Building aBuilding = new Building
+            switch (discipline)
             {
-                Elevation = siteLocation.Elevation,
-                Longitude = siteLocation.Longitude,
-                Latitude = siteLocation.Latitude,
-                Location = new oM.Geometry.Point()
-            };
+                case Discipline.Environmental:
+                    Building aBuilding = new Building
+                    {
+                        Elevation = siteLocation.Elevation,
+                        Longitude = siteLocation.Longitude,
+                        Latitude = siteLocation.Latitude,
+                        Location = new oM.Geometry.Point()
+                    };
 
-            aBuilding = Modify.SetIdentifiers(aBuilding, siteLocation) as Building;
-            if (copyCustomData)
-                aBuilding = Modify.SetCustomData(aBuilding, siteLocation) as Building;
+                    aBuilding = Modify.SetIdentifiers(aBuilding, siteLocation) as Building;
+                    if (copyCustomData)
+                        aBuilding = Modify.SetCustomData(aBuilding, siteLocation) as Building;
 
-            return aBuilding;
+                    //-------- Create BHoM building structure -----
+                    Document aDocument = siteLocation.Document;
+
+                    Dictionary<ElementId, List<BHoMObject>> aObjects = new Dictionary<ElementId, List<BHoMObject>>();
+                    using (Transaction aTransaction = new Transaction(aDocument, "GetAnalyticalModel"))
+                    {
+                        aTransaction.Start();
+
+                        FailureHandlingOptions aFailureHandlingOptions = aTransaction.GetFailureHandlingOptions();
+                        aFailureHandlingOptions.SetFailuresPreprocessor(new WarningSwallower());
+                        aTransaction.SetFailureHandlingOptions(aFailureHandlingOptions);
+
+                        EnergyAnalysisDetailModel aEnergyAnalysisDetailModel = null;
+
+                        using (SubTransaction aSubTransaction = new SubTransaction(aDocument))
+                        {
+                            aSubTransaction.Start();
+                            aEnergyAnalysisDetailModel = EnergyAnalysisDetailModel.GetMainEnergyAnalysisDetailModel(aDocument);
+                            if (aEnergyAnalysisDetailModel != null && aEnergyAnalysisDetailModel.IsValidObject)
+                            {
+                                aDocument.Delete(aEnergyAnalysisDetailModel.Id);
+                            }
+
+                            aSubTransaction.Commit();
+                        }
+
+                        EnergyAnalysisDetailModelOptions aEnergyAnalysisDetailModelOptions = new EnergyAnalysisDetailModelOptions();
+                        aEnergyAnalysisDetailModelOptions.Tier = EnergyAnalysisDetailModelTier.SecondLevelBoundaries;
+                        aEnergyAnalysisDetailModelOptions.EnergyModelType = EnergyModelType.SpatialElement;
+                        aEnergyAnalysisDetailModelOptions.ExportMullions = true;
+                        aEnergyAnalysisDetailModelOptions.IncludeShadingSurfaces = true;
+                        aEnergyAnalysisDetailModelOptions.SimplifyCurtainSystems = false;
+
+                        EnergyDataSettings aEnergyDataSettings = EnergyDataSettings.GetFromDocument(aDocument);
+                        aEnergyDataSettings.ExportComplexity = gbXMLExportComplexity.ComplexWithMullionsAndShadingSurfaces;
+                        aEnergyDataSettings.ExportDefaults = false;
+                        aEnergyDataSettings.SliverSpaceTolerance = UnitUtils.ConvertToInternalUnits(5, DisplayUnitType.DUT_MILLIMETERS);
+                        aEnergyDataSettings.AnalysisType = AnalysisMode.BuildingElements;
+                        aEnergyDataSettings.EnergyModel = false;
+
+                        aEnergyAnalysisDetailModel = EnergyAnalysisDetailModel.Create(aDocument, aEnergyAnalysisDetailModelOptions);
+                        IList<EnergyAnalysisSpace> aEnergyAnalysisSpaces = aEnergyAnalysisDetailModel.GetAnalyticalSpaces();
+                        Dictionary<string, EnergyAnalysisSurface> aEnergyAnalysisSurfaces = new Dictionary<string, EnergyAnalysisSurface>();
+                        foreach (EnergyAnalysisSpace aEnergyAnalysisSpace in aEnergyAnalysisSpaces)
+                        {
+                            Space aSpace = aEnergyAnalysisSpace.ToBHoM(aObjects, discipline, copyCustomData) as Space;
+                            AddBHoMObject(aSpace, aObjects);
+
+                            foreach (EnergyAnalysisSurface aEnergyAnalysisSurface in aEnergyAnalysisSpace.GetAnalyticalSurfaces())
+                                if (!aEnergyAnalysisSurfaces.ContainsKey(aEnergyAnalysisSurface.SurfaceName))
+                                    aEnergyAnalysisSurfaces.Add(aEnergyAnalysisSurface.SurfaceName, aEnergyAnalysisSurface);
+                        }
+
+
+                        foreach (KeyValuePair<string, EnergyAnalysisSurface> aKeyValuePair in aEnergyAnalysisSurfaces)
+                        {
+                            List<BHoMObject> aBHoMObjectList = aKeyValuePair.Value.ToBHoM(aObjects, discipline, copyCustomData);
+                            AddBHoMObjects(aBHoMObjectList, aObjects);
+
+                            List<BHoMObject> aBHoMObjectList_Hosted = null;
+                            foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aKeyValuePair.Value.GetAnalyticalOpenings())
+                            {
+                                aBHoMObjectList_Hosted = aEnergyAnalysisOpening.ToBHoM(aObjects, discipline, copyCustomData);
+                                AddBHoMObjects(aBHoMObjectList_Hosted, aObjects);
+                            }
+
+                            //------------ Cutting openings ----------------
+                            if (aBHoMObjectList_Hosted != null && aBHoMObjectList_Hosted.Count > 0)
+                            {
+                                foreach (BHoMObject aBHoMObject in aBHoMObjectList.FindAll(x => x is BuildingElement))
+                                {
+                                    BuildingElementPanel aBuildingElementPanel = (aBHoMObject as BuildingElement).BuildingElementGeometry as BuildingElementPanel;
+                                    if (aBuildingElementPanel == null)
+                                        continue;
+
+                                    foreach (BuildingElement aBuildingElement_Hosted in aBHoMObjectList_Hosted.FindAll(x => x is BuildingElement))
+                                    {
+                                        BuildingElementPanel aBuildingElementPanel_Hosted = aBuildingElement_Hosted.BuildingElementGeometry as BuildingElementPanel;
+                                        if (aBuildingElementPanel_Hosted == null)
+                                            continue;
+
+                                        aBuildingElementPanel.Openings.Add(new BuildingElementOpening() { PolyCurve = aBuildingElementPanel_Hosted.PolyCurve });
+                                    }
+                                }
+                            }
+                            //-------------------------------------------
+                        }
+
+
+                        aTransaction.RollBack();
+                    }
+
+                    foreach (KeyValuePair<ElementId, List<BHoMObject>> aKeyValuePair in aObjects)
+                        foreach (BHoMObject aBHoMObject in aKeyValuePair.Value)
+                        {
+                            if (aBHoMObject is Space)
+                                aBuilding.Spaces.Add(aBHoMObject as Space);
+                            else if (aBHoMObject is oM.Architecture.Elements.Level)
+                                aBuilding.Levels.Add(aBHoMObject as oM.Architecture.Elements.Level);
+                            else if (aBHoMObject is BuildingElementProperties)
+                                aBuilding.BuildingElementProperties.Add(aBHoMObject as BuildingElementProperties);
+                            else if (aBHoMObject is BuildingElement)
+                                aBuilding.BuildingElements.Add(aBHoMObject as BuildingElement);
+                        }
+
+
+                    //TODO: To be removed for next release when Space.BuildingElements removed from Space
+                    foreach (BuildingElement aBuildingElement in aBuilding.BuildingElements)
+                    {
+                        if (aBuildingElement.AdjacentSpaces != null && aBuildingElement.AdjacentSpaces.Count > 0)
+                            foreach (Space aSpace in aBuildingElement.AdjacentSpaces)
+                                if (aSpace.BuildingElements.Find(x => x.BHoM_Guid == aBuildingElement.BHoM_Guid) == null)
+                                    aSpace.BuildingElements.Add(aBuildingElement);
+                    }
+
+
+                    //---------------------------------------------
+
+                    return aBuilding;
+            }
+
+            return null;
         }
 
         /***************************************************/
@@ -768,6 +910,51 @@ namespace BH.Engine.Revit
             return null;
         }
 
+        /// <summary>
+        /// Gets BHoM obhect from Revit ElementType
+        /// </summary>
+        /// <param name="elementType">Revit ElementType</param>
+        /// <param name="objects">BHoM Objects</param>
+        /// <param name="discipline">BHoM Discipline</param>
+        /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
+        /// <returns name="BuildingElementProperties">BHoM BuildingElementProperties</returns>
+        /// <search>
+        /// Convert, ToBHoM, BHoM BuildingElement, Revit RoofType
+        /// </search>
+        public static BHoMObject ToBHoM(this ElementType elementType, Dictionary<ElementId, List<BHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
+        {
+            switch(discipline)
+            {
+                case Discipline.Environmental:
+                    BuildingElementProperties aBuildingElementProperties = null;
+                    if (objects != null)
+                    {
+                        List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
+                        if (objects.TryGetValue(elementType.Id, out aBHoMObjectList))
+                            if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
+                                aBuildingElementProperties = aBHoMObjectList.First() as BuildingElementProperties;
+                    }
+
+                    if (aBuildingElementProperties == null)
+                    {
+                        if (elementType is WallType)
+                            aBuildingElementProperties = (elementType as WallType).ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
+                        else if (elementType is FloorType)
+                            aBuildingElementProperties = (elementType as FloorType).ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
+                        else if (elementType is CeilingType)
+                            aBuildingElementProperties = (elementType as CeilingType).ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
+                        else if (elementType is RoofType)
+                            aBuildingElementProperties = (elementType as RoofType).ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
+                    }
+                    return aBuildingElementProperties;
+
+            }
+
+            return null;
+        }
+
+        /***************************************************/
+
         public static ISectionProperty ToBHoMSection(this FamilyInstance familyInstance, oM.Geometry.Line centreLine, bool copyCustomData = true)
         {
             try
@@ -1021,21 +1208,7 @@ namespace BH.Engine.Revit
 
                         Document aDocument = spatialElement.Document;
 
-                        oM.Architecture.Elements.Level aLevel = null;
-                        if (objects != null)
-                        {
-                            List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
-                            if (objects.TryGetValue(spatialElement.LevelId, out aBHoMObjectList))
-                                if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                                    aLevel = aBHoMObjectList.First() as oM.Architecture.Elements.Level;
-                        }
-
-                        if (aLevel == null)
-                        {
-                            aLevel = spatialElement.Level.ToBHoM() as oM.Architecture.Elements.Level;
-                            if (objects != null)
-                                objects.Add(spatialElement.LevelId, new List<BHoMObject>(new BHoMObject[] { aLevel }));
-                        } 
+                        oM.Architecture.Elements.Level aLevel = Query.Level(spatialElement, objects);
 
                         List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
                         IList<IList<BoundarySegment>> aBoundarySegmentListList = spatialElement.GetBoundarySegments(spatialElementBoundaryOptions);
@@ -1047,27 +1220,8 @@ namespace BH.Engine.Revit
                                     Element aElement = aDocument.GetElement(aBoundarySegment.ElementId);
                                     ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
 
-                                    BuildingElementProperties aBuildingElementProperties = null;
-                                    if (objects != null)
-                                    {
-                                        List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
-                                        if (objects.TryGetValue(aElementType.Id, out aBHoMObjectList))
-                                            if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                                                aBuildingElementProperties = aBHoMObjectList.First() as BuildingElementProperties;
-                                    }
-
-                                    if (aBuildingElementProperties == null)
-                                    {
-                                        if (aElement is Wall)
-                                            aBuildingElementProperties = (aElement as Wall).WallType.ToBHoM() as BuildingElementProperties;
-                                        else if (aElement is Floor)
-                                            aBuildingElementProperties = (aElement as Floor).FloorType.ToBHoM() as BuildingElementProperties;
-                                        else if (aElement is Ceiling)
-                                            aBuildingElementProperties = (aElement.Document.GetElement(aElement.GetTypeId()) as CeilingType).ToBHoM() as BuildingElementProperties;
-
-                                        if (objects != null)
-                                            objects.Add(aElementType.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElementProperties }));
-                                    }
+                                    BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(objects, discipline, copyCustomData) as BuildingElementProperties;
+                                    AddBHoMObject(aBuildingElementProperties, objects);
 
                                     BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementCurve(aICurve), aLevel);
                                     aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
@@ -1075,14 +1229,7 @@ namespace BH.Engine.Revit
                                         aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement) as BuildingElement;
                                     aBuildingElmementList.Add(aBuildingElement);
 
-                                    if (objects != null)
-                                    {
-                                        List<BHoMObject> aBHoMObjectList = null;
-                                        if (objects.TryGetValue(aElement.Id, out aBHoMObjectList))
-                                            aBHoMObjectList.Add(aBuildingElement);
-                                        else
-                                            objects.Add(aElement.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElement }));
-                                    }
+                                    AddBHoMObject(aBuildingElement, objects);
                                 }
 
                         Space aSpace = new Space
@@ -1142,52 +1289,14 @@ namespace BH.Engine.Revit
                         {
                             foreach (SpatialElementBoundarySubface aSpatialElementBoundarySubface in aSpatialElementGeometryResults.GetBoundaryFaceInfo(aFace))
                             {
-                                LinkElementId aLinkElementId = aSpatialElementBoundarySubface.SpatialBoundaryElement;
-                                Document aDocument = null;
-                                if (aLinkElementId.LinkInstanceId != Autodesk.Revit.DB.ElementId.InvalidElementId)
-                                    aDocument = (spatialElement.Document.GetElement(aLinkElementId.LinkInstanceId) as RevitLinkInstance).GetLinkDocument();
-                                else
-                                    aDocument = spatialElement.Document;
-
-                                Element aElement = null;
-                                if (aLinkElementId.LinkedElementId != Autodesk.Revit.DB.ElementId.InvalidElementId)
-                                    aElement = aDocument.GetElement(aLinkElementId.LinkedElementId);
-                                else
-                                    aElement = aDocument.GetElement(aLinkElementId.HostElementId);
-
+                                Element aElement = Query.Element(spatialElement.Document, aSpatialElementBoundarySubface.SpatialBoundaryElement);
                                 if (aElement == null)
                                     continue;
 
-                                ElementType aElementType = null;
-                                if (aElement != null)
-                                    aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
+                                ElementType aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
 
-                                BuildingElementProperties aBuildingElementProperties = null;
-                                if (objects != null)
-                                {
-                                    List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
-                                    if (objects.TryGetValue(aElementType.Id, out aBHoMObjectList))
-                                        if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                                            aBuildingElementProperties = aBHoMObjectList.First() as BuildingElementProperties;
-                                }
-
-                                if (aBuildingElementProperties == null)
-                                {
-                                    if (aElement is Wall)
-                                        aBuildingElementProperties = (aElementType as WallType).ToBHoM() as BuildingElementProperties;
-                                    else if (aElement is Floor)
-                                        aBuildingElementProperties = (aElementType as FloorType).ToBHoM() as BuildingElementProperties;
-                                    else if (aElement is Ceiling)
-                                        aBuildingElementProperties = (aElementType as CeilingType).ToBHoM() as BuildingElementProperties;
-                                    else if (Query.IsAssignableFromByFullName(aElement.GetType(), typeof(RoofBase)))
-                                        aBuildingElementProperties = (aElementType as RoofType).ToBHoM(discipline, copyCustomData) as BuildingElementProperties;
-
-                                    if (objects != null && aBuildingElementProperties != null)
-                                        objects.Add(aElementType.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElementProperties }));
-                                }
-
-                                if (aBuildingElementProperties == null)
-                                    continue;
+                                BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(objects, discipline, copyCustomData) as BuildingElementProperties;
+                                AddBHoMObject(aBuildingElementProperties, objects);
 
                                 //Face aFace_BoundingElementFace = aSpatialElementBoundarySubface.GetBoundingElementFace();
                                 //Face aFace_Subface = aSpatialElementBoundarySubface.GetSubface();
@@ -1233,14 +1342,8 @@ namespace BH.Engine.Revit
 
                                         //---------------------------------------------
 
-                                        if (objects != null)
-                                        {
-                                            List<BHoMObject> aBHoMObjectList = null;
-                                            if (objects.TryGetValue(aElement.Id, out aBHoMObjectList))
-                                                aBHoMObjectList.Add(aBuildingElement);
-                                            else
-                                                objects.Add(aElement.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElement }));
-                                        }
+
+                                        AddBHoMObject(aBuildingElement, objects);
                                     }
                             }
                         }
@@ -1254,6 +1357,10 @@ namespace BH.Engine.Revit
 
                         };
 
+                        if (aBuildingElmementList != null)
+                            foreach (BuildingElement aBuildingElement in aBuildingElmementList)
+                                aBuildingElement.AdjacentSpaces.Add(aSpace);
+
                         aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
                         if (copyCustomData)
                             aSpace = Modify.SetCustomData(aSpace, spatialElement) as Space;
@@ -1264,6 +1371,201 @@ namespace BH.Engine.Revit
 
             return null;
 
+        }
+
+        /***************************************************/
+
+        /// <summary>
+        /// Gets BHoM Space from Revit EnergyAnalysisSpace
+        /// </summary>
+        /// <param name="energyAnalysisSpace">Revit EnergyAnalysisSpace</param>
+        /// <param name="objects">BHoM Objects</param>
+        /// <param name="discipline">BHoM Discipline</param>
+        /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
+        /// <returns name="Space">BHoM Space</returns>
+        /// <search>
+        /// Convert, ToBHoM, BHoM Space, Revit EnergyAnalysisSpace
+        /// </search>
+        public static BHoMObject ToBHoM(this EnergyAnalysisSpace energyAnalysisSpace, Dictionary<ElementId, List<BHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
+        {
+            switch (discipline)
+            {
+                case Discipline.Environmental:
+                    {
+                        if (energyAnalysisSpace == null)
+                            return null;
+
+                        SpatialElement aSpatialElement = energyAnalysisSpace.Document.GetElement(energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
+                        if (aSpatialElement == null)
+                            return null;
+
+                        oM.Architecture.Elements.Level aLevel = Query.Level(aSpatialElement, objects);
+
+                        Space aSpace = new Space
+                        {
+                            Level = aLevel,
+                            Name = energyAnalysisSpace.SpaceName,
+                            Location = (aSpatialElement.Location as LocationPoint).ToBHoM()
+
+                        };
+
+                        aSpace = Modify.SetIdentifiers(aSpace, aSpatialElement) as Space;
+                        if (copyCustomData)
+                            aSpace = Modify.SetCustomData(aSpace, aSpatialElement) as Space;
+
+                        return aSpace;
+                    }
+            }
+
+            return null;
+
+        }
+
+        /// <summary>
+        /// Gets BHoM Space from Revit EnergyAnalysisSurface
+        /// </summary>
+        /// <param name="energyAnalysisSurface">Revit EnergyAnalysisSurface</param>
+        /// <param name="objects">BHoM Objects</param>
+        /// <param name="discipline">BHoM Discipline</param>
+        /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
+        /// <returns name="BHoMObjects">BHoM Obhjects</returns>
+        /// <search>
+        /// Convert, ToBHoM, BHoM Space, Revit EnergyAnalysisSpace
+        /// </search>
+        public static List<BHoMObject> ToBHoM(this EnergyAnalysisSurface energyAnalysisSurface, Dictionary<ElementId, List<BHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
+        {
+            switch (discipline)
+            {
+                case Discipline.Environmental:
+                    {
+                        if (energyAnalysisSurface == null)
+                            return null;
+
+                        Polyloop aPolyLoop = energyAnalysisSurface.GetPolyloop();
+                        if (aPolyLoop == null)
+                            return null;
+
+                        Document aDocument = energyAnalysisSurface.Document;
+
+                        Element aElement = Query.Element(aDocument, energyAnalysisSurface.CADObjectUniqueId, energyAnalysisSurface.CADLinkUniqueId);
+
+                        if (aElement == null)
+                            return null;
+
+                        ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
+
+                        BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(objects, discipline, copyCustomData) as BuildingElementProperties;
+                        AddBHoMObject(aBuildingElementProperties, objects);
+
+                        List<Space> aSpaceList = new List<Space>();
+                        List<ElementId> aElementIdList = Query.SpatialElementIds(energyAnalysisSurface);
+                        if (aElementIdList != null && objects != null)
+                        {
+                            List<BHoMObject> aBHoMObjectList = null;
+                            foreach(ElementId aElementId in aElementIdList)
+                            if(objects.TryGetValue(aElementId, out aBHoMObjectList))
+                                    if(aBHoMObjectList != null)
+                                        foreach(BHoMObject aBHoMObject in aBHoMObjectList)
+                                            if(aBHoMObject is Space)
+                                                aSpaceList.Add(aBHoMObject as Space);
+
+
+                        }
+
+                        oM.Architecture.Elements.Level aLevel = Query.Level(aElement, objects);
+
+                        BuildingElement aBuildingElement = new BuildingElement
+                        {
+                            Level = aLevel,
+                            Name = aElement.Name,
+                            BuildingElementGeometry = Create.BuildingElementPanel(aPolyLoop.ToBHoM()),
+                            AdjacentSpaces = aSpaceList
+
+                        };
+
+                        aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
+                        if (copyCustomData)
+                            aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement) as BuildingElement;
+
+                        return new List<BHoMObject>(new BHoMObject[] { aBuildingElement });
+                    }
+            }
+
+            return null;
+
+        }
+
+        /// <summary>
+        /// Gets BHoM Space from Revit EnergyAnalysisOpening
+        /// </summary>
+        /// <param name="energyAnalysisOpening">Revit EnergyAnalysisOpening</param>
+        /// <param name="objects">BHoM Objects</param>
+        /// <param name="discipline">BHoM Discipline</param>
+        /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
+        /// <returns name="BHoMObjects">BHoM Obhjects</returns>
+        /// <search>
+        /// Convert, ToBHoM, BHoM Space, Revit EnergyAnalysisOpening
+        /// </search>
+        public static List<BHoMObject> ToBHoM(this EnergyAnalysisOpening energyAnalysisOpening, Dictionary<ElementId, List<BHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
+        {
+            switch (discipline)
+            {
+                case Discipline.Environmental:
+                    {
+                        if (energyAnalysisOpening == null)
+                            return null;
+
+                        Polyloop aPolyLoop = energyAnalysisOpening.GetPolyloop();
+                        if (aPolyLoop == null)
+                            return null;
+
+                        Document aDocument = energyAnalysisOpening.Document;
+
+                        Element aElement = Query.Element(aDocument, energyAnalysisOpening.CADObjectUniqueId, energyAnalysisOpening.CADLinkUniqueId);
+
+                        if (aElement == null)
+                            return null;
+
+                        ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
+
+                        BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(objects, discipline, copyCustomData) as BuildingElementProperties;
+                        AddBHoMObject(aBuildingElementProperties, objects);
+
+                        List<Space> aSpaceList = new List<Space>();
+                        List<ElementId> aElementIdList = Query.SpatialElementIds(energyAnalysisOpening.GetAnalyticalSurface());
+                        if (aElementIdList != null && objects != null)
+                        {
+                            List<BHoMObject> aBHoMObjectList = null;
+                            foreach (ElementId aElementId in aElementIdList)
+                                if (objects.TryGetValue(aElementId, out aBHoMObjectList))
+                                    if (aBHoMObjectList != null)
+                                        foreach (BHoMObject aBHoMObject in aBHoMObjectList)
+                                            if (aBHoMObject is Space)
+                                                aSpaceList.Add(aBHoMObject as Space);
+
+
+                        }
+
+                        oM.Architecture.Elements.Level aLevel = Query.Level(aElement, objects);
+
+                        BuildingElement aBuildingElement = new BuildingElement
+                        {
+                            Level = aLevel,
+                            Name = aElement.Name,
+                            BuildingElementGeometry = Create.BuildingElementPanel(aPolyLoop.ToBHoM()),
+                            AdjacentSpaces = aSpaceList
+
+                        };
+
+                        aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
+                        if (copyCustomData)
+                            aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement) as BuildingElement;
+
+                        return new List<BHoMObject>(new BHoMObject[] { aBuildingElement });
+                    }
+            }
+
+            return null;
         }
 
         /***************************************************/
@@ -1286,6 +1588,50 @@ namespace BH.Engine.Revit
         /***************************************************/
         /**** Private Methods                           ****/
         /***************************************************/
+
+        private static List<BHoMObject> GetBHoMObjects(ElementId elementId, Dictionary<ElementId, List<BHoMObject>> objects)
+        {
+            if (objects == null || elementId == null)
+                return null;
+
+            List<BHoMObject> aResult = null;
+            if (objects.TryGetValue(elementId, out aResult))
+                return aResult;
+
+            return null;
+        }
+
+        private static void AddBHoMObject(BHoMObject bHoMObject, Dictionary<ElementId, List<BHoMObject>> objects)
+        {
+            if (objects == null)
+                return;
+
+            ElementId aElementId = Query.ElementId(bHoMObject);
+            if (aElementId == null)
+                return;
+
+            List<BHoMObject> aResult = null;
+            if (objects.TryGetValue(aElementId, out aResult))
+            {
+                if (aResult == null)
+                    aResult = new List<BHoMObject>();
+
+                aResult.Add(bHoMObject);
+            }
+            else
+            {
+                objects.Add(aElementId, new List<BHoMObject>(new BHoMObject[] { bHoMObject }));
+            }
+        }
+
+        private static void AddBHoMObjects(IEnumerable<BHoMObject> bHoMObjects, Dictionary<ElementId, List<BHoMObject>> objects)
+        {
+            if (bHoMObjects == null)
+                return;
+
+            foreach (BHoMObject aBHoMObject in bHoMObjects)
+                AddBHoMObject(aBHoMObject, objects);
+        }
 
         //TODO: Move to Revit2018_Engine.Query
         private static List<oM.Geometry.Polyline> GetBHOutlines(this Wall wall)
@@ -1835,6 +2181,21 @@ namespace BH.Engine.Revit
         private static double feetToMetre = UnitUtils.ConvertFromInternalUnits(1, DisplayUnitType.DUT_METERS);
         private static oM.Geometry.Point origin = new oM.Geometry.Point { X = 0, Y = 0, Z = 0 };
         private static oM.Geometry.Vector feetToMetreVector = new oM.Geometry.Vector { X = feetToMetre, Y = feetToMetre, Z = feetToMetre };
+
+
+        private class WarningSwallower : IFailuresPreprocessor
+        {
+            public FailureProcessingResult PreprocessFailures(FailuresAccessor FailuresAccessor)
+            {
+                IList<FailureMessageAccessor> aFailureMessageAccessors = FailuresAccessor.GetFailureMessages();
+
+                foreach (FailureMessageAccessor aFailureMessageAccessor in aFailureMessageAccessors)
+                {
+                    FailuresAccessor.DeleteWarning(aFailureMessageAccessor);
+                }
+                return FailureProcessingResult.Continue;
+            }
+        }
     }
 }
  

@@ -65,6 +65,9 @@ namespace Revit2018_Test
             aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
             aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
+            aFilterQuery = new FilterQuery() { Type = typeof(Building) };
+            aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+
             //aFilterQuery = new FilterQuery() { Type = typeof(PanelPlanar) };
             //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
