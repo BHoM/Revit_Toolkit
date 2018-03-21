@@ -1395,7 +1395,7 @@ namespace BH.Engine.Revit
                         if (energyAnalysisSpace == null)
                             return null;
 
-                        SpatialElement aSpatialElement = energyAnalysisSpace.Document.GetElement(energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
+                        SpatialElement aSpatialElement = Query.Element(energyAnalysisSpace.Document, energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
                         if (aSpatialElement == null)
                             return null;
 
@@ -1448,14 +1448,26 @@ namespace BH.Engine.Revit
                         Document aDocument = energyAnalysisSurface.Document;
 
                         Element aElement = Query.Element(aDocument, energyAnalysisSurface.CADObjectUniqueId, energyAnalysisSurface.CADLinkUniqueId);
+                        BuildingElementProperties aBuildingElementProperties = null;
+                        string aName = string.Empty;
+                        oM.Architecture.Elements.Level aLevel = null;
 
                         if (aElement == null)
-                            return null;
+                        {
+                            EnergyAnalysisSpace aEnergyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
+                            SpatialElement aSpatialElement = Query.Element(aEnergyAnalysisSpace.Document, aEnergyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
+                            aLevel = Query.Level(aSpatialElement, objects);
+                        }
+                        else
+                        {
+                            ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
+                            aBuildingElementProperties = aElementType.ToBHoM(objects, discipline, copyCustomData) as BuildingElementProperties;
+                            AddBHoMObject(aBuildingElementProperties, objects);
 
-                        ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
-
-                        BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(objects, discipline, copyCustomData) as BuildingElementProperties;
-                        AddBHoMObject(aBuildingElementProperties, objects);
+                            aName = aElement.Name;
+                            aLevel = Query.Level(aElement, objects);
+                        }
+                        
 
                         List<Space> aSpaceList = new List<Space>();
                         List<ElementId> aElementIdList = Query.SpatialElementIds(energyAnalysisSurface);
@@ -1472,13 +1484,12 @@ namespace BH.Engine.Revit
 
                         }
 
-                        oM.Architecture.Elements.Level aLevel = Query.Level(aElement, objects);
-
                         BuildingElement aBuildingElement = new BuildingElement
                         {
                             Level = aLevel,
-                            Name = aElement.Name,
+                            Name = aName,
                             BuildingElementGeometry = Create.BuildingElementPanel(aPolyLoop.ToBHoM()),
+                            BuildingElementProperties = aBuildingElementProperties,
                             AdjacentSpaces = aSpaceList
 
                         };
@@ -1608,7 +1619,7 @@ namespace BH.Engine.Revit
 
             ElementId aElementId = Query.ElementId(bHoMObject);
             if (aElementId == null)
-                return;
+                aElementId = Autodesk.Revit.DB.ElementId.InvalidElementId;
 
             List<BHoMObject> aResult = null;
             if (objects.TryGetValue(aElementId, out aResult))
