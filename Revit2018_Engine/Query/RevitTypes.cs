@@ -57,9 +57,15 @@ namespace BH.Engine.Revit
                 return aResult;
             }
 
+            //if (Type == typeof(Building))
+            //{
+            //    aResult.Add(typeof(SiteLocation));
+            //    return aResult;
+            //}
+
             if (Type == typeof(Building))
             {
-                aResult.Add(typeof(SiteLocation));
+                aResult.Add(typeof(Document));
                 return aResult;
             }
 
