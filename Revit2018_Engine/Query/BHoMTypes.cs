@@ -117,11 +117,11 @@ namespace BH.Engine.Revit
                 return aResult;
             }
 
-            if (element is SiteLocation)
-            {
-                aResult.Add(typeof(Building));
-                return aResult;
-            }
+            //if (element is SiteLocation)
+            //{
+            //    aResult.Add(typeof(Building));
+            //    return aResult;
+            //}
 
             if (element is Level)
             {

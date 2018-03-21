@@ -189,6 +189,12 @@ namespace BH.Adapter.Revit
 
             foreach (Tuple<Type, Discipline> aTuple in aTupleList)
             {
+                if(aTuple.Item1 == typeof(Document))
+                {
+                    objects.Add(ElementId.InvalidElementId, new List<BHoMObject>(new BHoMObject[] { m_Document.ToBHoM(aTuple.Item2, true) }));
+                    continue;
+                }
+
                 List<ElementId> aElementIdList = new List<ElementId>();
                 foreach (Element aElement in new FilteredElementCollector(m_Document).OfClass(aTuple.Item1))
                 {

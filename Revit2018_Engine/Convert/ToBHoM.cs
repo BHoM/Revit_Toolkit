@@ -364,18 +364,18 @@ namespace BH.Engine.Revit
         /***************************************************/
 
         /// <summary>
-        /// Gets BHoM Building from Site Location
+        /// Gets BHoM Building from Revit Document
         /// </summary>
-        /// <param name="siteLocation">Revit Site Location</param>
+        /// <param name="document">Revit Document</param>
         /// <param name="discipline">BHoM Discipline</param>
         /// <param name="copyCustomData">Copy parameters from Site Location to CustomData of BHoMObjects</param>
         /// <returns name="Building">BHoM Building</returns>
         /// <search>
         /// Convert, ToBHoM, BHoM Building, Revit SiteLocation, Site Location
         /// </search>
-        public static BHoMObject ToBHoM(this SiteLocation siteLocation, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
+        public static BHoMObject ToBHoM(this  Document document, Discipline discipline = Discipline.Environmental, bool copyCustomData = true)
         {
-            if (siteLocation == null)
+            if (document == null)
                 return null;
 
             switch (discipline)
@@ -383,21 +383,21 @@ namespace BH.Engine.Revit
                 case Discipline.Environmental:
                     Building aBuilding = new Building
                     {
-                        Elevation = siteLocation.Elevation,
-                        Longitude = siteLocation.Longitude,
-                        Latitude = siteLocation.Latitude,
+                        //TODO: Include missing properties
+                        //Elevation = siteLocation.Elevation,
+                        //Longitude = siteLocation.Longitude,
+                        //Latitude = siteLocation.Latitude,
                         Location = new oM.Geometry.Point()
                     };
 
-                    aBuilding = Modify.SetIdentifiers(aBuilding, siteLocation) as Building;
+                    aBuilding = Modify.SetIdentifiers(aBuilding, document.ProjectInformation) as Building;
                     if (copyCustomData)
-                        aBuilding = Modify.SetCustomData(aBuilding, siteLocation) as Building;
+                        aBuilding = Modify.SetCustomData(aBuilding, document.ProjectInformation) as Building;
 
                     //-------- Create BHoM building structure -----
-                    Document aDocument = siteLocation.Document;
 
                     Dictionary<ElementId, List<BHoMObject>> aObjects = new Dictionary<ElementId, List<BHoMObject>>();
-                    using (Transaction aTransaction = new Transaction(aDocument, "GetAnalyticalModel"))
+                    using (Transaction aTransaction = new Transaction(document, "GetAnalyticalModel"))
                     {
                         aTransaction.Start();
 
@@ -407,13 +407,13 @@ namespace BH.Engine.Revit
 
                         EnergyAnalysisDetailModel aEnergyAnalysisDetailModel = null;
 
-                        using (SubTransaction aSubTransaction = new SubTransaction(aDocument))
+                        using (SubTransaction aSubTransaction = new SubTransaction(document))
                         {
                             aSubTransaction.Start();
-                            aEnergyAnalysisDetailModel = EnergyAnalysisDetailModel.GetMainEnergyAnalysisDetailModel(aDocument);
+                            aEnergyAnalysisDetailModel = EnergyAnalysisDetailModel.GetMainEnergyAnalysisDetailModel(document);
                             if (aEnergyAnalysisDetailModel != null && aEnergyAnalysisDetailModel.IsValidObject)
                             {
-                                aDocument.Delete(aEnergyAnalysisDetailModel.Id);
+                                document.Delete(aEnergyAnalysisDetailModel.Id);
                             }
 
                             aSubTransaction.Commit();
@@ -426,14 +426,14 @@ namespace BH.Engine.Revit
                         aEnergyAnalysisDetailModelOptions.IncludeShadingSurfaces = true;
                         aEnergyAnalysisDetailModelOptions.SimplifyCurtainSystems = false;
 
-                        EnergyDataSettings aEnergyDataSettings = EnergyDataSettings.GetFromDocument(aDocument);
+                        EnergyDataSettings aEnergyDataSettings = EnergyDataSettings.GetFromDocument(document);
                         aEnergyDataSettings.ExportComplexity = gbXMLExportComplexity.ComplexWithMullionsAndShadingSurfaces;
                         aEnergyDataSettings.ExportDefaults = false;
                         aEnergyDataSettings.SliverSpaceTolerance = UnitUtils.ConvertToInternalUnits(5, DisplayUnitType.DUT_MILLIMETERS);
                         aEnergyDataSettings.AnalysisType = AnalysisMode.BuildingElements;
                         aEnergyDataSettings.EnergyModel = false;
 
-                        aEnergyAnalysisDetailModel = EnergyAnalysisDetailModel.Create(aDocument, aEnergyAnalysisDetailModelOptions);
+                        aEnergyAnalysisDetailModel = EnergyAnalysisDetailModel.Create(document, aEnergyAnalysisDetailModelOptions);
                         IList<EnergyAnalysisSpace> aEnergyAnalysisSpaces = aEnergyAnalysisDetailModel.GetAnalyticalSpaces();
                         Dictionary<string, EnergyAnalysisSurface> aEnergyAnalysisSurfaces = new Dictionary<string, EnergyAnalysisSurface>();
                         foreach (EnergyAnalysisSpace aEnergyAnalysisSpace in aEnergyAnalysisSpaces)
