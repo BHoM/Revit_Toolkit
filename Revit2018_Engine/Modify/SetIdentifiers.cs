@@ -24,7 +24,7 @@ namespace BH.Engine.Revit
         public static BHoMObject SetIdentifiers(this BHoMObject bHoMObject, Element element)
         {
             if (bHoMObject == null || element == null)
-                return null;
+                return bHoMObject;
 
             BHoMObject aBHoMObject = bHoMObject.GetShallowClone() as BHoMObject;
 

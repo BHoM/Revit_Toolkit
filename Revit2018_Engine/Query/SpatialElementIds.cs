@@ -36,7 +36,7 @@ namespace BH.Engine.Revit
                 aElementIdList.Add(aElementId);
 
             aElementId = SpatialElementId(energyAnalysisSurface.GetAdjacentAnalyticalSpace());
-            if (aElementId != null)
+            if (aElementId != null && aElementIdList.Find(x => x.IntegerValue == aElementId.IntegerValue) == null)
                 aElementIdList.Add(aElementId);
 
             return aElementIdList;
