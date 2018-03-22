@@ -122,9 +122,18 @@ namespace BH.Engine.Revit
         /// </search>
         public static oM.Geometry.Polyline ToBHoM(this Polyloop polyloop)
         {
+            IList<XYZ> aXYZs = polyloop.GetPoints();
+            if (aXYZs == null)
+                return null;
+
             List<oM.Geometry.Point> aPointList = new List<oM.Geometry.Point>();
-            foreach (XYZ aXYZ in polyloop.GetPoints())
-                aPointList.Add(aXYZ.ToBHoM());
+            if (aXYZs.Count > 0)
+            {
+                foreach (XYZ aXYZ in aXYZs)
+                    aPointList.Add(aXYZ.ToBHoM());
+
+                aPointList.Add(aXYZs[0].ToBHoM());
+            }
 
             return Geometry.Create.Polyline(aPointList);
         }
