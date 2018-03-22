@@ -37,6 +37,9 @@ namespace BH.Engine.Revit
         /// </search>
         public static oM.Geometry.Point ToBHoM(this XYZ xyz)
         {
+            if (xyz == null)
+                return null;
+
             return Geometry.Create.Point(xyz.X, xyz.Y, xyz.Z);
         }
 
@@ -50,6 +53,9 @@ namespace BH.Engine.Revit
         /// </search>
         public static oM.Geometry.Point ToBHoM(this LocationPoint locationPoint)
         {
+            if (locationPoint == null)
+                return null;
+
             return ToBHoM(locationPoint.Point);
         }
 
@@ -463,11 +469,16 @@ namespace BH.Engine.Revit
                             List<BHoMObject> aBHoMObjectList = aKeyValuePair.Value.ToBHoM(aObjects, discipline, copyCustomData);
                             AddBHoMObjects(aBHoMObjectList, aObjects);
 
-                            List<BHoMObject> aBHoMObjectList_Hosted = null;
+                            List<BHoMObject> aBHoMObjectList_Hosted = new List<BHoMObject>();
                             foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aKeyValuePair.Value.GetAnalyticalOpenings())
                             {
-                                aBHoMObjectList_Hosted = aEnergyAnalysisOpening.ToBHoM(aObjects, discipline, copyCustomData);
-                                AddBHoMObjects(aBHoMObjectList_Hosted, aObjects);
+                                List<BHoMObject> aBHoMObjectList_Hosted_Temp = aEnergyAnalysisOpening.ToBHoM(aObjects, discipline, copyCustomData);
+                                if(aBHoMObjectList_Hosted_Temp != null && aBHoMObjectList_Hosted_Temp.Count > 0)
+                                {
+                                    aBHoMObjectList_Hosted.AddRange(aBHoMObjectList_Hosted_Temp);
+                                    AddBHoMObjects(aBHoMObjectList_Hosted_Temp, aObjects);
+                                }
+                                
                             }
 
                             //------------ Cutting openings ----------------
@@ -500,11 +511,16 @@ namespace BH.Engine.Revit
                             List<BHoMObject> aBHoMObjectList = aEnergyAnalysisSurface.ToBHoM(aObjects, discipline, copyCustomData);
                             AddBHoMObjects(aBHoMObjectList, aObjects);
 
-                            List<BHoMObject> aBHoMObjectList_Hosted = null;
+                            List<BHoMObject> aBHoMObjectList_Hosted = new List<BHoMObject>();
                             foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aEnergyAnalysisSurface.GetAnalyticalOpenings())
                             {
-                                aBHoMObjectList_Hosted = aEnergyAnalysisOpening.ToBHoM(aObjects, discipline, copyCustomData);
-                                AddBHoMObjects(aBHoMObjectList_Hosted, aObjects);
+                                List<BHoMObject> aBHoMObjectList_Hosted_Temp = aEnergyAnalysisOpening.ToBHoM(aObjects, discipline, copyCustomData);
+                                if (aBHoMObjectList_Hosted_Temp != null && aBHoMObjectList_Hosted_Temp.Count > 0)
+                                {
+                                    aBHoMObjectList_Hosted.AddRange(aBHoMObjectList_Hosted_Temp);
+                                    AddBHoMObjects(aBHoMObjectList_Hosted_Temp, aObjects);
+                                }
+
                             }
 
                             //------------ Cutting openings ----------------
