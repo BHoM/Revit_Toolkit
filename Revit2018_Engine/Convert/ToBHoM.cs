@@ -433,6 +433,8 @@ namespace BH.Engine.Revit
                         aEnergyDataSettings.AnalysisType = AnalysisMode.BuildingElements;
                         aEnergyDataSettings.EnergyModel = false;
 
+
+                        //AnalyticalSpaces
                         aEnergyAnalysisDetailModel = EnergyAnalysisDetailModel.Create(document, aEnergyAnalysisDetailModelOptions);
                         IList<EnergyAnalysisSpace> aEnergyAnalysisSpaces = aEnergyAnalysisDetailModel.GetAnalyticalSpaces();
                         Dictionary<string, EnergyAnalysisSurface> aEnergyAnalysisSurfaces = new Dictionary<string, EnergyAnalysisSurface>();
@@ -446,7 +448,7 @@ namespace BH.Engine.Revit
                                     aEnergyAnalysisSurfaces.Add(aEnergyAnalysisSurface.SurfaceName, aEnergyAnalysisSurface);
                         }
 
-
+                        //EnergyAnalysisSurfaces
                         foreach (KeyValuePair<string, EnergyAnalysisSurface> aKeyValuePair in aEnergyAnalysisSurfaces)
                         {
                             List<BHoMObject> aBHoMObjectList = aKeyValuePair.Value.ToBHoM(aObjects, discipline, copyCustomData);
@@ -481,6 +483,42 @@ namespace BH.Engine.Revit
                             //-------------------------------------------
                         }
 
+
+                        //AnalyticalShadingSurfaces
+                        IList<EnergyAnalysisSurface> aAnalyticalShadingSurfaceList = aEnergyAnalysisDetailModel.GetAnalyticalShadingSurfaces();
+                        foreach (EnergyAnalysisSurface aEnergyAnalysisSurface in aAnalyticalShadingSurfaceList)
+                        {
+                            List<BHoMObject> aBHoMObjectList = aEnergyAnalysisSurface.ToBHoM(aObjects, discipline, copyCustomData);
+                            AddBHoMObjects(aBHoMObjectList, aObjects);
+
+                            List<BHoMObject> aBHoMObjectList_Hosted = null;
+                            foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aEnergyAnalysisSurface.GetAnalyticalOpenings())
+                            {
+                                aBHoMObjectList_Hosted = aEnergyAnalysisOpening.ToBHoM(aObjects, discipline, copyCustomData);
+                                AddBHoMObjects(aBHoMObjectList_Hosted, aObjects);
+                            }
+
+                            //------------ Cutting openings ----------------
+                            if (aBHoMObjectList_Hosted != null && aBHoMObjectList_Hosted.Count > 0)
+                            {
+                                foreach (BHoMObject aBHoMObject in aBHoMObjectList.FindAll(x => x is BuildingElement))
+                                {
+                                    BuildingElementPanel aBuildingElementPanel = (aBHoMObject as BuildingElement).BuildingElementGeometry as BuildingElementPanel;
+                                    if (aBuildingElementPanel == null)
+                                        continue;
+
+                                    foreach (BuildingElement aBuildingElement_Hosted in aBHoMObjectList_Hosted.FindAll(x => x is BuildingElement))
+                                    {
+                                        BuildingElementPanel aBuildingElementPanel_Hosted = aBuildingElement_Hosted.BuildingElementGeometry as BuildingElementPanel;
+                                        if (aBuildingElementPanel_Hosted == null)
+                                            continue;
+
+                                        aBuildingElementPanel.Openings.Add(new BuildingElementOpening() { PolyCurve = aBuildingElementPanel_Hosted.PolyCurve });
+                                    }
+                                }
+                            }
+                            //-------------------------------------------
+                        }
 
                         aTransaction.RollBack();
                     }
