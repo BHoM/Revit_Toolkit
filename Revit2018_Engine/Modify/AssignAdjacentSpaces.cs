@@ -101,22 +101,22 @@ namespace BH.Engine.Revit
                 if(aBuildingElement != null)
                 {
                     aBuildingElement = aBuildingElement.GetShallowClone() as BuildingElement;
-                    foreach(Space aSpace in aTupleList[i].Item2.AdjacentSpaces)
+                    foreach(Guid aGuid in aTupleList[i].Item2.AdjacentSpaces)
                     {
-                        Space aSpace_Temp = aBuildingElement.AdjacentSpaces.Find(x => x.BHoM_Guid == aSpace.BHoM_Guid);
-                        if (aSpace_Temp == null)
-                            aBuildingElement.AdjacentSpaces.Add(aSpace);
+                        Guid aGuid_Temp = aBuildingElement.AdjacentSpaces.Find(x => x == aGuid);
+                        if (aGuid_Temp != null && aGuid_Temp != Guid.Empty)
+                            aBuildingElement.AdjacentSpaces.Add(aGuid_Temp);
                     }
                     aResult.Add(aBuildingElement);
 
                     if(!removeDuplicates)
                     {
                         BuildingElement aBuildingElement_Temp = aTupleList[i].Item2.GetShallowClone() as BuildingElement;
-                        foreach (Space aSpace in aBuildingElement.AdjacentSpaces)
+                        foreach (Guid aGuid in aBuildingElement.AdjacentSpaces)
                         {
-                            Space aSpace_Temp = aBuildingElement_Temp.AdjacentSpaces.Find(x => x.BHoM_Guid == aSpace.BHoM_Guid);
-                            if (aSpace_Temp == null)
-                                aBuildingElement_Temp.AdjacentSpaces.Add(aSpace);
+                            Guid aGuid_Temp = aBuildingElement_Temp.AdjacentSpaces.Find(x => x == aGuid);
+                            if (aGuid_Temp != null && aGuid_Temp != Guid.Empty)
+                                aBuildingElement_Temp.AdjacentSpaces.Add(aGuid_Temp);
                         }
                         aResult.Add(aBuildingElement_Temp);
                     }

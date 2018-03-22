@@ -541,9 +541,16 @@ namespace BH.Engine.Revit
                     foreach (BuildingElement aBuildingElement in aBuilding.BuildingElements)
                     {
                         if (aBuildingElement.AdjacentSpaces != null && aBuildingElement.AdjacentSpaces.Count > 0)
-                            foreach (Space aSpace in aBuildingElement.AdjacentSpaces)
-                                if (aSpace.BuildingElements.Find(x => x.BHoM_Guid == aBuildingElement.BHoM_Guid) == null)
-                                    aSpace.BuildingElements.Add(aBuildingElement);
+                            foreach (Guid aGuid in aBuildingElement.AdjacentSpaces)
+                            {
+                                Space aSpace = aBuilding.Spaces.Find(x => x.BHoM_Guid == aGuid);
+                                if(aSpace != null)
+                                {
+                                    if (aSpace.BuildingElements.Find(x => x.BHoM_Guid == aBuildingElement.BHoM_Guid) == null)
+                                        aSpace.BuildingElements.Add(aBuildingElement);
+                                }
+                            }
+
                     }
 
 
@@ -1397,7 +1404,7 @@ namespace BH.Engine.Revit
 
                         if (aBuildingElmementList != null)
                             foreach (BuildingElement aBuildingElement in aBuildingElmementList)
-                                aBuildingElement.AdjacentSpaces.Add(aSpace);
+                                aBuildingElement.AdjacentSpaces.Add(aSpace.BHoM_Guid);
 
                         aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
                         if (copyCustomData)
@@ -1528,7 +1535,7 @@ namespace BH.Engine.Revit
                             Name = aName,
                             BuildingElementGeometry = Create.BuildingElementPanel(aPolyLoop.ToBHoM()),
                             BuildingElementProperties = aBuildingElementProperties,
-                            AdjacentSpaces = aSpaceList
+                            AdjacentSpaces = aSpaceList.ConvertAll(x => x.BHoM_Guid)
 
                         };
 
@@ -1602,7 +1609,7 @@ namespace BH.Engine.Revit
                             Level = aLevel,
                             Name = aElement.Name,
                             BuildingElementGeometry = Create.BuildingElementPanel(aPolyLoop.ToBHoM()),
-                            AdjacentSpaces = aSpaceList
+                            AdjacentSpaces = aSpaceList.ConvertAll(x => x.BHoM_Guid)
 
                         };
 
