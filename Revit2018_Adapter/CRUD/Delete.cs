@@ -73,63 +73,6 @@ namespace BH.Adapter.Revit
             return aResult;
         }
 
-        /***************************************************/
-
-        /// <summary>
-        /// Delete Storey from Revit Document. If DeleteByName set to false then Storey has to be linked to Revit Level by CustomData parameter called by Utilis.AdapterId const. Use Utilis.BHoM.CopyIdentifiers to include UniqueId in BHoMObject.
-        /// </summary>
-        /// <param name="storey">BHoM Storey</param>
-        /// <param name="deleteByName">Use Storey Name to match with Revit Level</param>
-        /// <returns name="Succeeded">Delete succeeded</returns>
-        /// <search>
-        /// Delete, BHoMObject, Storey, Revit, Document
-        /// </search>
-        public bool Delete(Storey storey, bool deleteByName)
-        {
-            if (m_Document == null || storey == null)
-                return false;
-
-            bool aResult = false;
-            using (Transaction aTransaction = new Transaction(m_Document, "Create"))
-            {
-                aTransaction.Start();
-                if(deleteByName)
-                    aResult = this.DeleteByName(typeof(Level), storey);
-                else
-                    aResult = DeleteByUniqueId(storey);
-                aTransaction.Commit();
-            }
-            return aResult;
-        }
-
-        /***************************************************/
-
-        /// <summary>
-        /// Delete Storeys from Revit Document. If DeleteByName set to false then Storeys have to be linked to Revit Levels by CustomData parameter called by Utilis.AdapterId const. Use Utilis.BHoM.CopyIdentifiers to include UniqueId in BHoMObject.
-        /// </summary>
-        /// <param name="storeys">BHoM Storeys</param>
-        /// <param name="deleteByName">Use Storey Name to match with Revit Level</param>
-        /// <returns name="Succeeded">Delete succeeded</returns>
-        /// <search>
-        /// Delete, BHoMObject, Storey, Revit, Document, Storeys
-        /// </search>
-        public bool Delete(IEnumerable<Storey> storeys, bool deleteByName)
-        {
-            if (m_Document == null || storeys == null || storeys.Count() < 1)
-                return false;
-
-            bool aResult = false;
-            using (Transaction aTransaction = new Transaction(m_Document, "Create"))
-            {
-                aTransaction.Start();
-                if (deleteByName)
-                    this.DeleteByName(typeof(Level), storeys);                        
-                else
-                    return Delete(storeys.Cast<BHoMObject>());
-                aTransaction.Commit();
-            }
-            return aResult;
-        }
 
         /***************************************************/
 

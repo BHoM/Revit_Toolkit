@@ -223,6 +223,7 @@ namespace BH.Engine.Revit
             return aElement;
         }
 
+        //TODO: Remove this
         /// <summary>
         /// Gets Revit Level from BHoM Storey
         /// </summary>
@@ -233,16 +234,16 @@ namespace BH.Engine.Revit
         /// <search>
         /// Convert, ToRevit, BHoM Storey, Revit Level 
         /// </search>
-        public static Level ToRevit(this Storey storey, Document document, bool copyCustomData = true)
-        {
-            Element aElement = Level.Create(document, storey.Elevation);
-            aElement.Name = storey.Name;
+        //public static Level ToRevit(this Storey storey, Document document, bool copyCustomData = true)
+        //{
+        //    Element aElement = Level.Create(document, storey.Elevation);
+        //    aElement.Name = storey.Name;
 
-            if (copyCustomData)
-                Modify.SetParameters(aElement, storey, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
+        //    if (copyCustomData)
+        //        Modify.SetParameters(aElement, storey, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
 
-            return aElement as Level;
-        }
+        //    return aElement as Level;
+        //}
 
         /// <summary>
         /// Gets Revit Level from BHoM Storey
