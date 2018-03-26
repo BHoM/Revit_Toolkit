@@ -51,7 +51,7 @@ namespace BH.Engine.Revit
                 return aResult;
             }
             
-            if (Type == typeof(Bar))
+            if (Type == typeof(FramingElement))
             {
                 aResult.Add(typeof(FamilyInstance));
                 return aResult;
@@ -69,11 +69,11 @@ namespace BH.Engine.Revit
                 return aResult;
             }
 
-            if (Type == typeof(Storey))
-            {
-                aResult.Add(typeof(Level));
-                return aResult;
-            }
+            //if (Type == typeof(Storey))
+            //{
+            //    aResult.Add(typeof(Level));
+            //    return aResult;
+            //}
 
             if (Type == typeof(oM.Architecture.Elements.Level))
             {

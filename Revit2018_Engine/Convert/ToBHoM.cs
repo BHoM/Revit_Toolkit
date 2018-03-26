@@ -601,6 +601,7 @@ namespace BH.Engine.Revit
                         StructuralType structuralType = ((FamilyInstance)familyInstance).StructuralType;
                         if (structuralType == StructuralType.Beam || structuralType == StructuralType.Brace || structuralType == StructuralType.Column)
                         {
+                            //TODO: Change from analytical lines to model curves and allow for other things that only lines (the latter needs update in the BHoM 26/03/2018)
                             AnalyticalModel analyticalModel = familyInstance.GetAnalyticalModel();
                             if (analyticalModel == null) return null;
 
@@ -614,16 +615,37 @@ namespace BH.Engine.Revit
                                 rotation = familyInstance.FacingOrientation.AngleTo(new XYZ(0, 1, 0)) * multiplier;
                             }
                             else rotation = -familyInstance.LookupParameter("Cross-Section Rotation").AsDouble();
-                            
-                            Bar aBar = BHS.Create.Bar(barCurve, aSectionProperty);
-                            aBar.OrientationAngle = rotation;
-                            aBar.Offset = new Offset();
 
-                            aBar = Modify.SetIdentifiers(aBar, familyInstance) as Bar;
+                            StructuralUsage1D usage;
+
+                            switch (structuralType)
+                            {
+                                case StructuralType.Beam:
+                                    usage = StructuralUsage1D.Beam;
+                                    break;
+                                case StructuralType.Brace:
+                                    usage = StructuralUsage1D.Brace;
+                                    break;
+                                case StructuralType.Column:
+                                    usage = StructuralUsage1D.Column;
+                                    break;
+                                case StructuralType.Footing:
+                                case StructuralType.NonStructural:
+                                case StructuralType.UnknownFraming:
+                                default:
+                                    usage = StructuralUsage1D.Undefined;
+                                    break;
+                            }
+
+                            //TODO: Allow varying orientation angle and varying cross sections (tapers etc)
+                            ConstantFramingElementProperty property = BHS.Create.ConstantFramingElementProperty(aSectionProperty, rotation, aSectionProperty.Name);
+                            FramingElement element = BHS.Create.FramingElement(barCurve, property, usage, familyInstance.Name);
+
+                            element = Modify.SetIdentifiers(element, familyInstance) as FramingElement;
                             if (copyCustomData)
-                                aBar = Modify.SetCustomData(aBar, familyInstance) as Bar;
+                                element = Modify.SetCustomData(element, familyInstance) as FramingElement;
 
-                            return aBar;
+                            return element;
                         }
                         return null;
                     }
@@ -682,7 +704,7 @@ namespace BH.Engine.Revit
                     {
                         string materialGrade = wall.GetMaterialGrade();
 
-                        Property2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, materialGrade) as Property2D;
+                        IProperty2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, materialGrade) as IProperty2D;
                         List<oM.Geometry.Polyline> outlines = wall.GetBHOutlines();
 
                         PanelPlanar aPanelPlanar = BHS.Create.PanelPlanar(outlines)[0];       // this is a temporary cheat!
@@ -771,7 +793,7 @@ namespace BH.Engine.Revit
                     {
                         string materialGrade = floor.GetMaterialGrade();
 
-                        Property2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData, materialGrade) as Property2D;
+                        IProperty2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData, materialGrade) as IProperty2D;
                         List<oM.Geometry.PolyCurve> outlines = floor.GetBHOutlines();
 
                         List<BHoMObject> aResult = new List<BHoMObject>();
@@ -868,7 +890,7 @@ namespace BH.Engine.Revit
                             }
                         }
 
-                        ConstantThickness aProperty2D = new ConstantThickness { Type = oM.Structural.Properties.PanelType.Wall, Thickness = aThickness, Material = aMaterial };
+                        ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structural.Properties.PanelType.Wall, Thickness = aThickness, Material = aMaterial };
 
                         aProperty2D = Modify.SetIdentifiers(aProperty2D, wallType) as ConstantThickness;
                         if (copyCustomData)
@@ -922,7 +944,7 @@ namespace BH.Engine.Revit
                             }
                         }
                             
-                        ConstantThickness aProperty2D = new ConstantThickness { Type = oM.Structural.Properties.PanelType.Slab, Thickness = aThickness, Material = aMaterial };
+                        ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structural.Properties.PanelType.Slab, Thickness = aThickness, Material = aMaterial };
 
                         aProperty2D = Modify.SetIdentifiers(aProperty2D, floorType) as ConstantThickness;
                         if (copyCustomData)
@@ -1037,10 +1059,10 @@ namespace BH.Engine.Revit
                 string materialGrade = familyInstance.GetMaterialGrade();
 
                 oM.Common.Materials.Material aMaterial = familyInstance.StructuralMaterialType.ToBHoM(materialGrade);
-                ISectionDimensions aSectionDimensions;
+                IProfile aSectionDimensions = null;
 
                 string name = familyInstance.Symbol.Name;
-                aSectionDimensions = BH.Engine.Library.Query.Match("UK_SteelSectionDimensions", name) as ISectionDimensions;
+                //aSectionDimensions = BH.Engine.Library.Query.Match("UK_SteelSectionDimensions", name) as IProfile;
 
                 if (aSectionDimensions == null)
                 {
@@ -1052,11 +1074,11 @@ namespace BH.Engine.Revit
                     //TODO: shouldn't we have AluminiumSection and TimberSection at least?
                     if (aMaterial.Type == oM.Common.Materials.MaterialType.Concrete)
                     {
-                        return BHS.Create.ConcreteSectionFromDimensions(aSectionDimensions, aMaterial, name);
+                        return BHS.Create.ConcreteSectionFromProfile(aSectionDimensions, aMaterial, name);
                     }
                     else if (aMaterial.Type == oM.Common.Materials.MaterialType.Steel)
                     {
-                        return BHS.Create.SteelSectionFromDimensions(aSectionDimensions, aMaterial, name);
+                        return BHS.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
                     }
                     else throw new Exception("Material not implemented yet.");
                 }
@@ -1207,6 +1229,7 @@ namespace BH.Engine.Revit
             {
                 case Discipline.Architecture:
                 case Discipline.Environmental:
+                case Discipline.Structural:
                     //TODO: Update constructor for Level to include Name
                     oM.Architecture.Elements.Level aLevel = Architecture.Elements.Create.Level(Level.Elevation * feetToMetre);
                     aLevel.Name = Level.Name;
@@ -1216,14 +1239,14 @@ namespace BH.Engine.Revit
                         aLevel = Modify.SetCustomData(aLevel, Level) as oM.Architecture.Elements.Level;
 
                     return aLevel;
-                case Discipline.Structural:
-                    Storey aStorey = Structure.Create.Storey(Level.Name, Level.Elevation, 0);
+                //case Discipline.Structural:
+                    //Storey aStorey = Structure.Create.Storey(Level.Name, Level.Elevation, 0);
 
-                    aStorey = Modify.SetIdentifiers(aStorey, Level) as Storey;
-                    if (CopyCustomData)
-                        aStorey = Modify.SetCustomData(aStorey, Level) as Storey;
+                    //aStorey = Modify.SetIdentifiers(aStorey, Level) as Storey;
+                    //if (CopyCustomData)
+                    //    aStorey = Modify.SetCustomData(aStorey, Level) as Storey;
 
-                    return aStorey;
+                    //return aStorey;
             }
 
             return null;
@@ -1870,7 +1893,7 @@ namespace BH.Engine.Revit
             return materialGrade;
         }
 
-        private static ISectionDimensions ToBHoMSectionDimensions(this FamilySymbol familySymbol)
+        private static IProfile ToBHoMSectionDimensions(this FamilySymbol familySymbol)
         {
             string familyName = familySymbol.Family.Name;
             StructuralSectionShape sectionShape = (StructuralSectionShape)familySymbol.LookupParameter("Section Shape").AsInteger();
@@ -1879,7 +1902,7 @@ namespace BH.Engine.Revit
             if (aTypes.Count == 0) aTypes.AddRange(Engine.Revit.Query.BHoMTypes(familyName));
             if (aTypes.Count == 0) return null;
 
-            if (aTypes.Contains(typeof(CircleDimensions)))
+            if (aTypes.Contains(typeof(CircleProfile)))
             {
                 double diameter;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -1889,17 +1912,17 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(diameter))
                 {
-                    return new CircleDimensions(diameter);
+                    return BHS.Create.CircleProfile(diameter);
                 }
 
                 double radius = familySymbol.LookupParameterDouble(radiusNames, true);
                 if (!double.IsNaN(radius))
                 {
-                    return new CircleDimensions(radius * 2);
+                    return BHS.Create.CircleProfile(radius * 2);
                 }
             }
 
-            else if (aTypes.Contains(typeof(FabricatedISectionDimensions)))
+            else if (aTypes.Contains(typeof(FabricatedISectionProfile)))
             {
                 double height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -1940,11 +1963,11 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(topFlangeWidth) && !double.IsNaN(botFlangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(topFlangeThickness) && !double.IsNaN(botFlangeThickness))
                 {
-                    return new FabricatedISectionDimensions(height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize);
+                    return BHS.Create.FabricatedISectionProfile(height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize);
                 }
             }
 
-            else if (aTypes.Contains(typeof(RectangleSectionDimensions)))
+            else if (aTypes.Contains(typeof(RectangleProfile)))
             {
                 double height, width, cornerRadius;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -1980,11 +2003,11 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(width))
                 {
-                    return new RectangleSectionDimensions(height, width, cornerRadius);
+                    return BHS.Create.RectangleProfile(height, width, cornerRadius);
                 }
             }
 
-            else if (aTypes.Contains(typeof(StandardAngleSectionDimensions)))
+            else if (aTypes.Contains(typeof(AngleProfile)))
             {
                 double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -2024,11 +2047,11 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness) && !double.IsNaN(rootRadius) && !double.IsNaN(toeRadius))
                 {
-                    return new StandardAngleSectionDimensions(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+                    return BHS.Create.AngleProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
 
-            else if (aTypes.Contains(typeof(StandardBoxDimensions)))
+            else if (aTypes.Contains(typeof(BoxProfile)))
             {
                 double height, width, thickness, outerRadius, innerRadius;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -2055,11 +2078,11 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(thickness) && !double.IsNaN(outerRadius) && !double.IsNaN(innerRadius))
                 {
-                    return new StandardBoxDimensions(height, width, thickness, outerRadius, innerRadius);
+                    return BHS.Create.BoxProfile(height, width, thickness, outerRadius, innerRadius);
                 }
             }
 
-            else if (aTypes.Contains(typeof(StandardChannelSectionDimensions)))
+            else if (aTypes.Contains(typeof(ChannelProfile)))
             {
                 double height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -2099,11 +2122,11 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(flangeWidth) && double.IsNaN(webThickness) && !double.IsNaN(flangeThickness) && !double.IsNaN(rootRadius) && double.IsNaN(toeRadius))
                 {
-                    return new StandardChannelSectionDimensions(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
+                    return BHS.Create.ChannelProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
 
-            else if (aTypes.Contains(typeof(StandardISectionDimensions)))
+            else if (aTypes.Contains(typeof(ISectionProfile)))
             {
                 double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -2142,11 +2165,11 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness) && !double.IsNaN(rootRadius) && !double.IsNaN(toeRadius))
                 {
-                    return new StandardISectionDimensions(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+                    return BHS.Create.ISectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
 
-            else if (aTypes.Contains(typeof(StandardTeeSectionDimensions)))
+            else if (aTypes.Contains(typeof(TSectionProfile)))
             {
                 double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
 
@@ -2196,11 +2219,11 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness) && !double.IsNaN(rootRadius) && !double.IsNaN(toeRadius))
                 {
-                    return new StandardTeeSectionDimensions(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+                    return BHS.Create.TSectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
 
-            else if (aTypes.Contains(typeof(StandardZedSectionDimensions)))
+            else if (aTypes.Contains(typeof(ZSectionProfile)))
             {
                 double height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -2229,11 +2252,11 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(flangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness) && !double.IsNaN(rootRadius) && !double.IsNaN(toeRadius))
                 {
-                    return new StandardZedSectionDimensions(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
+                    return BHS.Create.ZSectionProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
 
-            else if (aTypes.Contains(typeof(TubeDimensions)))
+            else if (aTypes.Contains(typeof(TubeProfile)))
             {
                 double thickness, diameter;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -2256,13 +2279,13 @@ namespace BH.Engine.Revit
                 }
                 if (!double.IsNaN(diameter) && !double.IsNaN(thickness))
                 {
-                    return new TubeDimensions(diameter, thickness);
+                    return BHS.Create.TubeProfile(diameter, thickness);
                 }
 
                 double radius = familySymbol.LookupParameterDouble(radiusNames, true);
                 if (!double.IsNaN(radius) && !double.IsNaN(thickness))
                 {
-                    return new TubeDimensions(radius * 2, thickness);
+                    return BHS.Create.TubeProfile(radius * 2, thickness);
                 }
             }
 

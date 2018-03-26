@@ -130,30 +130,6 @@ namespace BH.Adapter.Revit
 
         /***************************************************/
 
-        private bool Create(Storey storey, bool copyCustomData = true, bool replace = false)
-        {
-            if (storey == null)
-                return false;
-
-            if (replace)
-                Delete(storey);
-
-            List<Element>  aElementList = new FilteredElementCollector(m_Document).OfClass(typeof(Level)).ToList();
-            if (aElementList == null || aElementList.Count < 1)
-            {
-                storey.ToRevit(m_Document, copyCustomData);
-                return true;
-            }
-
-            Element aElement = aElementList.Find(x => x.Name == storey.Name);
-            if (aElement == null)
-            {
-                storey.ToRevit(m_Document, copyCustomData);
-                return true;
-            }
-
-            return false;
-        }
 
         private bool Create(oM.Architecture.Elements.Level level, bool copyCustomData = true, bool replace = false)
         {
