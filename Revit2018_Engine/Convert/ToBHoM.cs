@@ -41,7 +41,10 @@ namespace BH.Engine.Revit
             if (xyz == null)
                 return null;
 
-            return Geometry.Create.Point(xyz.X, xyz.Y, xyz.Z);
+            if (convertUnits)
+                return Geometry.Create.Point(UnitUtils.ConvertFromInternalUnits(xyz.X, DisplayUnitType.DUT_METERS), UnitUtils.ConvertFromInternalUnits(xyz.Y, DisplayUnitType.DUT_METERS), UnitUtils.ConvertFromInternalUnits(xyz.Z, DisplayUnitType.DUT_METERS));
+            else
+                return Geometry.Create.Point(xyz.X, xyz.Y, xyz.Z);
         }
 
         /// <summary>
