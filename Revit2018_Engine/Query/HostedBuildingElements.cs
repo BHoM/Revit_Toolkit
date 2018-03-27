@@ -21,13 +21,14 @@ namespace BH.Engine.Revit
         /// </summary>
         /// <param name="hostObject">Revit Host Object</param>
         /// <param name="face">Revit Face</param>
+        /// <param name="convertUnits">Convert to SI units</param>
         /// <param name="objects">Mapped BHoM objects</param>
         /// <param name="copyCustomData">Copy parameters to BHoM CustomData</param>
         /// <returns name="BuildingElements">BHoM BuildingElements</returns>
         /// <search>
         /// Query, HostedBuildingElements, Revit, Hosted Building Elements, BuildingElements, Element, Face
         /// </search>
-        static public List<BuildingElement> HostedBuildingElements(HostObject hostObject, Face face, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true)
+        static public List<BuildingElement> HostedBuildingElements(HostObject hostObject, Face face, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             if (hostObject == null)
                 return null;
@@ -72,11 +73,11 @@ namespace BH.Engine.Revit
                         continue;
 
                     List<oM.Geometry.Point> aPointList = new List<oM.Geometry.Point>();
-                    aPointList.Add(aXYZ_Max.ToBHoM());
-                    aPointList.Add(aXYZ_U.ToBHoM());
-                    aPointList.Add(aXYZ_Min.ToBHoM());
-                    aPointList.Add(aXYZ_V.ToBHoM());
-                    aPointList.Add(aXYZ_Max.ToBHoM());
+                    aPointList.Add(aXYZ_Max.ToBHoM(convertUnits));
+                    aPointList.Add(aXYZ_U.ToBHoM(convertUnits));
+                    aPointList.Add(aXYZ_Min.ToBHoM(convertUnits));
+                    aPointList.Add(aXYZ_V.ToBHoM(convertUnits));
+                    aPointList.Add(aXYZ_Max.ToBHoM(convertUnits));
 
                     BuildingElementPanel aBuildingElementPanel = Create.BuildingElementPanel(new oM.Geometry.Polyline[] { Geometry.Create.Polyline(aPointList) });
 

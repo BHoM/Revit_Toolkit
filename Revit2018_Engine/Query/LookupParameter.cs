@@ -31,28 +31,30 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static double LookupParameterDouble(this Element element, string parameterName, bool convertToSI = false)
+        public static double LookupParameterDouble(this Element element, string parameterName, bool convertUnits = true)
         {
             double value = double.NaN;
             Parameter p = element.LookupParameter(parameterName);
             if (p != null && p.HasValue)
             {
                 value = p.AsDouble();
-                if (convertToSI) value *= UnitUtils.ConvertFromInternalUnits(1, DisplayUnitType.DUT_METERS);
+                if (convertUnits)
+                    value = Convert.ToSI(value, p.Definition.UnitType);
             }
             return value;
         }
 
         /***************************************************/
 
-        public static double LookupParameterDouble(this Element element, IEnumerable<string> parameterNames, bool convertToSI = false)
+        public static double LookupParameterDouble(this Element element, IEnumerable<string> parameterNames, bool convertUnits = true)
         {
             double value = double.NaN;
             Parameter p = element.LookupParameter(parameterNames);
             if (p != null)
             {
                 value = p.AsDouble();
-                if (convertToSI) value *= UnitUtils.ConvertFromInternalUnits(1, DisplayUnitType.DUT_METERS);
+                if (convertUnits)
+                    value = Convert.ToSI(value, p.Definition.UnitType);
             }
             return value;
         }

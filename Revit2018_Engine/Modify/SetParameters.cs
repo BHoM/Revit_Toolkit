@@ -25,7 +25,7 @@ namespace BH.Engine.Revit
         /// <search>
         /// Modify, BHoM, SetParameters,  BHoMObject, Revit, Element, Set Parameters
         /// </search>
-        public static Element SetParameters(this Element element, BHoMObject bHoMObject, IEnumerable<BuiltInParameter> builtInParametersIgnore = null)
+        public static Element SetParameters(this Element element, BHoMObject bHoMObject, IEnumerable<BuiltInParameter> builtInParametersIgnore = null, bool convertUnits = true)
         {
             if (bHoMObject == null || element == null)
                 return null;

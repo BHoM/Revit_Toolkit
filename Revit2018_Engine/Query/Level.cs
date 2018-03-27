@@ -20,11 +20,12 @@ namespace BH.Engine.Revit
         /// </summary>
         /// <param name="element">Revit Element</param>
         /// <param name="objects">BHoM Objects</param>
+        /// <param name="convertUnits">Convert to SI units</param>
         /// <returns name="Level">BHoM Level</returns>
         /// <search>
         /// Query, Level, Revit, Level, element
         /// </search>
-        static public oM.Architecture.Elements.Level Level(Element element, Dictionary<ElementId, List<BHoMObject>> objects = null)
+        static public oM.Architecture.Elements.Level Level(Element element, Dictionary<ElementId, List<BHoMObject>> objects = null, Discipline discipline = Revit.Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             oM.Architecture.Elements.Level aLevel = null;
             if (objects != null)
@@ -37,7 +38,7 @@ namespace BH.Engine.Revit
 
             if (aLevel == null)
             {
-                aLevel = (element.Document.GetElement(element.LevelId) as Level).ToBHoM() as oM.Architecture.Elements.Level;
+                aLevel = (element.Document.GetElement(element.LevelId) as Level).ToBHoM(discipline, copyCustomData, convertUnits) as oM.Architecture.Elements.Level;
                 if (objects != null)
                     objects.Add(element.LevelId, new List<BHoMObject>(new BHoMObject[] { aLevel }));
             }

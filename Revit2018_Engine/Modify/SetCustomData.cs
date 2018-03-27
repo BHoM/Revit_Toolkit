@@ -23,12 +23,13 @@ namespace BH.Engine.Revit
         /// Copy values from BHoMObject CustomData to Revit Element parameters
         /// </summary>
         /// <param name="bHoMObject">Source BHoMObject</param>
+        /// <param name="convertUnits">Convert to SI units</param>
         /// <param name="element">Destination Revit Element</param>
         /// <returns name="BHoMObject">BHoMObject</returns>
         /// <search>
         /// Modify, BHoM, SetCustomData,  BHoMObject, Revit, Element, Set CustomData
         /// </search>
-        public static BHoMObject SetCustomData(this BHoMObject bHoMObject, Element element)
+        public static BHoMObject SetCustomData(this BHoMObject bHoMObject, Element element, bool convertUnits = true)
         {
             if (bHoMObject == null || element == null)
                 return bHoMObject;
@@ -45,6 +46,8 @@ namespace BH.Engine.Revit
                 {
                     case StorageType.Double:
                         aValue = aParameter.AsDouble();
+                        if(convertUnits)
+                            aValue = Convert.ToSI((double)aValue, aParameter.Definition.UnitType);
                         break;
                     case StorageType.ElementId:
                         ElementId aElementId = aParameter.AsElementId();
