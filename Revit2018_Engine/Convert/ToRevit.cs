@@ -28,60 +28,69 @@ namespace BH.Engine.Revit
         /// Gets Revit Point from BHoM Point
         /// </summary>
         /// <param name="point">BHoM Point</param>
+        /// <param name="convertUnits">Convert to Revit internal units</param>
         /// <returns name="Point">Revit Point</returns>
         /// <search>
         /// Convert, ToRevit, BHoM Point, Revit Point, XYZ 
         /// </search>
-        public static XYZ ToRevit(this oM.Geometry.Point point)
+        public static XYZ ToRevit(this oM.Geometry.Point point, bool convertUnits = true)
         {
-            return new XYZ(point.X, point.Y, point.Z);
+            if (convertUnits)
+                return new XYZ(UnitUtils.ConvertToInternalUnits(point.X, DisplayUnitType.DUT_METERS), UnitUtils.ConvertToInternalUnits(point.Y, DisplayUnitType.DUT_METERS), UnitUtils.ConvertToInternalUnits(point.Z, DisplayUnitType.DUT_METERS));
+            else
+                return new XYZ(point.X, point.Y, point.Z);
         }
 
         /// <summary>
         /// Gets Revit Point (XYZ) from BHoM Vector
         /// </summary>
         /// <param name="vector">BHoM Point</param>
+        /// <param name="convertUnits">Convert to Revit internal units</param>
         /// <returns name="Point">Revit Point (XYZ)</returns>
         /// <search>
         /// Convert, ToRevit, BHoM Vector, Revit Point, XYZ 
         /// </search>
-        public static XYZ ToRevit(this Vector vector)
+        public static XYZ ToRevit(this Vector vector, bool convertUnits = true)
         {
-            return new XYZ(vector.X, vector.Y, vector.Z);
+            if (convertUnits)
+                return new XYZ(UnitUtils.ConvertToInternalUnits(vector.X, DisplayUnitType.DUT_METERS), UnitUtils.ConvertToInternalUnits(vector.Y, DisplayUnitType.DUT_METERS), UnitUtils.ConvertToInternalUnits(vector.Z, DisplayUnitType.DUT_METERS));
+            else
+                return new XYZ(vector.X, vector.Y, vector.Z);
         }
 
         /// <summary>
         /// Gets Revit Curve from BHoM ICurve
         /// </summary>
         /// <param name="curve">BHoM ICurve</param>
+        /// <param name="convertUnits">Convert to Revit internal units</param>
         /// <returns name="Curve">Revit Curve</returns>
         /// <search>
         /// Convert, ToRevit, BHoM ICurve, Revit Curve 
         /// </search>
-        public static Curve ToRevit(this ICurve curve)
+        public static Curve ToRevit(this ICurve curve, bool convertUnits = true)
         {
             if (curve is oM.Geometry.Line)
             {
                 oM.Geometry.Line aLine = curve as oM.Geometry.Line;
-                return Autodesk.Revit.DB.Line.CreateBound(ToRevit(aLine.Start), ToRevit(aLine.End));
+                return Autodesk.Revit.DB.Line.CreateBound(ToRevit(aLine.Start, convertUnits), ToRevit(aLine.End, convertUnits));
             }
 
             if (curve is oM.Geometry.Arc)
             {
                 oM.Geometry.Arc aArc = curve as oM.Geometry.Arc;
-                return Autodesk.Revit.DB.Arc.Create(ToRevit(aArc.Start), ToRevit(aArc.End), ToRevit(aArc.Middle));
+                return Autodesk.Revit.DB.Arc.Create(ToRevit(aArc.Start, convertUnits), ToRevit(aArc.End, convertUnits), ToRevit(aArc.Middle, convertUnits));
             }
 
             if (curve is NurbCurve)
             {
                 NurbCurve aNurbCurve = curve as NurbCurve;
-                return NurbSpline.Create(HermiteSpline.Create(aNurbCurve.ControlPoints.Cast<oM.Geometry.Point>().ToList().ConvertAll(x => ToRevit(x)), false));
+                return NurbSpline.Create(HermiteSpline.Create(aNurbCurve.ControlPoints.Cast<oM.Geometry.Point>().ToList().ConvertAll(x => ToRevit(x, convertUnits)), false));
             }
 
             if (curve is oM.Geometry.Ellipse)
             {
                 oM.Geometry.Ellipse aEllipse = curve as oM.Geometry.Ellipse;
-                return Autodesk.Revit.DB.Ellipse.CreateCurve(ToRevit(aEllipse.Centre), aEllipse.Radius1, aEllipse.Radius2, ToRevit(aEllipse.Axis1), ToRevit(aEllipse.Axis2), 0, 1);
+                return Autodesk.Revit.DB.Ellipse.CreateCurve(ToRevit(aEllipse.Centre, convertUnits), aEllipse.Radius1, aEllipse.Radius2, ToRevit(aEllipse.Axis1, convertUnits), ToRevit(aEllipse.Axis2, convertUnits), 0, 1);
             }
 
             return null;
@@ -91,18 +100,19 @@ namespace BH.Engine.Revit
         /// Gets Revit CurveArray from BHoM PolyCurve
         /// </summary>
         /// <param name="polyCurve">BHoM PolyCurve</param>
+        /// <param name="convertUnits">Convert to Revit internal units</param>
         /// <returns name="CurveArray">Revit CurveArray</returns>
         /// <search>
         /// Convert, ToRevit, BHoM PolyCurve, Revit CurveArray 
         /// </search>
-        public static CurveArray ToRevit(this PolyCurve polyCurve)
+        public static CurveArray ToRevit(this PolyCurve polyCurve, bool convertUnits = true)
         {
             if (polyCurve == null)
                 return null;
 
             CurveArray aCurveArray = new CurveArray();
             foreach (ICurve aICurve in polyCurve.Curves)
-                aCurveArray.Append(aICurve.ToRevit());
+                aCurveArray.Append(aICurve.ToRevit(convertUnits));
 
             return aCurveArray;
         }
@@ -112,12 +122,13 @@ namespace BH.Engine.Revit
         /// </summary>
         /// <param name="buildingElementProperties">BHoM BuildingElementProperties</param>
         /// <param name="document">Revit Document</param>
+        /// <param name="convertUnits">Convert to Revit internal units</param>
         /// <param name="copyCustomData">Copy Custom Data - all parameters values copied to BHoMObject CustomData if set to true</param>
         /// <returns name="ElementType">Revit ElementType</returns>
         /// <search>
         /// Convert, ToRevit, BHoM BuildingElementProperties, Revit ElementType
         /// </search>
-        public static ElementType ToRevit(this BuildingElementProperties buildingElementProperties, Document document, bool copyCustomData = true)
+        public static ElementType ToRevit(this BuildingElementProperties buildingElementProperties, Document document, bool copyCustomData = true, bool convertUnits = true)
         {
             if (buildingElementProperties == null || document == null)
                 return null;
@@ -133,7 +144,7 @@ namespace BH.Engine.Revit
             aElementType = aElementType.Duplicate(buildingElementProperties.Name);
 
             if (copyCustomData)
-                Modify.SetParameters(aElementType, buildingElementProperties);
+                Modify.SetParameters(aElementType, buildingElementProperties, null, convertUnits);
                 
 
             return aElementType;
@@ -143,13 +154,14 @@ namespace BH.Engine.Revit
         /// Gets Revit Element from BHoM BuildingElement
         /// </summary>
         /// <param name="buildingElement">BHoM PolyCurve</param>
+        /// <param name="convertUnits">Convert to Revit internal units</param>
         /// <param name="document">Revit Document</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="CurveArray">Revit CurveArray</returns>
         /// <search>
         /// Convert, ToRevit, BHoM BuildingElement, Revit Element 
         /// </search>
-        public static Element ToRevit(this BuildingElement buildingElement, Document document, bool copyCustomData = true)
+        public static Element ToRevit(this BuildingElement buildingElement, Document document, bool copyCustomData = true, bool convertUnits = true)
         {
             if (buildingElement == null || buildingElement.BuildingElementProperties == null || document == null)
                 return null;
@@ -188,9 +200,9 @@ namespace BH.Engine.Revit
                         BuildingElementPanel aBuildingElementPanel = buildingElement.BuildingElementGeometry as BuildingElementPanel;
                         
                         if(aElementType != null)
-                            aElement = document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(), aElementType as FloorType, aLevel, false);
+                            aElement = document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(convertUnits), aElementType as FloorType, aLevel, false);
                         else
-                            aElement = document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(), false);                            
+                            aElement = document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(convertUnits), false);                            
                     }
                     aBuiltInParameters = new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM };
                     break;
@@ -202,14 +214,14 @@ namespace BH.Engine.Revit
                         BuildingElementPanel aBuildingElementPanel = buildingElement.BuildingElementGeometry as BuildingElementPanel;
                         ModelCurveArray aModelCurveArray = new ModelCurveArray();
                         if (aElementType != null)
-                            aElement = document.Create.NewFootPrintRoof(aBuildingElementPanel.PolyCurve.ToRevit(), aLevel, aElementType as RoofType, out aModelCurveArray);
+                            aElement = document.Create.NewFootPrintRoof(aBuildingElementPanel.PolyCurve.ToRevit(convertUnits), aLevel, aElementType as RoofType, out aModelCurveArray);
                     }
                     break;
                 case BuildingElementType.Wall:
                     ICurve aICurve = buildingElement.BuildingElementGeometry.Bottom();
                     if (aICurve == null)
                         return null;
-                    aElement = Wall.Create(document, ToRevit(aICurve), aLevel.Id, false);
+                    aElement = Wall.Create(document, ToRevit(aICurve, convertUnits), aLevel.Id, false);
                     if (aElementType != null)
                         aElement.ChangeTypeId(aElementType.Id);
 
@@ -218,50 +230,29 @@ namespace BH.Engine.Revit
             }
 
             if (copyCustomData)
-                Modify.SetParameters(aElement, buildingElement, aBuiltInParameters);
+                Modify.SetParameters(aElement, buildingElement, aBuiltInParameters, convertUnits);
 
             return aElement;
         }
-
-        //TODO: Remove this
-        /// <summary>
-        /// Gets Revit Level from BHoM Storey
-        /// </summary>
-        /// <param name="storey">BHoM Storey</param>
-        /// <param name="document">Revit Document</param>
-        /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
-        /// <returns name="Level">Revit Level</returns>
-        /// <search>
-        /// Convert, ToRevit, BHoM Storey, Revit Level 
-        /// </search>
-        //public static Level ToRevit(this Storey storey, Document document, bool copyCustomData = true)
-        //{
-        //    Element aElement = Level.Create(document, storey.Elevation);
-        //    aElement.Name = storey.Name;
-
-        //    if (copyCustomData)
-        //        Modify.SetParameters(aElement, storey, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
-
-        //    return aElement as Level;
-        //}
 
         /// <summary>
         /// Gets Revit Level from BHoM Storey
         /// </summary>
         /// <param name="level">BHoM Level</param>
+        /// <param name="convertUnits">Convert to Revit internal units</param>
         /// <param name="document">Revit Document</param>
         /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
         /// <returns name="Level">Revit Level</returns>
         /// <search>
         /// Convert, ToRevit, BHoM Storey, Revit Level 
         /// </search>
-        public static Level ToRevit(this oM.Architecture.Elements.Level level, Document document, bool copyCustomData = true)
+        public static Level ToRevit(this oM.Architecture.Elements.Level level, Document document, bool copyCustomData = true, bool convertUnits = true)
         {
             Element aElement = Level.Create(document, level.Elevation);
             aElement.Name = level.Name;
 
             if (copyCustomData)
-                Modify.SetParameters(aElement, level, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
+                Modify.SetParameters(aElement, level, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV }, convertUnits);
 
             return aElement as Level;
         }
@@ -277,7 +268,7 @@ namespace BH.Engine.Revit
         /// </search>
         public static Material ToRevit(this IMaterial material, Document document)
         {
-            ElementId aElementId = Autodesk.Revit.DB.Material.Create(document, material.Name);
+            ElementId aElementId = Material.Create(document, material.Name);
             return document.GetElement(aElementId) as Material;
         }
 
@@ -285,32 +276,34 @@ namespace BH.Engine.Revit
         /// Gets Revit CompoundStructureLayer from BHoM ConstructionLayer
         /// </summary>
         /// <param name="constructionLayer">BHoM ConstructionLayer</param>
+        /// <param name="convertUnits">Convert to Revit internal units</param>
         /// <param name="document">Revit Document</param>
         /// <returns name="CompoundStructureLayer">Revit CompoundStructureLayer</returns>
         /// <search>
         /// Convert, ToRevit, BHoM ConstructionLayer, Revit CompoundStructureLayer
         /// </search>
-        public static CompoundStructureLayer ToRevit(this ConstructionLayer constructionLayer, Document document)
+        public static CompoundStructureLayer ToRevit(this ConstructionLayer constructionLayer, Document document, bool convertUnits = true)
         {
             MaterialFunctionAssignment aMaterialFunctionAssignment = GetMaterialFunctionAssignment(constructionLayer);
 
-            return new CompoundStructureLayer(constructionLayer.Thickness, aMaterialFunctionAssignment, constructionLayer.Material.ToRevit(document).Id);
+            return new CompoundStructureLayer(UnitUtils.ConvertToInternalUnits(constructionLayer.Thickness, DisplayUnitType.DUT_METERS), aMaterialFunctionAssignment, constructionLayer.Material.ToRevit(document).Id);
         }
 
         /// <summary>
         /// Gets Revit CompoundStructure from BHoM ConstructionLayers
         /// </summary>
         /// <param name="constructionLayers">BHoM ConstructionLayers collection</param>
+        /// <param name="convertUnits">Convert to Revit internal units</param>
         /// <param name="document">Revit Document</param>
         /// <returns name="CompoundStructure">Revit CompoundStructure</returns>
         /// <search>
         /// Convert, ToRevit, BHoM ConstructionLayer, Revit CompoundStructure, ConstructionLayers
         /// </search>
-        public static CompoundStructure ToRevit(IEnumerable<ConstructionLayer> constructionLayers, Document document)
+        public static CompoundStructure ToRevit(IEnumerable<ConstructionLayer> constructionLayers, Document document, bool convertUnits = true)
         {
             List<CompoundStructureLayer> aCompoundStructureLayerList = new List<CompoundStructureLayer>();
             foreach (ConstructionLayer aConstructionLayer in constructionLayers)
-                aCompoundStructureLayerList.Add(aConstructionLayer.ToRevit(document));
+                aCompoundStructureLayerList.Add(aConstructionLayer.ToRevit(document, convertUnits));
 
             return CompoundStructure.CreateSimpleCompoundStructure(aCompoundStructureLayerList);
         }
