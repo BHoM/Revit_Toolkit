@@ -367,7 +367,7 @@ namespace BH.Engine.Revit
             }
 
 
-            oM.Architecture.Elements.Level aLevel = Query.Level(element, objects);
+            oM.Architecture.Elements.Level aLevel = Query.Level(element, objects, Discipline.Environmental, copyCustomData, convertUnits);
             if (aLevel == null)
                 return null;
 
@@ -421,7 +421,7 @@ namespace BH.Engine.Revit
 
                     aBuilding = Modify.SetIdentifiers(aBuilding, document.ProjectInformation) as Building;
                     if (copyCustomData)
-                        aBuilding = Modify.SetCustomData(aBuilding, document.ProjectInformation) as Building;
+                        aBuilding = Modify.SetCustomData(aBuilding, document.ProjectInformation, convertUnits) as Building;
 
                     //-------- Create BHoM building structure -----
 
@@ -469,7 +469,7 @@ namespace BH.Engine.Revit
                         Dictionary<string, EnergyAnalysisSurface> aEnergyAnalysisSurfaces = new Dictionary<string, EnergyAnalysisSurface>();
                         foreach (EnergyAnalysisSpace aEnergyAnalysisSpace in aEnergyAnalysisSpaces)
                         {
-                            Space aSpace = aEnergyAnalysisSpace.ToBHoM(aObjects, discipline, copyCustomData) as Space;
+                            Space aSpace = aEnergyAnalysisSpace.ToBHoM(aObjects, discipline, copyCustomData, convertUnits) as Space;
                             AddBHoMObject(aSpace, aObjects);
 
                             foreach (EnergyAnalysisSurface aEnergyAnalysisSurface in aEnergyAnalysisSpace.GetAnalyticalSurfaces())
@@ -759,7 +759,7 @@ namespace BH.Engine.Revit
                         BuildingElementProperties aBuildingElementProperties = (ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType).ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
                         foreach (BuildingElementPanel aBuildingElementPanel in ToBHoMBuildingElementPanels(ceiling))
                         {
-                            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aBuildingElementPanel, ToBHoM(ceiling.Document.GetElement(ceiling.LevelId) as Level, discipline, convertUnits) as BH.oM.Architecture.Elements.Level);
+                            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aBuildingElementPanel, ToBHoM(ceiling.Document.GetElement(ceiling.LevelId) as Level, discipline, convertUnits) as oM.Architecture.Elements.Level);
 
                             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, ceiling) as BuildingElement;
                             if (copyCustomData)
@@ -792,7 +792,6 @@ namespace BH.Engine.Revit
                 case Discipline.Environmental:
                     {
                         // we need the same like this for walls?
-
 
                         List<BHoMObject> aResult = new List<BHoMObject>();
                         BuildingElementProperties aBuildingElementProperties = floor.FloorType.ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
@@ -851,7 +850,7 @@ namespace BH.Engine.Revit
 
                         List<BHoMObject> aResult = new List<BHoMObject>();
                         BuildingElementProperties aBuildingElementProperties = roofBase.RoofType.ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
-                        foreach (BuildingElementPanel aBuildingElementPanel in ToBHoMBuildingElementPanels(roofBase))
+                        foreach (BuildingElementPanel aBuildingElementPanel in ToBHoMBuildingElementPanels(roofBase, convertUnits))
                         {
                             BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aBuildingElementPanel, ToBHoM(roofBase.Document.GetElement(roofBase.LevelId) as Level, discipline, convertUnits) as BH.oM.Architecture.Elements.Level);
 
@@ -1479,7 +1478,7 @@ namespace BH.Engine.Revit
                             Level = aLevel,
                             BuildingElements = aBuildingElmementList,
                             Name = spatialElement.Name,
-                            Location = (spatialElement.Location as LocationPoint).ToBHoM()
+                            Location = (spatialElement.Location as LocationPoint).ToBHoM(convertUnits)
 
                         };
 
@@ -1489,7 +1488,7 @@ namespace BH.Engine.Revit
 
                         aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
                         if (copyCustomData)
-                            aSpace = Modify.SetCustomData(aSpace, spatialElement) as Space;
+                            aSpace = Modify.SetCustomData(aSpace, spatialElement, convertUnits) as Space;
 
                         return aSpace;
                     }
