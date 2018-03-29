@@ -93,20 +93,24 @@ namespace BH.Adapter.Revit
             List<BHoMObject> aResult = null;
             if (aElement is Floor)
             {
-                aResult = Engine.Revit.Convert.ToBHoM(aElement as Floor, discipline, true);
+                aResult = Engine.Revit.Convert.ToBHoM(aElement as Floor, discipline, true, true);
             }
             else if (aElement is RoofBase)
             {
-                aResult = Engine.Revit.Convert.ToBHoM(aElement as RoofBase, discipline, true);
+                aResult = Engine.Revit.Convert.ToBHoM(aElement as RoofBase, discipline, true, true);
+            }
+            else if (aElement is Wall)
+            {
+                aResult = Engine.Revit.Convert.ToBHoM(aElement as Wall, discipline, true, true);
             }
             else if (aElement is SpatialElement)
             {
                 aResult = new List<BHoMObject>();
-                aResult.Add(Engine.Revit.Convert.ToBHoM(aElement as SpatialElement, objects, discipline, true));
+                aResult.Add(Engine.Revit.Convert.ToBHoM(aElement as SpatialElement, objects, discipline, true, true));
             }
             else
             {
-                object aObject = Engine.Revit.Convert.ToBHoM(aElement as dynamic, discipline, true);
+                object aObject = Engine.Revit.Convert.ToBHoM(aElement as dynamic, discipline, true, true);
 
                 aResult = new List<BHoMObject>();
                 if (aObject is BHoMObject)
