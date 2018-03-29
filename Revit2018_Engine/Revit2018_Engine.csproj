@@ -51,9 +51,9 @@
       <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Structure_Engine">
+    <Reference Include="Structure_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Engine\Build\Structure_Engine.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -84,6 +84,7 @@
     <Compile Include="Query\Element.cs" />
     <Compile Include="Query\ElementId.cs" />
     <Compile Include="Query\ElementIds.cs" />
+    <Compile Include="Query\Outline.cs" />
     <Compile Include="Query\SpatialElementId.cs" />
     <Compile Include="Query\SpatialElementIds.cs" />
     <Compile Include="Query\HostedBuildingElements.cs" />
