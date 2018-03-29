@@ -12,6 +12,7 @@ using BH.oM.Environmental.Elements;
 
 using BH.Engine.Environment;
 using BHS = BH.Engine.Structure;
+using BHG = BH.Engine.Geometry;
 using BH.oM.Base;
 using Autodesk.Revit.DB.Structure.StructuralSections;
 using Autodesk.Revit.DB.Analysis;
@@ -123,6 +124,27 @@ namespace BH.Engine.Revit
         public static oM.Geometry.ICurve ToBHoM(this Autodesk.Revit.DB.Edge edge, bool convertUnits = true)
         {
             return ToBHoM(edge.AsCurve(), convertUnits);
+        }
+
+        public static List<oM.Geometry.ICurve> ToBHoM(this EdgeArray edgeArray, bool convertUnits = true)
+        {
+            List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
+            foreach (Autodesk.Revit.DB.Edge aEdge in edgeArray)
+            {
+                result.Add(aEdge.ToBHoM(convertUnits));
+            }
+
+            return result;
+        }
+
+        public static List<List<oM.Geometry.ICurve>> ToBHoM(this EdgeArrayArray edgeArray, bool convertUnits = true)
+        {
+            List<List<oM.Geometry.ICurve>> result = new List<List<oM.Geometry.ICurve>>();
+            foreach (EdgeArray ea in edgeArray)
+            {
+                result.Add(ea.ToBHoM(convertUnits));
+            }
+            return result;
         }
 
         /// <summary>
@@ -246,10 +268,9 @@ namespace BH.Engine.Revit
         /// </search>
         public static BuildingElementCurve ToBHoMBuildingElementCurve(this Wall wall, Discipline discipline = Discipline.Environmental, bool convertUnits = true)
         {
-            LocationCurve aLocationCurve = wall.Location as LocationCurve;
             BuildingElementCurve aBuildingElementCurve = new BuildingElementCurve
             {
-                Curve = ToBHoM(aLocationCurve, convertUnits)
+                Curve = (wall.Location as LocationCurve).ToBHoM(convertUnits)
             };
             return aBuildingElementCurve;
         }
@@ -615,22 +636,29 @@ namespace BH.Engine.Revit
                         StructuralType structuralType = ((FamilyInstance)familyInstance).StructuralType;
                         if (structuralType == StructuralType.Beam || structuralType == StructuralType.Brace || structuralType == StructuralType.Column)
                         {
-                            //TODO: Change from analytical lines to model curves and allow for other things that only lines (the latter needs update in the BHoM 26/03/2018)
-                            AnalyticalModel analyticalModel = familyInstance.GetAnalyticalModel();
-                            if (analyticalModel == null) return null;
-
-                            //TODO: use convertUnits
-                            // oM.Geometry.Line barCurve = analyticalModel.GetCurve().ToBHoM(convertUnits); ???
-                            oM.Geometry.Line barCurve = Geometry.Modify.Scale(analyticalModel.GetCurve().ToBHoM() as oM.Geometry.Line, origin, feetToMetreVector);
-                            ISectionProperty aSectionProperty = familyInstance.ToBHoMSection(barCurve, copyCustomData) as ISectionProperty;
-
-                            double rotation;
-                            if (familyInstance.Location is LocationPoint)
+                            //TODO: switch from explicit Line to ICurve
+                            Location location = familyInstance.Location;
+                            double rotation = double.NaN;
+                            oM.Geometry.Line barCurve = null;
+                            if (location is LocationPoint)
                             {
+                                XYZ loc = (location as LocationPoint).Point;
+                                double baseLevel = (familyInstance.Document.GetElement(familyInstance.LookupParameter("Base Level").AsElementId()) as Level).ProjectElevation;
+                                double topLevel = (familyInstance.Document.GetElement(familyInstance.LookupParameter("Top Level").AsElementId()) as Level).ProjectElevation;
+                                double baseOffset = familyInstance.LookupParameter("Base Offset").AsDouble();
+                                double topOffset = familyInstance.LookupParameter("Top Offset").AsDouble();
+                                XYZ baseNode = new XYZ(loc.X, loc.Y, baseLevel + baseOffset);
+                                XYZ topNode = new XYZ(loc.X, loc.Y, topLevel + topOffset);
+                                barCurve = new oM.Geometry.Line { Start = baseNode.ToBHoM(true), End = topNode.ToBHoM(true) };
                                 int multiplier = familyInstance.FacingOrientation.DotProduct(new XYZ(1, 0, 0)) < 0 ? 1 : -1;
                                 rotation = familyInstance.FacingOrientation.AngleTo(new XYZ(0, 1, 0)) * multiplier;
                             }
-                            else rotation = -familyInstance.LookupParameter("Cross-Section Rotation").AsDouble();
+                            else if (location is LocationCurve)
+                            {
+                                barCurve = (location as LocationCurve).Curve.ToBHoM(convertUnits) as oM.Geometry.Line;
+                                rotation = -familyInstance.LookupParameter("Cross-Section Rotation").AsDouble();
+                            }
+                            ISectionProperty aSectionProperty = familyInstance.ToBHoMSection(barCurve, copyCustomData) as ISectionProperty;
 
                             StructuralUsage1D usage;
 
@@ -653,7 +681,7 @@ namespace BH.Engine.Revit
                                     break;
                             }
 
-                            //TODO: Allow varying orientation angle and varying cross sections (tapers etc)
+                            //TODO: Allow varying orientation angle and varying cross sections (tapers etc) - TBC
                             ConstantFramingElementProperty property = BHS.Create.ConstantFramingElementProperty(aSectionProperty, rotation, aSectionProperty.Name);
                             FramingElement element = BHS.Create.FramingElement(barCurve, property, usage, familyInstance.Name);
 
@@ -698,10 +726,9 @@ namespace BH.Engine.Revit
         /// Convert, ToBHoM, BHoM BuildingElement, Revit Wall
         /// </search>
         /// 
-        //TODO: split this to multiple panels? if a panel is separate here, it will cause issues in laundry? how about pulling back to revit?
-        public static BHoMObject ToBHoM(this Wall wall, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static List<BHoMObject> ToBHoM(this Wall wall, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
-            switch(discipline)
+            switch (discipline)
             {
                 case Discipline.Environmental:
                     {
@@ -714,7 +741,7 @@ namespace BH.Engine.Revit
                         if (copyCustomData)
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, wall, convertUnits) as BuildingElement;
 
-                        return aBuildingElement;
+                        return new List<BHoMObject> { aBuildingElement };
                     }
 
                 case Discipline.Structural:
@@ -722,16 +749,28 @@ namespace BH.Engine.Revit
                         string materialGrade = wall.GetMaterialGrade();
 
                         IProperty2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, convertUnits, materialGrade) as IProperty2D; //Old: IProperty2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, materialGrade) as IProperty2D;
-                        List<oM.Geometry.Polyline> outlines = wall.GetBHOutlines();
+                        List<List<oM.Geometry.PolyCurve>> outlines = wall.Outlines();
 
-                        PanelPlanar aPanelPlanar = BHS.Create.PanelPlanar(outlines)[0];       // this is a temporary cheat!
-                        aPanelPlanar.Property = aProperty2D;
+                        List<BHoMObject> aResult = new List<BHoMObject>();
 
-                        aPanelPlanar = Modify.SetIdentifiers(aPanelPlanar, wall) as PanelPlanar;
-                        if (copyCustomData)
-                            aPanelPlanar = Modify.SetCustomData(aPanelPlanar, wall, convertUnits) as PanelPlanar;
+                        foreach (List<oM.Geometry.PolyCurve> panelOutlines in outlines)
+                        {
+                            aResult.AddRange(BHS.Create.PanelPlanar(panelOutlines.ConvertAll(c => c as oM.Geometry.ICurve)));
+                        }
 
-                        return aPanelPlanar;
+                        for (int i = 0; i < aResult.Count; i++)
+                        {
+                            PanelPlanar panel = aResult[i] as PanelPlanar;
+                            panel.Property = aProperty2D;
+                            panel = Modify.SetIdentifiers(panel, wall) as PanelPlanar;
+
+                            if (copyCustomData)
+                            {
+                                panel = Modify.SetCustomData(panel, wall, convertUnits) as PanelPlanar;
+                            }
+                        }
+
+                        return aResult;
                     }
             }
 
@@ -791,8 +830,6 @@ namespace BH.Engine.Revit
             {
                 case Discipline.Environmental:
                     {
-                        // we need the same like this for walls?
-
                         List<BHoMObject> aResult = new List<BHoMObject>();
                         BuildingElementProperties aBuildingElementProperties = floor.FloorType.ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
                         foreach (BuildingElementPanel aBuildingElementPanel in ToBHoMBuildingElementPanels(floor, convertUnits))
@@ -812,26 +849,26 @@ namespace BH.Engine.Revit
                         string materialGrade = floor.GetMaterialGrade();
 
                         IProperty2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData, convertUnits, materialGrade) as IProperty2D; // Old: IProperty2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData, materialGrade) as IProperty2D;
-                        List<oM.Geometry.PolyCurve> outlines = floor.GetBHOutlines();
+                        List<List<oM.Geometry.PolyCurve>> outlines = floor.Outlines();
 
                         List<BHoMObject> aResult = new List<BHoMObject>();
 
-                        List<oM.Structural.Elements.Opening> openings = new List<oM.Structural.Elements.Opening>();
-                        for (int i = 1; i < outlines.Count; i++)
+                        foreach(List<oM.Geometry.PolyCurve> panelOutlines in outlines)
                         {
-                            openings.Add(BH.Engine.Structure.Create.Opening(outlines[i]));
+                            aResult.AddRange(BHS.Create.PanelPlanar(panelOutlines.ConvertAll(c => c as oM.Geometry.ICurve)));
                         }
-                        PanelPlanar PanelPlanar = BHS.Create.PanelPlanar(outlines[0] as oM.Geometry.ICurve, openings);
-                              
-                        PanelPlanar.Property = aProperty2D;
-                        PanelPlanar = Modify.SetIdentifiers(PanelPlanar, floor) as PanelPlanar;
 
-                        if (copyCustomData)
+                        for (int i = 0; i < aResult.Count; i++)
                         {
-                            PanelPlanar = Modify.SetCustomData(PanelPlanar, floor, convertUnits) as PanelPlanar;
-                        }                            
-                        aResult.Add(PanelPlanar);
+                            PanelPlanar panel = aResult[i] as PanelPlanar;
+                            panel.Property = aProperty2D;
+                            panel = Modify.SetIdentifiers(panel, floor) as PanelPlanar;
 
+                            if (copyCustomData)
+                            {
+                                panel = Modify.SetCustomData(panel, floor, convertUnits) as PanelPlanar;
+                            }
+                        }
                         return aResult;
                     }
             }
@@ -1085,7 +1122,7 @@ namespace BH.Engine.Revit
                 IProfile aSectionDimensions = null;
 
                 string name = familyInstance.Symbol.Name;
-                //aSectionDimensions = BH.Engine.Library.Query.Match("UK_SteelSectionDimensions", name) as IProfile;
+                aSectionDimensions = BH.Engine.Library.Query.Match("SectionProfiles", name) as IProfile;
 
                 if (aSectionDimensions == null)
                 {
@@ -1138,7 +1175,6 @@ namespace BH.Engine.Revit
                             }
                         }
                     }
-                    profileCurves = profileCurves.Select(c => Geometry.Modify.IScale(c, origin, feetToMetreVector)).ToList();
 
                     //TODO: shouldn't we have AluminiumSection and TimberSection at least?
                     if (aMaterial.Type == oM.Common.Materials.MaterialType.Concrete)
@@ -1715,10 +1751,8 @@ namespace BH.Engine.Revit
             {
                 case Discipline.Architecture:
                     {
-                        Line gridLine = grid.Curve as Line;
-                        //TODO: use convertUnits
-                        // oM.Architecture.Elements.Grid aGrid = Architecture.Elements.Create.Grid(gridLine.ToBHoM(convertUnits)); ???
-                        oM.Architecture.Elements.Grid aGrid = Architecture.Elements.Create.Grid(Geometry.Modify.IScale(gridLine.ToBHoM(), origin, feetToMetreVector));
+                        Curve gridLine = grid.Curve;
+                        oM.Architecture.Elements.Grid aGrid = Architecture.Elements.Create.Grid(gridLine.ToBHoM(convertUnits));
                         aGrid.Name = grid.Name;
                         return aGrid;
                     }
@@ -1772,142 +1806,6 @@ namespace BH.Engine.Revit
 
             foreach (BHoMObject aBHoMObject in bHoMObjects)
                 AddBHoMObject(aBHoMObject, objects);
-        }
-
-        //TODO: Move to Revit2018_Engine.Query
-        private static List<oM.Geometry.Polyline> GetBHOutlines(this Wall wall)
-        {
-            List<Curve> curves;
-            if (wall.GetAnalyticalModel() != null)
-            {
-                curves = wall.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
-            }
-            else
-            {
-                curves = new List<Curve>();
-                LocationCurve aLocationCurve = wall.Location as LocationCurve;
-                XYZ direction = (aLocationCurve.Curve as Line).Direction;
-                XYZ normal = new XYZ(-direction.Y, direction.X, 0);
-                foreach (GeometryObject obj in wall.get_Geometry(new Options()))
-                {
-                    if (obj is Solid)
-                    {
-                        foreach (PlanarFace face in (obj as Solid).Faces)
-                        {
-                            if (face.FaceNormal.IsAlmostEqualTo(normal))
-                            {
-                                EdgeArrayArray aEdgeArrayArray = face.EdgeLoops;
-                                if (aEdgeArrayArray != null && aEdgeArrayArray.Size > 0)
-                                {
-                                    for (int i = 0; i < aEdgeArrayArray.Size; i++)
-                                    {
-                                        EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
-                                        foreach (Autodesk.Revit.DB.Edge aEdge in aEdgeArray)
-                                        {
-                                            Curve aCurve = aEdge.AsCurve();
-                                            if (aCurve != null)
-                                                curves.Add(aCurve);
-                                        }
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            List<oM.Geometry.ICurve> crvs = curves.Select(c => c.ToBHoM()).ToList();
-            List<oM.Geometry.Line> lines = crvs.Discretize(8).Select(l => BH.Engine.Geometry.Modify.Scale(l, origin, feetToMetreVector)).ToList();
-            return Geometry.Modify.Join(lines);
-        }
-
-        /***************************************************/
-
-        //TODO: Move to Revit2018_Engine.Query
-        private static List<oM.Geometry.PolyCurve> GetBHOutlines(this Floor floor, bool convertUnits = true)
-        {
-            List<Curve> curves = new List<Curve>() ;
-            if (floor.GetAnalyticalModel() != null)
-            {
-                curves = floor.GetAnalyticalModel().GetCurves(AnalyticalCurveType.ActiveCurves).ToList();
-            }
-            else
-            {
-                curves = new List<Curve>();
-                foreach (GeometryObject obj in floor.get_Geometry(new Options()))
-                {
-                    if (obj is Solid)
-                    {
-                        PlanarFace top = Query.Top(obj as Solid);
-                        EdgeArrayArray aEdgeArrayArray = top.EdgeLoops;                                                            
-                        
-                        if (aEdgeArrayArray != null && aEdgeArrayArray.Size > 0)
-                        {
-                            for (int i = 0; i < aEdgeArrayArray.Size; i++)
-                            {
-                                EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
-                                foreach (Autodesk.Revit.DB.Edge aEdge in aEdgeArray)
-                                {
-                                    Curve aCurve = aEdge.AsCurve();
-                                    if (aCurve != null)
-                                        curves.Add(aCurve);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            List<oM.Geometry.PolyCurve> joinedCurves = new List<oM.Geometry.PolyCurve>();
-
-            oM.Geometry.PolyCurve pCurve = new oM.Geometry.PolyCurve();
-            pCurve.Curves.Add(Engine.Revit.Convert.ToBHoM(curves[0] as dynamic, convertUnits)); //Old: pCurve.Curves.Add(Engine.Revit.Convert.ToBHoM(curves[0] as dynamic));
-
-            for (int i = 0; i < curves.Count - 1; i++)
-            {
-                oM.Geometry.ICurve crv1 = Engine.Revit.Convert.ToBHoM(curves[i], convertUnits);
-                oM.Geometry.ICurve crv2 = Engine.Revit.Convert.ToBHoM(curves[i + 1], convertUnits);
-
-                if (Engine.Geometry.Query.Distance(Engine.Geometry.Query.EndPoint(crv1 as dynamic), Engine.Geometry.Query.StartPoint(crv2 as dynamic)) < 1e-9)
-                {
-                    pCurve.Curves.Add(crv2);
-                }
-                else
-                {
-                    joinedCurves.Add(pCurve);
-                    pCurve = new oM.Geometry.PolyCurve();
-                    pCurve.Curves.Add(crv2);
-                }
-            }
-            joinedCurves.Add(pCurve);
-
-            int perimiterCurveListPosition = 0;
-
-            bool contains = true;
-            for (int i = 0; i < joinedCurves.Count - 1; i++)
-            {
-                oM.Geometry.ICurve crv1 = joinedCurves[i];
-                for (int j = 1; j < joinedCurves.Count - 1; j++)
-                {
-                    oM.Geometry.ICurve crv2 = joinedCurves[j];
-                    if(BH.Engine.Geometry.Query.Area(crv1 as dynamic) > BH.Engine.Geometry.Query.Area(crv2 as dynamic))
-                    //if (BH.Engine.Geometry.Query.IsContaining(crv1, crv2))
-                    {
-                        contains = true;
-                        perimiterCurveListPosition = i;
-                    }
-                    else
-                    {
-                        contains = false;
-                    }
-                }
-                if (contains == true)
-                {
-                    perimiterCurveListPosition = i;
-                }
-            }
-            joinedCurves = joinedCurves.Select(pCrv => BH.Engine.Geometry.Modify.Scale(pCrv, origin, feetToMetreVector)).ToList();
-            return joinedCurves;
         }
 
         //TODO: Move to Revit2018_Engine.Query
@@ -2343,36 +2241,8 @@ namespace BH.Engine.Revit
         public static string[] outerRadiusNames = { "Outer Fillet", "Outer Radius", "r2", "R2", "ro", "tr" };
         public static string[] wallThicknessNames = { "Wall Nominal Thickness", "Wall Thickness", "t", "T" };
 
-        //TODO: Improve and move to Geometry_Engine
-        private static List<oM.Geometry.Line> Discretize(this List<oM.Geometry.ICurve> curves, int segments)
-        {
-            List<oM.Geometry.Line> result = new List<oM.Geometry.Line>();
-            List<double> parameters = new List<double>();
-            double step = 1 / segments;
-            for (int i = 0; i < segments + 1; i++)
-            {
-                parameters.Add(step * i);
-            }
-            foreach (oM.Geometry.ICurve curve in curves)
-            {
-                if (curve is oM.Geometry.Line) result.Add(curve as oM.Geometry.Line);
-                else
-                {
-                    List<oM.Geometry.Point> points = parameters.Select(p => BH.Engine.Geometry.Query.IPointAtLength(curve, p)).ToList();
-                    for (int i = 0; i < segments; i++)
-                    {
-                        result.Add(new oM.Geometry.Line { Start = points[i], End = points[i + 1] });
-                    }
-                }
-            }
-            return result;
-        }
-
         private static double feetToMetre = UnitUtils.ConvertFromInternalUnits(1, DisplayUnitType.DUT_METERS);
-        private static oM.Geometry.Point origin = new oM.Geometry.Point { X = 0, Y = 0, Z = 0 };
-        private static oM.Geometry.Vector feetToMetreVector = new oM.Geometry.Vector { X = feetToMetre, Y = feetToMetre, Z = feetToMetre };
-
-
+        
         private class WarningSwallower : IFailuresPreprocessor
         {
             public FailureProcessingResult PreprocessFailures(FailuresAccessor FailuresAccessor)
