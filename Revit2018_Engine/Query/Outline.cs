@@ -20,33 +20,41 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<List<oM.Geometry.PolyCurve>> Outlines(this Wall wall)
+        public static List<oM.Geometry.ICurve> Outlines(this Wall wall)
         {
-            List<List<oM.Geometry.PolyCurve>> result = new List<List<oM.Geometry.PolyCurve>>();
+            List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
 
-            CompoundStructure cs = wall.WallType.GetCompoundStructure();
-            double thk = cs.GetWidth();
-
-            LocationCurve aLocationCurve = wall.Location as LocationCurve;
-            XYZ direction = aLocationCurve.Curve.ComputeDerivatives(0.5, true).BasisX.Normalize();
-            XYZ normal = new XYZ(-direction.Y, direction.X, 0);
-            oM.Geometry.Vector toWallLine = new oM.Geometry.Point() - normal.ToBHoM(true) * thk * 0.5;
-
-            foreach (GeometryObject obj in wall.get_Geometry(new Options()))
+            if (wall.GetAnalyticalModel() != null)
             {
-                if (obj is Solid)
+                List<Curve> wallCurves = wall.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
+                result = wallCurves.ToBHoM(true).IJoin().ConvertAll(c=>c as oM.Geometry.ICurve);
+            }
+
+            else
+            {
+                CompoundStructure cs = wall.WallType.GetCompoundStructure();
+                double thk = cs.GetWidth();
+
+                LocationCurve aLocationCurve = wall.Location as LocationCurve;
+                XYZ direction = aLocationCurve.Curve.ComputeDerivatives(0.5, true).BasisX.Normalize();
+                XYZ normal = new XYZ(-direction.Y, direction.X, 0);
+                oM.Geometry.Vector toWallLine = new oM.Geometry.Point() - normal.ToBHoM(true) * thk * 0.5;
+
+                foreach (GeometryObject obj in wall.get_Geometry(new Options()))
                 {
-                    foreach (PlanarFace face in (obj as Solid).Faces)
+                    if (obj is Solid)
                     {
-                        if (face.FaceNormal.IsAlmostEqualTo(normal))
+                        foreach (PlanarFace face in (obj as Solid).Faces)
                         {
-                            List<oM.Geometry.PolyCurve> faceOutlines = new List<oM.Geometry.PolyCurve>();
-                            foreach (List<oM.Geometry.ICurve> lc in face.EdgeLoops.ToBHoM(true))
+                            if (face.FaceNormal.IsAlmostEqualTo(normal))
                             {
-                                faceOutlines.AddRange(lc.IJoin().Select(c => c.Translate(toWallLine)));
+                                List<oM.Geometry.ICurve> faceOutlines = new List<oM.Geometry.ICurve>();
+                                foreach (List<oM.Geometry.ICurve> lc in face.EdgeLoops.ToBHoM(true))
+                                {
+                                    result.AddRange(lc.IJoin().Select(c => c.Translate(toWallLine)));
+                                }
+                                break;                          //TODO: is this OK?
                             }
-                            result.Add(faceOutlines);
-                            break;                          //TODO: is this OK?
                         }
                     }
                 }
@@ -57,31 +65,39 @@ namespace BH.Engine.Revit
 
         /***************************************************/
         
-        public static List<List<oM.Geometry.PolyCurve>> Outlines(this Floor floor, bool convertUnits = true)
+        public static List<oM.Geometry.ICurve> Outlines(this Floor floor, bool convertUnits = true)
         {
-            List<List<oM.Geometry.PolyCurve>> result = new List<List<oM.Geometry.PolyCurve>>();
+            List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
 
-            CompoundStructure cs = floor.FloorType.GetCompoundStructure();
-            double thk = cs.GetWidth();
-
-            XYZ normal = new XYZ(0, 0, 1);
-            oM.Geometry.Vector toWallLine = new oM.Geometry.Point() - normal.ToBHoM(true) * thk * 0.5;
-
-            foreach (GeometryObject obj in floor.get_Geometry(new Options()))
+            if (floor.GetAnalyticalModel() != null)
             {
-                if (obj is Solid)
+                List<Curve> floorCurves = floor.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
+                result = floorCurves.ToBHoM(true).IJoin().ConvertAll(c => c as oM.Geometry.ICurve);
+            }
+
+            else
+            {
+                CompoundStructure cs = floor.FloorType.GetCompoundStructure();
+                double thk = cs.GetWidth();
+
+                XYZ normal = new XYZ(0, 0, 1);
+                oM.Geometry.Vector toFloorLine = new oM.Geometry.Point() - normal.ToBHoM(true) * thk * 0.5;
+
+                foreach (GeometryObject obj in floor.get_Geometry(new Options()))
                 {
-                    foreach (PlanarFace face in (obj as Solid).Faces)
+                    if (obj is Solid)
                     {
-                        if (face.FaceNormal.IsAlmostEqualTo(normal))
+                        foreach (PlanarFace face in (obj as Solid).Faces)
                         {
-                            List<oM.Geometry.PolyCurve> faceOutlines = new List<oM.Geometry.PolyCurve>();
-                            foreach (List<oM.Geometry.ICurve> lc in face.EdgeLoops.ToBHoM(true))
+                            if (face.FaceNormal.IsAlmostEqualTo(normal))
                             {
-                                faceOutlines.AddRange(lc.IJoin().Select(c => c.Translate(toWallLine)));
+                                List<oM.Geometry.ICurve> faceOutlines = new List<oM.Geometry.ICurve>();
+                                foreach (List<oM.Geometry.ICurve> lc in face.EdgeLoops.ToBHoM(true))
+                                {
+                                    result.AddRange(lc.IJoin().Select(c => c.Translate(toFloorLine)));
+                                }
+                                break;                          //TODO: is this OK?
                             }
-                            result.Add(faceOutlines);
-                            break;                          //TODO: is this OK?
                         }
                     }
                 }

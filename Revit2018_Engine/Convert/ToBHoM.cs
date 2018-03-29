@@ -749,14 +749,9 @@ namespace BH.Engine.Revit
                         string materialGrade = wall.GetMaterialGrade();
 
                         IProperty2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, convertUnits, materialGrade) as IProperty2D; //Old: IProperty2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, materialGrade) as IProperty2D;
-                        List<List<oM.Geometry.PolyCurve>> outlines = wall.Outlines();
+                        List<oM.Geometry.ICurve> outlines = wall.Outlines();
 
-                        List<BHoMObject> aResult = new List<BHoMObject>();
-
-                        foreach (List<oM.Geometry.PolyCurve> panelOutlines in outlines)
-                        {
-                            aResult.AddRange(BHS.Create.PanelPlanar(panelOutlines.ConvertAll(c => c as oM.Geometry.ICurve)));
-                        }
+                        List<BHoMObject> aResult = BHS.Create.PanelPlanar(outlines).ConvertAll(p => p as BHoMObject);
 
                         for (int i = 0; i < aResult.Count; i++)
                         {
@@ -849,15 +844,10 @@ namespace BH.Engine.Revit
                         string materialGrade = floor.GetMaterialGrade();
 
                         IProperty2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData, convertUnits, materialGrade) as IProperty2D; // Old: IProperty2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData, materialGrade) as IProperty2D;
-                        List<List<oM.Geometry.PolyCurve>> outlines = floor.Outlines();
+                        List<oM.Geometry.ICurve> outlines = floor.Outlines();
 
-                        List<BHoMObject> aResult = new List<BHoMObject>();
-
-                        foreach(List<oM.Geometry.PolyCurve> panelOutlines in outlines)
-                        {
-                            aResult.AddRange(BHS.Create.PanelPlanar(panelOutlines.ConvertAll(c => c as oM.Geometry.ICurve)));
-                        }
-
+                        List<BHoMObject> aResult = BHS.Create.PanelPlanar(outlines).ConvertAll(c => c as BHoMObject);
+                        
                         for (int i = 0; i < aResult.Count; i++)
                         {
                             PanelPlanar panel = aResult[i] as PanelPlanar;
