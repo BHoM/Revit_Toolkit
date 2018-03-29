@@ -1291,7 +1291,7 @@ namespace BH.Engine.Revit
                 case Discipline.Environmental:
                 case Discipline.Structural:
                     //TODO: Update constructor for Level to include Name
-                    oM.Architecture.Elements.Level aLevel = Architecture.Elements.Create.Level(ToSI(Level.Elevation, UnitType.UT_Length));
+                    oM.Architecture.Elements.Level aLevel = Architecture.Elements.Create.Level(ToSI(Level.ProjectElevation, UnitType.UT_Length));
                     aLevel.Name = Level.Name;
 
                     aLevel = Modify.SetIdentifiers(aLevel, Level) as oM.Architecture.Elements.Level;
