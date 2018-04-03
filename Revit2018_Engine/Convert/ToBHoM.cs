@@ -917,7 +917,7 @@ namespace BH.Engine.Revit
                         if (copyCustomData)
                         {
                             aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, wallType, convertUnits) as BuildingElementProperties;
-                            IncludeFamilyNameParameter(wallType, aBuildingElementProperties);
+                            aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, wallType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElementProperties;
                         }
                             
 
@@ -976,7 +976,7 @@ namespace BH.Engine.Revit
                         if (copyCustomData)
                         {
                             aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, floorType, convertUnits) as BuildingElementProperties;
-                            IncludeFamilyNameParameter(floorType, aBuildingElementProperties);
+                            aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, floorType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElementProperties;
                         }
                             
 
@@ -1031,7 +1031,7 @@ namespace BH.Engine.Revit
             if (copyCustomData)
             {
                 aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, ceilingType, convertUnits) as BuildingElementProperties;
-                IncludeFamilyNameParameter(ceilingType, aBuildingElementProperties);
+                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, ceilingType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElementProperties;
             }
 
             return aBuildingElementProperties;
@@ -1060,7 +1060,7 @@ namespace BH.Engine.Revit
                         if (copyCustomData)
                         {
                             aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, roofType, convertUnits) as BuildingElementProperties;
-                            IncludeFamilyNameParameter(roofType, aBuildingElementProperties);
+                            aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, roofType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElementProperties;
                         }
 
                         return aBuildingElementProperties;
@@ -1813,19 +1813,6 @@ namespace BH.Engine.Revit
         }
 
         /***************************************************/
-
-        private static bool IncludeFamilyNameParameter(Element element, BHoMObject bHoMObject)
-        {
-            Parameter aParameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
-            if(aParameter != null)
-            {
-                string aName = aParameter.AsValueString();
-                if(!string.IsNullOrEmpty(aName))
-                    bHoMObject.CustomData.Add("ELEM_FAMILY_PARAM", aName);
-            }
-
-            return false;
-        }
 
         //TODO: Move to Revit2018_Engine.Query
         private static string GetMaterialGrade(this Element element)
