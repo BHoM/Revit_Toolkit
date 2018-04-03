@@ -888,7 +888,11 @@ namespace BH.Engine.Revit
 
                         aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, wallType) as BuildingElementProperties;
                         if (copyCustomData)
+                        {
                             aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, wallType, convertUnits) as BuildingElementProperties;
+                            IncludeFamilyNameParameter(wallType, aBuildingElementProperties);
+                        }
+                            
 
                         return aBuildingElementProperties;
                     }
@@ -943,7 +947,11 @@ namespace BH.Engine.Revit
 
                         aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, floorType) as BuildingElementProperties;
                         if (copyCustomData)
+                        {
                             aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, floorType, convertUnits) as BuildingElementProperties;
+                            IncludeFamilyNameParameter(floorType, aBuildingElementProperties);
+                        }
+                            
 
                         return aBuildingElementProperties;
                     }
@@ -994,7 +1002,10 @@ namespace BH.Engine.Revit
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, ceilingType) as BuildingElementProperties;
             if (copyCustomData)
+            {
                 aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, ceilingType, convertUnits) as BuildingElementProperties;
+                IncludeFamilyNameParameter(ceilingType, aBuildingElementProperties);
+            }
 
             return aBuildingElementProperties;
         }
@@ -1020,7 +1031,10 @@ namespace BH.Engine.Revit
 
                         aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, roofType) as BuildingElementProperties;
                         if (copyCustomData)
+                        {
                             aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, roofType, convertUnits) as BuildingElementProperties;
+                            IncludeFamilyNameParameter(roofType, aBuildingElementProperties);
+                        }
 
                         return aBuildingElementProperties;
                     }
@@ -1772,6 +1786,21 @@ namespace BH.Engine.Revit
 
             foreach (BHoMObject aBHoMObject in bHoMObjects)
                 AddBHoMObject(aBHoMObject, objects);
+        }
+
+        /***************************************************/
+
+        private static bool IncludeFamilyNameParameter(Element element, BHoMObject bHoMObject)
+        {
+            Parameter aParameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
+            if(aParameter != null)
+            {
+                string aName = aParameter.AsValueString();
+                if(!string.IsNullOrEmpty(aName))
+                    bHoMObject.CustomData.Add("ELEM_FAMILY_PARAM", aName);
+            }
+
+            return false;
         }
 
         //TODO: Move to Revit2018_Engine.Query
