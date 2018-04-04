@@ -49,20 +49,20 @@ namespace BH.Engine.Revit
         /// </summary>
         /// <param name="bHoMObject">Destination BHoMObject</param>
         /// <param name="element">Source Revit Element</param>
-        /// <param name="builtInParamater">Revit BuiltIn Paramater</param>
+        /// <param name="builtInParameter">Revit BuiltIn Paramater</param>
         /// <param name="convertUnits">Convert to SI units</param>
         /// <returns name="BHoMObject">BHoMObject</returns>
         /// <search>
         /// Modify, BHoM, SetCustomData,  BHoMObject, Revit, Element, Set CustomData
         /// </search>
-        public static BHoMObject SetCustomData(this BHoMObject bHoMObject, Element element, BuiltInParameter builtInParamater,  bool convertUnits = true)
+        public static BHoMObject SetCustomData(this BHoMObject bHoMObject, Element element, BuiltInParameter builtInParameter,  bool convertUnits = true)
         {
             if (bHoMObject == null || element == null)
                 return bHoMObject;
 
             BHoMObject aBHoMObject = bHoMObject.GetShallowClone() as BHoMObject;
 
-            aBHoMObject = SetCustomData(aBHoMObject, element.get_Parameter(builtInParamater), convertUnits);
+            aBHoMObject = SetCustomData(aBHoMObject, element.get_Parameter(builtInParameter), convertUnits);
                 
 
             return aBHoMObject;
@@ -118,6 +118,33 @@ namespace BH.Engine.Revit
                 aBHoMObject.CustomData[aName] = aValue;
             else
                 aBHoMObject.CustomData.Add(parameter.Definition.Name, aValue);
+
+            return aBHoMObject;
+        }
+
+        /***************************************************/
+
+        /// <summary>
+        /// Copy values to BHoMObject CustomData from Revit Element parameters
+        /// </summary>
+        /// <param name="bHoMObject">Destination BHoMObject</param>
+        /// <param name="customDataName">Name of CustomData</param>
+        /// <param name="value">Value to be set</param>
+        /// <returns name="BHoMObject">BHoMObject</returns>
+        /// <search>
+        /// Modify, BHoM, SetCustomData,  BHoMObject, Set CustomData
+        /// </search>
+        public static BHoMObject SetCustomData(this BHoMObject bHoMObject, string customDataName, object value)
+        {
+            if (bHoMObject == null || string.IsNullOrEmpty(customDataName))
+                return bHoMObject;
+
+            BHoMObject aBHoMObject = bHoMObject.GetShallowClone() as BHoMObject;
+
+            if (aBHoMObject.CustomData.ContainsKey(customDataName))
+                aBHoMObject.CustomData[customDataName] = value;
+            else
+                aBHoMObject.CustomData.Add(customDataName, value);
 
             return aBHoMObject;
         }
