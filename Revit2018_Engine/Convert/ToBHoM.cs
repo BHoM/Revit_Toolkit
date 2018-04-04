@@ -1598,11 +1598,19 @@ namespace BH.Engine.Revit
                         {
                             aSpace = Modify.SetCustomData(aSpace, aSpatialElement, convertUnits) as Space;
                             double aInnerVolume = energyAnalysisSpace.InnerVolume;
+                            double aAnalyticalVolume = energyAnalysisSpace.AnalyticalVolume;
                             if (convertUnits)
+                            {
                                 aInnerVolume = UnitUtils.ConvertFromInternalUnits(aInnerVolume, DisplayUnitType.DUT_CUBIC_METERS);
+                                aAnalyticalVolume = UnitUtils.ConvertFromInternalUnits(aAnalyticalVolume, DisplayUnitType.DUT_CUBIC_METERS);
+                            }
+                                
                             aSpace = Modify.SetCustomData(aSpace, "Inner Volume", aInnerVolume) as Space;
+                            aSpace = Modify.SetCustomData(aSpace, "Analytical Volume", aAnalyticalVolume) as Space;
                         }
-                            
+
+                        if(aSpace.CustomData.ContainsKey("Number"))
+                            aSpace.Number = aSpace.CustomData["Number"].ToString();                            
 
                         return aSpace;
                     }
