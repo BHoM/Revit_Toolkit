@@ -40,6 +40,10 @@ namespace BH.Engine.Revit
                     return UnitUtils.ConvertFromInternalUnits(Value, DisplayUnitType.DUT_PASCALS);
                 case UnitType.UT_HVAC_Velocity:
                     return UnitUtils.ConvertFromInternalUnits(Value, DisplayUnitType.DUT_METERS_PER_SECOND);
+                case UnitType.UT_Area:
+                    return UnitUtils.ConvertFromInternalUnits(Value, DisplayUnitType.DUT_SQUARE_METERS);
+                case UnitType.UT_Volume:
+                    return UnitUtils.ConvertFromInternalUnits(Value, DisplayUnitType.DUT_CUBIC_METERS);
                 default:
                     return Value;
             }
