@@ -431,12 +431,31 @@ namespace BH.Engine.Revit
             switch (discipline)
             {
                 case Discipline.Environmental:
+
+                    double aElevation = 0;
+                    double aLongitude = 0;
+                    double aLatitude = 0;
+                    if(document.SiteLocation != null)
+                    {
+                        aElevation = document.SiteLocation.Elevation;
+                        aLongitude = document.SiteLocation.Longitude;
+                        aLatitude = document.SiteLocation.Latitude;
+
+                        if(convertUnits)
+                        {
+                            aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+                            aLongitude = UnitUtils.ConvertFromInternalUnits(aLongitude, DisplayUnitType.DUT_METERS);
+                            aLatitude = UnitUtils.ConvertFromInternalUnits(aLatitude, DisplayUnitType.DUT_METERS);
+                        }
+                    }
+
+
                     Building aBuilding = new Building
                     {
                         //TODO: Include missing properties
-                        //Elevation = siteLocation.Elevation,
-                        //Longitude = siteLocation.Longitude,
-                        //Latitude = siteLocation.Latitude,
+                        Elevation = aElevation,
+                        Longitude = aLongitude,
+                        Latitude = aLatitude,
                         Location = new oM.Geometry.Point()
                     };
 
@@ -482,7 +501,6 @@ namespace BH.Engine.Revit
                         aEnergyDataSettings.SliverSpaceTolerance = UnitUtils.ConvertToInternalUnits(5, DisplayUnitType.DUT_MILLIMETERS);
                         aEnergyDataSettings.AnalysisType = AnalysisMode.BuildingElements;
                         aEnergyDataSettings.EnergyModel = false;
-
 
                         //AnalyticalSpaces
                         aEnergyAnalysisDetailModel = EnergyAnalysisDetailModel.Create(document, aEnergyAnalysisDetailModelOptions);
@@ -1577,7 +1595,14 @@ namespace BH.Engine.Revit
 
                         aSpace = Modify.SetIdentifiers(aSpace, aSpatialElement) as Space;
                         if (copyCustomData)
+                        {
                             aSpace = Modify.SetCustomData(aSpace, aSpatialElement, convertUnits) as Space;
+                            double aInnerVolume = energyAnalysisSpace.InnerVolume;
+                            if (convertUnits)
+                                aInnerVolume = UnitUtils.ConvertFromInternalUnits(aInnerVolume, DisplayUnitType.DUT_CUBIC_METERS);
+                            aSpace = Modify.SetCustomData(aSpace, "Inner Volume", aInnerVolume) as Space;
+                        }
+                            
 
                         return aSpace;
                     }
@@ -1663,7 +1688,21 @@ namespace BH.Engine.Revit
 
                         aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
                         if (copyCustomData)
+                        {
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement, convertUnits) as BuildingElement;
+                            double aHeight = energyAnalysisSurface.Height;
+                            double aWidth = energyAnalysisSurface.Width;
+                            double aAzimuth = energyAnalysisSurface.Azimuth;
+                            if(convertUnits)
+                            {
+                                aHeight = UnitUtils.ConvertFromInternalUnits(aHeight, DisplayUnitType.DUT_METERS);
+                                aWidth = UnitUtils.ConvertFromInternalUnits(aWidth, DisplayUnitType.DUT_METERS);
+                            }
+                            aBuildingElement = Modify.SetCustomData(aBuildingElement, "Height", aHeight) as BuildingElement;
+                            aBuildingElement = Modify.SetCustomData(aBuildingElement, "Width", aWidth) as BuildingElement;
+                            aBuildingElement = Modify.SetCustomData(aBuildingElement, "Azimuth", aAzimuth) as BuildingElement;
+                        }
+                            
 
                         return new List<BHoMObject>(new BHoMObject[] { aBuildingElement });
                     }
@@ -1738,7 +1777,20 @@ namespace BH.Engine.Revit
 
                         aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
                         if (copyCustomData)
+                        {
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement, convertUnits) as BuildingElement;
+
+                            double aHeight = energyAnalysisOpening.Height;
+                            double aWidth = energyAnalysisOpening.Width;
+                            if (convertUnits)
+                            {
+                                aHeight = UnitUtils.ConvertFromInternalUnits(aHeight, DisplayUnitType.DUT_METERS);
+                                aWidth = UnitUtils.ConvertFromInternalUnits(aWidth, DisplayUnitType.DUT_METERS);
+                            }
+                            aBuildingElement = Modify.SetCustomData(aBuildingElement, "Height", aHeight) as BuildingElement;
+                            aBuildingElement = Modify.SetCustomData(aBuildingElement, "Width", aWidth) as BuildingElement;
+                        }
+                            
 
                         return new List<BHoMObject>(new BHoMObject[] { aBuildingElement });
                     }
