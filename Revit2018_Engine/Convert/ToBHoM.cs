@@ -1652,6 +1652,8 @@ namespace BH.Engine.Revit
                         string aName = string.Empty;
                         oM.Architecture.Elements.Level aLevel = null;
 
+
+                        ElementType aElementType = null;
                         if (aElement == null)
                         {
                             EnergyAnalysisSpace aEnergyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
@@ -1660,7 +1662,7 @@ namespace BH.Engine.Revit
                         }
                         else
                         {
-                            ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
+                            aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
                             aBuildingElementProperties = aElementType.ToBHoM(objects, discipline, copyCustomData, convertUnits) as BuildingElementProperties;
                             AddBHoMObject(aBuildingElementProperties, objects);
 
@@ -1709,6 +1711,8 @@ namespace BH.Engine.Revit
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, "Height", aHeight) as BuildingElement;
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, "Width", aWidth) as BuildingElement;
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, "Azimuth", aAzimuth) as BuildingElement;
+                            if (aElementType != null)
+                                aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElement;
                         }
                             
 
@@ -1797,6 +1801,9 @@ namespace BH.Engine.Revit
                             }
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, "Height", aHeight) as BuildingElement;
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, "Width", aWidth) as BuildingElement;
+                            aBuildingElement = Modify.SetCustomData(aBuildingElement, "Opening Type", energyAnalysisOpening.OpeningType.ToString()) as BuildingElement;
+                            aBuildingElement = Modify.SetCustomData(aBuildingElement, "Opening Name", energyAnalysisOpening.OpeningName) as BuildingElement;
+                            aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElement;
                         }
                             
 
