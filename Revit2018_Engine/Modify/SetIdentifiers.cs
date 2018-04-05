@@ -28,8 +28,8 @@ namespace BH.Engine.Revit
 
             BHoMObject aBHoMObject = bHoMObject.GetShallowClone() as BHoMObject;
 
-            aBHoMObject.SetCustomData(Convert.ElementId, element.Id.IntegerValue);
-            aBHoMObject.SetCustomData(Convert.AdapterId, element.UniqueId);
+            aBHoMObject = aBHoMObject.SetCustomData(Convert.ElementId, element.Id.IntegerValue);
+            aBHoMObject = aBHoMObject.SetCustomData(Convert.AdapterId, element.UniqueId);
 
             return aBHoMObject;
         }

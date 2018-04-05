@@ -48,6 +48,22 @@ namespace BH.Engine.Revit
             return null;
         }
 
+        /// <summary>
+        /// Gets BuildingElementType from Revit Category. If no match then null will be returned.
+        /// </summary>
+        /// <param name="Category">Revit Category</param>
+        /// <returns name="BuildingElementType">BHoM BuildingElementType</returns>
+        /// <search>
+        /// Utilis, BHoM, GetBuildingElementType, Get BuildingElementType, Category, Revit
+        /// </search>
+        public static BuildingElementType? BuildingElementType(this Category Category)
+        {
+            if (Category == null)
+                return null;
+
+            return BuildingElementType((BuiltInCategory)Category.Id.IntegerValue);
+        }
+
         /***************************************************/
     }
 }

@@ -296,32 +296,6 @@ namespace BH.Engine.Revit
             return ToBHoMBuildingElementPanels(roofBase.get_Geometry(new Options()), convertUnits);
         }
 
-        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this GeometryElement geometryElement, bool convertUnits = true)
-        {
-            List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
-            foreach (GeometryObject aGeometryObject in geometryElement)
-            {
-                Solid aSolid = aGeometryObject as Solid;
-                if (aSolid == null)
-                    continue;
-
-                PlanarFace aPlanarFace = Query.Top(aSolid);
-                if (aPlanarFace == null)
-                    continue;
-
-                List<BHoMObject> aBHoMObjectList = aPlanarFace.ToBHoM(Discipline.Environmental, convertUnits);
-                if (aBHoMObjectList == null || aBHoMObjectList.Count < 1)
-                    continue;
-
-                List<BuildingElementPanel> aBuildingElementPanelList = aBHoMObjectList.Cast<BuildingElementPanel>().ToList();
-                if (aBuildingElementPanelList != null && aBuildingElementPanelList.Count > 0)
-                    aResult.AddRange(aBuildingElementPanelList);
-            }
-
-            return aResult;
-
-        }
-
         public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this FamilyInstance familyInstance, bool convertUnits = true)
         {
             List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
@@ -356,6 +330,32 @@ namespace BH.Engine.Revit
                 aResult.Add(aBuildingElementPanel);
 
             return aResult;
+        }
+
+        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this GeometryElement geometryElement, bool convertUnits = true)
+        {
+            List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
+            foreach (GeometryObject aGeometryObject in geometryElement)
+            {
+                Solid aSolid = aGeometryObject as Solid;
+                if (aSolid == null)
+                    continue;
+
+                PlanarFace aPlanarFace = Query.Top(aSolid);
+                if (aPlanarFace == null)
+                    continue;
+
+                List<BHoMObject> aBHoMObjectList = aPlanarFace.ToBHoM(Discipline.Environmental, convertUnits);
+                if (aBHoMObjectList == null || aBHoMObjectList.Count < 1)
+                    continue;
+
+                List<BuildingElementPanel> aBuildingElementPanelList = aBHoMObjectList.Cast<BuildingElementPanel>().ToList();
+                if (aBuildingElementPanelList != null && aBuildingElementPanelList.Count > 0)
+                    aResult.AddRange(aBuildingElementPanelList);
+            }
+
+            return aResult;
+
         }
 
         /***************************************************/
@@ -1143,6 +1143,47 @@ namespace BH.Engine.Revit
         }
 
         /// <summary>
+        /// Gets BHoM BuildingElementProperties from Revit FamilySymbol
+        /// </summary>
+        /// <param name="familySymbol">Revit Family Symbol</param>
+        /// <param name="discipline">BHoM Discipline</param>
+        /// <param name="convertUnits">Convert to SI units</param>
+        /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
+        /// <returns name="BuildingElementProperties">BHoM BuildingElementProperties</returns>
+        /// <search>
+        /// Convert, ToBHoM, BHoM BuildingElement, Revit FamilySymbol
+        /// </search>
+        public static BHoMObject ToBHoM(this FamilySymbol familySymbol, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        {
+            if (familySymbol == null)
+                return null;
+
+            switch (discipline)
+            {
+                case Discipline.Environmental:
+                    {
+                        BuildingElementType? aBuildingElementType = Query.BuildingElementType(familySymbol.Category);
+                        if (aBuildingElementType.HasValue)
+                        {
+                            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(aBuildingElementType.Value, familySymbol.Name);
+                            aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, familySymbol) as BuildingElementProperties;
+                            if (copyCustomData)
+                            {
+                                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, familySymbol, convertUnits) as BuildingElementProperties;
+                                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, familySymbol, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElementProperties;
+                            }
+
+                            return aBuildingElementProperties;
+                        }
+
+                        return null;
+                    }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Gets BHoM obhect from Revit ElementType
         /// </summary>
         /// <param name="elementType">Revit ElementType</param>
@@ -1170,6 +1211,9 @@ namespace BH.Engine.Revit
 
                     if (aBuildingElementProperties == null)
                     {
+                        //TODO: dynamic does not work. ToBHoM for WallType not recognized
+                        //aBuildingElementProperties = (elementType as dynamic).ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
+
                         if (elementType is WallType)
                             aBuildingElementProperties = (elementType as WallType).ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
                         else if (elementType is FloorType)
@@ -1178,6 +1222,8 @@ namespace BH.Engine.Revit
                             aBuildingElementProperties = (elementType as CeilingType).ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
                         else if (elementType is RoofType)
                             aBuildingElementProperties = (elementType as RoofType).ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
+                        else if (elementType is FamilySymbol)
+                            aBuildingElementProperties = (elementType as FamilySymbol).ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
                     }
                     return aBuildingElementProperties;
 
@@ -1836,6 +1882,7 @@ namespace BH.Engine.Revit
                         {
                             Level = aLevel,
                             Name = aElement.Name,
+                            BuildingElementProperties = aBuildingElementProperties,
                             BuildingElementGeometry = Create.BuildingElementPanel(aPolyLoop.ToBHoM(convertUnits)),
                             AdjacentSpaces = aSpaceList.ConvertAll(x => x.BHoM_Guid)
 
@@ -1916,7 +1963,8 @@ namespace BH.Engine.Revit
                 if (aResult == null)
                     aResult = new List<BHoMObject>();
 
-                aResult.Add(bHoMObject);
+                if (aResult.Find(x => x.BHoM_Guid == bHoMObject.BHoM_Guid) == null)
+                    aResult.Add(bHoMObject);
             }
             else
             {
