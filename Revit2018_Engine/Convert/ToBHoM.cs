@@ -1952,7 +1952,7 @@ namespace BH.Engine.Revit
 
         private static void AddBHoMObject(BHoMObject bHoMObject, Dictionary<ElementId, List<BHoMObject>> objects)
         {
-            if (objects == null)
+            if (objects == null || bHoMObject == null)
                 return;
 
             ElementId aElementId = Query.ElementId(bHoMObject);
@@ -1965,7 +1965,7 @@ namespace BH.Engine.Revit
                 if (aResult == null)
                     aResult = new List<BHoMObject>();
 
-                if (aResult.Find(x => x.BHoM_Guid == bHoMObject.BHoM_Guid) == null)
+                if (aResult.Find(x => x != null && x.BHoM_Guid == bHoMObject.BHoM_Guid) == null)
                     aResult.Add(bHoMObject);
             }
             else
