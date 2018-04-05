@@ -43,6 +43,8 @@ namespace BH.Engine.Revit
                     return oM.Environmental.Elements.BuildingElementType.Window;
                 case BuiltInCategory.OST_Doors:
                     return oM.Environmental.Elements.BuildingElementType.Door;
+                case BuiltInCategory.OST_CurtainWallPanels:
+                    return oM.Environmental.Elements.BuildingElementType.Window;
             }
 
             return null;
