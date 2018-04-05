@@ -1006,7 +1006,8 @@ namespace BH.Engine.Revit
                             if (csl.Function == MaterialFunctionAssignment.Structure)
                             {
                                 aThickness = csl.Width * feetToMetre;
-                                Material m = document.GetElement(csl.MaterialId) as Material;
+                                ElementId id = csl.MaterialId;
+                                Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == id ? wallType.Category.Material : document.GetElement(id) as Material;
                                 aMaterial = m.ToBHoM(materialGrade);         // this is dangerous for multilayer panels?
                                 break;
                             }
@@ -1065,7 +1066,8 @@ namespace BH.Engine.Revit
                             if (csl.Function == MaterialFunctionAssignment.Structure)
                             {
                                 aThickness = csl.Width * feetToMetre;
-                                Material m = document.GetElement(csl.MaterialId) as Material;
+                                ElementId id = csl.MaterialId;
+                                Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == id ? floorType.Category.Material : document.GetElement(id) as Material;
                                 aMaterial = m.ToBHoM(materialGrade);         // this is dangerous for multilayer panels?
                                 break;
                             }
