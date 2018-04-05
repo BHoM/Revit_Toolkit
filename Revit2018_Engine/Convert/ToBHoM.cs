@@ -587,7 +587,15 @@ namespace BH.Engine.Revit
                                         if (aBuildingElementPanel_Hosted == null)
                                             continue;
 
-                                        aBuildingElementPanel.Openings.Add(new BuildingElementOpening() { PolyCurve = aBuildingElementPanel_Hosted.PolyCurve });
+                                        BuildingElementOpening aBuildingElementOpening = new BuildingElementOpening()
+                                        {
+                                            PolyCurve = aBuildingElementPanel_Hosted.PolyCurve
+                                        };
+
+                                        if (copyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Convert.ElementId))
+                                            aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, Convert.ElementId, aBuildingElement_Hosted.CustomData[Convert.ElementId]) as BuildingElementOpening;
+
+                                        aBuildingElementPanel.Openings.Add(aBuildingElementOpening);
                                     }
                                 }
                             }
@@ -629,7 +637,15 @@ namespace BH.Engine.Revit
                                         if (aBuildingElementPanel_Hosted == null)
                                             continue;
 
-                                        aBuildingElementPanel.Openings.Add(new BuildingElementOpening() { PolyCurve = aBuildingElementPanel_Hosted.PolyCurve });
+                                        BuildingElementOpening aBuildingElementOpening = new BuildingElementOpening()
+                                        {
+                                            PolyCurve = aBuildingElementPanel_Hosted.PolyCurve
+                                        };
+
+                                        if (copyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Convert.ElementId))
+                                            aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, Convert.ElementId, aBuildingElement_Hosted.CustomData[Convert.ElementId]) as BuildingElementOpening;
+
+                                        aBuildingElementPanel.Openings.Add(aBuildingElementOpening);
                                     }
                                 }
                             }
