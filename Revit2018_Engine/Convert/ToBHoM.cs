@@ -296,32 +296,6 @@ namespace BH.Engine.Revit
             return ToBHoMBuildingElementPanels(roofBase.get_Geometry(new Options()), convertUnits);
         }
 
-        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this GeometryElement geometryElement, bool convertUnits = true)
-        {
-            List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
-            foreach (GeometryObject aGeometryObject in geometryElement)
-            {
-                Solid aSolid = aGeometryObject as Solid;
-                if (aSolid == null)
-                    continue;
-
-                PlanarFace aPlanarFace = Query.Top(aSolid);
-                if (aPlanarFace == null)
-                    continue;
-
-                List<BHoMObject> aBHoMObjectList = aPlanarFace.ToBHoM(Discipline.Environmental, convertUnits);
-                if (aBHoMObjectList == null || aBHoMObjectList.Count < 1)
-                    continue;
-
-                List<BuildingElementPanel> aBuildingElementPanelList = aBHoMObjectList.Cast<BuildingElementPanel>().ToList();
-                if (aBuildingElementPanelList != null && aBuildingElementPanelList.Count > 0)
-                    aResult.AddRange(aBuildingElementPanelList);
-            }
-
-            return aResult;
-
-        }
-
         public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this FamilyInstance familyInstance, bool convertUnits = true)
         {
             List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
@@ -356,6 +330,32 @@ namespace BH.Engine.Revit
                 aResult.Add(aBuildingElementPanel);
 
             return aResult;
+        }
+
+        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this GeometryElement geometryElement, bool convertUnits = true)
+        {
+            List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
+            foreach (GeometryObject aGeometryObject in geometryElement)
+            {
+                Solid aSolid = aGeometryObject as Solid;
+                if (aSolid == null)
+                    continue;
+
+                PlanarFace aPlanarFace = Query.Top(aSolid);
+                if (aPlanarFace == null)
+                    continue;
+
+                List<BHoMObject> aBHoMObjectList = aPlanarFace.ToBHoM(Discipline.Environmental, convertUnits);
+                if (aBHoMObjectList == null || aBHoMObjectList.Count < 1)
+                    continue;
+
+                List<BuildingElementPanel> aBuildingElementPanelList = aBHoMObjectList.Cast<BuildingElementPanel>().ToList();
+                if (aBuildingElementPanelList != null && aBuildingElementPanelList.Count > 0)
+                    aResult.AddRange(aBuildingElementPanelList);
+            }
+
+            return aResult;
+
         }
 
         /***************************************************/
@@ -435,17 +435,43 @@ namespace BH.Engine.Revit
                     double aElevation = 0;
                     double aLongitude = 0;
                     double aLatitude = 0;
+                    double aTimeZone = 0;
+                    string aPlaceName = string.Empty;
+                    string aWeatherStationName = string.Empty;
+
                     if(document.SiteLocation != null)
                     {
                         aElevation = document.SiteLocation.Elevation;
                         aLongitude = document.SiteLocation.Longitude;
                         aLatitude = document.SiteLocation.Latitude;
+                        aTimeZone = document.SiteLocation.TimeZone;
+                        aPlaceName = document.SiteLocation.PlaceName;
+                        aWeatherStationName = document.SiteLocation.WeatherStationName;
 
                         if(convertUnits)
                         {
                             aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
                             aLongitude = UnitUtils.ConvertFromInternalUnits(aLongitude, DisplayUnitType.DUT_METERS);
                             aLatitude = UnitUtils.ConvertFromInternalUnits(aLatitude, DisplayUnitType.DUT_METERS);
+                        }
+                    }
+
+                    double aProjectAngle = 0;
+                    double aProjectEastWestOffset = 0;
+                    double aProjectElevation = 0;
+                    double aProjectNorthSouthOffset = 0;
+
+                    if(document.ActiveProjectLocation != null)
+                    {
+                        ProjectLocation aProjectLocation = document.ActiveProjectLocation;
+                        XYZ aXYZ = new XYZ(0, 0, 0);
+                        ProjectPosition aProjectPosition = aProjectLocation.GetProjectPosition(aXYZ);
+                        if(aProjectPosition != null)
+                        {
+                            aProjectAngle = aProjectPosition.Angle;
+                            aProjectEastWestOffset = aProjectPosition.EastWest;
+                            aProjectElevation = aProjectPosition.Elevation;
+                            aProjectNorthSouthOffset = aProjectPosition.NorthSouth;
                         }
                     }
 
@@ -461,7 +487,19 @@ namespace BH.Engine.Revit
 
                     aBuilding = Modify.SetIdentifiers(aBuilding, document.ProjectInformation) as Building;
                     if (copyCustomData)
+                    {
+                        aBuilding = Modify.SetCustomData(aBuilding, "Time Zone", aTimeZone) as Building;
+                        aBuilding = Modify.SetCustomData(aBuilding, "Place Name", aPlaceName) as Building;
+                        aBuilding = Modify.SetCustomData(aBuilding, "Weather Station Name", aWeatherStationName) as Building;
+
+                        aBuilding = Modify.SetCustomData(aBuilding, "Project Angle", aProjectAngle) as Building;
+                        aBuilding = Modify.SetCustomData(aBuilding, "Project East/West Offset", aProjectEastWestOffset) as Building;
+                        aBuilding = Modify.SetCustomData(aBuilding, "Project North/South Offset", aProjectNorthSouthOffset) as Building;
+                        aBuilding = Modify.SetCustomData(aBuilding, "Project Elevation", aProjectElevation) as Building;
+
                         aBuilding = Modify.SetCustomData(aBuilding, document.ProjectInformation, convertUnits) as Building;
+                    }
+                        
 
                     //-------- Create BHoM building structure -----
 
@@ -549,7 +587,15 @@ namespace BH.Engine.Revit
                                         if (aBuildingElementPanel_Hosted == null)
                                             continue;
 
-                                        aBuildingElementPanel.Openings.Add(new BuildingElementOpening() { PolyCurve = aBuildingElementPanel_Hosted.PolyCurve });
+                                        BuildingElementOpening aBuildingElementOpening = new BuildingElementOpening()
+                                        {
+                                            PolyCurve = aBuildingElementPanel_Hosted.PolyCurve
+                                        };
+
+                                        if (copyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Convert.ElementId))
+                                            aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, Convert.ElementId, aBuildingElement_Hosted.CustomData[Convert.ElementId]) as BuildingElementOpening;
+
+                                        aBuildingElementPanel.Openings.Add(aBuildingElementOpening);
                                     }
                                 }
                             }
@@ -591,7 +637,15 @@ namespace BH.Engine.Revit
                                         if (aBuildingElementPanel_Hosted == null)
                                             continue;
 
-                                        aBuildingElementPanel.Openings.Add(new BuildingElementOpening() { PolyCurve = aBuildingElementPanel_Hosted.PolyCurve });
+                                        BuildingElementOpening aBuildingElementOpening = new BuildingElementOpening()
+                                        {
+                                            PolyCurve = aBuildingElementPanel_Hosted.PolyCurve
+                                        };
+
+                                        if (copyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Convert.ElementId))
+                                            aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, Convert.ElementId, aBuildingElement_Hosted.CustomData[Convert.ElementId]) as BuildingElementOpening;
+
+                                        aBuildingElementPanel.Openings.Add(aBuildingElementOpening);
                                     }
                                 }
                             }
@@ -1091,6 +1145,47 @@ namespace BH.Engine.Revit
         }
 
         /// <summary>
+        /// Gets BHoM BuildingElementProperties from Revit FamilySymbol
+        /// </summary>
+        /// <param name="familySymbol">Revit Family Symbol</param>
+        /// <param name="discipline">BHoM Discipline</param>
+        /// <param name="convertUnits">Convert to SI units</param>
+        /// <param name="copyCustomData">Copy parameters from Document to CustomData of BHoMObjects</param>
+        /// <returns name="BuildingElementProperties">BHoM BuildingElementProperties</returns>
+        /// <search>
+        /// Convert, ToBHoM, BHoM BuildingElement, Revit FamilySymbol
+        /// </search>
+        public static BHoMObject ToBHoM(this FamilySymbol familySymbol, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        {
+            if (familySymbol == null)
+                return null;
+
+            switch (discipline)
+            {
+                case Discipline.Environmental:
+                    {
+                        BuildingElementType? aBuildingElementType = Query.BuildingElementType(familySymbol.Category);
+                        if (aBuildingElementType.HasValue)
+                        {
+                            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(aBuildingElementType.Value, familySymbol.Name);
+                            aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, familySymbol) as BuildingElementProperties;
+                            if (copyCustomData)
+                            {
+                                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, familySymbol, convertUnits) as BuildingElementProperties;
+                                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, familySymbol, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElementProperties;
+                            }
+
+                            return aBuildingElementProperties;
+                        }
+
+                        return null;
+                    }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Gets BHoM obhect from Revit ElementType
         /// </summary>
         /// <param name="elementType">Revit ElementType</param>
@@ -1118,6 +1213,9 @@ namespace BH.Engine.Revit
 
                     if (aBuildingElementProperties == null)
                     {
+                        //TODO: dynamic does not work. ToBHoM for WallType not recognized
+                        //aBuildingElementProperties = (elementType as dynamic).ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
+
                         if (elementType is WallType)
                             aBuildingElementProperties = (elementType as WallType).ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
                         else if (elementType is FloorType)
@@ -1126,6 +1224,8 @@ namespace BH.Engine.Revit
                             aBuildingElementProperties = (elementType as CeilingType).ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
                         else if (elementType is RoofType)
                             aBuildingElementProperties = (elementType as RoofType).ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
+                        else if (elementType is FamilySymbol)
+                            aBuildingElementProperties = (elementType as FamilySymbol).ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
                     }
                     return aBuildingElementProperties;
 
@@ -1654,6 +1754,8 @@ namespace BH.Engine.Revit
                         string aName = string.Empty;
                         oM.Architecture.Elements.Level aLevel = null;
 
+
+                        ElementType aElementType = null;
                         if (aElement == null)
                         {
                             EnergyAnalysisSpace aEnergyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
@@ -1662,7 +1764,7 @@ namespace BH.Engine.Revit
                         }
                         else
                         {
-                            ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
+                            aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
                             aBuildingElementProperties = aElementType.ToBHoM(objects, discipline, copyCustomData, convertUnits) as BuildingElementProperties;
                             AddBHoMObject(aBuildingElementProperties, objects);
 
@@ -1711,6 +1813,8 @@ namespace BH.Engine.Revit
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, "Height", aHeight) as BuildingElement;
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, "Width", aWidth) as BuildingElement;
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, "Azimuth", aAzimuth) as BuildingElement;
+                            if (aElementType != null)
+                                aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElement;
                         }
                             
 
@@ -1780,6 +1884,7 @@ namespace BH.Engine.Revit
                         {
                             Level = aLevel,
                             Name = aElement.Name,
+                            BuildingElementProperties = aBuildingElementProperties,
                             BuildingElementGeometry = Create.BuildingElementPanel(aPolyLoop.ToBHoM(convertUnits)),
                             AdjacentSpaces = aSpaceList.ConvertAll(x => x.BHoM_Guid)
 
@@ -1799,6 +1904,9 @@ namespace BH.Engine.Revit
                             }
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, "Height", aHeight) as BuildingElement;
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, "Width", aWidth) as BuildingElement;
+                            aBuildingElement = Modify.SetCustomData(aBuildingElement, "Opening Type", energyAnalysisOpening.OpeningType.ToString()) as BuildingElement;
+                            aBuildingElement = Modify.SetCustomData(aBuildingElement, "Opening Name", energyAnalysisOpening.OpeningName) as BuildingElement;
+                            aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElement;
                         }
                             
 
@@ -1857,7 +1965,8 @@ namespace BH.Engine.Revit
                 if (aResult == null)
                     aResult = new List<BHoMObject>();
 
-                aResult.Add(bHoMObject);
+                if (aResult.Find(x => x.BHoM_Guid == bHoMObject.BHoM_Guid) == null)
+                    aResult.Add(bHoMObject);
             }
             else
             {
