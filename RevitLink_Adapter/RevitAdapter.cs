@@ -10,16 +10,16 @@ using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
 using BH.Adapter.Socket;
 
-namespace BH.Adapter.RevitLink
+namespace BH.Adapter.Revit
 {
-    public class RevitLinkAdapter : BHoMAdapter
+    public class RevitAdapter : BHoMAdapter
     {
 
         /***************************************************/
         /**** Constructors                              ****/
         /***************************************************/
 
-        public RevitLinkAdapter(int pushPort = 14128, int pullPort = 14129, double maxMinutesToWait = 10)
+        public RevitAdapter(int pushPort = 14128, int pullPort = 14129, double maxMinutesToWait = 10)
         {
             m_linkIn = new SocketLink_Tcp(pushPort);
             m_linkOut = new SocketLink_Tcp(pullPort);

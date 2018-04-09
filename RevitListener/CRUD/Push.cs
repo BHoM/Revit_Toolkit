@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.Revit.UI;
 using BH.oM.Base;
+using BH.UI.Revit.Adapter;
 
-namespace BH.Adapter.Revit
+namespace BH.UI.Revit
 {
     public class PushEvent : IExternalEventHandler
     {
@@ -20,7 +21,7 @@ namespace BH.Adapter.Revit
                     RevitListener listener = RevitListener.Listener;
 
                     //Get the revit adapter
-                    RevitAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
+                    RevitInternalAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
 
                     //Push the data
                     List<IObject> objs = adapter.Push(listener.LatestPackage, listener.LatestTag, listener.LatestConfig);

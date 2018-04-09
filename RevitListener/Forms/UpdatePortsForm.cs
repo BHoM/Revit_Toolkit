@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BH.Adapter.Revit.Forms
+namespace BH.UI.Revit.Forms
 {
     public partial class UpdatePortsForm : Form
     {

@@ -14,12 +14,12 @@ using BH.Engine.Environment;
 using Autodesk.Revit.DB;
 using BH.oM.DataManipulation.Queries;
 
-namespace BH.Adapter.Revit
+namespace BH.UI.Revit.Adapter
 {
     /// <summary>
     /// BHoM RevitAdapter
     /// </summary>
-    public partial class RevitAdapter
+    public partial class RevitInternalAdapter
     {
         /***************************************************/
         /**** Public Methods                            ****/
