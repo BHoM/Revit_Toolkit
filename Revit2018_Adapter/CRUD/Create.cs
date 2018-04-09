@@ -11,9 +11,9 @@ using BH.oM.Base;
 using Autodesk.Revit.DB;
 
 
-namespace BH.Adapter.Revit
+namespace BH.UI.Revit.Adapter
 {
-    public partial class RevitAdapter
+    public partial class RevitInternalAdapter
     {
         /***************************************************/
         /**** Public Methods                            ****/

@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autodesk.Revit.UI;
+using BH.UI.Revit.Adapter;
 
-namespace BH.Adapter.Revit
+namespace BH.UI.Revit
 {
     public class PullEvent : IExternalEventHandler
     {
@@ -19,7 +20,7 @@ namespace BH.Adapter.Revit
                     RevitListener listener = RevitListener.Listener;
 
                     //Get the revit adapter
-                    RevitAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
+                    RevitInternalAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
 
                     //Push the data
                     IEnumerable<object> objs = adapter.Pull(listener.LatestQuery, listener.LatestConfig);
