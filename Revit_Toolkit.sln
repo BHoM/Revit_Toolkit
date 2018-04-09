@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revit2017_Adapter", "Revit2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cobra2017", "Cobra2017\Cobra2017.csproj", "{E8022CAD-94B9-45F2-B030-442DA3DAE600}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter_Cobra2018", "Revit2018_Adapter\Adapter_Cobra2018.csproj", "{C2BD93AF-8853-4685-8BD4-223055DE1CC6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter_Cobra2018", "Adapter_Cobra2018\Adapter_Cobra2018.csproj", "{C2BD93AF-8853-4685-8BD4-223055DE1CC6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4DFAF9C8-9770-4E5A-818D-EB4DAB665145} = {4DFAF9C8-9770-4E5A-818D-EB4DAB665145}
 	EndProjectSection
@@ -32,9 +32,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revit2018_Test", "Revit2018
 		{4DFAF9C8-9770-4E5A-818D-EB4DAB665145} = {4DFAF9C8-9770-4E5A-818D-EB4DAB665145}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revit_Adapter", "RevitLink_Adapter\Revit_Adapter.csproj", "{3EB6D37D-8720-495A-8FEB-E826F0E69AF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revit_Adapter", "Revit_Adapter\Revit_Adapter.csproj", "{3EB6D37D-8720-495A-8FEB-E826F0E69AF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cobra2018", "RevitListener\Cobra2018.csproj", "{928290E0-9CB8-4B96-BD7A-A2E4638824AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cobra2018", "Cobra2018\Cobra2018.csproj", "{928290E0-9CB8-4B96-BD7A-A2E4638824AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
