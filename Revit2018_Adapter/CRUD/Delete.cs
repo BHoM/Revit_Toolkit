@@ -11,9 +11,9 @@ using BH.oM.Structural.Elements;
 
 using BH.Engine.Revit;
 
-namespace BH.Adapter.Revit
+namespace BH.UI.Revit.Adapter
 {
-    public partial class RevitAdapter
+    public partial class RevitInternalAdapter
     {
         /***************************************************/
         /**** Public Methods                            ****/

@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 using Autodesk.Revit.DB;
 using BH.Engine.Revit;
+using BH.Adapter;
 
-namespace BH.Adapter.Revit
+namespace BH.UI.Revit.Adapter
 {
-    public partial class RevitAdapter : BHoMAdapter
+    public partial class RevitInternalAdapter : BHoMAdapter
     {
         /***************************************************/
         /**** Private Properties                        ****/
@@ -28,7 +29,7 @@ namespace BH.Adapter.Revit
         /// <search>
         /// Create, RevitAdapter, Constructor, Document
         /// </search>
-        public RevitAdapter(Document document)
+        public RevitInternalAdapter(Document document)
         {
             AdapterId = Engine.Revit.Convert.AdapterId;
             Config.UseAdapterId = false;

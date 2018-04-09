@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
-using BH.Adapter.Revit.Forms;
+using BH.UI.Revit.Forms;
 
-namespace BH.Adapter.Revit
+namespace BH.UI.Revit
 {
     [Transaction(TransactionMode.Manual)]
     [Regeneration(RegenerationOption.Manual)]

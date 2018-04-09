@@ -6,7 +6,7 @@ using System.Linq;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.DB;
 
-using BH.Adapter.Revit;
+using BH.UI.Revit.Adapter;
 
 using BH.oM.Environmental.Elements;
 using BH.Engine.Environment;
@@ -54,7 +54,7 @@ namespace Revit2018_Test
         public Result Execute(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
             //Creating Revit Adapter for active Revit Document
-            RevitAdapter pRevitAdapter = new RevitAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
+            RevitInternalAdapter pRevitAdapter = new RevitInternalAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
 
             FilterQuery aFilterQuery = null;
             List<IBHoMObject> aBHoMObjectList = null;

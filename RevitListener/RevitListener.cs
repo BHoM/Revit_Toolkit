@@ -8,8 +8,10 @@ using Autodesk.Revit.DB;
 using BH.Adapter.Socket;
 using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
+using BH.UI.Revit.Adapter;
+using BH.Adapter.Revit;
 
-namespace BH.Adapter.Revit
+namespace BH.UI.Revit
 {
     [Autodesk.Revit.Attributes.Regeneration(Autodesk.Revit.Attributes.RegenerationOption.Manual)]
     [Autodesk.Revit.Attributes.Journaling(Autodesk.Revit.Attributes.JournalingMode.NoCommandData)]
@@ -39,13 +41,13 @@ namespace BH.Adapter.Revit
         /**** Public methods                            ****/
         /***************************************************/
 
-        public RevitAdapter GetAdapter(Document doc)
+        public RevitInternalAdapter GetAdapter(Document doc)
         {
-            RevitAdapter adapter;
+            RevitInternalAdapter adapter;
 
             if (!m_adapters.TryGetValue(doc, out adapter))
             {
-                adapter = new RevitAdapter(doc);
+                adapter = new RevitInternalAdapter(doc);
                 m_adapters[doc] = adapter;
             }
             return adapter;
@@ -138,11 +140,11 @@ namespace BH.Adapter.Revit
                     return;
                 }
 
-                BH.Adapter.RevitLink.PackageType packageType = RevitLink.PackageType.ConnectionCheck;
+                PackageType packageType = PackageType.ConnectionCheck;
 
                 try
                 {
-                    packageType = (BH.Adapter.RevitLink.PackageType)package.Data[0];
+                    packageType = (PackageType)package.Data[0];
                 }
                 catch
                 {
@@ -152,10 +154,10 @@ namespace BH.Adapter.Revit
 
                 switch (packageType)
                 {
-                    case RevitLink.PackageType.ConnectionCheck:
+                    case PackageType.ConnectionCheck:
                         ReturnData(new List<object>());
                         return;
-                    case RevitLink.PackageType.Push:
+                    case PackageType.Push:
                         if (!CheckPackageSize(package)) return;
                         eve = m_pushEvent;  //Set the event to raise
                         LatestPackage = new List<IObject>();    //Clear the previous package list
@@ -166,7 +168,7 @@ namespace BH.Adapter.Revit
                                 LatestPackage.Add(obj as IObject);
                         }
                         break;
-                    case RevitLink.PackageType.Pull:
+                    case PackageType.Pull:
                         if (!CheckPackageSize(package)) return;
                         eve = m_pullEvent;
                         LatestQuery = package.Data[1] as IQuery;
@@ -204,7 +206,7 @@ namespace BH.Adapter.Revit
         private SocketLink_Tcp m_linkOut;
         private ExternalEvent m_pushEvent;
         private ExternalEvent m_pullEvent;
-        private Dictionary<Document, RevitAdapter> m_adapters = new Dictionary<Document, RevitAdapter>();
+        private Dictionary<Document, RevitInternalAdapter> m_adapters = new Dictionary<Document, RevitInternalAdapter>();
 
         public object m_packageLock = new object();
         /***************************************************/

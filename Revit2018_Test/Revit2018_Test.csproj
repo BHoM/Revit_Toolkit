@@ -100,9 +100,9 @@
     <None Include="Resources\Test.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Revit2018_Adapter\Revit2018_Adapter.csproj">
+    <ProjectReference Include="..\Revit2018_Adapter\Adapter_Cobra2018.csproj">
       <Project>{c2bd93af-8853-4685-8bd4-223055de1cc6}</Project>
-      <Name>Revit2018_Adapter</Name>
+      <Name>Adapter_Cobra2018</Name>
     </ProjectReference>
     <ProjectReference Include="..\Revit2018_Engine\Revit2018_Engine.csproj">
       <Project>{4dfaf9c8-9770-4e5a-818d-eb4dab665145}</Project>
