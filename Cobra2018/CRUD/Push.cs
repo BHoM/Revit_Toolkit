@@ -34,9 +34,9 @@ namespace BH.UI.Revit
                     //Return the pushed objects
                     listener.ReturnData(objs);
                 }
-                catch
+                catch (Exception e)
                 {
-                    RevitListener.Listener.ReturnData(new object[] { });
+                    RevitListener.Listener.ReturnData(new List<string> { "Failed to push. Exception from the adapter: " + e.Message });
                 }
             }
         }

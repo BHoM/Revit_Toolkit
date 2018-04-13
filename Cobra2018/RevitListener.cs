@@ -108,9 +108,25 @@ namespace BH.UI.Revit
 
             m_linkOut = new SocketLink_Tcp(14129);
 
+            application.ControlledApplication.DocumentOpened += ControlledApplication_DocumentOpened;
 
+            application.ControlledApplication.DocumentCreated += ControlledApplication_DocumentCreated;
 
             return Result.Succeeded;
+        }
+
+        /***************************************************/
+
+        private void ControlledApplication_DocumentCreated(object sender, Autodesk.Revit.DB.Events.DocumentCreatedEventArgs e)
+        {
+            RevitAdapter.InternalAdapter = GetAdapter(e.Document);
+        }
+
+        /***************************************************/
+
+        private void ControlledApplication_DocumentOpened(object sender, Autodesk.Revit.DB.Events.DocumentOpenedEventArgs e)
+        {
+            RevitAdapter.InternalAdapter = GetAdapter(e.Document);
         }
 
         /***************************************************/
@@ -207,6 +223,7 @@ namespace BH.UI.Revit
         private ExternalEvent m_pushEvent;
         private ExternalEvent m_pullEvent;
         private Dictionary<Document, RevitInternalAdapter> m_adapters = new Dictionary<Document, RevitInternalAdapter>();
+
 
         public object m_packageLock = new object();
         /***************************************************/
