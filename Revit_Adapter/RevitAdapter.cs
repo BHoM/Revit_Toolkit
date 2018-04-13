@@ -16,6 +16,12 @@ namespace BH.Adapter.Revit
     {
 
         /***************************************************/
+        /**** Public Properties                         ****/
+        /***************************************************/
+
+        public static BHoMAdapter InternalAdapter { get; set; } = null;
+
+        /***************************************************/
         /**** Constructors                              ****/
         /***************************************************/
 
@@ -46,6 +52,10 @@ namespace BH.Adapter.Revit
 
         public override List<IObject> Push(IEnumerable<IObject> objects, string tag = "", Dictionary<string, object> config = null)
         {
+            //If internal adapter is loaded call it directly
+            if (InternalAdapter != null)
+                return InternalAdapter.Push(objects, tag, config);
+
             //Reset the wait event
             m_waitEvent.Reset();
 
@@ -75,6 +85,10 @@ namespace BH.Adapter.Revit
 
         public override IEnumerable<object> Pull(IQuery query, Dictionary<string, object> config = null)
         {
+            //If internal adapter is loaded call it directly
+            if (InternalAdapter != null)
+                return InternalAdapter.Pull(query, config);
+
             //Reset the wait event
             m_waitEvent.Reset();
 
@@ -108,6 +122,10 @@ namespace BH.Adapter.Revit
 
         public override int Delete(FilterQuery filter, Dictionary<string, object> config = null)
         {
+            //If internal adapter is loaded call it directly
+            if (InternalAdapter != null)
+                return InternalAdapter.Delete(filter, config);
+
             throw new NotImplementedException();
         }
 
@@ -115,6 +133,10 @@ namespace BH.Adapter.Revit
 
         public override int UpdateProperty(FilterQuery filter, string property, object newValue, Dictionary<string, object> config = null)
         {
+            //If internal adapter is loaded call it directly
+            if (InternalAdapter != null)
+                return InternalAdapter.UpdateProperty(filter, property, newValue, config);
+
             throw new NotImplementedException();
         }
 
@@ -122,15 +144,13 @@ namespace BH.Adapter.Revit
 
         public override bool Execute(string command, Dictionary<string, object> parameters = null, Dictionary<string, object> config = null)
         {
+            //If internal adapter is loaded call it directly
+            if (InternalAdapter != null)
+                return InternalAdapter.Execute(command, parameters, config);
+
             throw new NotImplementedException();
         }
 
-        /***************************************************/
-
-        public override bool PullTo(BHoMAdapter to, IQuery query, Dictionary<string, object> config = null)
-        {
-            throw new NotImplementedException();
-        }
 
         /***************************************************/
         /**** Private  Fields                           ****/
