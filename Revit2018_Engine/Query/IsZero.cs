@@ -26,7 +26,7 @@ namespace BH.Engine.Revit
         /// </search>
         static public bool IsZero(double @double)
         {
-            return oM.Geometry.Tolerance.Distance > Math.Abs(@double);
+            return oM.Geometry.Tolerance.MicroDistance > Math.Abs(@double);
         }
 
         /***************************************************/
