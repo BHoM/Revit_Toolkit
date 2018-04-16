@@ -91,7 +91,7 @@ namespace BH.Engine.Revit
                 for (int j = i + 1; j < aTupleList.Count; j++)
                 {
                     double aDistance_Temp = Geometry.Query.Distance(aTupleList[i].Item1, aTupleList[j].Item1);
-                    if (aDistance_Temp < aDistance && aDistance_Temp <= Tolerance.Distance)
+                    if (aDistance_Temp < aDistance && aDistance_Temp <= Tolerance.MicroDistance)
                     {
                         aDistance = aDistance_Temp;
                         aBuildingElement = aTupleList[i].Item2;
