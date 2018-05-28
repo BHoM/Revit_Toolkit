@@ -147,7 +147,15 @@ namespace BH.UI.Revit.Adapter
 
             List<BHoMObject> aResult = new List<BHoMObject>();
             foreach (ElementId aElementId in elementIds)
-                Read(aElementId, discipline, objects);
+                try
+                {
+                    Read(aElementId, discipline, objects);
+                }
+                catch (Exception e)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Failed to read the element with the Revit ID: " + aElementId.IntegerValue.ToString() + ". \n Following error message was thrown: " + e.Message);
+                }
+
         }
 
         /***************************************************/
