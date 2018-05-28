@@ -9,6 +9,7 @@ using System.Collections;
 using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
 using BH.Adapter.Socket;
+using BH.oM.Reflection.Debuging;
 
 namespace BH.Adapter.Revit
 {
@@ -33,6 +34,7 @@ namespace BH.Adapter.Revit
 
             m_waitEvent = new ManualResetEvent(false);
             m_returnPackage = new List<object>();
+            m_returnEvents = new List<Event>();
 
             m_waitTime = maxMinutesToWait;
         }
@@ -41,6 +43,9 @@ namespace BH.Adapter.Revit
         {
             //Store the return data
             m_returnPackage = package.Data;
+
+            //Store the events
+            m_returnEvents = package.Events;
 
             //Set the wait event to allow methods to continue
             m_waitEvent.Set();
@@ -68,13 +73,16 @@ namespace BH.Adapter.Revit
             m_linkIn.SendData(new List<object>() { PackageType.Push, objects.ToList(), config }, tag);
 
             //Wait until the return message has been recieved
-            m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime));
+            if (!m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime)))
+                BH.Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
 
             //Grab the return objects from the latest package
             List<IObject> returnObjs = m_returnPackage.Cast<IObject>().ToList();
 
             //Clear the return list
             m_returnPackage.Clear();
+
+            RaiseEvents();
 
             //Return the package
             return returnObjs;
@@ -105,13 +113,17 @@ namespace BH.Adapter.Revit
             m_linkIn.SendData(new List<object>() { PackageType.Pull, query as FilterQuery, config });
 
             //Wait until the return message has been recieved
-            m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime));
+            if (!m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime)))
+                BH.Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
 
             //Grab the return objects from the latest package
             List<object> returnObjs = new List<object>(m_returnPackage);
 
             //Clear the return list
             m_returnPackage.Clear();
+
+            //Raise returned events
+            RaiseEvents();
 
             //Return the package
             return returnObjs;
@@ -161,6 +173,7 @@ namespace BH.Adapter.Revit
 
         private ManualResetEvent m_waitEvent;
         private List<object> m_returnPackage;
+        private List<Event> m_returnEvents;
         private double m_waitTime;
 
         /***************************************************/
@@ -170,11 +183,27 @@ namespace BH.Adapter.Revit
             m_linkIn.SendData(new List<object> { PackageType.ConnectionCheck });
 
             bool returned = m_waitEvent.WaitOne(TimeSpan.FromSeconds(5));
+            RaiseEvents();
             m_waitEvent.Reset();
+
+            if (!returned)
+                BH.Engine.Reflection.Compute.RecordError("Failed to connect to Revit");
+
             return returned;
         }
 
         /***************************************************/
+
+        private void RaiseEvents()
+        {
+            if (m_returnEvents == null)
+                return;
+
+            BH.Engine.Reflection.Query.CurrentEvents().AddRange(m_returnEvents);
+            BH.Engine.Reflection.Query.AllEvents().AddRange(m_returnEvents);
+
+            m_returnEvents = new List<Event>();
+        }
 
         protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {

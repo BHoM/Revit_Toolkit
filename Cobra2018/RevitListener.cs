@@ -56,7 +56,15 @@ namespace BH.UI.Revit
         /***************************************************/
         public void ReturnData(IEnumerable<object> objs)
         {
-            m_linkOut.SendData(objs.ToList());
+
+            BH.oM.Socket.DataPackage package = new oM.Socket.DataPackage
+            {
+                Data = objs.ToList(),
+                Events = BH.Engine.Reflection.Query.CurrentEvents(),
+                Tag = ""
+            };
+
+            m_linkOut.SendData(package);
         }
 
         /***************************************************/
@@ -146,6 +154,8 @@ namespace BH.UI.Revit
 
         private void M_linkIn_DataObservers(oM.Socket.DataPackage package)
         {
+            Engine.Reflection.Compute.ClearCurrentEvents();
+
             ExternalEvent eve = null;
 
             lock (m_packageLock)
