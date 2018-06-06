@@ -818,7 +818,7 @@ namespace BH.Engine.Revit
 
                 case Discipline.Structural:
                     {
-                        string materialGrade = wall.GetMaterialGrade();
+                        string materialGrade = wall.MaterialGrade();
 
                         IProperty2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, convertUnits, materialGrade) as IProperty2D; //Old: IProperty2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, materialGrade) as IProperty2D;
                         List<oM.Geometry.ICurve> outlines = wall.Outlines();
@@ -913,7 +913,7 @@ namespace BH.Engine.Revit
                     }
                 case Discipline.Structural:
                     {
-                        string materialGrade = floor.GetMaterialGrade();
+                        string materialGrade = floor.MaterialGrade();
 
                         IProperty2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData, convertUnits, materialGrade) as IProperty2D; // Old: IProperty2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData, materialGrade) as IProperty2D;
                         List<oM.Geometry.ICurve> outlines = floor.Outlines();
@@ -1240,13 +1240,13 @@ namespace BH.Engine.Revit
         {
             try
             {
-                string materialGrade = familyInstance.GetMaterialGrade();
+                string materialGrade = familyInstance.MaterialGrade();
 
                 oM.Common.Materials.Material aMaterial = familyInstance.StructuralMaterialType.ToBHoM(materialGrade);
                 IProfile aSectionDimensions = null;
 
                 string name = familyInstance.Symbol.Name;
-                aSectionDimensions = BH.Engine.Library.Query.Match("SectionProfiles", name) as IProfile;
+                aSectionDimensions = Library.Query.Match("SectionProfiles", name) as IProfile;
 
                 if (aSectionDimensions == null)
                 {
@@ -1984,21 +1984,6 @@ namespace BH.Engine.Revit
         }
 
         /***************************************************/
-
-        //TODO: Move to Revit2018_Engine.Query
-        private static string GetMaterialGrade(this Element element)
-        {
-            string materialGrade;
-            try
-            {
-                materialGrade = element.LookupParameter("BHE_Material Grade").AsString();
-            }
-            catch
-            {
-                materialGrade = null;
-            }
-            return materialGrade;
-        }
 
         private static IProfile ToBHoMSectionDimensions(this FamilySymbol familySymbol)
         {

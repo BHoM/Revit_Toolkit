@@ -182,5 +182,14 @@ namespace BH.UI.Revit.Adapter
         }
 
         /***************************************************/
+
+        private bool Create(FramingElement framingElement, bool copyCustomData = true, bool replace = false)
+        {
+            FamilyInstance aFamilyInstance = framingElement.ToRevit(m_Document, copyCustomData);
+
+            return true;
+        }
+
+        /***************************************************/
     }
 }

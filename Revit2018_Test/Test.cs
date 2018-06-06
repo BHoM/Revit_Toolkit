@@ -59,14 +59,19 @@ namespace Revit2018_Test
             FilterQuery aFilterQuery = null;
             List<IBHoMObject> aBHoMObjectList = null;
 
-            aFilterQuery = new FilterQuery() { Type = typeof(Space) };
+            aFilterQuery = new FilterQuery() { Type = typeof(FramingElement) };
             aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
-            aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
-            aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            pRevitAdapter.Push(aBHoMObjectList);
 
-            aFilterQuery = new FilterQuery() { Type = typeof(Building) };
-            aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            //aFilterQuery = new FilterQuery() { Type = typeof(Space) };
+            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+
+            //aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
+            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+
+            //aFilterQuery = new FilterQuery() { Type = typeof(Building) };
+            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
             //aFilterQuery = new FilterQuery() { Type = typeof(PanelPlanar) };
             //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();

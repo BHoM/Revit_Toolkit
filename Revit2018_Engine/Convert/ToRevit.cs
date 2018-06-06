@@ -308,6 +308,31 @@ namespace BH.Engine.Revit
             return CompoundStructure.CreateSimpleCompoundStructure(aCompoundStructureLayerList);
         }
 
+        /// <summary>
+        /// Creates Revit FamilyInstance from BHoM FramingElement
+        /// </summary>
+        /// <param name="framingElement">BHoM framingElement</param>
+        /// <param name="convertUnits">Convert to Revit internal units</param>
+        /// <param name="document">Revit Document</param>
+        /// <returns name="FamilyInstance">Revit FamilyInstance</returns>
+        /// <search>
+        /// Convert, ToRevit, BHoM FramingElement, Revit FamilyInstance, FramingElement
+        /// </search>
+        public static FamilyInstance ToRevit(this FramingElement framingElement, Document document, bool convertUnits = true)
+        {
+            if (framingElement == null || document == null)
+                return null;
+
+            Curve aCurve = framingElement.LocationCurve.ToRevit();
+            Level aLevel = Query.BottomLevel(framingElement.LocationCurve, document);
+
+            List<FamilySymbol> FamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilySymbol>().ToList();
+            if (FamilySymbolList == null || FamilySymbolList.Count < 1)
+                return null;
+
+            return document.Create.NewFamilyInstance(aCurve, FamilySymbolList.First(), aLevel, Autodesk.Revit.DB.Structure.StructuralType.Beam);
+        }
+
         /***************************************************/
         /**** Private Methods                           ****/
         /***************************************************/

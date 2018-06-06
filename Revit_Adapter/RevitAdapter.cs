@@ -13,7 +13,7 @@ using BH.oM.Reflection.Debuging;
 
 namespace BH.Adapter.Revit
 {
-    public class RevitAdapter : BHoMAdapter
+    public partial class RevitAdapter : BHoMAdapter
     {
 
         /***************************************************/
