@@ -2,17 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using BH.oM.Base;
-using BH.oM.Environmental.Elements;
 using BH.Engine.Revit;
-using BH.oM.Structural.Elements;
-using BH.Engine.Environment;
 
 using Autodesk.Revit.DB;
-using BH.oM.DataManipulation.Queries;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -86,7 +80,7 @@ namespace BH.UI.Revit.Adapter
             if (aElement == null)
                 return;
 
-            List<Type> aTypeList = Engine.Revit.Query.BHoMTypes(aElement);
+            List<Type> aTypeList = Query.BHoMTypes(aElement);
             if (aTypeList == null)
                 return;
 
@@ -175,22 +169,22 @@ namespace BH.UI.Revit.Adapter
                 return;
 
             //Get Revit class types
-            List<Tuple<Type, Discipline>> aTupleList = new List<Tuple<Type, Discipline>>();
+            List<Tuple<Type, List<BuiltInCategory>, Discipline>> aTupleList = new List<Tuple<Type, List<BuiltInCategory>, Discipline>>();
             foreach (Type aType in types)
             {
-                if (Engine.Revit.Query.IsAssignableFromByFullName(aType, typeof(Element)))
+                if (Query.IsAssignableFromByFullName(aType, typeof(Element)))
                 {
                     if(aTupleList.Find(x => x.Item1 == aType) == null)
-                        aTupleList.Add(new Tuple<Type, Discipline>(aType, Discipline.Environmental));
+                        aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType, new List<BuiltInCategory>() , Discipline.Environmental));
                 }
-                else if (Engine.Revit.Query.IsAssignableFromByFullName(aType, typeof(BHoMObject)))
+                else if (Query.IsAssignableFromByFullName(aType, typeof(BHoMObject)))
                 {
-                    IEnumerable<Type> aTypes = Engine.Revit.Query.RevitTypes(aType);
+                    IEnumerable<Type> aTypes = Query.RevitTypes(aType);
                     if (aTypes != null)
                     {
                         foreach (Type aType_Temp in aTypes)
                             if (aTupleList.Find(x => x.Item1 == aType_Temp) == null)
-                                aTupleList.Add(new Tuple<Type, Discipline>(aType_Temp, aType.Discipline()));
+                                aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType_Temp, aType.BuiltInCategories(), aType.Discipline()));
                     }
 
                 }
@@ -199,16 +193,22 @@ namespace BH.UI.Revit.Adapter
             if (aTupleList == null || aTupleList.Count < 1)
                 return;
 
-            foreach (Tuple<Type, Discipline> aTuple in aTupleList)
+            foreach (Tuple<Type, List<BuiltInCategory>, Discipline> aTuple in aTupleList)
             {
                 if(aTuple.Item1 == typeof(Document))
                 {
-                    objects.Add(ElementId.InvalidElementId, new List<BHoMObject>(new BHoMObject[] { m_Document.ToBHoM(aTuple.Item2, true) }));
+                    objects.Add(ElementId.InvalidElementId, new List<BHoMObject>(new BHoMObject[] { m_Document.ToBHoM(aTuple.Item3, true) }));
                     continue;
                 }
 
+                FilteredElementCollector aFilteredElementCollector = null;
+                if (aTuple.Item2 == null || aTuple.Item2.Count < 1)
+                    aFilteredElementCollector = new FilteredElementCollector(m_Document).OfClass(aTuple.Item1);
+                else
+                    aFilteredElementCollector = new FilteredElementCollector(m_Document).OfClass(aTuple.Item1).WherePasses(new LogicalOrFilter(aTuple.Item2.ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)));
+
                 List<ElementId> aElementIdList = new List<ElementId>();
-                foreach (Element aElement in new FilteredElementCollector(m_Document).OfClass(aTuple.Item1))
+                foreach (Element aElement in aFilteredElementCollector)
                 {
                     if (aElement == null)
                         continue;
@@ -219,7 +219,7 @@ namespace BH.UI.Revit.Adapter
                 if (aElementIdList == null || aElementIdList.Count < 1)
                     continue;
 
-                Read(aElementIdList, aTuple.Item2, objects);
+                Read(aElementIdList, aTuple.Item3, objects);
             }
         }
 
