@@ -83,13 +83,16 @@
     <Compile Include="Modify\SetParameters.cs" />
     <Compile Include="Modify\SetParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Query\BottomLevel.cs" />
     <Compile Include="Query\BuildingElements.cs" />
     <Compile Include="Query\BuildingElementType.cs" />
+    <Compile Include="Query\BuiltInCategories.cs" />
     <Compile Include="Query\CustomData.cs" />
     <Compile Include="Query\Discipline.cs" />
     <Compile Include="Query\Element.cs" />
     <Compile Include="Query\ElementId.cs" />
     <Compile Include="Query\ElementIds.cs" />
+    <Compile Include="Query\MaterialGrade.cs" />
     <Compile Include="Query\Outline.cs" />
     <Compile Include="Query\SpatialElementId.cs" />
     <Compile Include="Query\SpatialElementIds.cs" />

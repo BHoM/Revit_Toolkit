@@ -20,21 +20,21 @@ namespace BH.Engine.Revit
         /// <summary>
         /// Get Revit class types from BHoM class type.
         /// </summary>
-        /// <param name="Type">BHoM class Type</param>
+        /// <param name="type">BHoM class Type</param>
         /// <returns name="Types">Revit class Types</returns>
         /// <search>
         /// Query, RevitTypes, Revit, Get Revit Types, Type, BHoM Type
         /// </search>
-        public static IEnumerable<System.Type> RevitTypes(System.Type Type)
+        public static IEnumerable<System.Type> RevitTypes(System.Type type)
         {
-            if (Type == null)
+            if (type == null)
                 return null;
 
-            if (!Query.IsAssignableFromByFullName(Type, typeof(BHoMObject)))
+            if (!Query.IsAssignableFromByFullName(type, typeof(BHoMObject)))
                 return null;
 
             List<System.Type> aResult = new List<System.Type>();
-            if (Type == typeof(BuildingElement))
+            if (type == typeof(BuildingElement))
             {
                 aResult.Add(typeof(Floor));
                 aResult.Add(typeof(Wall));
@@ -44,50 +44,38 @@ namespace BH.Engine.Revit
                 return aResult;
             }
 
-            if (Type == typeof(PanelPlanar))
+            if (type == typeof(PanelPlanar))
             {
                 aResult.Add(typeof(Floor));
                 aResult.Add(typeof(Wall));
                 return aResult;
             }
             
-            if (Type == typeof(FramingElement))
+            if (type == typeof(FramingElement))
             {
                 aResult.Add(typeof(FamilyInstance));
                 return aResult;
             }
 
-            //if (Type == typeof(Building))
-            //{
-            //    aResult.Add(typeof(SiteLocation));
-            //    return aResult;
-            //}
-
-            if (Type == typeof(Building))
+            if (type == typeof(Building))
             {
                 aResult.Add(typeof(Document));
                 return aResult;
             }
 
-            //if (Type == typeof(Storey))
-            //{
-            //    aResult.Add(typeof(Level));
-            //    return aResult;
-            //}
-
-            if (Type == typeof(oM.Architecture.Elements.Level))
+            if (type == typeof(oM.Architecture.Elements.Level))
             {
                 aResult.Add(typeof(Level));
                 return aResult;
             }
 
-            if (Type == typeof(Space))
+            if (type == typeof(Space))
             {
                 aResult.Add(typeof(SpatialElement));
                 return aResult;
             }
 
-            if (Type == typeof(oM.Architecture.Elements.Grid))
+            if (type == typeof(oM.Architecture.Elements.Grid))
             {
                 aResult.Add(typeof(Grid));
                 return aResult;
