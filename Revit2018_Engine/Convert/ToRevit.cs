@@ -318,19 +318,67 @@ namespace BH.Engine.Revit
         /// <search>
         /// Convert, ToRevit, BHoM FramingElement, Revit FamilyInstance, FramingElement
         /// </search>
-        public static FamilyInstance ToRevit(this FramingElement framingElement, Document document, bool convertUnits = true)
+        public static FamilyInstance ToRevit(this FramingElement framingElement, Document document, bool copyCustomData = true, bool convertUnits = true)
         {
             if (framingElement == null || document == null)
                 return null;
 
-            Curve aCurve = framingElement.LocationCurve.ToRevit();
-            Level aLevel = Query.BottomLevel(framingElement.LocationCurve, document);
+            object aCustomDataValue = null;
 
-            List<FamilySymbol> FamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilySymbol>().ToList();
-            if (FamilySymbolList == null || FamilySymbolList.Count < 1)
+            Curve aCurve = framingElement.LocationCurve.ToRevit();
+            Level aLevel = null;
+
+            aCustomDataValue = Query.ICustomData(framingElement, "Reference Level");
+            if (aCustomDataValue != null && aCustomDataValue is int)
+            {
+                ElementId aElementId = new ElementId((int)aCustomDataValue);
+                aLevel = document.GetElement(aElementId) as Level;
+            }
+
+            if (aLevel == null)
+                aLevel = Query.BottomLevel(framingElement.LocationCurve, document);
+
+            FamilySymbol aFamilySymbol = ToRevit(framingElement.Property, document, copyCustomData, convertUnits);
+
+            if(aFamilySymbol == null)
+            {
+                List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilySymbol>().ToList();
+
+                aCustomDataValue = Query.ICustomData(framingElement, "Type");
+                if (aCustomDataValue != null && aCustomDataValue is int)
+                {
+                    ElementId aElementId = new ElementId((int)aCustomDataValue);
+                    aFamilySymbol = aFamilySymbolList.Find(x => x.Id == aElementId);
+                }
+
+                if (aFamilySymbol == null)
+                    aFamilySymbolList.Find(x => x.Name == framingElement.Name);
+
+                if (aFamilySymbol == null)
+                    aFamilySymbol = aFamilySymbolList.First();
+            }
+
+            FamilyInstance aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Beam);
+
+            if (copyCustomData)
+                Modify.SetParameters(aFamilyInstance, framingElement, null, convertUnits);
+
+            return aFamilyInstance;
+        }
+
+        public static FamilySymbol ToRevit(this oM.Structural.Properties.IFramingElementProperty framingElementProperty, Document document, bool copyCustomData = true, bool convertUnits = true)
+        {
+            List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilySymbol>().ToList();
+            if (aFamilySymbolList == null || aFamilySymbolList.Count < 1)
                 return null;
 
-            return document.Create.NewFamilyInstance(aCurve, FamilySymbolList.First(), aLevel, Autodesk.Revit.DB.Structure.StructuralType.Beam);
+            FamilySymbol aFamilySymbol = null;
+
+            aFamilySymbol = aFamilySymbolList.Find(x => x.Name == framingElementProperty.Name);
+            if (aFamilySymbol != null)
+                return aFamilySymbol;
+
+            return null;
         }
 
         /***************************************************/
