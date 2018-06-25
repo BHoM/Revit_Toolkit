@@ -1323,10 +1323,10 @@ namespace BH.Engine.Revit
         {
             switch (structuralMaterialType)
             {
-                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Aluminum:
+                case StructuralMaterialType.Aluminum:
                     return BH.Engine.Library.Query.Match("MaterialsEurope", "ALUM") as oM.Common.Materials.Material;
-                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete:
-                case Autodesk.Revit.DB.Structure.StructuralMaterialType.PrecastConcrete:
+                case StructuralMaterialType.Concrete:
+                case StructuralMaterialType.PrecastConcrete:
                     if (materialGrade != null)
                     {
                         foreach (IBHoMObject concrete in Library.Query.Match("MaterialsEurope", "Type", "Concrete"))
@@ -1337,8 +1337,8 @@ namespace BH.Engine.Revit
                             }
                         }
                     }
-                    return BH.Engine.Library.Query.Match("MaterialsEurope", "C30/37") as oM.Common.Materials.Material;
-                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
+                    return Library.Query.Match("MaterialsEurope", "C30/37") as oM.Common.Materials.Material;
+                case StructuralMaterialType.Steel:
                     if (materialGrade != null)
                     {
                         foreach (IBHoMObject steel in Library.Query.Match("MaterialsEurope", "Type", "Steel"))
@@ -1349,8 +1349,8 @@ namespace BH.Engine.Revit
                             }
                         }
                     }
-                    return BH.Engine.Library.Query.Match("MaterialsEurope", "S355") as oM.Common.Materials.Material;
-                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood:
+                    return Library.Query.Match("MaterialsEurope", "S355") as oM.Common.Materials.Material;
+                case StructuralMaterialType.Wood:
                     return BH.Engine.Library.Query.Match("MaterialsEurope", "TIMBER") as oM.Common.Materials.Material;
                 default:
                     return new oM.Common.Materials.Material();
