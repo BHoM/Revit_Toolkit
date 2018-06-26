@@ -75,6 +75,7 @@
     <Compile Include="Convert\Enums.cs" />
     <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Convert\ToRevit.cs" />
+    <Compile Include="Convert\FromSI .cs" />
     <Compile Include="Convert\ToSI.cs" />
     <Compile Include="Modify\AssignAdjacentSpaces.cs" />
     <Compile Include="Modify\RemoveIdentifiers.cs" />
