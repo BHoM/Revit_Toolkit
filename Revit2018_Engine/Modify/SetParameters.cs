@@ -39,7 +39,7 @@ namespace BH.Engine.Revit
                     if (builtInParametersIgnore != null && aParameter.Id.IntegerValue < 0 && builtInParametersIgnore.Contains((BuiltInParameter)aParameter.Id.IntegerValue))
                         continue;
 
-                    SetParameter(aParameter, aKeyValuePair.Value);
+                    SetParameter(aParameter, aKeyValuePair.Value, convertUnits);
                 }
             }
 
