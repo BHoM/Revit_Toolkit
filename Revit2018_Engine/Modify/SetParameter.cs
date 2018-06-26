@@ -23,11 +23,12 @@ namespace BH.Engine.Revit
         /// </summary>
         /// <param name="parameter">Revit Parameter</param>
         /// <param name="value">Value for parameter to be set. StorageType: 1. Double - Value type of double, int, bool, string 2. ElementId - Value type of int, string, 3. Integer - Value type of double, int, bool, string 4. String - value type of string, object</param>
+        /// <param name="convertUnits">Change units from SI</param>
         /// <returns name="Parameter">Revit Parameter</returns>
         /// <search>
         /// Modify, SetParameter, Revit, Set Parameter, Parameter
         /// </search>
-        public static Parameter SetParameter(this Parameter parameter, object value)
+        public static Parameter SetParameter(this Parameter parameter, object value, bool convertUnits = true)
         {
             if (parameter == null)
                 return null;
@@ -35,23 +36,37 @@ namespace BH.Engine.Revit
             switch (parameter.StorageType)
             {
                 case StorageType.Double:
+                    double aDouble = double.NaN;
                     if (value is double || value is int)
                     {
-                        parameter.Set((double)value);
+                        aDouble = (double)value;
                     }
                     else if (value is bool)
                     {
                         if ((bool)value)
-                            parameter.Set(1.0);
+                            aDouble = 1.0;
                         else
-                            parameter.Set(0.0);
+                            aDouble = 0.0;
                     }
                     else if (value is string)
                     {
-                        double aDouble = double.NaN;
-                        if (double.TryParse((string)value, out aDouble))
-                            parameter.Set(aDouble);
+                        if (!double.TryParse((string)value, out aDouble))
+                            aDouble = double.NaN;
                     }
+
+                    if (!double.IsNaN(aDouble))
+                    {
+                        try
+                        {
+                            aDouble = Convert.FromSI(aDouble, parameter.Definition.UnitType);
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+                        
+                    parameter.Set(aDouble);
                     break;
                 case StorageType.ElementId:
                     if (value is int)

@@ -361,7 +361,7 @@ namespace BH.Engine.Revit
             FamilyInstance aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Beam);
 
             if (copyCustomData)
-                Modify.SetParameters(aFamilyInstance, framingElement, null, convertUnits);
+                Modify.SetParameters(aFamilyInstance, framingElement, new BuiltInParameter[] { BuiltInParameter.STRUCTURAL_BEAM_END0_ELEVATION, BuiltInParameter.STRUCTURAL_BEAM_END1_ELEVATION }, convertUnits);
 
             return aFamilyInstance;
         }
