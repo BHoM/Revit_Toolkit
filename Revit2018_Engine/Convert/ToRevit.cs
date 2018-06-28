@@ -9,6 +9,7 @@ using BH.oM.Environmental.Interface;
 using BH.oM.Geometry;
 
 using BH.Engine.Environment;
+using BH.Engine.Geometry;
 
 using Autodesk.Revit.DB;
 
@@ -59,6 +60,23 @@ namespace BH.Engine.Revit
         }
 
         /// <summary>
+        /// Gets Revit Plane from BHoM CoordinateSystem
+        /// </summary>
+        /// <param name="vector">BHoM Point</param>
+        /// <param name="convertUnits">Convert to Revit internal units</param>
+        /// <returns name="Point">Revit Point (XYZ)</returns>
+        /// <search>
+        /// Convert, ToRevit, BHoM Vector, Revit Point, XYZ 
+        /// </search>
+        public static Autodesk.Revit.DB.Plane ToRevit(this CoordinateSystem CS, bool convertUnits = true)
+        {
+            XYZ origin = CS.Origin.ToRevit(convertUnits);
+            XYZ X = CS.X.ToRevit(convertUnits);
+            XYZ Y = CS.Y.ToRevit(convertUnits);
+            return Autodesk.Revit.DB.Plane.CreateByOriginAndBasis(origin, X, Y);
+        }
+
+        /// <summary>
         /// Gets Revit Curve from BHoM ICurve
         /// </summary>
         /// <param name="curve">BHoM ICurve</param>
@@ -78,7 +96,8 @@ namespace BH.Engine.Revit
             if (curve is oM.Geometry.Arc)
             {
                 oM.Geometry.Arc aArc = curve as oM.Geometry.Arc;
-                return Autodesk.Revit.DB.Arc.Create(ToRevit(aArc.Start, convertUnits), ToRevit(aArc.End, convertUnits), ToRevit(aArc.Middle, convertUnits));
+                double radius = convertUnits ? UnitUtils.ConvertToInternalUnits(aArc.Radius, DisplayUnitType.DUT_METERS) : aArc.Radius;
+                return Autodesk.Revit.DB.Arc.Create(ToRevit(aArc.CoordinateSystem, convertUnits), radius, aArc.StartAngle, aArc.EndAngle);
             }
 
             if (curve is NurbCurve)

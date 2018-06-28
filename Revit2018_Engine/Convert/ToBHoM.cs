@@ -12,7 +12,7 @@ using BH.oM.Environmental.Elements;
 
 using BH.Engine.Environment;
 using BHS = BH.Engine.Structure;
-using BHG = BH.Engine.Geometry;
+
 using BH.oM.Base;
 using Autodesk.Revit.DB.Structure.StructuralSections;
 using Autodesk.Revit.DB.Analysis;
@@ -66,6 +66,43 @@ namespace BH.Engine.Revit
         }
 
         /// <summary>
+        /// Gets BHoM Vector from Revit Point
+        /// </summary>
+        /// <param name="point">Revit Point</param>
+        /// <param name="convertUnits">Convert to SI units</param>
+        /// <returns name="Point">BHoM Vector</returns>
+        /// <search>
+        /// Convert, ToBHoM, BHoM Point, Revit LocationPoint, LocationPoint 
+        /// </search>
+        public static oM.Geometry.Vector ToBHoMVector(this XYZ xyz, bool convertUnits = true)
+        {
+            if (xyz == null)
+                return null;
+
+            if (convertUnits)
+                return Geometry.Create.Vector(UnitUtils.ConvertFromInternalUnits(xyz.X, DisplayUnitType.DUT_METERS), UnitUtils.ConvertFromInternalUnits(xyz.Y, DisplayUnitType.DUT_METERS), UnitUtils.ConvertFromInternalUnits(xyz.Z, DisplayUnitType.DUT_METERS));
+            else
+                return Geometry.Create.Vector(xyz.X, xyz.Y, xyz.Z);
+        }
+
+        /// <summary>
+        /// Gets BHoM CoordinateSystem from Revit Plane
+        /// </summary>
+        /// <param name="locationPoint">Revit Plane</param>
+        /// <param name="convertUnits">Convert to SI units</param>
+        /// <returns name="Point">BHoM Point</returns>
+        /// <search>
+        /// Convert, ToBHoM, BHoM Point, Revit LocationPoint, LocationPoint 
+        /// </search>
+        public static oM.Geometry.CoordinateSystem ToBHoM(this Plane plane, bool convertUnits = true)
+        {
+            if (plane == null)
+                return null;
+
+            return Geometry.Create.CoordinateSystem(ToBHoM(plane.Origin, convertUnits), ToBHoMVector(plane.XVec, convertUnits), ToBHoMVector(plane.YVec, convertUnits));
+        }
+
+        /// <summary>
         /// Gets BHoM ICurve from Revit Curve
         /// </summary>
         /// <param name="curve">Revit Curve</param>
@@ -80,7 +117,18 @@ namespace BH.Engine.Revit
                 return Geometry.Create.Line(ToBHoM(curve.GetEndPoint(0), convertUnits), ToBHoM(curve.GetEndPoint(1), convertUnits));
 
             if (curve is Arc)
-                return Geometry.Create.Arc(ToBHoM(curve.GetEndPoint(0), convertUnits), ToBHoM(curve.Evaluate(0.5, true), convertUnits), ToBHoM(curve.GetEndPoint(1), convertUnits));
+            {
+                Arc aArc = curve as Arc;
+                double radius = convertUnits ? UnitUtils.ConvertFromInternalUnits(aArc.Radius, DisplayUnitType.DUT_METERS) : aArc.Radius;
+                Plane plane = Plane.CreateByOriginAndBasis(aArc.Center, aArc.XDirection, aArc.YDirection);
+                double startAngle = aArc.XDirection.AngleOnPlaneTo(aArc.GetEndPoint(0) - aArc.Center, aArc.Normal);
+                double endAngle = aArc.XDirection.AngleOnPlaneTo(aArc.GetEndPoint(1) - aArc.Center, aArc.Normal);
+                if (startAngle > endAngle)
+                {
+                    startAngle -= 2 * Math.PI;
+                }
+                return Geometry.Create.Arc(ToBHoM(plane, convertUnits), radius, startAngle, endAngle);
+            }
 
             if (curve is NurbSpline)
             {
