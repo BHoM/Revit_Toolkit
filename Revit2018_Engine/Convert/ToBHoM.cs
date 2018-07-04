@@ -12,6 +12,7 @@ using BH.oM.Environmental.Elements;
 
 using BH.Engine.Environment;
 using BHS = BH.Engine.Structure;
+using BHG = BH.Engine.Geometry;
 
 using BH.oM.Base;
 using Autodesk.Revit.DB.Structure.StructuralSections;
