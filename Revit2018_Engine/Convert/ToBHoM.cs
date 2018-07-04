@@ -753,7 +753,7 @@ namespace BH.Engine.Revit
             {
                 case Discipline.Structural:
                     {
-                        StructuralType structuralType = ((FamilyInstance)familyInstance).StructuralType;
+                        StructuralType structuralType = familyInstance.StructuralType;
                         if (structuralType == StructuralType.Beam || structuralType == StructuralType.Brace || structuralType == StructuralType.Column)
                         {
                             //TODO: switch from explicit Line to ICurve
@@ -770,15 +770,20 @@ namespace BH.Engine.Revit
                                 XYZ baseNode = new XYZ(loc.X, loc.Y, baseLevel + baseOffset);
                                 XYZ topNode = new XYZ(loc.X, loc.Y, topLevel + topOffset);
                                 barCurve = new oM.Geometry.Line { Start = baseNode.ToBHoM(true), End = topNode.ToBHoM(true) };
-                                int multiplier = familyInstance.FacingOrientation.DotProduct(new XYZ(1, 0, 0)) < 0 ? 1 : -1;
-                                rotation = familyInstance.FacingOrientation.AngleTo(new XYZ(0, 1, 0)) * multiplier;
+                                int multiplier = familyInstance.FacingOrientation.DotProduct(new XYZ(0, 1, 0)) > 0 ? 1 : -1;
+                                rotation = familyInstance.FacingOrientation.AngleTo(new XYZ(1, 0, 0)) * multiplier;
                             }
                             else if (location is LocationCurve)
                             {
                                 barCurve = (location as LocationCurve).Curve.ToBHoM(convertUnits) as oM.Geometry.Line;
+                                if (structuralType != StructuralType.Column)
+                                {
+                                    double ZOffset = familyInstance.LookupParameterDouble("z Offset Value", true);
+                                    barCurve = BHG.Modify.Translate(barCurve, new oM.Geometry.Vector { X = 0, Y = 0, Z = ZOffset });
+                                }
                                 rotation = -familyInstance.LookupParameter("Cross-Section Rotation").AsDouble();
                             }
-                            ISectionProperty aSectionProperty = familyInstance.ToBHoMSection(barCurve, copyCustomData) as ISectionProperty;
+                            ISectionProperty aSectionProperty = familyInstance.ToBHoMSection(copyCustomData) as ISectionProperty;
 
                             StructuralUsage1D usage;
 
@@ -866,26 +871,33 @@ namespace BH.Engine.Revit
 
                 case Discipline.Structural:
                     {
-                        string materialGrade = wall.MaterialGrade();
-
-                        IProperty2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, convertUnits, materialGrade) as IProperty2D; //Old: IProperty2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, materialGrade) as IProperty2D;
-                        List<oM.Geometry.ICurve> outlines = wall.Outlines();
-
-                        List<BHoMObject> aResult = BHS.Create.PanelPlanar(outlines).ConvertAll(p => p as BHoMObject);
-
-                        for (int i = 0; i < aResult.Count; i++)
+                        try
                         {
-                            PanelPlanar panel = aResult[i] as PanelPlanar;
-                            panel.Property = aProperty2D;
-                            panel = Modify.SetIdentifiers(panel, wall) as PanelPlanar;
+                            string materialGrade = wall.GetMaterialGrade();
 
-                            if (copyCustomData)
+                            IProperty2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, convertUnits, materialGrade) as IProperty2D;
+                            List<oM.Geometry.ICurve> outlines = wall.Outlines();
+
+                            List<BHoMObject> aResult = BHS.Create.PanelPlanar(outlines).ConvertAll(p => p as BHoMObject);
+
+                            for (int i = 0; i < aResult.Count; i++)
                             {
-                                panel = Modify.SetCustomData(panel, wall, convertUnits) as PanelPlanar;
-                            }
-                        }
+                                PanelPlanar panel = aResult[i] as PanelPlanar;
+                                panel.Property = aProperty2D;
+                                panel = Modify.SetIdentifiers(panel, wall) as PanelPlanar;
 
-                        return aResult;
+                                if (copyCustomData)
+                                {
+                                    panel = Modify.SetCustomData(panel, wall, convertUnits) as PanelPlanar;
+                                }
+                            }
+
+                            return aResult;
+                        }
+                        catch (Exception e)
+                        {
+                            throw new Exception("Failed to pull element " + wall.Id.IntegerValue.ToString() + ". Exception: " + e.Message);
+                        }
                     }
             }
 
@@ -961,25 +973,32 @@ namespace BH.Engine.Revit
                     }
                 case Discipline.Structural:
                     {
-                        string materialGrade = floor.MaterialGrade();
-
-                        IProperty2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData, convertUnits, materialGrade) as IProperty2D; // Old: IProperty2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData, materialGrade) as IProperty2D;
-                        List<oM.Geometry.ICurve> outlines = floor.Outlines();
-
-                        List<BHoMObject> aResult = BHS.Create.PanelPlanar(outlines).ConvertAll(c => c as BHoMObject);
-                        
-                        for (int i = 0; i < aResult.Count; i++)
+                        try
                         {
-                            PanelPlanar panel = aResult[i] as PanelPlanar;
-                            panel.Property = aProperty2D;
-                            panel = Modify.SetIdentifiers(panel, floor) as PanelPlanar;
+                            string materialGrade = floor.GetMaterialGrade();
 
-                            if (copyCustomData)
+                            IProperty2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData, convertUnits, materialGrade) as IProperty2D;
+                            List<oM.Geometry.ICurve> outlines = floor.Outlines();
+
+                            List<BHoMObject> aResult = BHS.Create.PanelPlanar(outlines).ConvertAll(c => c as BHoMObject);
+
+                            for (int i = 0; i < aResult.Count; i++)
                             {
-                                panel = Modify.SetCustomData(panel, floor, convertUnits) as PanelPlanar;
+                                PanelPlanar panel = aResult[i] as PanelPlanar;
+                                panel.Property = aProperty2D;
+                                panel = Modify.SetIdentifiers(panel, floor) as PanelPlanar;
+
+                                if (copyCustomData)
+                                {
+                                    panel = Modify.SetCustomData(panel, floor, convertUnits) as PanelPlanar;
+                                }
                             }
+                            return aResult;
                         }
-                        return aResult;
+                        catch (Exception e)
+                        {
+                            throw new Exception("Failed to pull element " + floor.Id.IntegerValue.ToString() + ". Exception: " + e.Message);
+                        }
                     }
             }
 
@@ -1061,7 +1080,7 @@ namespace BH.Engine.Revit
                             }
                         }
 
-                        ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structural.Properties.PanelType.Wall, Thickness = aThickness, Material = aMaterial };
+                        ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structural.Properties.PanelType.Wall, Thickness = aThickness, Material = aMaterial, Name = wallType.Name };
 
                         aProperty2D = Modify.SetIdentifiers(aProperty2D, wallType) as ConstantThickness;
                         if (copyCustomData)
@@ -1120,8 +1139,8 @@ namespace BH.Engine.Revit
                                 break;
                             }
                         }
-                            
-                        ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structural.Properties.PanelType.Slab, Thickness = aThickness, Material = aMaterial };
+
+                        ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structural.Properties.PanelType.Slab, Thickness = aThickness, Material = aMaterial, Name = floorType.Name };
 
                         aProperty2D = Modify.SetIdentifiers(aProperty2D, floorType) as ConstantThickness;
                         if (copyCustomData)
@@ -1284,17 +1303,17 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static ISectionProperty ToBHoMSection(this FamilyInstance familyInstance, oM.Geometry.Line centreLine, bool copyCustomData = true)
+        public static ISectionProperty ToBHoMSection(this FamilyInstance familyInstance, bool copyCustomData = true)
         {
             try
             {
-                string materialGrade = familyInstance.MaterialGrade();
+                string materialGrade = familyInstance.GetMaterialGrade();
 
                 oM.Common.Materials.Material aMaterial = familyInstance.StructuralMaterialType.ToBHoM(materialGrade);
                 IProfile aSectionDimensions = null;
 
                 string name = familyInstance.Symbol.Name;
-                aSectionDimensions = Library.Query.Match("SectionProfiles", name) as IProfile;
+                aSectionDimensions = BH.Engine.Library.Query.Match("SectionProfiles", name) as IProfile;
 
                 if (aSectionDimensions == null)
                 {
@@ -1328,7 +1347,7 @@ namespace BH.Engine.Revit
                         {
                             if (obj is Solid)
                             {
-                                XYZ direction = (centreLine.ToRevit() as Line).Direction;
+                                XYZ direction = familyInstance.StructuralType == StructuralType.Column ? new XYZ(0, 0, 1) : new XYZ(1, 0, 0);
                                 foreach (Face face in (obj as Solid).Faces)
                                 {
                                     if (face is PlanarFace && (face as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(direction, 0.001) || (face as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(-direction, 0.001))
@@ -1371,10 +1390,10 @@ namespace BH.Engine.Revit
         {
             switch (structuralMaterialType)
             {
-                case StructuralMaterialType.Aluminum:
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Aluminum:
                     return BH.Engine.Library.Query.Match("MaterialsEurope", "ALUM") as oM.Common.Materials.Material;
-                case StructuralMaterialType.Concrete:
-                case StructuralMaterialType.PrecastConcrete:
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete:
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.PrecastConcrete:
                     if (materialGrade != null)
                     {
                         foreach (IBHoMObject concrete in Library.Query.Match("MaterialsEurope", "Type", "Concrete"))
@@ -1385,8 +1404,8 @@ namespace BH.Engine.Revit
                             }
                         }
                     }
-                    return Library.Query.Match("MaterialsEurope", "C30/37") as oM.Common.Materials.Material;
-                case StructuralMaterialType.Steel:
+                    return BH.Engine.Library.Query.Match("MaterialsEurope", "C30/37") as oM.Common.Materials.Material;
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
                     if (materialGrade != null)
                     {
                         foreach (IBHoMObject steel in Library.Query.Match("MaterialsEurope", "Type", "Steel"))
@@ -1397,8 +1416,8 @@ namespace BH.Engine.Revit
                             }
                         }
                     }
-                    return Library.Query.Match("MaterialsEurope", "S355") as oM.Common.Materials.Material;
-                case StructuralMaterialType.Wood:
+                    return BH.Engine.Library.Query.Match("MaterialsEurope", "S355") as oM.Common.Materials.Material;
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood:
                     return BH.Engine.Library.Query.Match("MaterialsEurope", "TIMBER") as oM.Common.Materials.Material;
                 default:
                     return new oM.Common.Materials.Material();
@@ -2029,6 +2048,23 @@ namespace BH.Engine.Revit
 
             foreach (BHoMObject aBHoMObject in bHoMObjects)
                 AddBHoMObject(aBHoMObject, objects);
+        }
+
+        /***************************************************/
+
+        //TODO: Move to Revit2018_Engine.Query
+        private static string GetMaterialGrade(this Element element)
+        {
+            string materialGrade;
+            try
+            {
+                materialGrade = element.LookupParameter("BHE_Material Grade").AsString();
+            }
+            catch
+            {
+                materialGrade = null;
+            }
+            return materialGrade;
         }
 
         /***************************************************/
