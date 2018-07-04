@@ -874,7 +874,7 @@ namespace BH.Engine.Revit
                     {
                         try
                         {
-                            string materialGrade = wall.GetMaterialGrade();
+                            string materialGrade = wall.MaterialGrade();
 
                             IProperty2D aProperty2D = wall.WallType.ToBHoM(discipline, copyCustomData, convertUnits, materialGrade) as IProperty2D;
                             List<oM.Geometry.ICurve> outlines = wall.Outlines();
@@ -976,7 +976,7 @@ namespace BH.Engine.Revit
                     {
                         try
                         {
-                            string materialGrade = floor.GetMaterialGrade();
+                            string materialGrade = floor.MaterialGrade();
 
                             IProperty2D aProperty2D = floor.FloorType.ToBHoM(discipline, copyCustomData, convertUnits, materialGrade) as IProperty2D;
                             List<oM.Geometry.ICurve> outlines = floor.Outlines();
@@ -1308,7 +1308,7 @@ namespace BH.Engine.Revit
         {
             try
             {
-                string materialGrade = familyInstance.GetMaterialGrade();
+                string materialGrade = familyInstance.MaterialGrade();
 
                 oM.Common.Materials.Material aMaterial = familyInstance.StructuralMaterialType.ToBHoM(materialGrade);
                 IProfile aSectionDimensions = null;
@@ -2049,23 +2049,6 @@ namespace BH.Engine.Revit
 
             foreach (BHoMObject aBHoMObject in bHoMObjects)
                 AddBHoMObject(aBHoMObject, objects);
-        }
-
-        /***************************************************/
-
-        //TODO: Move to Revit2018_Engine.Query
-        private static string GetMaterialGrade(this Element element)
-        {
-            string materialGrade;
-            try
-            {
-                materialGrade = element.LookupParameter("BHE_Material Grade").AsString();
-            }
-            catch
-            {
-                materialGrade = null;
-            }
-            return materialGrade;
         }
 
         /***************************************************/
