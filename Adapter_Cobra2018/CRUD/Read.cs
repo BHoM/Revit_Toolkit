@@ -51,7 +51,19 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected void Read(IEnumerable<BuiltInCategory> builtInCategories, Discipline discipline, Dictionary<ElementId, List<BHoMObject>> objects)
         {
-            if (m_Document == null || builtInCategories == null || builtInCategories.Count() < 1)
+            if (m_Document == null)
+            {
+                Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
+                return;
+            }
+
+            if (builtInCategories == null)
+            {
+                Engine.Reflection.Compute.RecordError("BHoM objects could not be read because revit Built-in categories is null.");
+                return;
+            }
+
+            if (builtInCategories.Count() < 1)
                 return;
 
             ICollection<ElementId> aElementIdList = new FilteredElementCollector(m_Document).WherePasses(new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
@@ -72,17 +84,35 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected void Read(ElementId elementId, Discipline discipline, Dictionary<ElementId, List<BHoMObject>> objects)
         {
-            if (m_Document == null || elementId == null || elementId == ElementId.InvalidElementId)
+            if (m_Document == null)
+            {
+                Engine.Reflection.Compute.RecordError("BHoM object could not be read because Revit Document is null.");
+                return;
+            }
+
+            if (elementId == null)
+            {
+                Engine.Reflection.Compute.RecordError("BHoM object could not be read because Revit elementId is null.");
+                return;
+            }
+
+            if (elementId == ElementId.InvalidElementId)
                 return;
 
             Element aElement = m_Document.GetElement(elementId);
 
             if (aElement == null)
+            {
+                Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because Revit ElementId {0} does not exists.", elementId.IntegerValue));
                 return;
+            }
 
             List<Type> aTypeList = Query.BHoMTypes(aElement);
-            if (aTypeList == null)
+            if (aTypeList == null || aTypeList.Count < 1)
+            {
+                Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because equivalent BHoM type does not exist. Element Id: {0}, Element Name: {1}", elementId.IntegerValue, aElement.Name));
                 return;
+            }  
 
             List<BHoMObject> aResult = null;
             if (aElement is Floor)
@@ -104,13 +134,21 @@ namespace BH.UI.Revit.Adapter
             }
             else
             {
-                object aObject = Engine.Revit.Convert.ToBHoM(aElement as dynamic, discipline, true, true);
+                try
+                {
+                    object aObject = Engine.Revit.Convert.ToBHoM(aElement as dynamic, discipline, true, true);
 
-                aResult = new List<BHoMObject>();
-                if (aObject is BHoMObject)
-                    aResult.Add(aObject as BHoMObject);
-                else if (aObject is List<BHoMObject>)
-                    aResult.AddRange(aObject as List<BHoMObject>);                
+                    aResult = new List<BHoMObject>();
+                    if (aObject is BHoMObject)
+                        aResult.Add(aObject as BHoMObject);
+                    else if (aObject is List<BHoMObject>)
+                        aResult.AddRange(aObject as List<BHoMObject>);
+                }
+                catch (Exception aException)
+                {
+                    Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because of conversion exception. Element Id: {0}, Element Name: {1}, Exception Message: {2}", elementId.IntegerValue, aElement.Name, aException.Message));
+                }
+               
             }
 
             if(aResult != null && aResult.Count > 0)
@@ -136,20 +174,39 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected void Read(IEnumerable<ElementId> elementIds, Discipline discipline, Dictionary<ElementId, List<BHoMObject>> objects)
         {
-            if (m_Document == null || elementIds == null)
+            if (m_Document == null)
+            {
+                Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
+                return;
+            }
+
+            if (elementIds == null)
+            {
+                Engine.Reflection.Compute.RecordError("BHoM objects could not be read because revit ElementIds are null.");
+                return;
+            }
+
+            if (elementIds.Count() < 1)
                 return;
 
             List<BHoMObject> aResult = new List<BHoMObject>();
             foreach (ElementId aElementId in elementIds)
+            {
+                if(aElementId == null || aElementId == ElementId.InvalidElementId)
+                {
+                    Engine.Reflection.Compute.RecordError("BHoM object could not be read because Revit elementId is null or Invalid.");
+                    continue;
+                }
+
                 try
                 {
                     Read(aElementId, discipline, objects);
                 }
                 catch (Exception e)
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Failed to read the element with the Revit ID: " + aElementId.IntegerValue.ToString() + ". \n Following error message was thrown: " + e.Message);
+                    Engine.Reflection.Compute.RecordError("Failed to read the element with the Revit ElementId: " + aElementId.IntegerValue.ToString() + ". \n Following error message was thrown: " + e.Message);
                 }
-
+            }
         }
 
         /***************************************************/
@@ -165,28 +222,54 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected void Read(IEnumerable<Type> types, Dictionary<ElementId, List<BHoMObject>> objects, IEnumerable<string> uniqueIds = null)
         {
-            if (types == null || m_Document == null)
+            if (m_Document == null)
+            {
+                Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
+                return;
+            }
+
+            if (types == null)
+            {
+                Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided types are null.");
+                return;
+            }
+
+            if (types.Count() < 1)
                 return;
 
             //Get Revit class types
             List<Tuple<Type, List<BuiltInCategory>, Discipline>> aTupleList = new List<Tuple<Type, List<BuiltInCategory>, Discipline>>();
             foreach (Type aType in types)
             {
+                if(aType == null)
+                {
+                    Engine.Reflection.Compute.RecordError("Provided type could not be read because is null.");
+                    continue;
+                }
+
                 if (Query.IsAssignableFromByFullName(aType, typeof(Element)))
                 {
-                    if(aTupleList.Find(x => x.Item1 == aType) == null)
-                        aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType, new List<BuiltInCategory>() , Discipline.Environmental));
+                    if (aTupleList.Find(x => x.Item1 == aType) == null)
+                        aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType, new List<BuiltInCategory>(), Discipline.Environmental));
                 }
                 else if (Query.IsAssignableFromByFullName(aType, typeof(BHoMObject)))
                 {
                     IEnumerable<Type> aTypes = Query.RevitTypes(aType);
-                    if (aTypes != null)
+                    if (aTypes == null || aTypes.Count() < 1)
                     {
-                        foreach (Type aType_Temp in aTypes)
-                            if (aTupleList.Find(x => x.Item1 == aType_Temp) == null)
-                                aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType_Temp, aType.BuiltInCategories(), aType.Discipline()));
+                        Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because equivalent BHoM types do not exist. Type Name: {0}", aType.FullName));
+                        continue;
                     }
 
+                    foreach (Type aType_Temp in aTypes)
+                        if (aTupleList.Find(x => x.Item1 == aType_Temp) == null)
+                            aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType_Temp, aType.BuiltInCategories(), aType.Discipline()));
+
+                }
+                else
+                {
+                    Engine.Reflection.Compute.RecordError(string.Format("Provided type is invalid. Type Name: {}", aType.FullName));
+                    continue;
                 }
             }
 
@@ -236,8 +319,17 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
         {
-            if (type == null)
+            if (m_Document == null)
+            {
+                Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
                 return null;
+            }
+
+            if (type == null)
+            {
+                Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided type is null.");
+                return null;
+            }
 
             Dictionary<ElementId, List<BHoMObject>> aDictionary = new Dictionary<ElementId, List<BHoMObject>>();
 
