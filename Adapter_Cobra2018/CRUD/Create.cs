@@ -36,6 +36,19 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected bool Create(BHoMObject bHoMObject, bool copyCustomData = true, bool replace = false)
         {
+            if (m_Document == null)
+            {
+                Engine.Reflection.Compute.RecordError("Revit objects could not be created because Revit Document is null.");
+                return false;
+            }
+
+            if (bHoMObject == null)
+            {
+                Engine.Reflection.Compute.RecordError("Revit objects could not be created because BHoM object is null.");
+                return false;
+            }
+                
+
             bool aResult = false;
             using (Transaction aTransaction = new Transaction(m_Document, "Create"))
             {
@@ -60,7 +73,19 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected bool Create(IEnumerable<BHoMObject> bHoMObjects, bool copyCustomData = true, bool replace = false)
         {
-            if (m_Document == null || bHoMObjects == null && bHoMObjects.Count() < 1)
+            if(m_Document == null)
+            {
+                Engine.Reflection.Compute.RecordError("Revit objects could not be created because Revit Document is null.");
+                return false;
+            }
+
+            if (bHoMObjects == null)
+            {
+                Engine.Reflection.Compute.RecordError("Revit objects could not be created because BHoM object is null.");
+                return false;
+            }
+
+            if (bHoMObjects.Count() < 1)
                 return false;
 
             using (Transaction aTransaction = new Transaction(m_Document, "Create"))
@@ -87,7 +112,19 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {
-            if (m_Document == null || objects == null)
+            if (m_Document == null)
+            {
+                Engine.Reflection.Compute.RecordError("Objects could not be created because Revit Document is null.");
+                return false;
+            }
+
+            if (objects == null)
+            {
+                Engine.Reflection.Compute.RecordError("Objects could not be created because BHoM object is null.");
+                return false;
+            }
+
+            if (objects.Count() < 1)
                 return false;
 
             using (Transaction aTransaction = new Transaction(m_Document, "Create"))
@@ -108,10 +145,16 @@ namespace BH.UI.Revit.Adapter
         private bool Create(BuildingElement buildingElement, bool copyCustomData = true, bool replace = false)
         {
             if (buildingElement == null)
+            {
+                Engine.Reflection.Compute.RecordError("Revit Object could not be created because BHoM buildingElement is null.");
                 return false;
+            }
 
-            if (buildingElement.BuildingElementProperties == null)
+            if (buildingElement == null)
+            {
+                Engine.Reflection.Compute.RecordError("Revit Object could not be created because BHoM buildingElementProperies are null.");
                 return false;
+            }
 
             //Set ElementType
             Create(buildingElement.BuildingElementProperties, copyCustomData, false);
@@ -134,7 +177,10 @@ namespace BH.UI.Revit.Adapter
         private bool Create(oM.Architecture.Elements.Level level, bool copyCustomData = true, bool replace = false)
         {
             if (level == null)
+            {
+                Engine.Reflection.Compute.RecordError("Revit Object could not be created because BHoM Level is null.");
                 return false;
+            }
 
             if (replace)
                 Delete(level);
@@ -161,7 +207,10 @@ namespace BH.UI.Revit.Adapter
         private bool Create(BuildingElementProperties buildingElementProperties, bool copyCustomData = true, bool replace = false)
         {
             if (buildingElementProperties == null)
+            {
+                Engine.Reflection.Compute.RecordError("Revit Object could not be created because BHoM BuildingElementProperties are null.");
                 return false;
+            }
 
             if (replace)
                 Delete(buildingElementProperties);
@@ -185,6 +234,12 @@ namespace BH.UI.Revit.Adapter
 
         private bool Create(FramingElement framingElement, bool copyCustomData = true, bool replace = false)
         {
+            if (framingElement == null)
+            {
+                Engine.Reflection.Compute.RecordError("Revit Object could not be created because BHoM FramingElement is null.");
+                return false;
+            }
+
             FamilyInstance aFamilyInstance = framingElement.ToRevit(m_Document, copyCustomData);
 
             return true;
