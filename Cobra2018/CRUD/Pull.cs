@@ -16,6 +16,9 @@ namespace BH.UI.Revit
             {
                 try
                 {
+                    //Clear the event log
+                    Engine.Reflection.Compute.ClearCurrentEvents();
+
                     //Get instance of listener
                     RevitListener listener = RevitListener.Listener;
 
