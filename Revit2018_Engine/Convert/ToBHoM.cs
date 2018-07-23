@@ -28,6 +28,35 @@ namespace BH.Engine.Revit
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
+       
+            /// <summary>
+        /// Gets BHoM Point from Revit (XYZ) Point
+        /// </summary>
+        /// <param name="aelement">Revit Point (XYZ)</param>
+        /// <param name="convertUnits">Convert to SI units</param>
+        /// <returns name="Point">BHoM Point</returns>
+        /// <search>
+        /// Convert, ToBHoM, BHoM Point, Revit Point, XYZ 
+        /// </search>
+        public static oM.Base.CustomObject ToCustomObject(this Element aelement, bool convertUnits = true)
+        {
+            Autodesk.Revit.DB.Options opt = new Options();
+            Autodesk.Revit.DB.GeometryElement geomElem = aelement.get_Geometry(opt);
+            BoundingBoxXYZ asdf = geomElem.GetBoundingBox();
+             
+            oM.Geometry.BoundingBox bb = new oM.Geometry.BoundingBox();
+
+            bb.Max = new oM.Geometry.Point{ X = bb.Max.X, Y = bb.Max.Y, Z = bb.Max.Z };
+            // oM.Base.CustomObject co = new CustomObject();
+            oM.Base.CustomObject co = new CustomObject();
+            co.SetCustomData("ObjectBoundingBox", bb);
+            //need to cast this next time
+            return Modify.SetCustomData(co, aelement, true);
+
+
+            return co;
+
+        }
 
         /// <summary>
         /// Gets BHoM Point from Revit (XYZ) Point
@@ -897,7 +926,16 @@ namespace BH.Engine.Revit
                         }
                         catch (Exception e)
                         {
-                            throw new Exception("Failed to pull element " + wall.Id.IntegerValue.ToString() + ". Exception: " + e.Message);
+                            try
+                            {
+                                List<BHoMObject> aResult = new List<BHoMObject>();
+                                    aResult.Add(wall.ToCustomObject(true));
+                                return aResult;
+                            }
+                            catch
+                            {
+                                throw new Exception("Failed to pull element " + wall.Id.IntegerValue.ToString() + ". Exception: " + e.Message);
+                            }
                         }
                     }
             }
@@ -998,14 +1036,23 @@ namespace BH.Engine.Revit
                         }
                         catch (Exception e)
                         {
-                            throw new Exception("Failed to pull element " + floor.Id.IntegerValue.ToString() + ". Exception: " + e.Message);
+                            try
+                            {
+                                List<BHoMObject> aResult = new List<BHoMObject>();
+                                aResult.Add(floor.ToCustomObject(true));
+                                return aResult;
+                            }
+                            catch
+                            {
+                                throw new Exception("Failed to pull element " + floor.Id.IntegerValue.ToString() + ". Exception: " + e.Message);
+                            }
                         }
                     }
             }
 
             return null;
         }
-
+        
         public static List<BHoMObject> ToBHoM(this RoofBase roofBase, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             switch (discipline)
@@ -1996,6 +2043,7 @@ namespace BH.Engine.Revit
                         Curve gridLine = grid.Curve;
                         oM.Architecture.Elements.Grid aGrid = Architecture.Elements.Create.Grid(gridLine.ToBHoM(convertUnits));
                         aGrid.Name = grid.Name;
+                        aGrid = Modify.SetCustomData(aGrid, grid, true) as oM.Architecture.Elements.Grid;
                         return aGrid;
                     }
             }
