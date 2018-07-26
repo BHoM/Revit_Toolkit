@@ -5,8 +5,8 @@ using System.Linq;
 using Autodesk.Revit.DB;
 
 using BH.oM.Base;
-using BH.oM.Environmental.Properties;
-using BH.oM.Environmental.Elements;
+using BH.oM.Environment.Properties;
+using BH.oM.Environment.Elements;
 using BH.oM.Structural.Elements;
 
 using BH.Engine.Revit;

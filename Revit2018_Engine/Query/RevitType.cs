@@ -1,6 +1,6 @@
 ﻿using System;
 
-using BH.oM.Environmental.Elements;
+using BH.oM.Environment.Elements;
 
 using Autodesk.Revit.DB;
 
@@ -27,17 +27,17 @@ namespace BH.Engine.Revit
         {
             switch (buildingElementType)
             {
-                case BH.oM.Environmental.Elements.BuildingElementType.Ceiling:
+                case BH.oM.Environment.Elements.BuildingElementType.Ceiling:
                     return typeof(CeilingType);
-                case BH.oM.Environmental.Elements.BuildingElementType.Floor:
+                case BH.oM.Environment.Elements.BuildingElementType.Floor:
                     return typeof(FloorType);
-                case BH.oM.Environmental.Elements.BuildingElementType.Roof:
+                case BH.oM.Environment.Elements.BuildingElementType.Roof:
                     return typeof(RoofType);
-                case BH.oM.Environmental.Elements.BuildingElementType.Wall:
+                case BH.oM.Environment.Elements.BuildingElementType.Wall:
                     return typeof(WallType);
-                case BH.oM.Environmental.Elements.BuildingElementType.Door:
+                case BH.oM.Environment.Elements.BuildingElementType.Door:
                     return typeof(FamilyInstance);
-                case BH.oM.Environmental.Elements.BuildingElementType.Window:
+                case BH.oM.Environment.Elements.BuildingElementType.Window:
                     return typeof(FamilyInstance);
             }
 

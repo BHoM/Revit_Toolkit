@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using BH.oM.Environmental.Elements;
+using BH.oM.Environment.Elements;
 
 using Autodesk.Revit.DB;
 
@@ -32,19 +32,19 @@ namespace BH.Engine.Revit
             switch (builtInCategory)
             {
                 case BuiltInCategory.OST_Ceilings:
-                    return oM.Environmental.Elements.BuildingElementType.Ceiling;
+                    return oM.Environment.Elements.BuildingElementType.Ceiling;
                 case BuiltInCategory.OST_Floors:
-                    return oM.Environmental.Elements.BuildingElementType.Floor;
+                    return oM.Environment.Elements.BuildingElementType.Floor;
                 case BuiltInCategory.OST_Roofs:
-                    return oM.Environmental.Elements.BuildingElementType.Roof;
+                    return oM.Environment.Elements.BuildingElementType.Roof;
                 case BuiltInCategory.OST_Walls:
-                    return oM.Environmental.Elements.BuildingElementType.Wall;
+                    return oM.Environment.Elements.BuildingElementType.Wall;
                 case BuiltInCategory.OST_Windows:
-                    return oM.Environmental.Elements.BuildingElementType.Window;
+                    return oM.Environment.Elements.BuildingElementType.Window;
                 case BuiltInCategory.OST_Doors:
-                    return oM.Environmental.Elements.BuildingElementType.Door;
+                    return oM.Environment.Elements.BuildingElementType.Door;
                 case BuiltInCategory.OST_CurtainWallPanels:
-                    return oM.Environmental.Elements.BuildingElementType.Window;
+                    return oM.Environment.Elements.BuildingElementType.Window;
             }
 
             return null;
