@@ -2,7 +2,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
-using BH.oM.Environmental.Elements;
+using BH.oM.Environment.Elements;
 using BH.Engine.Environment;
 
 namespace BH.Engine.Revit
