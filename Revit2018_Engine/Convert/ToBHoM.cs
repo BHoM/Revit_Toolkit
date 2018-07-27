@@ -991,7 +991,7 @@ namespace BH.Engine.Revit
 
                                 if (copyCustomData)
                                 {
-                                    panel = Modify.SetCustomData(panel, floor, convertUnits) as PanelPlanar;
+                                    aResult[i] = Modify.SetCustomData(panel, floor, convertUnits) as PanelPlanar;
                                 }
                             }
                             return aResult;
