@@ -641,8 +641,8 @@ namespace BH.Engine.Revit
                                             PolyCurve = aBuildingElementPanel_Hosted.PolyCurve
                                         };
 
-                                        if (copyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Convert.ElementId))
-                                            aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, Convert.ElementId, aBuildingElement_Hosted.CustomData[Convert.ElementId]) as BuildingElementOpening;
+                                        if (copyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Adapter.Revit.Id.ElementId))
+                                            aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, Adapter.Revit.Id.ElementId, aBuildingElement_Hosted.CustomData[Adapter.Revit.Id.ElementId]) as BuildingElementOpening;
 
                                         aBuildingElementPanel.Openings.Add(aBuildingElementOpening);
                                     }
@@ -691,8 +691,8 @@ namespace BH.Engine.Revit
                                             PolyCurve = aBuildingElementPanel_Hosted.PolyCurve
                                         };
 
-                                        if (copyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Convert.ElementId))
-                                            aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, Convert.ElementId, aBuildingElement_Hosted.CustomData[Convert.ElementId]) as BuildingElementOpening;
+                                        if (copyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Adapter.Revit.Id.ElementId))
+                                            aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, Adapter.Revit.Id.ElementId, aBuildingElement_Hosted.CustomData[Adapter.Revit.Id.ElementId]) as BuildingElementOpening;
 
                                         aBuildingElementPanel.Openings.Add(aBuildingElementOpening);
                                     }

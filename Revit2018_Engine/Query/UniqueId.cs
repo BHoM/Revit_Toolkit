@@ -28,7 +28,7 @@ namespace BH.Engine.Revit
                 return null;
 
             object aValue = null;
-            if (bHoMObject.CustomData.TryGetValue(Convert.AdapterId, out aValue))
+            if (bHoMObject.CustomData.TryGetValue(Adapter.Revit.Id.AdapterId, out aValue))
             {
                 if (aValue is string)
                     return (string)aValue;

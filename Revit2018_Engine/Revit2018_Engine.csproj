@@ -71,7 +71,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Convert\AdapterId.cs" />
     <Compile Include="Convert\Enums.cs" />
     <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Convert\ToRevit.cs" />
@@ -110,6 +109,12 @@
     <Compile Include="Query\Top.cs" />
     <Compile Include="Query\UniqueId.cs" />
     <Compile Include="Query\UniqueIds.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
+      <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
+      <Name>Revit_Adapter</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
