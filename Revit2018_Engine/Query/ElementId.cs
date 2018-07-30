@@ -33,7 +33,7 @@ namespace BH.Engine.Revit
                 return null;
 
             object aValue = null;
-            if (bHoMObject.CustomData.TryGetValue(Convert.ElementId, out aValue))
+            if (bHoMObject.CustomData.TryGetValue(Adapter.Revit.Id.ElementId, out aValue))
             {
                 if (aValue is string)
                 {

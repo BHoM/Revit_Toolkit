@@ -8,7 +8,7 @@ using Autodesk.Revit.DB;
 
 using BH.UI.Revit.Adapter;
 
-using BH.oM.Environmental.Elements;
+using BH.oM.Environment.Elements;
 using BH.Engine.Environment;
 using BH.oM.Structural.Elements;
 using BH.Engine.Revit;

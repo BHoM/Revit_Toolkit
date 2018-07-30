@@ -20,24 +20,31 @@ namespace BH.Adapter.Revit
         /**** Public Properties                         ****/
         /***************************************************/
 
-        public static BHoMAdapter InternalAdapter { get; set; } = null;
+        public static InternalAdapter InternalAdapter { get; set; } = null;
+        public RevitSettings RevitSettings { get; set; } = new RevitSettings();
 
         /***************************************************/
         /**** Constructors                              ****/
         /***************************************************/
 
-        public RevitAdapter(int pushPort = 14128, int pullPort = 14129, double maxMinutesToWait = 10)
+        public RevitAdapter(RevitSettings revitSettings = null, bool active = false)
         {
-            m_linkIn = new SocketLink_Tcp(pushPort);
-            m_linkOut = new SocketLink_Tcp(pullPort);
+            if (!active)
+                return;
+
+            if (revitSettings != null)
+                RevitSettings = revitSettings;
+
+            m_linkIn = new SocketLink_Tcp(RevitSettings.PushPort);
+            m_linkOut = new SocketLink_Tcp(RevitSettings.PullPort);
             m_linkOut.DataObservers += M_linkOut_DataObservers;
 
             m_waitEvent = new ManualResetEvent(false);
             m_returnPackage = new List<object>();
             m_returnEvents = new List<Event>();
 
-            m_waitTime = maxMinutesToWait;
-        }
+            m_waitTime = RevitSettings.MaxMinutesToWait;
+        } 
 
         private void M_linkOut_DataObservers(oM.Socket.DataPackage package)
         {
@@ -59,7 +66,11 @@ namespace BH.Adapter.Revit
         {
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)
+            {
+                InternalAdapter.RevitSettings = RevitSettings;
                 return InternalAdapter.Push(objects, tag, config);
+            }
+                
 
             //Reset the wait event
             m_waitEvent.Reset();
@@ -95,7 +106,10 @@ namespace BH.Adapter.Revit
         {
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)
+            {
+                InternalAdapter.RevitSettings = RevitSettings;
                 return InternalAdapter.Pull(query, config);
+            }  
 
             //Reset the wait event
             m_waitEvent.Reset();
@@ -114,7 +128,7 @@ namespace BH.Adapter.Revit
 
             //Wait until the return message has been recieved
             if (!m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime)))
-                BH.Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
+                Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
 
             //Grab the return objects from the latest package
             List<object> returnObjs = new List<object>(m_returnPackage);
@@ -136,7 +150,10 @@ namespace BH.Adapter.Revit
         {
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)
+            {
+                InternalAdapter.RevitSettings = RevitSettings;
                 return InternalAdapter.Delete(filter, config);
+            }
 
             throw new NotImplementedException();
         }
@@ -147,7 +164,11 @@ namespace BH.Adapter.Revit
         {
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)
+            {
+                InternalAdapter.RevitSettings = RevitSettings;
                 return InternalAdapter.UpdateProperty(filter, property, newValue, config);
+            }
+                
 
             throw new NotImplementedException();
         }
@@ -158,7 +179,11 @@ namespace BH.Adapter.Revit
         {
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)
+            {
+                InternalAdapter.RevitSettings = RevitSettings;
                 return InternalAdapter.Execute(command, parameters, config);
+            }
+                
 
             throw new NotImplementedException();
         }
@@ -187,7 +212,7 @@ namespace BH.Adapter.Revit
             m_waitEvent.Reset();
 
             if (!returned)
-                BH.Engine.Reflection.Compute.RecordError("Failed to connect to Revit");
+                Engine.Reflection.Compute.RecordError("Failed to connect to Revit");
 
             return returned;
         }
@@ -199,8 +224,8 @@ namespace BH.Adapter.Revit
             if (m_returnEvents == null)
                 return;
 
-            BH.Engine.Reflection.Query.CurrentEvents().AddRange(m_returnEvents);
-            BH.Engine.Reflection.Query.AllEvents().AddRange(m_returnEvents);
+            Engine.Reflection.Query.CurrentEvents().AddRange(m_returnEvents);
+            Engine.Reflection.Query.AllEvents().AddRange(m_returnEvents);
 
             m_returnEvents = new List<Event>();
         }
@@ -210,7 +235,7 @@ namespace BH.Adapter.Revit
             throw new NotImplementedException();
         }
 
-        protected override IEnumerable<BH.oM.Base.IBHoMObject> Read(Type type, IList ids)
+        protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
         {
             throw new NotImplementedException();
         }
