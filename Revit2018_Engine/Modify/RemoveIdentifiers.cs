@@ -26,8 +26,8 @@ namespace BH.Engine.Revit
 
             BHoMObject aBHoMObject = bHoMObject.GetShallowClone() as BHoMObject;
 
-            aBHoMObject.CustomData.Remove(Convert.AdapterId);
-            aBHoMObject.CustomData.Remove(Convert.ElementId);
+            aBHoMObject.CustomData.Remove(Adapter.Revit.Id.AdapterId);
+            aBHoMObject.CustomData.Remove(Adapter.Revit.Id.ElementId);
 
             return aBHoMObject;
 

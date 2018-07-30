@@ -40,10 +40,8 @@
       <HintPath>..\..\BHoM_Adapter\Build\BHoM_Adapter.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Environment_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Environment_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Environment_Engine.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Geometry_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Geometry_Engine.dll</HintPath>
@@ -103,6 +101,10 @@
       <Project>{4dfaf9c8-9770-4e5a-818d-eb4dab665145}</Project>
       <Name>Revit2018_Engine</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
+      <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
+      <Name>Revit_Adapter</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

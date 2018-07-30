@@ -6,18 +6,17 @@ using System.Threading.Tasks;
 
 using BH.Adapter;
 
-using Autodesk.Revit.DB;
-using BH.Adapter.Revit;
 
-namespace BH.UI.Revit.Adapter
+namespace BH.Adapter.Revit
 {
-    public partial class RevitInternalAdapter : InternalAdapter
+    public abstract class InternalAdapter : BHoMAdapter
     {
+        
         /***************************************************/
         /**** Private Properties                        ****/
         /***************************************************/
 
-        private Document m_Document;
+        private RevitSettings m_RevitSettings;
 
         /***************************************************/
         /**** Public Constructors                       ****/
@@ -30,11 +29,31 @@ namespace BH.UI.Revit.Adapter
         /// <search>
         /// Create, RevitAdapter, Constructor, Document
         /// </search>
-        public RevitInternalAdapter(Document document)
-            : base()
+        public InternalAdapter()
         {
-            m_Document = document;
+            AdapterId = Id.AdapterId;
+            Config.UseAdapterId = false;
+            Config.ProcessInMemory = false;
         }
 
+        /***************************************************/
+        /**** Public Properties                        ****/
+        /***************************************************/
+
+        public RevitSettings RevitSettings
+        {
+            get
+            {
+                return m_RevitSettings;
+            }
+
+            set
+            {
+                m_RevitSettings = value;
+            }
+
+        }
+
+        /***************************************************/
     }
 }

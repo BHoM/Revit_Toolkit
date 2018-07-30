@@ -201,7 +201,6 @@ namespace BH.UI.Revit.Adapter
             {
                 Element aElement = m_Document.GetElement(aUniqueId);
                 return Delete(aElement);
-
             }
 
             return false;
@@ -280,6 +279,17 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
+            if (RevitSettings != null && RevitSettings.SelectionSettings != null)
+            {
+                IEnumerable<string> aUniqueIds = RevitSettings.SelectionSettings.UniqueIds;
+                if (aUniqueIds != null && aUniqueIds.Count() > 0 && !aUniqueIds.Contains(element.UniqueId))
+                    return false;
+
+                IEnumerable<int> aElementIds_Temp = RevitSettings.SelectionSettings.ElementIds;
+                if (aElementIds_Temp != null && aElementIds_Temp.Count() > 0 && !aElementIds_Temp.Contains(element.Id.IntegerValue))
+                    return false;
+            }
+
             ICollection<ElementId> aElementIds = m_Document.Delete(element.Id);
             if (aElementIds != null && aElementIds.Count > 0)
                 return true;
@@ -297,10 +307,43 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            if (elementIds.Count() > 0)
+            if (elementIds.Count() < 1)
                 return false;
 
-            ICollection<ElementId> aElementIds = m_Document.Delete(elementIds);
+            List<ElementId> aElementIdList = null;
+
+            if (RevitSettings != null && RevitSettings.SelectionSettings != null)
+            {
+                IEnumerable<int> aElementIds_Temp = RevitSettings.SelectionSettings.ElementIds;
+                if (aElementIds_Temp != null && aElementIds_Temp.Count() > 0)
+                {
+                    aElementIdList = new List<ElementId>();
+
+                    foreach (ElementId aElementId in elementIds)
+                        if (aElementIds_Temp.Contains(aElementId.IntegerValue) && !aElementIdList.Contains(aElementId))
+                            aElementIdList.Add(aElementId);
+                }
+
+                IEnumerable<string> aUniqueIds = RevitSettings.SelectionSettings.UniqueIds;
+                if((aUniqueIds != null && aUniqueIds.Count() > 0))
+                {
+                    if (aElementIdList == null)
+                        aElementIdList = new List<ElementId>();
+
+                    foreach (ElementId aElementId in elementIds)
+                        if (!aElementIdList.Contains(aElementId))
+                        {
+                            Element aElement = m_Document.GetElement(aElementId);
+                            if (aElement != null && aUniqueIds.Contains(aElement.UniqueId))
+                                aElementIdList.Add(aElementId);
+                        }
+                }               
+            }
+
+            if(aElementIdList == null)
+                aElementIdList = new List<ElementId>(elementIds);
+
+            ICollection<ElementId> aElementIds = m_Document.Delete(aElementIdList);
             if (aElementIds != null && aElementIds.Count > 0)
                 return true;
 

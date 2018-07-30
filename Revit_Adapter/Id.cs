@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.Engine.Revit
+namespace BH.Adapter.Revit
 {
     /// <summary>
-    /// BHoM Revit Engine Convert Methods
+    /// BHoM Revit Adpater Ids
     /// </summary>
-    public static partial class Convert
+    public static partial class Id
     {
         /***************************************************/
         /**** Public Properties                         ****/

@@ -20,6 +20,7 @@ namespace BH.UI.Revit
         /***************************************************/
         /**** Properties                                ****/
         /***************************************************/
+
         public List<IObject> LatestPackage { get; set; }
 
         /***************************************************/
@@ -31,9 +32,11 @@ namespace BH.UI.Revit
         public Dictionary<string, object> LatestConfig { get; set; } = null;
 
         /***************************************************/
+
         public string LatestTag { get; set; }
 
         /***************************************************/
+
         public static RevitListener Listener { get; private set; } = null;
 
 
@@ -57,10 +60,10 @@ namespace BH.UI.Revit
         public void ReturnData(IEnumerable<object> objs)
         {
 
-            BH.oM.Socket.DataPackage package = new oM.Socket.DataPackage
+            oM.Socket.DataPackage package = new oM.Socket.DataPackage
             {
                 Data = objs.ToList(),
-                Events = BH.Engine.Reflection.Query.CurrentEvents(),
+                Events = Engine.Reflection.Query.CurrentEvents(),
                 Tag = ""
             };
 

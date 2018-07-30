@@ -297,7 +297,28 @@ namespace BH.UI.Revit.Adapter
                         continue;
 
                     if (uniqueIds == null || uniqueIds.Contains(aElement.UniqueId))
+                    {
                         aElementIdList.Add(aElement.Id);
+                        continue;
+                    }
+
+                    if(RevitSettings != null && RevitSettings.SelectionSettings != null)
+                    {
+                        IEnumerable<string> aUniqueIds = RevitSettings.SelectionSettings.UniqueIds;
+                        if (aUniqueIds != null && aUniqueIds.Count() > 0 && aUniqueIds.Contains(aElement.UniqueId))
+                        {
+                            aElementIdList.Add(aElement.Id);
+                            continue;
+                        }
+
+                        IEnumerable<int> aElementIds = RevitSettings.SelectionSettings.ElementIds;
+                        if(aElementIds != null && aElementIds.Count() > 0 && aElementIds.Contains(aElement.Id.IntegerValue))
+                        {
+                            aElementIdList.Add(aElement.Id);
+                            continue;
+                        }
+                    }
+                        
                 }
                 if (aElementIdList == null || aElementIdList.Count < 1)
                     continue;
