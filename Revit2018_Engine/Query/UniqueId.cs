@@ -15,7 +15,7 @@ namespace BH.Engine.Revit
     public static partial class Query
     {
         /// <summary>
-        /// Reads Revit UniqueId from BHoMObject CustomData. Key: Utilis.AdapterId
+        /// Reads Revit UniqueId from BHoMObject CustomData. Key: BH.Adapter.Revit.Id.AdapterId
         /// </summary>
         /// <param name="bHoMObject">BHoMObject</param>
         /// <returns name="UniqueId">Revit UniqueId</returns>

@@ -21,5 +21,10 @@ namespace BH.Adapter.Revit
         public SelectionSettings SelectionSettings = new SelectionSettings();
 
         /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
+
+
+        /***************************************************/
     }
 }
