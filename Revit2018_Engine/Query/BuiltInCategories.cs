@@ -45,6 +45,10 @@ namespace BH.Engine.Revit
             {
                 aBuiltInCategoryList.Add(BuiltInCategory.OST_Doors);
                 aBuiltInCategoryList.Add(BuiltInCategory.OST_Windows);
+                aBuiltInCategoryList.Add(BuiltInCategory.OST_Walls);
+                aBuiltInCategoryList.Add(BuiltInCategory.OST_Floors);
+                aBuiltInCategoryList.Add(BuiltInCategory.OST_Ceilings);
+                aBuiltInCategoryList.Add(BuiltInCategory.OST_Roofs);
             }
 
             return aBuiltInCategoryList;

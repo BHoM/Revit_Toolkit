@@ -37,7 +37,7 @@ namespace BH.Engine.Revit
             List<ElementId> aElementIdList = new List<ElementId>();
             foreach (string aUniqueId in uniqueIds)
             {
-                if (string.IsNullOrEmpty(aUniqueId))
+                if (!string.IsNullOrEmpty(aUniqueId))
                 {
                     Element aElement = document.GetElement(aUniqueId);
                     if (aElement != null)

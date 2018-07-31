@@ -31,6 +31,15 @@ namespace BH.Engine.Revit
             aBHoMObject = aBHoMObject.SetCustomData(Adapter.Revit.Id.ElementId, element.Id.IntegerValue);
             aBHoMObject = aBHoMObject.SetCustomData(Adapter.Revit.Id.AdapterId, element.UniqueId);
 
+            int aWorksetId = WorksetId.InvalidWorksetId.IntegerValue;
+            if (element.Document != null && element.Document.IsWorkshared)
+            {
+                WorksetId aWorksetId_Revit = element.WorksetId;
+                if (aWorksetId_Revit != null)
+                    aWorksetId = aWorksetId_Revit.IntegerValue;
+            }
+            aBHoMObject = aBHoMObject.SetCustomData(Adapter.Revit.Id.WorksetId, aWorksetId);
+
             return aBHoMObject;
         }
 

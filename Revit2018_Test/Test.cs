@@ -15,6 +15,7 @@ using BH.Engine.Revit;
 using System.Collections.Generic;
 using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
+using BH.Adapter.Revit;
 
 namespace Revit2018_Test
 {
@@ -54,15 +55,23 @@ namespace Revit2018_Test
         public Result Execute(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
             //Creating Revit Adapter for active Revit Document
-            RevitInternalAdapter pRevitAdapter = new RevitInternalAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
+            RevitInternalAdapter pRevitInternalAdapter = new RevitInternalAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
 
             FilterQuery aFilterQuery = null;
             List<IBHoMObject> aBHoMObjectList = null;
 
-            aFilterQuery = new FilterQuery() { Type = typeof(FramingElement) };
-            aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            RevitSettings aRevitSetting = new RevitSettings();
+            //aRevitSetting.SelectionSettings.ElementIds = new List<int>() { 2323 };
+            aRevitSetting.WorksetSettings.WorksetIds = new List<int>() { 0 };
 
-            pRevitAdapter.Push(aBHoMObjectList);
+            pRevitInternalAdapter.RevitSettings = aRevitSetting;
+
+            aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
+            aBHoMObjectList = pRevitInternalAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+
+            pRevitInternalAdapter.Delete(aBHoMObjectList.Cast<BHoMObject>());
+
+            pRevitInternalAdapter.Push(aBHoMObjectList);
 
             //aFilterQuery = new FilterQuery() { Type = typeof(Space) };
             //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
