@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>Cobra</Name>
+    <Assembly>Cobra\Cobra.dll</Assembly>
+    <FullClassName>BH.UI.Revit.RevitListener</FullClassName> |
+    <AddInId>05D16C68-EA24-4E38-A9D9-6029E2F8C760</AddInId>
+    <Text>BuroHappold Addin Suite</Text>
+    <VendorId>Buro Happold</VendorId>
+  </AddIn>
+</RevitAddIns>
