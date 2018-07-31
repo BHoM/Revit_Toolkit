@@ -69,7 +69,7 @@ namespace BH.Engine.Revit
         /// <summary>
         /// Gets BHoM Vector from Revit Point
         /// </summary>
-        /// <param name="point">Revit Point</param>
+        /// <param name="xyz">Revit Point</param>
         /// <param name="convertUnits">Convert to SI units</param>
         /// <returns name="Point">BHoM Vector</returns>
         /// <search>
@@ -89,7 +89,7 @@ namespace BH.Engine.Revit
         /// <summary>
         /// Gets BHoM CoordinateSystem from Revit Plane
         /// </summary>
-        /// <param name="locationPoint">Revit Plane</param>
+        /// <param name="plane">Revit Plane</param>
         /// <param name="convertUnits">Convert to SI units</param>
         /// <returns name="Point">BHoM Point</returns>
         /// <search>

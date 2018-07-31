@@ -107,11 +107,16 @@ namespace BH.UI.Revit.Adapter
                 return;
             }
 
+            if (!Query.AllowElement(RevitSettings, aElement))
+                return;
+
             List<Type> aTypeList = Query.BHoMTypes(aElement);
             if (aTypeList == null || aTypeList.Count < 1)
             {
                 Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because equivalent BHoM type does not exist. Element Id: {0}, Element Name: {1}", elementId.IntegerValue, aElement.Name));
                 return;
+
+
             }  
 
             List<BHoMObject> aResult = null;

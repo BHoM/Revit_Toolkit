@@ -28,5 +28,12 @@ namespace BH.Adapter.Revit
         public const string ElementId = "Revit_elementId";
 
         /***************************************************/
+
+        /// <summary>
+        /// WorksetId - CustomData element workset idetification parameter name
+        /// </summary>
+        public const string WorksetId = "Revit_worksetId";
+
+        /***************************************************/
     }
 }

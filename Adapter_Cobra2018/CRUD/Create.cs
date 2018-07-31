@@ -48,24 +48,9 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            if(RevitSettings != null && RevitSettings.SelectionSettings != null)
-            {
-                IEnumerable<int> aElementIds = RevitSettings.SelectionSettings.ElementIds;
-                if(aElementIds != null && aElementIds.Count() > 0)
-                {
-                    ElementId aElementId = Query.ElementId(bHoMObject);
-                    if (aElementId != null && !aElementIds.Contains(aElementId.IntegerValue))
-                        return false;
-                }
 
-                IEnumerable<string> aUniqueIds = RevitSettings.SelectionSettings.UniqueIds;
-                if (aUniqueIds != null && aUniqueIds.Count() > 0)
-                {
-                    string aUniqueId = Query.UniqueId(bHoMObject);
-                    if (!string.IsNullOrEmpty(aUniqueId) && !aUniqueIds.Contains(aUniqueId))
-                        return false;
-                }
-            }
+            if (!Query.AllowElement(RevitSettings, Query.UniqueId(bHoMObject), Query.ElementId(bHoMObject), Query.WorksetId(bHoMObject)))
+                return false;
 
             bool aResult = false;
             using (Transaction aTransaction = new Transaction(m_Document, "Create"))
@@ -106,52 +91,13 @@ namespace BH.UI.Revit.Adapter
             if (bHoMObjects.Count() < 1)
                 return false;
 
-            List<BHoMObject> aBHoMObjectList = null;
-
-            if (RevitSettings != null && RevitSettings.SelectionSettings != null)
-            {
-                IEnumerable<int> aElementIds_Temp = RevitSettings.SelectionSettings.ElementIds;
-                if (aElementIds_Temp != null && aElementIds_Temp.Count() > 0)
-                {
-                    aBHoMObjectList = new List<BHoMObject>();
-
-                    foreach (BHoMObject aBHoMObject in bHoMObjects)
-                    {
-                        ElementId aElementId = Query.ElementId(aBHoMObject);
-
-                        if (aElementId != null && aElementIds_Temp.Contains(aElementId.IntegerValue))
-                            aBHoMObjectList.Add(aBHoMObject);
-                    }
-
-                }
-
-                IEnumerable<string> aUniqueIds = RevitSettings.SelectionSettings.UniqueIds;
-                if ((aUniqueIds != null && aUniqueIds.Count() > 0))
-                {
-                    if (aBHoMObjectList == null)
-                        aBHoMObjectList = new List<BHoMObject>();
-
-                    foreach (BHoMObject aBHoMObject in bHoMObjects)
-                    {
-                        if (aBHoMObjectList.Contains(aBHoMObject))
-                            continue;
-
-                        string aUniqueId = Query.UniqueId(aBHoMObject);
-
-                        if (!string.IsNullOrEmpty(aUniqueId) && aUniqueIds.Contains(aUniqueId))
-                            aBHoMObjectList.Add(aBHoMObject);
-                    }
-                }
-            }
-
-            if (aBHoMObjectList == null)
-                aBHoMObjectList = new List<BHoMObject>(bHoMObjects);
+            List<BHoMObject> aBHoMObjectList = new List<BHoMObject>(bHoMObjects);
 
             using (Transaction aTransaction = new Transaction(m_Document, "Create"))
             {
                 aTransaction.Start();
                 foreach (BHoMObject aBHOMObject in aBHoMObjectList)
-                    Create(aBHOMObject as dynamic, copyCustomData, replace);
+                    Create(aBHOMObject, copyCustomData, replace);
                 aTransaction.Commit();
             }
 
@@ -231,7 +177,6 @@ namespace BH.UI.Revit.Adapter
         }
 
         /***************************************************/
-
 
         private bool Create(oM.Architecture.Elements.Level level, bool copyCustomData = true, bool replace = false)
         {
