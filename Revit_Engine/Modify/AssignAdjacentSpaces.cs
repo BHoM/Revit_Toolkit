@@ -40,7 +40,7 @@ namespace BH.Engine.Revit
             foreach (BuildingElement aBuildingElement in aBuilding.BuildingElements)
             {
                 object aObject;
-                if(aBuildingElement.CustomData.TryGetValue(Adapter.Revit.Id.ElementId, out aObject))
+                if(aBuildingElement.CustomData.TryGetValue(Convert.ElementId, out aObject))
                 {
                     if(aObject is int)
                     {

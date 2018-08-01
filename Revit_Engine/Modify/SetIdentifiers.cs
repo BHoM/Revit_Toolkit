@@ -28,8 +28,8 @@ namespace BH.Engine.Revit
 
             BHoMObject aBHoMObject = bHoMObject.GetShallowClone() as BHoMObject;
 
-            aBHoMObject = aBHoMObject.SetCustomData(Adapter.Revit.Id.ElementId, element.Id.IntegerValue);
-            aBHoMObject = aBHoMObject.SetCustomData(Adapter.Revit.Id.AdapterId, element.UniqueId);
+            aBHoMObject = aBHoMObject.SetCustomData(Convert.ElementId, element.Id.IntegerValue);
+            aBHoMObject = aBHoMObject.SetCustomData(Convert.AdapterId, element.UniqueId);
 
             int aWorksetId = WorksetId.InvalidWorksetId.IntegerValue;
             if (element.Document != null && element.Document.IsWorkshared)
@@ -38,7 +38,7 @@ namespace BH.Engine.Revit
                 if (aWorksetId_Revit != null)
                     aWorksetId = aWorksetId_Revit.IntegerValue;
             }
-            aBHoMObject = aBHoMObject.SetCustomData(Adapter.Revit.Id.WorksetId, aWorksetId);
+            aBHoMObject = aBHoMObject.SetCustomData(Convert.WorksetId, aWorksetId);
 
             return aBHoMObject;
         }

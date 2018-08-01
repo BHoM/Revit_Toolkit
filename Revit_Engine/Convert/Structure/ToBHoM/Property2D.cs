@@ -21,7 +21,7 @@ namespace BH.Engine.Revit
                 {
                     aThickness = csl.Width.ToSI(UnitType.UT_Section_Dimension);
                     ElementId id = csl.MaterialId;
-                    Material m = ElementId.InvalidElementId == id ? wallType.Category.Material : document.GetElement(id) as Material;
+                    Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == id ? wallType.Category.Material : document.GetElement(id) as Material;
                     aMaterial = m.ToBHoM(materialGrade) as oM.Common.Materials.Material;         // this is dangerous for multilayer panels?
                     break;
                 }

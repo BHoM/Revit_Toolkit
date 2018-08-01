@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Adapter
         public CobraAdapter(Document document)
             : base()
         {
-            AdapterId = Id.AdapterId;
+            AdapterId = Engine.Revit.Convert.AdapterId;
             Config.UseAdapterId = false;
             Config.ProcessInMemory = false;
             m_Document = document;

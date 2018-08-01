@@ -87,7 +87,7 @@
   <ItemGroup>
     <Compile Include="Convert\Architecture\ToBHoM\Grid.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Level.cs" />
-    <Compile Include="Convert\Common\Material.cs" />
+    <Compile Include="Convert\Common\ToBHoM\Material.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\Curve.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\Edge.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\LocationPoint.cs" />
@@ -98,6 +98,7 @@
     <Compile Include="Convert\Geometry\ToRevit\Curve.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Point.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Vector.cs" />
+    <Compile Include="Convert\AdapterID.cs" />
     <Compile Include="Convert\Structure\ToBHoM\FramingElement.cs" />
     <Compile Include="Convert\Structure\ToBHoM\PanelPlanar.cs" />
     <Compile Include="Convert\Structure\ToBHoM\Profile.cs" />
@@ -151,6 +152,7 @@
   <ItemGroup>
     <Folder Include="Compute\" />
     <Folder Include="Convert\Architecture\ToRevit\" />
+    <Folder Include="Convert\Common\ToRevit\" />
     <Folder Include="Convert\Environment\ToBHoM\" />
     <Folder Include="Convert\Environment\ToRevit\" />
     <Folder Include="Create\" />

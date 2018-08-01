@@ -74,7 +74,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Id.cs" />
     <Compile Include="InternalRevitAdapter.cs" />
     <Compile Include="PackageType.cs" />
     <Compile Include="RevitAdapter.cs" />
