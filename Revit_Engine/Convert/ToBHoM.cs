@@ -253,8 +253,6 @@ namespace BH.Engine.Revit
         
         public static BHoMObject ToBHoM(this StructuralMaterialType structuralMaterialType, string materialGrade, Discipline discipline = Discipline.Structural)
         {
-            structuralMaterialType.CheckIfNull();
-
             switch (discipline)
             {
                 case Discipline.Structural:

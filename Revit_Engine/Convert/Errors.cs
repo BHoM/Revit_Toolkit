@@ -1,5 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
+using BH.oM.Base;
+using System.Collections.Generic;
 
 namespace BH.Engine.Revit
 {
@@ -46,13 +48,6 @@ namespace BH.Engine.Revit
         {
             if (document == null)
                 Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because Revit document with title {0} does not exist.", document.Title));
-        }
-
-        /***************************************************/
-
-        private static void CheckIfNull(this StructuralMaterialType structuralMaterialType)
-        {
-            Engine.Reflection.Compute.RecordError("BHoM object could not be read because Revit structural material type " + structuralMaterialType + " does not exist.");
         }
 
         /***************************************************/

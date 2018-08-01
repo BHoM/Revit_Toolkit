@@ -11,7 +11,6 @@ namespace BH.Engine.Revit
 
         public static BHoMObject ToBHoMLevel(this Level Level, bool CopyCustomData = true, bool convertUnits = true)
         {
-            //TODO: Update constructor for Level to include Name
             oM.Architecture.Elements.Level aLevel = Architecture.Elements.Create.Level(ToSI(Level.ProjectElevation, UnitType.UT_Length));
             aLevel.Name = Level.Name;
 
