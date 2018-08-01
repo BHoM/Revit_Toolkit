@@ -62,6 +62,10 @@
       <HintPath>..\..\BHoM_Engine\Build\Library_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Reflection_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
+    </Reference>
     <Reference Include="RevitAPI" Condition="'$(Configuration)' == 'Debug2018'">
       <HintPath>..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
       <Private>False</Private>
@@ -121,6 +125,7 @@
     <Compile Include="Convert\ToRevit.cs" />
     <Compile Include="Convert\ToSI.cs" />
     <Compile Include="Convert\FromSI.cs" />
+    <Compile Include="Errors.cs" />
     <Compile Include="Modify\AssignAdjacentSpaces.cs" />
     <Compile Include="Modify\RemoveIdentifiers.cs" />
     <Compile Include="Modify\SetCustomData.cs" />

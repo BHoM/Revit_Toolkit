@@ -104,7 +104,7 @@ namespace BH.UI.Revit.Adapter
 
             if (aElement == null)
             {
-                Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because Revit ElementId {0} does not exists.", elementId.IntegerValue));
+                Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because Revit element with Id {0} does not exist.", elementId.IntegerValue));
                 return;
             }
 
@@ -116,8 +116,6 @@ namespace BH.UI.Revit.Adapter
             {
                 Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because equivalent BHoM type does not exist. Element Id: {0}, Element Name: {1}", elementId.IntegerValue, aElement.Name));
                 return;
-
-
             }  
 
             List<BHoMObject> aResult = null;
