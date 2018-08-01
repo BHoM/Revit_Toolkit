@@ -75,12 +75,15 @@ namespace BH.Engine.Revit
                     if (type.GetProperty(propertyName).GetValue(obj) == null) nullPropertyNames.Add(propertyName);
                 }
             }
-            
-            string warning = string.Format("The BHoM object if missing following properties: {0}. BHoM_Guid: {1}.", string.Join(", ", nullPropertyNames), obj.BHoM_Guid);
 
-            ElementId revitId = obj.ElementId();
-            if (revitId != null) warning += string.Format(" Revit ElementId: {0}.", revitId);
-            Engine.Reflection.Compute.RecordWarning(warning);
+            if (nullPropertyNames.Count > 0)
+            {
+                string warning = string.Format("The BHoM object if missing following properties: {0}. BHoM_Guid: {1}.", string.Join(", ", nullPropertyNames), obj.BHoM_Guid);
+
+                ElementId revitId = obj.ElementId();
+                if (revitId != null) warning += string.Format(" Revit ElementId: {0}.", revitId.IntegerValue);
+                Engine.Reflection.Compute.RecordWarning(warning);
+            }
         }
 
         /***************************************************/
