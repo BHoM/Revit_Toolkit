@@ -175,22 +175,6 @@ namespace BH.Adapter.Revit
         }
 
         /***************************************************/
-
-        public override bool Execute(string command, Dictionary<string, object> parameters = null, Dictionary<string, object> config = null)
-        {
-            //If internal adapter is loaded call it directly
-            if (InternalAdapter != null)
-            {
-                InternalAdapter.RevitSettings = RevitSettings;
-                return InternalAdapter.Execute(command, parameters, config);
-            }
-                
-
-            throw new NotImplementedException();
-        }
-
-
-        /***************************************************/
         /**** Private  Fields                           ****/
         /***************************************************/
 
