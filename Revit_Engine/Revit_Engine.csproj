@@ -62,6 +62,10 @@
       <HintPath>..\..\BHoM_Engine\Build\Library_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Reflection_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
+    </Reference>
     <Reference Include="RevitAPI" Condition="'$(Configuration)' == 'Debug2018'">
       <HintPath>..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
       <Private>False</Private>
@@ -99,6 +103,7 @@
     <Compile Include="Convert\Environment\ToRevit\CompoundStructureLayer.cs" />
     <Compile Include="Convert\Environment\ToRevit\Element.cs" />
     <Compile Include="Convert\Environment\ToRevit\ElementType.cs" />
+    <Compile Include="Convert\Errors.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\Curve.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\Edge.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\LocationPoint.cs" />
