@@ -13,7 +13,7 @@ using BH.Engine.Revit;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class RevitInternalAdapter
+    public partial class CobraAdapter
     {
         /***************************************************/
         /**** Public Methods                            ****/

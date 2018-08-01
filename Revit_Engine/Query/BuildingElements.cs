@@ -52,7 +52,7 @@ namespace BH.Engine.Revit
             foreach (BuildingElement aBuildingElement in building.BuildingElements)
             {
                 object aValue;
-                if (aBuildingElement.CustomData.TryGetValue(Adapter.Revit.Id.ElementId, out aValue))
+                if (aBuildingElement.CustomData.TryGetValue(Convert.ElementId, out aValue))
                     if (aValue is int && (int)aValue == elementId)
                         aResult.Add(aBuildingElement);
             }

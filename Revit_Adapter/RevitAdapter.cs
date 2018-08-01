@@ -10,6 +10,7 @@ using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
 using BH.Adapter.Socket;
 using BH.oM.Reflection.Debuging;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Adapter.Revit
 {
@@ -20,7 +21,7 @@ namespace BH.Adapter.Revit
         /**** Public Properties                         ****/
         /***************************************************/
 
-        public static InternalAdapter InternalAdapter { get; set; } = null;
+        public static InternalRevitAdapter InternalAdapter { get; set; } = null;
         public RevitSettings RevitSettings { get; set; } = new RevitSettings();
 
         /***************************************************/

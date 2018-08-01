@@ -13,7 +13,7 @@ using Autodesk.Revit.DB;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class RevitInternalAdapter : BH.Adapter.Revit.InternalAdapter
+    public partial class CobraAdapter : BH.Adapter.Revit.InternalRevitAdapter
     {
         /***************************************************/
         /**** Public Methods                            ****/
