@@ -87,9 +87,18 @@
   <ItemGroup>
     <Compile Include="Convert\Architecture\ToBHoM\Grid.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Level.cs" />
+    <Compile Include="Convert\Architecture\ToRevit\Level.cs" />
     <Compile Include="Convert\Common\ToBHoM\Material.cs" />
+    <Compile Include="Convert\Common\ToRevit\Material.cs" />
+    <Compile Include="Convert\Environment\ToBHoM\Building.cs" />
+    <Compile Include="Convert\Environment\ToBHoM\BuildingElement.cs" />
     <Compile Include="Convert\Environment\ToBHoM\BuildingElementCurve.cs" />
     <Compile Include="Convert\Environment\ToBHoM\BuildingElementPanel.cs" />
+    <Compile Include="Convert\Environment\ToBHoM\BuildingElementProperties.cs" />
+    <Compile Include="Convert\Environment\ToBHoM\Space.cs" />
+    <Compile Include="Convert\Environment\ToRevit\CompoundStructureLayer.cs" />
+    <Compile Include="Convert\Environment\ToRevit\Element.cs" />
+    <Compile Include="Convert\Environment\ToRevit\ElementType.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\Curve.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\Edge.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\LocationPoint.cs" />
@@ -153,9 +162,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Compute\" />
-    <Folder Include="Convert\Architecture\ToRevit\" />
-    <Folder Include="Convert\Common\ToRevit\" />
-    <Folder Include="Convert\Environment\ToRevit\" />
     <Folder Include="Create\" />
   </ItemGroup>
   <ItemGroup>

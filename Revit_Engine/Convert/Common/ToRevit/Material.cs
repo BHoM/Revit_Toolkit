@@ -18,9 +18,10 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Element ToRevit(this BHoMObject bHoMObject, Document document, bool copyCustomData = true, bool convertUnits = true)
+        public static Material ToRevit(this IMaterial material, Document document)
         {
-            return ToRevit(bHoMObject as dynamic, document, copyCustomData, convertUnits);
+            ElementId aElementId = Material.Create(document, material.Name);
+            return document.GetElement(aElementId) as Material;
         }
     }
 }

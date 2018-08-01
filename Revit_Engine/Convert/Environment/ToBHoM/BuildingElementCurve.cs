@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Autodesk.Revit.DB;
 
-using Autodesk.Revit.DB;
-
-using BH.oM.Base;
 using BH.oM.Environment.Elements;
-using BH.Engine.Environment;
 
 namespace BH.Engine.Revit
 {
@@ -22,5 +18,7 @@ namespace BH.Engine.Revit
             };
             return aBuildingElementCurve;
         }
+
+        /***************************************************/
     }
 }
