@@ -125,7 +125,7 @@
     <Compile Include="Convert\ToRevit.cs" />
     <Compile Include="Convert\ToSI.cs" />
     <Compile Include="Convert\FromSI.cs" />
-    <Compile Include="Errors.cs" />
+    <Compile Include="Convert\Errors.cs" />
     <Compile Include="Modify\AssignAdjacentSpaces.cs" />
     <Compile Include="Modify\RemoveIdentifiers.cs" />
     <Compile Include="Modify\SetCustomData.cs" />
