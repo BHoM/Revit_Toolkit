@@ -44,13 +44,13 @@ namespace BH.UI.Revit
         /**** Public methods                            ****/
         /***************************************************/
 
-        public RevitInternalAdapter GetAdapter(Document doc)
+        public CobraAdapter GetAdapter(Document doc)
         {
-            RevitInternalAdapter adapter;
+            CobraAdapter adapter;
 
             if (!m_adapters.TryGetValue(doc, out adapter))
             {
-                adapter = new RevitInternalAdapter(doc);
+                adapter = new CobraAdapter(doc);
                 m_adapters[doc] = adapter;
             }
             return adapter;
@@ -235,7 +235,7 @@ namespace BH.UI.Revit
         private SocketLink_Tcp m_linkOut;
         private ExternalEvent m_pushEvent;
         private ExternalEvent m_pullEvent;
-        private Dictionary<Document, RevitInternalAdapter> m_adapters = new Dictionary<Document, RevitInternalAdapter>();
+        private Dictionary<Document, CobraAdapter> m_adapters = new Dictionary<Document, CobraAdapter>();
 
 
         public object m_packageLock = new object();

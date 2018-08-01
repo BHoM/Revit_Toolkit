@@ -2,20 +2,16 @@
 using System.Windows.Media.Imaging;
 using System.Windows;
 using System.Linq;
+using System.Collections.Generic;
 
 using Autodesk.Revit.UI;
 using Autodesk.Revit.DB;
 
 using BH.UI.Revit.Adapter;
-
 using BH.oM.Environment.Elements;
-using BH.Engine.Environment;
-using BH.oM.Structural.Elements;
-using BH.Engine.Revit;
-using System.Collections.Generic;
 using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
-using BH.Adapter.Revit;
+using BH.oM.Adapters.Revit;
 
 namespace Revit_Test
 {
@@ -55,7 +51,7 @@ namespace Revit_Test
         public Result Execute(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
             //Creating Revit Adapter for active Revit Document
-            RevitInternalAdapter pRevitInternalAdapter = new RevitInternalAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
+            CobraAdapter pRevitInternalAdapter = new CobraAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
 
             FilterQuery aFilterQuery = null;
             List<IBHoMObject> aBHoMObjectList = null;

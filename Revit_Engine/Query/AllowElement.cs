@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using BH.Adapter.Revit;
+using BH.oM.Adapters.Revit;
 
 using Autodesk.Revit.DB;
 

@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using BH.Adapter;
-
+using BH.oM.Adapters.Revit;
 
 namespace BH.Adapter.Revit
 {
-    public abstract class InternalAdapter : BHoMAdapter
+    public abstract class InternalRevitAdapter : BHoMAdapter
     {
         
         /***************************************************/
@@ -29,9 +28,9 @@ namespace BH.Adapter.Revit
         /// <search>
         /// Create, RevitAdapter, Constructor, Document
         /// </search>
-        public InternalAdapter()
+        public InternalRevitAdapter()
         {
-            AdapterId = Id.AdapterId;
+            AdapterId = AdapterId;
             Config.UseAdapterId = false;
             Config.ProcessInMemory = false;
         }

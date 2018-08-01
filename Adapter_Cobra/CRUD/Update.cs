@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class RevitInternalAdapter
+    public partial class CobraAdapter
     {
         /***************************************************/
         /**** Public Methods                            ****/

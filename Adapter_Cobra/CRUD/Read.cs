@@ -14,7 +14,7 @@ namespace BH.UI.Revit.Adapter
     /// <summary>
     /// BHoM RevitAdapter
     /// </summary>
-    public partial class RevitInternalAdapter
+    public partial class CobraAdapter
     {
         /***************************************************/
         /**** Public Methods                            ****/

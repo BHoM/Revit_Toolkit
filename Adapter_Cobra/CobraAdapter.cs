@@ -4,20 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using BH.Adapter;
-
 using Autodesk.Revit.DB;
 using BH.Adapter.Revit;
+using BH.oM.Adapters.Revit;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class RevitInternalAdapter : InternalAdapter
+    public partial class CobraAdapter : InternalRevitAdapter
     {
         /***************************************************/
         /**** Private Properties                        ****/
         /***************************************************/
 
         private Document m_Document;
+        private RevitSettings m_RevitSettings;
 
         /***************************************************/
         /**** Public Constructors                       ****/
@@ -30,11 +30,34 @@ namespace BH.UI.Revit.Adapter
         /// <search>
         /// Create, RevitAdapter, Constructor, Document
         /// </search>
-        public RevitInternalAdapter(Document document)
+        public CobraAdapter(Document document)
             : base()
         {
+            AdapterId = Id.AdapterId;
+            Config.UseAdapterId = false;
+            Config.ProcessInMemory = false;
             m_Document = document;
         }
+
+        /***************************************************/
+        /**** Public Properties                        ****/
+        /***************************************************/
+
+        public RevitSettings RevitSettings
+        {
+            get
+            {
+                return m_RevitSettings;
+            }
+
+            set
+            {
+                m_RevitSettings = value;
+            }
+
+        }
+
+        /***************************************************/
 
     }
 }

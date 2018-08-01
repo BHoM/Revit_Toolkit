@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using BH.oM.Base;
 
-namespace BH.Adapter.Revit
+namespace BH.oM.Adapters.Revit
 {
     public class WorksetSettings : BHoMObject
     {
