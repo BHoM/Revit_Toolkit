@@ -56,6 +56,7 @@ namespace BH.Engine.Revit
 
         private static void CheckNullProperties(this BHoMObject obj, IEnumerable<string> propertyNames = null)
         {
+            //TODO: Move this one to the BHoM_Engine?
             List<string> nullPropertyNames = new List<string>();
 
             Type type = obj.GetType();
