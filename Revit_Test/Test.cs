@@ -17,7 +17,7 @@ using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
 using BH.Adapter.Revit;
 
-namespace Revit2018_Test
+namespace Revit_Test
 {
     /// <remarks>
     /// This application's main class.

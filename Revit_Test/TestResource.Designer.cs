@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Revit2018_Test {
+namespace Revit_Test {
     using System;
     
     
