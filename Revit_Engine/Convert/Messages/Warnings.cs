@@ -67,7 +67,14 @@ namespace BH.Engine.Revit
 
         private static void CompositePanelWarning(this HostObjAttributes hostObjAttributes)
         {
-            Engine.Reflection.Compute.RecordWarning(string.Format("The composite panels are currently not supported in the BHoM. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
+            Engine.Reflection.Compute.RecordWarning(string.Format("Composite panels are currently not supported in the BHoM. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
+        }
+
+        /***************************************************/
+
+        private static void NonlinearBarWarning(this FamilyInstance bar)
+        {
+            Engine.Reflection.Compute.RecordWarning(string.Format("Nonlinear bars are currently not supported in the BHoM. Element Id: {0}", bar.Id.IntegerValue));
         }
 
         /***************************************************/
