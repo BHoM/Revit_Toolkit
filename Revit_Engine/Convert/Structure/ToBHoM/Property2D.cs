@@ -10,20 +10,24 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IProperty2D ToBHoMProperty2D(this WallType wallType, bool copyCustomData = true, bool convertUnits = true, string materialGrade = null)
+        public static IProperty2D ToBHoMProperty2D(this WallType wallType, string materialGrade = null, bool copyCustomData = true, bool convertUnits = true)
         {
             Document document = wallType.Document;
             double aThickness = 0;
-            oM.Common.Materials.Material aMaterial = new oM.Common.Materials.Material();
+            oM.Common.Materials.Material aMaterial = null;
             foreach (CompoundStructureLayer csl in wallType.GetCompoundStructure().GetLayers())
             {
                 if (csl.Function == MaterialFunctionAssignment.Structure)
                 {
+                    if (aThickness != 0)
+                    {
+                        wallType.CompositePanelWarning();
+                        return null;
+                    }
                     aThickness = csl.Width.ToSI(UnitType.UT_Section_Dimension);
                     ElementId id = csl.MaterialId;
                     Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == id ? wallType.Category.Material : document.GetElement(id) as Material;
-                    aMaterial = m.ToBHoM(materialGrade) as oM.Common.Materials.Material;         // this is dangerous for multilayer panels?
-                    break;
+                    aMaterial = m.ToBHoMMaterial(materialGrade) as oM.Common.Materials.Material;
                 }
             }
 
@@ -42,16 +46,20 @@ namespace BH.Engine.Revit
         {
             Document document = floorType.Document;
             double aThickness = 0;
-            oM.Common.Materials.Material aMaterial = new oM.Common.Materials.Material();
+            oM.Common.Materials.Material aMaterial = null;
             foreach (CompoundStructureLayer csl in floorType.GetCompoundStructure().GetLayers())
             {
                 if (csl.Function == MaterialFunctionAssignment.Structure)
                 {
+                    if (aThickness != 0)
+                    {
+                        floorType.CompositePanelWarning();
+                        return null;
+                    }
                     aThickness = csl.Width.ToSI(UnitType.UT_Section_Dimension);
                     ElementId id = csl.MaterialId;
                     Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == id ? floorType.Category.Material : document.GetElement(id) as Material;
-                    aMaterial = m.ToBHoM(materialGrade) as oM.Common.Materials.Material;         // this is dangerous for multilayer panels?
-                    break;
+                    aMaterial = m.ToBHoMMaterial(materialGrade) as oM.Common.Materials.Material;
                 }
             }
 
