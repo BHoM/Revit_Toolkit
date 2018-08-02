@@ -171,7 +171,7 @@ namespace BH.Engine.Revit
                 case Discipline.Environmental:
                     return wallType.ToBHoMBuildingElementProperties(copyCustomData, convertUnits); 
                 case Discipline.Structural:
-                    return wallType.ToBHoMProperty2D(copyCustomData, convertUnits, materialGrade) as BHoMObject;
+                    return wallType.ToBHoMProperty2D(materialGrade, copyCustomData, convertUnits) as BHoMObject;
             }
 
             wallType.NotConvertedError();
@@ -246,33 +246,33 @@ namespace BH.Engine.Revit
 
         /***************************************************/
         
-        public static BHoMObject ToBHoM(this StructuralMaterialType structuralMaterialType, string materialGrade, Discipline discipline = Discipline.Structural)
-        {
-            switch (discipline)
-            {
-                case Discipline.Structural:
-                    return structuralMaterialType.ToBHoMMaterial(materialGrade);
-            }
+        //public static BHoMObject ToBHoM(this StructuralMaterialType structuralMaterialType, string materialGrade, Discipline discipline = Discipline.Structural)
+        //{
+        //    switch (discipline)
+        //    {
+        //        case Discipline.Structural:
+        //            return structuralMaterialType.ToBHoMMaterial(materialGrade);
+        //    }
 
-            structuralMaterialType.NotConvertedError();
-            return null;
-        }
+        //    structuralMaterialType.NotConvertedError();
+        //    return null;
+        //}
 
         /***************************************************/
         
-        public static BHoMObject ToBHoM(this Material material, string materialGrade, Discipline discipline = Discipline.Structural)
-        {
-            material.CheckIfNull();
+        //public static BHoMObject ToBHoM(this Material material, string materialGrade, Discipline discipline = Discipline.Structural)
+        //{
+        //    material.CheckIfNull();
 
-            switch (discipline)
-            {
-                case Discipline.Structural:
-                    return material.ToBHoMMaterial(materialGrade);
-            }
+        //    switch (discipline)
+        //    {
+        //        case Discipline.Structural:
+        //            return material.ToBHoMMaterial(materialGrade);
+        //    }
 
-            material.NotConvertedError();
-            return null;
-        }
+        //    material.NotConvertedError();
+        //    return null;
+        //}
 
         /***************************************************/
 
