@@ -58,9 +58,13 @@ namespace Revit_Test
 
             RevitSettings aRevitSetting = new RevitSettings();
             //aRevitSetting.SelectionSettings.ElementIds = new List<int>() { 2323 };
-            aRevitSetting.WorksetSettings.WorksetIds = new List<int>() { 0 };
+            //aRevitSetting.WorksetSettings.WorksetIds = new List<int>() { 0 };
 
             pRevitInternalAdapter.RevitSettings = aRevitSetting;
+
+            //pRevitInternalAdapter.RevitSettings.SelectionSettings.IncludeSelected = true;
+
+            pRevitInternalAdapter.RevitSettings.WorksetSettings.OpenWorksetsOnly = true;
 
             aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
             aBHoMObjectList = pRevitInternalAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();

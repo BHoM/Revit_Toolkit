@@ -13,11 +13,12 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static WorksetSettings WorksetSettings(IEnumerable<int> worksetIds = null)
+        public static WorksetSettings WorksetSettings(bool openWorksetsOnly = false, IEnumerable<int> worksetIds = null)
         {
             WorksetSettings aWorksetSettings = new WorksetSettings()
             {
-                WorksetIds = worksetIds,
+                OpenWorksetsOnly = openWorksetsOnly,
+                WorksetIds = worksetIds
             };
 
             return aWorksetSettings;

@@ -29,7 +29,7 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         public bool Delete(IEnumerable<BHoMObject> bHoMObjects)
         {
-            if (m_Document == null)
+            if (Document == null)
             {
                 Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because Revit Document is null.");
                 return false;
@@ -44,13 +44,13 @@ namespace BH.UI.Revit.Adapter
             if (bHoMObjects.Count() < 1)
                 return false;
 
-            List<ElementId> aElementIdList = Query.ElementIds(m_Document, Query.UniqueIds(bHoMObjects, true), true);
+            List<ElementId> aElementIdList = Query.ElementIds(Document, Query.UniqueIds(bHoMObjects, true), true);
 
             if (aElementIdList == null || aElementIdList.Count < 1)
                 return false;
 
             bool aResult = false;
-            using (Transaction aTransaction = new Transaction(m_Document, "Create"))
+            using (Transaction aTransaction = new Transaction(Document, "Create"))
             {
                 aTransaction.Start();
                 aResult = Delete(aElementIdList);
@@ -71,7 +71,7 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         public bool Delete(BHoMObject bHoMObject)
         {
-            if (m_Document == null)
+            if (Document == null)
             {
                 Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because Revit Document is null.");
                 return false;
@@ -84,7 +84,7 @@ namespace BH.UI.Revit.Adapter
             }
 
             bool aResult = false;
-            using (Transaction aTransaction = new Transaction(m_Document, "Create"))
+            using (Transaction aTransaction = new Transaction(Document, "Create"))
             {
                 aTransaction.Start();
                 aResult = DeleteByUniqueId(bHoMObject);
@@ -107,7 +107,7 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         public bool Delete(BuildingElementProperties buildingElementProperties, bool deleteByName)
         {
-            if (m_Document == null)
+            if (Document == null)
             {
                 Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because Revit Document is null.");
                 return false;
@@ -120,7 +120,7 @@ namespace BH.UI.Revit.Adapter
             }
 
             bool aResult = false;
-            using (Transaction aTransaction = new Transaction(m_Document, "Create"))
+            using (Transaction aTransaction = new Transaction(Document, "Create"))
             {
                 aTransaction.Start();
                 if (deleteByName)
@@ -145,7 +145,7 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         public bool Delete(IEnumerable<BuildingElementProperties> buildingElementProperties, bool deleteByName)
         {
-            if (m_Document == null)
+            if (Document == null)
             {
                 Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because Revit Document is null.");
                 return false;
@@ -161,7 +161,7 @@ namespace BH.UI.Revit.Adapter
                 return false;
 
             bool aResult = false;
-            using (Transaction aTransaction = new Transaction(m_Document, "Create"))
+            using (Transaction aTransaction = new Transaction(Document, "Create"))
             {
                 aTransaction.Start();
                 if (deleteByName)
@@ -198,7 +198,7 @@ namespace BH.UI.Revit.Adapter
             string aUniqueId = Query.UniqueId(bHoMObject);
             if (aUniqueId != null)
             {
-                Element aElement = m_Document.GetElement(aUniqueId);
+                Element aElement = Document.GetElement(aUniqueId);
                 return Delete(aElement);
             }
 
@@ -221,7 +221,7 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            List<Element> aElementList = new FilteredElementCollector(m_Document).OfClass(type).ToList();
+            List<Element> aElementList = new FilteredElementCollector(Document).OfClass(type).ToList();
             if (aElementList == null || aElementList.Count < 1)
                 return false;
 
@@ -248,7 +248,7 @@ namespace BH.UI.Revit.Adapter
             if (bHoMObjects.Count() < 1)
                 return false;
 
-            List<Element> aElementList = new FilteredElementCollector(m_Document).OfClass(type).ToList();
+            List<Element> aElementList = new FilteredElementCollector(Document).OfClass(type).ToList();
             if (aElementList == null || aElementList.Count < 1)
                 return false;
 
@@ -278,10 +278,10 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            if (!Query.AllowElement(RevitSettings, element))
+            if (!Query.AllowElement(RevitSettings, UIDocument, element))
                 return false;
 
-            ICollection<ElementId> aElementIds = m_Document.Delete(element.Id);
+            ICollection<ElementId> aElementIds = Document.Delete(element.Id);
             if (aElementIds != null && aElementIds.Count > 0)
                 return true;
 
@@ -304,10 +304,10 @@ namespace BH.UI.Revit.Adapter
             List<ElementId> aElementIdList = new List<ElementId>();
 
             foreach (ElementId aElementId in elementIds)
-                if (Query.AllowElement(RevitSettings, m_Document, aElementId))
+                if (Query.AllowElement(RevitSettings, UIDocument, aElementId))
                     aElementIdList.Add(aElementId);
 
-            ICollection<ElementId> aElementIds = m_Document.Delete(aElementIdList);
+            ICollection<ElementId> aElementIds = Document.Delete(aElementIdList);
             if (aElementIds != null && aElementIds.Count > 0)
                 return true;
 

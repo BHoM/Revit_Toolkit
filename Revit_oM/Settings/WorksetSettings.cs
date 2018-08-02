@@ -14,6 +14,8 @@ namespace BH.oM.Adapters.Revit
         /**** Public Properties                        ****/
         /***************************************************/
 
+        public bool OpenWorksetsOnly { get; set; } = false;
+
         public IEnumerable<int> WorksetIds { get; set; } = new List<int>();
 
         /***************************************************/
