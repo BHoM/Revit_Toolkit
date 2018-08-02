@@ -44,14 +44,14 @@ namespace BH.UI.Revit
         /**** Public methods                            ****/
         /***************************************************/
 
-        public CobraAdapter GetAdapter(Document doc)
+        public CobraAdapter GetAdapter(Document document)
         {
             CobraAdapter adapter;
 
-            if (!m_adapters.TryGetValue(doc, out adapter))
+            if (!m_adapters.TryGetValue(document, out adapter))
             {
-                adapter = new CobraAdapter(doc);
-                m_adapters[doc] = adapter;
+                adapter = new CobraAdapter(document);
+                m_adapters[document] = adapter;
             }
             return adapter;
         }
@@ -119,23 +119,12 @@ namespace BH.UI.Revit
 
             m_linkOut = new SocketLink_Tcp(14129);
 
-            application.ControlledApplication.DocumentOpened += ControlledApplication_DocumentOpened;
-
-            application.ControlledApplication.DocumentCreated += ControlledApplication_DocumentCreated;
+            application.ViewActivated += Application_ViewActivated;
 
             return Result.Succeeded;
         }
 
-        /***************************************************/
-
-        private void ControlledApplication_DocumentCreated(object sender, Autodesk.Revit.DB.Events.DocumentCreatedEventArgs e)
-        {
-            RevitAdapter.InternalAdapter = GetAdapter(e.Document);
-        }
-
-        /***************************************************/
-
-        private void ControlledApplication_DocumentOpened(object sender, Autodesk.Revit.DB.Events.DocumentOpenedEventArgs e)
+        private void Application_ViewActivated(object sender, Autodesk.Revit.UI.Events.ViewActivatedEventArgs e)
         {
             RevitAdapter.InternalAdapter = GetAdapter(e.Document);
         }

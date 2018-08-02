@@ -52,7 +52,7 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected void Read(IEnumerable<BuiltInCategory> builtInCategories, Discipline discipline, Dictionary<ElementId, List<BHoMObject>> objects)
         {
-            if (m_Document == null)
+            if (Document == null)
             {
                 Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
                 return;
@@ -67,7 +67,7 @@ namespace BH.UI.Revit.Adapter
             if (builtInCategories.Count() < 1)
                 return;
 
-            ICollection<ElementId> aElementIdList = new FilteredElementCollector(m_Document).WherePasses(new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
+            ICollection<ElementId> aElementIdList = new FilteredElementCollector(Document).WherePasses(new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
 
             Read(aElementIdList, discipline, objects);
         }
@@ -85,7 +85,7 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected void Read(ElementId elementId, Discipline discipline, Dictionary<ElementId, List<BHoMObject>> objects)
         {
-            if (m_Document == null)
+            if (Document == null)
             {
                 Engine.Reflection.Compute.RecordError("BHoM object could not be read because Revit Document is null.");
                 return;
@@ -100,7 +100,7 @@ namespace BH.UI.Revit.Adapter
             if (elementId == ElementId.InvalidElementId)
                 return;
 
-            Element aElement = m_Document.GetElement(elementId);
+            Element aElement = Document.GetElement(elementId);
 
             if (aElement == null)
             {
@@ -108,7 +108,7 @@ namespace BH.UI.Revit.Adapter
                 return;
             }
 
-            if (!Query.AllowElement(RevitSettings, aElement))
+            if (!Query.AllowElement(RevitSettings, UIDocument, aElement))
                 return;
 
             List<Type> aTypeList = Query.BHoMTypes(aElement);
@@ -178,7 +178,7 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected void Read(IEnumerable<ElementId> elementIds, Discipline discipline, Dictionary<ElementId, List<BHoMObject>> objects)
         {
-            if (m_Document == null)
+            if (Document == null)
             {
                 Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
                 return;
@@ -226,7 +226,7 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected void Read(IEnumerable<Type> types, Dictionary<ElementId, List<BHoMObject>> objects, IEnumerable<string> uniqueIds = null)
         {
-            if (m_Document == null)
+            if (Document == null)
             {
                 Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
                 return;
@@ -284,15 +284,15 @@ namespace BH.UI.Revit.Adapter
             {
                 if(aTuple.Item1 == typeof(Document))
                 {
-                    objects.Add(ElementId.InvalidElementId, new List<BHoMObject>(new BHoMObject[] { m_Document.ToBHoM(aTuple.Item3, true) }));
+                    objects.Add(ElementId.InvalidElementId, new List<BHoMObject>(new BHoMObject[] { Document.ToBHoM(aTuple.Item3, true) }));
                     continue;
                 }
 
                 FilteredElementCollector aFilteredElementCollector = null;
                 if (aTuple.Item2 == null || aTuple.Item2.Count < 1)
-                    aFilteredElementCollector = new FilteredElementCollector(m_Document).OfClass(aTuple.Item1);
+                    aFilteredElementCollector = new FilteredElementCollector(Document).OfClass(aTuple.Item1);
                 else
-                    aFilteredElementCollector = new FilteredElementCollector(m_Document).OfClass(aTuple.Item1).WherePasses(new LogicalOrFilter(aTuple.Item2.ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)));
+                    aFilteredElementCollector = new FilteredElementCollector(Document).OfClass(aTuple.Item1).WherePasses(new LogicalOrFilter(aTuple.Item2.ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)));
 
                 List<ElementId> aElementIdList = new List<ElementId>();
                 foreach (Element aElement in aFilteredElementCollector)
@@ -344,7 +344,7 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
         {
-            if (m_Document == null)
+            if (Document == null)
             {
                 Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
                 return null;
