@@ -43,12 +43,13 @@ namespace BH.Engine.Revit
             else if (location is LocationCurve)
             {
                 barCurve = (location as LocationCurve).Curve.ToBHoM(convertUnits) as oM.Geometry.Line;
-                if (structuralType != StructuralType.Column)
+                if (barCurve == null) familyInstance.NonlinearBarWarning();
+                else if (structuralType != StructuralType.Column)
                 {
                     double ZOffset = familyInstance.LookupParameterDouble("z Offset Value", convertUnits);
                     barCurve = BHG.Modify.Translate(barCurve, new oM.Geometry.Vector { X = 0, Y = 0, Z = ZOffset });
                 }
-                rotation = -familyInstance.LookupParameter("Cross-Section Rotation").AsDouble();
+                rotation = -familyInstance.LookupParameterDouble("Cross-Section Rotation", false);
             }
 
             ISectionProperty aSectionProperty = familyInstance.ToBHoMSectionProperty(copyCustomData, convertUnits) as ISectionProperty;
