@@ -13,7 +13,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static ISectionProperty ToBHoMSectionProperty(this FamilyInstance familyInstance, bool copyCustomData = true)
+        public static ISectionProperty ToBHoMSectionProperty(this FamilyInstance familyInstance, bool copyCustomData = true, bool convertUnits = true)
         {
             try
             {
@@ -41,7 +41,11 @@ namespace BH.Engine.Revit
                     {
                         return BHS.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
                     }
-                    else throw new Exception("Material not implemented yet.");
+                    else
+                    {
+                        familyInstance.UnknownMaterialWarning();
+                        return BHS.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
+                    }
                 }
 
                 else
@@ -86,7 +90,11 @@ namespace BH.Engine.Revit
                     {
                         return BHS.Create.SteelFreeFormSection(profileCurves, aMaterial, name);
                     }
-                    else throw new Exception("Material not implemented yet.");
+                    else
+                    {
+                        familyInstance.UnknownMaterialWarning();
+                        return BHS.Create.SteelFreeFormSection(profileCurves, aMaterial, name);
+                    }
                 }
             }
             catch
