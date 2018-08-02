@@ -75,7 +75,7 @@ namespace BH.UI.Revit.Adapter
                             if (replaceAll)
                                 Delete(aBHOMObject as BHoMObject);
 
-                            Engine.Revit.Convert.ToRevit(aBHOMObject as dynamic, Document, true);
+                            Engine.Revit.Convert.ToRevit(aBHOMObject as dynamic, Document, true, true);
                         }
                             
                     }
@@ -88,23 +88,6 @@ namespace BH.UI.Revit.Adapter
                     
                 aTransaction.Commit();
             }
-
-            return true;
-        }
-
-        /***************************************************/
-        /**** Private Methods                           ****/
-        /***************************************************/
-
-        private bool Create(FramingElement framingElement, bool copyCustomData = true, bool replace = false)
-        {
-            if (framingElement == null)
-            {
-                Engine.Reflection.Compute.RecordError("Revit Object could not be created because BHoM FramingElement is null.");
-                return false;
-            }
-
-            FamilyInstance aFamilyInstance = framingElement.ToRevitColumn(Document, copyCustomData);
 
             return true;
         }
