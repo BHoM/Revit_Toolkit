@@ -10,6 +10,7 @@ using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
 using BH.Adapter.Socket;
 using BH.oM.Reflection.Debuging;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Adapter.Revit
 {
@@ -20,7 +21,7 @@ namespace BH.Adapter.Revit
         /**** Public Properties                         ****/
         /***************************************************/
 
-        public static InternalAdapter InternalAdapter { get; set; } = null;
+        public static InternalRevitAdapter InternalAdapter { get; set; } = null;
         public RevitSettings RevitSettings { get; set; } = new RevitSettings();
 
         /***************************************************/
@@ -172,22 +173,6 @@ namespace BH.Adapter.Revit
 
             throw new NotImplementedException();
         }
-
-        /***************************************************/
-
-        public override bool Execute(string command, Dictionary<string, object> parameters = null, Dictionary<string, object> config = null)
-        {
-            //If internal adapter is loaded call it directly
-            if (InternalAdapter != null)
-            {
-                InternalAdapter.RevitSettings = RevitSettings;
-                return InternalAdapter.Execute(command, parameters, config);
-            }
-                
-
-            throw new NotImplementedException();
-        }
-
 
         /***************************************************/
         /**** Private  Fields                           ****/
