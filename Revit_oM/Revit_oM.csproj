@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3EB6D37D-8720-495A-8FEB-E826F0E69AF8}</ProjectGuid>
+    <ProjectGuid>{B97DBF34-761D-4AB7-B122-D05408B34D0F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BH.Adapter.RevitLink</RootNamespace>
-    <AssemblyName>Revit_Adapter</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <RootNamespace>Revit2018_oM</RootNamespace>
+    <AssemblyName>Revit_oM</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -41,28 +41,6 @@
   <ItemGroup>
     <Reference Include="BHoM">
       <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="BHoM_Adapter">
-      <HintPath>..\..\BHoM_Adapter\Build\BHoM_Adapter.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="BHoM_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\BHoM_Engine.dll</HintPath>
-    </Reference>
-    <Reference Include="Reflection_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Socket_Adapter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Socket_Toolkit\Build\Socket_Adapter.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Socket_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Socket_Toolkit\Build\Socket_oM.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -74,19 +52,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CRUD\Execute.cs" />
-    <Compile Include="InternalRevitAdapter.cs" />
-    <Compile Include="PackageType.cs" />
-    <Compile Include="RevitAdapter.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Types\Comparer.cs" />
-    <Compile Include="Types\DependencyTypes.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
-      <Project>{B97DBF34-761D-4AB7-B122-D05408B34D0F}</Project>
-      <Name>Revit_oM</Name>
-    </ProjectReference>
+    <Compile Include="Settings\RevitSettings.cs" />
+    <Compile Include="Settings\SelectionSettings.cs" />
+    <Compile Include="Settings\WorksetSettings.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
