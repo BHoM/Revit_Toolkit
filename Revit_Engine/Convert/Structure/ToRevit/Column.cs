@@ -11,6 +11,11 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        public static FamilyInstance ToRevit(this FramingElement framingElement, Document document, bool copyCustomData = true, bool convertUnits = true)
+        {
+            return framingElement.ToRevitColumn(document, copyCustomData, convertUnits);
+        }
+
         public static FamilyInstance ToRevitColumn(this FramingElement framingElement, Document document, bool copyCustomData = true, bool convertUnits = true)
         {
             if (framingElement == null || document == null)
