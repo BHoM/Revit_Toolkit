@@ -12,6 +12,8 @@ namespace BH.oM.Adapters.Revit
         /**** Public Properties                        ****/
         /***************************************************/
 
+        public bool IncludeSelected = false;
+
         public IEnumerable<int> ElementIds { get; set; } = new List<int>();
 
         public IEnumerable<string> UniqueIds { get; set; } = new List<string>();
