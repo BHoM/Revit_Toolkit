@@ -16,7 +16,9 @@ namespace BH.Engine.Revit
         public static IProfile ToBHoMProfile(this FamilySymbol familySymbol)
         {
             string familyName = familySymbol.Family.Name;
-            StructuralSectionShape sectionShape = (StructuralSectionShape)familySymbol.LookupParameter("Section Shape").AsInteger();
+            Parameter sectionShapeParam = familySymbol.LookupParameter("Section Shape");
+            StructuralSectionShape sectionShape = sectionShapeParam == null ? sectionShape = StructuralSectionShape.NotDefined : (StructuralSectionShape)sectionShapeParam.AsInteger();
+            
             List<Type> aTypes = Engine.Revit.Query.BHoMTypes(sectionShape);
 
             if (aTypes.Count == 0) aTypes.AddRange(Engine.Revit.Query.BHoMTypes(familyName));

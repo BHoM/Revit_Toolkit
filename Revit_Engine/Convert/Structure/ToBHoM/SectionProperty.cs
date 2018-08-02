@@ -33,7 +33,12 @@ namespace BH.Engine.Revit
                 if (aSectionDimensions != null)
                 {
                     //TODO: shouldn't we have AluminiumSection and TimberSection at least?
-                    if (aMaterial.Type == oM.Common.Materials.MaterialType.Concrete)
+                    if (aMaterial == null)
+                    {
+                        familyInstance.UnknownMaterialWarning();
+                        return BHS.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
+                    }
+                    else if (aMaterial.Type == oM.Common.Materials.MaterialType.Concrete)
                     {
                         return BHS.Create.ConcreteSectionFromProfile(aSectionDimensions, aMaterial, name);
                     }
@@ -82,7 +87,12 @@ namespace BH.Engine.Revit
                     }
 
                     //TODO: shouldn't we have AluminiumSection and TimberSection at least?
-                    if (aMaterial.Type == oM.Common.Materials.MaterialType.Concrete)
+                    if (aMaterial == null)
+                    {
+                        familyInstance.UnknownMaterialWarning();
+                        return BHS.Create.SteelFreeFormSection(profileCurves, aMaterial, name);
+                    }
+                    else if (aMaterial.Type == oM.Common.Materials.MaterialType.Concrete)
                     {
                         return BHS.Create.ConcreteFreeFormSection(profileCurves, aMaterial, name);
                     }
