@@ -13,10 +13,11 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static SelectionSettings SelectionSettings(IEnumerable<int> elementIds = null, IEnumerable<string> uniqueIds = null)
+        public static SelectionSettings SelectionSettings(bool includeSelected = false, IEnumerable<int> elementIds = null, IEnumerable<string> uniqueIds = null)
         {
             SelectionSettings aSelectionSettings = new SelectionSettings()
             {
+                IncludeSelected = includeSelected,
                 ElementIds = elementIds,
                 UniqueIds = uniqueIds,
             };
