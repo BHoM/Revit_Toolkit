@@ -50,7 +50,7 @@ namespace BH.Engine.Revit
                         ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
 
                         BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(objects, Discipline.Environmental, copyCustomData, convertUnits) as BuildingElementProperties;
-                        AddBHoMObject(aBuildingElementProperties, objects);
+                        objects = Modify.AddBHoMObject(objects, aBuildingElementProperties);
 
                         BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementCurve(aICurve), aLevel);
                         aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
@@ -58,7 +58,7 @@ namespace BH.Engine.Revit
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement, convertUnits) as BuildingElement;
                         aBuildingElmementList.Add(aBuildingElement);
 
-                        AddBHoMObject(aBuildingElement, objects);
+                        objects = Modify.AddBHoMObject(objects, aBuildingElement);
                     }
 
             Space aSpace = new Space
@@ -107,7 +107,7 @@ namespace BH.Engine.Revit
                     ElementType aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
 
                     BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(objects, Discipline.Environmental, copyCustomData, convertUnits) as BuildingElementProperties;
-                    AddBHoMObject(aBuildingElementProperties, objects);
+                    objects = Modify.AddBHoMObject(objects, aBuildingElementProperties);
 
                     //Face aFace_BoundingElementFace = aSpatialElementBoundarySubface.GetBoundingElementFace();
                     //Face aFace_Subface = aSpatialElementBoundarySubface.GetSubface();
@@ -153,8 +153,7 @@ namespace BH.Engine.Revit
 
                             //---------------------------------------------
 
-
-                            AddBHoMObject(aBuildingElement, objects);
+                            objects = Modify.AddBHoMObject(objects, aBuildingElement);
                         }
                 }
             }

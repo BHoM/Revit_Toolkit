@@ -1,15 +1,12 @@
-﻿using System.Linq;
+﻿using System;
 using System.Collections.Generic;
 
 using Autodesk.Revit.DB;
 
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
-using BH.Engine.Environment;
-using BH.oM.Adapters.Revit;
 using BH.oM.Environment.Properties;
-using Autodesk.Revit.DB.Analysis;
-using System;
+
 
 namespace BH.Engine.Revit
 {
@@ -92,155 +89,10 @@ namespace BH.Engine.Revit
 
             //-------- Create BHoM building structure -----
 
-            Dictionary<ElementId, List<BHoMObject>> aObjects = new Dictionary<ElementId, List<BHoMObject>>();
-            using (Transaction aTransaction = new Transaction(document, "GetAnalyticalModel"))
+            List<BHoMObject> aBHoMObjectList = Query.GetEnergyAnalysisModel(document, copyCustomData, convertUnits);
+            if(aBHoMObjectList != null && aBHoMObjectList.Count > 0)
             {
-                aTransaction.Start();
-
-                FailureHandlingOptions aFailureHandlingOptions = aTransaction.GetFailureHandlingOptions();
-                aFailureHandlingOptions.SetFailuresPreprocessor(new WarningSwallower());
-                aTransaction.SetFailureHandlingOptions(aFailureHandlingOptions);
-
-                EnergyAnalysisDetailModel aEnergyAnalysisDetailModel = null;
-
-                using (SubTransaction aSubTransaction = new SubTransaction(document))
-                {
-                    aSubTransaction.Start();
-                    aEnergyAnalysisDetailModel = EnergyAnalysisDetailModel.GetMainEnergyAnalysisDetailModel(document);
-                    if (aEnergyAnalysisDetailModel != null && aEnergyAnalysisDetailModel.IsValidObject)
-                    {
-                        document.Delete(aEnergyAnalysisDetailModel.Id);
-                    }
-
-                    aSubTransaction.Commit();
-                }
-
-                EnergyAnalysisDetailModelOptions aEnergyAnalysisDetailModelOptions = new EnergyAnalysisDetailModelOptions();
-                aEnergyAnalysisDetailModelOptions.Tier = EnergyAnalysisDetailModelTier.SecondLevelBoundaries;
-                aEnergyAnalysisDetailModelOptions.EnergyModelType = EnergyModelType.SpatialElement;
-                aEnergyAnalysisDetailModelOptions.ExportMullions = true;
-                aEnergyAnalysisDetailModelOptions.IncludeShadingSurfaces = true;
-                aEnergyAnalysisDetailModelOptions.SimplifyCurtainSystems = false;
-
-                EnergyDataSettings aEnergyDataSettings = EnergyDataSettings.GetFromDocument(document);
-                aEnergyDataSettings.ExportComplexity = gbXMLExportComplexity.ComplexWithMullionsAndShadingSurfaces;
-                aEnergyDataSettings.ExportDefaults = false;
-                aEnergyDataSettings.SliverSpaceTolerance = UnitUtils.ConvertToInternalUnits(5, DisplayUnitType.DUT_MILLIMETERS);
-                aEnergyDataSettings.AnalysisType = AnalysisMode.BuildingElements;
-                aEnergyDataSettings.EnergyModel = false;
-
-                //AnalyticalSpaces
-                aEnergyAnalysisDetailModel = EnergyAnalysisDetailModel.Create(document, aEnergyAnalysisDetailModelOptions);
-                IList<EnergyAnalysisSpace> aEnergyAnalysisSpaces = aEnergyAnalysisDetailModel.GetAnalyticalSpaces();
-                Dictionary<string, EnergyAnalysisSurface> aEnergyAnalysisSurfaces = new Dictionary<string, EnergyAnalysisSurface>();
-                foreach (EnergyAnalysisSpace aEnergyAnalysisSpace in aEnergyAnalysisSpaces)
-                {
-                    Space aSpace = aEnergyAnalysisSpace.ToBHoM(aObjects, Discipline.Environmental, copyCustomData, convertUnits) as Space;
-                    AddBHoMObject(aSpace, aObjects);
-
-                    foreach (EnergyAnalysisSurface aEnergyAnalysisSurface in aEnergyAnalysisSpace.GetAnalyticalSurfaces())
-                        if (!aEnergyAnalysisSurfaces.ContainsKey(aEnergyAnalysisSurface.SurfaceName))
-                            aEnergyAnalysisSurfaces.Add(aEnergyAnalysisSurface.SurfaceName, aEnergyAnalysisSurface);
-                }
-
-                //EnergyAnalysisSurfaces
-                foreach (KeyValuePair<string, EnergyAnalysisSurface> aKeyValuePair in aEnergyAnalysisSurfaces)
-                {
-                    BuildingElement aBuildingElement = aKeyValuePair.Value.ToBHoMBuildingElement(aObjects, copyCustomData, convertUnits);
-                    AddBHoMObject(aBuildingElement, aObjects);
-
-                    List<BHoMObject> aBHoMObjectList_Hosted = new List<BHoMObject>();
-                    foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aKeyValuePair.Value.GetAnalyticalOpenings())
-                    {
-                        BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(aObjects, copyCustomData, convertUnits);
-                        if (aBuildingElement_Opening != null)
-                        {
-                            aBHoMObjectList_Hosted.Add(aBuildingElement_Opening);
-                            AddBHoMObject(aBuildingElement_Opening, aObjects);
-                        }
-                    }
-
-                    //------------ Cutting openings ----------------
-                    if (aBHoMObjectList_Hosted != null && aBHoMObjectList_Hosted.Count > 0)
-                    {
-                        BuildingElementPanel aBuildingElementPanel = aBuildingElement.BuildingElementGeometry as BuildingElementPanel;
-                        if (aBuildingElementPanel == null)
-                            continue;
-
-                        foreach (BuildingElement aBuildingElement_Hosted in aBHoMObjectList_Hosted.FindAll(x => x is BuildingElement))
-                        {
-                            BuildingElementPanel aBuildingElementPanel_Hosted = aBuildingElement_Hosted.BuildingElementGeometry as BuildingElementPanel;
-                            if (aBuildingElementPanel_Hosted == null)
-                                continue;
-
-                            BuildingElementOpening aBuildingElementOpening = new BuildingElementOpening()
-                            {
-                                PolyCurve = aBuildingElementPanel_Hosted.PolyCurve
-                            };
-
-                            if (copyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Convert.ElementId))
-                                aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, Convert.ElementId, aBuildingElement_Hosted.CustomData[Convert.ElementId]) as BuildingElementOpening;
-
-                            aBuildingElementPanel.Openings.Add(aBuildingElementOpening);
-                        }
-
-                    }
-                    //-------------------------------------------
-                }
-
-
-                //AnalyticalShadingSurfaces
-                IList<EnergyAnalysisSurface> aAnalyticalShadingSurfaceList = aEnergyAnalysisDetailModel.GetAnalyticalShadingSurfaces();
-                foreach (EnergyAnalysisSurface aEnergyAnalysisSurface in aAnalyticalShadingSurfaceList)
-                {
-                    BuildingElement aBuildingElement = aEnergyAnalysisSurface.ToBHoMBuildingElement(aObjects, copyCustomData, convertUnits);
-                    AddBHoMObject(aBuildingElement, aObjects);
-
-                    List<BHoMObject> aBHoMObjectList_Hosted = new List<BHoMObject>();
-                    foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aEnergyAnalysisSurface.GetAnalyticalOpenings())
-                    {
-                        BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(aObjects, copyCustomData, convertUnits);
-                        if (aBuildingElement_Opening != null)
-                        {
-                            aBHoMObjectList_Hosted.Add(aBuildingElement_Opening);
-                            AddBHoMObject(aBuildingElement_Opening, aObjects);
-                        }
-                    }
-
-                    //------------ Cutting openings ----------------
-                    if (aBHoMObjectList_Hosted != null && aBHoMObjectList_Hosted.Count > 0)
-                    {
-
-                        BuildingElementPanel aBuildingElementPanel = aBuildingElement.BuildingElementGeometry as BuildingElementPanel;
-                        if (aBuildingElementPanel == null)
-                            continue;
-
-                        foreach (BuildingElement aBuildingElement_Hosted in aBHoMObjectList_Hosted.FindAll(x => x is BuildingElement))
-                        {
-                            BuildingElementPanel aBuildingElementPanel_Hosted = aBuildingElement_Hosted.BuildingElementGeometry as BuildingElementPanel;
-                            if (aBuildingElementPanel_Hosted == null)
-                                continue;
-
-                            BuildingElementOpening aBuildingElementOpening = new BuildingElementOpening()
-                            {
-                                PolyCurve = aBuildingElementPanel_Hosted.PolyCurve
-                            };
-
-                            if (copyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Convert.ElementId))
-                                aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, Convert.ElementId, aBuildingElement_Hosted.CustomData[Convert.ElementId]) as BuildingElementOpening;
-
-                            aBuildingElementPanel.Openings.Add(aBuildingElementOpening);
-                        }
-
-                    }
-                    //-------------------------------------------
-                }
-
-                aTransaction.RollBack();
-            }
-
-            foreach (KeyValuePair<ElementId, List<BHoMObject>> aKeyValuePair in aObjects)
-                foreach (BHoMObject aBHoMObject in aKeyValuePair.Value)
+                foreach (BHoMObject aBHoMObject in aBHoMObjectList)
                 {
                     if (aBHoMObject is Space)
                         aBuilding.Spaces.Add(aBHoMObject as Space);
@@ -251,7 +103,7 @@ namespace BH.Engine.Revit
                     else if (aBHoMObject is BuildingElement)
                         aBuilding.BuildingElements.Add(aBHoMObject as BuildingElement);
                 }
-
+            }
 
             //TODO: To be removed for next release when Space.BuildingElements removed from Space
             foreach (BuildingElement aBuildingElement in aBuilding.BuildingElements)
@@ -269,82 +121,9 @@ namespace BH.Engine.Revit
 
             }
 
-
             //---------------------------------------------
 
             return aBuilding;
-        }
-
-        /***************************************************/
-        /**** Private Methods                           ****/
-        /***************************************************/
-
-        private static List<BHoMObject> GetBHoMObjects(ElementId elementId, Dictionary<ElementId, List<BHoMObject>> objects)
-        {
-            if (objects == null || elementId == null)
-                return null;
-
-            List<BHoMObject> aResult = null;
-            if (objects.TryGetValue(elementId, out aResult))
-                return aResult;
-
-            return null;
-        }
-
-        /***************************************************/
-
-        private static void AddBHoMObject(BHoMObject bHoMObject, Dictionary<ElementId, List<BHoMObject>> objects)
-        {
-            if (objects == null || bHoMObject == null)
-                return;
-
-            ElementId aElementId = Query.ElementId(bHoMObject);
-            if (aElementId == null)
-                aElementId = Autodesk.Revit.DB.ElementId.InvalidElementId;
-
-            List<BHoMObject> aResult = null;
-            if (objects.TryGetValue(aElementId, out aResult))
-            {
-                if (aResult == null)
-                    aResult = new List<BHoMObject>();
-
-                if (aResult.Find(x => x != null && x.BHoM_Guid == bHoMObject.BHoM_Guid) == null)
-                    aResult.Add(bHoMObject);
-            }
-            else
-            {
-                objects.Add(aElementId, new List<BHoMObject>(new BHoMObject[] { bHoMObject }));
-            }
-        }
-
-        /***************************************************/
-
-        private static void AddBHoMObjects(IEnumerable<BHoMObject> bHoMObjects, Dictionary<ElementId, List<BHoMObject>> objects)
-        {
-            if (bHoMObjects == null)
-                return;
-
-            foreach (BHoMObject aBHoMObject in bHoMObjects)
-                AddBHoMObject(aBHoMObject, objects);
-        }
-
-
-        /***************************************************/
-        /**** Private Classes                           ****/
-        /***************************************************/
-
-        private class WarningSwallower : IFailuresPreprocessor
-        {
-            public FailureProcessingResult PreprocessFailures(FailuresAccessor FailuresAccessor)
-            {
-                IList<FailureMessageAccessor> aFailureMessageAccessors = FailuresAccessor.GetFailureMessages();
-
-                foreach (FailureMessageAccessor aFailureMessageAccessor in aFailureMessageAccessors)
-                {
-                    FailuresAccessor.DeleteWarning(aFailureMessageAccessor);
-                }
-                return FailureProcessingResult.Continue;
-            }
         }
 
         /***************************************************/

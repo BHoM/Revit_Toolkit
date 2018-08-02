@@ -63,11 +63,6 @@ namespace BH.Engine.Revit
                     return familyInstance.ToBHoMFramingElement(copyCustomData, convertUnits);
                 case Discipline.Environmental:
                     return familyInstance.ToBHoMBuildingElement(copyCustomData, convertUnits);
-                case Discipline.Architecture:
-                    {
-                        //TODO: add code for Architectural FamilyInstances
-                        return null;
-                    }
             }
 
             familyInstance.NotConvertedError();

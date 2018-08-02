@@ -129,7 +129,7 @@ namespace BH.Engine.Revit
             {
                 aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
                 aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(objects, copyCustomData, convertUnits);
-                AddBHoMObject(aBuildingElementProperties, objects);
+                objects = Modify.AddBHoMObject(objects, aBuildingElementProperties);
 
                 aName = aElement.Name;
                 aLevel = Query.Level(aElement, objects, Discipline.Environmental, copyCustomData, convertUnits);
@@ -205,7 +205,7 @@ namespace BH.Engine.Revit
             ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
 
             BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(objects, copyCustomData, convertUnits);
-            AddBHoMObject(aBuildingElementProperties, objects);
+            objects = Modify.AddBHoMObject(objects, aBuildingElementProperties);
 
             List<Space> aSpaceList = new List<Space>();
             List<ElementId> aElementIdList = Query.SpatialElementIds(energyAnalysisOpening.GetAnalyticalSurface());
