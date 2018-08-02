@@ -79,11 +79,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CRUD\Create.cs" />
-    <Compile Include="CRUD\Delete.cs" />
-    <Compile Include="CRUD\Execute.cs" />
-    <Compile Include="CRUD\Read.cs" />
-    <Compile Include="CRUD\Update.cs" />
+    <Compile Include="Create\Create.cs" />
+    <Compile Include="Create\Architecture\Level.cs" />
+    <Compile Include="Create\Environment\BuildingElement.cs" />
+    <Compile Include="Create\Environment\BuildingElementProperties.cs" />
+    <Compile Include="Delete\Delete.cs" />
+    <Compile Include="Execute\Execute.cs" />
+    <Compile Include="Read\Read.cs" />
+    <Compile Include="Update\Update.cs" />
+    <Compile Include="Messages\Errors.cs" />
+    <Compile Include="Messages\Warnings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CobraAdapter.cs" />
   </ItemGroup>

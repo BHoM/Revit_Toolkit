@@ -76,11 +76,18 @@ namespace BH.Engine.Revit
                     ICurve aICurve = buildingElement.BuildingElementGeometry.Bottom();
                     if (aICurve == null)
                         return null;
+
                     aElement = Wall.Create(document, ToRevit(aICurve, convertUnits), aLevel.Id, false);
                     if (aElementType != null)
                         aElement.ChangeTypeId(aElementType.Id);
 
                     aBuiltInParameters = new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT };
+                    break;
+                case BuildingElementType.Door:
+                    //TODO: Create Door from BuildingElement
+                    break;
+                case BuildingElementType.Window:
+                    //TODO: Create Widnow from BuildingElement
                     break;
             }
 
