@@ -44,7 +44,8 @@ namespace BH.Engine.Revit
                 case StructuralMaterialType.Wood:
                     return Library.Query.Match("MaterialsEurope", "TIMBER") as oM.Common.Materials.Material;
                 default:
-                    return new oM.Common.Materials.Material();
+                    materialGrade.MaterialNotFoundWarning();
+                    return null;
             }
         }
 
@@ -84,7 +85,8 @@ namespace BH.Engine.Revit
                 case "Wood":
                     return BH.Engine.Library.Query.Match("MaterialsEurope", "TIMBER") as oM.Common.Materials.Material;
                 default:
-                    return new oM.Common.Materials.Material();
+                    materialGrade.MaterialNotFoundWarning();
+                    return null;
             }
         }
 
