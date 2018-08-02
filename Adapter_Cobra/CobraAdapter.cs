@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 
-using Autodesk.Revit.DB;
 using BH.Adapter.Revit;
 using BH.oM.Adapters.Revit;
 
@@ -55,6 +51,29 @@ namespace BH.UI.Revit.Adapter
                 m_RevitSettings = value;
             }
 
+        }
+
+        /***************************************************/
+
+        public Document Document
+        {
+            get
+            {
+                return m_Document;
+            }
+        }
+
+        /***************************************************/
+
+        public UIDocument UIDocument
+        {
+            get
+            {
+                if (m_Document == null)
+                    return null;
+
+                return new UIDocument(m_Document);
+            }
         }
 
         /***************************************************/

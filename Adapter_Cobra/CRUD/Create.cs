@@ -36,7 +36,7 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected bool Create(BHoMObject bHoMObject, bool copyCustomData = true, bool replace = false)
         {
-            if (m_Document == null)
+            if (Document == null)
             {
                 Engine.Reflection.Compute.RecordError("Revit objects could not be created because Revit Document is null.");
                 return false;
@@ -49,11 +49,11 @@ namespace BH.UI.Revit.Adapter
             }
 
 
-            if (!Query.AllowElement(RevitSettings, Query.UniqueId(bHoMObject), Query.ElementId(bHoMObject), Query.WorksetId(bHoMObject)))
+            if (!Query.AllowElement(RevitSettings, UIDocument, Query.UniqueId(bHoMObject), Query.ElementId(bHoMObject), Query.WorksetId(bHoMObject)))
                 return false;
 
             bool aResult = false;
-            using (Transaction aTransaction = new Transaction(m_Document, "Create"))
+            using (Transaction aTransaction = new Transaction(Document, "Create"))
             {
                 aTransaction.Start();
                 aResult = Create(bHoMObject as dynamic, copyCustomData, replace);
@@ -76,7 +76,7 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected bool Create(IEnumerable<BHoMObject> bHoMObjects, bool copyCustomData = true, bool replace = false)
         {
-            if(m_Document == null)
+            if(Document == null)
             {
                 Engine.Reflection.Compute.RecordError("Revit objects could not be created because Revit Document is null.");
                 return false;
@@ -93,7 +93,7 @@ namespace BH.UI.Revit.Adapter
 
             List<BHoMObject> aBHoMObjectList = new List<BHoMObject>(bHoMObjects);
 
-            using (Transaction aTransaction = new Transaction(m_Document, "Create"))
+            using (Transaction aTransaction = new Transaction(Document, "Create"))
             {
                 aTransaction.Start();
                 foreach (BHoMObject aBHOMObject in aBHoMObjectList)
@@ -117,7 +117,7 @@ namespace BH.UI.Revit.Adapter
         /// </search>
         protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {
-            if (m_Document == null)
+            if (Document == null)
             {
                 Engine.Reflection.Compute.RecordError("Objects could not be created because Revit Document is null.");
                 return false;
@@ -132,7 +132,7 @@ namespace BH.UI.Revit.Adapter
             if (objects.Count() < 1)
                 return false;
 
-            using (Transaction aTransaction = new Transaction(m_Document, "Create"))
+            using (Transaction aTransaction = new Transaction(Document, "Create"))
             {
                 aTransaction.Start();
                 foreach (IBHoMObject aBHOMObject in objects)
@@ -171,7 +171,7 @@ namespace BH.UI.Revit.Adapter
             if (replace)
                 Delete(buildingElement);
 
-            buildingElement.ToRevit(m_Document, copyCustomData);
+            buildingElement.ToRevit(Document, copyCustomData);
 
             return true;
         }
@@ -189,17 +189,17 @@ namespace BH.UI.Revit.Adapter
             if (replace)
                 Delete(level);
 
-            List<Element> aElementList = new FilteredElementCollector(m_Document).OfClass(typeof(Level)).ToList();
+            List<Element> aElementList = new FilteredElementCollector(Document).OfClass(typeof(Level)).ToList();
             if (aElementList == null || aElementList.Count < 1)
             {
-                level.ToRevit(m_Document, copyCustomData);
+                level.ToRevit(Document, copyCustomData);
                 return true;
             }
 
             Element aElement = aElementList.Find(x => x.Name == level.Name);
             if (aElement == null)
             {
-                level.ToRevit(m_Document, copyCustomData);
+                level.ToRevit(Document, copyCustomData);
                 return true;
             }
 
@@ -220,14 +220,14 @@ namespace BH.UI.Revit.Adapter
                 Delete(buildingElementProperties);
 
             Type aType = Query.RevitType(buildingElementProperties.BuildingElementType);
-            List<Element> aElementList = new FilteredElementCollector(m_Document).OfClass(aType).ToList();
+            List<Element> aElementList = new FilteredElementCollector(Document).OfClass(aType).ToList();
             if (aElementList == null && aElementList.Count < 1)
                 return false;
 
             Element aElement = aElementList.Find(x => x.Name == buildingElementProperties.Name);
             if (aElement == null)
             {
-                aElement = buildingElementProperties.ToRevit(m_Document, copyCustomData);
+                aElement = buildingElementProperties.ToRevit(Document, copyCustomData);
                 return true;
             }
 
@@ -244,7 +244,7 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            FamilyInstance aFamilyInstance = framingElement.ToRevitColumn(m_Document, copyCustomData);
+            FamilyInstance aFamilyInstance = framingElement.ToRevitColumn(Document, copyCustomData);
 
             return true;
         }
