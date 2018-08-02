@@ -50,5 +50,26 @@ namespace BH.Engine.Revit
         }
 
         /***************************************************/
+
+        private static void UnknownMaterialWarning(this FamilyInstance familyInstance)
+        {
+            Engine.Reflection.Compute.RecordWarning(string.Format("Revit symbol has been converted to a steel profile with an unknown material. Element Id: {0}, Element Name: {1}", familyInstance.Id.IntegerValue, familyInstance.Name));
+        }
+
+        /***************************************************/
+
+        private static void MaterialNotFoundWarning(this string materialGrade)
+        {
+            Engine.Reflection.Compute.RecordWarning(string.Format("A BHoM equivalent to the Revit material has not been found. Material  grade: {0}", materialGrade));
+        }
+
+        /***************************************************/
+
+        private static void CompositePanelWarning(this HostObjAttributes hostObjAttributes)
+        {
+            Engine.Reflection.Compute.RecordWarning(string.Format("The composite panels are currently not supported in the BHoM. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
+        }
+
+        /***************************************************/
     }
 }
