@@ -38,17 +38,28 @@ namespace BH.Engine.Revit
 
             if (element is FamilyInstance)
             {
-                switch ((element as FamilyInstance).StructuralType)
+                //Structural framing
+                switch ((BuiltInCategory)element.Category.Id.IntegerValue)
                 {
-                    case StructuralType.Beam:
-                    case StructuralType.Column:
-                    case StructuralType.Brace:
+                    case BuiltInCategory.OST_StructuralFraming:
+                    case BuiltInCategory.OST_StructuralFoundation:
+                    case BuiltInCategory.OST_StructuralColumns:
+                    case BuiltInCategory.OST_Columns:
+                    case BuiltInCategory.OST_VerticalBracing:
+                    case BuiltInCategory.OST_Truss:
+                    case BuiltInCategory.OST_StructuralTruss:
+                    case BuiltInCategory.OST_HorizontalBracing:
+                    case BuiltInCategory.OST_Purlin:
+                    case BuiltInCategory.OST_Joist:
+                    case BuiltInCategory.OST_Girder:
+                    case BuiltInCategory.OST_StructuralStiffener:
+                    case BuiltInCategory.OST_StructuralFramingOther:
                         aResult.Add(typeof(FramingElement));
                         return aResult;
                 }
 
                 //Environmental Windows and Doors
-                switch((BuiltInCategory)element.Category.Id.IntegerValue)
+                switch ((BuiltInCategory)element.Category.Id.IntegerValue)
                 {
                     case BuiltInCategory.OST_Windows:
                     case BuiltInCategory.OST_Doors:
