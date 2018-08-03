@@ -26,8 +26,19 @@ namespace BH.Engine.Revit
 
             if (wall.GetAnalyticalModel() != null)
             {
-                List<Curve> wallCurves = wall.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
-                result = wallCurves.ToBHoM(true).IJoin().ConvertAll(c=>c as oM.Geometry.ICurve);
+                List<oM.Geometry.ICurve> wallCurves = wall.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList().ToBHoM();
+
+                foreach (oM.Geometry.ICurve c in wallCurves)
+                {
+                    if (c == null)
+                    {
+                        wall.UnsupportedOutlineCurveError();
+                        return null;
+                    }
+                        
+                }
+
+                result = wallCurves.IJoin().ConvertAll(c => c as oM.Geometry.ICurve);
             }
 
             else
@@ -51,6 +62,12 @@ namespace BH.Engine.Revit
                                 List<oM.Geometry.ICurve> faceOutlines = new List<oM.Geometry.ICurve>();
                                 foreach (List<oM.Geometry.ICurve> lc in face.EdgeLoops.ToBHoM(true))
                                 {
+                                    foreach (oM.Geometry.ICurve c in lc)
+                                    {
+                                        wall.UnsupportedOutlineCurveError();
+                                        if (c == null) return null;
+                                    }
+
                                     result.AddRange(lc.IJoin().Select(c => c.Translate(toWallLine)));
                                 }
                                 break;                          //TODO: is this OK?
@@ -71,8 +88,18 @@ namespace BH.Engine.Revit
 
             if (floor.GetAnalyticalModel() != null)
             {
-                List<Curve> floorCurves = floor.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList();
-                result = floorCurves.ToBHoM(true).IJoin().ConvertAll(c => c as oM.Geometry.ICurve);
+                List<oM.Geometry.ICurve> floorCurves = floor.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList().ToBHoM();
+                
+                foreach (oM.Geometry.ICurve c in floorCurves)
+                {
+                    if (c == null)
+                    {
+                        floor.UnsupportedOutlineCurveError();
+                        return null;
+                    }
+                }
+
+                result = floorCurves.IJoin().ConvertAll(c => c as oM.Geometry.ICurve);
             }
 
             else
@@ -94,6 +121,13 @@ namespace BH.Engine.Revit
                                 List<oM.Geometry.ICurve> faceOutlines = new List<oM.Geometry.ICurve>();
                                 foreach (List<oM.Geometry.ICurve> lc in face.EdgeLoops.ToBHoM(true))
                                 {
+
+                                    foreach (oM.Geometry.ICurve c in lc)
+                                    {
+                                        floor.UnsupportedOutlineCurveError();
+                                        if (c == null) return null;
+                                    }
+
                                     result.AddRange(lc.IJoin().Select(c => c.Translate(toFloorLine)));
                                 }
                                 break;                          //TODO: is this OK?
