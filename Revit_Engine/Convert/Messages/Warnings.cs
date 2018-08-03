@@ -1,23 +1,18 @@
 ﻿using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure;
 using BH.oM.Base;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System;
 
 namespace BH.Engine.Revit
 {
-
-    /// <summary>
-    /// BHoM Revit Engine Convert Methods
-    /// </summary>
     public static partial class Convert
     {
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
 
-        private static void CheckNullProperties(this BHoMObject obj, IEnumerable<string> propertyNames = null)
+        private static void LogNullProperties(this BHoMObject obj, IEnumerable<string> propertyNames = null)
         {
             //TODO: Move this one to the BHoM_Engine?
             List<string> nullPropertyNames = new List<string>();
