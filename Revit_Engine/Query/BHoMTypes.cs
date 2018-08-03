@@ -42,7 +42,7 @@ namespace BH.Engine.Revit
                 switch ((BuiltInCategory)element.Category.Id.IntegerValue)
                 {
                     case BuiltInCategory.OST_StructuralFraming:
-                    case BuiltInCategory.OST_StructuralFoundation:
+                    //case BuiltInCategory.OST_StructuralFoundation:
                     case BuiltInCategory.OST_StructuralColumns:
                     case BuiltInCategory.OST_Columns:
                     case BuiltInCategory.OST_VerticalBracing:

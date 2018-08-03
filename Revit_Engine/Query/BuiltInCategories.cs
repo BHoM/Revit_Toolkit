@@ -39,7 +39,7 @@ namespace BH.Engine.Revit
             if (type == typeof(FramingElement))
             {
                 aBuiltInCategoryList.Add(BuiltInCategory.OST_StructuralFraming);
-                aBuiltInCategoryList.Add(BuiltInCategory.OST_StructuralFoundation);
+                //aBuiltInCategoryList.Add(BuiltInCategory.OST_StructuralFoundation);
                 aBuiltInCategoryList.Add(BuiltInCategory.OST_StructuralColumns);
                 aBuiltInCategoryList.Add(BuiltInCategory.OST_Columns);
                 aBuiltInCategoryList.Add(BuiltInCategory.OST_VerticalBracing);
