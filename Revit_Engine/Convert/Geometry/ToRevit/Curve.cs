@@ -10,7 +10,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Curve ToRevit(this ICurve curve, bool convertUnits = true)
+        internal static Curve ToRevit(this ICurve curve, bool convertUnits = true)
         {
             if (curve is oM.Geometry.Line)
             {
@@ -42,7 +42,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static CurveArray ToRevit(this PolyCurve polyCurve, bool convertUnits = true)
+        internal static CurveArray ToRevit(this PolyCurve polyCurve, bool convertUnits = true)
         {
             if (polyCurve == null)
                 return null;

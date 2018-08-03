@@ -18,7 +18,7 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static CompoundStructureLayer ToRevit(this ConstructionLayer constructionLayer, Document document, bool convertUnits = true)
+        internal static CompoundStructureLayer ToRevit(this ConstructionLayer constructionLayer, Document document, bool convertUnits = true)
         {
             MaterialFunctionAssignment aMaterialFunctionAssignment = GetMaterialFunctionAssignment(constructionLayer);
 
@@ -27,7 +27,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static CompoundStructure ToRevit(IEnumerable<ConstructionLayer> constructionLayers, Document document, bool convertUnits = true)
+        internal static CompoundStructure ToRevit(IEnumerable<ConstructionLayer> constructionLayers, Document document, bool convertUnits = true)
         {
             List<CompoundStructureLayer> aCompoundStructureLayerList = new List<CompoundStructureLayer>();
             foreach (ConstructionLayer aConstructionLayer in constructionLayers)

@@ -18,7 +18,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static BuildingElement ToBHoMBuildingElement(this Element element, BuildingElementPanel buildingElementPanel, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElement ToBHoMBuildingElement(this Element element, BuildingElementPanel buildingElementPanel, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             ElementType aElementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
             BuildingElementProperties aBuildingElementProperties = null;
@@ -65,7 +65,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BuildingElement ToBHoMBuildingElement(this FamilyInstance familyInstance, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElement ToBHoMBuildingElement(this FamilyInstance familyInstance, bool copyCustomData = true, bool convertUnits = true)
         {
             BuildingElementType? aBuildingElementType = Query.BuildingElementType((BuiltInCategory)familyInstance.Category.Id.IntegerValue);
             if (!aBuildingElementType.HasValue)
@@ -79,7 +79,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BuildingElement ToBHoMBuildingElement(this Wall wall, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElement ToBHoMBuildingElement(this Wall wall, bool copyCustomData = true, bool convertUnits = true)
         {
             BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoM(Discipline.Environmental, copyCustomData, convertUnits) as BuildingElementProperties;
 
@@ -94,7 +94,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisSurface energyAnalysisSurface, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisSurface energyAnalysisSurface, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             BuildingElementPanel aBuildingElementPanel = null;
             if (energyAnalysisSurface != null)
@@ -179,7 +179,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisOpening energyAnalysisOpening, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisOpening energyAnalysisOpening, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             BuildingElementPanel aBuildingElementPanel = null;
             if (energyAnalysisOpening != null)
@@ -253,7 +253,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static List<BuildingElement> ToBHoMBuildingElements(this Ceiling ceiling, bool copyCustomData = true, bool convertUnits = true)
+        internal static List<BuildingElement> ToBHoMBuildingElements(this Ceiling ceiling, bool copyCustomData = true, bool convertUnits = true)
         {
             List<BuildingElement> aResult = new List<BuildingElement>();
             BuildingElementProperties aBuildingElementProperties = (ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType).ToBHoM(Discipline.Environmental, copyCustomData, convertUnits) as BuildingElementProperties;
@@ -272,7 +272,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static List<BuildingElement> ToBHoMBuildingElements(this Floor floor, bool copyCustomData = true, bool convertUnits = true)
+        internal static List<BuildingElement> ToBHoMBuildingElements(this Floor floor, bool copyCustomData = true, bool convertUnits = true)
         {
             List<BuildingElement> aResult = new List<BuildingElement>();
             BuildingElementProperties aBuildingElementProperties = floor.FloorType.ToBHoMBuildingElementProperties(copyCustomData, convertUnits);
@@ -291,7 +291,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static List<BuildingElement> ToBHoMBuildingElements(this RoofBase roofBase, bool copyCustomData = true, bool convertUnits = true)
+        internal static List<BuildingElement> ToBHoMBuildingElements(this RoofBase roofBase, bool copyCustomData = true, bool convertUnits = true)
         {
             List<BuildingElement> aResult = new List<BuildingElement>();
             BuildingElementProperties aBuildingElementProperties = roofBase.RoofType.ToBHoMBuildingElementProperties(copyCustomData, convertUnits);

@@ -9,7 +9,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static BHoMObject ToBHoMGrid(this Grid grid, bool copyCustomData = true, bool convertUnits = true)
+        internal static BHoMObject ToBHoMGrid(this Grid grid, bool copyCustomData = true, bool convertUnits = true)
         {
             Curve gridLine = grid.Curve;
             oM.Architecture.Elements.Grid aGrid = Architecture.Elements.Create.Grid(gridLine.ToBHoM(convertUnits));

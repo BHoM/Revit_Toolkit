@@ -8,7 +8,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static oM.Geometry.Point ToBHoM(this LocationPoint locationPoint, bool convertUnits = true)
+        internal static oM.Geometry.Point ToBHoM(this LocationPoint locationPoint, bool convertUnits = true)
         {
             if (locationPoint == null)
                 return null;

@@ -9,7 +9,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static XYZ ToRevit(this Vector vector, bool convertUnits = true)
+        internal static XYZ ToRevit(this Vector vector, bool convertUnits = true)
         {
             if (convertUnits)
                 return new XYZ(UnitUtils.ConvertToInternalUnits(vector.X, DisplayUnitType.DUT_METERS), UnitUtils.ConvertToInternalUnits(vector.Y, DisplayUnitType.DUT_METERS), UnitUtils.ConvertToInternalUnits(vector.Z, DisplayUnitType.DUT_METERS));
