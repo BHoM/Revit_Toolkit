@@ -27,7 +27,7 @@ namespace BH.Engine.Revit
             Location location = familyInstance.Location;
             double rotation = double.NaN;
 
-            if (location is LocationPoint)
+            if (location is LocationPoint && structuralType == StructuralType.Column)
             {
                 XYZ loc = (location as LocationPoint).Point;
                 double baseLevel = (familyInstance.Document.GetElement(familyInstance.LookupParameter("Base Level").AsElementId()) as Level).ProjectElevation;
