@@ -10,7 +10,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IProperty2D ToBHoMProperty2D(this WallType wallType, string materialGrade = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static IProperty2D ToBHoMProperty2D(this WallType wallType, string materialGrade = null, bool copyCustomData = true, bool convertUnits = true)
         {
             Document document = wallType.Document;
             double aThickness = 0;
@@ -44,7 +44,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static IProperty2D ToBHoMProperty2D(this FloorType floorType, bool copyCustomData = true, bool convertUnits = true, string materialGrade = null)
+        internal static IProperty2D ToBHoMProperty2D(this FloorType floorType, bool copyCustomData = true, bool convertUnits = true, string materialGrade = null)
         {
             Document document = floorType.Document;
             double aThickness = 0;

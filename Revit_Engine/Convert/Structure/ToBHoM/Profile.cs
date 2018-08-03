@@ -13,7 +13,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IProfile ToBHoMProfile(this FamilySymbol familySymbol)
+        internal static IProfile ToBHoMProfile(this FamilySymbol familySymbol)
         {
             string familyName = familySymbol.Family.Name;
             Parameter sectionShapeParam = familySymbol.LookupParameter("Section Shape");
