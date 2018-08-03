@@ -6,13 +6,13 @@ using System.Reflection;
 
 namespace BH.Engine.Revit
 {
-    public static partial class Convert
+    public static partial class Compute
     {
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
 
-        private static void LogNullProperties(this BHoMObject obj, IEnumerable<string> propertyNames = null)
+        internal static void LogNullProperties(this BHoMObject obj, IEnumerable<string> propertyNames = null)
         {
             //TODO: Move this one to the BHoM_Engine?
             List<string> nullPropertyNames = new List<string>();
@@ -46,30 +46,23 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        private static void UnknownMaterialWarning(this FamilyInstance familyInstance)
+        internal static void UnknownMaterialWarning(this FamilyInstance familyInstance)
         {
             Engine.Reflection.Compute.RecordWarning(string.Format("Revit symbol has been converted to a steel profile with an unknown material. Element Id: {0}, Element Name: {1}", familyInstance.Id.IntegerValue, familyInstance.Name));
         }
 
         /***************************************************/
 
-        private static void MaterialNotFoundWarning(this string materialGrade)
+        internal static void MaterialNotFoundWarning(this string materialGrade)
         {
             Engine.Reflection.Compute.RecordWarning(string.Format("A BHoM equivalent to the Revit material has not been found. Material  grade: {0}", materialGrade));
         }
 
         /***************************************************/
 
-        private static void CompositePanelWarning(this HostObjAttributes hostObjAttributes)
+        internal static void CompositePanelWarning(this HostObjAttributes hostObjAttributes)
         {
             Engine.Reflection.Compute.RecordWarning(string.Format("Composite panels are currently not supported in the BHoM. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
-        }
-
-        /***************************************************/
-
-        private static void NonlinearBarWarning(this FamilyInstance bar)
-        {
-            Engine.Reflection.Compute.RecordWarning(string.Format("Nonlinear bars are currently not supported in the BHoM. Element Id: {0}", bar.Id.IntegerValue));
         }
 
         /***************************************************/
