@@ -20,20 +20,7 @@ namespace BH.Engine.Revit
             IProperty2D aProperty2D = wall.WallType.ToBHoMProperty2D(materialGrade, copyCustomData, convertUnits) as IProperty2D;
 
             List<oM.Geometry.ICurve> outlines = wall.Outlines();
-
-            //TODO: Remove this hack when Nurbs are properly implemented!
-            bool isNurb = false;
-            foreach (oM.Geometry.ICurve c in outlines)
-            {
-                if (c is oM.Geometry.NurbCurve)
-                {
-                    isNurb = true;
-                    Reflection.Compute.RecordError(string.Format("The panel outline contains a nurbs curve, which is not supported in BHoM 2.0, it is returned with empty geometry. Element Id: {0}", wall.Id.IntegerValue));
-                    break;
-                }
-            }
-
-            List<PanelPlanar> aResult = isNurb ? new List<PanelPlanar> { new PanelPlanar { ExternalEdges = new List<oM.Structural.Elements.Edge>(), Openings = new List<oM.Structural.Elements.Opening>(), Property = aProperty2D } } : BHS.Create.PanelPlanar(outlines);
+            List<PanelPlanar> aResult = outlines != null ? BHS.Create.PanelPlanar(outlines) : new List<PanelPlanar> { new PanelPlanar { ExternalEdges = new List<oM.Structural.Elements.Edge>(), Openings = new List<oM.Structural.Elements.Opening>(), Property = aProperty2D } };
 
             for (int i = 0; i < aResult.Count; i++)
             {
@@ -58,20 +45,7 @@ namespace BH.Engine.Revit
             IProperty2D aProperty2D = floor.FloorType.ToBHoMProperty2D(copyCustomData, convertUnits, materialGrade) as IProperty2D;
 
             List<oM.Geometry.ICurve> outlines = floor.Outlines();
-
-            //TODO: Remove this hack when Nurbs are properly implemented!
-            bool isNurb = false;
-            foreach (oM.Geometry.ICurve c in outlines)
-            {
-                if (c is oM.Geometry.NurbCurve)
-                {
-                    isNurb = true;
-                    Reflection.Compute.RecordError(string.Format("The panel outline contains a nurbs curve, which is not supported in BHoM 2.0, it is returned with empty geometry. Element Id: {0}", floor.Id.IntegerValue));
-                    break;
-                }
-            }
-
-            List<PanelPlanar> aResult = isNurb ? new List<PanelPlanar> { new PanelPlanar { ExternalEdges = new List<oM.Structural.Elements.Edge>(), Openings = new List<oM.Structural.Elements.Opening>(), Property = aProperty2D } } : BHS.Create.PanelPlanar(outlines);
+            List<PanelPlanar> aResult = outlines != null ? BHS.Create.PanelPlanar(outlines) : new List<PanelPlanar> { new PanelPlanar { ExternalEdges = new List<oM.Structural.Elements.Edge>(), Openings = new List<oM.Structural.Elements.Opening>(), Property = aProperty2D } };
 
             for (int i = 0; i < aResult.Count; i++)
             {
