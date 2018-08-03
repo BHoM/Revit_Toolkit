@@ -77,7 +77,7 @@ namespace BH.Engine.Revit
             if (copyCustomData)
                 element = Modify.SetCustomData(element, familyInstance, convertUnits) as FramingElement;
 
-            element.CheckNullProperties(new List<string> { "LocationCurve" });
+            element.LogNullProperties(new List<string> { "LocationCurve" });
             return element;
         }
 
