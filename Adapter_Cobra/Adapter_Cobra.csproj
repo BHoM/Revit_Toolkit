@@ -91,6 +91,7 @@
     <Compile Include="Messages\Warnings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CobraAdapter.cs" />
+    <Compile Include="Update\UpdateProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj">
