@@ -14,7 +14,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<PanelPlanar> ToBHoMPanelPlanar(this Wall wall, bool copyCustomData = true, bool convertUnits = true)
+        internal static List<PanelPlanar> ToBHoMPanelPlanar(this Wall wall, bool copyCustomData = true, bool convertUnits = true)
         {
             string materialGrade = wall.MaterialGrade();
             IProperty2D aProperty2D = wall.WallType.ToBHoMProperty2D(materialGrade, copyCustomData, convertUnits) as IProperty2D;
@@ -52,7 +52,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static List<PanelPlanar> ToBHoMPanelPlanar(this Floor floor, bool copyCustomData = true, bool convertUnits = true)
+        internal static List<PanelPlanar> ToBHoMPanelPlanar(this Floor floor, bool copyCustomData = true, bool convertUnits = true)
         {
             string materialGrade = floor.MaterialGrade();
             IProperty2D aProperty2D = floor.FloorType.ToBHoMProperty2D(copyCustomData, convertUnits, materialGrade) as IProperty2D;
