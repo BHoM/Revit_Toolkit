@@ -31,12 +31,14 @@ namespace BH.Engine.Revit
                 }
             }
 
+            if (aThickness == 0) Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", wallType.Id.IntegerValue));
+
             ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structural.Properties.PanelType.Wall, Thickness = aThickness, Material = aMaterial, Name = wallType.Name };
 
             aProperty2D = Modify.SetIdentifiers(aProperty2D, wallType) as ConstantThickness;
             if (copyCustomData)
                 aProperty2D = Modify.SetCustomData(aProperty2D, wallType, convertUnits) as ConstantThickness;
-
+            
             return aProperty2D;
         }
 
@@ -62,6 +64,8 @@ namespace BH.Engine.Revit
                     aMaterial = m.ToBHoMMaterial(materialGrade) as oM.Common.Materials.Material;
                 }
             }
+
+            if (aThickness == 0) Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", floorType.Id.IntegerValue));
 
             ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structural.Properties.PanelType.Slab, Thickness = aThickness, Material = aMaterial, Name = floorType.Name };
 
