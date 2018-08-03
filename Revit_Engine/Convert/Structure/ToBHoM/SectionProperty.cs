@@ -1,7 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using BH.oM.Structural.Properties;
-using System;
 using System.Collections.Generic;
 using BHS = BH.Engine.Structure;
 
@@ -13,7 +12,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static ISectionProperty ToBHoMSectionProperty(this FamilyInstance familyInstance, bool copyCustomData = true, bool convertUnits = true)
+        internal static ISectionProperty ToBHoMSectionProperty(this FamilyInstance familyInstance, bool copyCustomData = true, bool convertUnits = true)
         {
             try
             {
