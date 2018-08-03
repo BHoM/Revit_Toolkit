@@ -19,31 +19,31 @@ namespace BH.Engine.Revit
 
         public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this PlanarFace planarFace, bool convertUnits = true)
         {
+            List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
+            
             EdgeArrayArray aEdgeArrayArray = planarFace.EdgeLoops;
-            if (aEdgeArrayArray != null && aEdgeArrayArray.Size > 0)
-            {
-                List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
-                for (int i = 0; i < aEdgeArrayArray.Size; i++)
-                {
-                    EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
-                    List<oM.Geometry.ICurve> aCurveList = new List<oM.Geometry.ICurve>();
-                    foreach (Edge aEdge in aEdgeArray)
-                    {
-                        Curve aCurve = aEdge.AsCurve();
-                        if (aCurve != null)
-                            aCurveList.Add(aCurve.ToBHoM(convertUnits));
-                    }
-
-                    if (aCurveList != null && aCurveList.Count > 0)
-                    {
-                        BuildingElementPanel aBuildingElementPanel = new BuildingElementPanel();
-                        aBuildingElementPanel = aBuildingElementPanel.SetGeometry(Geometry.Create.PolyCurve(aCurveList));
-                        aResult.Add(aBuildingElementPanel);
-                    }
-                }
+            if (aEdgeArrayArray == null && aEdgeArrayArray.Size == 0)
                 return aResult;
+            
+            for (int i = 0; i < aEdgeArrayArray.Size; i++)
+            {
+                EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
+                List<oM.Geometry.ICurve> aCurveList = new List<oM.Geometry.ICurve>();
+                foreach (Edge aEdge in aEdgeArray)
+                {
+                    Curve aCurve = aEdge.AsCurve();
+                    if (aCurve != null)
+                        aCurveList.Add(aCurve.ToBHoM(convertUnits));
+                }
+
+                if (aCurveList != null && aCurveList.Count > 0)
+                {
+                    BuildingElementPanel aBuildingElementPanel = new BuildingElementPanel();
+                    aBuildingElementPanel = aBuildingElementPanel.SetGeometry(Geometry.Create.PolyCurve(aCurveList));
+                    aResult.Add(aBuildingElementPanel);
+                }
             }
-            return null;
+            return aResult;
         }
 
         /***************************************************/

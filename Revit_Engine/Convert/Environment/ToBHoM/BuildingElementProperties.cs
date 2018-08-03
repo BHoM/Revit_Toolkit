@@ -83,19 +83,18 @@ namespace BH.Engine.Revit
         public static BuildingElementProperties ToBHoMBuildingElementProperties(this FamilySymbol familySymbol, bool copyCustomData = true, bool convertUnits = true)
         {
             BuildingElementType? aBuildingElementType = Query.BuildingElementType(familySymbol.Category);
-            if (aBuildingElementType.HasValue)
-            {
-                BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(aBuildingElementType.Value, familySymbol.Name);
-                aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, familySymbol) as BuildingElementProperties;
-                if (copyCustomData)
-                {
-                    aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, familySymbol, convertUnits) as BuildingElementProperties;
-                    aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, familySymbol, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElementProperties;
-                }
+            if (!aBuildingElementType.HasValue)
+                aBuildingElementType = BuildingElementType.Undefined;
 
-                return aBuildingElementProperties;
+            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(aBuildingElementType.Value, familySymbol.Name);
+            aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, familySymbol) as BuildingElementProperties;
+            if (copyCustomData)
+            {
+                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, familySymbol, convertUnits) as BuildingElementProperties;
+                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, familySymbol, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElementProperties;
             }
-            return null;
+
+            return aBuildingElementProperties;
         }
 
         /***************************************************/
@@ -127,6 +126,10 @@ namespace BH.Engine.Revit
                 else if (elementType is FamilySymbol)
                     aBuildingElementProperties = (elementType as FamilySymbol).ToBHoMBuildingElementProperties(copyCustomData, convertUnits);
             }
+
+            if (aBuildingElementProperties == null)
+                aBuildingElementProperties = new BuildingElementProperties();
+
             return aBuildingElementProperties;
         }
 

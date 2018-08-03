@@ -1,11 +1,8 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
-using Autodesk.Revit.DB.Structure;
 using BH.oM.Adapters.Revit;
 using BH.oM.Base;
-using BH.oM.Environment.Elements;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.Engine.Revit
 {
@@ -19,16 +16,10 @@ namespace BH.Engine.Revit
         {
             if (planarFace == null) return null;
 
-            switch(discipline)
+            switch (discipline)
             {
                 case Discipline.Environmental:
-                    {
-                        List<BuildingElementPanel> aBuildingElementPanelList = planarFace.ToBHoMBuildingElementPanels(convertUnits);
-                        if (aBuildingElementPanelList != null)
-                            return aBuildingElementPanelList.Cast<BHoMObject>().ToList();
-                        //TODO: return null & give specific warning?
-                        break;
-                    }
+                    return planarFace.ToBHoMBuildingElementPanels(convertUnits).ConvertAll(x => x as BHoMObject);
             }
             
             return null;
@@ -78,15 +69,7 @@ namespace BH.Engine.Revit
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    {
-
-                        BuildingElement aBuildingElement = wall.ToBHoMBuildingElement(copyCustomData, convertUnits);
-                        if (aBuildingElement != null)
-                            return new List<BHoMObject>() { aBuildingElement };
-                        break;
-                    }
-                    
-
+                    return new List<BHoMObject>() { wall.ToBHoMBuildingElement(copyCustomData, convertUnits) };
                 case Discipline.Structural:
                     return wall.ToBHoMPanelPlanar(copyCustomData, convertUnits).ConvertAll(p => p as BHoMObject);
             }
@@ -104,12 +87,7 @@ namespace BH.Engine.Revit
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    {
-                        List<BuildingElement> aBuildingElementList = ceiling.ToBHoMBuildingElements(copyCustomData, convertUnits);
-                        if (aBuildingElementList != null)
-                            return aBuildingElementList.Cast<BHoMObject>().ToList();
-                        break;
-                    }
+                    return ceiling.ToBHoMBuildingElements(copyCustomData, convertUnits).ConvertAll(x => x as BHoMObject);
             }
 
             ceiling.NotConvertedError();
@@ -125,12 +103,7 @@ namespace BH.Engine.Revit
             switch(discipline)
             {
                 case Discipline.Environmental:
-                    {
-                        List<BuildingElement> aBuildingElementList = floor.ToBHoMBuildingElements(copyCustomData, convertUnits);
-                        if (aBuildingElementList != null)
-                            return aBuildingElementList.Cast<BHoMObject>().ToList();
-                        break;
-                    }
+                    return floor.ToBHoMBuildingElements(copyCustomData, convertUnits).ConvertAll(x => x as BHoMObject);
                 case Discipline.Structural:
                     return floor.ToBHoMPanelPlanar(copyCustomData, convertUnits).ConvertAll(p => p as BHoMObject);
             }
@@ -148,12 +121,7 @@ namespace BH.Engine.Revit
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    {
-                        List<BuildingElement> aBuildingElementList = roofBase.ToBHoMBuildingElements(copyCustomData, convertUnits);
-                        if (aBuildingElementList != null)
-                            return aBuildingElementList.Cast<BHoMObject>().ToList();
-                        break;
-                    }
+                    return roofBase.ToBHoMBuildingElements(copyCustomData, convertUnits).ConvertAll(x => x as BHoMObject);
             }
 
             roofBase.NotConvertedError();
