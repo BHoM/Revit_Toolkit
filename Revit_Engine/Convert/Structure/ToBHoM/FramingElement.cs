@@ -43,7 +43,7 @@ namespace BH.Engine.Revit
             else if (location is LocationCurve)
             {
                 barCurve = (location as LocationCurve).Curve.ToBHoM(convertUnits) as oM.Geometry.Line;
-                if (barCurve == null) familyInstance.NonlinearBarWarning();
+                if (barCurve == null) familyInstance.NonlinearBarError();
                 else if (structuralType != StructuralType.Column)
                 {
                     double ZOffset = familyInstance.LookupParameterDouble("z Offset Value", convertUnits);
@@ -76,8 +76,7 @@ namespace BH.Engine.Revit
             element = Modify.SetIdentifiers(element, familyInstance) as FramingElement;
             if (copyCustomData)
                 element = Modify.SetCustomData(element, familyInstance, convertUnits) as FramingElement;
-
-            element.LogNullProperties(new List<string> { "LocationCurve" });
+            
             return element;
         }
 
