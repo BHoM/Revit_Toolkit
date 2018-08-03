@@ -16,7 +16,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Element ToRevit(this BuildingElement buildingElement, Document document, bool copyCustomData = true, bool convertUnits = true)
+        internal static Element ToRevit(this BuildingElement buildingElement, Document document, bool copyCustomData = true, bool convertUnits = true)
         {
             if (buildingElement == null || buildingElement.BuildingElementProperties == null || document == null)
                 return null;

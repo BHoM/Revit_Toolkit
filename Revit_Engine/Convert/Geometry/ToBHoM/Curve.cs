@@ -11,7 +11,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static oM.Geometry.ICurve ToBHoM(this Curve curve, bool convertUnits = true)
+        internal static oM.Geometry.ICurve ToBHoM(this Curve curve, bool convertUnits = true)
         {
             if (curve is Line)
                 return Geometry.Create.Line(ToBHoM(curve.GetEndPoint(0), convertUnits), ToBHoM(curve.GetEndPoint(1), convertUnits));
@@ -47,21 +47,21 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static List<oM.Geometry.ICurve> ToBHoM(this List<Curve> curves, bool convertUnits = true)
+        internal static List<oM.Geometry.ICurve> ToBHoM(this List<Curve> curves, bool convertUnits = true)
         {
             return curves.Select(c => c.ToBHoM(convertUnits)).ToList();
         }
 
         /***************************************************/
 
-        public static oM.Geometry.ICurve ToBHoM(this LocationCurve locationCurve, bool convertUnits = true)
+        internal static oM.Geometry.ICurve ToBHoM(this LocationCurve locationCurve, bool convertUnits = true)
         {
             return ToBHoM(locationCurve.Curve, convertUnits);
         }
 
         /***************************************************/
 
-        public static List<oM.Geometry.ICurve> ToBHoM(this CurveArray curves, bool convertUnits = true)
+        internal static List<oM.Geometry.ICurve> ToBHoM(this CurveArray curves, bool convertUnits = true)
         {
             List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
             for (int i = 0; i < curves.Size; i++)
@@ -73,7 +73,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static oM.Geometry.PolyCurve ToBHoM(this CurveLoop curveLoop, bool convertUnits = true)
+        internal static oM.Geometry.PolyCurve ToBHoM(this CurveLoop curveLoop, bool convertUnits = true)
         {
             if (curveLoop == null)
                 return null;

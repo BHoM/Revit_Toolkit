@@ -10,7 +10,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static oM.Common.Materials.Material ToBHoMMaterial(this StructuralMaterialType structuralMaterialType, string materialGrade)
+        internal static oM.Common.Materials.Material ToBHoMMaterial(this StructuralMaterialType structuralMaterialType, string materialGrade)
         {
             switch (structuralMaterialType)
             {
@@ -51,7 +51,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static oM.Common.Materials.Material ToBHoMMaterial(this Material material, string materialGrade)
+        internal static oM.Common.Materials.Material ToBHoMMaterial(this Material material, string materialGrade)
         {
             switch (material.MaterialClass)
             {

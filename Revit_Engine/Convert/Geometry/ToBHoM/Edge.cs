@@ -9,14 +9,14 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static oM.Geometry.ICurve ToBHoM(this Autodesk.Revit.DB.Edge edge, bool convertUnits = true)
+        internal static oM.Geometry.ICurve ToBHoM(this Autodesk.Revit.DB.Edge edge, bool convertUnits = true)
         {
             return ToBHoM(edge.AsCurve(), convertUnits);
         }
 
         /***************************************************/
 
-        public static List<oM.Geometry.ICurve> ToBHoM(this EdgeArray edgeArray, bool convertUnits = true)
+        internal static List<oM.Geometry.ICurve> ToBHoM(this EdgeArray edgeArray, bool convertUnits = true)
         {
             List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
             foreach (Autodesk.Revit.DB.Edge aEdge in edgeArray)
@@ -29,7 +29,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static List<List<oM.Geometry.ICurve>> ToBHoM(this EdgeArrayArray edgeArray, bool convertUnits = true)
+        internal static List<List<oM.Geometry.ICurve>> ToBHoM(this EdgeArrayArray edgeArray, bool convertUnits = true)
         {
             List<List<oM.Geometry.ICurve>> result = new List<List<oM.Geometry.ICurve>>();
             foreach (EdgeArray ea in edgeArray)

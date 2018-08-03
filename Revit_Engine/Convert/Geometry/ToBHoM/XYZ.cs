@@ -9,7 +9,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static oM.Geometry.Point ToBHoM(this XYZ xyz, bool convertUnits = true)
+        internal static oM.Geometry.Point ToBHoM(this XYZ xyz, bool convertUnits = true)
         {
             if (xyz == null)
                 return null;
@@ -22,7 +22,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static oM.Geometry.Vector ToBHoMVector(this XYZ xyz, bool convertUnits = true)
+        internal static oM.Geometry.Vector ToBHoMVector(this XYZ xyz, bool convertUnits = true)
         {
             if (xyz == null)
                 return null;

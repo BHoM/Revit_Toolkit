@@ -10,7 +10,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static BuildingElementCurve ToBHoMBuildingElementCurve(this Wall wall, bool convertUnits = true)
+        internal static BuildingElementCurve ToBHoMBuildingElementCurve(this Wall wall, bool convertUnits = true)
         {
             BuildingElementCurve aBuildingElementCurve = new BuildingElementCurve
             {

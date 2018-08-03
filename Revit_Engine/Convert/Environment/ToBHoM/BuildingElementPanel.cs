@@ -17,7 +17,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this PlanarFace planarFace, bool convertUnits = true)
+        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this PlanarFace planarFace, bool convertUnits = true)
         {
             List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
             
@@ -48,21 +48,21 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this Element element, bool convertUnits = true)
+        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this Element element, bool convertUnits = true)
         {
             return ToBHoMBuildingElementPanels(element.get_Geometry(new Options()), convertUnits);
         }
 
         /***************************************************/
 
-        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this RoofBase roofBase, bool convertUnits = true)
+        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this RoofBase roofBase, bool convertUnits = true)
         {
             return ToBHoMBuildingElementPanels(roofBase.get_Geometry(new Options()), convertUnits);
         }
 
         /***************************************************/
 
-        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this FamilyInstance familyInstance, bool convertUnits = true)
+        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this FamilyInstance familyInstance, bool convertUnits = true)
         {
             List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
 
@@ -100,7 +100,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this GeometryElement geometryElement, bool convertUnits = true)
+        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this GeometryElement geometryElement, bool convertUnits = true)
         {
             List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
             foreach (GeometryObject aGeometryObject in geometryElement)

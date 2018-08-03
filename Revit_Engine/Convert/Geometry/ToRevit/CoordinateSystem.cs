@@ -9,7 +9,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Autodesk.Revit.DB.Plane ToRevit(this CoordinateSystem CS, bool convertUnits = true)
+        internal static Autodesk.Revit.DB.Plane ToRevit(this CoordinateSystem CS, bool convertUnits = true)
         {
             XYZ origin = CS.Origin.ToRevit(convertUnits);
             XYZ X = CS.X.ToRevit(convertUnits);
