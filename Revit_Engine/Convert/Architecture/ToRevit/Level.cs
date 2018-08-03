@@ -12,7 +12,7 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Level ToRevit(this oM.Architecture.Elements.Level level, Document document, bool copyCustomData = true, bool convertUnits = true)
+        internal static Level ToRevit(this oM.Architecture.Elements.Level level, Document document, bool copyCustomData = true, bool convertUnits = true)
         {
             Element aElement = Level.Create(document, level.Elevation);
             aElement.Name = level.Name;

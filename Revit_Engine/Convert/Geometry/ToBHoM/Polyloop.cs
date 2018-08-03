@@ -10,7 +10,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static oM.Geometry.Polyline ToBHoM(this Polyloop polyloop, bool convertUnits = true)
+        internal static oM.Geometry.Polyline ToBHoM(this Polyloop polyloop, bool convertUnits = true)
         {
             IList<XYZ> aXYZs = polyloop.GetPoints();
             if (aXYZs == null)

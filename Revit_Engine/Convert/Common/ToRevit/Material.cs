@@ -18,7 +18,7 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Material ToRevit(this IMaterial material, Document document)
+        internal static Material ToRevit(this IMaterial material, Document document)
         {
             ElementId aElementId = Material.Create(document, material.Name);
             return document.GetElement(aElementId) as Material;

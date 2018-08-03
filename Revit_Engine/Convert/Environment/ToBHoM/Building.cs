@@ -16,7 +16,7 @@ namespace BH.Engine.Revit
         /**** Public methods                            ****/
         /***************************************************/
 
-        public static Building ToBHoMBuilding(this Document document, bool copyCustomData = true, bool convertUnits = true)
+        internal static Building ToBHoMBuilding(this Document document, bool copyCustomData = true, bool convertUnits = true)
         {
             double aElevation = 0;
             double aLongitude = 0;

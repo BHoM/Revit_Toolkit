@@ -8,7 +8,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static oM.Geometry.CoordinateSystem ToBHoM(this Plane plane, bool convertUnits = true)
+        internal static oM.Geometry.CoordinateSystem ToBHoM(this Plane plane, bool convertUnits = true)
         {
             if (plane == null)
                 return null;

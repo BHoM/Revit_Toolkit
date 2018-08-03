@@ -9,7 +9,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static BHoMObject ToBHoMLevel(this Level Level, bool CopyCustomData = true, bool convertUnits = true)
+        internal static BHoMObject ToBHoMLevel(this Level Level, bool CopyCustomData = true, bool convertUnits = true)
         {
             oM.Architecture.Elements.Level aLevel = Architecture.Elements.Create.Level(ToSI(Level.ProjectElevation, UnitType.UT_Length));
             aLevel.Name = Level.Name;
