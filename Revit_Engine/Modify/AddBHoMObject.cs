@@ -13,36 +13,36 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Dictionary<ElementId, List<BHoMObject>> AddBHoMObject(this Dictionary<ElementId, List<BHoMObject>> objects, BHoMObject bHoMObject)
+        public static Dictionary<ElementId, List<IBHoMObject>> AddBHoMObject(this Dictionary<ElementId, List<IBHoMObject>> objects, IBHoMObject bHoMObject)
         {
             if (bHoMObject == null && bHoMObject == null)
                 return null;
 
-            Dictionary<ElementId, List<BHoMObject>> aResult = null;
+            Dictionary<ElementId, List<IBHoMObject>> aResult = null;
             if (objects == null)
-                aResult = new Dictionary<ElementId, List<BHoMObject>>();
+                aResult = new Dictionary<ElementId, List<IBHoMObject>>();
             else
-                aResult = new Dictionary<ElementId, List<BHoMObject>>(objects);
+                aResult = new Dictionary<ElementId, List<IBHoMObject>>(objects);
 
             if (bHoMObject == null)
-                return new Dictionary<ElementId, List<BHoMObject>>(objects);
+                return new Dictionary<ElementId, List<IBHoMObject>>(objects);
 
             ElementId aElementId = Query.ElementId(bHoMObject);
             if (aElementId == null)
                 aElementId = ElementId.InvalidElementId;
 
-            List<BHoMObject> aBHoMObjectList = null;
+            List<IBHoMObject> aBHoMObjectList = null;
             if (aResult.TryGetValue(aElementId, out aBHoMObjectList))
             {
                 if (aBHoMObjectList == null)
-                    aBHoMObjectList = new List<BHoMObject>();
+                    aBHoMObjectList = new List<IBHoMObject>();
 
                 if (aBHoMObjectList.Find(x => x != null && x.BHoM_Guid == bHoMObject.BHoM_Guid) == null)
                     aBHoMObjectList.Add(bHoMObject);
             }
             else
             {
-                aResult.Add(aElementId, new List<BHoMObject>() { bHoMObject });
+                aResult.Add(aElementId, new List<IBHoMObject>() { bHoMObject });
             }
 
             return aResult;

@@ -13,16 +13,16 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Dictionary<ElementId, List<BHoMObject>> AddBHoMObjects(this Dictionary<ElementId, List<BHoMObject>> objects, IEnumerable<BHoMObject> bHoMObjects)
+        public static Dictionary<ElementId, List<IBHoMObject>> AddBHoMObjects(this Dictionary<ElementId, List<IBHoMObject>> objects, IEnumerable<IBHoMObject> bHoMObjects)
         {
             if (bHoMObjects == null && bHoMObjects == null)
                 return null;
 
-            Dictionary<ElementId, List<BHoMObject>> aResult = null;
+            Dictionary<ElementId, List<IBHoMObject>> aResult = null;
             if (objects == null)
-                aResult = new Dictionary<ElementId, List<BHoMObject>>();
+                aResult = new Dictionary<ElementId, List<IBHoMObject>>();
             else
-                aResult = new Dictionary<ElementId, List<BHoMObject>>(objects);
+                aResult = new Dictionary<ElementId, List<IBHoMObject>>(objects);
 
             foreach (BHoMObject aBHoMObject in bHoMObjects)
                 aResult = aResult.AddBHoMObject(aBHoMObject);
