@@ -28,7 +28,7 @@ namespace BH.Engine.Revit
         /// <search>
         /// Query, HostedBuildingElements, Revit, Hosted Building Elements, BuildingElements, Element, Face
         /// </search>
-        static public List<BuildingElement> HostedBuildingElements(HostObject hostObject, Face face, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        static public List<BuildingElement> HostedBuildingElements(HostObject hostObject, Face face, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             if (hostObject == null)
                 return null;

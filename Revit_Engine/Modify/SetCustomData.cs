@@ -29,12 +29,12 @@ namespace BH.Engine.Revit
         /// <search>
         /// Modify, BHoM, SetCustomData,  BHoMObject, Revit, Element, Set CustomData
         /// </search>
-        public static BHoMObject SetCustomData(this BHoMObject bHoMObject, Element element, bool convertUnits = true)
+        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Element element, bool convertUnits = true)
         {
             if (bHoMObject == null || element == null)
                 return bHoMObject;
 
-            BHoMObject aBHoMObject = bHoMObject.GetShallowClone() as BHoMObject;
+            IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
 
             foreach (Parameter aParameter in element.ParametersMap)
                 aBHoMObject = SetCustomData(aBHoMObject, aParameter, convertUnits);
@@ -55,12 +55,12 @@ namespace BH.Engine.Revit
         /// <search>
         /// Modify, BHoM, SetCustomData,  BHoMObject, Revit, Element, Set CustomData
         /// </search>
-        public static BHoMObject SetCustomData(this BHoMObject bHoMObject, Element element, BuiltInParameter builtInParameter,  bool convertUnits = true)
+        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Element element, BuiltInParameter builtInParameter,  bool convertUnits = true)
         {
             if (bHoMObject == null || element == null)
                 return bHoMObject;
 
-            BHoMObject aBHoMObject = bHoMObject.GetShallowClone() as BHoMObject;
+            IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
 
             aBHoMObject = SetCustomData(aBHoMObject, element.get_Parameter(builtInParameter), convertUnits);
                 
@@ -79,12 +79,12 @@ namespace BH.Engine.Revit
         /// <search>
         /// Modify, BHoM, SetCustomData,  BHoMObject, Revit, Element, Set CustomData, Parameter
         /// </search>
-        public static BHoMObject SetCustomData(this BHoMObject bHoMObject, Parameter parameter, bool convertUnits = true)
+        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, bool convertUnits = true)
         {
             if (bHoMObject == null || parameter == null)
                 return bHoMObject;
 
-            BHoMObject aBHoMObject = bHoMObject.GetShallowClone() as BHoMObject;
+            IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
 
             object aValue = null;
             switch (parameter.StorageType)
@@ -134,12 +134,12 @@ namespace BH.Engine.Revit
         /// <search>
         /// Modify, BHoM, SetCustomData,  BHoMObject, Set CustomData
         /// </search>
-        public static BHoMObject SetCustomData(this BHoMObject bHoMObject, string customDataName, object value)
+        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, string customDataName, object value)
         {
             if (bHoMObject == null || string.IsNullOrEmpty(customDataName))
                 return bHoMObject;
 
-            BHoMObject aBHoMObject = bHoMObject.GetShallowClone() as BHoMObject;
+            IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
 
             if (aBHoMObject.CustomData.ContainsKey(customDataName))
                 aBHoMObject.CustomData[customDataName] = value;

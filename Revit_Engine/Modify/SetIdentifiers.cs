@@ -21,12 +21,12 @@ namespace BH.Engine.Revit
         /// <search>
         /// Modify, BHoM, SetIdentifiers, Revit, Set Identifiers, BHoMObject
         /// </search>
-        public static BHoMObject SetIdentifiers(this BHoMObject bHoMObject, Element element)
+        public static IBHoMObject SetIdentifiers(this IBHoMObject bHoMObject, Element element)
         {
             if (bHoMObject == null || element == null)
                 return bHoMObject;
 
-            BHoMObject aBHoMObject = bHoMObject.GetShallowClone() as BHoMObject;
+            IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
 
             aBHoMObject = aBHoMObject.SetCustomData(Convert.ElementId, element.Id.IntegerValue);
             aBHoMObject = aBHoMObject.SetCustomData(Convert.AdapterId, element.UniqueId);

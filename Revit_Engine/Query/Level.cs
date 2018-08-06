@@ -26,12 +26,12 @@ namespace BH.Engine.Revit
         /// <search>
         /// Query, Level, Revit, Level, element
         /// </search>
-        static public oM.Architecture.Elements.Level Level(Element element, Dictionary<ElementId, List<BHoMObject>> objects = null, Discipline discipline = oM.Adapters.Revit.Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        static public oM.Architecture.Elements.Level Level(Element element, Dictionary<ElementId, List<IBHoMObject>> objects = null, Discipline discipline = oM.Adapters.Revit.Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             oM.Architecture.Elements.Level aLevel = null;
             if (objects != null)
             {
-                List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
+                List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
                 if (objects.TryGetValue(element.LevelId, out aBHoMObjectList))
                     if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
                         aLevel = aBHoMObjectList.First() as oM.Architecture.Elements.Level;
@@ -41,7 +41,7 @@ namespace BH.Engine.Revit
             {
                 aLevel = (element.Document.GetElement(element.LevelId) as Level).ToBHoM(discipline, copyCustomData, convertUnits) as oM.Architecture.Elements.Level;
                 if (objects != null)
-                    objects.Add(element.LevelId, new List<BHoMObject>(new BHoMObject[] { aLevel }));
+                    objects.Add(element.LevelId, new List<IBHoMObject>(new BHoMObject[] { aLevel }));
             }
 
             return aLevel;
