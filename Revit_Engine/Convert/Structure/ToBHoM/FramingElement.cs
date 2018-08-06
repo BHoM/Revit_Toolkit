@@ -11,7 +11,7 @@ namespace BH.Engine.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
         internal static FramingElement ToBHoMFramingElement(this FamilyInstance familyInstance, bool copyCustomData = true, bool convertUnits = true)
@@ -30,13 +30,26 @@ namespace BH.Engine.Revit
             if (location is LocationPoint && structuralType == StructuralType.Column)
             {
                 XYZ loc = (location as LocationPoint).Point;
-                double baseLevel = (familyInstance.Document.GetElement(familyInstance.LookupParameter("Base Level").AsElementId()) as Level).ProjectElevation;
-                double topLevel = (familyInstance.Document.GetElement(familyInstance.LookupParameter("Top Level").AsElementId()) as Level).ProjectElevation;
-                double baseOffset = familyInstance.LookupParameter("Base Offset").AsDouble();
-                double topOffset = familyInstance.LookupParameter("Top Offset").AsDouble();
-                XYZ baseNode = new XYZ(loc.X, loc.Y, baseLevel + baseOffset);
-                XYZ topNode = new XYZ(loc.X, loc.Y, topLevel + topOffset);
-                barCurve = new oM.Geometry.Line { Start = baseNode.ToBHoM(convertUnits), End = topNode.ToBHoM(convertUnits) };
+                Parameter baseLevelParam = familyInstance.LookupParameter("Base Level");
+                Parameter topLevelParam = familyInstance.LookupParameter("Top Level");
+                Parameter baseOffsetParam = familyInstance.LookupParameter("Base Offset");
+                Parameter topOffsetParam = familyInstance.LookupParameter("Top Offset");
+
+                if (baseLevelParam == null || !baseLevelParam.HasValue || topLevelParam == null || !topLevelParam.HasValue || baseOffsetParam == null || !baseOffsetParam.HasValue || topOffsetParam == null || !topOffsetParam.HasValue)
+                {
+                    barCurve = null;
+                }
+                else
+                {
+                    double baseLevel = (familyInstance.Document.GetElement(baseLevelParam.AsElementId()) as Level).ProjectElevation;
+                    double topLevel = (familyInstance.Document.GetElement(topLevelParam.AsElementId()) as Level).ProjectElevation;
+                    double baseOffset = baseOffsetParam.AsDouble();
+                    double topOffset = topOffsetParam.AsDouble();
+                    XYZ baseNode = new XYZ(loc.X, loc.Y, baseLevel + baseOffset);
+                    XYZ topNode = new XYZ(loc.X, loc.Y, topLevel + topOffset);
+                    barCurve = new oM.Geometry.Line { Start = baseNode.ToBHoM(convertUnits), End = topNode.ToBHoM(convertUnits) };
+                }
+
                 int multiplier = familyInstance.FacingOrientation.DotProduct(new XYZ(0, 1, 0)) > 0 ? 1 : -1;
                 rotation = familyInstance.FacingOrientation.AngleTo(new XYZ(1, 0, 0)) * multiplier;
             }
@@ -52,6 +65,7 @@ namespace BH.Engine.Revit
                 rotation = -familyInstance.LookupParameterDouble("Cross-Section Rotation", false);
             }
 
+            if (barCurve==null) familyInstance.BarCurveNotFoundError();
             ISectionProperty aSectionProperty = familyInstance.ToBHoMSectionProperty(copyCustomData, convertUnits) as ISectionProperty;
 
             switch (structuralType)
