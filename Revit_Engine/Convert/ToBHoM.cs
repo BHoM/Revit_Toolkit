@@ -12,14 +12,14 @@ namespace BH.Engine.Revit
         /****      Convert Revit elements to BHoM       ****/
         /***************************************************/
 
-        public static List<BHoMObject> ToBHoM(this PlanarFace planarFace, Discipline discipline = Discipline.Environmental, bool convertUnits = true)
+        public static List<IBHoMObject> ToBHoM(this PlanarFace planarFace, Discipline discipline = Discipline.Environmental, bool convertUnits = true)
         {
             if (planarFace == null) return null;
 
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    return planarFace.ToBHoMBuildingElementPanels(convertUnits).ConvertAll(x => x as BHoMObject);
+                    return planarFace.ToBHoMBuildingElementPanels(convertUnits).ConvertAll(x => x as IBHoMObject);
             }
             
             return null;
@@ -27,7 +27,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
         
-        public static BHoMObject ToBHoM(this Document document, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static IBHoMObject ToBHoM(this Document document, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             document.CheckIfNull();
 
@@ -44,7 +44,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BHoMObject ToBHoM(this FamilyInstance familyInstance, Discipline discipline = Discipline.Structural, bool copyCustomData = true, bool convertUnits = true)
+        public static IBHoMObject ToBHoM(this FamilyInstance familyInstance, Discipline discipline = Discipline.Structural, bool copyCustomData = true, bool convertUnits = true)
         {
             familyInstance.CheckIfNull();
 
@@ -62,16 +62,16 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static List<BHoMObject> ToBHoM(this Wall wall, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static List<IBHoMObject> ToBHoM(this Wall wall, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             wall.CheckIfNull();
 
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    return new List<BHoMObject>() { wall.ToBHoMBuildingElement(copyCustomData, convertUnits) };
+                    return new List<IBHoMObject>() { wall.ToBHoMBuildingElement(copyCustomData, convertUnits) };
                 case Discipline.Structural:
-                    return wall.ToBHoMPanelPlanar(copyCustomData, convertUnits).ConvertAll(p => p as BHoMObject);
+                    return wall.ToBHoMPanelPlanar(copyCustomData, convertUnits).ConvertAll(p => p as IBHoMObject);
             }
 
             wall.NotConvertedError();
@@ -80,14 +80,14 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static List<BHoMObject> ToBHoM(this Ceiling ceiling, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static List<IBHoMObject> ToBHoM(this Ceiling ceiling, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             ceiling.CheckIfNull();
 
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    return ceiling.ToBHoMBuildingElements(copyCustomData, convertUnits).ConvertAll(x => x as BHoMObject);
+                    return ceiling.ToBHoMBuildingElements(copyCustomData, convertUnits).ConvertAll(x => x as IBHoMObject);
             }
 
             ceiling.NotConvertedError();
@@ -96,16 +96,16 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static List<BHoMObject> ToBHoM(this Floor floor, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static List<IBHoMObject> ToBHoM(this Floor floor, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             floor.CheckIfNull();
 
             switch(discipline)
             {
                 case Discipline.Environmental:
-                    return floor.ToBHoMBuildingElements(copyCustomData, convertUnits).ConvertAll(x => x as BHoMObject);
+                    return floor.ToBHoMBuildingElements(copyCustomData, convertUnits).ConvertAll(x => x as IBHoMObject);
                 case Discipline.Structural:
-                    return floor.ToBHoMPanelPlanar(copyCustomData, convertUnits).ConvertAll(p => p as BHoMObject);
+                    return floor.ToBHoMPanelPlanar(copyCustomData, convertUnits).ConvertAll(p => p as IBHoMObject);
             }
 
             floor.NotConvertedError();
@@ -114,14 +114,14 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static List<BHoMObject> ToBHoM(this RoofBase roofBase, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static List<IBHoMObject> ToBHoM(this RoofBase roofBase, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             roofBase.CheckIfNull();
 
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    return roofBase.ToBHoMBuildingElements(copyCustomData, convertUnits).ConvertAll(x => x as BHoMObject);
+                    return roofBase.ToBHoMBuildingElements(copyCustomData, convertUnits).ConvertAll(x => x as IBHoMObject);
             }
 
             roofBase.NotConvertedError();
@@ -130,7 +130,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BHoMObject ToBHoM(this WallType wallType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true, string materialGrade = null)
+        public static IBHoMObject ToBHoM(this WallType wallType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true, string materialGrade = null)
         {
             wallType.CheckIfNull();
 
@@ -139,7 +139,7 @@ namespace BH.Engine.Revit
                 case Discipline.Environmental:
                     return wallType.ToBHoMBuildingElementProperties(copyCustomData, convertUnits); 
                 case Discipline.Structural:
-                    return wallType.ToBHoMProperty2D(materialGrade, copyCustomData, convertUnits) as BHoMObject;
+                    return wallType.ToBHoMProperty2D(materialGrade, copyCustomData, convertUnits) as IBHoMObject;
             }
 
             wallType.NotConvertedError();
@@ -148,7 +148,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BHoMObject ToBHoM(this FloorType floorType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true, string materialGrade = null)
+        public static IBHoMObject ToBHoM(this FloorType floorType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true, string materialGrade = null)
         {
             floorType.CheckIfNull();
 
@@ -157,7 +157,7 @@ namespace BH.Engine.Revit
                 case Discipline.Environmental:
                     return floorType.ToBHoMBuildingElementProperties(copyCustomData, convertUnits);
                 case Discipline.Structural:
-                    return floorType.ToBHoMProperty2D(copyCustomData, convertUnits, materialGrade) as BHoMObject;
+                    return floorType.ToBHoMProperty2D(materialGrade, copyCustomData, convertUnits) as IBHoMObject;
             }
 
             floorType.NotConvertedError();
@@ -166,7 +166,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BHoMObject ToBHoM(this CeilingType ceilingType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static IBHoMObject ToBHoM(this CeilingType ceilingType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             ceilingType.CheckIfNull();
 
@@ -182,7 +182,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BHoMObject ToBHoM(this RoofType roofType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static IBHoMObject ToBHoM(this RoofType roofType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             roofType.CheckIfNull();
 
@@ -198,7 +198,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BHoMObject ToBHoM(this FamilySymbol familySymbol, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static IBHoMObject ToBHoM(this FamilySymbol familySymbol, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             familySymbol.CheckIfNull();
 
@@ -214,7 +214,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
         
-        //public static BHoMObject ToBHoM(this StructuralMaterialType structuralMaterialType, string materialGrade, Discipline discipline = Discipline.Structural)
+        //public static IBHoMObject ToBHoM(this StructuralMaterialType structuralMaterialType, string materialGrade, Discipline discipline = Discipline.Structural)
         //{
         //    switch (discipline)
         //    {
@@ -228,7 +228,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
         
-        //public static BHoMObject ToBHoM(this Material material, string materialGrade, Discipline discipline = Discipline.Structural)
+        //public static IBHoMObject ToBHoM(this Material material, string materialGrade, Discipline discipline = Discipline.Structural)
         //{
         //    material.CheckIfNull();
 
@@ -244,7 +244,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BHoMObject ToBHoM(this Level level, Discipline discipline = Discipline.Environmental, bool CopyCustomData = true, bool convertUnits = true)
+        public static IBHoMObject ToBHoM(this Level level, Discipline discipline = Discipline.Environmental, bool CopyCustomData = true, bool convertUnits = true)
         {
             level.CheckIfNull();
 
@@ -262,7 +262,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BHoMObject ToBHoM(this Grid grid, Discipline discipline = Discipline.Architecture, bool copyCustomData = true, bool convertUnits = true)
+        public static IBHoMObject ToBHoM(this Grid grid, Discipline discipline = Discipline.Architecture, bool copyCustomData = true, bool convertUnits = true)
         {
             grid.CheckIfNull();
 
@@ -280,7 +280,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BHoMObject ToBHoM(this ElementType elementType, Dictionary<ElementId, List<BHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static IBHoMObject ToBHoM(this ElementType elementType, Dictionary<ElementId, List<IBHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             elementType.CheckIfNull();
 
@@ -296,7 +296,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BHoMObject ToBHoM(this SpatialElement spatialElement, Dictionary<ElementId, List<BHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static IBHoMObject ToBHoM(this SpatialElement spatialElement, Dictionary<ElementId, List<IBHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             spatialElement.CheckIfNull();
 
@@ -312,7 +312,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
         
-        public static BHoMObject ToBHoM(this EnergyAnalysisSpace energyAnalysisSpace, Dictionary<ElementId, List<BHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static IBHoMObject ToBHoM(this EnergyAnalysisSpace energyAnalysisSpace, Dictionary<ElementId, List<IBHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             energyAnalysisSpace.CheckIfNull();
 
@@ -328,7 +328,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BHoMObject ToBHoM(this EnergyAnalysisSurface energyAnalysisSurface, Dictionary<ElementId, List<BHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static IBHoMObject ToBHoM(this EnergyAnalysisSurface energyAnalysisSurface, Dictionary<ElementId, List<IBHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             energyAnalysisSurface.CheckIfNull();
 
@@ -344,7 +344,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BHoMObject ToBHoM(this EnergyAnalysisOpening energyAnalysisOpening, Dictionary<ElementId, List<BHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static IBHoMObject ToBHoM(this EnergyAnalysisOpening energyAnalysisOpening, Dictionary<ElementId, List<IBHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             energyAnalysisOpening.CheckIfNull();
 

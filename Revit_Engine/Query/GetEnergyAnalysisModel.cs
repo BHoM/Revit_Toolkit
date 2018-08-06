@@ -18,9 +18,9 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<BHoMObject> GetEnergyAnalysisModel(this Document document, bool copyCustomData = true, bool convertUnits = true)
+        public static List<IBHoMObject> GetEnergyAnalysisModel(this Document document, bool copyCustomData = true, bool convertUnits = true)
         {
-            Dictionary<ElementId, List<BHoMObject>> aObjects = new Dictionary<ElementId, List<BHoMObject>>();
+            Dictionary<ElementId, List<IBHoMObject>> aObjects = new Dictionary<ElementId, List<IBHoMObject>>();
             using (Transaction aTransaction = new Transaction(document, "GetAnalyticalModel"))
             {
                 aTransaction.Start();
@@ -84,7 +84,7 @@ namespace BH.Engine.Revit
                         BuildingElement aBuildingElement = aKeyValuePair.Value.ToBHoMBuildingElement(aObjects, copyCustomData, convertUnits);
                         aObjects = Modify.AddBHoMObject(aObjects, aBuildingElement);
 
-                        List<BHoMObject> aBHoMObjectList_Hosted = new List<BHoMObject>();
+                        List<IBHoMObject> aBHoMObjectList_Hosted = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aKeyValuePair.Value.GetAnalyticalOpenings())
                         {
                             BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(aObjects, copyCustomData, convertUnits);
@@ -137,7 +137,7 @@ namespace BH.Engine.Revit
                         BuildingElement aBuildingElement = aEnergyAnalysisSurface.ToBHoMBuildingElement(aObjects, copyCustomData, convertUnits);
                         aObjects = Modify.AddBHoMObject(aObjects, aBuildingElement);
 
-                        List<BHoMObject> aBHoMObjectList_Hosted = new List<BHoMObject>();
+                        List<IBHoMObject> aBHoMObjectList_Hosted = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aEnergyAnalysisSurface.GetAnalyticalOpenings())
                         {
                             BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(aObjects, copyCustomData, convertUnits);
@@ -186,8 +186,8 @@ namespace BH.Engine.Revit
                 aTransaction.RollBack();
             }
 
-            List<BHoMObject> aResult = new List<BHoMObject>();
-            foreach (List<BHoMObject> aBHoMObjectList in aObjects.Values)
+            List<IBHoMObject> aResult = new List<IBHoMObject>();
+            foreach (List<IBHoMObject> aBHoMObjectList in aObjects.Values)
                 if (aBHoMObjectList != null)
                     aResult.AddRange(aBHoMObjectList);
 
