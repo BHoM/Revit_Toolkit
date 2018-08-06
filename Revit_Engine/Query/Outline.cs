@@ -64,8 +64,11 @@ namespace BH.Engine.Revit
                                 {
                                     foreach (oM.Geometry.ICurve c in lc)
                                     {
-                                        wall.UnsupportedOutlineCurveError();
-                                        if (c == null) return null;
+                                        if (c == null)
+                                        {
+                                            wall.UnsupportedOutlineCurveError();
+                                            return null;
+                                        }
                                     }
 
                                     result.AddRange(lc.IJoin().Select(c => c.Translate(toWallLine)));
@@ -74,6 +77,15 @@ namespace BH.Engine.Revit
                             }
                         }
                     }
+                }
+            }
+
+            foreach(oM.Geometry.ICurve outline in result)
+            {
+                if (!outline.IIsClosed())
+                {
+                    wall.NonClosedOutlineError();
+                    return null;
                 }
             }
 
@@ -124,8 +136,11 @@ namespace BH.Engine.Revit
 
                                     foreach (oM.Geometry.ICurve c in lc)
                                     {
-                                        floor.UnsupportedOutlineCurveError();
-                                        if (c == null) return null;
+                                        if (c == null)
+                                        {
+                                            floor.UnsupportedOutlineCurveError();
+                                            return null;
+                                        }
                                     }
 
                                     result.AddRange(lc.IJoin().Select(c => c.Translate(toFloorLine)));
@@ -134,6 +149,15 @@ namespace BH.Engine.Revit
                             }
                         }
                     }
+                }
+            }
+
+            foreach (oM.Geometry.ICurve outline in result)
+            {
+                if (!outline.IIsClosed())
+                {
+                    floor.NonClosedOutlineError();
+                    return null;
                 }
             }
 
