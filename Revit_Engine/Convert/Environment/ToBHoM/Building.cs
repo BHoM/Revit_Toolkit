@@ -13,7 +13,7 @@ namespace BH.Engine.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /**** Public methods                            ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
         internal static Building ToBHoMBuilding(this Document document, bool copyCustomData = true, bool convertUnits = true)
@@ -89,7 +89,7 @@ namespace BH.Engine.Revit
 
             //-------- Create BHoM building structure -----
 
-            List<BHoMObject> aBHoMObjectList = Query.GetEnergyAnalysisModel(document, copyCustomData, convertUnits);
+            List<IBHoMObject> aBHoMObjectList = Query.GetEnergyAnalysisModel(document, copyCustomData, convertUnits);
             if(aBHoMObjectList != null && aBHoMObjectList.Count > 0)
             {
                 foreach (BHoMObject aBHoMObject in aBHoMObjectList)

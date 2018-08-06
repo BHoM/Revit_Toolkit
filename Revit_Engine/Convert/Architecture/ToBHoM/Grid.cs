@@ -6,7 +6,7 @@ namespace BH.Engine.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
         internal static BHoMObject ToBHoMGrid(this Grid grid, bool copyCustomData = true, bool convertUnits = true)

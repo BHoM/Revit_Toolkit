@@ -14,10 +14,10 @@ namespace BH.Engine.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
-        internal static Space ToBHoMSpace(this SpatialElement spatialElement, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static Space ToBHoMSpace(this SpatialElement spatialElement, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             SpatialElementBoundaryOptions aSpatialElementBoundaryOptions = new SpatialElementBoundaryOptions();
             aSpatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
@@ -30,7 +30,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             if (spatialElement == null || spatialElementBoundaryOptions == null)
                 return new Space();
@@ -79,7 +79,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             if (spatialElement == null || spatialElementGeometryCalculator == null)
                 return new Space();
@@ -179,7 +179,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static Space ToBHoMSpace(this EnergyAnalysisSpace energyAnalysisSpace, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static Space ToBHoMSpace(this EnergyAnalysisSpace energyAnalysisSpace, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             if (energyAnalysisSpace == null)
                 return new Space();

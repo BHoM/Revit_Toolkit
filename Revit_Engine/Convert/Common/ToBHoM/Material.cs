@@ -7,7 +7,7 @@ namespace BH.Engine.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
         internal static oM.Common.Materials.Material ToBHoMMaterial(this StructuralMaterialType structuralMaterialType, string materialGrade)

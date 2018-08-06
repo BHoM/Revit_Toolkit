@@ -6,7 +6,7 @@ namespace BH.Engine.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
         internal static BHoMObject ToBHoMLevel(this Level Level, bool CopyCustomData = true, bool convertUnits = true)

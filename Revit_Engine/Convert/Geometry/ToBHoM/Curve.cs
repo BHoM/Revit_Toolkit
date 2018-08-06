@@ -8,7 +8,7 @@ namespace BH.Engine.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
         internal static oM.Geometry.ICurve ToBHoM(this Curve curve, bool convertUnits = true)

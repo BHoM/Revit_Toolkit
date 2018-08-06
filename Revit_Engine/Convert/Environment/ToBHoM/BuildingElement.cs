@@ -15,16 +15,16 @@ namespace BH.Engine.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
-        internal static BuildingElement ToBHoMBuildingElement(this Element element, BuildingElementPanel buildingElementPanel, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElement ToBHoMBuildingElement(this Element element, BuildingElementPanel buildingElementPanel, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             ElementType aElementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
             BuildingElementProperties aBuildingElementProperties = null;
             if (objects != null)
             {
-                List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
+                List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
                 if (objects.TryGetValue(aElementType.Id, out aBHoMObjectList))
                     if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
                         aBuildingElementProperties = aBHoMObjectList.First() as BuildingElementProperties;
@@ -42,7 +42,7 @@ namespace BH.Engine.Revit
                     aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, aElementType, convertUnits) as BuildingElementProperties;
 
                 if (objects != null)
-                    objects.Add(aElementType.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElementProperties }));
+                    objects.Add(aElementType.Id, new List<IBHoMObject>(new BHoMObject[] { aBuildingElementProperties }));
             }
 
             BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, buildingElementPanel);
@@ -53,11 +53,11 @@ namespace BH.Engine.Revit
 
             if (objects != null)
             {
-                List<BHoMObject> aBHoMObjectList = null;
+                List<IBHoMObject> aBHoMObjectList = null;
                 if (objects.TryGetValue(element.Id, out aBHoMObjectList))
                     aBHoMObjectList.Add(aBuildingElement);
                 else
-                    objects.Add(element.Id, new List<BHoMObject>(new BHoMObject[] { aBuildingElement }));
+                    objects.Add(element.Id, new List<IBHoMObject>(new BHoMObject[] { aBuildingElement }));
             }
 
             return aBuildingElement;
@@ -94,7 +94,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisSurface energyAnalysisSurface, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisSurface energyAnalysisSurface, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             BuildingElementPanel aBuildingElementPanel = null;
             if (energyAnalysisSurface != null)
@@ -133,7 +133,7 @@ namespace BH.Engine.Revit
             List<ElementId> aElementIdList = Query.SpatialElementIds(energyAnalysisSurface);
             if (aElementIdList != null && objects != null)
             {
-                List<BHoMObject> aBHoMObjectList = null;
+                List<IBHoMObject> aBHoMObjectList = null;
                 foreach (ElementId aElementId in aElementIdList)
                     if (objects.TryGetValue(aElementId, out aBHoMObjectList))
                         if (aBHoMObjectList != null)
@@ -179,7 +179,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisOpening energyAnalysisOpening, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisOpening energyAnalysisOpening, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             BuildingElementPanel aBuildingElementPanel = null;
             if (energyAnalysisOpening != null)
@@ -205,7 +205,7 @@ namespace BH.Engine.Revit
             List<ElementId> aElementIdList = Query.SpatialElementIds(energyAnalysisOpening.GetAnalyticalSurface());
             if (aElementIdList != null && objects != null)
             {
-                List<BHoMObject> aBHoMObjectList = null;
+                List<IBHoMObject> aBHoMObjectList = null;
                 foreach (ElementId aElementId in aElementIdList)
                     if (objects.TryGetValue(aElementId, out aBHoMObjectList))
                         if (aBHoMObjectList != null)
