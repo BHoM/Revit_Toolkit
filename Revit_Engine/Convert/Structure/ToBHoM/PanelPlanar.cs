@@ -1,8 +1,6 @@
 ﻿using Autodesk.Revit.DB;
-using BH.oM.Base;
 using BH.oM.Structural.Elements;
 using BH.oM.Structural.Properties;
-using System;
 using System.Collections.Generic;
 using BHS = BH.Engine.Structure;
 
@@ -11,7 +9,7 @@ namespace BH.Engine.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
         internal static List<PanelPlanar> ToBHoMPanelPlanar(this Wall wall, bool copyCustomData = true, bool convertUnits = true)
@@ -42,7 +40,7 @@ namespace BH.Engine.Revit
         internal static List<PanelPlanar> ToBHoMPanelPlanar(this Floor floor, bool copyCustomData = true, bool convertUnits = true)
         {
             string materialGrade = floor.MaterialGrade();
-            IProperty2D aProperty2D = floor.FloorType.ToBHoMProperty2D(copyCustomData, convertUnits, materialGrade) as IProperty2D;
+            IProperty2D aProperty2D = floor.FloorType.ToBHoMProperty2D(materialGrade, copyCustomData, convertUnits) as IProperty2D;
 
             List<oM.Geometry.ICurve> outlines = floor.Outlines();
             List<PanelPlanar> aResult = outlines != null ? BHS.Create.PanelPlanar(outlines) : new List<PanelPlanar> { new PanelPlanar { ExternalEdges = new List<oM.Structural.Elements.Edge>(), Openings = new List<oM.Structural.Elements.Opening>(), Property = aProperty2D } };
