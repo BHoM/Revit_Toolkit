@@ -6,7 +6,7 @@ namespace BH.Engine.Revit
     public static partial class Compute
     {
         /***************************************************/
-        /****              Private methods              ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
         internal static void NotConvertedError(this Element element)
@@ -56,10 +56,26 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
+        internal static void BarCurveNotFoundError(this FamilyInstance bar)
+        {
+            if (bar != null)
+                Reflection.Compute.RecordError(string.Format("Bar curve could not be retrieved, the object is returned with empty geometry. Element Id: {0}", bar.Id.IntegerValue));
+        }
+
+        /***************************************************/
+
         internal static void UnsupportedOutlineCurveError(this HostObject hostObject)
         {
             if (hostObject != null)
                 Reflection.Compute.RecordError(string.Format("The panel outline contains a curve that is currently not supported in BHoM, the object is returned with empty geometry. Element Id: {0}", hostObject.Id.IntegerValue));
+        }
+
+        /***************************************************/
+
+        internal static void NonClosedOutlineError(this HostObject hostObject)
+        {
+            if (hostObject != null)
+                Reflection.Compute.RecordError(string.Format("The panel outline is not closed, the object is returned with empty geometry. Element Id: {0}", hostObject.Id.IntegerValue));
         }
 
         /***************************************************/
