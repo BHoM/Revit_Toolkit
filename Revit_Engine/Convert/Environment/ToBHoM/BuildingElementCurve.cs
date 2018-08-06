@@ -7,7 +7,7 @@ namespace BH.Engine.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
         internal static BuildingElementCurve ToBHoMBuildingElementCurve(this Wall wall, bool convertUnits = true)

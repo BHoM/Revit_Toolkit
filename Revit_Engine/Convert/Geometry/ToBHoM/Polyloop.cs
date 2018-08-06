@@ -7,7 +7,7 @@ namespace BH.Engine.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
         internal static oM.Geometry.Polyline ToBHoM(this Polyloop polyloop, bool convertUnits = true)
