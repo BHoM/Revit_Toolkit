@@ -9,7 +9,7 @@ namespace BH.Engine.Revit
     public static partial class Compute
     {
         /***************************************************/
-        /****              Private methods              ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
         internal static void LogNullProperties(this BHoMObject obj, IEnumerable<string> propertyNames = null)
@@ -62,7 +62,14 @@ namespace BH.Engine.Revit
 
         internal static void CompositePanelWarning(this HostObjAttributes hostObjAttributes)
         {
-            Engine.Reflection.Compute.RecordWarning(string.Format("Composite panels are currently not supported in the BHoM. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
+            Engine.Reflection.Compute.RecordWarning(string.Format("Composite panels are currently not supported in BHoM. A zero thickness panel is created. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
+        }
+
+        /***************************************************/
+
+        internal static void ConvertProfileFailedWarning(this FamilySymbol familySymbol)
+        {
+            Engine.Reflection.Compute.RecordWarning(string.Format("Revit family symbol conversion to BHoM profile failed, zero profile is returned. Family symbol Id: {0}", familySymbol.Id.IntegerValue));
         }
 
         /***************************************************/
