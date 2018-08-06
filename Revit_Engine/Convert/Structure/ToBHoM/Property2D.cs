@@ -1,5 +1,4 @@
 ﻿using Autodesk.Revit.DB;
-using BH.oM.Base;
 using BH.oM.Structural.Properties;
 
 namespace BH.Engine.Revit
@@ -7,31 +6,37 @@ namespace BH.Engine.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
         internal static IProperty2D ToBHoMProperty2D(this WallType wallType, string materialGrade = null, bool copyCustomData = true, bool convertUnits = true)
         {
             Document document = wallType.Document;
+
             double aThickness = 0;
             oM.Common.Materials.Material aMaterial = null;
+            bool composite = false;
             foreach (CompoundStructureLayer csl in wallType.GetCompoundStructure().GetLayers())
             {
                 if (csl.Function == MaterialFunctionAssignment.Structure)
                 {
                     if (aThickness != 0)
                     {
-                        wallType.CompositePanelWarning();
-                        return null;
+                        composite = true;
+                        aThickness = 0;
+                        break;
                     }
-                    aThickness = csl.Width.ToSI(UnitType.UT_Section_Dimension);
-                    ElementId id = csl.MaterialId;
-                    Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == id ? wallType.Category.Material : document.GetElement(id) as Material;
+                    aThickness = csl.Width;
+                    if (convertUnits) aThickness = aThickness.ToSI(UnitType.UT_Section_Dimension);
+
+                    ElementId materialId = csl.MaterialId;
+                    Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == materialId ? wallType.Category.Material : document.GetElement(materialId) as Material;
                     aMaterial = m.ToBHoMMaterial(materialGrade) as oM.Common.Materials.Material;
                 }
             }
 
-            if (aThickness == 0) Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", wallType.Id.IntegerValue));
+            if (composite) wallType.CompositePanelWarning();
+            else if (aThickness == 0) Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", wallType.Id.IntegerValue));
 
             ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structural.Properties.PanelType.Wall, Thickness = aThickness, Material = aMaterial, Name = wallType.Name };
 
@@ -44,28 +49,34 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static IProperty2D ToBHoMProperty2D(this FloorType floorType, bool copyCustomData = true, bool convertUnits = true, string materialGrade = null)
+        internal static IProperty2D ToBHoMProperty2D(this FloorType floorType, string materialGrade = null, bool copyCustomData = true, bool convertUnits = true)
         {
             Document document = floorType.Document;
+
             double aThickness = 0;
             oM.Common.Materials.Material aMaterial = null;
+            bool composite = false;
             foreach (CompoundStructureLayer csl in floorType.GetCompoundStructure().GetLayers())
             {
                 if (csl.Function == MaterialFunctionAssignment.Structure)
                 {
                     if (aThickness != 0)
                     {
-                        floorType.CompositePanelWarning();
-                        return null;
+                        composite = true;
+                        aThickness = 0;
+                        break;
                     }
-                    aThickness = csl.Width.ToSI(UnitType.UT_Section_Dimension);
-                    ElementId id = csl.MaterialId;
-                    Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == id ? floorType.Category.Material : document.GetElement(id) as Material;
+                    aThickness = csl.Width;
+                    if (convertUnits) aThickness = aThickness.ToSI(UnitType.UT_Section_Dimension);
+
+                    ElementId materialId = csl.MaterialId;
+                    Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == materialId ? floorType.Category.Material : document.GetElement(materialId) as Material;
                     aMaterial = m.ToBHoMMaterial(materialGrade) as oM.Common.Materials.Material;
                 }
             }
 
-            if (aThickness == 0) Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", floorType.Id.IntegerValue));
+            if (composite) floorType.CompositePanelWarning();
+            else if (aThickness == 0) Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", floorType.Id.IntegerValue));
 
             ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structural.Properties.PanelType.Slab, Thickness = aThickness, Material = aMaterial, Name = floorType.Name };
 
