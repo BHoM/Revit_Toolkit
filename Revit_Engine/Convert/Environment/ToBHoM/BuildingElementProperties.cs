@@ -12,7 +12,7 @@ namespace BH.Engine.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
         internal static BuildingElementProperties ToBHoMBuildingElementProperties(this WallType wallType, bool copyCustomData = true, bool convertUnits = true)
@@ -99,12 +99,12 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static BuildingElementProperties ToBHoMBuildingElementProperties(this ElementType elementType, Dictionary<ElementId, List<BHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElementProperties ToBHoMBuildingElementProperties(this ElementType elementType, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             BuildingElementProperties aBuildingElementProperties = null;
             if (objects != null)
             {
-                List<BHoMObject> aBHoMObjectList = new List<BHoMObject>();
+                List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
                 if (objects.TryGetValue(elementType.Id, out aBHoMObjectList))
                     if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
                         aBuildingElementProperties = aBHoMObjectList.First() as BuildingElementProperties;

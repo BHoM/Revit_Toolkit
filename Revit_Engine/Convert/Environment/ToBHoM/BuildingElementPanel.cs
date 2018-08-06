@@ -14,7 +14,7 @@ namespace BH.Engine.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
         internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this PlanarFace planarFace, bool convertUnits = true)
@@ -113,7 +113,7 @@ namespace BH.Engine.Revit
                 if (aPlanarFace == null)
                     continue;
 
-                List<BHoMObject> aBHoMObjectList = aPlanarFace.ToBHoM(Discipline.Environmental, convertUnits);
+                List<IBHoMObject> aBHoMObjectList = aPlanarFace.ToBHoM(Discipline.Environmental, convertUnits);
                 if (aBHoMObjectList == null || aBHoMObjectList.Count < 1)
                     continue;
 
