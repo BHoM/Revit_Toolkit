@@ -36,11 +36,11 @@ namespace BH.Engine.Revit
             //    return Geometry.Create.NurbCurve(aNurbSpline.CtrlPoints.Cast<XYZ>().ToList().ConvertAll(x => ToBHoM(x, convertUnits)), aNurbSpline.Weights.Cast<double>(), aNurbSpline.Degree);
             //}
 
-            if (curve is Ellipse)
-            {
-                Ellipse aEllipse = curve as Ellipse;
-                return Geometry.Create.Ellipse(ToBHoM(aEllipse.Center, convertUnits), aEllipse.RadiusX, aEllipse.RadiusY);
-            }
+            //if (curve is Ellipse)
+            //{
+            //    Ellipse aEllipse = curve as Ellipse;
+            //    return Geometry.Create.Ellipse(ToBHoM(aEllipse.Center, convertUnits), aEllipse.RadiusX, aEllipse.RadiusY);
+            //}
             
             return null;
         }
