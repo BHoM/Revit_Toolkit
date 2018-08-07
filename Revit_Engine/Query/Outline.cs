@@ -32,7 +32,7 @@ namespace BH.Engine.Revit
                 {
                     if (c == null)
                     {
-                        wall.UnsupportedOutlineCurveError();
+                        wall.UnsupportedOutlineCurveWarning();
                         return null;
                     }
                         
@@ -66,7 +66,7 @@ namespace BH.Engine.Revit
                                     {
                                         if (c == null)
                                         {
-                                            wall.UnsupportedOutlineCurveError();
+                                            wall.UnsupportedOutlineCurveWarning();
                                             return null;
                                         }
                                     }
@@ -84,7 +84,7 @@ namespace BH.Engine.Revit
             {
                 if (!outline.IIsClosed())
                 {
-                    wall.NonClosedOutlineError();
+                    wall.NonClosedOutlineWarning();
                     return null;
                 }
             }
@@ -106,7 +106,7 @@ namespace BH.Engine.Revit
                 {
                     if (c == null)
                     {
-                        floor.UnsupportedOutlineCurveError();
+                        floor.UnsupportedOutlineCurveWarning();
                         return null;
                     }
                 }
@@ -138,7 +138,7 @@ namespace BH.Engine.Revit
                                     {
                                         if (c == null)
                                         {
-                                            floor.UnsupportedOutlineCurveError();
+                                            floor.UnsupportedOutlineCurveWarning();
                                             return null;
                                         }
                                     }
@@ -156,7 +156,7 @@ namespace BH.Engine.Revit
             {
                 if (!outline.IIsClosed())
                 {
-                    floor.NonClosedOutlineError();
+                    floor.NonClosedOutlineWarning();
                     return null;
                 }
             }
