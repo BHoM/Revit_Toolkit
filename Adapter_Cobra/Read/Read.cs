@@ -148,9 +148,20 @@ namespace BH.UI.Revit.Adapter
                     else if (aObject is List<IBHoMObject>)
                         aResult.AddRange(aObject as List<IBHoMObject>);
                 }
-                catch (Exception aException)
+                catch (Exception aException_1)
                 {
-                    Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because of conversion exception. Element Id: {0}, Element Name: {1}, Exception Message: {2}", elementId.IntegerValue, aElement.Name, aException.Message));
+                    try
+                    {
+                        IBHoMObject aIBHoMObject = new BHoMObject();
+                        aIBHoMObject = Modify.SetIdentifiers(aIBHoMObject, aElement);
+                        aIBHoMObject = Modify.SetCustomData(aIBHoMObject, aElement, true);
+                        aResult.Add(aIBHoMObject as BHoMObject);
+                        Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted becasue of missing ToBHoM method. Element Id: {0}, Element Name: {1}, Exception Message: {2}", elementId.IntegerValue, aElement.Name, aException_1.Message));
+                    }
+                    catch(Exception aException_2)
+                    {
+                        Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because of conversion exception. Element Id: {0}, Element Name: {1}, Exception Message: {2}", elementId.IntegerValue, aElement.Name, aException_1.Message));
+                    }                    
                 }
                
             }
