@@ -17,6 +17,7 @@ namespace BH.Engine.Revit
         internal static FramingElement ToBHoMFramingElement(this FamilyInstance familyInstance, bool copyCustomData = true, bool convertUnits = true)
         {
             oM.Geometry.Line barCurve = null;
+            bool nonlinear = false;
             ConstantFramingElementProperty property = null;
             StructuralUsage1D usage = StructuralUsage1D.Undefined;
             string name = null;
@@ -56,7 +57,11 @@ namespace BH.Engine.Revit
             else if (location is LocationCurve)
             {
                 barCurve = (location as LocationCurve).Curve.ToBHoM(convertUnits) as oM.Geometry.Line;
-                if (barCurve == null) familyInstance.NonlinearBarWarning();
+                if (barCurve == null)
+                {
+                    nonlinear = true;
+                    familyInstance.NonlinearBarWarning();
+                }
                 else if (structuralType != StructuralType.Column)
                 {
                     double ZOffset = familyInstance.LookupParameterDouble("z Offset Value", convertUnits);
@@ -65,7 +70,7 @@ namespace BH.Engine.Revit
                 rotation = -familyInstance.LookupParameterDouble("Cross-Section Rotation", false);
             }
 
-            if (barCurve==null) familyInstance.BarCurveNotFoundWarning();
+            if (!nonlinear && barCurve==null) familyInstance.BarCurveNotFoundWarning();
             ISectionProperty aSectionProperty = familyInstance.ToBHoMSectionProperty(copyCustomData, convertUnits) as ISectionProperty;
 
             switch (structuralType)
