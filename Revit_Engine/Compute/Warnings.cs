@@ -73,5 +73,65 @@ namespace BH.Engine.Revit
         }
 
         /***************************************************/
+
+        internal static void NonlinearBarWarning(this FamilyInstance bar)
+        {
+            string aMessage = "Nonlinear bars are currently not supported in BHoM, the object is returned with empty geometry.";
+
+            if (bar != null)
+                aMessage = string.Format("{0} Element Id: {1}", aMessage, bar.Id.IntegerValue);
+
+            Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void BarCurveNotFoundWarning(this FamilyInstance bar)
+        {
+            string aMessage = "Bar curve could not be retrieved, the object is returned with empty geometry.";
+
+            if (bar != null)
+                aMessage = string.Format("{0} Element Id: {1}", aMessage, bar.Id.IntegerValue);
+
+            Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void UnsupportedOutlineCurveWarning(this HostObject hostObject)
+        {
+            string aMessage = "The panel outline contains a curve that is currently not supported in BHoM, the object is returned with empty geometry.";
+
+            if (hostObject != null)
+                aMessage = string.Format("{0} Element Id: {1}", aMessage, hostObject.Id.IntegerValue);
+
+            Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void NonClosedOutlineWarning(this HostObject hostObject)
+        {
+            string aMessage = "The panel outline is not closed, the object is returned with empty geometry.";
+
+            if (hostObject != null)
+                aMessage = string.Format("{0} Element Id: {1}", aMessage, hostObject.Id.IntegerValue);
+
+            Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void ElementCouldNotBeQueried(this Element element)
+        {
+            string aMessage = "Revit element could not be queried.";
+
+            if (element != null)
+                aMessage = string.Format("{0} Element Id: {1}", aMessage, element.Id.IntegerValue);
+
+            Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
     }
 }

@@ -56,7 +56,7 @@ namespace BH.Engine.Revit
             else if (location is LocationCurve)
             {
                 barCurve = (location as LocationCurve).Curve.ToBHoM(convertUnits) as oM.Geometry.Line;
-                if (barCurve == null) familyInstance.NonlinearBarError();
+                if (barCurve == null) familyInstance.NonlinearBarWarning();
                 else if (structuralType != StructuralType.Column)
                 {
                     double ZOffset = familyInstance.LookupParameterDouble("z Offset Value", convertUnits);
@@ -65,7 +65,7 @@ namespace BH.Engine.Revit
                 rotation = -familyInstance.LookupParameterDouble("Cross-Section Rotation", false);
             }
 
-            if (barCurve==null) familyInstance.BarCurveNotFoundError();
+            if (barCurve==null) familyInstance.BarCurveNotFoundWarning();
             ISectionProperty aSectionProperty = familyInstance.ToBHoMSectionProperty(copyCustomData, convertUnits) as ISectionProperty;
 
             switch (structuralType)
