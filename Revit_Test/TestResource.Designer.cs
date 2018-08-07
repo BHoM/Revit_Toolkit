@@ -39,7 +39,7 @@ namespace Revit_Test {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Revit2018_Test.TestResource", typeof(TestResource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Revit_Test.TestResource", typeof(TestResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

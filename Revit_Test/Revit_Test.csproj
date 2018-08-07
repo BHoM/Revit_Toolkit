@@ -7,7 +7,7 @@
     <ProjectGuid>{09699A82-1026-432C-A68F-DAD6F4565865}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Revit2018_Test</RootNamespace>
+    <RootNamespace>Revit_Test</RootNamespace>
     <AssemblyName>Revit_Test</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

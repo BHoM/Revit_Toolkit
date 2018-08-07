@@ -111,13 +111,6 @@ namespace BH.UI.Revit.Adapter
             if (!Query.AllowElement(RevitSettings, UIDocument, aElement))
                 return;
 
-            List<Type> aTypeList = Query.BHoMTypes(aElement);
-            if (aTypeList == null || aTypeList.Count < 1)
-            {
-                Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because equivalent BHoM type does not exist. Element Id: {0}, Element Name: {1}", elementId.IntegerValue, aElement.Name));
-                return;
-            }  
-
             List<IBHoMObject> aResult = null;
             if (aElement is Floor)
             {
@@ -138,32 +131,47 @@ namespace BH.UI.Revit.Adapter
             }
             else
             {
-                try
-                {
-                    object aObject = Engine.Revit.Convert.ToBHoM(aElement as dynamic, discipline, true, true);
+                object aObject = null;
+                bool aConverted = true;
 
-                    aResult = new List<IBHoMObject>();
-                    if (aObject is BHoMObject)
-                        aResult.Add(aObject as BHoMObject);
-                    else if (aObject is List<IBHoMObject>)
-                        aResult.AddRange(aObject as List<IBHoMObject>);
+                List<Type> aTypeList = Query.BHoMTypes(aElement);
+                if (aTypeList != null && aTypeList.Count > 0)
+                {
+                    try
+                    {
+                        aObject = Engine.Revit.Convert.ToBHoM(aElement as dynamic, discipline, true, true);
+                    }
+                    catch (Exception aException)
+                    {
+                        Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted becasue of missing ToBHoM method. Element Id: {0}, Element Name: {1}, Exception Message: {2}", elementId.IntegerValue, aElement.Name, aException.Message));
+                        aConverted = false;
+                    }
                 }
-                catch (Exception aException_1)
+
+                if(aObject == null)
                 {
                     try
                     {
                         IBHoMObject aIBHoMObject = new BHoMObject();
                         aIBHoMObject = Modify.SetIdentifiers(aIBHoMObject, aElement);
                         aIBHoMObject = Modify.SetCustomData(aIBHoMObject, aElement, true);
-                        aResult.Add(aIBHoMObject as BHoMObject);
-                        Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted becasue of missing ToBHoM method. Element Id: {0}, Element Name: {1}, Exception Message: {2}", elementId.IntegerValue, aElement.Name, aException_1.Message));
+                        aObject = aIBHoMObject;
                     }
-                    catch(Exception aException_2)
+                    catch (Exception aException)
                     {
-                        Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because of conversion exception. Element Id: {0}, Element Name: {1}, Exception Message: {2}", elementId.IntegerValue, aElement.Name, aException_1.Message));
-                    }                    
+                        if (aConverted)
+                            Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", elementId.IntegerValue, aElement.Name, aException.Message));
+                    }
                 }
-               
+
+                if(aObject != null)
+                {
+                    aResult = new List<IBHoMObject>();
+                    if (aObject is BHoMObject)
+                        aResult.Add(aObject as BHoMObject);
+                    else if (aObject is List<IBHoMObject>)
+                        aResult.AddRange(aObject as List<IBHoMObject>);
+                }
             }
 
             if(aResult != null && aResult.Count > 0)
