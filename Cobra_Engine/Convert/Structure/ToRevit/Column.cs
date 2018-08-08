@@ -26,7 +26,7 @@ namespace BH.Engine.Revit
             Curve aCurve = framingElement.LocationCurve.ToRevit();
             Level aLevel = null;
 
-            aCustomDataValue = Query.ICustomData(framingElement, "Reference Level");
+            aCustomDataValue = framingElement.ICustomData("Reference Level");
             if (aCustomDataValue != null && aCustomDataValue is int)
             {
                 ElementId aElementId = new ElementId((int)aCustomDataValue);
@@ -42,7 +42,7 @@ namespace BH.Engine.Revit
             {
                 List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilySymbol>().ToList();
 
-                aCustomDataValue = Query.ICustomData(framingElement, "Type");
+                aCustomDataValue = framingElement.ICustomData("Type");
                 if (aCustomDataValue != null && aCustomDataValue is int)
                 {
                     ElementId aElementId = new ElementId((int)aCustomDataValue);
