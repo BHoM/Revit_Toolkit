@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.oM.Base;
 
 namespace BH.oM.Adapters.Revit
 {
-    public class SelectionSettings
+    public class SelectionSettings : BHoMObject
     {
         /***************************************************/
         /**** Public Properties                        ****/

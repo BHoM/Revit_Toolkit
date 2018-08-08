@@ -82,7 +82,7 @@ namespace BH.Adapter.Revit
             config = config == null ? new Dictionary<string, object>() : null;
 
             //Send data through the socket link
-            m_linkIn.SendData(new List<object>() { PackageType.Push, objects.ToList(), config }, tag);
+            m_linkIn.SendData(new List<object>() { PackageType.Push, objects.ToList(), config, RevitSettings }, tag);
 
             //Wait until the return message has been recieved
             if (!m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime)))
@@ -125,7 +125,7 @@ namespace BH.Adapter.Revit
                 return new List<object>();
 
             //Send data through the socket link
-            m_linkIn.SendData(new List<object>() { PackageType.Pull, query as FilterQuery, config });
+            m_linkIn.SendData(new List<object>() { PackageType.Pull, query as FilterQuery, config, RevitSettings });
 
             //Wait until the return message has been recieved
             if (!m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime)))
@@ -169,9 +169,36 @@ namespace BH.Adapter.Revit
                 InternalAdapter.RevitSettings = RevitSettings;
                 return InternalAdapter.UpdateProperty(filter, property, newValue, config);
             }
-                
 
-            throw new NotImplementedException();
+            //Reset the wait event
+            m_waitEvent.Reset();
+
+
+            if (!CheckConnection())
+                return 0;
+
+            config = config == null ? new Dictionary<string, object>() : null;
+
+            //Send data through the socket link
+            m_linkIn.SendData(new List<object>() { PackageType.UpdateProperty, new Tuple<FilterQuery,string,object>(filter,property, newValue), config, RevitSettings });
+
+            //Wait until the return message has been recieved
+            if (!m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime)))
+                Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
+
+            int returnValue = 0;
+            //Grab the return objects from the latest package
+            if (m_returnPackage.Count > 0 && m_returnPackage[0] is int)
+                returnValue = (int)m_returnPackage[0];
+
+            //Clear the return list
+            m_returnPackage.Clear();
+
+            //Raise returned events
+            RaiseEvents();
+
+            //Return the package
+            return returnValue;
         }
 
         /***************************************************/
