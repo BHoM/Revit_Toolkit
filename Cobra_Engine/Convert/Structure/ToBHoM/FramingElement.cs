@@ -5,6 +5,7 @@ using BH.oM.Structural.Properties;
 using BHG = BH.Engine.Geometry;
 using BHS = BH.Engine.Structure;
 using System.Collections.Generic;
+using BH.oM.Base;
 
 namespace BH.Engine.Revit
 {
@@ -14,7 +15,7 @@ namespace BH.Engine.Revit
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static FramingElement ToBHoMFramingElement(this FamilyInstance familyInstance, bool copyCustomData = true, bool convertUnits = true)
+        internal static FramingElement ToBHoMFramingElement(this FamilyInstance familyInstance, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             oM.Geometry.Line barCurve = null;
             bool nonlinear = false;
@@ -70,8 +71,8 @@ namespace BH.Engine.Revit
                 rotation = -familyInstance.LookupParameterDouble("Cross-Section Rotation", false);
             }
 
-            if (!nonlinear && barCurve==null) familyInstance.BarCurveNotFoundWarning();
-            ISectionProperty aSectionProperty = familyInstance.ToBHoMSectionProperty(copyCustomData, convertUnits) as ISectionProperty;
+            if (!nonlinear && barCurve == null) familyInstance.BarCurveNotFoundWarning();
+            ISectionProperty aSectionProperty = familyInstance.ToBHoMSectionProperty(objects, copyCustomData, convertUnits) as ISectionProperty;
 
             switch (structuralType)
             {

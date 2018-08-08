@@ -51,8 +51,9 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static oM.Common.Materials.Material ToBHoMMaterial(this Material material, string materialGrade)
+        internal static oM.Common.Materials.Material ToBHoMMaterial(this Material material)
         {
+            string materialGrade = material.MaterialGrade();
             switch (material.MaterialClass)
             {
                 case "Aluminium":

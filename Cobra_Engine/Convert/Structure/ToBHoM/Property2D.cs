@@ -1,5 +1,8 @@
 ﻿using Autodesk.Revit.DB;
 using BH.oM.Structural.Properties;
+using System.Collections.Generic;
+using BH.oM.Base;
+using System.Linq;
 
 namespace BH.Engine.Revit
 {
@@ -9,12 +12,13 @@ namespace BH.Engine.Revit
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static IProperty2D ToBHoMProperty2D(this WallType wallType, string materialGrade = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static IProperty2D ToBHoMProperty2D(this WallType wallType, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             Document document = wallType.Document;
 
             double aThickness = 0;
             oM.Common.Materials.Material aMaterial = null;
+
             bool composite = false;
             foreach (CompoundStructureLayer csl in wallType.GetCompoundStructure().GetLayers())
             {
@@ -30,8 +34,25 @@ namespace BH.Engine.Revit
                     if (convertUnits) aThickness = aThickness.ToSI(UnitType.UT_Section_Dimension);
 
                     ElementId materialId = csl.MaterialId;
-                    Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == materialId ? wallType.Category.Material : document.GetElement(materialId) as Material;
-                    aMaterial = m.ToBHoMMaterial(materialGrade) as oM.Common.Materials.Material;
+                    bool materialFound = false;
+                    if (objects != null)
+                    {
+                        List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
+                        if (objects.TryGetValue(materialId, out aBHoMObjectList))
+                            if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
+                            {
+                                aMaterial = aBHoMObjectList.First() as oM.Common.Materials.Material;
+                                materialFound = true;
+                            }
+                    }
+
+                    if (!materialFound)
+                    {
+                        Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == materialId ? wallType.Category.Material : document.GetElement(materialId) as Material;
+                        aMaterial = m.ToBHoMMaterial() as oM.Common.Materials.Material;
+                        if (objects != null)
+                            objects.Add(materialId, new List<IBHoMObject>(new IBHoMObject[] { aMaterial }));
+                    }
                 }
             }
 
@@ -49,12 +70,13 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static IProperty2D ToBHoMProperty2D(this FloorType floorType, string materialGrade = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static IProperty2D ToBHoMProperty2D(this FloorType floorType, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             Document document = floorType.Document;
 
             double aThickness = 0;
             oM.Common.Materials.Material aMaterial = null;
+
             bool composite = false;
             foreach (CompoundStructureLayer csl in floorType.GetCompoundStructure().GetLayers())
             {
@@ -70,8 +92,25 @@ namespace BH.Engine.Revit
                     if (convertUnits) aThickness = aThickness.ToSI(UnitType.UT_Section_Dimension);
 
                     ElementId materialId = csl.MaterialId;
-                    Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == materialId ? floorType.Category.Material : document.GetElement(materialId) as Material;
-                    aMaterial = m.ToBHoMMaterial(materialGrade) as oM.Common.Materials.Material;
+                    bool materialFound = false;
+                    if (objects != null)
+                    {
+                        List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
+                        if (objects.TryGetValue(materialId, out aBHoMObjectList))
+                            if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
+                            {
+                                aMaterial = aBHoMObjectList.First() as oM.Common.Materials.Material;
+                                materialFound = true;
+                            }
+                    }
+
+                    if (!materialFound)
+                    {
+                        Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == materialId ? floorType.Category.Material : document.GetElement(materialId) as Material;
+                        aMaterial = m.ToBHoMMaterial() as oM.Common.Materials.Material;
+                        if (objects != null)
+                            objects.Add(materialId, new List<IBHoMObject>(new IBHoMObject[] { aMaterial }));
+                    }
                 }
             }
 

@@ -44,14 +44,14 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this FamilyInstance familyInstance, Discipline discipline = Discipline.Structural, bool copyCustomData = true, bool convertUnits = true)
+        public static IBHoMObject ToBHoM(this FamilyInstance familyInstance, Dictionary<ElementId, List<IBHoMObject>> objects = null, Discipline discipline = Discipline.Structural, bool copyCustomData = true, bool convertUnits = true)
         {
             familyInstance.CheckIfNull();
 
             switch (discipline)
             {
                 case Discipline.Structural:
-                    return familyInstance.ToBHoMFramingElement(copyCustomData, convertUnits);
+                    return familyInstance.ToBHoMFramingElement(objects, copyCustomData, convertUnits);
                 case Discipline.Environmental:
                     return familyInstance.ToBHoMBuildingElement(copyCustomData, convertUnits);
             }
@@ -62,7 +62,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this Wall wall, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static List<IBHoMObject> ToBHoM(this Wall wall, Dictionary<ElementId, List<IBHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             wall.CheckIfNull();
 
@@ -71,7 +71,7 @@ namespace BH.Engine.Revit
                 case Discipline.Environmental:
                     return new List<IBHoMObject>() { wall.ToBHoMBuildingElement(copyCustomData, convertUnits) };
                 case Discipline.Structural:
-                    return wall.ToBHoMPanelPlanar(copyCustomData, convertUnits).ConvertAll(p => p as IBHoMObject);
+                    return wall.ToBHoMPanelPlanar(objects, copyCustomData, convertUnits).ConvertAll(p => p as IBHoMObject);
             }
 
             wall.NotConvertedError();
@@ -96,7 +96,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this Floor floor, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        public static List<IBHoMObject> ToBHoM(this Floor floor, Dictionary<ElementId, List<IBHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             floor.CheckIfNull();
 
@@ -105,7 +105,7 @@ namespace BH.Engine.Revit
                 case Discipline.Environmental:
                     return floor.ToBHoMBuildingElements(copyCustomData, convertUnits).ConvertAll(x => x as IBHoMObject);
                 case Discipline.Structural:
-                    return floor.ToBHoMPanelPlanar(copyCustomData, convertUnits).ConvertAll(p => p as IBHoMObject);
+                    return floor.ToBHoMPanelPlanar(objects, copyCustomData, convertUnits).ConvertAll(p => p as IBHoMObject);
             }
 
             floor.NotConvertedError();
@@ -130,7 +130,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this WallType wallType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true, string materialGrade = null)
+        public static IBHoMObject ToBHoM(this WallType wallType, Dictionary<ElementId, List<IBHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             wallType.CheckIfNull();
 
@@ -139,7 +139,7 @@ namespace BH.Engine.Revit
                 case Discipline.Environmental:
                     return wallType.ToBHoMBuildingElementProperties(copyCustomData, convertUnits); 
                 case Discipline.Structural:
-                    return wallType.ToBHoMProperty2D(materialGrade, copyCustomData, convertUnits) as IBHoMObject;
+                    return wallType.ToBHoMProperty2D(objects, copyCustomData, convertUnits) as IBHoMObject;
             }
 
             wallType.NotConvertedError();
@@ -148,7 +148,7 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this FloorType floorType, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true, string materialGrade = null)
+        public static IBHoMObject ToBHoM(this FloorType floorType, Dictionary<ElementId, List<IBHoMObject>> objects = null, Discipline discipline = Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
         {
             floorType.CheckIfNull();
 
@@ -157,7 +157,7 @@ namespace BH.Engine.Revit
                 case Discipline.Environmental:
                     return floorType.ToBHoMBuildingElementProperties(copyCustomData, convertUnits);
                 case Discipline.Structural:
-                    return floorType.ToBHoMProperty2D(materialGrade, copyCustomData, convertUnits) as IBHoMObject;
+                    return floorType.ToBHoMProperty2D(objects, copyCustomData, convertUnits) as IBHoMObject;
             }
 
             floorType.NotConvertedError();
@@ -206,6 +206,8 @@ namespace BH.Engine.Revit
             {
                 case Discipline.Environmental:
                     return familySymbol.ToBHoMBuildingElementProperties(copyCustomData, convertUnits);
+                case Discipline.Structural:
+                    return familySymbol.ToBHoMProfile(copyCustomData, convertUnits);
             }
 
             familySymbol.NotConvertedError();
