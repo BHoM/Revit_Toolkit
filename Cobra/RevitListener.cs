@@ -10,6 +10,7 @@ using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
 using BH.UI.Revit.Adapter;
 using BH.Adapter.Revit;
+using BH.oM.Adapters.Revit;
 
 namespace BH.UI.Revit
 {
@@ -37,7 +38,15 @@ namespace BH.UI.Revit
 
         /***************************************************/
 
+        public KeyValuePair<string, object> LatestKeyValuePair { get; set; }
+
+        /***************************************************/
+
         public static RevitListener Listener { get; private set; } = null;
+
+        /***************************************************/
+
+        public static RevitSettings AdapterSettings { get; set; } = null;
 
 
         /***************************************************/
@@ -53,6 +62,10 @@ namespace BH.UI.Revit
                 adapter = new CobraAdapter(document);
                 m_adapters[document] = adapter;
             }
+
+            if (AdapterSettings != null)
+                adapter.RevitSettings = AdapterSettings;
+
             return adapter;
         }
 
@@ -109,6 +122,9 @@ namespace BH.UI.Revit
 
             PullEvent pullEvent = new PullEvent();
             m_pullEvent = ExternalEvent.Create(pullEvent);
+
+            UpdatePropertyEvent updatePropEvent = new UpdatePropertyEvent();
+            m_updatePropertyEvent = ExternalEvent.Create(updatePropEvent);
 
             //empty list for package holding
             LatestPackage = new List<IObject>();
@@ -191,6 +207,13 @@ namespace BH.UI.Revit
                         eve = m_pullEvent;
                         LatestQuery = package.Data[1] as IQuery;
                         break;
+                    case PackageType.UpdateProperty:
+                        if (!CheckPackageSize(package)) return;
+                        eve = m_updatePropertyEvent;
+                        var tuple = package.Data[1] as Tuple<FilterQuery, string, object>;
+                        LatestQuery = tuple.Item1;
+                        LatestKeyValuePair = new KeyValuePair<string, object>(tuple.Item2, tuple.Item3);
+                        break;
                     default:
                         ReturnData(new List<string> { "Unrecognized package type" });
                         return;
@@ -198,7 +221,7 @@ namespace BH.UI.Revit
 
                 LatestTag = package.Tag;
                 LatestConfig = package.Data[2] as Dictionary<string,object>;
-
+                AdapterSettings = package.Data[3] as RevitSettings;
             }
 
             eve.Raise();
@@ -208,7 +231,7 @@ namespace BH.UI.Revit
 
         private bool CheckPackageSize(oM.Socket.DataPackage package)
         {
-            if (package.Data.Count < 3)
+            if (package.Data.Count < 4)
             {
                 ReturnData(new List<string> { "Invalid Package" });
                 return false;
@@ -224,6 +247,7 @@ namespace BH.UI.Revit
         private SocketLink_Tcp m_linkOut;
         private ExternalEvent m_pushEvent;
         private ExternalEvent m_pullEvent;
+        private ExternalEvent m_updatePropertyEvent;
         private Dictionary<Document, CobraAdapter> m_adapters = new Dictionary<Document, CobraAdapter>();
 
 

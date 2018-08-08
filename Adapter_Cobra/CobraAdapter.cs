@@ -13,7 +13,6 @@ namespace BH.UI.Revit.Adapter
         /***************************************************/
 
         private Document m_Document;
-        private RevitSettings m_RevitSettings;
 
         /***************************************************/
         /**** Public Constructors                       ****/
@@ -39,21 +38,6 @@ namespace BH.UI.Revit.Adapter
         /**** Public Properties                        ****/
         /***************************************************/
 
-        public RevitSettings RevitSettings
-        {
-            get
-            {
-                return m_RevitSettings;
-            }
-
-            set
-            {
-                m_RevitSettings = value;
-            }
-
-        }
-
-        /***************************************************/
 
         public Document Document
         {
