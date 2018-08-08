@@ -81,7 +81,7 @@ namespace BH.Engine.Revit
 
         internal static BuildingElement ToBHoMBuildingElement(this Wall wall, bool copyCustomData = true, bool convertUnits = true)
         {
-            BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoM(Discipline.Environmental, copyCustomData, convertUnits) as BuildingElementProperties;
+            BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoM(null, Discipline.Environmental, copyCustomData, convertUnits) as BuildingElementProperties;
 
             BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, ToBHoMBuildingElementCurve(wall, convertUnits), ToBHoM(wall.Document.GetElement(wall.LevelId) as Level, Discipline.Environmental, copyCustomData, convertUnits) as oM.Architecture.Elements.Level);
 
