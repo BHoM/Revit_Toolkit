@@ -149,7 +149,6 @@
     <Compile Include="Query\BuildingElements.cs" />
     <Compile Include="Query\BuildingElementType.cs" />
     <Compile Include="Query\BuiltInCategories.cs" />
-    <Compile Include="Query\CustomData.cs" />
     <Compile Include="Query\Discipline.cs" />
     <Compile Include="Query\Element.cs" />
     <Compile Include="Query\ElementId.cs" />
@@ -182,6 +181,10 @@
     <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
       <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
       <Name>Revit_Adapter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj">
+      <Project>{75a99ac5-fe80-45a4-b456-1aa3b1c4bb74}</Project>
+      <Name>Revit_Engine</Name>
     </ProjectReference>
     <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
       <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
