@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Adapter
         /// <search>
         /// RevitAdapter, Read, Revit, BuiltInCategory, BHoMObject, BHoM, BHoMObjects
         /// </search>
-        protected void Read(BuiltInCategory builtInCategory, Discipline discipline, Dictionary<ElementId, List<IBHoMObject>> objects)
+        protected void Read(BuiltInCategory builtInCategory, Discipline discipline, List<IBHoMObject> objects)
         {
             Read(new BuiltInCategory[] { builtInCategory }, discipline, objects);
         }
@@ -50,7 +50,7 @@ namespace BH.UI.Revit.Adapter
         /// <search>
         /// RevitAdapter, Read, Revit, BuiltInCategory, BHoMObject, BHoM, BHoMObjects, BuiltInCategories
         /// </search>
-        protected void Read(IEnumerable<BuiltInCategory> builtInCategories, Discipline discipline, Dictionary<ElementId, List<IBHoMObject>> objects)
+        protected void Read(IEnumerable<BuiltInCategory> builtInCategories, Discipline discipline, List<IBHoMObject> objects)
         {
             if (Document == null)
             {
@@ -83,7 +83,7 @@ namespace BH.UI.Revit.Adapter
         /// <search>
         /// RevitAdapter, Read, Revit, ElementId, BHoMObjects, BHoM
         /// </search>
-        protected void Read(ElementId elementId, Discipline discipline, Dictionary<ElementId, List<IBHoMObject>> objects)
+        protected void Read(ElementId elementId, Discipline discipline, List<IBHoMObject> objects, Dictionary<ElementId, List<IBHoMObject>> refObjects)
         {
             if (Document == null)
             {
@@ -114,7 +114,7 @@ namespace BH.UI.Revit.Adapter
             List<IBHoMObject> aResult = null;
             if (aElement is Floor)
             {
-                aResult = Engine.Revit.Convert.ToBHoM(aElement as Floor, discipline, true, true);
+                aResult = Engine.Revit.Convert.ToBHoM(aElement as Floor, refObjects, discipline, true, true);
             }
             else if (aElement is RoofBase)
             {
@@ -122,12 +122,16 @@ namespace BH.UI.Revit.Adapter
             }
             else if (aElement is Wall)
             {
-                aResult = Engine.Revit.Convert.ToBHoM(aElement as Wall, discipline, true, true);
+                aResult = Engine.Revit.Convert.ToBHoM(aElement as Wall, refObjects, discipline, true, true);
+            }
+            else if (aElement is FamilyInstance)
+            {
+                aResult = new List<IBHoMObject> { Engine.Revit.Convert.ToBHoM(aElement as FamilyInstance, refObjects, discipline, true, true) };
             }
             else if (aElement is SpatialElement)
             {
                 aResult = new List<IBHoMObject>();
-                aResult.Add(Engine.Revit.Convert.ToBHoM(aElement as SpatialElement, objects, discipline, true, true));
+                aResult.Add(Engine.Revit.Convert.ToBHoM(aElement as SpatialElement, refObjects, discipline, true, true));
             }
             else
             {
@@ -174,12 +178,9 @@ namespace BH.UI.Revit.Adapter
                 }
             }
 
-            if(aResult != null && aResult.Count > 0)
+            if(aResult != null)
             {
-                if (objects == null)
-                    objects = new Dictionary<ElementId, List<IBHoMObject>>();
-
-                objects.Add(aElement.Id, aResult);
+                objects.AddRange(aResult);
             }
         }
 
@@ -195,7 +196,7 @@ namespace BH.UI.Revit.Adapter
         /// <search>
         /// RevitAdapter, Read, Revit, ElementId, BHoMObject, BHoM, BHoMObjects
         /// </search>
-        protected void Read(IEnumerable<ElementId> elementIds, Discipline discipline, Dictionary<ElementId, List<IBHoMObject>> objects)
+        protected void Read(IEnumerable<ElementId> elementIds, Discipline discipline, List<IBHoMObject> objects)
         {
             if (Document == null)
             {
@@ -212,7 +213,7 @@ namespace BH.UI.Revit.Adapter
             if (elementIds.Count() < 1)
                 return;
 
-            List<IBHoMObject> aResult = new List<IBHoMObject>();
+            Dictionary<ElementId, List<IBHoMObject>> refObjects = new Dictionary<ElementId, List<IBHoMObject>>();
             foreach (ElementId aElementId in elementIds)
             {
                 if(aElementId == null || aElementId == ElementId.InvalidElementId)
@@ -223,7 +224,7 @@ namespace BH.UI.Revit.Adapter
 
                 try
                 {
-                    Read(aElementId, discipline, objects);
+                    Read(aElementId, discipline, objects, refObjects);
                 }
                 catch (Exception e)
                 {
@@ -243,7 +244,7 @@ namespace BH.UI.Revit.Adapter
         /// <search>
         /// RevitAdapter, Read, Revit, BHoMObject, BHoM, BHoMObjects, 
         /// </search>
-        protected void Read(IEnumerable<Type> types, Dictionary<ElementId, List<IBHoMObject>> objects, IEnumerable<string> uniqueIds = null)
+        protected void Read(IEnumerable<Type> types, List<IBHoMObject> objects, IEnumerable<string> uniqueIds = null)
         {
             if (Document == null)
             {
@@ -303,7 +304,7 @@ namespace BH.UI.Revit.Adapter
             {
                 if(aTuple.Item1 == typeof(Document))
                 {
-                    objects.Add(ElementId.InvalidElementId, new List<IBHoMObject>(new IBHoMObject[] { Document.ToBHoM(aTuple.Item3, true) }));
+                    objects.Add(Document.ToBHoM(aTuple.Item3, true));
                     continue;
                 }
 
@@ -375,21 +376,11 @@ namespace BH.UI.Revit.Adapter
                 return null;
             }
 
-            Dictionary<ElementId, List<IBHoMObject>> aDictionary = new Dictionary<ElementId, List<IBHoMObject>>();
-
-            if (ids == null)
-               Read(new Type[] { type }, aDictionary);
-            else
-               Read(new Type[] { type }, aDictionary, ids.Cast<string>().ToList());
-
             List<IBHoMObject> aObjects = new List<IBHoMObject>();
-            foreach (KeyValuePair<ElementId, List<IBHoMObject>> aKeyValuePair in aDictionary)
-            {
-                if (aKeyValuePair.Value != null && aKeyValuePair.Value.Count > 0)
-                    foreach (BHoMObject aBHoMObject in aKeyValuePair.Value)
-                        if (aBHoMObject != null && aBHoMObject.GetType() == type)
-                            aObjects.Add(aBHoMObject);
-            } 
+            if (ids == null)
+               Read(new Type[] { type }, aObjects);
+            else
+               Read(new Type[] { type }, aObjects, ids.Cast<string>().ToList());
 
             return aObjects;
         }
