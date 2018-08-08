@@ -11,5 +11,6 @@ namespace BH.Adapter.Revit
         Push,
         Pull,
         ConnectionCheck,
+        UpdateProperty,
     }
 }

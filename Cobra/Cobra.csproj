@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="CRUD\Pull.cs" />
     <Compile Include="CRUD\Push.cs" />
+    <Compile Include="CRUD\UpdateProperty.cs" />
     <Compile Include="Forms\UpdatePortsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -137,6 +138,10 @@
     <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
       <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
       <Name>Revit_Adapter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
+      <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
+      <Name>Revit_oM</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

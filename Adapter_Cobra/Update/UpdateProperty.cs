@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.oM.DataManipulation.Queries;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -11,6 +12,12 @@ namespace BH.UI.Revit.Adapter
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
+
+
+        public override int UpdateProperty(FilterQuery filter, string property, object newValue, Dictionary<string, object> config = null)
+        {
+            return base.UpdateProperty(filter, property, newValue, config);
+        }
 
         //public override int UpdateProperty(Type type, IEnumerable<object> ids, string property, object newValue)
         //{
