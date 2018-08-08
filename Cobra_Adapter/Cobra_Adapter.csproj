@@ -94,9 +94,9 @@
     <Compile Include="Update\UpdateProperty.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj">
+    <ProjectReference Include="..\Cobra_Engine\Cobra_Engine.csproj">
       <Project>{4dfaf9c8-9770-4e5a-818d-eb4dab665145}</Project>
-      <Name>Revit_Engine</Name>
+      <Name>Cobra_Engine</Name>
     </ProjectReference>
     <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
       <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
