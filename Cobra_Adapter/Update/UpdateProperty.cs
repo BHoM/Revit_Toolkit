@@ -8,6 +8,7 @@ using BH.oM.Adapters.Revit;
 using BH.oM.Base;
 using Autodesk.Revit.DB;
 using BH.Engine.Revit;
+using Autodesk.Revit.UI;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -22,7 +23,16 @@ namespace BH.UI.Revit.Adapter
             if (filter == null || filter.Type == null)
                 return -1;
 
-            return UpdateProperty(new List<Type> { filter.Type }, property, newValue, config);
+            int aResult = -1;
+
+            using (Transaction aTransaction = new Transaction(Document, "UpdateProperty"))
+            {
+                aTransaction.Start();
+                aResult = UpdateProperty(new List<Type> { filter.Type }, property, newValue, config);
+                aTransaction.Commit();
+            }
+
+            return aResult;
         }
 
         ///***************************************************/
@@ -43,13 +53,17 @@ namespace BH.UI.Revit.Adapter
                 return -1;
             }
 
+            if (string.IsNullOrEmpty(property))
+            {
+                Engine.Reflection.Compute.RecordError("Invalid property name.");
+                return -1;
+            }
+
             if (types.Count() < 1)
                 return 0;
 
-            Dictionary<Discipline, PullSettings> aDictionary_Discipline = new Dictionary<Discipline, PullSettings>();
-
             //Get Revit class types
-            List<Tuple<Type, List<BuiltInCategory>, PullSettings>> aTupleList = new List<Tuple<Type, List<BuiltInCategory>, PullSettings>>();
+            List<Tuple<Type, List<BuiltInCategory>, Discipline>> aTupleList = new List<Tuple<Type, List<BuiltInCategory>, Discipline>>();
             foreach (Type aType in types)
             {
                 if (aType == null)
@@ -61,21 +75,7 @@ namespace BH.UI.Revit.Adapter
                 if (Query.IsAssignableFromByFullName(aType, typeof(Element)))
                 {
                     if (aTupleList.Find(x => x.Item1 == aType) == null)
-                    {
-                        PullSettings aPullSettings = null;
-                        if (!aDictionary_Discipline.TryGetValue(Discipline.Environmental, out aPullSettings))
-                        {
-                            aPullSettings = new PullSettings();
-                            aPullSettings.ConvertUnits = true;
-                            aPullSettings.CopyCustomData = true;
-                            aPullSettings.RefObjects = new Dictionary<int, List<IBHoMObject>>();
-                            aPullSettings.Discipline = Discipline.Environmental;
-
-                            aDictionary_Discipline.Add(aPullSettings.Discipline, aPullSettings);
-                        }
-
-                        aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, PullSettings>(aType, new List<BuiltInCategory>(), aPullSettings));
-                    }
+                        aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType, new List<BuiltInCategory>(), Discipline.Environmental));
 
                 }
                 else if (Query.IsAssignableFromByFullName(aType, typeof(BHoMObject)))
@@ -89,24 +89,7 @@ namespace BH.UI.Revit.Adapter
 
                     foreach (Type aType_Temp in aTypes)
                         if (aTupleList.Find(x => x.Item1 == aType_Temp) == null)
-                        {
-                            PullSettings aPullSettings = null;
-                            Discipline aDiscipline = aType.Discipline();
-                            if (!aDictionary_Discipline.TryGetValue(aDiscipline, out aPullSettings))
-                            {
-                                aPullSettings = new PullSettings();
-                                aPullSettings.ConvertUnits = true;
-                                aPullSettings.CopyCustomData = true;
-                                aPullSettings.RefObjects = new Dictionary<int, List<IBHoMObject>>();
-                                aPullSettings.Discipline = aDiscipline;
-
-                                aDictionary_Discipline.Add(aPullSettings.Discipline, aPullSettings);
-                            }
-
-                            aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, PullSettings>(aType_Temp, aType.BuiltInCategories(), aPullSettings));
-                        }
-
-
+                            aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType_Temp, aType.BuiltInCategories(), aType.Discipline()));
                 }
                 else
                 {
@@ -118,57 +101,85 @@ namespace BH.UI.Revit.Adapter
             if (aTupleList == null || aTupleList.Count < 1)
                 return - 1;
 
-            foreach (Tuple<Type, List<BuiltInCategory>, PullSettings> aTuple in aTupleList)
+            int aCount = 0;
+            UpdatePropertySettings aUpdatePropertySettings = new UpdatePropertySettings()
             {
+                ParameterName = property,
+                Value = newValue,
+                ConvertUnits = true
+                
+            };
+
+            UIDocument aUIDocument = UIDocument;
+            RevitSettings aRevitSettings = RevitSettings;
+
+            foreach (Tuple<Type, List<BuiltInCategory>, Discipline> aTuple in aTupleList)
+            {
+                List<Element> aElementList = new List<Element>();
+
                 if (aTuple.Item1 == typeof(Document))
                 {
-                    //objects.Add(Document.ToBHoM(aTuple.Item3));
-                    continue;
+                    Element aElement = Document.ProjectInformation;
+                    if (Query.AllowElement(aRevitSettings, UIDocument, aElement))
+                        aElementList.Add(aElement);
                 }
-
-                FilteredElementCollector aFilteredElementCollector = null;
-                if (aTuple.Item2 == null || aTuple.Item2.Count < 1)
-                    aFilteredElementCollector = new FilteredElementCollector(Document).OfClass(aTuple.Item1);
                 else
-                    aFilteredElementCollector = new FilteredElementCollector(Document).OfClass(aTuple.Item1).WherePasses(new LogicalOrFilter(aTuple.Item2.ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)));
-
-                List<ElementId> aElementIdList = new List<ElementId>();
-                foreach (Element aElement in aFilteredElementCollector)
                 {
-                    if (aElement == null)
-                        continue;
+                    FilteredElementCollector aFilteredElementCollector = null;
+                    if (aTuple.Item2 == null || aTuple.Item2.Count < 1)
+                        aFilteredElementCollector = new FilteredElementCollector(Document).OfClass(aTuple.Item1);
+                    else
+                        aFilteredElementCollector = new FilteredElementCollector(Document).OfClass(aTuple.Item1).WherePasses(new LogicalOrFilter(aTuple.Item2.ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)));
 
-                    //if (uniqueIds == null || uniqueIds.Contains(aElement.UniqueId))
-                    //{
-                    //    aElementIdList.Add(aElement.Id);
-                    //    continue;
-                    //}
-
-                    if (RevitSettings != null && RevitSettings.SelectionSettings != null)
+                    foreach (Element aElement in aFilteredElementCollector)
                     {
-                        IEnumerable<string> aUniqueIds = RevitSettings.SelectionSettings.UniqueIds;
-                        if (aUniqueIds != null && aUniqueIds.Count() > 0 && aUniqueIds.Contains(aElement.UniqueId))
-                        {
-                            aElementIdList.Add(aElement.Id);
+                        if (aElement == null)
                             continue;
-                        }
 
-                        IEnumerable<int> aElementIds = RevitSettings.SelectionSettings.ElementIds;
-                        if (aElementIds != null && aElementIds.Count() > 0 && aElementIds.Contains(aElement.Id.IntegerValue))
-                        {
-                            aElementIdList.Add(aElement.Id);
-                            continue;
-                        }
+                        if (Query.AllowElement(aRevitSettings, UIDocument, aElement))
+                            aElementList.Add(aElement);
+
                     }
-
                 }
-                if (aElementIdList == null || aElementIdList.Count < 1)
+
+                if (aElementList == null || aElementList.Count == 0)
                     continue;
 
-                //Read(aElementIdList, objects, aTuple.Item3);
+                aCount += UpdateProperty(UIDocument, aElementList, aUpdatePropertySettings);
             }
 
-            return -1;
+            return aCount;
+        }
+
+        /***************************************************/
+
+        private static int UpdateProperty(UIDocument uIDocument, IEnumerable<Element> elements, UpdatePropertySettings updatePropertySettings)
+        {
+            if (updatePropertySettings == null)
+                return 0;
+
+            int aResult = 0;
+            foreach (Element aElement in elements)
+                aResult += UpdateProperty(uIDocument, aElement, updatePropertySettings);
+            return aResult;
+        }
+
+        /***************************************************/
+
+        private static int UpdateProperty(UIDocument uIDocument, Element element, UpdatePropertySettings updatePropertySettings)
+        {
+            if (updatePropertySettings == null)
+                return 0;
+
+            Parameter aParameter = element.LookupParameter(updatePropertySettings.ParameterName);
+            if (aParameter == null || aParameter.IsReadOnly)
+                return 0;
+
+            aParameter = Modify.SetParameter(aParameter, updatePropertySettings.Value, updatePropertySettings.ConvertUnits);
+            if (aParameter != null)
+                return 1;
+
+            return 0;
         }
 
         /***************************************************/
