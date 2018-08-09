@@ -1,4 +1,5 @@
 ﻿using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base;
 
 namespace BH.Engine.Revit
@@ -9,10 +10,13 @@ namespace BH.Engine.Revit
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static BHoMObject ToBHoMGrid(this Grid grid, bool copyCustomData = true, bool convertUnits = true)
+        internal static BHoMObject ToBHoMGrid(this Grid grid, PullSettings pullSettings = null)
         {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             Curve gridLine = grid.Curve;
-            oM.Architecture.Elements.Grid aGrid = Architecture.Elements.Create.Grid(gridLine.ToBHoM(convertUnits));
+            oM.Architecture.Elements.Grid aGrid = Architecture.Elements.Create.Grid(gridLine.ToBHoM(pullSettings));
             aGrid.Name = grid.Name;
             return aGrid;
         }

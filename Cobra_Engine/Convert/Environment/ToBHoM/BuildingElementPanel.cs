@@ -17,8 +17,11 @@ namespace BH.Engine.Revit
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this PlanarFace planarFace, bool convertUnits = true)
+        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this PlanarFace planarFace, PullSettings pullSettings = null)
         {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
             
             EdgeArrayArray aEdgeArrayArray = planarFace.EdgeLoops;
@@ -33,7 +36,7 @@ namespace BH.Engine.Revit
                 {
                     Curve aCurve = aEdge.AsCurve();
                     if (aCurve != null)
-                        aCurveList.Add(aCurve.ToBHoM(convertUnits));
+                        aCurveList.Add(aCurve.ToBHoM(pullSettings));
                 }
 
                 if (aCurveList != null && aCurveList.Count > 0)
@@ -48,22 +51,31 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this Element element, bool convertUnits = true)
+        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this Element element, PullSettings pullSettings = null)
         {
-            return ToBHoMBuildingElementPanels(element.get_Geometry(new Options()), convertUnits);
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
+            return ToBHoMBuildingElementPanels(element.get_Geometry(new Options()), pullSettings);
         }
 
         /***************************************************/
 
-        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this RoofBase roofBase, bool convertUnits = true)
+        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this RoofBase roofBase, PullSettings pullSettings = null)
         {
-            return ToBHoMBuildingElementPanels(roofBase.get_Geometry(new Options()), convertUnits);
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
+            return ToBHoMBuildingElementPanels(roofBase.get_Geometry(new Options()), pullSettings);
         }
 
         /***************************************************/
 
-        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this FamilyInstance familyInstance, bool convertUnits = true)
+        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
 
             //TODO: Get more accurate shape. Currently, Windows and doors goes as rectangular panel
@@ -85,11 +97,11 @@ namespace BH.Engine.Revit
             XYZ aXYZ_4 = aMiddle - aVector_Z - aVector_Y;
 
             List<oM.Geometry.Point> aPointList = new List<oM.Geometry.Point>();
-            aPointList.Add(aXYZ_1.ToBHoM(convertUnits));
-            aPointList.Add(aXYZ_2.ToBHoM(convertUnits));
-            aPointList.Add(aXYZ_3.ToBHoM(convertUnits));
-            aPointList.Add(aXYZ_4.ToBHoM(convertUnits));
-            aPointList.Add(aXYZ_1.ToBHoM(convertUnits));
+            aPointList.Add(aXYZ_1.ToBHoM(pullSettings));
+            aPointList.Add(aXYZ_2.ToBHoM(pullSettings));
+            aPointList.Add(aXYZ_3.ToBHoM(pullSettings));
+            aPointList.Add(aXYZ_4.ToBHoM(pullSettings));
+            aPointList.Add(aXYZ_1.ToBHoM(pullSettings));
 
             BuildingElementPanel aBuildingElementPanel = Create.BuildingElementPanel(new oM.Geometry.Polyline[] { Geometry.Create.Polyline(aPointList) });
             if (aBuildingElementPanel != null)
@@ -100,8 +112,11 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this GeometryElement geometryElement, bool convertUnits = true)
+        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this GeometryElement geometryElement, PullSettings pullSettings = null)
         {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
             foreach (GeometryObject aGeometryObject in geometryElement)
             {
@@ -113,13 +128,11 @@ namespace BH.Engine.Revit
                 if (aPlanarFace == null)
                     continue;
 
-                List<IBHoMObject> aBHoMObjectList = aPlanarFace.ToBHoM(Discipline.Environmental, convertUnits);
-                if (aBHoMObjectList == null || aBHoMObjectList.Count < 1)
+                List<BuildingElementPanel> aBuildingElementPanelList = aPlanarFace.ToBHoMBuildingElementPanels(pullSettings);
+                if (aBuildingElementPanelList == null || aBuildingElementPanelList.Count < 1)
                     continue;
 
-                List<BuildingElementPanel> aBuildingElementPanelList = aBHoMObjectList.Cast<BuildingElementPanel>().ToList();
-                if (aBuildingElementPanelList != null && aBuildingElementPanelList.Count > 0)
-                    aResult.AddRange(aBuildingElementPanelList);
+                aResult.AddRange(aBuildingElementPanelList);
             }
 
             return aResult;

@@ -7,6 +7,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Environment.Elements;
 using BH.oM.Geometry;
 using BH.Engine.Environment;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Engine.Revit
 {
@@ -16,10 +17,13 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static Element ToRevit(this BuildingElement buildingElement, Document document, bool copyCustomData = true, bool convertUnits = true)
+        internal static Element ToRevit(this BuildingElement buildingElement, Document document, PushSettings pushSettings = null)
         {
             if (buildingElement == null || buildingElement.BuildingElementProperties == null || document == null)
                 return null;
+
+            if (pushSettings == null)
+                pushSettings = PushSettings.Default;
 
             //Get Level
             Level aLevel = null;
@@ -55,9 +59,9 @@ namespace BH.Engine.Revit
                         BuildingElementPanel aBuildingElementPanel = buildingElement.BuildingElementGeometry as BuildingElementPanel;
 
                         if (aElementType != null)
-                            aElement = document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(convertUnits), aElementType as FloorType, aLevel, false);
+                            aElement = document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(pushSettings), aElementType as FloorType, aLevel, false);
                         else
-                            aElement = document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(convertUnits), false);
+                            aElement = document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(pushSettings), false);
                     }
                     aBuiltInParameters = new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM };
                     break;
@@ -69,7 +73,7 @@ namespace BH.Engine.Revit
                         BuildingElementPanel aBuildingElementPanel = buildingElement.BuildingElementGeometry as BuildingElementPanel;
                         ModelCurveArray aModelCurveArray = new ModelCurveArray();
                         if (aElementType != null)
-                            aElement = document.Create.NewFootPrintRoof(aBuildingElementPanel.PolyCurve.ToRevit(convertUnits), aLevel, aElementType as RoofType, out aModelCurveArray);
+                            aElement = document.Create.NewFootPrintRoof(aBuildingElementPanel.PolyCurve.ToRevit(pushSettings), aLevel, aElementType as RoofType, out aModelCurveArray);
                     }
                     break;
                 case BuildingElementType.Wall:
@@ -77,7 +81,7 @@ namespace BH.Engine.Revit
                     if (aICurve == null)
                         return null;
 
-                    aElement = Wall.Create(document, ToRevit(aICurve, convertUnits), aLevel.Id, false);
+                    aElement = Wall.Create(document, ToRevit(aICurve, pushSettings), aLevel.Id, false);
                     if (aElementType != null)
                         aElement.ChangeTypeId(aElementType.Id);
 
@@ -91,8 +95,8 @@ namespace BH.Engine.Revit
                     break;
             }
 
-            if (copyCustomData)
-                Modify.SetParameters(aElement, buildingElement, aBuiltInParameters, convertUnits);
+            if (pushSettings.CopyCustomData)
+                Modify.SetParameters(aElement, buildingElement, aBuiltInParameters, pushSettings.ConvertUnits);
 
             return aElement;
         }

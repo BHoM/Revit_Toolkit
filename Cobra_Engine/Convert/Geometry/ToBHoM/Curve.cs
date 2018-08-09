@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Engine.Revit
 {
@@ -11,15 +12,21 @@ namespace BH.Engine.Revit
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static oM.Geometry.ICurve ToBHoM(this Curve curve, bool convertUnits = true)
+        internal static oM.Geometry.ICurve ToBHoM(this Curve curve, PullSettings pullSettings = null)
         {
+            if (curve == null)
+                return null;
+
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             if (curve is Line)
-                return Geometry.Create.Line(ToBHoM(curve.GetEndPoint(0), convertUnits), ToBHoM(curve.GetEndPoint(1), convertUnits));
+                return Geometry.Create.Line(ToBHoM(curve.GetEndPoint(0), pullSettings), ToBHoM(curve.GetEndPoint(1), pullSettings));
 
             if (curve is Arc)
             {
                 Arc aArc = curve as Arc;
-                double radius = convertUnits ? UnitUtils.ConvertFromInternalUnits(aArc.Radius, DisplayUnitType.DUT_METERS) : aArc.Radius;
+                double radius = pullSettings.ConvertUnits ? UnitUtils.ConvertFromInternalUnits(aArc.Radius, DisplayUnitType.DUT_METERS) : aArc.Radius;
                 Plane plane = Plane.CreateByOriginAndBasis(aArc.Center, aArc.XDirection, aArc.YDirection);
                 double startAngle = aArc.XDirection.AngleOnPlaneTo(aArc.GetEndPoint(0) - aArc.Center, aArc.Normal);
                 double endAngle = aArc.XDirection.AngleOnPlaneTo(aArc.GetEndPoint(1) - aArc.Center, aArc.Normal);
@@ -27,60 +34,69 @@ namespace BH.Engine.Revit
                 {
                     startAngle -= 2 * Math.PI;
                 }
-                return Geometry.Create.Arc(ToBHoM(plane, convertUnits), radius, startAngle, endAngle);
+                return Geometry.Create.Arc(ToBHoM(plane, pullSettings), radius, startAngle, endAngle);
             }
-
-            //if (curve is NurbSpline)
-            //{
-            //    NurbSpline aNurbSpline = curve as NurbSpline;
-            //    return Geometry.Create.NurbCurve(aNurbSpline.CtrlPoints.Cast<XYZ>().ToList().ConvertAll(x => ToBHoM(x, convertUnits)), aNurbSpline.Weights.Cast<double>(), aNurbSpline.Degree);
-            //}
-
-            //if (curve is Ellipse)
-            //{
-            //    Ellipse aEllipse = curve as Ellipse;
-            //    return Geometry.Create.Ellipse(ToBHoM(aEllipse.Center, convertUnits), aEllipse.RadiusX, aEllipse.RadiusY);
-            //}
             
             return null;
         }
 
         /***************************************************/
 
-        internal static List<oM.Geometry.ICurve> ToBHoM(this List<Curve> curves, bool convertUnits = true)
+        internal static List<oM.Geometry.ICurve> ToBHoM(this List<Curve> curves, PullSettings pullSettings = null)
         {
-            return curves.Select(c => c.ToBHoM(convertUnits)).ToList();
+            if (curves == null)
+                return null;
+
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
+            return curves.Select(c => c.ToBHoM(pullSettings)).ToList();
         }
 
         /***************************************************/
 
-        internal static oM.Geometry.ICurve ToBHoM(this LocationCurve locationCurve, bool convertUnits = true)
+        internal static oM.Geometry.ICurve ToBHoM(this LocationCurve locationCurve, PullSettings pullSettings = null)
         {
-            return ToBHoM(locationCurve.Curve, convertUnits);
+            if (locationCurve == null)
+                return null;
+
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
+            return ToBHoM(locationCurve.Curve, pullSettings);
         }
 
         /***************************************************/
 
-        internal static List<oM.Geometry.ICurve> ToBHoM(this CurveArray curves, bool convertUnits = true)
+        internal static List<oM.Geometry.ICurve> ToBHoM(this CurveArray curves, PullSettings pullSettings = null)
         {
+            if (curves == null)
+                return null;
+
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
             for (int i = 0; i < curves.Size; i++)
             {
-                result.Add(curves.get_Item(i).ToBHoM(convertUnits));
+                result.Add(curves.get_Item(i).ToBHoM(pullSettings));
             }
             return result;
         }
 
         /***************************************************/
 
-        internal static oM.Geometry.PolyCurve ToBHoM(this CurveLoop curveLoop, bool convertUnits = true)
+        internal static oM.Geometry.PolyCurve ToBHoM(this CurveLoop curveLoop, PullSettings pullSettings = null)
         {
             if (curveLoop == null)
                 return null;
 
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             List<oM.Geometry.ICurve> aICurveList = new List<oM.Geometry.ICurve>();
             foreach (Curve aCurve in curveLoop)
-                aICurveList.Add(aCurve.ToBHoM(convertUnits));
+                aICurveList.Add(aCurve.ToBHoM(pullSettings));
 
             return Geometry.Create.PolyCurve(aICurveList);
         }

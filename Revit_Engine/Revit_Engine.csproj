@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Create\RevitSettings.cs" />
+    <Compile Include="Create\PullSettings.cs" />
     <Compile Include="Create\SelectionSettings.cs" />
     <Compile Include="Create\WorksetSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

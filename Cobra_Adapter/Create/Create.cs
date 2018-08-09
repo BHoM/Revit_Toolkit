@@ -9,7 +9,7 @@ using BH.Engine.Revit;
 using BH.oM.Base;
 
 using Autodesk.Revit.DB;
-
+using BH.oM.Adapters.Revit;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -54,6 +54,13 @@ namespace BH.UI.Revit.Adapter
             {
                 aTransaction.Start();
 
+                PushSettings aPushSettings = new PushSettings()
+                {
+                    Replace = replaceAll,
+                    ConvertUnits = true,
+                    CopyCustomData = true
+                };
+
                 foreach (IBHoMObject aBHOMObject in objects)
                 {
                     if(aBHOMObject == null)
@@ -68,14 +75,14 @@ namespace BH.UI.Revit.Adapter
                             aBHOMObject is BuildingElement || 
                             aBHOMObject is BuildingElementProperties)
                         {
-                            Create(aBHOMObject as dynamic, true, replaceAll);
+                            Create(aBHOMObject as dynamic, aPushSettings);
                         }  
                         else
                         {
                             if (replaceAll)
                                 Delete(aBHOMObject as BHoMObject);
 
-                            Engine.Revit.Convert.ToRevit(aBHOMObject as dynamic, Document, true, true);
+                            Engine.Revit.Convert.ToRevit(aBHOMObject as dynamic, Document, aPushSettings);
                         }
                             
                     }

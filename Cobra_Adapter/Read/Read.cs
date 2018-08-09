@@ -29,14 +29,14 @@ namespace BH.UI.Revit.Adapter
         /// Generates BHoMObjects from Revit Elements by given BuiltInCategory
         /// </summary>
         /// <param name="builtInCategory">Revit BuiltInCategory</param>
-        /// <param name="discipline">BHoM Discipline</param>
+        /// <param name="pullSettings">BHoM PullSettings</param>
         /// <param name="objects">BHoM Objects</param>
         /// <search>
         /// RevitAdapter, Read, Revit, BuiltInCategory, BHoMObject, BHoM, BHoMObjects
         /// </search>
-        protected void Read(BuiltInCategory builtInCategory, Discipline discipline, List<IBHoMObject> objects)
+        protected void Read(BuiltInCategory builtInCategory, List<IBHoMObject> objects, PullSettings pullSettings = null)
         {
-            Read(new BuiltInCategory[] { builtInCategory }, discipline, objects);
+            Read(new BuiltInCategory[] { builtInCategory }, objects, pullSettings);
         }
 
         /***************************************************/
@@ -45,12 +45,12 @@ namespace BH.UI.Revit.Adapter
         /// Generates BHoMObjects from Revit Elements by given BuiltInCategory
         /// </summary>
         /// <param name="builtInCategories">Revit BuiltInCategories collection</param>
-        /// <param name="discipline">BHoM Discipline</param>
+        /// <param name="pullSettings">BHoM PullSettings</param>
         /// <param name="objects">BHoM Objects</param>
         /// <search>
         /// RevitAdapter, Read, Revit, BuiltInCategory, BHoMObject, BHoM, BHoMObjects, BuiltInCategories
         /// </search>
-        protected void Read(IEnumerable<BuiltInCategory> builtInCategories, Discipline discipline, List<IBHoMObject> objects)
+        protected void Read(IEnumerable<BuiltInCategory> builtInCategories, List<IBHoMObject> objects, PullSettings pullSettings = null)
         {
             if (Document == null)
             {
@@ -67,9 +67,12 @@ namespace BH.UI.Revit.Adapter
             if (builtInCategories.Count() < 1)
                 return;
 
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             ICollection<ElementId> aElementIdList = new FilteredElementCollector(Document).WherePasses(new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
 
-            Read(aElementIdList, discipline, objects);
+            Read(aElementIdList, objects, pullSettings);
         }
 
         /***************************************************/
@@ -80,10 +83,11 @@ namespace BH.UI.Revit.Adapter
         /// <param name="elementId">ElementId of Revit Element to be read</param>
         /// <param name="discipline">BHoM Discipline</param>
         /// <param name="objects">BHoM Objects</param>
+        /// <param name="pullSettings">BHoM PullSettings</param>
         /// <search>
         /// RevitAdapter, Read, Revit, ElementId, BHoMObjects, BHoM
         /// </search>
-        protected void Read(ElementId elementId, Discipline discipline, List<IBHoMObject> objects, Dictionary<ElementId, List<IBHoMObject>> refObjects)
+        protected void Read(ElementId elementId, List<IBHoMObject> objects, PullSettings pullSettings = null)
         {
             if (Document == null)
             {
@@ -111,27 +115,30 @@ namespace BH.UI.Revit.Adapter
             if (!Query.AllowElement(RevitSettings, UIDocument, aElement))
                 return;
 
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             List<IBHoMObject> aResult = null;
             if (aElement is Floor)
             {
-                aResult = Engine.Revit.Convert.ToBHoM(aElement as Floor, refObjects, discipline, true, true);
+                aResult = Engine.Revit.Convert.ToBHoM(aElement as Floor, pullSettings);
             }
             else if (aElement is RoofBase)
             {
-                aResult = Engine.Revit.Convert.ToBHoM(aElement as RoofBase, discipline, true, true);
+                aResult = Engine.Revit.Convert.ToBHoM(aElement as RoofBase, pullSettings);
             }
             else if (aElement is Wall)
             {
-                aResult = Engine.Revit.Convert.ToBHoM(aElement as Wall, refObjects, discipline, true, true);
+                aResult = Engine.Revit.Convert.ToBHoM(aElement as Wall, pullSettings);
             }
             else if (aElement is FamilyInstance)
             {
-                aResult = new List<IBHoMObject> { Engine.Revit.Convert.ToBHoM(aElement as FamilyInstance, refObjects, discipline, true, true) };
+                aResult = new List<IBHoMObject> { Engine.Revit.Convert.ToBHoM(aElement as FamilyInstance, pullSettings) };
             }
             else if (aElement is SpatialElement)
             {
                 aResult = new List<IBHoMObject>();
-                aResult.Add(Engine.Revit.Convert.ToBHoM(aElement as SpatialElement, refObjects, discipline, true, true));
+                aResult.Add(Engine.Revit.Convert.ToBHoM(aElement as SpatialElement, pullSettings));
             }
             else
             {
@@ -143,7 +150,7 @@ namespace BH.UI.Revit.Adapter
                 {
                     try
                     {
-                        aObject = Engine.Revit.Convert.ToBHoM(aElement as dynamic, discipline, true, true);
+                        aObject = Engine.Revit.Convert.ToBHoM(aElement as dynamic, pullSettings);
                     }
                     catch (Exception aException)
                     {
@@ -190,13 +197,13 @@ namespace BH.UI.Revit.Adapter
         /// Generates BHoMObjects from Revit Elements by given ElementIds
         /// </summary>
         /// <param name="elementIds">ElementIds of Revit Elements to be read</param>
-        /// <param name="discipline">BHoM Discipline</param>
+        /// <param name="pullSettings">BHoM PullSettings</param>
         /// <param name="objects">BHoM Objects</param>
         /// <returns name="BHoMObjects">BHoMObject collection</returns>
         /// <search>
         /// RevitAdapter, Read, Revit, ElementId, BHoMObject, BHoM, BHoMObjects
         /// </search>
-        protected void Read(IEnumerable<ElementId> elementIds, Discipline discipline, List<IBHoMObject> objects)
+        protected void Read(IEnumerable<ElementId> elementIds, List<IBHoMObject> objects, PullSettings pullSettings = null)
         {
             if (Document == null)
             {
@@ -213,6 +220,9 @@ namespace BH.UI.Revit.Adapter
             if (elementIds.Count() < 1)
                 return;
 
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             Dictionary<ElementId, List<IBHoMObject>> refObjects = new Dictionary<ElementId, List<IBHoMObject>>();
             foreach (ElementId aElementId in elementIds)
             {
@@ -224,7 +234,7 @@ namespace BH.UI.Revit.Adapter
 
                 try
                 {
-                    Read(aElementId, discipline, objects, refObjects);
+                    Read(aElementId, objects, pullSettings);
                 }
                 catch (Exception e)
                 {
@@ -261,8 +271,10 @@ namespace BH.UI.Revit.Adapter
             if (types.Count() < 1)
                 return;
 
+            Dictionary<Discipline, PullSettings> aDictionary_Discipline = new Dictionary<Discipline, PullSettings>();
+
             //Get Revit class types
-            List<Tuple<Type, List<BuiltInCategory>, Discipline>> aTupleList = new List<Tuple<Type, List<BuiltInCategory>, Discipline>>();
+            List<Tuple<Type, List<BuiltInCategory>, PullSettings>> aTupleList = new List<Tuple<Type, List<BuiltInCategory>, PullSettings>>();
             foreach (Type aType in types)
             {
                 if(aType == null)
@@ -274,7 +286,22 @@ namespace BH.UI.Revit.Adapter
                 if (Query.IsAssignableFromByFullName(aType, typeof(Element)))
                 {
                     if (aTupleList.Find(x => x.Item1 == aType) == null)
-                        aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType, new List<BuiltInCategory>(), Discipline.Environmental));
+                    {
+                        PullSettings aPullSettings = null;
+                        if(!aDictionary_Discipline.TryGetValue(Discipline.Environmental, out aPullSettings))
+                        {
+                            aPullSettings = new PullSettings();
+                            aPullSettings.ConvertUnits = true;
+                            aPullSettings.CopyCustomData = true;
+                            aPullSettings.RefObjects = new Dictionary<int, List<IBHoMObject>>();
+                            aPullSettings.Discipline = Discipline.Environmental;
+
+                            aDictionary_Discipline.Add(aPullSettings.Discipline, aPullSettings);
+                        }
+
+                        aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, PullSettings>(aType, new List<BuiltInCategory>(), aPullSettings));
+                    }
+                        
                 }
                 else if (Query.IsAssignableFromByFullName(aType, typeof(BHoMObject)))
                 {
@@ -287,7 +314,23 @@ namespace BH.UI.Revit.Adapter
 
                     foreach (Type aType_Temp in aTypes)
                         if (aTupleList.Find(x => x.Item1 == aType_Temp) == null)
-                            aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType_Temp, aType.BuiltInCategories(), aType.Discipline()));
+                        {
+                            PullSettings aPullSettings = null;
+                            Discipline aDiscipline = aType.Discipline();
+                            if (!aDictionary_Discipline.TryGetValue(aDiscipline, out aPullSettings))
+                            {
+                                aPullSettings = new PullSettings();
+                                aPullSettings.ConvertUnits = true;
+                                aPullSettings.CopyCustomData = true;
+                                aPullSettings.RefObjects = new Dictionary<int, List<IBHoMObject>>();
+                                aPullSettings.Discipline = aDiscipline;
+
+                                aDictionary_Discipline.Add(aPullSettings.Discipline, aPullSettings);
+                            }
+
+                            aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, PullSettings>(aType_Temp, aType.BuiltInCategories(), aPullSettings));
+                        }
+                            
 
                 }
                 else
@@ -300,11 +343,11 @@ namespace BH.UI.Revit.Adapter
             if (aTupleList == null || aTupleList.Count < 1)
                 return;
 
-            foreach (Tuple<Type, List<BuiltInCategory>, Discipline> aTuple in aTupleList)
+            foreach (Tuple<Type, List<BuiltInCategory>, PullSettings> aTuple in aTupleList)
             {
                 if(aTuple.Item1 == typeof(Document))
                 {
-                    objects.Add(Document.ToBHoM(aTuple.Item3, true));
+                    objects.Add(Document.ToBHoM(aTuple.Item3));
                     continue;
                 }
 
@@ -347,7 +390,7 @@ namespace BH.UI.Revit.Adapter
                 if (aElementIdList == null || aElementIdList.Count < 1)
                     continue;
 
-                Read(aElementIdList, aTuple.Item3, objects);
+                Read(aElementIdList, objects, aTuple.Item3);
             }
         }
 
