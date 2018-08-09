@@ -1,6 +1,6 @@
-﻿using BH.oM.Adapters.Revit;
+﻿using BH.oM.Revit;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Engine.Revit
 {
     public static partial class Create
     {

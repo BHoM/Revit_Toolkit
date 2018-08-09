@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Adapters.Revit;
+﻿using System.Collections.Generic;
+using BH.oM.Revit;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Engine.Revit
 {
     public static partial class Create
     {

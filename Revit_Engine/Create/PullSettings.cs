@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using BH.oM.Base;
+using BH.oM.Revit;
+using System.Collections.Generic;
 
-using BH.oM.Adapters.Revit;
-using BH.oM.Base;
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.Engine.Revit
 {
     public static partial class Create
     {

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections;
 
 namespace BH.Adapter.Revit
 {
@@ -19,5 +18,7 @@ namespace BH.Adapter.Revit
 
             return false;
         }
+
+        /***************************************************/
     }
 }

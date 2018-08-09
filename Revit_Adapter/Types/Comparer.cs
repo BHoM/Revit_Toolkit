@@ -1,9 +1,5 @@
-﻿using BH.Engine.Base.Objects;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BH.Adapter.Revit
 {
@@ -40,9 +36,7 @@ namespace BH.Adapter.Revit
             //{typeof(Material), new BHoMObjectNameComparer() },
             //{typeof(LinkConstraint), new BHoMObjectNameComparer() },
         };
-
-
+        
         /***************************************************/
     }
-
 }

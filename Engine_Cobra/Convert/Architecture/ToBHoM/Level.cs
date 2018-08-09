@@ -1,0 +1,30 @@
+﻿using Autodesk.Revit.DB;
+using BH.oM.Base;
+using BH.oM.Revit;
+
+namespace BH.UI.Cobra.Engine
+{
+    public static partial class Convert
+    {
+        /***************************************************/
+        /****             Internal methods              ****/
+        /***************************************************/
+
+        internal static BHoMObject ToBHoMLevel(this Level Level, PullSettings pullSettings = null)
+        {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
+            oM.Architecture.Elements.Level aLevel = BH.Engine.Architecture.Elements.Create.Level(ToSI(Level.ProjectElevation, UnitType.UT_Length));
+            aLevel.Name = Level.Name;
+
+            aLevel = Modify.SetIdentifiers(aLevel, Level) as oM.Architecture.Elements.Level;
+            if (pullSettings.CopyCustomData)
+                aLevel = Modify.SetCustomData(aLevel, Level, pullSettings.ConvertUnits) as oM.Architecture.Elements.Level;
+
+            return aLevel;
+        }
+
+        /***************************************************/
+    }
+}
