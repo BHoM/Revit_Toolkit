@@ -73,7 +73,7 @@ namespace BH.UI.Cobra.Engine
                     List<oM.Geometry.ICurve> profileCurves = new List<oM.Geometry.ICurve>();
                     if (familyInstance.HasSweptProfile())
                     {
-                        profileCurves = familyInstance.GetSweptProfile().GetSweptProfile().Curves.ToBHoM();
+                        profileCurves = familyInstance.GetSweptProfile().GetSweptProfile().Curves.ToBHoM(pullSettings);
                     }
                     else
                     {
@@ -90,7 +90,7 @@ namespace BH.UI.Cobra.Engine
                                         {
                                             foreach (Edge c in curveArray)
                                             {
-                                                profileCurves.Add(c.AsCurve().ToBHoM());
+                                                profileCurves.Add(c.AsCurve().ToBHoM(pullSettings));
                                             }
                                         }
                                         break;

@@ -21,7 +21,7 @@ namespace BH.UI.Cobra.Engine
 
             if (wall.GetAnalyticalModel() != null)
             {
-                List<oM.Geometry.ICurve> wallCurves = wall.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList().ToBHoM();
+                List<oM.Geometry.ICurve> wallCurves = wall.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList().ToBHoM(pullSettings);
 
                 foreach (oM.Geometry.ICurve c in wallCurves)
                 {
@@ -97,7 +97,7 @@ namespace BH.UI.Cobra.Engine
 
             if (floor.GetAnalyticalModel() != null)
             {
-                List<oM.Geometry.ICurve> floorCurves = floor.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList().ToBHoM();
+                List<oM.Geometry.ICurve> floorCurves = floor.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList().ToBHoM(pullSettings);
                 
                 foreach (oM.Geometry.ICurve c in floorCurves)
                 {
