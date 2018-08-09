@@ -16,8 +16,7 @@ namespace BH.UI.Cobra.Engine
 
         public static List<IBHoMObject> GetEnergyAnalysisModel(this Document document, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
                 
             if(pullSettings.RefObjects == null)
                 pullSettings.RefObjects = new Dictionary<int, List<IBHoMObject>>();

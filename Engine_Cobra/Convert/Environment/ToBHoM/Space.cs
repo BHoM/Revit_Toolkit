@@ -16,8 +16,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static Space ToBHoMSpace(this SpatialElement spatialElement, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             SpatialElementBoundaryOptions aSpatialElementBoundaryOptions = new SpatialElementBoundaryOptions();
             aSpatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
@@ -35,8 +34,7 @@ namespace BH.UI.Cobra.Engine
             if (spatialElement == null || spatialElementBoundaryOptions == null)
                 return new Space();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             Document aDocument = spatialElement.Document;
 
@@ -90,8 +88,7 @@ namespace BH.UI.Cobra.Engine
             if (!SpatialElementGeometryCalculator.CanCalculateGeometry(spatialElement))
                 return new Space();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             SpatialElementGeometryResults aSpatialElementGeometryResults = spatialElementGeometryCalculator.CalculateSpatialElementGeometry(spatialElement);
 
@@ -189,6 +186,8 @@ namespace BH.UI.Cobra.Engine
         {
             if (energyAnalysisSpace == null)
                 return new Space();
+
+            pullSettings.DefaultIfNull();
 
             SpatialElement aSpatialElement = Query.Element(energyAnalysisSpace.Document, energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
 

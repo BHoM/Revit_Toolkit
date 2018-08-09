@@ -16,8 +16,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static FramingElement ToBHoMFramingElement(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             oM.Geometry.Line barCurve = null;
             bool nonlinear = false;

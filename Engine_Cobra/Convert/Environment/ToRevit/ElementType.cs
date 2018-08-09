@@ -24,8 +24,7 @@ namespace BH.UI.Cobra.Engine
             if (aElementTypeList == null || aElementTypeList.Count < 1)
                 return null;
 
-            if (pushSettings == null)
-                pushSettings = PushSettings.Default;
+            pushSettings.DefaultIfNull();
 
             ElementType aElementType = null;
             aElementType = aElementTypeList.First() as ElementType;

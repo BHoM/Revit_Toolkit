@@ -17,8 +17,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static List<PanelPlanar> ToBHoMPanelPlanar(this Wall wall, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             IProperty2D aProperty2D = null;
             if (pullSettings.RefObjects != null)
@@ -56,8 +55,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static List<PanelPlanar> ToBHoMPanelPlanar(this Floor floor, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             IProperty2D aProperty2D = null;
             if (pullSettings.RefObjects != null)

@@ -19,8 +19,7 @@ namespace BH.UI.Cobra.Engine
         {
             ISectionProperty aSectionProperty = null;
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
             
             oM.Common.Materials.Material aMaterial = null;
             bool materialFound = false;

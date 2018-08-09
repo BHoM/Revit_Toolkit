@@ -12,8 +12,7 @@ namespace BH.UI.Cobra.Engine
 
         public static Element ToRevit(this BHoMObject bHoMObject, Document document, PushSettings pushSettings = null)
         {
-            if (pushSettings == null)
-                pushSettings = PushSettings.Default;
+            pushSettings.DefaultIfNull();
 
             return ToRevit(bHoMObject as dynamic, document, pushSettings);
         }

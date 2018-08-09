@@ -18,8 +18,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static BuildingElement ToBHoMBuildingElement(this Element element, BuildingElementPanel buildingElementPanel, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             ElementType aElementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
             BuildingElementProperties aBuildingElementProperties = null;
@@ -68,8 +67,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static BuildingElement ToBHoMBuildingElement(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             BuildingElementType? aBuildingElementType = Query.BuildingElementType((BuiltInCategory)familyInstance.Category.Id.IntegerValue);
             if (!aBuildingElementType.HasValue)
@@ -85,8 +83,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static BuildingElement ToBHoMBuildingElement(this Wall wall, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoM(pullSettings) as BuildingElementProperties;
 
@@ -103,8 +100,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisSurface energyAnalysisSurface, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             BuildingElementPanel aBuildingElementPanel = null;
             if (energyAnalysisSurface != null)
@@ -191,8 +187,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             BuildingElementPanel aBuildingElementPanel = null;
             if (energyAnalysisOpening != null)
@@ -268,8 +263,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static List<BuildingElement> ToBHoMBuildingElements(this Ceiling ceiling, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             List<BuildingElement> aResult = new List<BuildingElement>();
             BuildingElementProperties aBuildingElementProperties = (ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType).ToBHoM(pullSettings) as BuildingElementProperties;
@@ -290,8 +284,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static List<BuildingElement> ToBHoMBuildingElements(this Floor floor, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             List<BuildingElement> aResult = new List<BuildingElement>();
             BuildingElementProperties aBuildingElementProperties = floor.FloorType.ToBHoMBuildingElementProperties(pullSettings);
@@ -312,8 +305,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static List<BuildingElement> ToBHoMBuildingElements(this RoofBase roofBase, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             List<BuildingElement> aResult = new List<BuildingElement>();
             BuildingElementProperties aBuildingElementProperties = roofBase.RoofType.ToBHoMBuildingElementProperties(pullSettings);
