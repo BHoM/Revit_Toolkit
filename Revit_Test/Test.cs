@@ -57,7 +57,7 @@ namespace Revit_Test
             List<IBHoMObject> aBHoMObjectList = null;
 
             RevitSettings aRevitSetting = new RevitSettings();
-            //aRevitSetting.SelectionSettings.ElementIds = new List<int>() { 2323 };
+            aRevitSetting.SelectionSettings.ElementIds = new List<int>() { 2354 };
             //aRevitSetting.WorksetSettings.WorksetIds = new List<int>() { 0 };
 
             pRevitInternalAdapter.RevitSettings = aRevitSetting;
@@ -69,9 +69,11 @@ namespace Revit_Test
             aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
             aBHoMObjectList = pRevitInternalAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
-            pRevitInternalAdapter.Delete(aBHoMObjectList.Cast<BHoMObject>());
+            //pRevitInternalAdapter.Delete(aBHoMObjectList.Cast<BHoMObject>());
 
-            pRevitInternalAdapter.Push(aBHoMObjectList);
+            pRevitInternalAdapter.UpdateProperty(aFilterQuery, "Structural", true);
+
+            //pRevitInternalAdapter.Push(aBHoMObjectList);
 
             //aFilterQuery = new FilterQuery() { Type = typeof(Space) };
             //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
