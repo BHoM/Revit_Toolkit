@@ -15,8 +15,7 @@ namespace BH.UI.Cobra.Engine
 
         public static FamilyInstance ToRevit(this FramingElement framingElement, Document document, PushSettings pushSettings = null)
         {
-            if (pushSettings == null)
-                pushSettings = PushSettings.Default;
+            pushSettings.DefaultIfNull();
 
             return framingElement.ToRevitColumn(document, pushSettings);
         }
@@ -28,8 +27,7 @@ namespace BH.UI.Cobra.Engine
             if (framingElement == null || document == null)
                 return null;
 
-            if (pushSettings == null)
-                pushSettings = PushSettings.Default;
+            pushSettings.DefaultIfNull();
 
             object aCustomDataValue = null;
 

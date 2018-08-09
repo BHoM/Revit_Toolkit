@@ -10,6 +10,31 @@ namespace BH.UI.Cobra.Engine
     public static partial class Compute
     {
         /***************************************************/
+        /****               Public methods              ****/
+        /***************************************************/
+
+        public static void DefaultIfNull(this PullSettings pullSettings)
+        {
+            if (pullSettings == null)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("Pull settings are not set. Default settings are used.");
+                pullSettings = PullSettings.Default;
+            }
+        }
+
+        /***************************************************/
+
+        public static void DefaultIfNull(this PushSettings pushSettings)
+        {
+            if (pushSettings == null)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("Push settings are not set. Default settings are used.");
+                pushSettings = PushSettings.Default;
+            }
+        }
+
+
+        /***************************************************/
         /****             Internal methods              ****/
         /***************************************************/
 
@@ -42,28 +67,6 @@ namespace BH.UI.Cobra.Engine
                 ElementId revitId = obj.ElementId();
                 if (revitId != null) warning += string.Format(" Revit ElementId: {0}.", revitId.IntegerValue);
                 BH.Engine.Reflection.Compute.RecordWarning(warning);
-            }
-        }
-
-        /***************************************************/
-
-        internal static void DefaultIfNull(this PullSettings pullSettings)
-        {
-            if (pullSettings == null)
-            {
-                BH.Engine.Reflection.Compute.RecordWarning("Pull settings are not set. Default settings are used.");
-                pullSettings = PullSettings.Default;
-            }
-        }
-
-        /***************************************************/
-
-        internal static void DefaultIfNull(this PushSettings pushSettings)
-        {
-            if (pushSettings == null)
-            {
-                BH.Engine.Reflection.Compute.RecordWarning("Push settings are not set. Default settings are used.");
-                pushSettings = PushSettings.Default;
             }
         }
 

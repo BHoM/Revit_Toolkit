@@ -20,8 +20,7 @@ namespace BH.UI.Cobra.Adapter
                 return false;
             }
 
-            if (pushSettings == null)
-                pushSettings = PushSettings.Default;
+            pushSettings.DefaultIfNull();
 
             if (pushSettings.Replace)
                 Delete(level);

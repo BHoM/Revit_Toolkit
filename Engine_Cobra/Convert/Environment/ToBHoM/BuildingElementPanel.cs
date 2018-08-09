@@ -15,8 +15,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this PlanarFace planarFace, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
             
@@ -49,8 +48,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this Element element, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             return ToBHoMBuildingElementPanels(element.get_Geometry(new Options()), pullSettings);
         }
@@ -59,8 +57,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this RoofBase roofBase, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             return ToBHoMBuildingElementPanels(roofBase.get_Geometry(new Options()), pullSettings);
         }
@@ -69,8 +66,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
 
@@ -110,8 +106,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this GeometryElement geometryElement, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
             foreach (GeometryObject aGeometryObject in geometryElement)

@@ -13,8 +13,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static oM.Geometry.Polyline ToBHoM(this Polyloop polyloop, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             IList<XYZ> aXYZs = polyloop.GetPoints();
             if (aXYZs == null)

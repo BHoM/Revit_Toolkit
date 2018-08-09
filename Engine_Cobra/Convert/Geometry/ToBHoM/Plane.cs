@@ -14,8 +14,7 @@ namespace BH.UI.Cobra.Engine
             if (plane == null)
                 return null;
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             return BH.Engine.Geometry.Create.CoordinateSystem(ToBHoM(plane.Origin, pullSettings), ToBHoMVector(plane.XVec, pullSettings), ToBHoMVector(plane.YVec, pullSettings));
         }
