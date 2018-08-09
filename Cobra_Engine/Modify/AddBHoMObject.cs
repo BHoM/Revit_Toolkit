@@ -13,26 +13,26 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Dictionary<ElementId, List<IBHoMObject>> AddBHoMObject(this Dictionary<ElementId, List<IBHoMObject>> objects, IBHoMObject bHoMObject)
+        public static Dictionary<int, List<IBHoMObject>> AddBHoMObject(this Dictionary<int, List<IBHoMObject>> objects, IBHoMObject bHoMObject)
         {
             if (bHoMObject == null && bHoMObject == null)
                 return null;
 
-            Dictionary<ElementId, List<IBHoMObject>> aResult = null;
+            Dictionary<int, List<IBHoMObject>> aResult = null;
             if (objects == null)
-                aResult = new Dictionary<ElementId, List<IBHoMObject>>();
+                aResult = new Dictionary<int, List<IBHoMObject>>();
             else
-                aResult = new Dictionary<ElementId, List<IBHoMObject>>(objects);
+                aResult = new Dictionary<int, List<IBHoMObject>>(objects);
 
             if (bHoMObject == null)
-                return new Dictionary<ElementId, List<IBHoMObject>>(objects);
+                return new Dictionary<int, List<IBHoMObject>>(objects);
 
             ElementId aElementId = Query.ElementId(bHoMObject);
             if (aElementId == null)
                 aElementId = ElementId.InvalidElementId;
 
             List<IBHoMObject> aBHoMObjectList = null;
-            if (aResult.TryGetValue(aElementId, out aBHoMObjectList))
+            if (aResult.TryGetValue(aElementId.IntegerValue, out aBHoMObjectList))
             {
                 if (aBHoMObjectList == null)
                     aBHoMObjectList = new List<IBHoMObject>();
@@ -42,7 +42,7 @@ namespace BH.Engine.Revit
             }
             else
             {
-                aResult.Add(aElementId, new List<IBHoMObject>() { bHoMObject });
+                aResult.Add(aElementId.IntegerValue, new List<IBHoMObject>() { bHoMObject });
             }
 
             return aResult;

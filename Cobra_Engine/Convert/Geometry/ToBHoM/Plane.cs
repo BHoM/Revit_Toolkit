@@ -1,4 +1,5 @@
 ﻿using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Engine.Revit
 {
@@ -8,12 +9,15 @@ namespace BH.Engine.Revit
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static oM.Geometry.CoordinateSystem ToBHoM(this Plane plane, bool convertUnits = true)
+        internal static oM.Geometry.CoordinateSystem ToBHoM(this Plane plane, PullSettings pullSettings = null)
         {
             if (plane == null)
                 return null;
 
-            return Geometry.Create.CoordinateSystem(ToBHoM(plane.Origin, convertUnits), ToBHoMVector(plane.XVec, convertUnits), ToBHoMVector(plane.YVec, convertUnits));
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
+            return Geometry.Create.CoordinateSystem(ToBHoM(plane.Origin, pullSettings), ToBHoMVector(plane.XVec, pullSettings), ToBHoMVector(plane.YVec, pullSettings));
         }
 
         /***************************************************/

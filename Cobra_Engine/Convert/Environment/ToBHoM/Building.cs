@@ -6,7 +6,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Properties;
-
+using BH.oM.Adapters.Revit;
 
 namespace BH.Engine.Revit
 {
@@ -16,8 +16,11 @@ namespace BH.Engine.Revit
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static Building ToBHoMBuilding(this Document document, bool copyCustomData = true, bool convertUnits = true)
+        internal static Building ToBHoMBuilding(this Document document, PullSettings pullSettings = null)
         {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             double aElevation = 0;
             double aLongitude = 0;
             double aLatitude = 0;
@@ -34,7 +37,7 @@ namespace BH.Engine.Revit
                 aPlaceName = document.SiteLocation.PlaceName;
                 aWeatherStationName = document.SiteLocation.WeatherStationName;
 
-                if (convertUnits)
+                if (pullSettings.ConvertUnits)
                 {
                     aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
                     aLongitude = UnitUtils.ConvertFromInternalUnits(aLongitude, DisplayUnitType.DUT_METERS);
@@ -72,7 +75,7 @@ namespace BH.Engine.Revit
             };
 
             aBuilding = Modify.SetIdentifiers(aBuilding, document.ProjectInformation) as Building;
-            if (copyCustomData)
+            if (pullSettings.CopyCustomData)
             {
                 aBuilding = Modify.SetCustomData(aBuilding, "Time Zone", aTimeZone) as Building;
                 aBuilding = Modify.SetCustomData(aBuilding, "Place Name", aPlaceName) as Building;
@@ -83,13 +86,13 @@ namespace BH.Engine.Revit
                 aBuilding = Modify.SetCustomData(aBuilding, "Project North/South Offset", aProjectNorthSouthOffset) as Building;
                 aBuilding = Modify.SetCustomData(aBuilding, "Project Elevation", aProjectElevation) as Building;
 
-                aBuilding = Modify.SetCustomData(aBuilding, document.ProjectInformation, convertUnits) as Building;
+                aBuilding = Modify.SetCustomData(aBuilding, document.ProjectInformation, pullSettings.ConvertUnits) as Building;
             }
 
 
             //-------- Create BHoM building structure -----
 
-            List<IBHoMObject> aBHoMObjectList = Query.GetEnergyAnalysisModel(document, copyCustomData, convertUnits);
+            List<IBHoMObject> aBHoMObjectList = Query.GetEnergyAnalysisModel(document, pullSettings);
             if(aBHoMObjectList != null && aBHoMObjectList.Count > 0)
             {
                 foreach (BHoMObject aBHoMObject in aBHoMObjectList)

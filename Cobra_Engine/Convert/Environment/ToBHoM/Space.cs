@@ -17,27 +17,33 @@ namespace BH.Engine.Revit
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static Space ToBHoMSpace(this SpatialElement spatialElement, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static Space ToBHoMSpace(this SpatialElement spatialElement, PullSettings pullSettings = null)
         {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             SpatialElementBoundaryOptions aSpatialElementBoundaryOptions = new SpatialElementBoundaryOptions();
             aSpatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
             aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = false;
 
             SpatialElementGeometryCalculator aSpatialElementGeometryCalculator = new SpatialElementGeometryCalculator(spatialElement.Document, aSpatialElementBoundaryOptions);
 
-            return ToBHoMSpace(spatialElement, aSpatialElementGeometryCalculator, objects, copyCustomData, convertUnits) as Space;
+            return ToBHoMSpace(spatialElement, aSpatialElementGeometryCalculator, pullSettings) as Space;
         }
 
         /***************************************************/
 
-        internal static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, PullSettings pullSettings = null)
         {
             if (spatialElement == null || spatialElementBoundaryOptions == null)
                 return new Space();
 
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             Document aDocument = spatialElement.Document;
 
-            oM.Architecture.Elements.Level aLevel = Query.Level(spatialElement, objects, Discipline.Environmental, copyCustomData, convertUnits);
+            oM.Architecture.Elements.Level aLevel = Query.Level(spatialElement, pullSettings);
 
             List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
             IList<IList<BoundarySegment>> aBoundarySegmentListList = spatialElement.GetBoundarySegments(spatialElementBoundaryOptions);
@@ -45,20 +51,20 @@ namespace BH.Engine.Revit
                 foreach (IList<BoundarySegment> aBoundarySegmentList in aBoundarySegmentListList)
                     foreach (BoundarySegment aBoundarySegment in aBoundarySegmentList)
                     {
-                        oM.Geometry.ICurve aICurve = aBoundarySegment.GetCurve().ToBHoM(convertUnits);
+                        oM.Geometry.ICurve aICurve = aBoundarySegment.GetCurve().ToBHoM(pullSettings);
                         Element aElement = aDocument.GetElement(aBoundarySegment.ElementId);
                         ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
 
-                        BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(objects, Discipline.Environmental, copyCustomData, convertUnits) as BuildingElementProperties;
-                        objects = Modify.AddBHoMObject(objects, aBuildingElementProperties);
+                        BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(pullSettings) as BuildingElementProperties;
+                        pullSettings.RefObjects = Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElementProperties);
 
                         BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementCurve(aICurve), aLevel);
                         aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
-                        if (copyCustomData)
-                            aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement, convertUnits) as BuildingElement;
+                        if (pullSettings.CopyCustomData)
+                            aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement, pullSettings.ConvertUnits) as BuildingElement;
                         aBuildingElmementList.Add(aBuildingElement);
 
-                        objects = Modify.AddBHoMObject(objects, aBuildingElement);
+                        pullSettings.RefObjects = Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
                     }
 
             Space aSpace = new Space
@@ -66,20 +72,20 @@ namespace BH.Engine.Revit
                 Level = aLevel,
                 BuildingElements = aBuildingElmementList,
                 Name = spatialElement.Name,
-                Location = (spatialElement.Location as LocationPoint).ToBHoM(convertUnits)
+                Location = (spatialElement.Location as LocationPoint).ToBHoM(pullSettings)
 
             };
 
             aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
-            if (copyCustomData)
-                aSpace = Modify.SetCustomData(aSpace, spatialElement, convertUnits) as Space;
+            if (pullSettings.CopyCustomData)
+                aSpace = Modify.SetCustomData(aSpace, spatialElement, pullSettings.ConvertUnits) as Space;
 
             return aSpace;
         }
 
         /***************************************************/
 
-        internal static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, PullSettings pullSettings = null)
         {
             if (spatialElement == null || spatialElementGeometryCalculator == null)
                 return new Space();
@@ -87,11 +93,14 @@ namespace BH.Engine.Revit
             if (!SpatialElementGeometryCalculator.CanCalculateGeometry(spatialElement))
                 return new Space();
 
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             SpatialElementGeometryResults aSpatialElementGeometryResults = spatialElementGeometryCalculator.CalculateSpatialElementGeometry(spatialElement);
 
             Solid aSolid = aSpatialElementGeometryResults.GetGeometry();
 
-            oM.Architecture.Elements.Level aLevel = Query.Level(spatialElement, objects, Discipline.Environmental, copyCustomData, convertUnits);
+            oM.Architecture.Elements.Level aLevel = Query.Level(spatialElement, pullSettings);
 
             List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
             if (aSolid != null)
@@ -105,8 +114,8 @@ namespace BH.Engine.Revit
 
                         ElementType aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
 
-                        BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(objects, Discipline.Environmental, copyCustomData, convertUnits) as BuildingElementProperties;
-                        objects = Modify.AddBHoMObject(objects, aBuildingElementProperties);
+                        BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(pullSettings) as BuildingElementProperties;
+                        pullSettings.RefObjects = Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElementProperties);
 
                         //Face aFace_BoundingElementFace = aSpatialElementBoundarySubface.GetBoundingElementFace();
                         //Face aFace_Subface = aSpatialElementBoundarySubface.GetSubface();
@@ -120,16 +129,16 @@ namespace BH.Engine.Revit
                             {
                                 BuildingElement aBuildingElement = null;
 
-                                aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementPanel(aCurveLoop.ToBHoM(convertUnits)));
+                                aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementPanel(aCurveLoop.ToBHoM(pullSettings)));
                                 aBuildingElement.Level = aLevel;
                                 aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
-                                if (copyCustomData)
-                                    aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement, convertUnits) as BuildingElement;
+                                if (pullSettings.CopyCustomData)
+                                    aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement, pullSettings.ConvertUnits) as BuildingElement;
                                 aBuildingElmementList.Add(aBuildingElement);
 
 
                                 //---- Get Hosted Building Elements -----------
-                                List<BuildingElement> aBuildingElmementList_Hosted = Query.HostedBuildingElements(aElement as HostObject, aFace_BuildingElement, objects, copyCustomData, convertUnits);
+                                List<BuildingElement> aBuildingElmementList_Hosted = Query.HostedBuildingElements(aElement as HostObject, aFace_BuildingElement, pullSettings);
                                 if (aBuildingElmementList_Hosted != null && aBuildingElmementList_Hosted.Count > 0)
                                 {
                                     aBuildingElmementList.AddRange(aBuildingElmementList_Hosted);
@@ -152,7 +161,7 @@ namespace BH.Engine.Revit
 
                                 //---------------------------------------------
 
-                                objects = Modify.AddBHoMObject(objects, aBuildingElement);
+                                pullSettings.RefObjects = Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
                             }
                     }
                 }
@@ -162,7 +171,7 @@ namespace BH.Engine.Revit
                 Level = aLevel,
                 BuildingElements = aBuildingElmementList,
                 Name = spatialElement.Name,
-                Location = (spatialElement.Location as LocationPoint).ToBHoM(convertUnits)
+                Location = (spatialElement.Location as LocationPoint).ToBHoM(pullSettings)
 
             };
 
@@ -171,15 +180,15 @@ namespace BH.Engine.Revit
                     aBuildingElement.AdjacentSpaces.Add(aSpace.BHoM_Guid);
 
             aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
-            if (copyCustomData)
-                aSpace = Modify.SetCustomData(aSpace, spatialElement, convertUnits) as Space;
+            if (pullSettings.CopyCustomData)
+                aSpace = Modify.SetCustomData(aSpace, spatialElement, pullSettings.ConvertUnits) as Space;
 
             return aSpace;
         }
 
         /***************************************************/
 
-        internal static Space ToBHoMSpace(this EnergyAnalysisSpace energyAnalysisSpace, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static Space ToBHoMSpace(this EnergyAnalysisSpace energyAnalysisSpace, PullSettings pullSettings = null)
         {
             if (energyAnalysisSpace == null)
                 return new Space();
@@ -188,11 +197,11 @@ namespace BH.Engine.Revit
 
             oM.Architecture.Elements.Level aLevel = null;
             if(aSpatialElement != null)
-                aLevel = Query.Level(aSpatialElement, objects, Discipline.Environmental, copyCustomData, convertUnits);
+                aLevel = Query.Level(aSpatialElement, pullSettings);
 
             oM.Geometry.Point aPoint = null;
             if (aSpatialElement != null && aSpatialElement.Location != null)
-                aPoint = (aSpatialElement.Location as LocationPoint).ToBHoM(convertUnits);
+                aPoint = (aSpatialElement.Location as LocationPoint).ToBHoM(pullSettings);
 
             Space aSpace = new Space
             {
@@ -203,12 +212,12 @@ namespace BH.Engine.Revit
             };
 
             aSpace = Modify.SetIdentifiers(aSpace, aSpatialElement) as Space;
-            if (copyCustomData)
+            if (pullSettings.CopyCustomData)
             {
-                aSpace = Modify.SetCustomData(aSpace, aSpatialElement, convertUnits) as Space;
+                aSpace = Modify.SetCustomData(aSpace, aSpatialElement, pullSettings.ConvertUnits) as Space;
                 double aInnerVolume = energyAnalysisSpace.InnerVolume;
                 double aAnalyticalVolume = energyAnalysisSpace.AnalyticalVolume;
-                if (convertUnits)
+                if (pullSettings.ConvertUnits)
                 {
                     aInnerVolume = UnitUtils.ConvertFromInternalUnits(aInnerVolume, DisplayUnitType.DUT_CUBIC_METERS);
                     aAnalyticalVolume = UnitUtils.ConvertFromInternalUnits(aAnalyticalVolume, DisplayUnitType.DUT_CUBIC_METERS);

@@ -5,6 +5,7 @@ using BH.oM.Environment.Interface;
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Engine.Revit
 {
@@ -18,9 +19,12 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Element ToRevit(this BHoMObject bHoMObject, Document document, bool copyCustomData = true, bool convertUnits = true)
+        public static Element ToRevit(this BHoMObject bHoMObject, Document document, PushSettings pushSettings = null)
         {
-            return ToRevit(bHoMObject as dynamic, document, copyCustomData, convertUnits);
+            if (pushSettings == null)
+                pushSettings = PushSettings.Default;
+
+            return ToRevit(bHoMObject as dynamic, document, pushSettings);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using BH.Engine.Geometry;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Engine.Revit
 {
@@ -9,12 +10,15 @@ namespace BH.Engine.Revit
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static oM.Geometry.Point ToBHoM(this XYZ xyz, bool convertUnits = true)
+        internal static oM.Geometry.Point ToBHoM(this XYZ xyz, PullSettings pullSettings = null)
         {
             if (xyz == null)
                 return null;
 
-            if (convertUnits)
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
+            if (pullSettings.ConvertUnits)
                 return Create.Point(UnitUtils.ConvertFromInternalUnits(xyz.X, DisplayUnitType.DUT_METERS), UnitUtils.ConvertFromInternalUnits(xyz.Y, DisplayUnitType.DUT_METERS), UnitUtils.ConvertFromInternalUnits(xyz.Z, DisplayUnitType.DUT_METERS));
             else
                 return Create.Point(xyz.X, xyz.Y, xyz.Z);
@@ -22,15 +26,18 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static oM.Geometry.Vector ToBHoMVector(this XYZ xyz, bool convertUnits = true)
+        internal static oM.Geometry.Vector ToBHoMVector(this XYZ xyz, PullSettings pullSettings = null)
         {
             if (xyz == null)
                 return null;
 
-            if (convertUnits)
-                return Geometry.Create.Vector(UnitUtils.ConvertFromInternalUnits(xyz.X, DisplayUnitType.DUT_METERS), UnitUtils.ConvertFromInternalUnits(xyz.Y, DisplayUnitType.DUT_METERS), UnitUtils.ConvertFromInternalUnits(xyz.Z, DisplayUnitType.DUT_METERS));
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
+            if (pullSettings.ConvertUnits)
+                return Create.Vector(UnitUtils.ConvertFromInternalUnits(xyz.X, DisplayUnitType.DUT_METERS), UnitUtils.ConvertFromInternalUnits(xyz.Y, DisplayUnitType.DUT_METERS), UnitUtils.ConvertFromInternalUnits(xyz.Z, DisplayUnitType.DUT_METERS));
             else
-                return Geometry.Create.Vector(xyz.X, xyz.Y, xyz.Z);
+                return Create.Vector(xyz.X, xyz.Y, xyz.Z);
         }
 
         /***************************************************/

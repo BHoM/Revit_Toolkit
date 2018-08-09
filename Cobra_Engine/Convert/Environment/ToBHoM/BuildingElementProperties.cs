@@ -6,6 +6,7 @@ using BH.Engine.Environment;
 using BH.oM.Base;
 using System.Collections.Generic;
 using System.Linq;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Engine.Revit
 {
@@ -15,15 +16,18 @@ namespace BH.Engine.Revit
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static BuildingElementProperties ToBHoMBuildingElementProperties(this WallType wallType, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElementProperties ToBHoMBuildingElementProperties(this WallType wallType, PullSettings pullSettings = null)
         {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Wall, wallType.Name);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, wallType) as BuildingElementProperties;
-            if (copyCustomData)
+            if (pullSettings.CopyCustomData)
             {
-                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, wallType, convertUnits) as BuildingElementProperties;
-                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, wallType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElementProperties;
+                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, wallType, pullSettings.ConvertUnits) as BuildingElementProperties;
+                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, wallType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElementProperties;
             }
 
             return aBuildingElementProperties;
@@ -31,32 +35,37 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static BuildingElementProperties ToBHoMBuildingElementProperties(this FloorType floorType, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElementProperties ToBHoMBuildingElementProperties(this FloorType floorType, PullSettings pullSettings = null)
         {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Floor, floorType.Name);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, floorType) as BuildingElementProperties;
-            if (copyCustomData)
+            if (pullSettings.CopyCustomData)
             {
-                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, floorType, convertUnits) as BuildingElementProperties;
-                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, floorType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElementProperties;
+                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, floorType, pullSettings.ConvertUnits) as BuildingElementProperties;
+                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, floorType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElementProperties;
             }
-
 
             return aBuildingElementProperties;
         }
 
         /***************************************************/
 
-        internal static BuildingElementProperties ToBHoMBuildingElementProperties(this CeilingType ceilingType, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElementProperties ToBHoMBuildingElementProperties(this CeilingType ceilingType, PullSettings pullSettings = null)
         {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Ceiling, ceilingType.Name);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, ceilingType) as BuildingElementProperties;
-            if (copyCustomData)
+            if (pullSettings.CopyCustomData)
             {
-                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, ceilingType, convertUnits) as BuildingElementProperties;
-                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, ceilingType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElementProperties;
+                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, ceilingType, pullSettings.ConvertUnits) as BuildingElementProperties;
+                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, ceilingType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElementProperties;
             }
 
             return aBuildingElementProperties;
@@ -64,15 +73,18 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static BuildingElementProperties ToBHoMBuildingElementProperties(this RoofType roofType, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElementProperties ToBHoMBuildingElementProperties(this RoofType roofType, PullSettings pullSettings = null)
         {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Roof, roofType.Name);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, roofType) as BuildingElementProperties;
-            if (copyCustomData)
+            if (pullSettings.CopyCustomData)
             {
-                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, roofType, convertUnits) as BuildingElementProperties;
-                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, roofType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElementProperties;
+                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, roofType, pullSettings.ConvertUnits) as BuildingElementProperties;
+                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, roofType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElementProperties;
             }
 
             return aBuildingElementProperties;
@@ -80,18 +92,21 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static BuildingElementProperties ToBHoMBuildingElementProperties(this FamilySymbol familySymbol, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElementProperties ToBHoMBuildingElementProperties(this FamilySymbol familySymbol, PullSettings pullSettings = null)
         {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             BuildingElementType? aBuildingElementType = Query.BuildingElementType(familySymbol.Category);
             if (!aBuildingElementType.HasValue)
                 aBuildingElementType = BuildingElementType.Undefined;
 
             BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(aBuildingElementType.Value, familySymbol.Name);
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, familySymbol) as BuildingElementProperties;
-            if (copyCustomData)
+            if (pullSettings.CopyCustomData)
             {
-                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, familySymbol, convertUnits) as BuildingElementProperties;
-                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, familySymbol, BuiltInParameter.ALL_MODEL_FAMILY_NAME, convertUnits) as BuildingElementProperties;
+                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, familySymbol, pullSettings.ConvertUnits) as BuildingElementProperties;
+                aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, familySymbol, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElementProperties;
             }
 
             return aBuildingElementProperties;
@@ -99,13 +114,16 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        internal static BuildingElementProperties ToBHoMBuildingElementProperties(this ElementType elementType, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static BuildingElementProperties ToBHoMBuildingElementProperties(this ElementType elementType, PullSettings pullSettings = null)
         {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             BuildingElementProperties aBuildingElementProperties = null;
-            if (objects != null)
+            if (pullSettings.RefObjects != null)
             {
                 List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
-                if (objects.TryGetValue(elementType.Id, out aBHoMObjectList))
+                if (pullSettings.RefObjects.TryGetValue(elementType.Id.IntegerValue, out aBHoMObjectList))
                     if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
                         aBuildingElementProperties = aBHoMObjectList.First() as BuildingElementProperties;
             }
@@ -116,15 +134,15 @@ namespace BH.Engine.Revit
                 //aBuildingElementProperties = (elementType as dynamic).ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
 
                 if (elementType is WallType)
-                    aBuildingElementProperties = (elementType as WallType).ToBHoMBuildingElementProperties(copyCustomData, convertUnits);
+                    aBuildingElementProperties = (elementType as WallType).ToBHoMBuildingElementProperties(pullSettings);
                 else if (elementType is FloorType)
-                    aBuildingElementProperties = (elementType as FloorType).ToBHoMBuildingElementProperties(copyCustomData, convertUnits);
+                    aBuildingElementProperties = (elementType as FloorType).ToBHoMBuildingElementProperties(pullSettings);
                 else if (elementType is CeilingType)
-                    aBuildingElementProperties = (elementType as CeilingType).ToBHoMBuildingElementProperties(copyCustomData, convertUnits);
+                    aBuildingElementProperties = (elementType as CeilingType).ToBHoMBuildingElementProperties(pullSettings);
                 else if (elementType is RoofType)
-                    aBuildingElementProperties = (elementType as RoofType).ToBHoMBuildingElementProperties(copyCustomData, convertUnits);
+                    aBuildingElementProperties = (elementType as RoofType).ToBHoMBuildingElementProperties(pullSettings);
                 else if (elementType is FamilySymbol)
-                    aBuildingElementProperties = (elementType as FamilySymbol).ToBHoMBuildingElementProperties(copyCustomData, convertUnits);
+                    aBuildingElementProperties = (elementType as FamilySymbol).ToBHoMBuildingElementProperties(pullSettings);
             }
 
             if (aBuildingElementProperties == null)

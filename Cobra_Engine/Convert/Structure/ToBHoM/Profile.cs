@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure.StructuralSections;
+using BH.oM.Adapters.Revit;
 using BH.oM.Structural.Properties;
 using System;
 using System.Collections.Generic;
@@ -13,8 +14,11 @@ namespace BH.Engine.Revit
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static IProfile ToBHoMProfile(this FamilySymbol familySymbol, bool copyCustomData = true, bool convertUnits = true)
+        internal static IProfile ToBHoMProfile(this FamilySymbol familySymbol, PullSettings pullSettings = null)
         {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             IProfile aProfile = null;
 
             string familyName = familySymbol.Family.Name;
@@ -34,12 +38,12 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(diameter))
                 {
-                    if (convertUnits) diameter = diameter.ToSI(UnitType.UT_Section_Dimension);
+                    if (pullSettings.ConvertUnits) diameter = diameter.ToSI(UnitType.UT_Section_Dimension);
                     aProfile = BHS.Create.CircleProfile(diameter);
                 }
                 else
                 {
-                    double radius = familySymbol.LookupParameterDouble(radiusNames, convertUnits);
+                    double radius = familySymbol.LookupParameterDouble(radiusNames, pullSettings.ConvertUnits);
                     if (!double.IsNaN(radius))
                     {
                         aProfile = BHS.Create.CircleProfile(radius * 2);
@@ -88,7 +92,7 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(topFlangeWidth) && !double.IsNaN(botFlangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(topFlangeThickness) && !double.IsNaN(botFlangeThickness))
                 {
-                    if (convertUnits)
+                    if (pullSettings.ConvertUnits)
                     {
                         height = height.ToSI(UnitType.UT_Section_Dimension);
                         topFlangeWidth = topFlangeWidth.ToSI(UnitType.UT_Section_Dimension);
@@ -139,7 +143,7 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(width))
                 {
-                    if (convertUnits)
+                    if (pullSettings.ConvertUnits)
                     {
                         height = height.ToSI(UnitType.UT_Section_Dimension);
                         width = width.ToSI(UnitType.UT_Section_Dimension);
@@ -190,7 +194,7 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
                 {
-                    if (convertUnits)
+                    if (pullSettings.ConvertUnits)
                     {
                         height = height.ToSI(UnitType.UT_Section_Dimension);
                         width = width.ToSI(UnitType.UT_Section_Dimension);
@@ -231,7 +235,7 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(thickness))
                 {
-                    if (convertUnits)
+                    if (pullSettings.ConvertUnits)
                     {
                         height = height.ToSI(UnitType.UT_Section_Dimension);
                         width = width.ToSI(UnitType.UT_Section_Dimension);
@@ -284,7 +288,7 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(flangeWidth) && double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
                 {
-                    if (convertUnits)
+                    if (pullSettings.ConvertUnits)
                     {
                         height = height.ToSI(UnitType.UT_Section_Dimension);
                         flangeWidth = flangeWidth.ToSI(UnitType.UT_Section_Dimension);
@@ -337,7 +341,7 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
                 {
-                    if (convertUnits)
+                    if (pullSettings.ConvertUnits)
                     {
                         height = height.ToSI(UnitType.UT_Section_Dimension);
                         width = width.ToSI(UnitType.UT_Section_Dimension);
@@ -401,7 +405,7 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
                 {
-                    if (convertUnits)
+                    if (pullSettings.ConvertUnits)
                     {
                         height = height.ToSI(UnitType.UT_Section_Dimension);
                         width = width.ToSI(UnitType.UT_Section_Dimension);
@@ -444,7 +448,7 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(height) && !double.IsNaN(flangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
                 {
-                    if (convertUnits)
+                    if (pullSettings.ConvertUnits)
                     {
                         height = height.ToSI(UnitType.UT_Section_Dimension);
                         flangeWidth = flangeWidth.ToSI(UnitType.UT_Section_Dimension);
@@ -482,7 +486,7 @@ namespace BH.Engine.Revit
 
                 if (!double.IsNaN(diameter) && !double.IsNaN(thickness))
                 {
-                    if (convertUnits)
+                    if (pullSettings.ConvertUnits)
                     {
                         diameter = diameter.ToSI(UnitType.UT_Section_Dimension);
                         thickness = thickness.ToSI(UnitType.UT_Section_Dimension);
@@ -494,7 +498,7 @@ namespace BH.Engine.Revit
                 double radius = familySymbol.LookupParameterDouble(radiusNames, false);
                 if (!double.IsNaN(radius) && !double.IsNaN(thickness))
                 {
-                    if (convertUnits)
+                    if (pullSettings.ConvertUnits)
                     {
                         radius = radius.ToSI(UnitType.UT_Section_Dimension);
                         thickness = thickness.ToSI(UnitType.UT_Section_Dimension);
@@ -507,8 +511,8 @@ namespace BH.Engine.Revit
             if (aProfile == null) aProfile = new FreeFormProfile(new List<oM.Geometry.ICurve>());
 
             aProfile = Modify.SetIdentifiers(aProfile, familySymbol) as IProfile;
-            if (copyCustomData)
-                aProfile = Modify.SetCustomData(aProfile, familySymbol, convertUnits) as IProfile;
+            if (pullSettings.CopyCustomData)
+                aProfile = Modify.SetCustomData(aProfile, familySymbol, pullSettings.ConvertUnits) as IProfile;
 
             return aProfile;
         }
