@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 using BH.oM.Base;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Revit
 {
     public class RevitSettings : BHoMObject
     {
@@ -19,11 +14,6 @@ namespace BH.oM.Adapters.Revit
         public int MaxMinutesToWait { get; set; } = 10;
         public WorksetSettings WorksetSettings = new WorksetSettings();
         public SelectionSettings SelectionSettings = new SelectionSettings();
-
-        /***************************************************/
-        /**** Public Methods                            ****/
-        /***************************************************/
-
 
         /***************************************************/
     }
