@@ -513,6 +513,7 @@ namespace BH.Engine.Revit
             aProfile = Modify.SetIdentifiers(aProfile, familySymbol) as IProfile;
             if (pullSettings.CopyCustomData)
                 aProfile = Modify.SetCustomData(aProfile, familySymbol, pullSettings.ConvertUnits) as IProfile;
+            aProfile.Name = familySymbol.Name;
 
             return aProfile;
         }
