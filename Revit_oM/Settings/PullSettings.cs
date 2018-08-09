@@ -1,12 +1,7 @@
-﻿using System;
+﻿using BH.oM.Base;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using BH.oM.Base;
-
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Revit
 {
     public class PullSettings : BHoMObject
     {
@@ -25,7 +20,7 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         public static PullSettings Default = new PullSettings();
-    }
 
-    
+        /***************************************************/
+    }
 }

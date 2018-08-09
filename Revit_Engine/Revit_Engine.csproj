@@ -7,7 +7,7 @@
     <ProjectGuid>{75A99AC5-FE80-45A4-B456-1AA3B1C4BB74}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Revit_Engine</RootNamespace>
+    <RootNamespace>BH.Engine.Revit</RootNamespace>
     <AssemblyName>Revit_Engine</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

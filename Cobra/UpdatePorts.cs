@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.Revit.UI;
-using Autodesk.Revit.Attributes;
+﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
-using BH.UI.Revit.Forms;
+using Autodesk.Revit.UI;
+using BH.UI.Cobra.Forms;
 
-namespace BH.UI.Revit
+namespace BH.UI.Cobra
 {
     [Transaction(TransactionMode.Manual)]
     [Regeneration(RegenerationOption.Manual)]
     public class UpdatePorts : IExternalCommand
     {
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
+
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             new UpdatePortsForm().ShowDialog();
@@ -21,5 +20,6 @@ namespace BH.UI.Revit
             return Result.Succeeded;
         }
 
+        /***************************************************/
     }
 }

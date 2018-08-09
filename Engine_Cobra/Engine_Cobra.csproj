@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4DFAF9C8-9770-4E5A-818D-EB4DAB665145}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BH.UI.Cobra.Engine</RootNamespace>
+    <AssemblyName>Engine_Cobra</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\Build\Engine_Cobra.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2018|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>..\Build\Engine_Cobra.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Architecture_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\Architecture_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="BHoM">
+      <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Environment_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM_Engine\Build\Environment_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Geometry_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\Geometry_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Library_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\Library_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Reflection_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)' == 'Debug2018'">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)' == 'Debug'">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == 'Debug2018'">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == 'Debug'">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Structure_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM_Engine\Build\Structure_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Convert\Architecture\ToBHoM\Grid.cs" />
+    <Compile Include="Convert\Architecture\ToBHoM\Level.cs" />
+    <Compile Include="Convert\Architecture\ToRevit\Level.cs" />
+    <Compile Include="Convert\Common\ToBHoM\Material.cs" />
+    <Compile Include="Convert\Common\ToRevit\Material.cs" />
+    <Compile Include="Convert\Environment\ToBHoM\Building.cs" />
+    <Compile Include="Convert\Environment\ToBHoM\BuildingElement.cs" />
+    <Compile Include="Convert\Environment\ToBHoM\BuildingElementCurve.cs" />
+    <Compile Include="Convert\Environment\ToBHoM\BuildingElementPanel.cs" />
+    <Compile Include="Convert\Environment\ToBHoM\BuildingElementProperties.cs" />
+    <Compile Include="Convert\Environment\ToBHoM\Space.cs" />
+    <Compile Include="Convert\Environment\ToRevit\CompoundStructureLayer.cs" />
+    <Compile Include="Convert\Environment\ToRevit\Element.cs" />
+    <Compile Include="Convert\Environment\ToRevit\ElementType.cs" />
+    <Compile Include="Compute\Warnings.cs" />
+    <Compile Include="Compute\Errors.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\Curve.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\Edge.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\LocationPoint.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\Plane.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\Polyloop.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\XYZ.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\CoordinateSystem.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\Curve.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\Point.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\Vector.cs" />
+    <Compile Include="Convert\AdapterID.cs" />
+    <Compile Include="Convert\Structure\ToBHoM\FramingElement.cs" />
+    <Compile Include="Convert\Structure\ToBHoM\PanelPlanar.cs" />
+    <Compile Include="Convert\Structure\ToBHoM\Profile.cs" />
+    <Compile Include="Convert\Structure\ToBHoM\Property2D.cs" />
+    <Compile Include="Convert\Structure\ToBHoM\SectionProperty.cs" />
+    <Compile Include="Convert\Structure\ToRevit\Column.cs" />
+    <Compile Include="Convert\Structure\ToRevit\FamilySymbol.cs" />
+    <Compile Include="Convert\ToBHoM.cs" />
+    <Compile Include="Convert\ToRevit.cs" />
+    <Compile Include="Convert\ToSI.cs" />
+    <Compile Include="Convert\FromSI.cs" />
+    <Compile Include="Modify\AddBHoMObject.cs" />
+    <Compile Include="Modify\AddBHoMObjects.cs" />
+    <Compile Include="Modify\AssignAdjacentSpaces.cs" />
+    <Compile Include="Modify\RemoveIdentifiers.cs" />
+    <Compile Include="Modify\SetCustomData.cs" />
+    <Compile Include="Modify\SetIdentifiers.cs" />
+    <Compile Include="Modify\SetParameters.cs" />
+    <Compile Include="Modify\SetParameter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Query\AllowElement.cs" />
+    <Compile Include="Query\BottomLevel.cs" />
+    <Compile Include="Query\BuildingElements.cs" />
+    <Compile Include="Query\BuildingElementType.cs" />
+    <Compile Include="Query\BuiltInCategories.cs" />
+    <Compile Include="Query\Discipline.cs" />
+    <Compile Include="Query\Element.cs" />
+    <Compile Include="Query\ElementId.cs" />
+    <Compile Include="Query\ElementIds.cs" />
+    <Compile Include="Query\GetEnergyAnalysisModel.cs" />
+    <Compile Include="Query\IntegerValue.cs" />
+    <Compile Include="Query\MaterialGrade.cs" />
+    <Compile Include="Query\Outline.cs" />
+    <Compile Include="Query\SpatialElementId.cs" />
+    <Compile Include="Query\SpatialElementIds.cs" />
+    <Compile Include="Query\HostedBuildingElements.cs" />
+    <Compile Include="Query\IsAssignableFromByFullName.cs" />
+    <Compile Include="Query\BHoMTypes.cs" />
+    <Compile Include="Query\IsHorizontal.cs" />
+    <Compile Include="Query\IsVertical.cs" />
+    <Compile Include="Query\IsZero.cs" />
+    <Compile Include="Query\Level.cs" />
+    <Compile Include="Query\LookupParameter.cs" />
+    <Compile Include="Query\RevitType.cs" />
+    <Compile Include="Query\RevitTypes.cs" />
+    <Compile Include="Query\Top.cs" />
+    <Compile Include="Query\UniqueId.cs" />
+    <Compile Include="Query\UniqueIds.cs" />
+    <Compile Include="Query\WorksetId.cs" />
+    <Compile Include="Query\WorksetIds.cs" />
+    <Compile Include="Query\WorksetNames.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
+      <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
+      <Name>Revit_Adapter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj">
+      <Project>{75a99ac5-fe80-45a4-b456-1aa3b1c4bb74}</Project>
+      <Name>Revit_Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
+      <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
+      <Name>Revit_oM</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

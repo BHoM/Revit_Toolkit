@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BH.Adapter.Revit
 {
@@ -48,9 +45,7 @@ namespace BH.Adapter.Revit
             //{typeof(MeshFace), new List<Type> { typeof(IProperty2D), typeof(Node) } },
             //{typeof(IProperty2D), new List<Type> { typeof(Material) } }
         };
-
-
+        
         /***************************************************/
     }
-
 }

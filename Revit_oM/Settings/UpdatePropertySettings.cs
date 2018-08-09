@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BH.oM.Base;
 
-using BH.oM.Base;
-
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Revit
 {
     public class UpdatePropertySettings : BHoMObject
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****            Public Properties              ****/
         /***************************************************/
 
         public string ParameterName { get; set; } = null;
@@ -23,7 +17,7 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         public static UpdatePropertySettings Default = new UpdatePropertySettings();
-    }
 
-    
+        /***************************************************/
+    }
 }

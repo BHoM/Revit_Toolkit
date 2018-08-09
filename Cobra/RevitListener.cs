@@ -1,25 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using Autodesk.Revit.DB;
+using BH.Adapter.Revit;
 using BH.Adapter.Socket;
 using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
-using BH.UI.Revit.Adapter;
-using BH.Adapter.Revit;
-using BH.oM.Adapters.Revit;
+using BH.oM.Revit;
+using BH.UI.Cobra.Adapter;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace BH.UI.Revit
+namespace BH.UI.Cobra
 {
     [Autodesk.Revit.Attributes.Regeneration(Autodesk.Revit.Attributes.RegenerationOption.Manual)]
     [Autodesk.Revit.Attributes.Journaling(Autodesk.Revit.Attributes.JournalingMode.NoCommandData)]
     public class RevitListener : IExternalApplication
     {
         /***************************************************/
-        /**** Properties                                ****/
+        /**** Public properties                         ****/
         /***************************************************/
 
         public List<IObject> LatestPackage { get; set; }
@@ -70,13 +68,14 @@ namespace BH.UI.Revit
         }
 
         /***************************************************/
+
         public void ReturnData(IEnumerable<object> objs)
         {
 
             oM.Socket.DataPackage package = new oM.Socket.DataPackage
             {
                 Data = objs.ToList(),
-                Events = Engine.Reflection.Query.CurrentEvents(),
+                Events = BH.Engine.Reflection.Query.CurrentEvents(),
                 Tag = ""
             };
 
@@ -84,6 +83,7 @@ namespace BH.UI.Revit
         }
 
         /***************************************************/
+
         public void SetPorts(int inputPort, int outputPort)
         {
             //Not sure if needed
@@ -94,6 +94,7 @@ namespace BH.UI.Revit
 
             m_linkOut = new SocketLink_Tcp(outputPort);
         }
+
 
         /***************************************************/
         /**** Revit addin methods                       ****/
@@ -156,13 +157,14 @@ namespace BH.UI.Revit
             aPushButton.ToolTip = "Update the ports that revit is listening on for information from external softwares sending BHoM information";
         }
 
+
         /***************************************************/
         /**** Data observer method                      ****/
         /***************************************************/
 
         private void M_linkIn_DataObservers(oM.Socket.DataPackage package)
         {
-            Engine.Reflection.Compute.ClearCurrentEvents();
+            BH.Engine.Reflection.Compute.ClearCurrentEvents();
 
             ExternalEvent eve = null;
 
@@ -239,6 +241,7 @@ namespace BH.UI.Revit
             return true;
         }
 
+
         /***************************************************/
         /**** Private feilds                            ****/
         /***************************************************/
@@ -249,9 +252,9 @@ namespace BH.UI.Revit
         private ExternalEvent m_pullEvent;
         private ExternalEvent m_updatePropertyEvent;
         private Dictionary<Document, CobraAdapter> m_adapters = new Dictionary<Document, CobraAdapter>();
-
-
+        
         public object m_packageLock = new object();
+
         /***************************************************/
     }
 }

@@ -1,17 +1,15 @@
-﻿using System;
-using System.Windows.Media.Imaging;
-using System.Windows;
-using System.Linq;
-using System.Collections.Generic;
-
+﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using Autodesk.Revit.DB;
-
-using BH.UI.Revit.Adapter;
-using BH.oM.Environment.Elements;
 using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
-using BH.oM.Adapters.Revit;
+using BH.oM.Environment.Elements;
+using BH.oM.Revit;
+using BH.UI.Cobra.Adapter;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace Revit_Test
 {

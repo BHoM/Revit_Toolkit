@@ -1,28 +1,25 @@
-﻿using System;
+﻿using BH.Adapter.Socket;
+using BH.oM.Base;
+using BH.oM.DataManipulation.Queries;
+using BH.oM.Reflection.Debuging;
+using BH.oM.Revit;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Text;
-using System.Threading.Tasks;
-using BH.Adapter;
-using System.Collections;
-using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
-using BH.Adapter.Socket;
-using BH.oM.Reflection.Debuging;
-using BH.oM.Adapters.Revit;
 
 namespace BH.Adapter.Revit
 {
     public partial class RevitAdapter : BHoMAdapter
     {
-
         /***************************************************/
         /**** Public Properties                         ****/
         /***************************************************/
 
         public static InternalRevitAdapter InternalAdapter { get; set; } = null;
         public RevitSettings RevitSettings { get; set; } = new RevitSettings();
+
 
         /***************************************************/
         /**** Constructors                              ****/
@@ -47,17 +44,6 @@ namespace BH.Adapter.Revit
             m_waitTime = RevitSettings.MaxMinutesToWait;
         } 
 
-        private void M_linkOut_DataObservers(oM.Socket.DataPackage package)
-        {
-            //Store the return data
-            m_returnPackage = package.Data;
-
-            //Store the events
-            m_returnEvents = package.Events;
-
-            //Set the wait event to allow methods to continue
-            m_waitEvent.Set();
-        }
 
         /***************************************************/
         /**** Public methods                            ****/
@@ -201,6 +187,7 @@ namespace BH.Adapter.Revit
             return returnValue;
         }
 
+
         /***************************************************/
         /**** Private  Fields                           ****/
         /***************************************************/
@@ -212,6 +199,23 @@ namespace BH.Adapter.Revit
         private List<object> m_returnPackage;
         private List<Event> m_returnEvents;
         private double m_waitTime;
+
+
+        /***************************************************/
+        /**** Private  Methods                          ****/
+        /***************************************************/
+
+        private void M_linkOut_DataObservers(oM.Socket.DataPackage package)
+        {
+            //Store the return data
+            m_returnPackage = package.Data;
+
+            //Store the events
+            m_returnEvents = package.Events;
+
+            //Set the wait event to allow methods to continue
+            m_waitEvent.Set();
+        }
 
         /***************************************************/
 
@@ -242,14 +246,23 @@ namespace BH.Adapter.Revit
             m_returnEvents = new List<Event>();
         }
 
+
+        /***************************************************/
+        /**** Protected  Methods                        ****/
+        /***************************************************/
+
         protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {
             throw new NotImplementedException();
         }
 
+        /***************************************************/
+
         protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
         {
             throw new NotImplementedException();
         }
+
+        /***************************************************/
     }
 }

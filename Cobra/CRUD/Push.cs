@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.Revit.UI;
+﻿using Autodesk.Revit.UI;
 using BH.oM.Base;
-using BH.UI.Revit.Adapter;
+using BH.UI.Cobra.Adapter;
+using System;
+using System.Collections.Generic;
 
-namespace BH.UI.Revit
+namespace BH.UI.Cobra
 {
     public class PushEvent : IExternalEventHandler
     {
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
+
         public void Execute(UIApplication app)
         {
             lock (RevitListener.Listener.m_packageLock)
@@ -18,7 +19,7 @@ namespace BH.UI.Revit
                 try
                 {
                     //Clear the event log
-                    Engine.Reflection.Compute.ClearCurrentEvents();
+                    BH.Engine.Reflection.Compute.ClearCurrentEvents();
 
                     //Get instance of listener
                     RevitListener listener = RevitListener.Listener;
@@ -44,9 +45,13 @@ namespace BH.UI.Revit
             }
         }
 
+        /***************************************************/
+
         public string GetName()
         {
             return "Push event";
         }
+
+        /***************************************************/
     }
 }
