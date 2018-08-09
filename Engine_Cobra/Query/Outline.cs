@@ -17,8 +17,7 @@ namespace BH.UI.Cobra.Engine
         {
             List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             if (wall.GetAnalyticalModel() != null)
             {
@@ -94,8 +93,7 @@ namespace BH.UI.Cobra.Engine
         {
             List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             if (floor.GetAnalyticalModel() != null)
             {

@@ -14,8 +14,7 @@ namespace BH.UI.Cobra.Engine
             if (locationPoint == null)
                 return null;
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             return ToBHoM(locationPoint.Point, pullSettings);
         }

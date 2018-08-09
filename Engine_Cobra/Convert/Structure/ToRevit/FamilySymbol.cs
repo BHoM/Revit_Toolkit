@@ -17,8 +17,7 @@ namespace BH.UI.Cobra.Engine
             if (aFamilySymbolList == null || aFamilySymbolList.Count < 1)
                 return null;
 
-            if (pushSettings == null)
-                pushSettings = PushSettings.Default;
+            pushSettings.DefaultIfNull();
 
             FamilySymbol aFamilySymbol = null;
 

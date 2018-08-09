@@ -16,8 +16,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static Building ToBHoMBuilding(this Document document, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             double aElevation = 0;
             double aLongitude = 0;

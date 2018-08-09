@@ -12,8 +12,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static BHoMObject ToBHoMGrid(this Grid grid, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             Curve gridLine = grid.Curve;
             oM.Architecture.Elements.Grid aGrid = BH.Engine.Architecture.Elements.Create.Grid(gridLine.ToBHoM(pullSettings));

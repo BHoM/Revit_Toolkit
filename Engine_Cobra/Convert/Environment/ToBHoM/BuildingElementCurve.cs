@@ -12,8 +12,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static BuildingElementCurve ToBHoMBuildingElementCurve(this Wall wall, PullSettings pullSettings = null)
         {
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             BuildingElementCurve aBuildingElementCurve = new BuildingElementCurve
             {

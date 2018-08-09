@@ -39,8 +39,7 @@ namespace BH.UI.Cobra.Adapter
             if (builtInCategories.Count() < 1)
                 return;
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             ICollection<ElementId> aElementIdList = new FilteredElementCollector(Document).WherePasses(new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
 
@@ -76,9 +75,8 @@ namespace BH.UI.Cobra.Adapter
 
             if (!Query.AllowElement(RevitSettings, UIDocument, aElement))
                 return;
-            
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+
+            pullSettings.DefaultIfNull();
 
             List<IBHoMObject> aResult = null;
             if (aElement is Floor)
@@ -172,8 +170,7 @@ namespace BH.UI.Cobra.Adapter
             if (elementIds.Count() < 1)
                 return;
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             Dictionary<ElementId, List<IBHoMObject>> refObjects = new Dictionary<ElementId, List<IBHoMObject>>();
             foreach (ElementId aElementId in elementIds)

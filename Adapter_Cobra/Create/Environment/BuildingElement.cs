@@ -25,8 +25,7 @@ namespace BH.UI.Cobra.Adapter
                 return false;
             }
 
-            if (pushSettings == null)
-                pushSettings = PushSettings.Default;
+            pushSettings.DefaultIfNull();
 
             //Set ElementType
             Create(buildingElement.BuildingElementProperties, pushSettings);

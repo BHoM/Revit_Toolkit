@@ -66,8 +66,7 @@ namespace BH.UI.Cobra.Engine
         {
             wall.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -87,8 +86,7 @@ namespace BH.UI.Cobra.Engine
         {
             ceiling.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -106,8 +104,7 @@ namespace BH.UI.Cobra.Engine
         {
             floor.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch(pullSettings.Discipline)
             {
@@ -127,8 +124,7 @@ namespace BH.UI.Cobra.Engine
         {
             roofBase.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -146,8 +142,7 @@ namespace BH.UI.Cobra.Engine
         {
             wallType.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -167,8 +162,7 @@ namespace BH.UI.Cobra.Engine
         {
             floorType.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -188,8 +182,7 @@ namespace BH.UI.Cobra.Engine
         {
             ceilingType.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -207,8 +200,7 @@ namespace BH.UI.Cobra.Engine
         {
             roofType.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -226,8 +218,7 @@ namespace BH.UI.Cobra.Engine
         {
             familySymbol.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -242,43 +233,12 @@ namespace BH.UI.Cobra.Engine
         }
 
         /***************************************************/
-        
-        //public static IBHoMObject ToBHoM(this StructuralMaterialType structuralMaterialType, string materialGrade, Discipline discipline = Discipline.Structural)
-        //{
-        //    switch (discipline)
-        //    {
-        //        case Discipline.Structural:
-        //            return structuralMaterialType.ToBHoMMaterial(materialGrade);
-        //    }
-
-        //    structuralMaterialType.NotConvertedError();
-        //    return null;
-        //}
-
-        /***************************************************/
-        
-        //public static IBHoMObject ToBHoM(this Material material, string materialGrade, Discipline discipline = Discipline.Structural)
-        //{
-        //    material.CheckIfNull();
-
-        //    switch (discipline)
-        //    {
-        //        case Discipline.Structural:
-        //            return material.ToBHoMMaterial(materialGrade);
-        //    }
-
-        //    material.NotConvertedError();
-        //    return null;
-        //}
-
-        /***************************************************/
 
         public static IBHoMObject ToBHoM(this Level level, PullSettings pullSettings = null)
         {
             level.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch(pullSettings.Discipline)
             {
@@ -298,8 +258,7 @@ namespace BH.UI.Cobra.Engine
         {
             grid.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -319,8 +278,7 @@ namespace BH.UI.Cobra.Engine
         {
             elementType.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -338,8 +296,7 @@ namespace BH.UI.Cobra.Engine
         {
             spatialElement.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -357,8 +314,7 @@ namespace BH.UI.Cobra.Engine
         {
             energyAnalysisSpace.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -376,8 +332,7 @@ namespace BH.UI.Cobra.Engine
         {
             energyAnalysisSurface.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -395,8 +350,7 @@ namespace BH.UI.Cobra.Engine
         {
             energyAnalysisOpening.CheckIfNull();
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
