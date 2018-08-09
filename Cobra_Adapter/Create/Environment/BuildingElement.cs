@@ -9,7 +9,7 @@ using BH.Engine.Revit;
 using BH.oM.Base;
 
 using Autodesk.Revit.DB;
-
+using BH.oM.Adapters.Revit;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -19,7 +19,7 @@ namespace BH.UI.Revit.Adapter
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private bool Create(BuildingElement buildingElement, bool copyCustomData = true, bool replace = false)
+        private bool Create(BuildingElement buildingElement, PushSettings pushSettings = null)
         {
             if (buildingElement == null)
             {
@@ -33,17 +33,20 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
+            if (pushSettings == null)
+                pushSettings = PushSettings.Default;
+
             //Set ElementType
-            Create(buildingElement.BuildingElementProperties, copyCustomData, false);
+            Create(buildingElement.BuildingElementProperties, pushSettings);
 
             //Set Level
             if (buildingElement.Level != null)
-                Create(buildingElement.Level, copyCustomData, false);
+                Create(buildingElement.Level, pushSettings);
 
-            if (replace)
+            if (pushSettings.Replace)
                 Delete(buildingElement);
 
-            buildingElement.ToRevit(Document, copyCustomData);
+            buildingElement.ToRevit(Document, pushSettings);
 
             return true;
         }

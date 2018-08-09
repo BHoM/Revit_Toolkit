@@ -6,6 +6,7 @@ using Autodesk.Revit.DB.Analysis;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using System;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Engine.Revit
 {
@@ -18,9 +19,14 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<IBHoMObject> GetEnergyAnalysisModel(this Document document, bool copyCustomData = true, bool convertUnits = true)
+        public static List<IBHoMObject> GetEnergyAnalysisModel(this Document document, PullSettings pullSettings = null)
         {
-            Dictionary<ElementId, List<IBHoMObject>> aObjects = new Dictionary<ElementId, List<IBHoMObject>>();
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+                
+            if(pullSettings.RefObjects == null)
+                pullSettings.RefObjects = new Dictionary<int, List<IBHoMObject>>();
+
             using (Transaction aTransaction = new Transaction(document, "GetAnalyticalModel"))
             {
                 aTransaction.Start();
@@ -63,8 +69,8 @@ namespace BH.Engine.Revit
                 {
                     try
                     {
-                        Space aSpace = aEnergyAnalysisSpace.ToBHoM(aObjects, oM.Adapters.Revit.Discipline.Environmental, copyCustomData, convertUnits) as Space;
-                        aObjects = Modify.AddBHoMObject(aObjects, aSpace);
+                        Space aSpace = aEnergyAnalysisSpace.ToBHoMSpace(pullSettings);
+                        pullSettings.RefObjects = Modify.AddBHoMObject(pullSettings.RefObjects, aSpace);
 
                         foreach (EnergyAnalysisSurface aEnergyAnalysisSurface in aEnergyAnalysisSpace.GetAnalyticalSurfaces())
                             if (!aEnergyAnalysisSurfaces.ContainsKey(aEnergyAnalysisSurface.SurfaceName))
@@ -81,17 +87,17 @@ namespace BH.Engine.Revit
                 {
                     try
                     {
-                        BuildingElement aBuildingElement = aKeyValuePair.Value.ToBHoMBuildingElement(aObjects, copyCustomData, convertUnits);
-                        aObjects = Modify.AddBHoMObject(aObjects, aBuildingElement);
+                        BuildingElement aBuildingElement = aKeyValuePair.Value.ToBHoMBuildingElement(pullSettings);
+                        pullSettings.RefObjects = Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
 
                         List<IBHoMObject> aBHoMObjectList_Hosted = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aKeyValuePair.Value.GetAnalyticalOpenings())
                         {
-                            BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(aObjects, copyCustomData, convertUnits);
+                            BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(pullSettings);
                             if (aBuildingElement_Opening != null)
                             {
                                 aBHoMObjectList_Hosted.Add(aBuildingElement_Opening);
-                                aObjects = Modify.AddBHoMObject(aObjects, aBuildingElement_Opening);
+                                pullSettings.RefObjects = Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement_Opening);
                             }
                         }
 
@@ -113,7 +119,7 @@ namespace BH.Engine.Revit
                                     PolyCurve = aBuildingElementPanel_Hosted.PolyCurve
                                 };
 
-                                if (copyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Convert.ElementId))
+                                if (pullSettings.CopyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Convert.ElementId))
                                     aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, Convert.ElementId, aBuildingElement_Hosted.CustomData[Convert.ElementId]) as BuildingElementOpening;
 
                                 aBuildingElementPanel.Openings.Add(aBuildingElementOpening);
@@ -134,17 +140,17 @@ namespace BH.Engine.Revit
                 {
                     try
                     {
-                        BuildingElement aBuildingElement = aEnergyAnalysisSurface.ToBHoMBuildingElement(aObjects, copyCustomData, convertUnits);
-                        aObjects = Modify.AddBHoMObject(aObjects, aBuildingElement);
+                        BuildingElement aBuildingElement = aEnergyAnalysisSurface.ToBHoMBuildingElement(pullSettings);
+                        pullSettings.RefObjects = Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
 
                         List<IBHoMObject> aBHoMObjectList_Hosted = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aEnergyAnalysisSurface.GetAnalyticalOpenings())
                         {
-                            BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(aObjects, copyCustomData, convertUnits);
+                            BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(pullSettings);
                             if (aBuildingElement_Opening != null)
                             {
                                 aBHoMObjectList_Hosted.Add(aBuildingElement_Opening);
-                                aObjects = Modify.AddBHoMObject(aObjects, aBuildingElement_Opening);
+                                pullSettings.RefObjects = Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement_Opening);
                             }
                         }
 
@@ -167,7 +173,7 @@ namespace BH.Engine.Revit
                                     PolyCurve = aBuildingElementPanel_Hosted.PolyCurve
                                 };
 
-                                if (copyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Convert.ElementId))
+                                if (pullSettings.CopyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Convert.ElementId))
                                     aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, Convert.ElementId, aBuildingElement_Hosted.CustomData[Convert.ElementId]) as BuildingElementOpening;
 
                                 aBuildingElementPanel.Openings.Add(aBuildingElementOpening);
@@ -187,7 +193,7 @@ namespace BH.Engine.Revit
             }
 
             List<IBHoMObject> aResult = new List<IBHoMObject>();
-            foreach (List<IBHoMObject> aBHoMObjectList in aObjects.Values)
+            foreach (List<IBHoMObject> aBHoMObjectList in pullSettings.RefObjects.Values)
                 if (aBHoMObjectList != null)
                     aResult.AddRange(aBHoMObjectList);
 

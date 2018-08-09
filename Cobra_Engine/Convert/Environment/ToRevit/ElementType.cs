@@ -5,6 +5,7 @@ using System.Linq;
 using Autodesk.Revit.DB;
 
 using BH.oM.Environment.Properties;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Engine.Revit
 {
@@ -14,7 +15,7 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static ElementType ToRevit(this BuildingElementProperties buildingElementProperties, Document document, bool copyCustomData = true, bool convertUnits = true)
+        internal static ElementType ToRevit(this BuildingElementProperties buildingElementProperties, Document document, PushSettings pushSettings = null)
         {
             if (buildingElementProperties == null || document == null)
                 return null;
@@ -25,12 +26,15 @@ namespace BH.Engine.Revit
             if (aElementTypeList == null || aElementTypeList.Count < 1)
                 return null;
 
+            if (pushSettings == null)
+                pushSettings = PushSettings.Default;
+
             ElementType aElementType = null;
             aElementType = aElementTypeList.First() as ElementType;
             aElementType = aElementType.Duplicate(buildingElementProperties.Name);
 
-            if (copyCustomData)
-                Modify.SetParameters(aElementType, buildingElementProperties, null, convertUnits);
+            if (pushSettings.CopyCustomData)
+                Modify.SetParameters(aElementType, buildingElementProperties, null, pushSettings.ConvertUnits);
 
 
             return aElementType;

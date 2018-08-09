@@ -8,6 +8,7 @@ using BH.Engine.Geometry;
 
 using BH.oM.Base;
 using Autodesk.Revit.DB.Structure;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Engine.Revit
 {
@@ -20,9 +21,12 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<oM.Geometry.ICurve> Outlines(this Wall wall)
+        public static List<oM.Geometry.ICurve> Outlines(this Wall wall, PullSettings pullSettings = null)
         {
             List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
+
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
 
             if (wall.GetAnalyticalModel() != null)
             {
@@ -49,7 +53,7 @@ namespace BH.Engine.Revit
                 LocationCurve aLocationCurve = wall.Location as LocationCurve;
                 XYZ direction = aLocationCurve.Curve.ComputeDerivatives(0.5, true).BasisX.Normalize();
                 XYZ normal = new XYZ(-direction.Y, direction.X, 0);
-                oM.Geometry.Vector toWallLine = new oM.Geometry.Point() - normal.ToBHoM(true) * thk * 0.5;
+                oM.Geometry.Vector toWallLine = new oM.Geometry.Point() - normal.ToBHoM(pullSettings) * thk * 0.5;
 
                 foreach (GeometryObject obj in wall.get_Geometry(new Options()))
                 {
@@ -60,7 +64,7 @@ namespace BH.Engine.Revit
                             if (face.FaceNormal.IsAlmostEqualTo(normal))
                             {
                                 List<oM.Geometry.ICurve> faceOutlines = new List<oM.Geometry.ICurve>();
-                                foreach (List<oM.Geometry.ICurve> lc in face.EdgeLoops.ToBHoM(true))
+                                foreach (List<oM.Geometry.ICurve> lc in face.EdgeLoops.ToBHoM(pullSettings))
                                 {
                                     foreach (oM.Geometry.ICurve c in lc)
                                     {
@@ -94,9 +98,12 @@ namespace BH.Engine.Revit
 
         /***************************************************/
         
-        public static List<oM.Geometry.ICurve> Outlines(this Floor floor, bool convertUnits = true)
+        public static List<oM.Geometry.ICurve> Outlines(this Floor floor, PullSettings pullSettings = null)
         {
             List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
+
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
 
             if (floor.GetAnalyticalModel() != null)
             {
@@ -120,7 +127,7 @@ namespace BH.Engine.Revit
                 double thk = cs.GetWidth();
 
                 XYZ normal = new XYZ(0, 0, 1);
-                oM.Geometry.Vector toFloorLine = new oM.Geometry.Point() - normal.ToBHoM(true) * thk * 0.5;
+                oM.Geometry.Vector toFloorLine = new oM.Geometry.Point() - normal.ToBHoM(pullSettings) * thk * 0.5;
 
                 foreach (GeometryObject obj in floor.get_Geometry(new Options()))
                 {
@@ -131,7 +138,7 @@ namespace BH.Engine.Revit
                             if (face.FaceNormal.IsAlmostEqualTo(normal))
                             {
                                 List<oM.Geometry.ICurve> faceOutlines = new List<oM.Geometry.ICurve>();
-                                foreach (List<oM.Geometry.ICurve> lc in face.EdgeLoops.ToBHoM(true))
+                                foreach (List<oM.Geometry.ICurve> lc in face.EdgeLoops.ToBHoM(pullSettings))
                                 {
 
                                     foreach (oM.Geometry.ICurve c in lc)

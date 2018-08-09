@@ -1,4 +1,5 @@
 ﻿using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit;
 using BH.oM.Structural.Elements;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,15 +12,21 @@ namespace BH.Engine.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static FamilyInstance ToRevit(this FramingElement framingElement, Document document, bool copyCustomData = true, bool convertUnits = true)
+        public static FamilyInstance ToRevit(this FramingElement framingElement, Document document, PushSettings pushSettings = null)
         {
-            return framingElement.ToRevitColumn(document, copyCustomData, convertUnits);
+            if (pushSettings == null)
+                pushSettings = PushSettings.Default;
+
+            return framingElement.ToRevitColumn(document, pushSettings);
         }
 
-        public static FamilyInstance ToRevitColumn(this FramingElement framingElement, Document document, bool copyCustomData = true, bool convertUnits = true)
+        public static FamilyInstance ToRevitColumn(this FramingElement framingElement, Document document, PushSettings pushSettings = null)
         {
             if (framingElement == null || document == null)
                 return null;
+
+            if (pushSettings == null)
+                pushSettings = PushSettings.Default;
 
             object aCustomDataValue = null;
 
@@ -36,7 +43,7 @@ namespace BH.Engine.Revit
             if (aLevel == null)
                 aLevel = Query.BottomLevel(framingElement.LocationCurve, document);
 
-            FamilySymbol aFamilySymbol = ToRevitFamilySymbol(framingElement.Property, document, copyCustomData, convertUnits);
+            FamilySymbol aFamilySymbol = ToRevitFamilySymbol(framingElement.Property, document, pushSettings);
 
             if (aFamilySymbol == null)
             {
@@ -58,8 +65,8 @@ namespace BH.Engine.Revit
 
             FamilyInstance aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Beam);
 
-            if (copyCustomData)
-                Modify.SetParameters(aFamilyInstance, framingElement, new BuiltInParameter[] { BuiltInParameter.STRUCTURAL_BEAM_END0_ELEVATION, BuiltInParameter.STRUCTURAL_BEAM_END1_ELEVATION }, convertUnits);
+            if (pushSettings.CopyCustomData)
+                Modify.SetParameters(aFamilyInstance, framingElement, new BuiltInParameter[] { BuiltInParameter.STRUCTURAL_BEAM_END0_ELEVATION, BuiltInParameter.STRUCTURAL_BEAM_END1_ELEVATION }, pushSettings.ConvertUnits);
 
             return aFamilyInstance;
         }

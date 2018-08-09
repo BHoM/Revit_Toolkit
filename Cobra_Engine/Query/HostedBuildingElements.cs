@@ -4,6 +4,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.Engine.Environment;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Engine.Revit
 {
@@ -21,14 +22,12 @@ namespace BH.Engine.Revit
         /// </summary>
         /// <param name="hostObject">Revit Host Object</param>
         /// <param name="face">Revit Face</param>
-        /// <param name="convertUnits">Convert to SI units</param>
-        /// <param name="objects">Mapped BHoM objects</param>
-        /// <param name="copyCustomData">Copy parameters to BHoM CustomData</param>
+        /// <param name="pullSettings">BHoM PullSettings</param>
         /// <returns name="BuildingElements">BHoM BuildingElements</returns>
         /// <search>
         /// Query, HostedBuildingElements, Revit, Hosted Building Elements, BuildingElements, Element, Face
         /// </search>
-        static public List<BuildingElement> HostedBuildingElements(HostObject hostObject, Face face, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        static public List<BuildingElement> HostedBuildingElements(HostObject hostObject, Face face, PullSettings pullSettings = null)
         {
             if (hostObject == null)
                 return null;
@@ -36,6 +35,9 @@ namespace BH.Engine.Revit
             IList<ElementId> aElementIdList = hostObject.FindInserts(false, false, false, false);
             if (aElementIdList == null || aElementIdList.Count < 1)
                 return null;
+
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
 
             List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
             foreach (ElementId aElementId in aElementIdList)
@@ -73,15 +75,15 @@ namespace BH.Engine.Revit
                         continue;
 
                     List<oM.Geometry.Point> aPointList = new List<oM.Geometry.Point>();
-                    aPointList.Add(aXYZ_Max.ToBHoM(convertUnits));
-                    aPointList.Add(aXYZ_U.ToBHoM(convertUnits));
-                    aPointList.Add(aXYZ_Min.ToBHoM(convertUnits));
-                    aPointList.Add(aXYZ_V.ToBHoM(convertUnits));
-                    aPointList.Add(aXYZ_Max.ToBHoM(convertUnits));
+                    aPointList.Add(aXYZ_Max.ToBHoM(pullSettings));
+                    aPointList.Add(aXYZ_U.ToBHoM(pullSettings));
+                    aPointList.Add(aXYZ_Min.ToBHoM(pullSettings));
+                    aPointList.Add(aXYZ_V.ToBHoM(pullSettings));
+                    aPointList.Add(aXYZ_Max.ToBHoM(pullSettings));
 
                     BuildingElementPanel aBuildingElementPanel = Create.BuildingElementPanel(new oM.Geometry.Polyline[] { Geometry.Create.Polyline(aPointList) });
 
-                    BuildingElement aBuildingElement = Convert.ToBHoMBuildingElement(aElement_Hosted, aBuildingElementPanel, objects, copyCustomData);
+                    BuildingElement aBuildingElement = Convert.ToBHoMBuildingElement(aElement_Hosted, aBuildingElementPanel, pullSettings);
                     if (aBuildingElement != null)
                         aBuildingElmementList.Add(aBuildingElement);
 

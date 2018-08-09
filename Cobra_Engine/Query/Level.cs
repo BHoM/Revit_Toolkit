@@ -20,28 +20,30 @@ namespace BH.Engine.Revit
         /// Gets Level of Revit element
         /// </summary>
         /// <param name="element">Revit Element</param>
-        /// <param name="objects">BHoM Objects</param>
-        /// <param name="convertUnits">Convert to SI units</param>
+        /// <param name="pullSettings">BHoM Pull Settings</param>
         /// <returns name="Level">BHoM Level</returns>
         /// <search>
         /// Query, Level, Revit, Level, element
         /// </search>
-        static public oM.Architecture.Elements.Level Level(Element element, Dictionary<ElementId, List<IBHoMObject>> objects = null, Discipline discipline = oM.Adapters.Revit.Discipline.Environmental, bool copyCustomData = true, bool convertUnits = true)
+        static public oM.Architecture.Elements.Level Level(Element element, PullSettings pullSettings = null)
         {
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
+
             oM.Architecture.Elements.Level aLevel = null;
-            if (objects != null)
+            if (pullSettings.RefObjects != null)
             {
                 List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
-                if (objects.TryGetValue(element.LevelId, out aBHoMObjectList))
+                if (pullSettings.RefObjects.TryGetValue(element.LevelId.IntegerValue, out aBHoMObjectList))
                     if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
                         aLevel = aBHoMObjectList.First() as oM.Architecture.Elements.Level;
             }
 
             if (aLevel == null)
             {
-                aLevel = (element.Document.GetElement(element.LevelId) as Level).ToBHoM(discipline, copyCustomData, convertUnits) as oM.Architecture.Elements.Level;
-                if (objects != null)
-                    objects.Add(element.LevelId, new List<IBHoMObject>(new BHoMObject[] { aLevel }));
+                aLevel = (element.Document.GetElement(element.LevelId) as Level).ToBHoM(pullSettings) as oM.Architecture.Elements.Level;
+                if (pullSettings.RefObjects != null)
+                    pullSettings.RefObjects.Add(element.LevelId.IntegerValue, new List<IBHoMObject>(new BHoMObject[] { aLevel }));
             }
 
             return aLevel;

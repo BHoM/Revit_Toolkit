@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using BHS = BH.Engine.Structure;
 using BH.oM.Base;
 using System.Linq;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Engine.Revit
 {
@@ -14,16 +15,19 @@ namespace BH.Engine.Revit
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static ISectionProperty ToBHoMSectionProperty(this FamilyInstance familyInstance, Dictionary<ElementId, List<IBHoMObject>> objects = null, bool copyCustomData = true, bool convertUnits = true)
+        internal static ISectionProperty ToBHoMSectionProperty(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
             ISectionProperty aSectionProperty = null;
+
+            if (pullSettings == null)
+                pullSettings = PullSettings.Default;
             
             oM.Common.Materials.Material aMaterial = null;
             bool materialFound = false;
-            if (objects != null)
+            if (pullSettings.RefObjects != null)
             {
                 List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
-                if (objects.TryGetValue(familyInstance.StructuralMaterialId, out aBHoMObjectList))
+                if (pullSettings.RefObjects.TryGetValue(familyInstance.StructuralMaterialId.IntegerValue, out aBHoMObjectList))
                     if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
                     {
                         aMaterial = aBHoMObjectList.First() as oM.Common.Materials.Material;
@@ -44,16 +48,16 @@ namespace BH.Engine.Revit
                 else
                 {
                     aMaterial = (familyInstance.Document.GetElement(materialId) as Material).ToBHoMMaterial();
-                    if (objects != null)
-                        objects.Add(familyInstance.StructuralMaterialId, new List<IBHoMObject>(new IBHoMObject[] { aMaterial }));
+                    if (pullSettings.RefObjects != null)
+                        pullSettings.RefObjects.Add(familyInstance.StructuralMaterialId.IntegerValue, new List<IBHoMObject>(new IBHoMObject[] { aMaterial }));
                 }
             }
 
             IProfile aSectionDimensions = null;
-            if (objects != null)
+            if (pullSettings.RefObjects != null)
             {
                 List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
-                if (objects.TryGetValue(familyInstance.Symbol.Id, out aBHoMObjectList))
+                if (pullSettings.RefObjects.TryGetValue(familyInstance.Symbol.Id.IntegerValue, out aBHoMObjectList))
                     if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
                         aSectionDimensions = aBHoMObjectList.First() as IProfile;
             }
@@ -63,7 +67,7 @@ namespace BH.Engine.Revit
                 string symbolName = familyInstance.Symbol.Name;
                 aSectionDimensions = Library.Query.Match("SectionProfiles", symbolName) as IProfile;
 
-                if (aSectionDimensions == null) aSectionDimensions = familyInstance.Symbol.ToBHoMProfile(false, convertUnits);
+                if (aSectionDimensions == null) aSectionDimensions = familyInstance.Symbol.ToBHoMProfile(pullSettings);
 
                 if (aSectionDimensions.Edges.Count == 0)
                 {
@@ -101,11 +105,11 @@ namespace BH.Engine.Revit
                 }
 
                 aSectionDimensions = Modify.SetIdentifiers(aSectionDimensions, familyInstance.Symbol) as IProfile;
-                if (copyCustomData)
-                    aSectionDimensions = Modify.SetCustomData(aSectionDimensions, familyInstance.Symbol, convertUnits) as IProfile;
+                if (pullSettings.CopyCustomData)
+                    aSectionDimensions = Modify.SetCustomData(aSectionDimensions, familyInstance.Symbol, pullSettings.ConvertUnits) as IProfile;
 
-                if (objects != null)
-                    objects.Add(familyInstance.Symbol.Id, new List<IBHoMObject>(new IBHoMObject[] { aSectionDimensions }));
+                if (pullSettings.RefObjects != null)
+                    pullSettings.RefObjects.Add(familyInstance.Symbol.Id.IntegerValue, new List<IBHoMObject>(new IBHoMObject[] { aSectionDimensions }));
             }
 
             string name = familyInstance.Name;
@@ -153,8 +157,8 @@ namespace BH.Engine.Revit
             }
             
             aSectionProperty = Modify.SetIdentifiers(aSectionProperty, familyInstance) as ISectionProperty;
-            if (copyCustomData)
-                aSectionProperty = Modify.SetCustomData(aSectionProperty, familyInstance, convertUnits) as ISectionProperty;
+            if (pullSettings.CopyCustomData)
+                aSectionProperty = Modify.SetCustomData(aSectionProperty, familyInstance, pullSettings.ConvertUnits) as ISectionProperty;
 
             return aSectionProperty;
         }
