@@ -172,7 +172,6 @@ namespace BH.UI.Cobra.Adapter
 
             pullSettings.DefaultIfNull();
 
-            Dictionary<ElementId, List<IBHoMObject>> refObjects = new Dictionary<ElementId, List<IBHoMObject>>();
             foreach (ElementId aElementId in elementIds)
             {
                 if(aElementId == null || aElementId == ElementId.InvalidElementId)

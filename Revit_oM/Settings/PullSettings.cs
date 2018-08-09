@@ -9,7 +9,7 @@ namespace BH.oM.Revit
         /**** Public Properties                        ****/
         /***************************************************/
 
-        public Discipline Discipline { get; set; } = Discipline.Environmental;
+        public Discipline Discipline { get; set; } = Discipline.Structural;
 
         public bool CopyCustomData { get; set; } = true;
 
