@@ -20,7 +20,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\Build\Adapter_Cobra.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,6 +49,10 @@
     <Reference Include="BHoM_Adapter">
       <HintPath>..\..\BHoM_Adapter\Build\BHoM_Adapter.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="BHoM_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM_Engine\Build\BHoM_Engine.dll</HintPath>
     </Reference>
     <Reference Include="Reflection_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
@@ -86,6 +91,8 @@
     <Compile Include="Delete\Delete.cs" />
     <Compile Include="Execute\Execute.cs" />
     <Compile Include="Read\Read.cs" />
+    <Compile Include="Types\Comparer.cs" />
+    <Compile Include="Types\DependencyTypes.cs" />
     <Compile Include="Update\Update.cs" />
     <Compile Include="Messages\Errors.cs" />
     <Compile Include="Messages\Warnings.cs" />
@@ -107,7 +114,9 @@
       <Name>Revit_oM</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Create\Structure\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
