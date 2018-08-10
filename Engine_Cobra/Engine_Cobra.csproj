@@ -20,7 +20,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\Build\Engine_Cobra.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -129,7 +130,7 @@
     <Compile Include="Convert\Structure\ToBHoM\Profile.cs" />
     <Compile Include="Convert\Structure\ToBHoM\Property2D.cs" />
     <Compile Include="Convert\Structure\ToBHoM\SectionProperty.cs" />
-    <Compile Include="Convert\Structure\ToRevit\Column.cs" />
+    <Compile Include="Convert\Structure\ToRevit\StructuralColumn.cs" />
     <Compile Include="Convert\Structure\ToRevit\FamilySymbol.cs" />
     <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Convert\ToRevit.cs" />

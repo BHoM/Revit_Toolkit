@@ -23,6 +23,7 @@ namespace BH.UI.Cobra.Adapter
             AdapterId = BH.UI.Cobra.Engine.Convert.AdapterId;
             Config.UseAdapterId = false;
             Config.ProcessInMemory = false;
+            Config.SeparateProperties = true;
             m_Document = document;
         }
 
