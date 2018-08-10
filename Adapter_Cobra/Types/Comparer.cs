@@ -1,10 +1,13 @@
-﻿using System;
+﻿using BH.oM.Common.Materials;
+using BH.oM.Architecture.Elements;
+using BH.oM.Structural.Properties;
+using System;
 using System.Collections.Generic;
+using BH.Engine.Base.Objects;
 
-namespace BH.Adapter.Revit
+namespace BH.UI.Cobra.Adapter
 {
-
-    public partial class RevitAdapter
+    public partial class CobraAdapter
     {
         /***************************************************/
         /**** BHoM Adapter Interface                    ****/
@@ -33,8 +36,10 @@ namespace BH.Adapter.Revit
         private static Dictionary<Type, object> m_Comparers = new Dictionary<Type, object>
         {
             //{typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
+            //{typeof(IProfile), new BHoMObjectNameOrToStringComparer() },
+            //{typeof(IProperty2D), new BHoMObjectNameOrToStringComparer() },
             //{typeof(Material), new BHoMObjectNameComparer() },
-            //{typeof(LinkConstraint), new BHoMObjectNameComparer() },
+            //{typeof(Level), new BHoMObjectNameComparer() },
         };
         
         /***************************************************/

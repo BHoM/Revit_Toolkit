@@ -11,12 +11,33 @@ namespace BH.UI.Cobra.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static FamilySymbol ToRevitFamilySymbol(this oM.Structural.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
+        public static FamilySymbol ToRevitFramingSymbol(this oM.Structural.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
         {
             List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilySymbol>().ToList();
             if (aFamilySymbolList == null || aFamilySymbolList.Count < 1)
                 return null;
 
+            //TODO: unnecessary?
+            pushSettings.DefaultIfNull();
+
+            FamilySymbol aFamilySymbol = null;
+
+            aFamilySymbol = aFamilySymbolList.Find(x => x.Name == framingElementProperty.Name);
+            if (aFamilySymbol != null)
+                return aFamilySymbol;
+
+            return null;
+        }
+
+        /***************************************************/
+
+        public static FamilySymbol ToRevitColumnSymbol(this oM.Structural.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
+        {
+            List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralColumns).Cast<FamilySymbol>().ToList();
+            if (aFamilySymbolList == null || aFamilySymbolList.Count < 1)
+                return null;
+
+            //TODO: unnecessary?
             pushSettings.DefaultIfNull();
 
             FamilySymbol aFamilySymbol = null;

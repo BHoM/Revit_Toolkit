@@ -29,7 +29,7 @@ namespace BH.UI.Cobra.Engine
         
         public static IBHoMObject ToBHoM(this Document document, PullSettings pullSettings = null)
         {
-            document.CheckIfNull();
+            document.CheckIfNulPull();
 
             switch (pullSettings.Discipline)
             {
@@ -46,7 +46,7 @@ namespace BH.UI.Cobra.Engine
 
         public static IBHoMObject ToBHoM(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
-            familyInstance.CheckIfNull();
+            familyInstance.CheckIfNullPull();
 
             switch (pullSettings.Discipline)
             {
@@ -64,7 +64,7 @@ namespace BH.UI.Cobra.Engine
 
         public static List<IBHoMObject> ToBHoM(this Wall wall, PullSettings pullSettings = null)
         {
-            wall.CheckIfNull();
+            wall.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -84,7 +84,7 @@ namespace BH.UI.Cobra.Engine
 
         public static List<IBHoMObject> ToBHoM(this Ceiling ceiling, PullSettings pullSettings = null)
         {
-            ceiling.CheckIfNull();
+            ceiling.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -102,7 +102,7 @@ namespace BH.UI.Cobra.Engine
 
         public static List<IBHoMObject> ToBHoM(this Floor floor, PullSettings pullSettings = null)
         {
-            floor.CheckIfNull();
+            floor.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -122,7 +122,7 @@ namespace BH.UI.Cobra.Engine
 
         public static List<IBHoMObject> ToBHoM(this RoofBase roofBase, PullSettings pullSettings = null)
         {
-            roofBase.CheckIfNull();
+            roofBase.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -140,7 +140,7 @@ namespace BH.UI.Cobra.Engine
 
         public static IBHoMObject ToBHoM(this WallType wallType, PullSettings pullSettings = null)
         {
-            wallType.CheckIfNull();
+            wallType.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -160,7 +160,7 @@ namespace BH.UI.Cobra.Engine
 
         public static IBHoMObject ToBHoM(this FloorType floorType, PullSettings pullSettings = null)
         {
-            floorType.CheckIfNull();
+            floorType.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -180,7 +180,7 @@ namespace BH.UI.Cobra.Engine
 
         public static IBHoMObject ToBHoM(this CeilingType ceilingType, PullSettings pullSettings = null)
         {
-            ceilingType.CheckIfNull();
+            ceilingType.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -198,7 +198,7 @@ namespace BH.UI.Cobra.Engine
 
         public static IBHoMObject ToBHoM(this RoofType roofType, PullSettings pullSettings = null)
         {
-            roofType.CheckIfNull();
+            roofType.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -216,7 +216,7 @@ namespace BH.UI.Cobra.Engine
 
         public static IBHoMObject ToBHoM(this FamilySymbol familySymbol, PullSettings pullSettings = null)
         {
-            familySymbol.CheckIfNull();
+            familySymbol.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -236,7 +236,7 @@ namespace BH.UI.Cobra.Engine
 
         public static IBHoMObject ToBHoM(this Level level, PullSettings pullSettings = null)
         {
-            level.CheckIfNull();
+            level.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -256,7 +256,7 @@ namespace BH.UI.Cobra.Engine
 
         public static IBHoMObject ToBHoM(this Grid grid, PullSettings pullSettings = null)
         {
-            grid.CheckIfNull();
+            grid.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -276,7 +276,7 @@ namespace BH.UI.Cobra.Engine
 
         public static IBHoMObject ToBHoM(this ElementType elementType, PullSettings pullSettings = null)
         {
-            elementType.CheckIfNull();
+            elementType.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -294,7 +294,7 @@ namespace BH.UI.Cobra.Engine
 
         public static IBHoMObject ToBHoM(this SpatialElement spatialElement, PullSettings pullSettings = null)
         {
-            spatialElement.CheckIfNull();
+            spatialElement.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -312,7 +312,7 @@ namespace BH.UI.Cobra.Engine
         
         public static IBHoMObject ToBHoM(this EnergyAnalysisSpace energyAnalysisSpace, PullSettings pullSettings = null)
         {
-            energyAnalysisSpace.CheckIfNull();
+            energyAnalysisSpace.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -330,7 +330,7 @@ namespace BH.UI.Cobra.Engine
 
         public static IBHoMObject ToBHoM(this EnergyAnalysisSurface energyAnalysisSurface, PullSettings pullSettings = null)
         {
-            energyAnalysisSurface.CheckIfNull();
+            energyAnalysisSurface.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 
@@ -348,7 +348,7 @@ namespace BH.UI.Cobra.Engine
 
         public static IBHoMObject ToBHoM(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
         {
-            energyAnalysisOpening.CheckIfNull();
+            energyAnalysisOpening.CheckIfNullPull();
 
             pullSettings.DefaultIfNull();
 

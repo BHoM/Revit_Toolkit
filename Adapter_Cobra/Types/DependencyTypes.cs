@@ -1,9 +1,13 @@
-﻿using System;
+﻿using BH.oM.Common.Materials;
+using BH.oM.Structural.Elements;
+using BH.oM.Architecture.Elements;
+using BH.oM.Structural.Properties;
+using System;
 using System.Collections.Generic;
 
-namespace BH.Adapter.Revit
+namespace BH.UI.Cobra.Adapter
 {
-    public partial class RevitAdapter
+    public partial class CobraAdapter
     {
         /***************************************************/
         /**** BHoM Adapter Interface                    ****/
@@ -39,10 +43,9 @@ namespace BH.Adapter.Revit
 
         private static Dictionary<Type, List<Type>> m_DependencyTypes = new Dictionary<Type, List<Type>>
         {
-            //{typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node) } },
-            //{typeof(ISectionProperty), new List<Type> { typeof(Material) } },
-            //{typeof(RigidLink), new List<Type> { typeof(LinkConstraint), typeof(Node) } },
-            //{typeof(MeshFace), new List<Type> { typeof(IProperty2D), typeof(Node) } },
+            //{typeof(FramingElement), new List<Type> { typeof(ISectionProperty), typeof(Level) } },
+            //{typeof(ISectionProperty), new List<Type> { typeof(Material), typeof(IProfile) } },
+            //{typeof(PanelPlanar), new List<Type> { typeof(IProperty2D), typeof(Level) } },
             //{typeof(IProperty2D), new List<Type> { typeof(Material) } }
         };
         

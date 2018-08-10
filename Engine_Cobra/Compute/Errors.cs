@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
+using BH.oM.Base;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -40,10 +41,18 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        internal static void CheckIfNull(this Element element)
+        internal static void CheckIfNullPull(this Element element)
         {
             if (element == null)
                 BH.Engine.Reflection.Compute.RecordError("BHoM object could not be read because Revit element does not exist.");
+        }
+
+        /***************************************************/
+
+        internal static void CheckIfNullPush(this Element element, IBHoMObject BHoMObject)
+        {
+            if (element == null)
+                BH.Engine.Reflection.Compute.RecordError(string.Format("Revit element has not been created due to BHoM/Revit conversion issues. BHoM element Guid: {0}", BHoMObject.BHoM_Guid));
         }
 
         /***************************************************/
@@ -55,7 +64,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        internal static void CheckIfNull(this Document document)
+        internal static void CheckIfNulPull(this Document document)
         {
             if (document == null)
                 NullDocumentError();
