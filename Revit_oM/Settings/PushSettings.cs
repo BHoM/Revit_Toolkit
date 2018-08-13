@@ -15,8 +15,6 @@ namespace BH.oM.Revit
 
         public bool Replace { get; set; } = true;
 
-        public Dictionary<string, List<int>> RefObjects = null;
-
         /***************************************************/
 
         public static PushSettings Default = new PushSettings();
