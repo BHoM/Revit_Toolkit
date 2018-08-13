@@ -80,7 +80,19 @@ namespace BH.UI.Cobra.Engine
             aFamilyInstance.CheckIfNullPush(framingElement);
 
             if (aFamilyInstance != null && pushSettings.CopyCustomData)
-                Modify.SetParameters(aFamilyInstance, framingElement, new BuiltInParameter[] { BuiltInParameter.STRUCTURAL_BEAM_END0_ELEVATION, BuiltInParameter.STRUCTURAL_BEAM_END1_ELEVATION }, pushSettings.ConvertUnits);
+            {
+                BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
+                {
+                    BuiltInParameter.STRUCTURAL_BEAM_END0_ELEVATION,
+                    BuiltInParameter.STRUCTURAL_BEAM_END1_ELEVATION,
+                    BuiltInParameter.ELEM_FAMILY_PARAM,
+                    BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
+                    BuiltInParameter.ALL_MODEL_IMAGE,
+                    BuiltInParameter.ELEM_TYPE_PARAM
+                };
+                Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
+            }
+            //Modify.SetParameters(aFamilyInstance, framingElement, new BuiltInParameter[] { BuiltInParameter.STRUCTURAL_BEAM_END0_ELEVATION, BuiltInParameter.STRUCTURAL_BEAM_END1_ELEVATION }, pushSettings.ConvertUnits);
 
             return aFamilyInstance;
         }
