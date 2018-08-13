@@ -8,8 +8,18 @@ namespace BH.UI.Cobra.Engine
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
-        public static Parameter SetParameter(this Parameter parameter, object value, Document Document, bool convertUnits = true)
+
+        ///// <summary>
+        ///// Sets Revit Parameter
+        ///// </summary>
+        ///// <param name="parameter">Revit Parameter</param>
+        ///// <param name="value">New parameter value to be set</param>
+        ///// <param name="document">Revit Document. If Document is not null then method checks if Element with given ElementId exists.</param>
+        ///// <returns name="convertUnits">Convert Units from SI to Internal Revit unit</returns>
+        ///// <search>
+        ///// SetParameter, Revit, Modify, set parameter
+        ///// </search>
+        public static Parameter SetParameter(this Parameter parameter, object value, Document document = null, bool convertUnits = true)
         {
             if (parameter == null || parameter.IsReadOnly)
                 return null;
@@ -83,13 +93,13 @@ namespace BH.UI.Cobra.Engine
 
                         if(!aExists)
                         {
-                            if (Document == null)
+                            if (document == null)
                             {
                                 aExists = true;
                             }
                             else
                             {
-                                Element aElement = Document.GetElement(aElementId);
+                                Element aElement = document.GetElement(aElementId);
                                 aExists = aElement != null;
                             }
                                 
