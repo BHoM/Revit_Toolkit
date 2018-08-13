@@ -130,10 +130,15 @@
     <Compile Include="Convert\Structure\ToBHoM\Profile.cs" />
     <Compile Include="Convert\Structure\ToBHoM\Property2D.cs" />
     <Compile Include="Convert\Structure\ToBHoM\SectionProperty.cs" />
+    <Compile Include="Convert\Structure\ToRevit\Floor.cs" />
+    <Compile Include="Convert\Structure\ToRevit\FloorType.cs" />
     <Compile Include="Convert\Structure\ToRevit\FramingElement.cs" />
     <Compile Include="Convert\Structure\ToRevit\FamilySymbol.cs" />
+    <Compile Include="Convert\Structure\ToRevit\PanelPlanar.cs" />
     <Compile Include="Convert\Structure\ToRevit\StructuralColumn.cs" />
     <Compile Include="Convert\Structure\ToRevit\StructuralFraming.cs" />
+    <Compile Include="Convert\Structure\ToRevit\Wall.cs" />
+    <Compile Include="Convert\Structure\ToRevit\WallType.cs" />
     <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Convert\ToRevit.cs" />
     <Compile Include="Convert\ToSI.cs" />

@@ -10,7 +10,7 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Element ToRevit(this BHoMObject bHoMObject, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this IBHoMObject bHoMObject, Document document, PushSettings pushSettings = null)
         {
             pushSettings.DefaultIfNull();
 
