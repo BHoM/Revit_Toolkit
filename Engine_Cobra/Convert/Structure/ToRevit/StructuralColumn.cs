@@ -68,7 +68,7 @@ namespace BH.UI.Cobra.Engine
                 oM.Structural.Properties.ConstantFramingElementProperty barProperty = framingElement.Property as oM.Structural.Properties.ConstantFramingElementProperty;
                 if (barProperty != null)
                 {
-                    double orientationAngle = Math.PI * 0.5 - barProperty.OrientationAngle;
+                    double orientationAngle = (Math.PI * 0.5 - barProperty.OrientationAngle) % (2 * Math.PI);
                     Parameter rotation = aFamilyInstance.LookupParameter("Cross-Section Rotation");
                     rotation.Set(orientationAngle);
                 }
