@@ -99,17 +99,17 @@ namespace BH.UI.Cobra.Engine
                 {
                     BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
                     {
-                    BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM,
-                    BuiltInParameter.FAMILY_BASE_LEVEL_PARAM,
+                    //BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM,
+                    //BuiltInParameter.FAMILY_BASE_LEVEL_PARAM,
                     BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM,
                     BuiltInParameter.SCHEDULE_BASE_LEVEL_OFFSET_PARAM,
                     BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM,
                     BuiltInParameter.ELEM_FAMILY_PARAM,
                     BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
                     BuiltInParameter.ALL_MODEL_IMAGE,
-                    BuiltInParameter.SCHEDULE_LEVEL_PARAM,
-                    BuiltInParameter.FAMILY_TOP_LEVEL_PARAM,
-                    BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM,
+                    //BuiltInParameter.SCHEDULE_LEVEL_PARAM,
+                    //BuiltInParameter.FAMILY_TOP_LEVEL_PARAM,
+                    //BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM,
                     BuiltInParameter.SCHEDULE_TOP_LEVEL_OFFSET_PARAM,
                     BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM,
                     BuiltInParameter.ELEM_TYPE_PARAM
