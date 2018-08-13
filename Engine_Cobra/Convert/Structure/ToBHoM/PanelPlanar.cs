@@ -46,6 +46,7 @@ namespace BH.UI.Cobra.Engine
                 panel = Modify.SetIdentifiers(panel, wall) as PanelPlanar;
                 if (pullSettings.CopyCustomData)
                     panel = Modify.SetCustomData(panel, wall, pullSettings.ConvertUnits) as PanelPlanar;
+                aResult[i] = panel;
             }
 
             return aResult;
@@ -84,6 +85,7 @@ namespace BH.UI.Cobra.Engine
                 panel = Modify.SetIdentifiers(panel, floor) as PanelPlanar;
                 if (pullSettings.CopyCustomData)
                     panel = Modify.SetCustomData(panel, floor, pullSettings.ConvertUnits) as PanelPlanar;
+                aResult[i] = panel;
             }
 
             return aResult;
