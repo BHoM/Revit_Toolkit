@@ -174,7 +174,7 @@ namespace BH.UI.Cobra.Adapter
             if (aParameter == null || aParameter.IsReadOnly)
                 return 0;
 
-            aParameter = Modify.SetParameter(aParameter, updatePropertySettings.Value, updatePropertySettings.ConvertUnits);
+            aParameter = Modify.SetParameter(aParameter, updatePropertySettings.Value, element.Document, updatePropertySettings.ConvertUnits);
             if (aParameter != null)
                 return 1;
 
