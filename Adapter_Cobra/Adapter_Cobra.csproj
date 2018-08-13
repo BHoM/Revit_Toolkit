@@ -90,6 +90,7 @@
     <Compile Include="Create\Environment\BuildingElementProperties.cs" />
     <Compile Include="Delete\Delete.cs" />
     <Compile Include="Execute\Execute.cs" />
+    <Compile Include="Push\Push.cs" />
     <Compile Include="Read\Read.cs" />
     <Compile Include="Types\Comparer.cs" />
     <Compile Include="Types\DependencyTypes.cs" />
