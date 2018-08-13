@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Revit;
 using BH.Engine.Revit;
+using System;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -47,8 +48,9 @@ namespace BH.UI.Cobra.Engine
 
             Curve aCurve = framingElement.LocationCurve.ToRevit(pushSettings);
             Level aLevel = null;
-
-            aCustomDataValue = framingElement.ICustomData("Reference Level");
+            
+            //TODO: Rotation yo!
+            aCustomDataValue = framingElement.ICustomData("Base Level");
             if (aCustomDataValue != null && aCustomDataValue is int)
             {
                 ElementId aElementId = new ElementId((int)aCustomDataValue);
@@ -75,14 +77,47 @@ namespace BH.UI.Cobra.Engine
                     aFamilySymbolList.Find(x => x.Name == framingElement.Name);
 
                 if (aFamilySymbol == null)
-                    aFamilySymbol = aFamilySymbolList.First();
+                {
+                    BH.Engine.Reflection.Compute.RecordError(string.Format("Family symbol has not been found for given BHoM framing property. BHoM Guid: {0}", framingElement.BHoM_Guid));
+                    return null;
+                }
             }
 
             FamilyInstance aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Column);
 
-            //if (pushSettings.CopyCustomData)
-            //    Modify.SetParameters(aFamilyInstance, framingElement, new BuiltInParameter[] { BuiltInParameter.STRUCTURAL_BEAM_END0_ELEVATION, BuiltInParameter.STRUCTURAL_BEAM_END1_ELEVATION }, pushSettings.ConvertUnits);
+            if (aFamilyInstance != null)
+            {
+                oM.Structural.Properties.ConstantFramingElementProperty barProperty = framingElement.Property as oM.Structural.Properties.ConstantFramingElementProperty;
+                if (barProperty != null)
+                {
+                    double orientationAngle = Math.PI * 0.5 - barProperty.OrientationAngle;
+                    Parameter rotation = aFamilyInstance.LookupParameter("Cross-Section Rotation");
+                    rotation.Set(orientationAngle);
+                }
 
+                if (pushSettings.CopyCustomData)
+                {
+                    BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
+                    {
+                    BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM,
+                    BuiltInParameter.FAMILY_BASE_LEVEL_PARAM,
+                    BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM,
+                    BuiltInParameter.SCHEDULE_BASE_LEVEL_OFFSET_PARAM,
+                    BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM,
+                    BuiltInParameter.ELEM_FAMILY_PARAM,
+                    BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
+                    BuiltInParameter.ALL_MODEL_IMAGE,
+                    BuiltInParameter.SCHEDULE_LEVEL_PARAM,
+                    BuiltInParameter.FAMILY_TOP_LEVEL_PARAM,
+                    BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM,
+                    BuiltInParameter.SCHEDULE_TOP_LEVEL_OFFSET_PARAM,
+                    BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM,
+                    BuiltInParameter.ELEM_TYPE_PARAM
+                    };
+                    Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
+                }
+            }
+            
             return aFamilyInstance;
         }
 
@@ -127,9 +162,12 @@ namespace BH.UI.Cobra.Engine
 
                 if (aFamilySymbol == null)
                     aFamilySymbolList.Find(x => x.Name == framingElement.Name);
-
+                
                 if (aFamilySymbol == null)
-                    aFamilySymbol = aFamilySymbolList.First();
+                {
+                    BH.Engine.Reflection.Compute.RecordError(string.Format("Family symbol has not been found for given BHoM framing property. BHoM Guid: {0}", framingElement.BHoM_Guid));
+                    return null;
+                }
             }
 
             FamilyInstance aFamilyInstance;
