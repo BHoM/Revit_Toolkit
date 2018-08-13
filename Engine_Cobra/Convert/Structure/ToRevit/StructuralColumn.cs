@@ -25,8 +25,7 @@ namespace BH.UI.Cobra.Engine
 
             Curve aCurve = framingElement.LocationCurve.ToRevit(pushSettings);
             Level aLevel = null;
-
-            //TODO: Rotation yo!
+            
             aCustomDataValue = framingElement.ICustomData("Base Level");
             if (aCustomDataValue != null && aCustomDataValue is int)
             {
@@ -61,6 +60,8 @@ namespace BH.UI.Cobra.Engine
             }
 
             FamilyInstance aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Column);
+
+            aFamilyInstance.CheckIfNullPush(framingElement);
 
             if (aFamilyInstance != null)
             {

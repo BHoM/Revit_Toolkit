@@ -15,8 +15,6 @@ namespace BH.UI.Cobra.Engine
 
         internal static FamilyInstance ToRevitStructuralFraming(this FramingElement framingElement, Document document, PushSettings pushSettings = null)
         {
-            //TODO: remember about setting structural usage parameter!
-
             if (framingElement == null || document == null)
                 return null;
 
@@ -92,7 +90,6 @@ namespace BH.UI.Cobra.Engine
                 };
                 Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
             }
-            //Modify.SetParameters(aFamilyInstance, framingElement, new BuiltInParameter[] { BuiltInParameter.STRUCTURAL_BEAM_END0_ELEVATION, BuiltInParameter.STRUCTURAL_BEAM_END1_ELEVATION }, pushSettings.ConvertUnits);
 
             return aFamilyInstance;
         }
