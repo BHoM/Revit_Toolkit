@@ -25,7 +25,7 @@ namespace BH.UI.Cobra.Engine
                     if (builtInParametersIgnore != null && aParameter.Id.IntegerValue < 0 && builtInParametersIgnore.Contains((BuiltInParameter)aParameter.Id.IntegerValue))
                         continue;
 
-                    SetParameter(aParameter, aKeyValuePair.Value, convertUnits);
+                    SetParameter(aParameter, aKeyValuePair.Value, element.Document, convertUnits);
                 }
             }
 

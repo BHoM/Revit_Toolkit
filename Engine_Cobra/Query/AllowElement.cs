@@ -163,11 +163,24 @@ namespace BH.UI.Cobra.Engine
                     return false;
             }
 
-            if (worksetSettings.WorksetIds == null || worksetSettings.WorksetIds.Count() < 1)
+            if ((worksetSettings.WorksetIds == null || worksetSettings.WorksetIds.Count() < 1) && (worksetSettings.WorksetNames == null || worksetSettings.WorksetNames.Count() < 1))
                 return true;
 
-            return worksetSettings.WorksetIds.Contains(worksetId.IntegerValue);
+            if (worksetSettings.WorksetIds != null && worksetSettings.WorksetIds.Count() > 0 && worksetSettings.WorksetIds.Contains(worksetId.IntegerValue))
+                return true;
 
+            if (worksetSettings.WorksetNames != null && worksetSettings.WorksetNames.Count() > 0)
+            {
+                if(worksetId != Autodesk.Revit.DB.WorksetId.InvalidWorksetId)
+                {
+                    WorksetTable aWorksetTable = document.GetWorksetTable();
+                    Workset aWorkset = aWorksetTable.GetWorkset(worksetId);
+                    if (aWorkset != null && worksetSettings.WorksetNames.Contains(aWorkset.Name))
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         /***************************************************/

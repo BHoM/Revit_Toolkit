@@ -9,7 +9,7 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public static Parameter SetParameter(this Parameter parameter, object value, bool convertUnits = true)
+        public static Parameter SetParameter(this Parameter parameter, object value, Document Document, bool convertUnits = true)
         {
             if (parameter == null || parameter.IsReadOnly)
                 return null;
@@ -57,17 +57,47 @@ namespace BH.UI.Cobra.Engine
                     }
                     break;
                 case StorageType.ElementId:
+                    ElementId aElementId = null;
                     if (value is int)
                     {
-                        parameter.Set(new ElementId((int)value));
-                        return parameter;
+                        aElementId = new ElementId((int)value);
                     }
                     else if (value is string)
                     {
                         int aInt;
                         if (int.TryParse((string)value, out aInt))
+                            aElementId = new ElementId(aInt);
+                    }
+                    else if(value != null)
+                    {
+                        int aInt;
+                        if (int.TryParse(value.ToString(), out aInt))
+                            aElementId = new ElementId(aInt);
+                    }
+
+                    if(aElementId != null)
+                    {
+                        bool aExists = false;
+                        if (aElementId == ElementId.InvalidElementId)
+                            aExists = true;
+
+                        if(!aExists)
                         {
-                            parameter.Set(new ElementId(aInt));
+                            if (Document == null)
+                            {
+                                aExists = true;
+                            }
+                            else
+                            {
+                                Element aElement = Document.GetElement(aElementId);
+                                aExists = aElement != null;
+                            }
+                                
+                        }
+
+                        if(aExists)
+                        {
+                            parameter.Set(aElementId);
                             return parameter;
                         }
                     }
