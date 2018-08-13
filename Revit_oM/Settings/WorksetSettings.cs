@@ -13,6 +13,8 @@ namespace BH.oM.Revit
 
         public IEnumerable<int> WorksetIds { get; set; } = new List<int>();
 
+        public IEnumerable<string> WorksetNames { get; set; } = new List<string>();
+
         /***************************************************/
     }
 }
