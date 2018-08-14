@@ -88,7 +88,14 @@ namespace BH.UI.Cobra.Adapter
 
                     foreach (Type aType_Temp in aTypes)
                         if (aTupleList.Find(x => x.Item1 == aType_Temp) == null)
-                            aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType_Temp, aType.BuiltInCategories(), aType.Discipline()));
+                        {
+                            IEnumerable<BuiltInCategory> aBuiltInCategories = aType.BuiltInCategories();
+                            if (aBuiltInCategories == null)
+                                aBuiltInCategories = new List<BuiltInCategory>();
+
+                            aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType_Temp, aBuiltInCategories.ToList(), aType.Discipline()));
+                        }
+                            
                 }
                 else
                 {

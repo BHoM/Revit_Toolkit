@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using BH.oM.Environment.Elements;
+using BH.oM.Revit;
 using BH.oM.Structural.Elements;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public static List<BuiltInCategory> BuiltInCategories(this Type type)
+        public static IEnumerable<BuiltInCategory> BuiltInCategories(this Type type)
         {
             if (type == null)
                 return null;
@@ -46,6 +47,32 @@ namespace BH.UI.Cobra.Engine
             }
 
             return aBuiltInCategoryList;
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<BuiltInCategory> BuiltInCategories(this RevitSettings revitSettings, Document document)
+        {
+            if (document == null || revitSettings == null)
+                return null;
+
+            List<BuiltInCategory> aResult = new List<BuiltInCategory>();
+
+            if (revitSettings.SelectionSettings == null || revitSettings.SelectionSettings.CategoryNames == null)
+                return aResult;
+
+            Categories aCategories = document.Settings.Categories;
+            foreach(string aCategoryName in revitSettings.SelectionSettings.CategoryNames)
+            {
+                foreach(Category aCategory in aCategories)
+                    if(aCategory.Name == aCategoryName)
+                    {
+                        BuiltInCategory aBuiltInCategory = (BuiltInCategory)aCategory.Id.IntegerValue;
+                        aResult.Add(aBuiltInCategory);
+                        break;
+                    }
+            }
+            return aResult;
         }
 
         /***************************************************/
