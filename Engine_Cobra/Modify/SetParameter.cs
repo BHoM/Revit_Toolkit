@@ -113,10 +113,14 @@ namespace BH.UI.Cobra.Engine
                     }
                     break;
                 case StorageType.Integer:
-                    if (value is double || value is int)
+                    if (value is int)
                     {
                         parameter.Set((int)value);
                         return parameter;
+                    }
+                    else if(value is sbyte || value is byte || value is short || value is ushort || value is int || value is uint || value is long || value is ulong || value is float || value is double || value is decimal)
+                    {
+                        parameter.Set(System.Convert.ToInt32(value));
                     }
                     else if (value is bool)
                     {
