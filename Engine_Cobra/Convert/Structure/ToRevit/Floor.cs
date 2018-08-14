@@ -25,10 +25,11 @@ namespace BH.UI.Cobra.Engine
             object aCustomDataValue = null;
 
             CurveArray aCurves = new CurveArray();
-            foreach (Curve c in panelPlanar.AllEdgeCurves().Select(c => c.ToRevit(pushSettings)))
+            foreach (Curve c in panelPlanar.ExternalEdgeCurves().Select(c => c.ToRevit(pushSettings)))
             {
                 aCurves.Append(c);
             }
+            if (panelPlanar.Openings.Count != 0) panelPlanar.OpeningInPanelWarning();
 
             Level aLevel = null;
 
@@ -47,6 +48,7 @@ namespace BH.UI.Cobra.Engine
             if (aFloorType == null)
             {
                 List<FloorType> aFloorTypeList = new FilteredElementCollector(document).OfClass(typeof(FloorType)).OfCategory(BuiltInCategory.OST_Floors).Cast<FloorType>().ToList();
+                aFloorTypeList.AddRange(new FilteredElementCollector(document).OfClass(typeof(FloorType)).OfCategory(BuiltInCategory.OST_StructuralFoundation).Cast<FloorType>());
 
                 aCustomDataValue = panelPlanar.ICustomData("Type");
                 if (aCustomDataValue != null && aCustomDataValue is int)

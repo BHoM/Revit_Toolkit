@@ -1,6 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using BH.oM.Base;
 using BH.oM.Revit;
+using BH.oM.Structural.Elements;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -89,6 +90,13 @@ namespace BH.UI.Cobra.Engine
         internal static void CompositePanelWarning(this HostObjAttributes hostObjAttributes)
         {
             BH.Engine.Reflection.Compute.RecordWarning(string.Format("Composite panels are currently not supported in BHoM. A zero thickness panel is created. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
+        }
+
+        /***************************************************/
+
+        internal static void OpeningInPanelWarning(this PanelPlanar panelPlanar)
+        {
+            BH.Engine.Reflection.Compute.RecordWarning(string.Format("In current implementation of BHoM the panels are pushed without openings. {0} openings are skipped for the panel with BHoM_Guid: {1}", panelPlanar.Openings.Count, panelPlanar.BHoM_Guid));
         }
 
         /***************************************************/
