@@ -247,6 +247,8 @@ namespace BH.UI.Cobra.Adapter
                     IEnumerable<Type> aTypes = Query.RevitTypes(aType);
                     if (aTypes == null || aTypes.Count() < 1)
                     {
+
+                        //TODO: add code for BHoMObject
                         BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because equivalent BHoM types do not exist. Type Name: {0}", aType.FullName));
                         continue;
                     }
@@ -267,14 +269,16 @@ namespace BH.UI.Cobra.Adapter
                                 aDictionary_Discipline.Add(aPullSettings.Discipline, aPullSettings);
                             }
 
-                            aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, PullSettings>(aType_Temp, aType.BuiltInCategories(), aPullSettings));
-                        }
-                            
+                            IEnumerable<BuiltInCategory> aBuiltInCategories = aType.BuiltInCategories();
+                            if (aBuiltInCategories == null)
+                                aBuiltInCategories = new List<BuiltInCategory>();
 
+                            aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, PullSettings>(aType_Temp, aBuiltInCategories.ToList(), aPullSettings));
+                        }
                 }
                 else
                 {
-                    BH.Engine.Reflection.Compute.RecordError(string.Format("Provided type is invalid. Type Name: {}", aType.FullName));
+                    BH.Engine.Reflection.Compute.RecordError(string.Format("Provided type is invalid. Type Name: {0}", aType.FullName));
                     continue;
                 }
             }

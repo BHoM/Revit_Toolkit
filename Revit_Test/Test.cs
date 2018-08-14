@@ -64,7 +64,7 @@ namespace Revit_Test
 
             pRevitInternalAdapter.RevitSettings.WorksetSettings.OpenWorksetsOnly = true;
 
-            aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
+            aFilterQuery = new FilterQuery() { Type = typeof(BHoMObject) };
             aBHoMObjectList = pRevitInternalAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
             //pRevitInternalAdapter.Delete(aBHoMObjectList.Cast<BHoMObject>());
