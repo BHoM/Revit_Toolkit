@@ -15,6 +15,8 @@ namespace BH.oM.Revit
 
         public IEnumerable<string> UniqueIds { get; set; } = new List<string>();
 
+        public IEnumerable<string> CategoryNames { get; set; } = new List<string>();
+
         /***************************************************/
     }
 }

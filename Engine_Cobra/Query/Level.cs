@@ -12,7 +12,7 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public oM.Architecture.Elements.Level Level(Element element, PullSettings pullSettings = null)
+        static public oM.Architecture.Elements.Level Level(this Element element, PullSettings pullSettings = null)
         {
             pullSettings.DefaultIfNull();
 
