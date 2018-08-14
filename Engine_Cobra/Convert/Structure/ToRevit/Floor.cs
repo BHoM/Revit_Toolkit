@@ -67,7 +67,11 @@ namespace BH.UI.Cobra.Engine
                 }
             }
 
-            Floor aFloor = document.Create.NewFloor(aCurves, aFloorType, aLevel, false);
+            Floor aFloor;
+            if (aFloorType.IsFoundationSlab)
+                aFloor = document.Create.NewFoundationSlab(aCurves, aFloorType, aLevel, true, XYZ.BasisZ);
+            else
+                aFloor = document.Create.NewFloor(aCurves, aFloorType, aLevel, true);
 
             aFloor.CheckIfNullPush(panelPlanar);
 

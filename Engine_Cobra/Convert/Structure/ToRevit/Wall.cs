@@ -63,7 +63,7 @@ namespace BH.UI.Cobra.Engine
                 }
             }
 
-            Wall aWall = Wall.Create(document, aCurves, aWallType.Id, aLevel.Id, false);
+            Wall aWall = Wall.Create(document, aCurves, aWallType.Id, aLevel.Id, true);
 
             aWall.CheckIfNullPush(panelPlanar);
 
