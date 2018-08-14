@@ -25,8 +25,9 @@ namespace BH.UI.Cobra.Engine
 
             object aCustomDataValue = null;
 
-            List<Curve> aCurves = panelPlanar.AllEdgeCurves().Select(c => c.ToRevit(pushSettings)).ToList();
-            
+            List<Curve> aCurves = panelPlanar.ExternalEdgeCurves().Select(c => c.ToRevit(pushSettings)).ToList();
+            if (panelPlanar.Openings.Count != 0) panelPlanar.OpeningInPanelWarning();
+
             Level aLevel = null;
 
             aCustomDataValue = panelPlanar.ICustomData("Base Constraint");
