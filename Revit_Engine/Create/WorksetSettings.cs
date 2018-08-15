@@ -22,5 +22,15 @@ namespace BH.Engine.Revit
         }
 
         /***************************************************/
+
+        public static WorksetSettings WorksetSettings(IEnumerable<string> worksetNames)
+        {
+            WorksetSettings aWorksetSettings = new WorksetSettings()
+            {
+                WorksetNames = worksetNames
+            };
+
+            return aWorksetSettings;
+        }
     }
 }

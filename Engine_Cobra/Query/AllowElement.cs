@@ -13,12 +13,12 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static bool AllowElement(this RevitSettings revitSettings, UIDocument uIDocument, string uniqueId, ElementId elementId, WorksetId worksetId)
+        public static bool AllowElement(this RevitSettings revitSettings, UIDocument uIDocument, string uniqueId, ElementId elementId, WorksetId worksetId, string categoryName)
         {
             if (revitSettings == null)
                 return true;
 
-            if (!AllowElement(revitSettings.SelectionSettings, uIDocument, uniqueId, elementId))
+            if (!AllowElement(revitSettings.SelectionSettings, uIDocument, uniqueId, elementId, categoryName))
                 return false;
 
             return AllowElement(revitSettings.WorksetSettings, uIDocument.Document, worksetId);
@@ -60,12 +60,16 @@ namespace BH.UI.Cobra.Engine
             if (element == null)
                 return false;
 
-            return AllowElement(selectionSettings, uIDocument, element.UniqueId, element.Id);
+            string aCategoryName = null;
+            if (element.Category != null)
+                aCategoryName = element.Category.Name;
+
+            return AllowElement(selectionSettings, uIDocument, element.UniqueId, element.Id, aCategoryName);
         }
 
         /***************************************************/
 
-        public static bool AllowElement(this SelectionSettings selectionSettings, UIDocument uIDocument, string uniqueId, ElementId elementId)
+        public static bool AllowElement(this SelectionSettings selectionSettings, UIDocument uIDocument, string uniqueId, ElementId elementId, string categoryName)
         {
             if (selectionSettings == null)
                 return true;
@@ -91,6 +95,10 @@ namespace BH.UI.Cobra.Engine
                 if (aElementIds_Selected != null && aElementIds_Selected.Count() > 0 && !aElementIds_Selected.Contains(elementId))
                     return false;
             }
+
+            IEnumerable<string> aCategoryNames = selectionSettings.CategoryNames;
+            if (aCategoryNames != null && aCategoryNames.Count() > 0 && !string.IsNullOrEmpty(categoryName) && !aCategoryNames.Contains(categoryName))
+                return false;
 
             return true;
         }

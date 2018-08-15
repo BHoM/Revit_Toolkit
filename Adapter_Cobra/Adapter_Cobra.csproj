@@ -110,6 +110,10 @@
       <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
       <Name>Revit_Adapter</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj">
+      <Project>{75a99ac5-fe80-45a4-b456-1aa3b1c4bb74}</Project>
+      <Name>Revit_Engine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
       <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
       <Name>Revit_oM</Name>
