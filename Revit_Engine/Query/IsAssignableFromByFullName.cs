@@ -1,6 +1,7 @@
-﻿using Autodesk.Revit.DB;
+﻿using System;
+using System.Collections.Generic;
 
-namespace BH.UI.Cobra.Engine
+namespace BH.Engine.Revit
 {
     public static partial class Query
     {
@@ -8,9 +9,12 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public bool IsVertical(XYZ xyz)
+        public static bool IsAssignableFromByFullName(this Type typeToCheck, Type type)
         {
-            return BH.Engine.Revit.Query.IsZero(xyz.X) && BH.Engine.Revit.Query.IsZero(xyz.Y);
+            if (type == null || typeToCheck == null)
+                return false;
+
+            return FullNames(typeToCheck).Contains(type.FullName);
         }
 
         /***************************************************/

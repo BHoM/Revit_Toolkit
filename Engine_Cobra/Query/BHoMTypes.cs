@@ -78,7 +78,7 @@ namespace BH.UI.Cobra.Engine
                 return aResult;
             }
 
-            if (element.GetType().IsAssignableFromByFullName(typeof(SpatialElement)))
+            if (BH.Engine.Revit.Query.IsAssignableFromByFullName(element.GetType(), typeof(SpatialElement)))
             {
                 aResult.Add(typeof(Space));
                 return aResult;
@@ -98,7 +98,7 @@ namespace BH.UI.Cobra.Engine
             }
 
 
-            if (element.GetType().IsAssignableFromByFullName(typeof(RoofBase)))
+            if (BH.Engine.Revit.Query.IsAssignableFromByFullName(element.GetType(), typeof(RoofBase)))
             {
                 aResult.Add(typeof(BuildingElement));
                 return aResult;

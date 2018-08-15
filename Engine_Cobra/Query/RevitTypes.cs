@@ -17,7 +17,7 @@ namespace BH.UI.Cobra.Engine
             if (type == null)
                 return null;
 
-            if (!Query.IsAssignableFromByFullName(type, typeof(BHoMObject)))
+            if (!BH.Engine.Revit.Query.IsAssignableFromByFullName(type, typeof(BHoMObject)))
                 return null;
 
             List<System.Type> aResult = new List<System.Type>();

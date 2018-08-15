@@ -1,7 +1,7 @@
 ﻿using BH.oM.Revit;
 using System;
 
-namespace BH.UI.Cobra.Engine
+namespace BH.Engine.Revit
 {
     public static partial class Query
     {
@@ -9,10 +9,10 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public static Discipline Discipline(this Type type)
+        public static Discipline? Discipline(this Type type)
         {
             if (type == null)
-                return oM.Revit.Discipline.Environmental;
+                return null;
 
             if(type.Namespace.StartsWith("BH.oM.Structural"))
                 return oM.Revit.Discipline.Structural;
@@ -23,7 +23,17 @@ namespace BH.UI.Cobra.Engine
             if (type.Namespace.StartsWith("BH.oM.Architecture"))
                 return oM.Revit.Discipline.Architecture;
 
-            return oM.Revit.Discipline.Environmental;
+            return null;
+        }
+
+        /***************************************************/
+
+        public static Discipline Discipline(this RevitSettings revitSettings, Type type)
+        {
+            Discipline? aDiscipline = Query.Discipline(type);
+            if (aDiscipline == null || !aDiscipline.HasValue)
+                aDiscipline = DefaultDiscipline(revitSettings);
+            return aDiscipline.Value;
         }
 
         /***************************************************/

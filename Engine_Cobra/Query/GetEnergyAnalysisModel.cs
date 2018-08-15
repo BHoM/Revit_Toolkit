@@ -64,7 +64,7 @@ namespace BH.UI.Cobra.Engine
                     try
                     {
                         Space aSpace = aEnergyAnalysisSpace.ToBHoMSpace(pullSettings);
-                        pullSettings.RefObjects = Modify.AddBHoMObject(pullSettings.RefObjects, aSpace);
+                        pullSettings.RefObjects = BH.Engine.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aSpace);
 
                         foreach (EnergyAnalysisSurface aEnergyAnalysisSurface in aEnergyAnalysisSpace.GetAnalyticalSurfaces())
                             if (!aEnergyAnalysisSurfaces.ContainsKey(aEnergyAnalysisSurface.SurfaceName))
@@ -82,7 +82,7 @@ namespace BH.UI.Cobra.Engine
                     try
                     {
                         BuildingElement aBuildingElement = aKeyValuePair.Value.ToBHoMBuildingElement(pullSettings);
-                        pullSettings.RefObjects = Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
+                        pullSettings.RefObjects = BH.Engine.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
 
                         List<IBHoMObject> aBHoMObjectList_Hosted = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aKeyValuePair.Value.GetAnalyticalOpenings())
@@ -91,7 +91,7 @@ namespace BH.UI.Cobra.Engine
                             if (aBuildingElement_Opening != null)
                             {
                                 aBHoMObjectList_Hosted.Add(aBuildingElement_Opening);
-                                pullSettings.RefObjects = Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement_Opening);
+                                pullSettings.RefObjects = BH.Engine.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement_Opening);
                             }
                         }
 
@@ -113,8 +113,8 @@ namespace BH.UI.Cobra.Engine
                                     PolyCurve = aBuildingElementPanel_Hosted.PolyCurve
                                 };
 
-                                if (pullSettings.CopyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Convert.ElementId))
-                                    aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, Convert.ElementId, aBuildingElement_Hosted.CustomData[Convert.ElementId]) as BuildingElementOpening;
+                                if (pullSettings.CopyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(BH.Engine.Revit.Convert.ElementId))
+                                    aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, BH.Engine.Revit.Convert.ElementId, aBuildingElement_Hosted.CustomData[BH.Engine.Revit.Convert.ElementId]) as BuildingElementOpening;
 
                                 aBuildingElementPanel.Openings.Add(aBuildingElementOpening);
                             }
@@ -135,7 +135,7 @@ namespace BH.UI.Cobra.Engine
                     try
                     {
                         BuildingElement aBuildingElement = aEnergyAnalysisSurface.ToBHoMBuildingElement(pullSettings);
-                        pullSettings.RefObjects = Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
+                        pullSettings.RefObjects = BH.Engine.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
 
                         List<IBHoMObject> aBHoMObjectList_Hosted = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aEnergyAnalysisSurface.GetAnalyticalOpenings())
@@ -144,7 +144,7 @@ namespace BH.UI.Cobra.Engine
                             if (aBuildingElement_Opening != null)
                             {
                                 aBHoMObjectList_Hosted.Add(aBuildingElement_Opening);
-                                pullSettings.RefObjects = Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement_Opening);
+                                pullSettings.RefObjects = BH.Engine.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement_Opening);
                             }
                         }
 
@@ -167,8 +167,8 @@ namespace BH.UI.Cobra.Engine
                                     PolyCurve = aBuildingElementPanel_Hosted.PolyCurve
                                 };
 
-                                if (pullSettings.CopyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(Convert.ElementId))
-                                    aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, Convert.ElementId, aBuildingElement_Hosted.CustomData[Convert.ElementId]) as BuildingElementOpening;
+                                if (pullSettings.CopyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(BH.Engine.Revit.Convert.ElementId))
+                                    aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, BH.Engine.Revit.Convert.ElementId, aBuildingElement_Hosted.CustomData[BH.Engine.Revit.Convert.ElementId]) as BuildingElementOpening;
 
                                 aBuildingElementPanel.Openings.Add(aBuildingElementOpening);
                             }
