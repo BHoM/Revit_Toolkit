@@ -33,6 +33,16 @@ namespace BH.Engine.Revit
             return aSelectionSettings;
         }
 
+        public static SelectionSettings SelectionSettings(bool includeSelected = false)
+        {
+            SelectionSettings aSelectionSettings = new SelectionSettings()
+            {
+                IncludeSelected = includeSelected
+            };
+
+            return aSelectionSettings;
+        }
+
         /***************************************************/
     }
 }

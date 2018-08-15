@@ -1,6 +1,6 @@
-﻿using Autodesk.Revit.DB;
+﻿using System;
 
-namespace BH.UI.Cobra.Engine
+namespace BH.Engine.Revit
 {
     public static partial class Query
     {
@@ -8,9 +8,9 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public bool IsVertical(XYZ xyz)
+        static public bool IsZero(double @double)
         {
-            return BH.Engine.Revit.Query.IsZero(xyz.X) && BH.Engine.Revit.Query.IsZero(xyz.Y);
+            return oM.Geometry.Tolerance.MicroDistance > Math.Abs(@double);
         }
 
         /***************************************************/

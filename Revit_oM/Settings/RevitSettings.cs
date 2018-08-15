@@ -14,6 +14,7 @@ namespace BH.oM.Revit
         public int MaxMinutesToWait { get; set; } = 10;
         public WorksetSettings WorksetSettings = new WorksetSettings();
         public SelectionSettings SelectionSettings = new SelectionSettings();
+        public Discipline DefaultDiscipline = Discipline.Environmental;
 
         /***************************************************/
     }

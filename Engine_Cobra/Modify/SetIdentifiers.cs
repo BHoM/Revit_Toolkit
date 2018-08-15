@@ -1,4 +1,5 @@
 ﻿using Autodesk.Revit.DB;
+
 using BH.oM.Base;
 
 namespace BH.UI.Cobra.Engine
@@ -16,8 +17,8 @@ namespace BH.UI.Cobra.Engine
 
             IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
 
-            aBHoMObject = aBHoMObject.SetCustomData(Convert.ElementId, element.Id.IntegerValue);
-            aBHoMObject = aBHoMObject.SetCustomData(Convert.AdapterId, element.UniqueId);
+            aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Revit.Convert.ElementId, element.Id.IntegerValue);
+            aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Revit.Convert.AdapterId, element.UniqueId);
 
             int aWorksetId = WorksetId.InvalidWorksetId.IntegerValue;
             if (element.Document != null && element.Document.IsWorkshared)
@@ -26,7 +27,7 @@ namespace BH.UI.Cobra.Engine
                 if (aWorksetId_Revit != null)
                     aWorksetId = aWorksetId_Revit.IntegerValue;
             }
-            aBHoMObject = aBHoMObject.SetCustomData(Convert.WorksetId, aWorksetId);
+            aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Revit.Convert.WorksetId, aWorksetId);
 
             return aBHoMObject;
         }
