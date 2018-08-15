@@ -55,21 +55,22 @@ namespace Revit_Test
             List<IBHoMObject> aBHoMObjectList = null;
 
             RevitSettings aRevitSetting = new RevitSettings();
-            aRevitSetting.SelectionSettings.ElementIds = new List<int>() { 2354 };
+            aRevitSetting.SelectionSettings.CategoryNames = new List<string> { "Sheets" };
+            //aRevitSetting.SelectionSettings.ElementIds = new List<int>() { 2354 };
             //aRevitSetting.WorksetSettings.WorksetIds = new List<int>() { 0 };
 
             pRevitInternalAdapter.RevitSettings = aRevitSetting;
 
             //pRevitInternalAdapter.RevitSettings.SelectionSettings.IncludeSelected = true;
 
-            pRevitInternalAdapter.RevitSettings.WorksetSettings.OpenWorksetsOnly = true;
+            //pRevitInternalAdapter.RevitSettings.WorksetSettings.OpenWorksetsOnly = true;
 
             aFilterQuery = new FilterQuery() { Type = typeof(BHoMObject) };
             aBHoMObjectList = pRevitInternalAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
             //pRevitInternalAdapter.Delete(aBHoMObjectList.Cast<BHoMObject>());
 
-            pRevitInternalAdapter.UpdateProperty(aFilterQuery, "Structural", true);
+            //pRevitInternalAdapter.UpdateProperty(aFilterQuery, "Structural", true);
 
             //pRevitInternalAdapter.Push(aBHoMObjectList);
 

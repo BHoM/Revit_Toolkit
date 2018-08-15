@@ -33,7 +33,6 @@ namespace BH.UI.Cobra.Adapter
             return aResult;
         }
 
-
         /***************************************************/
         /**** Private Methods                           ****/
         /***************************************************/
@@ -99,7 +98,7 @@ namespace BH.UI.Cobra.Adapter
                 }
                 else
                 {
-                    BH.Engine.Reflection.Compute.RecordError(string.Format("Provided type is invalid. Type Name: {}", aType.FullName));
+                    BH.Engine.Reflection.Compute.RecordError(string.Format("Provided type is invalid. Type Name: {0}", aType.FullName));
                     continue;
                 }
             }

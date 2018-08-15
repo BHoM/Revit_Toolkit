@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using BH.oM.Revit;
+using System.Linq;
 
 namespace BH.Engine.Revit
 {
@@ -16,7 +17,17 @@ namespace BH.Engine.Revit
                 IncludeSelected = includeSelected,
                 ElementIds = elementIds,
                 UniqueIds = uniqueIds,
-                CategoryNames = categoryNames,
+                CategoryNames = categoryNames
+            };
+
+            return aSelectionSettings;
+        }
+
+        public static SelectionSettings SelectionSettings(IEnumerable<string> categoryNames)
+        {
+            SelectionSettings aSelectionSettings = new SelectionSettings()
+            {
+                CategoryNames = categoryNames
             };
 
             return aSelectionSettings;

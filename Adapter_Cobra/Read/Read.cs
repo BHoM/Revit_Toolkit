@@ -124,6 +124,7 @@ namespace BH.UI.Cobra.Adapter
                     try
                     {
                         IBHoMObject aIBHoMObject = new BHoMObject();
+                        aIBHoMObject.Name = aElement.Name;
                         aIBHoMObject = Modify.SetIdentifiers(aIBHoMObject, aElement);
                         aIBHoMObject = Modify.SetCustomData(aIBHoMObject, aElement, true);
                         aObject = aIBHoMObject;
@@ -213,7 +214,7 @@ namespace BH.UI.Cobra.Adapter
             Dictionary<Discipline, PullSettings> aDictionary_Discipline = new Dictionary<Discipline, PullSettings>();
 
             //Get Revit class types
-            List<Tuple<Type, List<BuiltInCategory>, PullSettings>> aTupleList = new List<Tuple<Type, List<BuiltInCategory>, PullSettings>>();
+            List<Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings>> aTupleList = new List<Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings>>();
             foreach (Type aType in types)
             {
                 if(aType == null)
@@ -222,59 +223,88 @@ namespace BH.UI.Cobra.Adapter
                     continue;
                 }
 
+                //Getting Discipline related to type. If not BHoM type then defult disipline returned
+                Discipline aDiscipline = aType.Discipline();
+
+                //Getting PullSettings and adding it to Dictionary if not exists
+                PullSettings aPullSettings = null;
+                if (!aDictionary_Discipline.TryGetValue(aDiscipline, out aPullSettings))
+                {
+                    aPullSettings = new PullSettings();
+                    aPullSettings.ConvertUnits = true;
+                    aPullSettings.CopyCustomData = true;
+                    aPullSettings.RefObjects = new Dictionary<int, List<IBHoMObject>>();
+                    aPullSettings.Discipline = Discipline.Environmental;
+
+                    aDictionary_Discipline.Add(aPullSettings.Discipline, aPullSettings);
+                }
+
                 if (Query.IsAssignableFromByFullName(aType, typeof(Element)))
                 {
+                    //Code for Revit types (not applicable for BHoM 2.0)
                     if (aTupleList.Find(x => x.Item1 == aType) == null)
-                    {
-                        PullSettings aPullSettings = null;
-                        if(!aDictionary_Discipline.TryGetValue(Discipline.Environmental, out aPullSettings))
-                        {
-                            aPullSettings = new PullSettings();
-                            aPullSettings.ConvertUnits = true;
-                            aPullSettings.CopyCustomData = true;
-                            aPullSettings.RefObjects = new Dictionary<int, List<IBHoMObject>>();
-                            aPullSettings.Discipline = Discipline.Environmental;
-
-                            aDictionary_Discipline.Add(aPullSettings.Discipline, aPullSettings);
-                        }
-
-                        aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, PullSettings>(aType, new List<BuiltInCategory>(), aPullSettings));
-                    }
-                        
+                        aTupleList.Add(new Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings>(aType, new List<BuiltInCategory>(), aPullSettings));                        
                 }
                 else if (Query.IsAssignableFromByFullName(aType, typeof(BHoMObject)))
                 {
+                    //Code for BHoM types
                     IEnumerable<Type> aTypes = Query.RevitTypes(aType);
                     if (aTypes == null || aTypes.Count() < 1)
                     {
+                        //Related Revit types for BHoM type have not been found
+                        IEnumerable<BuiltInCategory> aBuiltInCategories = Query.BuiltInCategories(RevitSettings, Document);
 
-                        //TODO: add code for BHoMObject
-                        BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because equivalent BHoM types do not exist. Type Name: {0}", aType.FullName));
-                        continue;
-                    }
-
-                    foreach (Type aType_Temp in aTypes)
-                        if (aTupleList.Find(x => x.Item1 == aType_Temp) == null)
+                        //Include selection if applicable
+                        if (BH.Engine.Revit.Query.IncludeSelected(RevitSettings))
                         {
-                            PullSettings aPullSettings = null;
-                            Discipline aDiscipline = aType.Discipline();
-                            if (!aDictionary_Discipline.TryGetValue(aDiscipline, out aPullSettings))
-                            {
-                                aPullSettings = new PullSettings();
-                                aPullSettings.ConvertUnits = true;
-                                aPullSettings.CopyCustomData = true;
-                                aPullSettings.RefObjects = new Dictionary<int, List<IBHoMObject>>();
-                                aPullSettings.Discipline = aDiscipline;
+                            IEnumerable<BuiltInCategory> aBuiltInCategories_Selected = Query.SelectionBuiltInCategories(UIDocument);
+                            if (aBuiltInCategories_Selected != null)
+                                if (aBuiltInCategories == null)
+                                {
+                                    aBuiltInCategories = aBuiltInCategories_Selected;
+                                }
+                                else
+                                {
+                                    List<BuiltInCategory> aBuiltInCategoryList = aBuiltInCategories.ToList();
+                                    foreach (BuiltInCategory aBuiltInCategory in aBuiltInCategories_Selected)
+                                        if (!aBuiltInCategoryList.Contains(aBuiltInCategory))
+                                            aBuiltInCategoryList.Add(aBuiltInCategory);
+                                    aBuiltInCategories = aBuiltInCategoryList;
+                                }
+                        }
 
-                                aDictionary_Discipline.Add(aPullSettings.Discipline, aPullSettings);
+                        if (aBuiltInCategories != null && aBuiltInCategories.Count() > 0)
+                        {
+                            //BuiltInCategories have been setup in RevitSettings so some default BHoM Objects can be created
+                            Type aType_Temp = typeof(Element);
+                            int aIndex = aTupleList.FindIndex(x => x.Item1 == aType_Temp);
+                            if(aIndex > -1)
+                            {
+                                Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings> aTuple = aTupleList.ElementAt(aIndex);
+                                aTupleList.RemoveAt(aIndex);
+                                List<BuiltInCategory> aBuiltInCategoryList = new List<BuiltInCategory>(aBuiltInCategories);
+                                if (aTuple.Item2 != null && aTuple.Item2.Count() > 0)
+                                    foreach (BuiltInCategory aBuiltInCategory in aTuple.Item2)
+                                        if (!aBuiltInCategoryList.Contains(aBuiltInCategory))
+                                            aBuiltInCategoryList.Add(aBuiltInCategory);
+                                aBuiltInCategories = aBuiltInCategoryList;
                             }
 
-                            IEnumerable<BuiltInCategory> aBuiltInCategories = aType.BuiltInCategories();
-                            if (aBuiltInCategories == null)
-                                aBuiltInCategories = new List<BuiltInCategory>();
-
-                            aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, PullSettings>(aType_Temp, aBuiltInCategories.ToList(), aPullSettings));
+                            aTupleList.Add(new Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings>(aType_Temp, aBuiltInCategories, aPullSettings));
                         }
+                        else
+                        {
+                            //BuiltInCategories have not been set in RevitSettings. Cannot create BHoM objects
+                            BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be read because equivalent BHoM types do not exist. Type Name: {0}", aType.FullName));
+                        }
+                    }
+                    else
+                    {
+                        //Related Revit types for BHoM type have been found
+                        foreach (Type aType_Temp in aTypes)
+                            if (aTupleList.Find(x => x.Item1 == aType_Temp) == null)
+                                aTupleList.Add(new Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings>(aType_Temp, aType.BuiltInCategories(), aPullSettings));
+                    }
                 }
                 else
                 {
@@ -286,7 +316,7 @@ namespace BH.UI.Cobra.Adapter
             if (aTupleList == null || aTupleList.Count < 1)
                 return;
 
-            foreach (Tuple<Type, List<BuiltInCategory>, PullSettings> aTuple in aTupleList)
+            foreach (Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings> aTuple in aTupleList)
             {
                 if(aTuple.Item1 == typeof(Document))
                 {
@@ -296,10 +326,16 @@ namespace BH.UI.Cobra.Adapter
                 }
 
                 FilteredElementCollector aFilteredElementCollector = null;
-                if (aTuple.Item2 == null || aTuple.Item2.Count < 1)
+                if (aTuple.Item2 == null || aTuple.Item2.Count() < 1)
                     aFilteredElementCollector = new FilteredElementCollector(Document).OfClass(aTuple.Item1);
                 else
-                    aFilteredElementCollector = new FilteredElementCollector(Document).OfClass(aTuple.Item1).WherePasses(new LogicalOrFilter(aTuple.Item2.ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)));
+                {
+                    if (aTuple.Item1 == typeof(Element))
+                        aFilteredElementCollector = new FilteredElementCollector(Document).WherePasses(new LogicalOrFilter(aTuple.Item2.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)));
+                    else
+                        aFilteredElementCollector = new FilteredElementCollector(Document).OfClass(aTuple.Item1).WherePasses(new LogicalOrFilter(aTuple.Item2.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)));
+                }
+                    
 
                 List<ElementId> aElementIdList = new List<ElementId>();
                 foreach (Element aElement in aFilteredElementCollector)
