@@ -224,7 +224,7 @@ namespace BH.UI.Cobra.Adapter
                 }
 
                 //Getting Discipline related to type. If not BHoM type then defult disipline returned
-                Discipline aDiscipline = aType.Discipline();
+                Discipline aDiscipline = BH.Engine.Revit.Query.Discipline(RevitSettings, aType);
 
                 //Getting PullSettings and adding it to Dictionary if not exists
                 PullSettings aPullSettings = null;
@@ -234,18 +234,18 @@ namespace BH.UI.Cobra.Adapter
                     aPullSettings.ConvertUnits = true;
                     aPullSettings.CopyCustomData = true;
                     aPullSettings.RefObjects = new Dictionary<int, List<IBHoMObject>>();
-                    aPullSettings.Discipline = Discipline.Environmental;
+                    aPullSettings.Discipline = aDiscipline;
 
-                    aDictionary_Discipline.Add(aPullSettings.Discipline, aPullSettings);
+                    aDictionary_Discipline.Add(aDiscipline, aPullSettings);
                 }
 
-                if (Query.IsAssignableFromByFullName(aType, typeof(Element)))
+                if (BH.Engine.Revit.Query.IsAssignableFromByFullName(aType, typeof(Element)))
                 {
                     //Code for Revit types (not applicable for BHoM 2.0)
                     if (aTupleList.Find(x => x.Item1 == aType) == null)
                         aTupleList.Add(new Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings>(aType, new List<BuiltInCategory>(), aPullSettings));                        
                 }
-                else if (Query.IsAssignableFromByFullName(aType, typeof(BHoMObject)))
+                else if (BH.Engine.Revit.Query.IsAssignableFromByFullName(aType, typeof(BHoMObject)))
                 {
                     //Code for BHoM types
                     IEnumerable<Type> aTypes = Query.RevitTypes(aType);

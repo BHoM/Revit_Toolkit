@@ -55,9 +55,10 @@ namespace Revit_Test
             List<IBHoMObject> aBHoMObjectList = null;
 
             RevitSettings aRevitSetting = new RevitSettings();
-            aRevitSetting.SelectionSettings.CategoryNames = new List<string> { "Sheets" };
+            aRevitSetting.SelectionSettings.IncludeSelected = true;
             //aRevitSetting.SelectionSettings.ElementIds = new List<int>() { 2354 };
             //aRevitSetting.WorksetSettings.WorksetIds = new List<int>() { 0 };
+            aRevitSetting.DefaultDiscipline = Discipline.Structural;
 
             pRevitInternalAdapter.RevitSettings = aRevitSetting;
 

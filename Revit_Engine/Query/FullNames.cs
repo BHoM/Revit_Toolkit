@@ -1,16 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace BH.UI.Cobra.Engine
+namespace BH.Engine.Revit
 {
     public static partial class Query
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
-        static public bool IsZero(double @double)
+
+        private static List<string> FullNames(Type type)
         {
-            return oM.Geometry.Tolerance.MicroDistance > Math.Abs(@double);
+            List<string> aResult = new List<string>();
+            aResult.Add(type.FullName);
+            if (type.BaseType != null)
+                aResult.AddRange(FullNames(type.BaseType));
+            return aResult;
         }
 
         /***************************************************/

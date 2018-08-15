@@ -70,13 +70,13 @@ namespace BH.UI.Cobra.Adapter
                     continue;
                 }
 
-                if (Query.IsAssignableFromByFullName(aType, typeof(Element)))
+                if (BH.Engine.Revit.Query.IsAssignableFromByFullName(aType, typeof(Element)))
                 {
                     if (aTupleList.Find(x => x.Item1 == aType) == null)
                         aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType, new List<BuiltInCategory>(), Discipline.Environmental));
 
                 }
-                else if (Query.IsAssignableFromByFullName(aType, typeof(BHoMObject)))
+                else if (BH.Engine.Revit.Query.IsAssignableFromByFullName(aType, typeof(BHoMObject)))
                 {
                     IEnumerable<Type> aTypes = Query.RevitTypes(aType);
                     if (aTypes == null || aTypes.Count() < 1)
@@ -92,7 +92,7 @@ namespace BH.UI.Cobra.Adapter
                             if (aBuiltInCategories == null)
                                 aBuiltInCategories = new List<BuiltInCategory>();
 
-                            aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType_Temp, aBuiltInCategories.ToList(), aType.Discipline()));
+                            aTupleList.Add(new Tuple<Type, List<BuiltInCategory>, Discipline>(aType_Temp, aBuiltInCategories.ToList(), BH.Engine.Revit.Query.Discipline(RevitSettings, aType)));
                         }
                             
                 }

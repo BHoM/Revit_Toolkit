@@ -3,7 +3,7 @@ using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
 
-namespace BH.UI.Cobra.Engine
+namespace BH.Engine.Revit
 {
     public static partial class Modify
     {
@@ -22,13 +22,13 @@ namespace BH.UI.Cobra.Engine
             foreach (BuildingElement aBuildingElement in aBuilding.BuildingElements)
             {
                 object aObject;
-                if(aBuildingElement.CustomData.TryGetValue(Convert.ElementId, out aObject))
+                if(aBuildingElement.CustomData.TryGetValue(BH.Engine.Revit.Convert.ElementId, out aObject))
                 {
                     if(aObject is int)
                     {
                         int aId = (int)aObject;
                         if (!aData.ContainsKey(aId))
-                            aData.Add(aId, building.BuildingElements(aId));
+                            aData.Add(aId, BH.Engine.Revit.Query.BuildingElements(building, aId));
                     }
                 }
             }

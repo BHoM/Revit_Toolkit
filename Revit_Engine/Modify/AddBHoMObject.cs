@@ -1,8 +1,7 @@
-﻿using Autodesk.Revit.DB;
-using BH.oM.Base;
+﻿using BH.oM.Base;
 using System.Collections.Generic;
 
-namespace BH.UI.Cobra.Engine
+namespace BH.Engine.Revit
 {
     public static partial class Modify
     {
@@ -24,12 +23,10 @@ namespace BH.UI.Cobra.Engine
             if (bHoMObject == null)
                 return new Dictionary<int, List<IBHoMObject>>(objects);
 
-            ElementId aElementId = Query.ElementId(bHoMObject);
-            if (aElementId == null)
-                aElementId = ElementId.InvalidElementId;
+            int aId = Query.Id(bHoMObject);
 
             List<IBHoMObject> aBHoMObjectList = null;
-            if (aResult.TryGetValue(aElementId.IntegerValue, out aBHoMObjectList))
+            if (aResult.TryGetValue(aId, out aBHoMObjectList))
             {
                 if (aBHoMObjectList == null)
                     aBHoMObjectList = new List<IBHoMObject>();
@@ -39,7 +36,7 @@ namespace BH.UI.Cobra.Engine
             }
             else
             {
-                aResult.Add(aElementId.IntegerValue, new List<IBHoMObject>() { bHoMObject });
+                aResult.Add(aId, new List<IBHoMObject>() { bHoMObject });
             }
 
             return aResult;

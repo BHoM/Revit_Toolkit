@@ -1,6 +1,6 @@
-﻿using Autodesk.Revit.DB;
+﻿using BH.oM.Revit;
 
-namespace BH.UI.Cobra.Engine
+namespace BH.Engine.Revit
 {
     public static partial class Query
     {
@@ -8,9 +8,12 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public bool IsVertical(XYZ xyz)
+        public static Discipline DefaultDiscipline(this RevitSettings revitSettings)
         {
-            return BH.Engine.Revit.Query.IsZero(xyz.X) && BH.Engine.Revit.Query.IsZero(xyz.Y);
+            if (revitSettings == null)
+                return oM.Revit.Discipline.Environmental;
+
+            return revitSettings.DefaultDiscipline;
         }
 
         /***************************************************/

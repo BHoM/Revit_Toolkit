@@ -20,7 +20,7 @@ namespace BH.UI.Cobra.Adapter
         public CobraAdapter(Document document)
             : base()
         {
-            AdapterId = BH.UI.Cobra.Engine.Convert.AdapterId;
+            AdapterId = BH.Engine.Revit.Convert.AdapterId;
             Config.UseAdapterId = false;
             Config.ProcessInMemory = false;
             Config.SeparateProperties = true;
