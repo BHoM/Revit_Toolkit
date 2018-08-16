@@ -230,12 +230,7 @@ namespace BH.UI.Cobra.Adapter
                 PullSettings aPullSettings = null;
                 if (!aDictionary_Discipline.TryGetValue(aDiscipline, out aPullSettings))
                 {
-                    aPullSettings = new PullSettings();
-                    aPullSettings.ConvertUnits = true;
-                    aPullSettings.CopyCustomData = true;
-                    aPullSettings.RefObjects = new Dictionary<int, List<IBHoMObject>>();
-                    aPullSettings.Discipline = aDiscipline;
-
+                    aPullSettings = BH.Engine.Revit.Create.PullSettings(aDiscipline);
                     aDictionary_Discipline.Add(aDiscipline, aPullSettings);
                 }
 
@@ -256,22 +251,12 @@ namespace BH.UI.Cobra.Adapter
 
                         //Include selection if applicable
                         if (BH.Engine.Revit.Query.IncludeSelected(RevitSettings))
-                        {
-                            IEnumerable<BuiltInCategory> aBuiltInCategories_Selected = Query.SelectionBuiltInCategories(UIDocument);
-                            if (aBuiltInCategories_Selected != null)
-                                if (aBuiltInCategories == null)
-                                {
-                                    aBuiltInCategories = aBuiltInCategories_Selected;
-                                }
-                                else
-                                {
-                                    List<BuiltInCategory> aBuiltInCategoryList = aBuiltInCategories.ToList();
-                                    foreach (BuiltInCategory aBuiltInCategory in aBuiltInCategories_Selected)
-                                        if (!aBuiltInCategoryList.Contains(aBuiltInCategory))
-                                            aBuiltInCategoryList.Add(aBuiltInCategory);
-                                    aBuiltInCategories = aBuiltInCategoryList;
-                                }
-                        }
+                            aBuiltInCategories = Modify.Append(aBuiltInCategories, Query.SelectionBuiltInCategories(UIDocument));
+
+                        //Include ElementIds and UniqueIds if applicable
+                        IEnumerable<Element> aElements = Query.Elements(RevitSettings, UIDocument);
+                        if(aElements != null && aElements.Count() > 0)
+                            aBuiltInCategories = Modify.Append(aBuiltInCategories, Query.BuiltInCategories(aElements));
 
                         if (aBuiltInCategories != null && aBuiltInCategories.Count() > 0)
                         {

@@ -12,7 +12,7 @@ namespace BH.UI.Cobra.Engine
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
+
         public static IEnumerable<BuiltInCategory> BuiltInCategories(this Type type)
         {
             if (type == null)
@@ -36,7 +36,7 @@ namespace BH.UI.Cobra.Engine
                 aBuiltInCategoryList.Add(BuiltInCategory.OST_StructuralStiffener);
                 aBuiltInCategoryList.Add(BuiltInCategory.OST_StructuralFramingOther);
             }
-            if(type == typeof(BuildingElement))
+            if (type == typeof(BuildingElement))
             {
                 aBuiltInCategoryList.Add(BuiltInCategory.OST_Doors);
                 aBuiltInCategoryList.Add(BuiltInCategory.OST_Windows);
@@ -62,10 +62,10 @@ namespace BH.UI.Cobra.Engine
                 return aResult;
 
             Categories aCategories = document.Settings.Categories;
-            foreach(string aCategoryName in revitSettings.SelectionSettings.CategoryNames)
+            foreach (string aCategoryName in revitSettings.SelectionSettings.CategoryNames)
             {
-                foreach(Category aCategory in aCategories)
-                    if(aCategory.Name == aCategoryName)
+                foreach (Category aCategory in aCategories)
+                    if (aCategory.Name == aCategoryName)
                     {
                         BuiltInCategory aBuiltInCategory = (BuiltInCategory)aCategory.Id.IntegerValue;
                         aResult.Add(aBuiltInCategory);
@@ -76,5 +76,22 @@ namespace BH.UI.Cobra.Engine
         }
 
         /***************************************************/
+
+        public static IEnumerable<BuiltInCategory> BuiltInCategories(IEnumerable<Element> elements)
+        {
+            if (elements == null)
+                return null;
+
+            List<BuiltInCategory> aBuiltInCategoryList = new List<BuiltInCategory>();
+            foreach (Element aElement in elements)
+                if (aElement.Category != null)
+                {
+                    BuiltInCategory aBuiltInCategory = (BuiltInCategory)aElement.Category.Id.IntegerValue;
+                    if (!aBuiltInCategoryList.Contains(aBuiltInCategory))
+                        aBuiltInCategoryList.Add(aBuiltInCategory);
+                }
+
+            return aBuiltInCategoryList;
+        }
     }
 }
