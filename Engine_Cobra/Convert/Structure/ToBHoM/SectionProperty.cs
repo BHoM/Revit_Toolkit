@@ -52,19 +52,30 @@ namespace BH.UI.Cobra.Engine
                 }
             }
 
-            IProfile aSectionDimensions = null;
+
             if (pullSettings.RefObjects != null)
             {
                 List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
                 if (pullSettings.RefObjects.TryGetValue(familyInstance.Symbol.Id.IntegerValue, out aBHoMObjectList))
                     if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                        aSectionDimensions = aBHoMObjectList.First() as IProfile;
+                        aSectionProperty = aBHoMObjectList.First() as ISectionProperty;
             }
-
-            if (aSectionDimensions == null)
+            else
             {
                 string symbolName = familyInstance.Symbol.Name;
-                aSectionDimensions = BH.Engine.Library.Query.Match("SectionProfiles", symbolName) as IProfile;
+                aSectionProperty = BH.Engine.Library.Query.Match("SectionProperties", symbolName) as ISectionProperty;
+
+                if (aSectionProperty != null)
+                {
+                    aSectionProperty.Material = aMaterial;
+                    aSectionProperty.Name = symbolName;
+                }
+            }
+
+
+            if (aSectionProperty == null)
+            {
+                IProfile aSectionDimensions = null;
 
                 if (aSectionDimensions == null) aSectionDimensions = familyInstance.Symbol.ToBHoMProfile(pullSettings);
 
@@ -107,57 +118,61 @@ namespace BH.UI.Cobra.Engine
                 if (pullSettings.CopyCustomData)
                     aSectionDimensions = Modify.SetCustomData(aSectionDimensions, familyInstance.Symbol, pullSettings.ConvertUnits) as IProfile;
 
-                if (pullSettings.RefObjects != null)
-                    pullSettings.RefObjects.Add(familyInstance.Symbol.Id.IntegerValue, new List<IBHoMObject>(new IBHoMObject[] { aSectionDimensions }));
+
+
+
+                string name = familyInstance.Name;
+                bool emptyProfile = aSectionDimensions.Edges.Count == 0;
+                if (emptyProfile) familyInstance.Symbol.ConvertProfileFailedWarning();
+
+                //TODO: shouldn't we have AluminiumSection and TimberSection at least?
+                if (aMaterial == null)
+                {
+                    familyInstance.UnknownMaterialWarning();
+                    if (emptyProfile)
+                    {
+                        aSectionProperty = new SteelSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        aSectionProperty.Name = name;
+                    }
+                    else aSectionProperty = BHS.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
+                }
+                else if (aMaterial.Type == oM.Common.Materials.MaterialType.Concrete)
+                {
+                    if (emptyProfile)
+                    {
+                        aSectionProperty = new ConcreteSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        aSectionProperty.Name = name;
+                    }
+                    else aSectionProperty = BHS.Create.ConcreteSectionFromProfile(aSectionDimensions, aMaterial, name);
+                }
+                else if (aMaterial.Type == oM.Common.Materials.MaterialType.Steel)
+                {
+                    if (emptyProfile)
+                    {
+                        aSectionProperty = new SteelSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        aSectionProperty.Name = name;
+                    }
+                    else aSectionProperty = BHS.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
+                }
+                else
+                {
+                    familyInstance.UnknownMaterialWarning();
+                    if (emptyProfile)
+                    {
+                        aSectionProperty = new SteelSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        aSectionProperty.Name = name;
+                    }
+                    else aSectionProperty = BHS.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
+                }
             }
 
-            string name = familyInstance.Name;
-            bool emptyProfile = aSectionDimensions.Edges.Count == 0;
-            if (emptyProfile) familyInstance.Symbol.ConvertProfileFailedWarning();
-
-            //TODO: shouldn't we have AluminiumSection and TimberSection at least?
-            if (aMaterial == null)
-            {
-                familyInstance.UnknownMaterialWarning();
-                if (emptyProfile)
-                {
-                    aSectionProperty = new SteelSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                    aSectionProperty.Name = name;
-                }
-                else aSectionProperty = BHS.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
-            }
-            else if (aMaterial.Type == oM.Common.Materials.MaterialType.Concrete)
-            {
-                if (emptyProfile)
-                {
-                    aSectionProperty = new ConcreteSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                    aSectionProperty.Name = name;
-                }
-                else aSectionProperty = BHS.Create.ConcreteSectionFromProfile(aSectionDimensions, aMaterial, name);
-            }
-            else if (aMaterial.Type == oM.Common.Materials.MaterialType.Steel)
-            {
-                if (emptyProfile)
-                {
-                    aSectionProperty = new SteelSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                    aSectionProperty.Name = name;
-                }
-                else aSectionProperty = BHS.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
-            }
-            else
-            {
-                familyInstance.UnknownMaterialWarning();
-                if (emptyProfile)
-                {
-                    aSectionProperty = new SteelSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                    aSectionProperty.Name = name;
-                }
-                else aSectionProperty = BHS.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
-            }
-            
             aSectionProperty = Modify.SetIdentifiers(aSectionProperty, familyInstance) as ISectionProperty;
             if (pullSettings.CopyCustomData)
                 aSectionProperty = Modify.SetCustomData(aSectionProperty, familyInstance, pullSettings.ConvertUnits) as ISectionProperty;
+
+
+            if (pullSettings.RefObjects != null)
+                pullSettings.RefObjects.Add(familyInstance.Symbol.Id.IntegerValue, new List<IBHoMObject>(new IBHoMObject[] { aSectionProperty }));
 
             return aSectionProperty;
         }
