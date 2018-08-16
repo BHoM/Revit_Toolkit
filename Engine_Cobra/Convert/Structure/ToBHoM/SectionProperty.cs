@@ -58,22 +58,19 @@ namespace BH.UI.Cobra.Engine
                 List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
                 if (pullSettings.RefObjects.TryGetValue(familyInstance.Symbol.Id.IntegerValue, out aBHoMObjectList))
                     if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                        aSectionProperty = aBHoMObjectList.First() as ISectionProperty;
+                        return aBHoMObjectList.First() as ISectionProperty;
+            }
+
+            string symbolName = familyInstance.Symbol.Name;
+            aSectionProperty = BH.Engine.Library.Query.Match("SectionProperties", symbolName) as ISectionProperty;
+
+            if (aSectionProperty != null)
+            {
+                aSectionProperty = aSectionProperty.GetShallowClone() as ISectionProperty;
+                aSectionProperty.Material = aMaterial;
+                aSectionProperty.Name = symbolName;
             }
             else
-            {
-                string symbolName = familyInstance.Symbol.Name;
-                aSectionProperty = BH.Engine.Library.Query.Match("SectionProperties", symbolName).GetShallowClone() as ISectionProperty;
-
-                if (aSectionProperty != null)
-                {
-                    aSectionProperty.Material = aMaterial;
-                    aSectionProperty.Name = symbolName;
-                }
-            }
-
-
-            if (aSectionProperty == null)
             {
                 IProfile aSectionDimensions = null;
 
