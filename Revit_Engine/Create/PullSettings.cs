@@ -24,5 +24,19 @@ namespace BH.Engine.Revit
         }
 
         /***************************************************/
+
+        public static PullSettings PullSettings(Discipline discipline)
+        {
+            PullSettings aPullSettings = new PullSettings()
+            {
+                Discipline = discipline,
+                RefObjects = new Dictionary<int, List<IBHoMObject>>(),
+            };
+
+            return aPullSettings;
+        }
+
+        /***************************************************/
+
     }
 }

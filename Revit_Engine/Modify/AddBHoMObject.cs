@@ -23,7 +23,7 @@ namespace BH.Engine.Revit
             if (bHoMObject == null)
                 return new Dictionary<int, List<IBHoMObject>>(objects);
 
-            int aId = Query.Id(bHoMObject);
+            int aId = Query.ElementId(bHoMObject);
 
             List<IBHoMObject> aBHoMObjectList = null;
             if (aResult.TryGetValue(aId, out aBHoMObjectList))

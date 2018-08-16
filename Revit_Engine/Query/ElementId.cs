@@ -8,7 +8,7 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static int Id(this IBHoMObject bHoMObject)
+        public static int ElementId(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
                 return -1;

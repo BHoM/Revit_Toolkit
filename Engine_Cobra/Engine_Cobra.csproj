@@ -144,6 +144,7 @@
     <Compile Include="Convert\FromSI.cs" />
     <Compile Include="Modify\SetCustomData.cs" />
     <Compile Include="Modify\SetIdentifiers.cs" />
+    <Compile Include="Modify\Append.cs" />
     <Compile Include="Modify\SetParameters.cs" />
     <Compile Include="Modify\SetParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -152,6 +153,7 @@
     <Compile Include="Query\BuildingElements.cs" />
     <Compile Include="Query\BuildingElementType.cs" />
     <Compile Include="Query\BuiltInCategories.cs" />
+    <Compile Include="Query\Elements.cs" />
     <Compile Include="Query\SelectionBuiltInCategories.cs" />
     <Compile Include="Query\Element.cs" />
     <Compile Include="Query\ElementId.cs" />
