@@ -63,7 +63,7 @@ namespace BH.UI.Cobra.Engine
             else
             {
                 string symbolName = familyInstance.Symbol.Name;
-                aSectionProperty = BH.Engine.Library.Query.Match("SectionProperties", symbolName) as ISectionProperty;
+                aSectionProperty = BH.Engine.Library.Query.Match("SectionProperties", symbolName).GetShallowClone() as ISectionProperty;
 
                 if (aSectionProperty != null)
                 {
