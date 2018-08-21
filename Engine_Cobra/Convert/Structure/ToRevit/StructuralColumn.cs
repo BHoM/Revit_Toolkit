@@ -1,7 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using BH.Engine.Revit;
 using BH.oM.Revit;
-using BH.oM.Structural.Elements;
+using BH.oM.Structure.Elements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,7 +65,7 @@ namespace BH.UI.Cobra.Engine
 
             if (aFamilyInstance != null)
             {
-                oM.Structural.Properties.ConstantFramingElementProperty barProperty = framingElement.Property as oM.Structural.Properties.ConstantFramingElementProperty;
+                oM.Structure.Properties.ConstantFramingElementProperty barProperty = framingElement.Property as oM.Structure.Properties.ConstantFramingElementProperty;
                 if (barProperty != null)
                 {
                     double orientationAngle = (Math.PI * 0.5 - barProperty.OrientationAngle) % (2 * Math.PI);

@@ -1,6 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure.StructuralSections;
-using BH.oM.Structural.Properties;
+using BH.oM.Structure.Properties;
 using System;
 using System.Collections.Generic;
 using BHS = BH.Engine.Structure;

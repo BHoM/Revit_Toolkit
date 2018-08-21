@@ -1,7 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using BH.oM.Base;
 using BH.oM.Revit;
-using BH.oM.Structural.Elements;
+using BH.oM.Structure.Elements;
 using System;
 using System.Collections.Generic;
 using System.Reflection;

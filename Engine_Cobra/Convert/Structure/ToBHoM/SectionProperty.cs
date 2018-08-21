@@ -2,7 +2,7 @@
 using Autodesk.Revit.DB.Structure;
 using BH.oM.Base;
 using BH.oM.Revit;
-using BH.oM.Structural.Properties;
+using BH.oM.Structure.Properties;
 using System.Collections.Generic;
 using System.Linq;
 using BHS = BH.Engine.Structure;

@@ -1,6 +1,6 @@
 ﻿using BH.oM.Common.Materials;
 using BH.oM.Architecture.Elements;
-using BH.oM.Structural.Properties;
+using BH.oM.Structure.Properties;
 using System;
 using System.Collections.Generic;
 using BH.Engine.Base.Objects;

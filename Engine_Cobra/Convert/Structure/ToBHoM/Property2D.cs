@@ -1,6 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using BH.oM.Base;
-using BH.oM.Structural.Properties;
+using BH.oM.Structure.Properties;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Revit;
@@ -62,7 +62,7 @@ namespace BH.UI.Cobra.Engine
             if (composite) wallType.CompositePanelWarning();
             else if (aThickness == 0) BH.Engine.Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", wallType.Id.IntegerValue));
 
-            ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structural.Properties.PanelType.Wall, Thickness = aThickness, Material = aMaterial, Name = wallType.Name };
+            ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structure.Properties.PanelType.Wall, Thickness = aThickness, Material = aMaterial, Name = wallType.Name };
 
             aProperty2D = Modify.SetIdentifiers(aProperty2D, wallType) as ConstantThickness;
             if (pullSettings.CopyCustomData)
@@ -122,7 +122,7 @@ namespace BH.UI.Cobra.Engine
             if (composite) floorType.CompositePanelWarning();
             else if (aThickness == 0) BH.Engine.Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", floorType.Id.IntegerValue));
 
-            ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structural.Properties.PanelType.Slab, Thickness = aThickness, Material = aMaterial, Name = floorType.Name };
+            ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structure.Properties.PanelType.Slab, Thickness = aThickness, Material = aMaterial, Name = floorType.Name };
 
             aProperty2D = Modify.SetIdentifiers(aProperty2D, floorType) as ConstantThickness;
             if (pullSettings.CopyCustomData)

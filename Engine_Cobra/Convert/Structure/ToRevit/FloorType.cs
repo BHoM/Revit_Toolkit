@@ -11,7 +11,7 @@ namespace BH.UI.Cobra.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static FloorType ToRevitFloorType(this oM.Structural.Properties.IProperty2D property2D, Document document, PushSettings pushSettings = null)
+        public static FloorType ToRevitFloorType(this oM.Structure.Properties.IProperty2D property2D, Document document, PushSettings pushSettings = null)
         {
             List<FloorType> aFloorTypeList = new FilteredElementCollector(document).OfClass(typeof(FloorType)).OfCategory(BuiltInCategory.OST_Floors).Cast<FloorType>().ToList();
             aFloorTypeList.AddRange(new FilteredElementCollector(document).OfClass(typeof(FloorType)).OfCategory(BuiltInCategory.OST_StructuralFoundation).Cast<FloorType>());

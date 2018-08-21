@@ -1,8 +1,8 @@
 ﻿using Autodesk.Revit.DB;
 using BH.oM.Base;
 using BH.oM.Revit;
-using BH.oM.Structural.Elements;
-using BH.oM.Structural.Properties;
+using BH.oM.Structure.Elements;
+using BH.oM.Structure.Properties;
 using System.Collections.Generic;
 using System.Linq;
 using BHS = BH.Engine.Structure;
@@ -36,7 +36,7 @@ namespace BH.UI.Cobra.Engine
             }
             
             List<oM.Geometry.ICurve> outlines = wall.Outlines(pullSettings);
-            List<PanelPlanar> aResult = outlines != null ? BHS.Create.PanelPlanar(outlines) : new List<PanelPlanar> { new PanelPlanar { ExternalEdges = new List<oM.Structural.Elements.Edge>(), Openings = new List<oM.Structural.Elements.Opening>(), Property = aProperty2D } };
+            List<PanelPlanar> aResult = outlines != null ? BHS.Create.PanelPlanar(outlines) : new List<PanelPlanar> { new PanelPlanar { ExternalEdges = new List<oM.Structure.Elements.Edge>(), Openings = new List<oM.Structure.Elements.Opening>(), Property = aProperty2D } };
 
             for (int i = 0; i < aResult.Count; i++)
             {
@@ -75,7 +75,7 @@ namespace BH.UI.Cobra.Engine
             }
 
             List<oM.Geometry.ICurve> outlines = floor.Outlines(pullSettings);
-            List<PanelPlanar> aResult = outlines != null ? BHS.Create.PanelPlanar(outlines) : new List<PanelPlanar> { new PanelPlanar { ExternalEdges = new List<oM.Structural.Elements.Edge>(), Openings = new List<oM.Structural.Elements.Opening>(), Property = aProperty2D } };
+            List<PanelPlanar> aResult = outlines != null ? BHS.Create.PanelPlanar(outlines) : new List<PanelPlanar> { new PanelPlanar { ExternalEdges = new List<oM.Structure.Elements.Edge>(), Openings = new List<oM.Structure.Elements.Opening>(), Property = aProperty2D } };
 
             for (int i = 0; i < aResult.Count; i++)
             {
