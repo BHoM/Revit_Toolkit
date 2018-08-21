@@ -11,7 +11,7 @@ namespace BH.UI.Cobra.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static FamilySymbol ToRevitColumnSymbol(this oM.Structural.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
+        public static FamilySymbol ToRevitColumnSymbol(this oM.Structure.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
         {
             List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralColumns).Cast<FamilySymbol>().ToList();
             if (aFamilySymbolList == null || aFamilySymbolList.Count < 1)
@@ -29,7 +29,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        public static FamilySymbol ToRevitFramingSymbol(this oM.Structural.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
+        public static FamilySymbol ToRevitFramingSymbol(this oM.Structure.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
         {
             List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilySymbol>().ToList();
             if (aFamilySymbolList == null || aFamilySymbolList.Count < 1)

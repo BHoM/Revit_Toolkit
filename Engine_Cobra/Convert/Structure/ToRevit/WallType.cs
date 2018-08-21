@@ -11,7 +11,7 @@ namespace BH.UI.Cobra.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static WallType ToRevitWallType(this oM.Structural.Properties.IProperty2D property2D, Document document, PushSettings pushSettings = null)
+        public static WallType ToRevitWallType(this oM.Structure.Properties.IProperty2D property2D, Document document, PushSettings pushSettings = null)
         {
             List<WallType> aWallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).OfCategory(BuiltInCategory.OST_Walls).Cast<WallType>().ToList();
             if (aWallTypeList == null || aWallTypeList.Count < 1)

@@ -3,7 +3,7 @@ using BH.Engine.Geometry;
 using BH.Engine.Structure;
 using BH.oM.Geometry;
 using BH.oM.Revit;
-using BH.oM.Structural.Elements;
+using BH.oM.Structure.Elements;
 using System;
 
 namespace BH.UI.Cobra.Engine
