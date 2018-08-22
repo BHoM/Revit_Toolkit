@@ -14,7 +14,7 @@ namespace BH.Engine.Revit
             if (type == null)
                 return null;
 
-            if(type.Namespace.StartsWith("BH.oM.Structural"))
+            if(type.Namespace.StartsWith("BH.oM.Structure"))
                 return oM.Revit.Discipline.Structural;
 
             if (type.Namespace.StartsWith("BH.oM.Environment"))
