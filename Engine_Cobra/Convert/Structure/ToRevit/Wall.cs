@@ -54,7 +54,7 @@ namespace BH.UI.Cobra.Engine
                 }
 
                 if (aWallType == null)
-                    aWallTypeList.Find(x => x.Name == panelPlanar.Name);
+                    aWallType = aWallTypeList.Find(x => x.Name == panelPlanar.Name);
 
                 if (aWallType == null)
                 {

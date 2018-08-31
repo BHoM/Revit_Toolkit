@@ -49,7 +49,7 @@ namespace BH.UI.Cobra.Engine
                 }
 
                 if (aFamilySymbol == null)
-                    aFamilySymbolList.Find(x => x.Name == framingElement.Name);
+                    aFamilySymbol = aFamilySymbolList.Find(x => x.Name == framingElement.Name);
 
                 if (aFamilySymbol == null)
                 {
