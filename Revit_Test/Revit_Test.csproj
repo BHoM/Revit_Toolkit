@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+	<TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugEngines>{351668CC-8477-4fbf-BFE3-5F1006E4DB1F}</DebugEngines>
@@ -40,6 +41,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2019|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -49,6 +51,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BHoM">
