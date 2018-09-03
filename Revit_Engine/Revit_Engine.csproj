@@ -83,6 +83,7 @@
     <Compile Include="Query\FullNames.cs" />
     <Compile Include="Query\IsAssignableFromByFullName.cs" />
     <Compile Include="Query\IsZero.cs" />
+    <Compile Include="Query\OmniClass.cs" />
     <Compile Include="Query\UniqueId.cs" />
     <Compile Include="Query\UniqueIds.cs" />
     <Compile Include="Query\WorksetId.cs" />
