@@ -16,14 +16,14 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static RevitFilePreview RevitFilePreview(string Path)
+        public static RevitFilePreview RevitFilePreview(string path)
         {
             XDocument aXDocument = null;
 
-            if (!File.Exists(Path))
+            if (!File.Exists(path))
                 return null;
 
-            StorageInfo aStorageInfo = (StorageInfo)InvokeStorageRootMethod(null, "Open", Path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            StorageInfo aStorageInfo = (StorageInfo)InvokeStorageRootMethod(null, "Open", path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
             if (aStorageInfo != null)
             {
@@ -51,20 +51,20 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        private static object InvokeStorageRootMethod(StorageInfo StorageInfoRoot, string MethodName, params object[] MethodArgs)
+        private static object InvokeStorageRootMethod(StorageInfo storageInfoRoot, string methodName, params object[] methodArgs)
         {
             BindingFlags aBindingFlags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod;
             Type aStorageRootType = typeof(StorageInfo).Assembly.GetType("System.IO.Packaging.StorageRoot", true, false);
-            object aResult = aStorageRootType.InvokeMember(MethodName, aBindingFlags, null, StorageInfoRoot, MethodArgs);
+            object aResult = aStorageRootType.InvokeMember(methodName, aBindingFlags, null, storageInfoRoot, methodArgs);
             return aResult;
         }
 
-        private static byte[] ParseStreamInfo(StreamInfo StreamInfo)
+        private static byte[] ParseStreamInfo(StreamInfo streamInfo)
         {
             byte[] aResult = null;
             try
             {
-                using (Stream aStream = StreamInfo.GetStream(FileMode.Open, FileAccess.Read))
+                using (Stream aStream = streamInfo.GetStream(FileMode.Open, FileAccess.Read))
                 {
                     aResult = new byte[aStream.Length];
                     aStream.Read(aResult, 0, aResult.Length);
@@ -81,9 +81,9 @@ namespace BH.Engine.Revit
             }
         }
 
-        private static void CloseStorageInfo(StorageInfo StorageInfo)
+        private static void CloseStorageInfo(StorageInfo storageInfo)
         {
-            InvokeStorageRootMethod(StorageInfo, "Close");
+            InvokeStorageRootMethod(storageInfo, "Close");
         }
     }
 }
