@@ -1,17 +1,21 @@
-﻿using BH.oM.Base;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using BH.oM.Base;
 using System.Xml.Linq;
 
 namespace BH.oM.Revit
 {
-    public class RevitFilePreview : BHoMObject
+    public class FamilyLibrary : BHoMObject
     {
         /***************************************************/
         /**** Public Properties                        ****/
         /***************************************************/
 
-        public XDocument XDocument { get; set; } = null;
+        public Dictionary<string, Dictionary<string, Dictionary<string, string>>> Dictionary { get; set; } = null;
 
         /***************************************************/
     }
 }
-
