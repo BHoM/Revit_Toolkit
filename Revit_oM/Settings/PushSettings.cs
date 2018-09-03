@@ -1,5 +1,4 @@
 ﻿using BH.oM.Base;
-using System.Collections.Generic;
 
 namespace BH.oM.Revit
 {
@@ -14,6 +13,8 @@ namespace BH.oM.Revit
         public bool ConvertUnits { get; set; } = true;
 
         public bool Replace { get; set; } = true;
+
+        public FamilyLibrary FamilyLibrary { get; set; } = null;
 
         /***************************************************/
 

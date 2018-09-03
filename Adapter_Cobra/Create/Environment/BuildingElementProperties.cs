@@ -27,6 +27,9 @@ namespace BH.UI.Cobra.Adapter
             if (pushSettings.Replace)
                 Delete(buildingElementProperties);
 
+            //TODO: Check how type is selected
+            //TODO: Implement FamilyLibrary
+
             Type aType = Query.RevitType(buildingElementProperties.BuildingElementType);
             List<Element> aElementList = new FilteredElementCollector(Document).OfClass(aType).ToList();
             if (aElementList == null && aElementList.Count < 1)

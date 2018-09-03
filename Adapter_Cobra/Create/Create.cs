@@ -40,7 +40,9 @@ namespace BH.UI.Cobra.Adapter
                 {
                     Replace = replaceAll,
                     ConvertUnits = true,
-                    CopyCustomData = true
+                    CopyCustomData = true,
+                    FamilyLibrary = RevitSettings.FamilyLibrary
+                    
                 };
 
                 foreach (IBHoMObject aBHOMObject in objects)
