@@ -123,6 +123,7 @@
     <Compile Include="Convert\Architecture\ToBHoM\Level.cs" />
     <Compile Include="Convert\Architecture\ToRevit\Level.cs" />
     <Compile Include="Convert\Common\ToBHoM\Material.cs" />
+    <Compile Include="Convert\Common\ToRevit\GenericObject.cs" />
     <Compile Include="Convert\Common\ToRevit\Material.cs" />
     <Compile Include="Convert\Environment\ToBHoM\Building.cs" />
     <Compile Include="Convert\Environment\ToBHoM\BuildingElement.cs" />

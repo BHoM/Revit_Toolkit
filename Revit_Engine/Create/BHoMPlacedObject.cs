@@ -9,9 +9,9 @@ namespace BH.Engine.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static BHoMPlacedObject BHoMPlacedObject(Point point)
+        public static GenericObject GenericObject(Point point)
         {
-            return new BHoMPlacedObject()
+            return new GenericObject()
             {
                 Location = point
             };
@@ -19,9 +19,9 @@ namespace BH.Engine.Revit
 
         /***************************************************/
 
-        public static BHoMPlacedObject BHoMPlacedObject(ICurve curve)
+        public static GenericObject GenericObject(ICurve curve)
         {
-            return new BHoMPlacedObject()
+            return new GenericObject()
             {
                 Location = curve
             };

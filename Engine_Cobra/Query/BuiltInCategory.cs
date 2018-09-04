@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 
+using BH.oM.Base;
 using BH.oM.Environment.Elements;
 
 namespace BH.UI.Cobra.Engine
@@ -31,6 +32,35 @@ namespace BH.UI.Cobra.Engine
                 default:
                     return Autodesk.Revit.DB.BuiltInCategory.INVALID;
             }
+        }
+
+        /***************************************************/
+
+        public static BuiltInCategory BuiltInCategory(this BHoMObject bHoMObject, Document document)
+        {
+            if (bHoMObject == null || document == null)
+                return Autodesk.Revit.DB.BuiltInCategory.INVALID;
+
+            string aCategoryName = BH.Engine.Revit.Query.CategoryName(bHoMObject);
+            if (string.IsNullOrEmpty(aCategoryName))
+                return Autodesk.Revit.DB.BuiltInCategory.INVALID;
+
+            return BuiltInCategory(document, aCategoryName);
+        }
+
+        /***************************************************/
+
+        public static BuiltInCategory BuiltInCategory(this Document document, string Name)
+        {
+            if (document == null || string.IsNullOrEmpty(Name)|| document.Settings == null || document.Settings.Categories == null)
+                return Autodesk.Revit.DB.BuiltInCategory.INVALID;
+
+
+            foreach (Category aCategory in document.Settings.Categories)
+                if (aCategory.Name == Name)
+                    return (BuiltInCategory)aCategory.Id.IntegerValue;
+
+            return Autodesk.Revit.DB.BuiltInCategory.INVALID;
         }
 
         /***************************************************/
