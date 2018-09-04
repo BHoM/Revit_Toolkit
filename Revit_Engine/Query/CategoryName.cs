@@ -1,8 +1,9 @@
-﻿using BH.oM.Revit;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+
+using BH.oM.Base;
+using BH.oM.Revit;
 
 namespace BH.Engine.Revit
 {
@@ -44,6 +45,25 @@ namespace BH.Engine.Revit
                     }
                 }
             }
+            return null;
+        }
+
+        /***************************************************/
+
+        public static string CategoryName(this IBHoMObject bHoMObject)
+        {
+            if (bHoMObject == null)
+                return null;
+
+            object aValue = null;
+            if (bHoMObject.CustomData.TryGetValue(Convert.CategoryName, out aValue))
+            {
+                if (aValue == null)
+                    return null;
+
+                return aValue.ToString();
+            }
+
             return null;
         }
 

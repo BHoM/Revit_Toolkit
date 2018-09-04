@@ -18,21 +18,25 @@ namespace BH.UI.Cobra.Engine
             if (buildingElementProperties == null || document == null)
                 return null;
 
-            Type aType = Query.RevitType(buildingElementProperties.BuildingElementType);
-
-            List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(aType).Cast<ElementType>().ToList();
-            if (aElementTypeList == null || aElementTypeList.Count < 1)
+            BuiltInCategory aBuiltInCategory = buildingElementProperties.BuildingElementType.BuiltInCategory();
+            if (aBuiltInCategory == BuiltInCategory.INVALID)
                 return null;
 
             pushSettings.DefaultIfNull();
 
-            ElementType aElementType = null;
-            aElementType = aElementTypeList.First() as ElementType;
-            aElementType = aElementType.Duplicate(buildingElementProperties.Name);
+            ElementType aElementType = buildingElementProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLibrary);
+            if(aElementType == null)
+            {
+                List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfCategory(aBuiltInCategory).WhereElementIsElementType().Cast<ElementType>().ToList();
+                if (aElementTypeList == null || aElementTypeList.Count < 1)
+                    return null;
+
+                aElementType = aElementTypeList.First() as ElementType;
+                aElementType = aElementType.Duplicate(buildingElementProperties.Name);
+            }
 
             if (pushSettings.CopyCustomData)
                 Modify.SetParameters(aElementType, buildingElementProperties, null, pushSettings.ConvertUnits);
-
 
             return aElementType;
         }

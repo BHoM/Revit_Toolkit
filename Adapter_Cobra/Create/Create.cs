@@ -55,9 +55,7 @@ namespace BH.UI.Cobra.Adapter
 
                     try
                     {
-                        if (aBHOMObject is oM.Architecture.Elements.Level || 
-                            aBHOMObject is BuildingElement || 
-                            aBHOMObject is BuildingElementProperties)
+                        if (aBHOMObject is oM.Architecture.Elements.Level || aBHOMObject is BuildingElement || aBHOMObject is BuildingElementProperties)
                         {
                             Create(aBHOMObject as dynamic, aPushSettings);
                         }  
@@ -66,7 +64,14 @@ namespace BH.UI.Cobra.Adapter
                             if (replaceAll)
                                 Delete(aBHOMObject as BHoMObject);
 
-                            BH.UI.Cobra.Engine.Convert.ToRevit(aBHOMObject as dynamic, Document, aPushSettings);
+                            if(aBHOMObject is BHoMPlacedObject)
+                            {
+
+                            }
+                            else
+                            {
+                                BH.UI.Cobra.Engine.Convert.ToRevit(aBHOMObject as dynamic, Document, aPushSettings);
+                            }
                         }
                             
                     }

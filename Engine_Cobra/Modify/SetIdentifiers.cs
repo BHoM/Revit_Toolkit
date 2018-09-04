@@ -29,6 +29,20 @@ namespace BH.UI.Cobra.Engine
             }
             aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Revit.Convert.WorksetId, aWorksetId);
 
+            Parameter aParameter = null;
+
+            aParameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
+            if (aParameter != null)
+                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Revit.Convert.FamilyName, aParameter.AsValueString());
+
+            aParameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
+            if (aParameter != null)
+                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Revit.Convert.TypeName, aParameter.AsValueString());
+
+            aParameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
+            if (aParameter != null)
+                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Revit.Convert.CategoryName, aParameter.AsValueString());
+
             return aBHoMObject;
         }
 
