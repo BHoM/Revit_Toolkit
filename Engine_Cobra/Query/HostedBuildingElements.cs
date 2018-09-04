@@ -27,7 +27,7 @@ namespace BH.UI.Cobra.Engine
             foreach (ElementId aElementId in aElementIdList)
             {
                 Element aElement_Hosted = hostObject.Document.GetElement(aElementId);
-                if ((BuiltInCategory)aElement_Hosted.Category.Id.IntegerValue == BuiltInCategory.OST_Windows || (BuiltInCategory)aElement_Hosted.Category.Id.IntegerValue == BuiltInCategory.OST_Doors)
+                if ((BuiltInCategory)aElement_Hosted.Category.Id.IntegerValue == Autodesk.Revit.DB.BuiltInCategory.OST_Windows || (BuiltInCategory)aElement_Hosted.Category.Id.IntegerValue == Autodesk.Revit.DB.BuiltInCategory.OST_Doors)
                 {
                     IntersectionResult aIntersectionResult = null;
 

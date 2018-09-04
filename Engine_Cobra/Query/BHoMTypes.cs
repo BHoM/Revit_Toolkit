@@ -24,19 +24,19 @@ namespace BH.UI.Cobra.Engine
                 //Structural framing
                 switch ((BuiltInCategory)element.Category.Id.IntegerValue)
                 {
-                    case BuiltInCategory.OST_StructuralFraming:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming:
                     //case BuiltInCategory.OST_StructuralFoundation:
-                    case BuiltInCategory.OST_StructuralColumns:
-                    case BuiltInCategory.OST_Columns:
-                    case BuiltInCategory.OST_VerticalBracing:
-                    case BuiltInCategory.OST_Truss:
-                    case BuiltInCategory.OST_StructuralTruss:
-                    case BuiltInCategory.OST_HorizontalBracing:
-                    case BuiltInCategory.OST_Purlin:
-                    case BuiltInCategory.OST_Joist:
-                    case BuiltInCategory.OST_Girder:
-                    case BuiltInCategory.OST_StructuralStiffener:
-                    case BuiltInCategory.OST_StructuralFramingOther:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_Columns:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_VerticalBracing:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_Truss:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralTruss:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_HorizontalBracing:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_Purlin:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_Joist:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_Girder:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther:
                         aResult.Add(typeof(FramingElement));
                         return aResult;
                 }
@@ -44,8 +44,8 @@ namespace BH.UI.Cobra.Engine
                 //Environmental Windows and Doors
                 switch ((BuiltInCategory)element.Category.Id.IntegerValue)
                 {
-                    case BuiltInCategory.OST_Windows:
-                    case BuiltInCategory.OST_Doors:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_Windows:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_Doors:
                         aResult.Add(typeof(BuildingElement));
                         return aResult;
                 }

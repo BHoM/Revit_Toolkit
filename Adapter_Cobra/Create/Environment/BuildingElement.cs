@@ -27,8 +27,11 @@ namespace BH.UI.Cobra.Adapter
 
             pushSettings.DefaultIfNull();
 
-            //Set ElementType
-            Create(buildingElement.BuildingElementProperties, pushSettings);
+            if (pushSettings.Replace)
+                Delete(buildingElement.BuildingElementProperties);
+
+            buildingElement.BuildingElementProperties.ToRevit(Document, pushSettings);
+
 
             //Set Level
             if (buildingElement.Level != null)
