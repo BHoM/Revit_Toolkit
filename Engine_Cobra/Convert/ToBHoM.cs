@@ -1,8 +1,11 @@
-﻿using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Analysis;
+﻿using System.Collections.Generic;
+
 using BH.oM.Base;
+using BH.oM.Geometry;
 using BH.oM.Revit;
-using System.Collections.Generic;
+
+using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Analysis;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -10,6 +13,25 @@ namespace BH.UI.Cobra.Engine
     {
         /***************************************************/
         /****      Convert Revit elements to BHoM       ****/
+        /***************************************************/
+
+        public static IGeometry ToBHoM(this Location Location, PullSettings pullSettings = null)
+        {
+            if (Location == null) return null;
+
+            switch (pullSettings.Discipline)
+            {
+                default:
+                    if (Location is LocationPoint)
+                        return ToBHoM((LocationPoint)Location, pullSettings);
+                    else if (Location is LocationCurve)
+                        return ToBHoM((LocationCurve)Location, pullSettings);
+                    break;
+            }
+
+            return null;
+        }
+
         /***************************************************/
 
         public static List<IBHoMObject> ToBHoM(this PlanarFace planarFace, PullSettings pullSettings = null)
