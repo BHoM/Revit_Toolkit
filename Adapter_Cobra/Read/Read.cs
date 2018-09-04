@@ -140,8 +140,8 @@ namespace BH.UI.Cobra.Adapter
 
                             if(aIGeometry != null)
                             {
-                                aIBHoMObject = new BHoMPlacedObject();
-                                ((BHoMPlacedObject)aIBHoMObject).Location = aIGeometry;
+                                aIBHoMObject = new GenericObject();
+                                ((GenericObject)aIBHoMObject).Location = aIGeometry;
                             }
                         }
                         if (aIBHoMObject == null)

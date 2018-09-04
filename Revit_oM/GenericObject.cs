@@ -8,7 +8,7 @@ using BH.oM.Geometry;
 
 namespace BH.oM.Revit
 {
-    public class BHoMPlacedObject : BHoMObject
+    public class GenericObject : BHoMObject
     {
         /***************************************************/
         /**** Public Properties                        ****/

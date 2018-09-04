@@ -62,7 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BHoMPlacedObject.cs" />
+    <Compile Include="GenericObject.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="FamilyLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

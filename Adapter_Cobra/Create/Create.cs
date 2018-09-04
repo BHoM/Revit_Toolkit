@@ -64,14 +64,7 @@ namespace BH.UI.Cobra.Adapter
                             if (replaceAll)
                                 Delete(aBHOMObject as BHoMObject);
 
-                            if(aBHOMObject is BHoMPlacedObject)
-                            {
-
-                            }
-                            else
-                            {
-                                BH.UI.Cobra.Engine.Convert.ToRevit(aBHOMObject as dynamic, Document, aPushSettings);
-                            }
+                            BH.UI.Cobra.Engine.Convert.ToRevit(aBHOMObject as dynamic, Document, aPushSettings);
                         }
                             
                     }
