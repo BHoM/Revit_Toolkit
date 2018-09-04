@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using BH.oM.Base;
+using BH.oM.Geometry;
 using BH.oM.Revit;
 using BH.UI.Cobra.Engine;
 using System;
@@ -123,11 +124,37 @@ namespace BH.UI.Cobra.Adapter
                 {
                     try
                     {
-                        IBHoMObject aIBHoMObject = new BHoMObject();
-                        aIBHoMObject.Name = aElement.Name;
-                        aIBHoMObject = Modify.SetIdentifiers(aIBHoMObject, aElement);
-                        aIBHoMObject = Modify.SetCustomData(aIBHoMObject, aElement, true);
-                        aObject = aIBHoMObject;
+                        IBHoMObject aIBHoMObject = null;
+
+                        if (aElement.Location != null)
+                        {
+                            IGeometry aIGeometry = null;
+                            try
+                            {
+                                aIGeometry = aElement.Location.ToBHoM(pullSettings);
+                            }
+                            catch(Exception aException)
+                            {
+                                BH.Engine.Reflection.Compute.RecordWarning(string.Format("Location of BHoM object could not be converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", elementId.IntegerValue, aElement.Name, aException.Message));
+                            }
+
+                            if(aIGeometry != null)
+                            {
+                                aIBHoMObject = new BHoMPlacedObject();
+                                ((BHoMPlacedObject)aIBHoMObject).Location = aIGeometry;
+                            }
+                        }
+                        if (aIBHoMObject == null)
+                            aIBHoMObject = new BHoMObject();
+
+                        if (aIBHoMObject != null)
+                        {
+                            aIBHoMObject.Name = aElement.Name;
+                            aIBHoMObject = Modify.SetIdentifiers(aIBHoMObject, aElement);
+                            aIBHoMObject = Modify.SetCustomData(aIBHoMObject, aElement, true);
+                            aObject = aIBHoMObject;
+                        }
+
                     }
                     catch (Exception aException)
                     {

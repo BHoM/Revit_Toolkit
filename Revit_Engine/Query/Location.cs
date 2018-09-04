@@ -1,22 +1,27 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+using System.Linq;
+using System.Xml.Linq;
 
+using BH.oM.Geometry;
 using BH.oM.Revit;
-
 
 namespace BH.Engine.Revit
 {
-    public static partial class Create
+    public static partial class Query
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static FamilyLibrary FamilyLibrary(string directory, bool topDirectoryOnly = false)
+        public static IGeometry Location(this BHoMPlacedObject BHoMPlacedObject)
         {
-            return new FamilyLibrary().Append(directory, topDirectoryOnly);
+            if (BHoMPlacedObject == null)
+                return null;
+
+            return BHoMPlacedObject.Location;
         }
 
         /***************************************************/
     }
 }
+
