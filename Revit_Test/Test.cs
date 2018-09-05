@@ -3,7 +3,7 @@ using Autodesk.Revit.UI;
 using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
 using BH.oM.Environment.Elements;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 using BH.UI.Cobra.Adapter;
 using System;
 using System.Collections.Generic;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BH.Engine.Revit
+namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {

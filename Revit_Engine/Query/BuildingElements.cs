@@ -1,7 +1,7 @@
 ﻿using BH.oM.Environment.Elements;
 using System.Collections.Generic;
 
-namespace BH.Engine.Revit
+namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {
@@ -18,7 +18,7 @@ namespace BH.Engine.Revit
             foreach (BuildingElement aBuildingElement in building.BuildingElements)
             {
                 object aValue;
-                if (aBuildingElement.CustomData.TryGetValue(BH.Engine.Revit.Convert.ElementId, out aValue))
+                if (aBuildingElement.CustomData.TryGetValue(Convert.ElementId, out aValue))
                     if (aValue is int && (int)aValue == elementId)
                         aResult.Add(aBuildingElement);
             }

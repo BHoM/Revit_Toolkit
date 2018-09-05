@@ -1,4 +1,4 @@
-﻿using BH.oM.Revit;
+﻿using BH.oM.Adapters.Revit;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
 
-namespace BH.Engine.Revit
+namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {

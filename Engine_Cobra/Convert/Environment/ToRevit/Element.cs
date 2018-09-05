@@ -2,7 +2,7 @@
 using BH.Engine.Environment;
 using BH.oM.Environment.Elements;
 using BH.oM.Geometry;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 using System;
 using System.Collections.Generic;
 using System.Linq;

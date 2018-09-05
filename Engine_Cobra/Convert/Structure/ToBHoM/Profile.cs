@@ -4,7 +4,7 @@ using BH.oM.Structure.Properties;
 using System;
 using System.Collections.Generic;
 using BHS = BH.Engine.Structure;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 
 namespace BH.UI.Cobra.Engine
 {

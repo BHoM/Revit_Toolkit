@@ -1,6 +1,6 @@
-﻿using BH.oM.Revit;
+﻿using BH.oM.Adapters.Revit;
 
-namespace BH.Engine.Revit
+namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {
@@ -11,7 +11,7 @@ namespace BH.Engine.Revit
         public static Discipline DefaultDiscipline(this RevitSettings revitSettings)
         {
             if (revitSettings == null)
-                return oM.Revit.Discipline.Environmental;
+                return oM.Adapters.Revit.Discipline.Environmental;
 
             return revitSettings.DefaultDiscipline;
         }

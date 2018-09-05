@@ -2,7 +2,7 @@
 using BH.Engine.Geometry;
 using BH.Engine.Structure;
 using BH.oM.Geometry;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 using BH.oM.Structure.Elements;
 using System;
 

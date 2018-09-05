@@ -17,8 +17,8 @@ namespace BH.UI.Cobra.Engine
 
             IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
 
-            aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Revit.Convert.ElementId, element.Id.IntegerValue);
-            aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Revit.Convert.AdapterId, element.UniqueId);
+            aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.ElementId, element.Id.IntegerValue);
+            aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.AdapterId, element.UniqueId);
 
             int aWorksetId = WorksetId.InvalidWorksetId.IntegerValue;
             if (element.Document != null && element.Document.IsWorkshared)
@@ -27,21 +27,21 @@ namespace BH.UI.Cobra.Engine
                 if (aWorksetId_Revit != null)
                     aWorksetId = aWorksetId_Revit.IntegerValue;
             }
-            aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Revit.Convert.WorksetId, aWorksetId);
+            aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.WorksetId, aWorksetId);
 
             Parameter aParameter = null;
 
             aParameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
             if (aParameter != null)
-                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Revit.Convert.FamilyName, aParameter.AsValueString());
+                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyName, aParameter.AsValueString());
 
             aParameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
             if (aParameter != null)
-                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Revit.Convert.TypeName, aParameter.AsValueString());
+                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.TypeName, aParameter.AsValueString());
 
             aParameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
             if (aParameter != null)
-                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Revit.Convert.CategoryName, aParameter.AsValueString());
+                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.CategoryName, aParameter.AsValueString());
 
             return aBHoMObject;
         }

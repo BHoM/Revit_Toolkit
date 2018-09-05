@@ -1,7 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using BH.oM.Base;
 using BH.oM.Geometry;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 using BH.UI.Cobra.Engine;
 using System;
 using System.Collections;
@@ -251,23 +251,23 @@ namespace BH.UI.Cobra.Adapter
                 }
 
                 //Getting Discipline related to type. If not BHoM type then defult disipline returned
-                Discipline aDiscipline = BH.Engine.Revit.Query.Discipline(RevitSettings, aType);
+                Discipline aDiscipline = BH.Engine.Adapters.Revit.Query.Discipline(RevitSettings, aType);
 
                 //Getting PullSettings and adding it to Dictionary if not exists
                 PullSettings aPullSettings = null;
                 if (!aDictionary_Discipline.TryGetValue(aDiscipline, out aPullSettings))
                 {
-                    aPullSettings = BH.Engine.Revit.Create.PullSettings(aDiscipline);
+                    aPullSettings = BH.Engine.Adapters.Revit.Create.PullSettings(aDiscipline);
                     aDictionary_Discipline.Add(aDiscipline, aPullSettings);
                 }
 
-                if (BH.Engine.Revit.Query.IsAssignableFromByFullName(aType, typeof(Element)))
+                if (BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(aType, typeof(Element)))
                 {
                     //Code for Revit types (not applicable for BHoM 2.0)
                     if (aTupleList.Find(x => x.Item1 == aType) == null)
                         aTupleList.Add(new Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings>(aType, new List<BuiltInCategory>(), aPullSettings));                        
                 }
-                else if (BH.Engine.Revit.Query.IsAssignableFromByFullName(aType, typeof(BHoMObject)))
+                else if (BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(aType, typeof(BHoMObject)))
                 {
                     //Code for BHoM types
                     IEnumerable<Type> aTypes = Query.RevitTypes(aType);
@@ -277,7 +277,7 @@ namespace BH.UI.Cobra.Adapter
                         IEnumerable<BuiltInCategory> aBuiltInCategories = Query.BuiltInCategories(RevitSettings, Document);
 
                         //Include selection if applicable
-                        if (BH.Engine.Revit.Query.IncludeSelected(RevitSettings))
+                        if (BH.Engine.Adapters.Revit.Query.IncludeSelected(RevitSettings))
                             aBuiltInCategories = Modify.Append(aBuiltInCategories, Query.SelectionBuiltInCategories(UIDocument));
 
                         //Include ElementIds and UniqueIds if applicable

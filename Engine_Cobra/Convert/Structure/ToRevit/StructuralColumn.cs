@@ -1,6 +1,6 @@
 ﻿using Autodesk.Revit.DB;
-using BH.Engine.Revit;
-using BH.oM.Revit;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
 using BH.oM.Structure.Elements;
 using System;
 using System.Collections.Generic;

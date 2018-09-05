@@ -1,6 +1,6 @@
 ﻿using BH.oM.Base;
 
-namespace BH.Engine.Revit
+namespace BH.Engine.Adapters.Revit
 {
     public static partial class Modify
     {

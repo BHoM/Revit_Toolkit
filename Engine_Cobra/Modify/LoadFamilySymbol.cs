@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 
 using Autodesk.Revit.DB;
 
@@ -18,7 +18,7 @@ namespace BH.UI.Cobra.Engine
             if (familyLibrary == null && document == null)
                 return null;
 
-            List<string> aPathList = BH.Engine.Revit.Query.GetPaths(familyLibrary, categoryName, familyName, typeName);
+            List<string> aPathList = BH.Engine.Adapters.Revit.Query.GetPaths(familyLibrary, categoryName, familyName, typeName);
             if (aPathList != null && aPathList.Count > 0)
             {
                 return LoadFamilySymbol(document, aPathList.First(), typeName);

@@ -32,7 +32,7 @@ namespace BH.UI.Cobra.Adapter
             if (bHoMObjects.Count() < 1)
                 return false;
 
-            List<ElementId> aElementIdList = Query.ElementIds(Document, BH.Engine.Revit.Query.UniqueIds(bHoMObjects, true), true);
+            List<ElementId> aElementIdList = Query.ElementIds(Document, BH.Engine.Adapters.Revit.Query.UniqueIds(bHoMObjects, true), true);
 
             if (aElementIdList == null || aElementIdList.Count < 1)
                 return false;
@@ -158,7 +158,7 @@ namespace BH.UI.Cobra.Adapter
                 return false;
             }
 
-            string aUniqueId = BH.Engine.Revit.Query.UniqueId(bHoMObject);
+            string aUniqueId = BH.Engine.Adapters.Revit.Query.UniqueId(bHoMObject);
             if (aUniqueId != null)
             {
                 Element aElement = Document.GetElement(aUniqueId);
