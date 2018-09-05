@@ -2,7 +2,7 @@
 using BH.Engine.Environment;
 using BH.oM.Environment.Elements;
 using System.Collections.Generic;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 
 namespace BH.UI.Cobra.Engine
 {

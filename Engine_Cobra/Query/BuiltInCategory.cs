@@ -41,7 +41,7 @@ namespace BH.UI.Cobra.Engine
             if (bHoMObject == null || document == null)
                 return Autodesk.Revit.DB.BuiltInCategory.INVALID;
 
-            string aCategoryName = BH.Engine.Revit.Query.CategoryName(bHoMObject);
+            string aCategoryName = BH.Engine.Adapters.Revit.Query.CategoryName(bHoMObject);
             if (string.IsNullOrEmpty(aCategoryName))
                 return Autodesk.Revit.DB.BuiltInCategory.INVALID;
 

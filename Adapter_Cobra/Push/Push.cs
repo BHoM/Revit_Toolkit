@@ -1,12 +1,9 @@
-﻿using Autodesk.Revit.DB;
-using BH.oM.Base;
-using BH.oM.Revit;
-using BH.UI.Cobra.Engine;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
+using BH.oM.Base;
 
 namespace BH.UI.Cobra.Adapter
 {

@@ -15,7 +15,7 @@ namespace BH.UI.Cobra.Engine
             if (elementId == null || elementId == Autodesk.Revit.DB.ElementId.InvalidElementId)
                 return null;
 
-            return BH.Engine.Revit.Query.BuildingElements(building, elementId.IntegerValue);
+            return BH.Engine.Adapters.Revit.Query.BuildingElements(building, elementId.IntegerValue);
         }
 
         /***************************************************/

@@ -2,7 +2,7 @@
 
 using BH.oM.Base;
 using BH.oM.Geometry;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;

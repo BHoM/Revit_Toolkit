@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Geometry;
 
-namespace BH.oM.Revit
+namespace BH.oM.Adapters.Revit
 {
     public class GenericObject : BHoMObject
     {

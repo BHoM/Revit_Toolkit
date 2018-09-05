@@ -3,7 +3,7 @@ using Autodesk.Revit.DB.Structure;
 using BH.Engine.Geometry;
 using System.Collections.Generic;
 using System.Linq;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 
 namespace BH.UI.Cobra.Engine
 {

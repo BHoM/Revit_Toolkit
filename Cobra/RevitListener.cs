@@ -4,7 +4,7 @@ using BH.Adapter.Revit;
 using BH.Adapter.Socket;
 using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 using BH.UI.Cobra.Adapter;
 using System;
 using System.Collections.Generic;

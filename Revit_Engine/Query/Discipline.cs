@@ -1,7 +1,7 @@
-﻿using BH.oM.Revit;
+﻿using BH.oM.Adapters.Revit;
 using System;
 
-namespace BH.Engine.Revit
+namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {
@@ -15,13 +15,13 @@ namespace BH.Engine.Revit
                 return null;
 
             if(type.Namespace.StartsWith("BH.oM.Structure"))
-                return oM.Revit.Discipline.Structural;
+                return oM.Adapters.Revit.Discipline.Structural;
 
             if (type.Namespace.StartsWith("BH.oM.Environment"))
-                return oM.Revit.Discipline.Environmental;
+                return oM.Adapters.Revit.Discipline.Environmental;
 
             if (type.Namespace.StartsWith("BH.oM.Architecture"))
-                return oM.Revit.Discipline.Architecture;
+                return oM.Adapters.Revit.Discipline.Architecture;
 
             return null;
         }

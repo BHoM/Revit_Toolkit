@@ -3,9 +3,9 @@ using System.Linq;
 using System.Xml.Linq;
 
 using BH.oM.Geometry;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 
-namespace BH.Engine.Revit
+namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {

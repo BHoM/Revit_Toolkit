@@ -10,7 +10,7 @@ namespace BH.UI.Cobra.Engine
         
         static public bool IsVertical(XYZ xyz)
         {
-            return BH.Engine.Revit.Query.IsZero(xyz.X) && BH.Engine.Revit.Query.IsZero(xyz.Y);
+            return BH.Engine.Adapters.Revit.Query.IsZero(xyz.X) && BH.Engine.Adapters.Revit.Query.IsZero(xyz.Y);
         }
 
         /***************************************************/

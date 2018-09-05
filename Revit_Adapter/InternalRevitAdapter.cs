@@ -1,4 +1,4 @@
-﻿using BH.oM.Revit;
+﻿using BH.oM.Adapters.Revit;
 
 namespace BH.Adapter.Revit
 {

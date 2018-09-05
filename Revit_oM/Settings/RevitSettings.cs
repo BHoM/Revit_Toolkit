@@ -1,7 +1,7 @@
 ﻿
 using BH.oM.Base;
 
-namespace BH.oM.Revit
+namespace BH.oM.Adapters.Revit
 {
     public class RevitSettings : BHoMObject
     {

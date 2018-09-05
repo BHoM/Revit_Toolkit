@@ -4,7 +4,7 @@ using BH.Engine.Environment;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Properties;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -128,7 +128,7 @@ namespace BH.UI.Cobra.Engine
             {
                 aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
                 aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
-                pullSettings.RefObjects = BH.Engine.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElementProperties);
+                pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElementProperties);
 
                 aName = aElement.Name;
                 aLevel = Query.Level(aElement, pullSettings);
@@ -207,7 +207,7 @@ namespace BH.UI.Cobra.Engine
             ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
 
             BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
-            pullSettings.RefObjects = BH.Engine.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElementProperties);
+            pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElementProperties);
 
             List<Space> aSpaceList = new List<Space>();
             List<ElementId> aElementIdList = Query.SpatialElementIds(energyAnalysisOpening.GetAnalyticalSurface());

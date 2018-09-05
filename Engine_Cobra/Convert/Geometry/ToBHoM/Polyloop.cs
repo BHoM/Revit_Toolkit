@@ -1,7 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using System.Collections.Generic;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 
 namespace BH.UI.Cobra.Engine
 {

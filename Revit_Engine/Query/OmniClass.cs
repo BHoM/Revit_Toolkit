@@ -1,10 +1,9 @@
-﻿using BH.oM.Revit;
-using System;
+﻿using BH.oM.Adapters.Revit;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace BH.Engine.Revit
+namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {

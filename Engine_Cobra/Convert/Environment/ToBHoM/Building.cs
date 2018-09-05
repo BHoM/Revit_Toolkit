@@ -2,7 +2,7 @@
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Properties;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 using System;
 using System.Collections.Generic;
 

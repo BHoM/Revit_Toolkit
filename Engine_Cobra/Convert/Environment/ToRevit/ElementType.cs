@@ -1,6 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using BH.oM.Environment.Properties;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 using System;
 using System.Collections.Generic;
 using System.Linq;

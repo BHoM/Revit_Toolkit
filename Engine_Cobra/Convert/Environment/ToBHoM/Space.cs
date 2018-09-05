@@ -3,7 +3,7 @@ using Autodesk.Revit.DB.Analysis;
 using BH.Engine.Environment;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Properties;
-using BH.oM.Revit;
+using BH.oM.Adapters.Revit;
 using System.Collections.Generic;
 
 namespace BH.UI.Cobra.Engine
@@ -51,7 +51,7 @@ namespace BH.UI.Cobra.Engine
                         ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
 
                         BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(pullSettings) as BuildingElementProperties;
-                        pullSettings.RefObjects = BH.Engine.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElementProperties);
+                        pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElementProperties);
 
                         BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementCurve(aICurve), aLevel);
                         aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
@@ -59,7 +59,7 @@ namespace BH.UI.Cobra.Engine
                             aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement, pullSettings.ConvertUnits) as BuildingElement;
                         aBuildingElmementList.Add(aBuildingElement);
 
-                        pullSettings.RefObjects = BH.Engine.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
+                        pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
                     }
 
             Space aSpace = new Space
@@ -109,7 +109,7 @@ namespace BH.UI.Cobra.Engine
                         ElementType aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
 
                         BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(pullSettings) as BuildingElementProperties;
-                        pullSettings.RefObjects = BH.Engine.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElementProperties);
+                        pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElementProperties);
 
                         //Face aFace_BoundingElementFace = aSpatialElementBoundarySubface.GetBoundingElementFace();
                         //Face aFace_Subface = aSpatialElementBoundarySubface.GetSubface();
@@ -155,7 +155,7 @@ namespace BH.UI.Cobra.Engine
 
                                 //---------------------------------------------
 
-                                pullSettings.RefObjects = BH.Engine.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
+                                pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
                             }
                     }
                 }
