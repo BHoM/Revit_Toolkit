@@ -12,7 +12,44 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<string> FamilyTypeNames(this RevitFilePreview RevitFilePreview)
+        public static List<string> TypeNames(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null)
+        {
+            if (familyLibrary == null)
+                return null;
+
+            List<string> aTypeNames = new List<string>();
+
+            List<Dictionary<string, Dictionary<string, string>>> aDictionaryList_Category = new List<Dictionary<string, Dictionary<string, string>>>();
+
+            if (string.IsNullOrEmpty(categoryName))
+                aDictionaryList_Category = familyLibrary.Dictionary.Values.ToList();
+            else
+            {
+                Dictionary<string, Dictionary<string, string>> aDictionary_Category = null;
+                if (familyLibrary.Dictionary.TryGetValue(categoryName, out aDictionary_Category))
+                    aDictionaryList_Category.Add(aDictionary_Category);
+            }
+
+            foreach (Dictionary<string, Dictionary<string, string>> aDictionary_Category in aDictionaryList_Category)
+            {
+                if (string.IsNullOrEmpty(familyName))
+                {
+                    aTypeNames.AddRange(aDictionary_Category.Keys);
+                }
+                else
+                {
+                    foreach (KeyValuePair<string, Dictionary<string, string>> aKeyValuePair_Category in aDictionary_Category)
+                        if (aKeyValuePair_Category.Value.ContainsKey(familyName))
+                            aTypeNames.Add(aKeyValuePair_Category.Key);
+                }
+            }
+
+            return aTypeNames;
+        }
+
+        /***************************************************/
+
+        public static List<string> TypeNames(this RevitFilePreview RevitFilePreview)
         {
             if (RevitFilePreview == null || RevitFilePreview.XDocument == null)
                 return null;
@@ -54,3 +91,5 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
     }
 }
+
+

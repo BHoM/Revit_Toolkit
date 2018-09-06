@@ -21,7 +21,7 @@ namespace BH.UI.Cobra.Engine
             if (panelPlanar == null || document == null)
                 return null;
 
-            pushSettings.DefaultIfNull();
+            pushSettings = pushSettings.DefaultIfNull();
 
             object aCustomDataValue = null;
 
@@ -48,18 +48,20 @@ namespace BH.UI.Cobra.Engine
 
             if (aFloorType == null)
             {
-                List<FloorType> aFloorTypeList = new FilteredElementCollector(document).OfClass(typeof(FloorType)).OfCategory(BuiltInCategory.OST_Floors).Cast<FloorType>().ToList();
-                aFloorTypeList.AddRange(new FilteredElementCollector(document).OfClass(typeof(FloorType)).OfCategory(BuiltInCategory.OST_StructuralFoundation).Cast<FloorType>());
+                aFloorType = Query.ElementType(panelPlanar, document, BuiltInCategory.OST_Floors) as FloorType;
 
-                aCustomDataValue = panelPlanar.ICustomData("Type");
-                if (aCustomDataValue != null && aCustomDataValue is int)
-                {
-                    ElementId aElementId = new ElementId((int)aCustomDataValue);
-                    aFloorType = aFloorTypeList.Find(x => x.Id == aElementId);
-                }
+                //List<FloorType> aFloorTypeList = new FilteredElementCollector(document).OfClass(typeof(FloorType)).OfCategory(BuiltInCategory.OST_Floors).Cast<FloorType>().ToList();
+                //aFloorTypeList.AddRange(new FilteredElementCollector(document).OfClass(typeof(FloorType)).OfCategory(BuiltInCategory.OST_StructuralFoundation).Cast<FloorType>());
 
-                if (aFloorType == null)
-                    aFloorType = aFloorTypeList.Find(x => x.Name == panelPlanar.Name);
+                //aCustomDataValue = panelPlanar.ICustomData("Type");
+                //if (aCustomDataValue != null && aCustomDataValue is int)
+                //{
+                //    ElementId aElementId = new ElementId((int)aCustomDataValue);
+                //    aFloorType = aFloorTypeList.Find(x => x.Id == aElementId);
+                //}
+
+                //if (aFloorType == null)
+                //    aFloorType = aFloorTypeList.Find(x => x.Name == panelPlanar.Name);
 
                 if (aFloorType == null)
                 {

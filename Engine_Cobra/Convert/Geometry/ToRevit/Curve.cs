@@ -13,7 +13,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static Curve ToRevit(this ICurve curve, PushSettings pushSettings = null)
         {
-            pushSettings.DefaultIfNull();
+            pushSettings = pushSettings.DefaultIfNull();
 
             if (curve is oM.Geometry.Line)
             {
@@ -50,7 +50,7 @@ namespace BH.UI.Cobra.Engine
             if (polyCurve == null)
                 return null;
 
-            pushSettings.DefaultIfNull();
+            pushSettings = pushSettings.DefaultIfNull();
 
             CurveArray aCurveArray = new CurveArray();
             foreach (ICurve aICurve in polyCurve.Curves)

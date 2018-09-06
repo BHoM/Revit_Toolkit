@@ -35,12 +35,17 @@ namespace BH.Engine.Adapters.Revit
 
             FamilyLibrary aFamilyLibrary = familyLibrary.GetShallowClone() as FamilyLibrary;
 
+            if (aFamilyLibrary.Dictionary == null)
+                aFamilyLibrary.Dictionary = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+
             string aFamilyName = Path.GetFileNameWithoutExtension(path);
             RevitFilePreview aRevitFilePreview = Create.RevitFilePreview(path);
 
             string aCategoryName = aRevitFilePreview.CategoryName();
 
+
             Dictionary<string, Dictionary<string, string>> aDictionary_Category = null;
+
             if (!aFamilyLibrary.Dictionary.TryGetValue(aCategoryName, out aDictionary_Category))
             {
                 aDictionary_Category = new Dictionary<string, Dictionary<string, string>>();
@@ -48,7 +53,7 @@ namespace BH.Engine.Adapters.Revit
             }
 
 
-            foreach (string aTypeName in aRevitFilePreview.FamilyTypeNames())
+            foreach (string aTypeName in aRevitFilePreview.TypeNames())
             {
                 Dictionary<string, string> aDictionary_Type = null;
                 if (!aDictionary_Category.TryGetValue(aTypeName, out aDictionary_Type))

@@ -13,35 +13,51 @@ namespace BH.UI.Cobra.Engine
 
         public static FamilySymbol ToRevitColumnSymbol(this oM.Structure.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
         {
-            List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralColumns).Cast<FamilySymbol>().ToList();
-            if (aFamilySymbolList == null || aFamilySymbolList.Count < 1)
+            if (framingElementProperty == null || document == null)
                 return null;
 
-            FamilySymbol aFamilySymbol = null;
+            pushSettings = pushSettings.DefaultIfNull();
 
-            aFamilySymbol = aFamilySymbolList.Find(x => x.Name == framingElementProperty.Name);
+            return Query.ElementType(framingElementProperty, document, BuiltInCategory.OST_StructuralColumns, pushSettings.FamilyLibrary) as FamilySymbol;
+            
+            //framingElementProperty.ElementType()
 
-            if (aFamilySymbol != null)
-                return aFamilySymbol;
+            //List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralColumns).Cast<FamilySymbol>().ToList();
+            //if (aFamilySymbolList == null || aFamilySymbolList.Count < 1)
+            //    return null;
 
-            return null;
+            //FamilySymbol aFamilySymbol = null;
+
+            //aFamilySymbol = aFamilySymbolList.Find(x => x.Name == framingElementProperty.Name);
+
+            //if (aFamilySymbol != null)
+            //    return aFamilySymbol;
+
+            //return null;
         }
 
         /***************************************************/
 
         public static FamilySymbol ToRevitFramingSymbol(this oM.Structure.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
         {
-            List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilySymbol>().ToList();
-            if (aFamilySymbolList == null || aFamilySymbolList.Count < 1)
+            if (framingElementProperty == null || document == null)
                 return null;
 
-            FamilySymbol aFamilySymbol = null;
+            pushSettings = pushSettings.DefaultIfNull();
 
-            aFamilySymbol = aFamilySymbolList.Find(x => x.Name == framingElementProperty.Name);
-            if (aFamilySymbol != null)
-                return aFamilySymbol;
+            return Query.ElementType(framingElementProperty, document, BuiltInCategory.OST_StructuralFraming, pushSettings.FamilyLibrary) as FamilySymbol;
 
-            return null;
+            //List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilySymbol>().ToList();
+            //if (aFamilySymbolList == null || aFamilySymbolList.Count < 1)
+            //    return null;
+
+            //FamilySymbol aFamilySymbol = null;
+
+            //aFamilySymbol = aFamilySymbolList.Find(x => x.Name == framingElementProperty.Name);
+            //if (aFamilySymbol != null)
+            //    return aFamilySymbol;
+
+            //return null;
         }
 
         /***************************************************/

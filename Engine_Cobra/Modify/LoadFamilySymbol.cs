@@ -2,6 +2,7 @@
 using System.Linq;
 
 using BH.oM.Adapters.Revit;
+using BH.Engine.Adapters.Revit;
 
 using Autodesk.Revit.DB;
 
@@ -13,7 +14,7 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static FamilySymbol LoadFamilySymbol(this FamilyLibrary familyLibrary, Document document, string categoryName, string familyName, string typeName)
+        public static FamilySymbol LoadFamilySymbol(this FamilyLibrary familyLibrary, Document document, string categoryName, string familyName, string typeName = null)
         {
             if (familyLibrary == null && document == null)
                 return null;
@@ -29,13 +30,33 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        public static FamilySymbol LoadFamilySymbol(this Document document, string path, string typeName)
+        public static FamilySymbol LoadFamilySymbol(this Document document, string path, string typeName = null)
         {
-            if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(typeName) || document == null)
+            if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(typeName) || document == null || !System.IO.File.Exists(path))
                 return null;
+
+            string aTypeName = typeName;
+            if(string.IsNullOrEmpty(aTypeName))
+            {
+                //Look for first available type name if type name not provided
+
+                RevitFilePreview aRevitFilePreview = Create.RevitFilePreview(path);
+                if (aRevitFilePreview == null)
+                    return null;
+
+                List<string> aTypeNameList = BH.Engine.Adapters.Revit.Query.TypeNames(aRevitFilePreview);
+                if (aTypeNameList == null || aTypeNameList.Count < 1)
+                    return null;
+
+                aTypeName = aTypeNameList.First();
+            }
 
             FamilySymbol aFamilySymbol = null;
             document.LoadFamilySymbol(path, typeName, out aFamilySymbol);
+
+            if (!aFamilySymbol.IsActive)
+                aFamilySymbol.Activate();
+
             return aFamilySymbol;
         }
 

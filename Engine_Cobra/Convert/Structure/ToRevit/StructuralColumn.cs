@@ -19,7 +19,7 @@ namespace BH.UI.Cobra.Engine
             if (framingElement == null || document == null)
                 return null;
 
-            pushSettings.DefaultIfNull();
+            pushSettings = pushSettings.DefaultIfNull();
 
             object aCustomDataValue = null;
 
@@ -40,17 +40,19 @@ namespace BH.UI.Cobra.Engine
 
             if (aFamilySymbol == null)
             {
-                List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralColumns).Cast<FamilySymbol>().ToList();
+                aFamilySymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralColumns, pushSettings.FamilyLibrary) as FamilySymbol;
 
-                aCustomDataValue = framingElement.ICustomData("Type");
-                if (aCustomDataValue != null && aCustomDataValue is int)
-                {
-                    ElementId aElementId = new ElementId((int)aCustomDataValue);
-                    aFamilySymbol = aFamilySymbolList.Find(x => x.Id == aElementId);
-                }
+                //List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralColumns).Cast<FamilySymbol>().ToList();
 
-                if (aFamilySymbol == null)
-                    aFamilySymbol = aFamilySymbolList.Find(x => x.Name == framingElement.Name);
+                //aCustomDataValue = framingElement.ICustomData("Type");
+                //if (aCustomDataValue != null && aCustomDataValue is int)
+                //{
+                //    ElementId aElementId = new ElementId((int)aCustomDataValue);
+                //    aFamilySymbol = aFamilySymbolList.Find(x => x.Id == aElementId);
+                //}
+
+                //if (aFamilySymbol == null)
+                //    aFamilySymbol = aFamilySymbolList.Find(x => x.Name == framingElement.Name);
 
                 if (aFamilySymbol == null)
                 {

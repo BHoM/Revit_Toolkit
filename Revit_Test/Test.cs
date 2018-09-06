@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using BH.Engine.Adapters.Revit;
 
 namespace Revit_Test
 {
@@ -47,6 +48,26 @@ namespace Revit_Test
     public class DoTest : IExternalCommand
     {
         public Result Execute(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
+        {
+            //Creating Revit Adapter for active Revit Document
+            CobraAdapter pRevitInternalAdapter = new CobraAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
+
+            FamilyLibrary aFamilyLibrary = Create.FamilyLibrary(@"C:\Users\jziolkow\Desktop\Families");
+
+            RevitSettings aRevitSetting = Create.RevitSettings();
+            aRevitSetting = aRevitSetting.SetFamilyLibrary(aFamilyLibrary);
+
+            GenericObject aGenerticObject = Create.GenericObject(new BH.oM.Geometry.Point(), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU");
+
+            pRevitInternalAdapter.RevitSettings = aRevitSetting;
+
+            List<IObject> aIObjects = pRevitInternalAdapter.Push(new IBHoMObject[] { aGenerticObject });
+
+
+            return Result.Succeeded;
+        }
+
+        public Result Execute_Old(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
             //Creating Revit Adapter for active Revit Document
             CobraAdapter pRevitInternalAdapter = new CobraAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);

@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Convert\AdapterID.cs" />
-    <Compile Include="Create\BHoMPlacedObject.cs" />
+    <Compile Include="Create\GenericObject.cs" />
     <Compile Include="Create\FamilyLibrary.cs" />
     <Compile Include="Create\RevitFilePreview.cs" />
     <Compile Include="Create\RevitSettings.cs" />
@@ -77,8 +77,8 @@
     <Compile Include="Modify\SetFamilyLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\BuildingElements.cs" />
+    <Compile Include="Query\CategoryNames.cs" />
     <Compile Include="Query\FamilyName.cs" />
-    <Compile Include="Query\FamilyTypeNames.cs" />
     <Compile Include="Query\CategoryName.cs" />
     <Compile Include="Query\DefaultDiscipline.cs" />
     <Compile Include="Query\ElementId.cs" />
@@ -92,6 +92,7 @@
     <Compile Include="Query\Location.cs" />
     <Compile Include="Query\OmniClass.cs" />
     <Compile Include="Query\TypeName.cs" />
+    <Compile Include="Query\TypeNames.cs" />
     <Compile Include="Query\UniqueId.cs" />
     <Compile Include="Query\UniqueIds.cs" />
     <Compile Include="Query\WorksetId.cs" />

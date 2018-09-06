@@ -16,7 +16,10 @@ namespace BH.UI.Cobra.Engine
 
         internal static HostObject ToRevit(this PanelPlanar panelPlanar, Document document, PushSettings pushSettings = null)
         {
-            pushSettings.DefaultIfNull();
+            if (panelPlanar == null || document == null)
+                return null;
+
+            pushSettings = pushSettings.DefaultIfNull();
 
             //TODO: the solution below should be replaced by a Property of a PanelPlanar that would define if it is a floor or wall.
             double dotProduct = Math.Abs(panelPlanar.Outline().FitPlane().Normal.DotProduct(Vector.ZAxis));

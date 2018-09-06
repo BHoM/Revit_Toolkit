@@ -17,7 +17,7 @@ namespace BH.UI.Cobra.Engine
             if (curve == null)
                 return null;
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             if (curve is Line)
                 return BH.Engine.Geometry.Create.Line(ToBHoM(curve.GetEndPoint(0), pullSettings), ToBHoM(curve.GetEndPoint(1), pullSettings));
@@ -46,7 +46,7 @@ namespace BH.UI.Cobra.Engine
             if (curves == null)
                 return null;
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             return curves.Select(c => c.ToBHoM(pullSettings)).ToList();
         }
@@ -58,7 +58,7 @@ namespace BH.UI.Cobra.Engine
             if (locationCurve == null)
                 return null;
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             return ToBHoM(locationCurve.Curve, pullSettings);
         }
@@ -70,7 +70,7 @@ namespace BH.UI.Cobra.Engine
             if (curves == null)
                 return null;
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
             for (int i = 0; i < curves.Size; i++)
@@ -87,7 +87,7 @@ namespace BH.UI.Cobra.Engine
             if (curveLoop == null)
                 return null;
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             List<oM.Geometry.ICurve> aICurveList = new List<oM.Geometry.ICurve>();
             foreach (Curve aCurve in curveLoop)

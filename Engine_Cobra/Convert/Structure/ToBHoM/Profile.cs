@@ -16,7 +16,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static IProfile ToBHoMProfile(this FamilySymbol familySymbol, PullSettings pullSettings = null)
         {
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             IProfile aProfile = null;
 

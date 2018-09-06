@@ -20,7 +20,7 @@ namespace BH.UI.Cobra.Engine
             if (buildingElement == null || buildingElement.BuildingElementProperties == null || document == null)
                 return null;
 
-            pushSettings.DefaultIfNull();
+            pushSettings = pushSettings.DefaultIfNull();
 
             //Get Level
             Level aLevel = null;

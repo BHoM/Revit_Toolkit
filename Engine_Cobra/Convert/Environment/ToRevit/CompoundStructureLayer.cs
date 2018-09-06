@@ -13,7 +13,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static CompoundStructureLayer ToRevit(this ConstructionLayer constructionLayer, Document document, PushSettings pushSettings = null)
         {
-            pushSettings.DefaultIfNull();
+            pushSettings = pushSettings.DefaultIfNull();
 
             MaterialFunctionAssignment aMaterialFunctionAssignment = GetMaterialFunctionAssignment(constructionLayer);
 
@@ -24,7 +24,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static CompoundStructure ToRevit(IEnumerable<ConstructionLayer> constructionLayers, Document document, PushSettings pushSettings = null)
         {
-            pushSettings.DefaultIfNull();
+            pushSettings = pushSettings.DefaultIfNull();
 
             List<CompoundStructureLayer> aCompoundStructureLayerList = new List<CompoundStructureLayer>();
             foreach (ConstructionLayer aConstructionLayer in constructionLayers)

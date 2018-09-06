@@ -8,7 +8,7 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static string UniqueId(this BHoMObject bHoMObject)
+        public static string UniqueId(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
                 return null;

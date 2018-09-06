@@ -35,6 +35,7 @@ namespace BH.Engine.Adapters.Revit
                     {
                         byte[] aFileInfoData = ParseStreamInfo(aStreamInfo);
                         aXDocument = XDocument.Parse(Encoding.Default.GetString(aFileInfoData));
+                        break;
                     }
                 }
 

@@ -47,9 +47,11 @@ namespace BH.UI.Cobra.Adapter
                     
                 };
 
-                foreach (IBHoMObject aBHOMObject in objects)
+                for(int i=0; i < objects.Count(); i++)
                 {
-                    if(aBHOMObject == null)
+                    IBHoMObject aBHOMObject = objects.ElementAt<T>(i) as IBHoMObject;
+
+                    if (aBHOMObject == null)
                     {
                         NullObjectCreateError(typeof(IBHoMObject));
                         continue;
@@ -57,18 +59,18 @@ namespace BH.UI.Cobra.Adapter
 
                     try
                     {
-                        if (aBHOMObject is oM.Architecture.Elements.Level || aBHOMObject is BuildingElement || aBHOMObject is BuildingElementProperties)
-                        {
-                            Create(aBHOMObject as dynamic, aPushSettings);
-                        }  
-                        else
-                        {
-                            if (replaceAll)
-                                Delete(aBHOMObject as BHoMObject);
+                        if (replaceAll)
+                            Delete(aBHOMObject as BHoMObject);
 
-                            BH.UI.Cobra.Engine.Convert.ToRevit(aBHOMObject as dynamic, Document, aPushSettings);
-                        }
-                            
+                        Element aElement = null;
+
+                        if (aBHOMObject is oM.Architecture.Elements.Level || aBHOMObject is BuildingElement || aBHOMObject is BuildingElementProperties)
+                            aElement = Create(aBHOMObject as dynamic, aPushSettings);  
+                        else
+                            aElement = BH.UI.Cobra.Engine.Convert.ToRevit(aBHOMObject as dynamic, Document, aPushSettings);
+
+                        if (aElement != null)
+                            aBHOMObject = Engine.Modify.SetIdentifiers(aBHOMObject, aElement);
                     }
                     catch(Exception aException)
                     {

@@ -12,7 +12,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static Autodesk.Revit.DB.Plane ToRevit(this CoordinateSystem CS, PushSettings pushSettings = null)
         {
-            pushSettings.DefaultIfNull();
+            pushSettings = pushSettings.DefaultIfNull();
 
             XYZ origin = CS.Origin.ToRevit(pushSettings);
             XYZ X = CS.X.ToRevit(pushSettings);

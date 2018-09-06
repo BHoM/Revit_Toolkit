@@ -11,26 +11,26 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<string> GetPaths(this FamilyLibrary FamilyLibrary, string CategoryName = null, string FamilyName = null, string TypeName = null)
+        public static List<string> GetPaths(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null, string typeName = null)
         {
-            if (FamilyLibrary == null)
+            if (familyLibrary == null)
                 return null;
 
             List<string> aPathList = new List<string>();
 
             List<Dictionary<string, Dictionary<string, string>>> aDictionaryList_Category = new List<Dictionary<string, Dictionary<string, string>>>();
 
-            if (string.IsNullOrEmpty(CategoryName))
-                aDictionaryList_Category = FamilyLibrary.Dictionary.Values.ToList();
+            if (string.IsNullOrEmpty(categoryName))
+                aDictionaryList_Category = familyLibrary.Dictionary.Values.ToList();
             else
             {
                 Dictionary<string, Dictionary<string, string>> aDictionary_Category = null;
-                if (FamilyLibrary.Dictionary.TryGetValue(CategoryName, out aDictionary_Category))
+                if (familyLibrary.Dictionary.TryGetValue(categoryName, out aDictionary_Category))
                     aDictionaryList_Category.Add(aDictionary_Category);
             }
 
             List<Dictionary<string, string>> aDictionaryList_Type = new List<Dictionary<string, string>>();
-            if (string.IsNullOrEmpty(TypeName))
+            if (string.IsNullOrEmpty(typeName))
             {
                 foreach (Dictionary<string, Dictionary<string, string>> aDictionary_Category in aDictionaryList_Category)
                     aDictionaryList_Type.AddRange(aDictionary_Category.Values);
@@ -40,12 +40,12 @@ namespace BH.Engine.Adapters.Revit
                 foreach (Dictionary<string, Dictionary<string, string>> aDictionary_Category in aDictionaryList_Category)
                 {
                     Dictionary<string, string> aDictionary_Family = null;
-                    if (aDictionary_Category.TryGetValue(TypeName, out aDictionary_Family))
+                    if (aDictionary_Category.TryGetValue(typeName, out aDictionary_Family))
                         aDictionaryList_Type.Add(aDictionary_Family);
                 }
             }
 
-            if (string.IsNullOrEmpty(FamilyName))
+            if (string.IsNullOrEmpty(familyName))
             {
                 aDictionaryList_Type.ForEach(x => aPathList.AddRange(x.Values));
             }
@@ -54,7 +54,7 @@ namespace BH.Engine.Adapters.Revit
                 foreach (Dictionary<string, string> aDictionary_Family in aDictionaryList_Type)
                 {
                     string aPath = null;
-                    if (aDictionary_Family.TryGetValue(FamilyName, out aPath))
+                    if (aDictionary_Family.TryGetValue(familyName, out aPath))
                         aPathList.Add(aPath);
                 }
             }

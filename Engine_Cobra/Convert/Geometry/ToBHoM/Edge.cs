@@ -12,7 +12,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static oM.Geometry.ICurve ToBHoM(this Edge edge, PullSettings pullSettings = null)
         {
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             return ToBHoM(edge.AsCurve(), pullSettings);
         }
@@ -21,7 +21,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static List<oM.Geometry.ICurve> ToBHoM(this EdgeArray edgeArray, PullSettings pullSettings = null)
         {
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
             foreach (Edge aEdge in edgeArray)
@@ -36,7 +36,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static List<List<oM.Geometry.ICurve>> ToBHoM(this EdgeArrayArray edgeArray, PullSettings pullSettings = null)
         {
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             List<List<oM.Geometry.ICurve>> result = new List<List<oM.Geometry.ICurve>>();
             foreach (EdgeArray ea in edgeArray)
