@@ -8,7 +8,7 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public static int WorksetId(this BHoMObject bHoMObject)
+        public static int WorksetId(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
                 return -1;

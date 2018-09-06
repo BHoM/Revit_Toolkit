@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-	<TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugEngines>{351668CC-8477-4fbf-BFE3-5F1006E4DB1F}</DebugEngines>
@@ -41,7 +41,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-	<TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2019|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -51,7 +51,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-	<TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BHoM">
@@ -143,6 +143,10 @@
     <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
       <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
       <Name>Revit_Adapter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj">
+      <Project>{75a99ac5-fe80-45a4-b456-1aa3b1c4bb74}</Project>
+      <Name>Revit_Engine</Name>
     </ProjectReference>
     <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
       <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>

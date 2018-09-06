@@ -14,7 +14,7 @@ namespace BH.UI.Cobra.Engine
         
         static public oM.Architecture.Elements.Level Level(this Element element, PullSettings pullSettings = null)
         {
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             oM.Architecture.Elements.Level aLevel = null;
             if (pullSettings.RefObjects != null)

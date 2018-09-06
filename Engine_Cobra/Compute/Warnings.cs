@@ -14,24 +14,28 @@ namespace BH.UI.Cobra.Engine
         /****               Public methods              ****/
         /***************************************************/
 
-        public static void DefaultIfNull(this PullSettings pullSettings)
+        public static PullSettings DefaultIfNull(this PullSettings pullSettings)
         {
             if (pullSettings == null)
             {
                 BH.Engine.Reflection.Compute.RecordWarning("Pull settings are not set. Default settings are used.");
-                pullSettings = PullSettings.Default;
+                return PullSettings.Default;
             }
+
+            return pullSettings;
         }
 
         /***************************************************/
 
-        public static void DefaultIfNull(this PushSettings pushSettings)
+        public static PushSettings DefaultIfNull(this PushSettings pushSettings)
         {
             if (pushSettings == null)
             {
                 BH.Engine.Reflection.Compute.RecordWarning("Push settings are not set. Default settings are used.");
-                pushSettings = PushSettings.Default;
+                return PushSettings.Default;
             }
+
+            return pushSettings;
         }
 
 

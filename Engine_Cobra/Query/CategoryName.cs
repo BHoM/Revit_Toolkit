@@ -2,6 +2,7 @@
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -21,6 +22,23 @@ namespace BH.UI.Cobra.Engine
                     return aCategory.Name;
 
             return null;
+        }
+
+        /***************************************************/
+
+        public static string CategoryName(this Document document, string familyName)
+        {
+            if (document == null || string.IsNullOrEmpty(familyName))
+                return null;
+
+            List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>().ToList();
+
+            ElementType aElementType = aElementTypeList.Find(x => x.FamilyName == familyName && x.Category != null);
+
+            if (aElementType == null)
+                return null;
+
+            return aElementType.Category.Name;
         }
 
         /***************************************************/

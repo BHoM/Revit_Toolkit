@@ -21,7 +21,7 @@ namespace BH.UI.Cobra.Engine
             if (panelPlanar == null || document == null)
                 return null;
 
-            pushSettings.DefaultIfNull();
+            pushSettings = pushSettings.DefaultIfNull();
 
             object aCustomDataValue = null;
 
@@ -44,17 +44,19 @@ namespace BH.UI.Cobra.Engine
 
             if (aWallType == null)
             {
-                List<WallType> aWallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).OfCategory(BuiltInCategory.OST_Walls).Cast<WallType>().ToList();
+                aWallType = Query.ElementType(panelPlanar, document, BuiltInCategory.OST_Walls) as WallType;
 
-                aCustomDataValue = panelPlanar.ICustomData("Type");
-                if (aCustomDataValue != null && aCustomDataValue is int)
-                {
-                    ElementId aElementId = new ElementId((int)aCustomDataValue);
-                    aWallType = aWallTypeList.Find(x => x.Id == aElementId);
-                }
+                //List<WallType> aWallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).OfCategory(BuiltInCategory.OST_Walls).Cast<WallType>().ToList();
 
-                if (aWallType == null)
-                    aWallType = aWallTypeList.Find(x => x.Name == panelPlanar.Name);
+                //aCustomDataValue = panelPlanar.ICustomData("Type");
+                //if (aCustomDataValue != null && aCustomDataValue is int)
+                //{
+                //    ElementId aElementId = new ElementId((int)aCustomDataValue);
+                //    aWallType = aWallTypeList.Find(x => x.Id == aElementId);
+                //}
+
+                //if (aWallType == null)
+                //    aWallType = aWallTypeList.Find(x => x.Name == panelPlanar.Name);
 
                 if (aWallType == null)
                 {

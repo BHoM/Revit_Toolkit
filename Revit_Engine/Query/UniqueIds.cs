@@ -9,13 +9,13 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public static List<string> UniqueIds(IEnumerable<BHoMObject> bHoMObjects, bool removeNulls = true)
+        public static List<string> UniqueIds(IEnumerable<IBHoMObject> bHoMObjects, bool removeNulls = true)
         {
             if (bHoMObjects == null)
                 return null;
 
             List<string> aUniqueIdList = new List<string>();
-            foreach (BHoMObject aBHoMObject in bHoMObjects)
+            foreach (IBHoMObject aBHoMObject in bHoMObjects)
             {
                 string aUniqueId = UniqueId(aBHoMObject);
                 if (string.IsNullOrEmpty(aUniqueId) && removeNulls)

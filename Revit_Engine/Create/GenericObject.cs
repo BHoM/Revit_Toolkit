@@ -28,6 +28,21 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
+
+        public static GenericObject GenericObject(Point point, string familyName, string typeName)
+        {
+            GenericObject aGenericObject = new GenericObject()
+            {
+                Location = point
+            };
+
+            aGenericObject.CustomData.Add(Convert.FamilyName, familyName);
+            aGenericObject.CustomData.Add(Convert.TypeName, typeName);
+
+            return aGenericObject;
+        }
+
+        /***************************************************/
     }
 }
 

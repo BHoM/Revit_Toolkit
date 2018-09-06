@@ -1,4 +1,6 @@
-﻿using BH.oM.Environment.Elements;
+﻿using Autodesk.Revit.DB;
+
+using BH.oM.Environment.Elements;
 using BH.oM.Environment.Properties;
 using BH.oM.Adapters.Revit;
 using BH.UI.Cobra.Engine;
@@ -11,21 +13,21 @@ namespace BH.UI.Cobra.Adapter
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private bool Create(BuildingElement buildingElement, PushSettings pushSettings = null)
+        private Element Create(BuildingElement buildingElement, PushSettings pushSettings = null)
         {
             if (buildingElement == null)
             {
                 NullObjectCreateError(typeof(BuildingElement));
-                return false;
+                return null;
             }
 
             if (buildingElement.BuildingElementProperties == null)
             {
                 NullObjectCreateError(typeof(BuildingElementProperties));
-                return false;
+                return null;
             }
 
-            pushSettings.DefaultIfNull();
+            pushSettings = pushSettings.DefaultIfNull();
 
             if (pushSettings.Replace)
                 Delete(buildingElement.BuildingElementProperties);
@@ -40,9 +42,7 @@ namespace BH.UI.Cobra.Adapter
             if (pushSettings.Replace)
                 Delete(buildingElement);
 
-            buildingElement.ToRevit(Document, pushSettings);
-
-            return true;
+            return buildingElement.ToRevit(Document, pushSettings);
         }
 
         /***************************************************/

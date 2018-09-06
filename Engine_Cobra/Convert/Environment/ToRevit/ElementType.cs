@@ -22,7 +22,7 @@ namespace BH.UI.Cobra.Engine
             if (aBuiltInCategory == BuiltInCategory.INVALID)
                 return null;
 
-            pushSettings.DefaultIfNull();
+            pushSettings = pushSettings.DefaultIfNull();
 
             ElementType aElementType = buildingElementProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLibrary);
             if(aElementType == null)

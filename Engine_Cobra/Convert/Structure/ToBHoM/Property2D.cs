@@ -17,7 +17,7 @@ namespace BH.UI.Cobra.Engine
         {
             Document document = wallType.Document;
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             double aThickness = 0;
             oM.Common.Materials.Material aMaterial = null;
@@ -75,7 +75,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static IProperty2D ToBHoMProperty2D(this FloorType floorType, PullSettings pullSettings = null)
         {
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             Document document = floorType.Document;
 

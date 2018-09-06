@@ -15,7 +15,7 @@ namespace BH.Engine.Adapters.Revit
 
             RevitSettings aRevitSettings = revitSettings.GetShallowClone() as RevitSettings;
 
-            revitSettings.FamilyLibrary = familyLibrary;
+            aRevitSettings.FamilyLibrary = familyLibrary;
 
             return aRevitSettings;
         }

@@ -21,7 +21,7 @@ namespace BH.UI.Cobra.Engine
             if (aElementIdList == null || aElementIdList.Count < 1)
                 return null;
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
             foreach (ElementId aElementId in aElementIdList)

@@ -12,7 +12,10 @@ namespace BH.UI.Cobra.Engine
 
         public static FamilyInstance ToRevit(this FramingElement framingElement, Document document, PushSettings pushSettings = null)
         {
-            pushSettings.DefaultIfNull();
+            if (framingElement == null || document == null)
+                return null;
+
+            pushSettings = pushSettings.DefaultIfNull();
 
             switch (framingElement.StructuralUsage)
             {

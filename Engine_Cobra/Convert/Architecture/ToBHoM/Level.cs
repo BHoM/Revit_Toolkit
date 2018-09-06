@@ -12,7 +12,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static BHoMObject ToBHoMLevel(this Level Level, PullSettings pullSettings = null)
         {
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             oM.Architecture.Elements.Level aLevel = BH.Engine.Architecture.Elements.Create.Level(ToSI(Level.ProjectElevation, UnitType.UT_Length));
             aLevel.Name = Level.Name;

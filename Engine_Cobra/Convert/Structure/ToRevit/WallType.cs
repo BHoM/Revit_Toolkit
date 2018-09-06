@@ -1,7 +1,5 @@
 ﻿using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -13,18 +11,25 @@ namespace BH.UI.Cobra.Engine
 
         public static WallType ToRevitWallType(this oM.Structure.Properties.IProperty2D property2D, Document document, PushSettings pushSettings = null)
         {
-            List<WallType> aWallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).OfCategory(BuiltInCategory.OST_Walls).Cast<WallType>().ToList();
-            if (aWallTypeList == null || aWallTypeList.Count < 1)
+            if (property2D == null || document == null)
                 return null;
 
-            WallType aWallType = null;
+            pushSettings = pushSettings.DefaultIfNull();
 
-            aWallType = aWallTypeList.Find(x => x.Name == property2D.Name);
+            return Query.ElementType(property2D, document, BuiltInCategory.OST_Walls, pushSettings.FamilyLibrary) as WallType;
 
-            if (aWallType != null)
-                return aWallType;
+            //List<WallType> aWallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).OfCategory(BuiltInCategory.OST_Walls).Cast<WallType>().ToList();
+            //if (aWallTypeList == null || aWallTypeList.Count < 1)
+            //    return null;
 
-            return null;
+            //WallType aWallType = null;
+
+            //aWallType = aWallTypeList.Find(x => x.Name == property2D.Name);
+
+            //if (aWallType != null)
+            //    return aWallType;
+
+            //return null;
         }
     }
 }

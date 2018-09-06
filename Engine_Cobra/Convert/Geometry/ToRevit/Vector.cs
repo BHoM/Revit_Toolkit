@@ -12,7 +12,7 @@ namespace BH.UI.Cobra.Engine
 
         internal static XYZ ToRevit(this Vector vector, PushSettings pushSettings = null)
         {
-            pushSettings.DefaultIfNull();
+            pushSettings = pushSettings.DefaultIfNull();
 
             if (pushSettings.ConvertUnits)
                 return new XYZ(UnitUtils.ConvertToInternalUnits(vector.X, DisplayUnitType.DUT_METERS), UnitUtils.ConvertToInternalUnits(vector.Y, DisplayUnitType.DUT_METERS), UnitUtils.ConvertToInternalUnits(vector.Z, DisplayUnitType.DUT_METERS));

@@ -180,6 +180,7 @@
     <Compile Include="Query\CategoryName.cs" />
     <Compile Include="Query\Elements.cs" />
     <Compile Include="Query\ElementType.cs" />
+    <Compile Include="Query\Family.cs" />
     <Compile Include="Query\SelectionBuiltInCategories.cs" />
     <Compile Include="Query\Element.cs" />
     <Compile Include="Query\ElementId.cs" />

@@ -88,7 +88,7 @@ namespace BH.UI.Cobra.Engine
         {
             wall.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -108,7 +108,7 @@ namespace BH.UI.Cobra.Engine
         {
             ceiling.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -126,7 +126,7 @@ namespace BH.UI.Cobra.Engine
         {
             floor.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch(pullSettings.Discipline)
             {
@@ -146,7 +146,7 @@ namespace BH.UI.Cobra.Engine
         {
             roofBase.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -164,7 +164,7 @@ namespace BH.UI.Cobra.Engine
         {
             wallType.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -184,7 +184,7 @@ namespace BH.UI.Cobra.Engine
         {
             floorType.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -204,7 +204,7 @@ namespace BH.UI.Cobra.Engine
         {
             ceilingType.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -222,7 +222,7 @@ namespace BH.UI.Cobra.Engine
         {
             roofType.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -240,7 +240,7 @@ namespace BH.UI.Cobra.Engine
         {
             familySymbol.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -260,7 +260,7 @@ namespace BH.UI.Cobra.Engine
         {
             level.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch(pullSettings.Discipline)
             {
@@ -280,7 +280,7 @@ namespace BH.UI.Cobra.Engine
         {
             grid.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -300,7 +300,7 @@ namespace BH.UI.Cobra.Engine
         {
             elementType.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -318,7 +318,7 @@ namespace BH.UI.Cobra.Engine
         {
             spatialElement.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -336,7 +336,7 @@ namespace BH.UI.Cobra.Engine
         {
             energyAnalysisSpace.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -354,7 +354,7 @@ namespace BH.UI.Cobra.Engine
         {
             energyAnalysisSurface.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
@@ -372,7 +372,7 @@ namespace BH.UI.Cobra.Engine
         {
             energyAnalysisOpening.CheckIfNullPull();
 
-            pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
             switch (pullSettings.Discipline)
             {
