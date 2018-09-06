@@ -34,7 +34,7 @@ namespace BH.UI.Cobra.Engine
 
             Level aLevel = null;
 
-            aCustomDataValue = panelPlanar.ICustomData("Level");
+            aCustomDataValue = panelPlanar.CustomDataValue("Level");
             if (aCustomDataValue != null && aCustomDataValue is int)
             {
                 ElementId aElementId = new ElementId((int)aCustomDataValue);

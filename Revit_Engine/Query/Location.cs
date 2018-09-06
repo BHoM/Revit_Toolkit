@@ -13,12 +13,12 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static IGeometry Location(this GenericObject GenericObject)
+        public static IGeometry Location(this GenericObject genericObject)
         {
-            if (GenericObject == null)
+            if (genericObject == null)
                 return null;
 
-            return GenericObject.Location;
+            return genericObject.Location;
         }
 
         /***************************************************/

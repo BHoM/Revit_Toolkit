@@ -25,7 +25,7 @@ namespace BH.UI.Cobra.Engine
             Curve aCurve = framingElement.LocationCurve.ToRevit(pushSettings);
             Level aLevel = null;
 
-            aCustomDataValue = framingElement.ICustomData("Reference Level");
+            aCustomDataValue = framingElement.CustomDataValue("Reference Level");
             if (aCustomDataValue != null && aCustomDataValue is int)
             {
                 ElementId aElementId = new ElementId((int)aCustomDataValue);

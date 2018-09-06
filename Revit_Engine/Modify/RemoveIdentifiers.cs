@@ -8,12 +8,12 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public static BHoMObject RemoveIdentifiers(this BHoMObject bHoMObject)
+        public static IBHoMObject RemoveIdentifiers(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
                 return null;
 
-            BHoMObject aBHoMObject = bHoMObject.GetShallowClone() as BHoMObject;
+            IBHoMObject aBHoMObject = bHoMObject.GetShallowClone();
 
             aBHoMObject.CustomData.Remove(Convert.AdapterId);
             aBHoMObject.CustomData.Remove(Convert.ElementId);

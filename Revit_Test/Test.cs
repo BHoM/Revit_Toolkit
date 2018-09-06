@@ -57,11 +57,15 @@ namespace Revit_Test
             RevitSettings aRevitSetting = Create.RevitSettings();
             aRevitSetting = aRevitSetting.SetFamilyLibrary(aFamilyLibrary);
 
-            GenericObject aGenerticObject = Create.GenericObject(new BH.oM.Geometry.Point(), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU");
+            List<IBHoMObject> aIBHoMObjectList = new List<IBHoMObject>();
+
+            aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 0, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide", "AHU New Type"));
+            aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 100, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU New Type"));
+            aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 200, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU"));
 
             pRevitInternalAdapter.RevitSettings = aRevitSetting;
 
-            List<IObject> aIObjects = pRevitInternalAdapter.Push(new IBHoMObject[] { aGenerticObject });
+            List<IObject> aIObjects = pRevitInternalAdapter.Push(aIBHoMObjectList);
 
 
             return Result.Succeeded;

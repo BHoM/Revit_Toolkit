@@ -8,7 +8,7 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public static object ICustomData(this IBHoMObject bHoMObject, string name)
+        public static object CustomDataValue(this IBHoMObject bHoMObject, string name)
         {
             if (bHoMObject == null)
                 return null;
