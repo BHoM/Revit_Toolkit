@@ -30,7 +30,7 @@ namespace BH.UI.Cobra.Engine
 
             Level aLevel = null;
 
-            aCustomDataValue = panelPlanar.ICustomData("Base Constraint");
+            aCustomDataValue = panelPlanar.CustomDataValue("Base Constraint");
             if (aCustomDataValue != null && aCustomDataValue is int)
             {
                 ElementId aElementId = new ElementId((int)aCustomDataValue);

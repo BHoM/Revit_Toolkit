@@ -11,12 +11,12 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static string OmniClass(this RevitFilePreview RevitFilePreview)
+        public static string OmniClass(this RevitFilePreview revitFilePreview)
         {
-            if (RevitFilePreview == null || RevitFilePreview.XDocument == null)
+            if (revitFilePreview == null || revitFilePreview.XDocument == null)
                 return null;
 
-            XDocument aXDocument = RevitFilePreview.XDocument;
+            XDocument aXDocument = revitFilePreview.XDocument;
 
             if (aXDocument != null && aXDocument.Root != null)
             {

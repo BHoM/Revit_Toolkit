@@ -11,7 +11,7 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<string> CategoryNames(this FamilyLibrary familyLibrary, string familyName, string typeName)
+        public static List<string> CategoryNames(this FamilyLibrary familyLibrary, string familyName, string typeName = null)
         {
             if (familyLibrary == null)
                 return null;
