@@ -45,11 +45,13 @@ namespace BH.UI.Cobra.Engine
             if (bHoMObject == null || document == null)
                 return Autodesk.Revit.DB.BuiltInCategory.INVALID;
 
-            string aCategoryName = BH.Engine.Adapters.Revit.Query.CategoryName(bHoMObject);
-            if (string.IsNullOrEmpty(aCategoryName))
-                return Autodesk.Revit.DB.BuiltInCategory.INVALID;
 
-            if (string.IsNullOrEmpty(aCategoryName))
+            BuiltInCategory aBuiltInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID;
+            string aCategoryName = BH.Engine.Adapters.Revit.Query.CategoryName(bHoMObject);
+            if (!string.IsNullOrEmpty(aCategoryName))
+                aBuiltInCategory = BuiltInCategory(document, aCategoryName);
+
+            if (aBuiltInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
             {
                 string aFamilyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject);
                 if (string.IsNullOrEmpty(aFamilyName))
@@ -69,14 +71,12 @@ namespace BH.UI.Cobra.Engine
                         aElementType = aElementTypeList.Find(x => x.FamilyName == aFamilyName);
                 }
 
-                if (aElementType == null || aElementType.Category == null)
-                    return Autodesk.Revit.DB.BuiltInCategory.INVALID;
-                else
-                    return (BuiltInCategory)aElementType.Category.Id.IntegerValue;
+                if (aElementType != null && aElementType.Category != null)
+                    aBuiltInCategory = (BuiltInCategory)aElementType.Category.Id.IntegerValue;
 
             }
 
-            return BuiltInCategory(document, aCategoryName);
+            return aBuiltInCategory;
         }
 
         /***************************************************/

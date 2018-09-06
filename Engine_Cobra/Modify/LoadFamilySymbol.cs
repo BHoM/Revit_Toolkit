@@ -32,7 +32,7 @@ namespace BH.UI.Cobra.Engine
 
         public static FamilySymbol LoadFamilySymbol(this Document document, string path, string typeName = null)
         {
-            if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(typeName) || document == null || !System.IO.File.Exists(path))
+            if (string.IsNullOrEmpty(path) || document == null || !System.IO.File.Exists(path))
                 return null;
 
             string aTypeName = typeName;
@@ -51,11 +51,15 @@ namespace BH.UI.Cobra.Engine
                 aTypeName = aTypeNameList.First();
             }
 
-            FamilySymbol aFamilySymbol = null;
-            document.LoadFamilySymbol(path, typeName, out aFamilySymbol);
+            if (string.IsNullOrEmpty(aTypeName))
+                return null;
 
-            if (!aFamilySymbol.IsActive)
-                aFamilySymbol.Activate();
+            FamilySymbol aFamilySymbol = null;
+            if(document.LoadFamilySymbol(path, aTypeName, out aFamilySymbol))
+            {
+                if (!aFamilySymbol.IsActive)
+                    aFamilySymbol.Activate();
+            }
 
             return aFamilySymbol;
         }

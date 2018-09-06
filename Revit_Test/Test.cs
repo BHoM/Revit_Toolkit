@@ -59,9 +59,9 @@ namespace Revit_Test
 
             List<IBHoMObject> aIBHoMObjectList = new List<IBHoMObject>();
 
-            aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 0, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide", "AHU New Type"));
-            aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 100, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU New Type"));
-            aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 200, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU"));
+            aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 0, 0), "BHE_MechanicalEquipment_AHUPlant_AHUStacked", "AHU New Type"));
+            aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 10, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU New Type"));
+            aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 20, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU"));
 
             pRevitInternalAdapter.RevitSettings = aRevitSetting;
 
