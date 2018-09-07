@@ -2,7 +2,7 @@
 
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Properties;
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
 using BH.UI.Cobra.Engine;
 
 namespace BH.UI.Cobra.Adapter

@@ -1,5 +1,5 @@
 ﻿using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Cobra.Engine
 {

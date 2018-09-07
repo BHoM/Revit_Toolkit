@@ -1,15 +1,18 @@
-﻿using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
-using BH.oM.Environment.Elements;
-using BH.oM.Adapters.Revit;
-using BH.UI.Cobra.Adapter;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
+
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+
+using BH.oM.Base;
+using BH.oM.DataManipulation.Queries;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Adapters.Revit.Elements;
+using BH.UI.Cobra.Adapter;
 using BH.Engine.Adapters.Revit;
 
 namespace Revit_Test
@@ -59,9 +62,15 @@ namespace Revit_Test
 
             List<IBHoMObject> aIBHoMObjectList = new List<IBHoMObject>();
 
+            Sheet aSheet = Create.Sheet("Test", "100");
+            FloorPlan aFloorPlan = Create.FloorPlan("New Floor Plan", "Level 01");
+
+
             aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 0, 0), "BHE_MechanicalEquipment_AHUPlant_AHUStacked", "AHU New Type"));
             aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 10, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU New Type"));
             aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 20, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU"));
+            aIBHoMObjectList.Add(aSheet);
+            aIBHoMObjectList.Add(aFloorPlan);
 
             pRevitInternalAdapter.RevitSettings = aRevitSetting;
 

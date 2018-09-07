@@ -1,10 +1,12 @@
-﻿using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure.StructuralSections;
-using BH.oM.Structure.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Structure.StructuralSections;
+
+using BH.oM.Structure.Properties;
 using BHS = BH.Engine.Structure;
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Cobra.Engine
 {

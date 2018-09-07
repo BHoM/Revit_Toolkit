@@ -1,4 +1,4 @@
-﻿using BH.oM.Adapters.Revit;
+﻿using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Geometry;
 
 namespace BH.Engine.Adapters.Revit
@@ -9,31 +9,28 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static GenericObject GenericObject(Point point)
-        {
-            return new GenericObject()
-            {
-                Location = point
-            };
-        }
-
-        /***************************************************/
-
-        public static GenericObject GenericObject(ICurve curve)
-        {
-            return new GenericObject()
-            {
-                Location = curve
-            };
-        }
-
-        /***************************************************/
-
         public static GenericObject GenericObject(Point point, string familyName, string typeName)
         {
             GenericObject aGenericObject = new GenericObject()
             {
+                Name = typeName,
                 Location = point
+            };
+
+            aGenericObject.CustomData.Add(Convert.FamilyName, familyName);
+            aGenericObject.CustomData.Add(Convert.TypeName, typeName);
+
+            return aGenericObject;
+        }
+
+        /***************************************************/
+
+        public static GenericObject GenericObject(ICurve curve, string familyName, string typeName)
+        {
+            GenericObject aGenericObject = new GenericObject()
+            {
+                Name = typeName,
+                Location = curve
             };
 
             aGenericObject.CustomData.Add(Convert.FamilyName, familyName);

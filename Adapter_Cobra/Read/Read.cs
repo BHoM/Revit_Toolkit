@@ -1,12 +1,17 @@
-﻿using Autodesk.Revit.DB;
-using BH.oM.Base;
-using BH.oM.Geometry;
-using BH.oM.Adapters.Revit;
-using BH.UI.Cobra.Engine;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
+using Autodesk.Revit.DB;
+
+using BH.oM.Base;
+using BH.oM.Geometry;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Adapters.Revit.Elements;
+using BH.UI.Cobra.Engine;
+
 
 namespace BH.UI.Cobra.Adapter
 {
@@ -140,10 +145,24 @@ namespace BH.UI.Cobra.Adapter
 
                             if(aIGeometry != null)
                             {
-                                aIBHoMObject = new GenericObject();
-                                ((GenericObject)aIBHoMObject).Location = aIGeometry;
+                                if (aElement.ViewSpecific)
+                                {
+                                    aIBHoMObject = new DraftingObject()
+                                    {
+                                        ViewName = aElement.Document.GetElement(aElement.OwnerViewId).Name,
+                                        Location = aIGeometry
+                                    };
+                                }
+                                else
+                                {
+                                    aIBHoMObject = new GenericObject()
+                                    {
+                                        Location = aIGeometry
+                                    };
+                                }
                             }
                         }
+
                         if (aIBHoMObject == null)
                             aIBHoMObject = new BHoMObject();
 

@@ -1,6 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
-using BH.oM.Adapters.Revit;
+
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Properties;
 using BHG = BH.Engine.Geometry;

@@ -1,17 +1,23 @@
-﻿using BH.oM.Base;
-using BH.oM.Geometry;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BH.oM.Adapters.Revit
+using BH.oM.Base;
+
+namespace BH.oM.Adapters.Revit.Elements
 {
-    public class GenericObject : BHoMObject
+    public class FloorPlan : BHoMObject
     {
         /***************************************************/
         /**** Public Properties                        ****/
         /***************************************************/
 
-        public IGeometry Location { get; set; } = null;
+        public string LevelName = null;
 
         /***************************************************/
     }
 }
+
 

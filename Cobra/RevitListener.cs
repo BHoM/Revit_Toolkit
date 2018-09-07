@@ -1,14 +1,17 @@
-﻿using Autodesk.Revit.DB;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+
 using BH.Adapter.Revit;
 using BH.Adapter.Socket;
 using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
 using BH.UI.Cobra.Adapter;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 
 namespace BH.UI.Cobra
 {

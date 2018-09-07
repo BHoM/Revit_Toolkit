@@ -1,12 +1,14 @@
-﻿using Autodesk.Revit.DB;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
+
 using BH.Engine.Environment;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Properties;
-using BH.oM.Adapters.Revit;
-using System.Collections.Generic;
-using System.Linq;
+using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Cobra.Engine
 {
