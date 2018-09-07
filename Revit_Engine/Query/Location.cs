@@ -3,7 +3,7 @@ using System.Linq;
 using System.Xml.Linq;
 
 using BH.oM.Geometry;
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Elements;
 
 namespace BH.Engine.Adapters.Revit
 {

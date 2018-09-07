@@ -122,9 +122,13 @@
     <Compile Include="Convert\Architecture\ToBHoM\Grid.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Level.cs" />
     <Compile Include="Convert\Architecture\ToRevit\Level.cs" />
+    <Compile Include="Convert\Common\ToBHoM\FloorPlan.cs" />
     <Compile Include="Convert\Common\ToBHoM\Material.cs" />
+    <Compile Include="Convert\Common\ToBHoM\Sheet.cs" />
     <Compile Include="Convert\Common\ToRevit\Element.cs" />
     <Compile Include="Convert\Common\ToRevit\Material.cs" />
+    <Compile Include="Convert\Common\ToRevit\ViewPlan.cs" />
+    <Compile Include="Convert\Common\ToRevit\ViewSheet.cs" />
     <Compile Include="Convert\Environment\ToBHoM\Building.cs" />
     <Compile Include="Convert\Environment\ToBHoM\BuildingElement.cs" />
     <Compile Include="Convert\Environment\ToBHoM\BuildingElementCurve.cs" />

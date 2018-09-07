@@ -62,7 +62,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GenericObject.cs" />
+    <Compile Include="Elements\DraftingObject.cs" />
+    <Compile Include="Elements\FloorPlan.cs" />
+    <Compile Include="Elements\GenericObject.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="FamilyLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -73,6 +75,7 @@
     <Compile Include="Settings\SelectionSettings.cs" />
     <Compile Include="Settings\PushSettings.cs" />
     <Compile Include="Settings\WorksetSettings.cs" />
+    <Compile Include="Elements\Sheet.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,16 +1,17 @@
-﻿using BH.oM.Adapters.Revit.Settings;
+﻿using BH.oM.Base;
+using BH.oM.Geometry;
 
-namespace BH.Adapter.Revit
+namespace BH.oM.Adapters.Revit.Elements
 {
-    public abstract class InternalRevitAdapter : BHoMAdapter
+    public class GenericObject : BHoMObject
     {
-
         /***************************************************/
         /**** Public Properties                        ****/
         /***************************************************/
 
-        public RevitSettings RevitSettings { get; set; }
+        public IGeometry Location { get; set; } = null;
 
         /***************************************************/
     }
 }
+

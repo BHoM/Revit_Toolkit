@@ -1,5 +1,7 @@
-﻿using BH.oM.Adapters.Revit;
-using System;
+﻿using System;
+
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.Engine.Adapters.Revit
 {

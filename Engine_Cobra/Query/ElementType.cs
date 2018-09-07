@@ -39,6 +39,17 @@ namespace BH.UI.Cobra.Engine
                     }
                 }
             }
+            else if(!string.IsNullOrEmpty(aFamilyName))
+            {
+                foreach (ElementType aElementType in elementTypes)
+                {
+                    if (aElementType.FamilyName == aFamilyName)
+                    {
+                        aResult = aElementType;
+                        break;
+                    }
+                }
+            }
 
             return aResult;
         }

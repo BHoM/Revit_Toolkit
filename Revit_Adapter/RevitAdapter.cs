@@ -2,7 +2,7 @@
 using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
 using BH.oM.Reflection.Debuging;
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
