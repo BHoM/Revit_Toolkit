@@ -39,7 +39,8 @@ namespace BH.UI.Cobra.Engine
                     }
                 }
             }
-            else if(!string.IsNullOrEmpty(aFamilyName))
+
+            if (!string.IsNullOrEmpty(aFamilyName))
             {
                 foreach (ElementType aElementType in elementTypes)
                 {
