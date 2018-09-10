@@ -66,11 +66,11 @@ namespace Revit_Test
             FloorPlan aFloorPlan = Create.FloorPlan("New Floor Plan", "Level 01");
 
 
-            aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 0, 0), "BHE_MechanicalEquipment_AHUPlant_AHUStacked", "AHU New Type"));
-            aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 10, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU New Type"));
-            aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 20, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU"));
-            aIBHoMObjectList.Add(aSheet);
-            aIBHoMObjectList.Add(aFloorPlan);
+            aIBHoMObjectList.Add(Create.DraftingObject("BHE_GenericAnnotations_PipeAccessories_BibTap", "Bib Tap", BH.Engine.Geometry.Create.Point(0, 0, 0), "Drafting View"));
+            //aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 10, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU New Type"));
+            //aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 20, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU"));
+            //aIBHoMObjectList.Add(aSheet);
+            //aIBHoMObjectList.Add(aFloorPlan);
 
             pRevitInternalAdapter.RevitSettings = aRevitSetting;
 

@@ -72,7 +72,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        private static Element ToRevit(this DraftingObject draftingObject, Document document, BuiltInCategory builtInCategory, PushSettings pushSettings = null)
+        private static Element ToRevit(this DraftingObject draftingObject, Document document, PushSettings pushSettings = null)
         {
             if (draftingObject == null || string.IsNullOrEmpty(draftingObject.ViewName) || document == null)
                 return null;
