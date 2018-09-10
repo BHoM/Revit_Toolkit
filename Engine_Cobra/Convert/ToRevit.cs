@@ -2,6 +2,7 @@
 
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Adapters.Revit.Elements;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -13,7 +14,7 @@ namespace BH.UI.Cobra.Engine
 
         public static Element ToRevit(this IBHoMObject bHoMObject, Document document, PushSettings pushSettings = null)
         {
-             pushSettings = pushSettings.DefaultIfNull();
+            pushSettings = pushSettings.DefaultIfNull();
 
             return ToRevit(bHoMObject as dynamic, document, pushSettings);
         }
