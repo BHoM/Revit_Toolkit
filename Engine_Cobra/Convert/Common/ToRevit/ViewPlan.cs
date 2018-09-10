@@ -53,6 +53,7 @@ namespace BH.UI.Cobra.Engine
                 return null;
 
             ViewPlan aViewPlan = ViewPlan.Create(document, aElementId_ViewFamilyType, aElementId_Level);
+            aViewPlan.ViewName = floorPlan.Name;
 
             if (pushSettings.CopyCustomData)
                 Modify.SetParameters(aViewPlan, floorPlan, null, pushSettings.ConvertUnits);
