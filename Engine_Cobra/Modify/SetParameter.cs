@@ -1,5 +1,4 @@
-﻿
-using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.DB;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -28,9 +27,13 @@ namespace BH.UI.Cobra.Engine
             {
                 case StorageType.Double:
                     double aDouble = double.NaN;
-                    if (value is double || value is int)
+                    if (value is double)
                     {
                         aDouble = (double)value;
+                    }
+                    else if(value is int || value is byte || value is float|| value is long)
+                    {
+                        aDouble = System.Convert.ToDouble(value);
                     }
                     else if (value is bool)
                     {
