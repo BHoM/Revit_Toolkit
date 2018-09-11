@@ -16,7 +16,7 @@ namespace BH.UI.Cobra.Adapter
 
         public override List<IObject> Push(IEnumerable<IObject> objects, string tag = "", Dictionary<string, object> config = null)
         {
-            bool success = true;
+            bool aSuccess = true;
 
             List<IObject> objectsToPush = Config.CloneBeforePush ? objects.Select(x => x is BHoMObject ? ((BHoMObject)x).GetShallowClone() : x).ToList() : objects.ToList(); //ToList() necessary for the return collection to function properly for cloned objects
 
@@ -30,10 +30,10 @@ namespace BH.UI.Cobra.Adapter
                 var list = miListObject.Invoke(typeGroup, new object[] { typeGroup });
 
                 if (iBHoMObjectType.IsAssignableFrom(typeGroup.Key))
-                    aResult.AddRange(Create(list as dynamic));
+                    aSuccess &= Create(list as dynamic);                    
             }
 
-            return aResult;
+            return aSuccess ? objectsToPush : new List<IObject>();
         }
 
     }

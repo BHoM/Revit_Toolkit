@@ -8,6 +8,7 @@ using BH.oM.Environment.Properties;
 using BH.oM.Adapters.Revit.Settings;
 
 using Autodesk.Revit.DB;
+using BH.UI.Cobra.Engine;
 
 namespace BH.UI.Cobra.Adapter
 {
@@ -17,31 +18,22 @@ namespace BH.UI.Cobra.Adapter
         /**** Protected Methods                         ****/
         /***************************************************/
 
-        //TODO: Does it have to be overriden? To be replaces by List<T> Create<T>(IEnumerable<T> objects)
-        protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll)
+        protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {
-            return Create(objects).Count > 0;
-        }
-        /***************************************************/
-
-        protected List<T> Create<T>(IEnumerable<T> objects)
-        {
-            List<T> aObjects = new List<T>();
-
             if (Document == null)
             {
                 NullDocumentCreateError();
-                return aObjects;
+                return false;
             }
 
             if (objects == null)
             {
                 NullObjectsCreateError();
-                return aObjects;
+                return false;
             }
 
             if (objects.Count() < 1)
-                return aObjects;
+                return false;
 
             using (Transaction aTransaction = new Transaction(Document, "Create"))
             {
@@ -63,7 +55,6 @@ namespace BH.UI.Cobra.Adapter
                     if (aBHOMObject == null)
                     {
                         NullObjectCreateError(typeof(IBHoMObject));
-                        aObjects.Add(objects.ElementAt<T>(i));
                         continue;
                     }
 
@@ -71,23 +62,23 @@ namespace BH.UI.Cobra.Adapter
                     {
                         Element aElement = null;
 
-                        if (RevitSettings.Replace)
-                        {
-                            Delete(aBHOMObject as BHoMObject);
-                        }
-                        else
-                        {
-                            string aUniqueId = BH.Engine.Adapters.Revit.Query.UniqueId(aBHOMObject);
-                            if (!string.IsNullOrEmpty(aUniqueId))
-                                aElement = Document.GetElement(aUniqueId);
+                        string aUniqueId = BH.Engine.Adapters.Revit.Query.UniqueId(aBHOMObject);
+                        if (!string.IsNullOrEmpty(aUniqueId))
+                            aElement = Document.GetElement(aUniqueId);
 
-                            if(aElement == null)
-                            {
-                                int aId = BH.Engine.Adapters.Revit.Query.ElementId(aBHOMObject);
-                                if (aId != -1)
-                                    aElement = Document.GetElement(new ElementId(aId));
-                            }
+                        if (aElement == null)
+                        {
+                            int aId = BH.Engine.Adapters.Revit.Query.ElementId(aBHOMObject);
+                            if (aId != -1)
+                                aElement = Document.GetElement(new ElementId(aId));
                         }
+
+                        if (RevitSettings.Replace && aElement != null)
+                        {
+                            Document.Delete(aElement.Id);
+                            aElement = null;
+                        }
+
 
                         if (aElement == null)
                         {
@@ -96,23 +87,18 @@ namespace BH.UI.Cobra.Adapter
                             else
                                 aElement = BH.UI.Cobra.Engine.Convert.ToRevit(aBHOMObject as dynamic, Document, aPushSettings);
 
-                            aBHOMObject = Engine.Modify.SetIdentifiers(aBHOMObject, aElement);
+                            SetIdentifiers(aBHOMObject, aElement);
                         }
                         else
                         {
-                            aElement = Engine.Modify.SetParameters(aElement, aBHOMObject);
+                            aElement = Modify.SetParameters(aElement, aBHOMObject);
                         }
 
-                        if (aElement != null)
-                            aObjects.Add((T)aBHOMObject);
-                        else
-                            aObjects.Add(objects.ElementAt<T>(i));
-                            
+
                     }
                     catch (Exception aException)
                     {
                         ObjectNotCreatedCreateError(aBHOMObject);
-                        aObjects.Add(objects.ElementAt<T>(i));
                     }
 
                 }
@@ -120,9 +106,57 @@ namespace BH.UI.Cobra.Adapter
                 aTransaction.Commit();
             }
 
-            return aObjects;
+            return true;
         }
 
         /***************************************************/
+
+        private static void SetIdentifiers(IBHoMObject bHoMObject, Element element)
+        {
+            if (bHoMObject == null || element == null)
+                return;
+
+            SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.ElementId, element.Id.IntegerValue);
+            SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.AdapterId, element.UniqueId);
+
+            int aWorksetId = WorksetId.InvalidWorksetId.IntegerValue;
+            if (element.Document != null && element.Document.IsWorkshared)
+            {
+                WorksetId aWorksetId_Revit = element.WorksetId;
+                if (aWorksetId_Revit != null)
+                    aWorksetId = aWorksetId_Revit.IntegerValue;
+            }
+            SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.WorksetId, aWorksetId);
+
+            Parameter aParameter = null;
+
+            aParameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
+            if (aParameter != null)
+                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyName, aParameter.AsValueString());
+
+            aParameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
+            if (aParameter != null)
+                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.TypeName, aParameter.AsValueString());
+
+            aParameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
+            if (aParameter != null)
+                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.CategoryName, aParameter.AsValueString());
+        }
+
+        /***************************************************/
+
+        private static void SetCustomData(IBHoMObject bHoMObject, string customDataName, object value)
+        {
+            if (bHoMObject == null || string.IsNullOrEmpty(customDataName))
+                return;
+
+            if (bHoMObject.CustomData.ContainsKey(customDataName))
+                bHoMObject.CustomData[customDataName] = value;
+            else
+                bHoMObject.CustomData.Add(customDataName, value);
+        }
+
+        /***************************************************/
+
     }
 }
