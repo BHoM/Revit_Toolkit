@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Convert\AdapterID.cs" />
+    <Compile Include="Create\BHoMObject.cs" />
     <Compile Include="Create\DraftingObject.cs" />
     <Compile Include="Create\FloorPlan.cs" />
     <Compile Include="Create\GenericObject.cs" />
