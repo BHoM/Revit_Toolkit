@@ -58,23 +58,33 @@ namespace Revit_Test
             FamilyLibrary aFamilyLibrary = Create.FamilyLibrary(@"C:\Users\jziolkow\Desktop\Families");
 
             RevitSettings aRevitSetting = Create.RevitSettings();
+            aRevitSetting.Replace = false;
             aRevitSetting = aRevitSetting.SetFamilyLibrary(aFamilyLibrary);
 
             List<IBHoMObject> aIBHoMObjectList = new List<IBHoMObject>();
 
             Sheet aSheet = Create.Sheet("Test", "100");
-            FloorPlan aFloorPlan = Create.FloorPlan("New Floor Plan", "Level 01");
+            //FloorPlan aFloorPlan = Create.FloorPlan("New Floor Plan", "Level 01");
 
 
-            aIBHoMObjectList.Add(Create.DraftingObject("BHE_GenericAnnotations_PipeAccessories_BibTap", "Bib Tap", BH.Engine.Geometry.Create.Point(0, 0, 0), "Drafting View"));
+            //aIBHoMObjectList.Add(Create.DraftingObject("BHE_GenericAnnotations_PipeAccessories_BibTap", "Bib Tap", BH.Engine.Geometry.Create.Point(0, 0, 0), "Drafting View"));
             //aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 10, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU New Type"));
             //aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 20, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU"));
-            //aIBHoMObjectList.Add(aSheet);
+            aIBHoMObjectList.Add(aSheet);
             //aIBHoMObjectList.Add(aFloorPlan);
 
             pRevitInternalAdapter.RevitSettings = aRevitSetting;
 
             List<IObject> aIObjects = pRevitInternalAdapter.Push(aIBHoMObjectList);
+
+            //
+
+            int aIndex = aIObjects.FindIndex(x => x is Sheet);
+            if (aIndex != -1)
+                aIObjects[aIndex] = (aIObjects[aIndex] as IBHoMObject).UpdateCustomDataValue("TEST", "OK");
+
+            pRevitInternalAdapter.Push(aIObjects);
+
 
 
             return Result.Succeeded;

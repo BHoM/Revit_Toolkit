@@ -22,6 +22,7 @@ namespace BH.UI.Cobra.Adapter
 
             Type iBHoMObjectType = typeof(IBHoMObject);
             MethodInfo miToList = typeof(Enumerable).GetMethod("Cast");
+            List<IObject> aResult = new List<IObject>();
             foreach (var typeGroup in objectsToPush.GroupBy(x => x.GetType()))
             {
                 MethodInfo miListObject = miToList.MakeGenericMethod(new[] { typeGroup.Key });
@@ -29,13 +30,10 @@ namespace BH.UI.Cobra.Adapter
                 var list = miListObject.Invoke(typeGroup, new object[] { typeGroup });
 
                 if (iBHoMObjectType.IsAssignableFrom(typeGroup.Key))
-                {
-                   success &= Create(list as dynamic);
-
-                }
+                    aResult.AddRange(Create(list as dynamic));
             }
 
-            return success ? objectsToPush : new List<IObject>();
+            return aResult;
         }
 
     }
