@@ -1,4 +1,7 @@
-﻿namespace BH.UI.Cobra.Adapter
+﻿using System;
+using System.Collections.Generic;
+
+namespace BH.UI.Cobra.Adapter
 {
     public partial class CobraAdapter
     {

@@ -16,6 +16,7 @@ namespace BH.oM.Adapters.Revit.Settings
         public SelectionSettings SelectionSettings = new SelectionSettings();
         public FamilyLibrary FamilyLibrary = new FamilyLibrary();
         public Discipline DefaultDiscipline = Discipline.Environmental;
+        public bool Replace = true;
 
         /***************************************************/
     }

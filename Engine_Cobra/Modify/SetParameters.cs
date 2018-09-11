@@ -11,7 +11,7 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public static Element SetParameters(this Element element, BHoMObject bHoMObject, IEnumerable<BuiltInParameter> builtInParametersIgnore = null, bool convertUnits = true)
+        public static Element SetParameters(this Element element, IBHoMObject bHoMObject, IEnumerable<BuiltInParameter> builtInParametersIgnore = null, bool convertUnits = true)
         {
             if (bHoMObject == null || element == null)
                 return null;
