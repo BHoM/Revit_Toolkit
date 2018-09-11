@@ -82,12 +82,18 @@ namespace BH.UI.Cobra.Adapter
 
                         if (aElement == null)
                         {
-                            if (aBHOMObject is oM.Architecture.Elements.Level || aBHOMObject is BuildingElement || aBHOMObject is BuildingElementProperties)
-                                aElement = Create(aBHOMObject as dynamic, aPushSettings);
-                            else
-                                aElement = BH.UI.Cobra.Engine.Convert.ToRevit(aBHOMObject as dynamic, Document, aPushSettings);
+                            Type aType = aBHOMObject.GetType();
 
-                            SetIdentifiers(aBHOMObject, aElement);
+                            if(aType != typeof(BHoMObject))
+                            {
+                                if (aBHOMObject is oM.Architecture.Elements.Level || aBHOMObject is BuildingElement || aBHOMObject is BuildingElementProperties)
+                                    aElement = Create(aBHOMObject as dynamic, aPushSettings);
+                                else
+                                    aElement = BH.UI.Cobra.Engine.Convert.ToRevit(aBHOMObject as dynamic, Document, aPushSettings);
+
+                                SetIdentifiers(aBHOMObject, aElement);
+                            }
+
                         }
                         else
                         {
