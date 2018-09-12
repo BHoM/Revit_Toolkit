@@ -11,7 +11,7 @@ namespace BH.UI.Cobra.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static Sheet ToBHoM(this ViewSheet viewSheet, PullSettings pullSettings = null)
+        internal static Sheet ToBHoMSheet(this ViewSheet viewSheet, PullSettings pullSettings = null)
         {
             Sheet aSheet = BH.Engine.Adapters.Revit.Create.Sheet(viewSheet.Name, viewSheet.SheetNumber);
 

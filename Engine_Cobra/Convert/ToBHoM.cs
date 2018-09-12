@@ -386,5 +386,59 @@ namespace BH.UI.Cobra.Engine
         }
 
         /***************************************************/
+
+        public static IBHoMObject ToBHoM(this ViewSheet viewSheet, PullSettings pullSettings = null)
+        {
+            viewSheet.CheckIfNullPull();
+
+            pullSettings = pullSettings.DefaultIfNull();
+
+            switch (pullSettings.Discipline)
+            {
+                default:
+                    return ToBHoMSheet(viewSheet, pullSettings);
+            }
+
+            viewSheet.NotConvertedError();
+            return null;
+        }
+
+        /***************************************************/
+
+        public static IBHoMObject ToBHoM(this Viewport viewport, PullSettings pullSettings = null)
+        {
+            viewport.CheckIfNullPull();
+
+            pullSettings = pullSettings.DefaultIfNull();
+
+            switch (pullSettings.Discipline)
+            {
+                default:
+                    return ToBHoMViewport(viewport, pullSettings);
+            }
+
+            viewport.NotConvertedError();
+            return null;
+        }
+
+        /***************************************************/
+
+        public static IBHoMObject ToBHoM(this ViewPlan viewPlan, PullSettings pullSettings = null)
+        {
+            viewPlan.CheckIfNullPull();
+
+            pullSettings = pullSettings.DefaultIfNull();
+
+            switch (pullSettings.Discipline)
+            {
+                default:
+                    return ToBHoMFloorPlan(viewPlan, pullSettings);
+            }
+
+            viewPlan.NotConvertedError();
+            return null;
+        }
+
+        /***************************************************/
     }
 }

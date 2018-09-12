@@ -57,15 +57,21 @@ namespace Revit_Test
             //Creating Revit Adapter for active Revit Document
             CobraAdapter pRevitInternalAdapter = new CobraAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
 
+            SelectionSettings aSelectionSettings = Create.SelectionSettings(new string[] { "Sheets" });
+
             FamilyLibrary aFamilyLibrary = Create.FamilyLibrary(@"C:\Users\jziolkow\Desktop\Families");
 
             RevitSettings aRevitSetting = Create.RevitSettings();
             aRevitSetting.Replace = false;
+            aRevitSetting.SelectionSettings = aSelectionSettings;
             aRevitSetting = aRevitSetting.SetFamilyLibrary(aFamilyLibrary);
+
+            pRevitInternalAdapter.RevitSettings = aRevitSetting;
 
             List<IBHoMObject> aIBHoMObjectList = new List<IBHoMObject>();
 
-            FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(Building) };
+            //FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(Building) };
+            FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(BHoMObject) };
             aIBHoMObjectList = pRevitInternalAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
             return Result.Succeeded;
