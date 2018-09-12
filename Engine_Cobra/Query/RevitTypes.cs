@@ -1,8 +1,12 @@
-﻿using Autodesk.Revit.DB;
+﻿using System.Collections.Generic;
+
+using Autodesk.Revit.DB;
+
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Structure.Elements;
-using System.Collections.Generic;
+
 
 namespace BH.UI.Cobra.Engine
 {
@@ -65,6 +69,30 @@ namespace BH.UI.Cobra.Engine
             if (type == typeof(oM.Architecture.Elements.Grid))
             {
                 aResult.Add(typeof(Grid));
+                return aResult;
+            }
+
+            if (type == typeof(Sheet))
+            {
+                aResult.Add(typeof(ViewSheet));
+                return aResult;
+            }
+
+            if (type == typeof(FloorPlan))
+            {
+                aResult.Add(typeof(ViewPlan));
+                return aResult;
+            }
+
+            if (type == typeof(DraftingObject))
+            {
+                aResult.Add(typeof(FamilyInstance));
+                return aResult;
+            }
+
+            if (type == typeof(oM.Adapters.Revit.Elements.Viewport))
+            {
+                aResult.Add(typeof(Autodesk.Revit.DB.Viewport));
                 return aResult;
             }
 

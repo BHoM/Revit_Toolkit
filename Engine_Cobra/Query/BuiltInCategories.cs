@@ -45,6 +45,18 @@ namespace BH.UI.Cobra.Engine
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Ceilings);
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Roofs);
             }
+            if(type == typeof(oM.Adapters.Revit.Elements.Sheet))
+            {
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Sheets);
+            }
+            if (type == typeof(oM.Adapters.Revit.Elements.Viewport))
+            {
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Viewports);
+            }
+            if (type == typeof(oM.Adapters.Revit.Elements.FloorPlan))
+            {
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Views);
+            }
 
             return aBuiltInCategoryList;
         }

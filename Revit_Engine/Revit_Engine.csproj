@@ -69,6 +69,7 @@
     <Compile Include="Create\RevitSettings.cs" />
     <Compile Include="Create\PullSettings.cs" />
     <Compile Include="Create\SelectionSettings.cs" />
+    <Compile Include="Create\Viewport.cs" />
     <Compile Include="Create\Sheet.cs" />
     <Compile Include="Create\WorksetSettings.cs" />
     <Compile Include="Modify\AddBHoMObject.cs" />
@@ -97,6 +98,8 @@
     <Compile Include="Query\IsZero.cs" />
     <Compile Include="Query\Location.cs" />
     <Compile Include="Query\OmniClass.cs" />
+    <Compile Include="Query\SheetNumber.cs" />
+    <Compile Include="Query\ViewName.cs" />
     <Compile Include="Query\TypeName.cs" />
     <Compile Include="Query\TypeNames.cs" />
     <Compile Include="Query\UniqueId.cs" />
