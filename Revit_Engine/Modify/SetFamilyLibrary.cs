@@ -1,4 +1,4 @@
-﻿using BH.oM.Adapters.Revit;
+﻿using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.Engine.Adapters.Revit

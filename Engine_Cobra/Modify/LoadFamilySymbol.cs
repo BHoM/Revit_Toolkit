@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Generic;
 using BH.Engine.Adapters.Revit;
 
 using Autodesk.Revit.DB;

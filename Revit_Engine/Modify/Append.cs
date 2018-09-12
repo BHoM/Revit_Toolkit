@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Generic;
 using System.IO;
 
 namespace BH.Engine.Adapters.Revit

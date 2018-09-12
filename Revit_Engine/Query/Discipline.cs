@@ -1,6 +1,6 @@
 ﻿using System;
 
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.Engine.Adapters.Revit
@@ -17,13 +17,13 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             if(type.Namespace.StartsWith("BH.oM.Structure"))
-                return oM.Adapters.Revit.Discipline.Structural;
+                return oM.Adapters.Revit.Enums.Discipline.Structural;
 
             if (type.Namespace.StartsWith("BH.oM.Environment"))
-                return oM.Adapters.Revit.Discipline.Environmental;
+                return oM.Adapters.Revit.Enums.Discipline.Environmental;
 
             if (type.Namespace.StartsWith("BH.oM.Architecture"))
-                return oM.Adapters.Revit.Discipline.Architecture;
+                return oM.Adapters.Revit.Enums.Discipline.Architecture;
 
             return null;
         }

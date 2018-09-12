@@ -4,7 +4,7 @@ using System.Linq;
 
 using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.UI.Cobra.Engine;
 

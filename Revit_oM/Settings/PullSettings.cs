@@ -9,7 +9,7 @@ namespace BH.oM.Adapters.Revit.Settings
         /**** Public Properties                        ****/
         /***************************************************/
 
-        public Discipline Discipline { get; set; } = Discipline.Structural;
+        public Enums.Discipline Discipline { get; set; } = Enums.Discipline.Structural;
 
         public bool CopyCustomData { get; set; } = true;
 

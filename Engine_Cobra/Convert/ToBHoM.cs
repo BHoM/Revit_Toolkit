@@ -2,7 +2,7 @@
 
 using BH.oM.Base;
 using BH.oM.Geometry;
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 
 using Autodesk.Revit.DB;

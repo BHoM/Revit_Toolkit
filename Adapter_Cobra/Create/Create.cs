@@ -79,7 +79,6 @@ namespace BH.UI.Cobra.Adapter
                             aElement = null;
                         }
 
-
                         if (aElement == null)
                         {
                             Type aType = aBHOMObject.GetType();

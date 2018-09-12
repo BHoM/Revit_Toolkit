@@ -24,6 +24,7 @@ namespace BH.UI.Cobra.Adapter
             Config.UseAdapterId = false;
             Config.ProcessInMemory = false;
             Config.SeparateProperties = true;
+            Config.CloneBeforePush = true;
             m_Document = document;
         }
 

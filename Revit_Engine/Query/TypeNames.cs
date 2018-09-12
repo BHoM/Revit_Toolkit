@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Xml.Linq;
 
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Generic;
 
 namespace BH.Engine.Adapters.Revit
 {

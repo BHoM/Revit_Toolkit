@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using BH.oM.Base;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Generic
 {
     public class FamilyLibrary : BHoMObject
     {

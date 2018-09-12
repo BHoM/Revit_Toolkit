@@ -1,4 +1,4 @@
-﻿namespace BH.oM.Adapters.Revit
+﻿namespace BH.oM.Adapters.Revit.Enums
 {
     public enum Discipline
     {
