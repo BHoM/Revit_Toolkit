@@ -14,7 +14,7 @@ namespace BH.oM.Adapters.Revit.Settings
 
         public bool Replace { get; set; } = true;
 
-        public FamilyLibrary FamilyLibrary { get; set; } = null;
+        public Generic.FamilyLibrary FamilyLibrary { get; set; } = null;
 
         /***************************************************/
 

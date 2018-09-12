@@ -5,7 +5,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Base;
 using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Generic;
 
 
 namespace BH.UI.Cobra.Engine

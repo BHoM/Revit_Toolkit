@@ -14,8 +14,8 @@ namespace BH.oM.Adapters.Revit.Settings
         public int MaxMinutesToWait { get; set; } = 10;
         public WorksetSettings WorksetSettings = new WorksetSettings();
         public SelectionSettings SelectionSettings = new SelectionSettings();
-        public FamilyLibrary FamilyLibrary = new FamilyLibrary();
-        public Discipline DefaultDiscipline = Discipline.Environmental;
+        public Generic.FamilyLibrary FamilyLibrary = new Generic.FamilyLibrary();
+        public Enums.Discipline DefaultDiscipline = Enums.Discipline.Environmental;
         public bool Replace = true;
 
         /***************************************************/

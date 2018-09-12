@@ -7,7 +7,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Base;
 using BH.oM.Geometry;
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Elements;
 using BH.UI.Cobra.Engine;

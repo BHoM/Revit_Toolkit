@@ -1,7 +1,7 @@
 ﻿using BH.oM.Base;
 using System.Xml.Linq;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Generic
 {
     public class RevitFilePreview : BHoMObject
     {

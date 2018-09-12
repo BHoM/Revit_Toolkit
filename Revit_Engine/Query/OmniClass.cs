@@ -1,4 +1,4 @@
-﻿using BH.oM.Adapters.Revit;
+﻿using BH.oM.Adapters.Revit.Generic;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;

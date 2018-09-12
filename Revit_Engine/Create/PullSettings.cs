@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using BH.oM.Base;
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.Engine.Adapters.Revit

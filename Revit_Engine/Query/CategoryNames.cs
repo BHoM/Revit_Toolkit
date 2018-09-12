@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Generic;
 
 
 namespace BH.Engine.Adapters.Revit

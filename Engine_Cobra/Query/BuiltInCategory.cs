@@ -3,7 +3,7 @@ using System.Linq;
 
 using Autodesk.Revit.DB;
 
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 
