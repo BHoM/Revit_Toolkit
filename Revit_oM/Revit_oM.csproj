@@ -65,6 +65,7 @@
     <Compile Include="Elements\DraftingObject.cs" />
     <Compile Include="Elements\FloorPlan.cs" />
     <Compile Include="Elements\GenericObject.cs" />
+    <Compile Include="Elements\Viewport.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="FamilyLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

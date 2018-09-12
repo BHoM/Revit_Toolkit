@@ -1,9 +1,7 @@
-﻿using BH.oM.Common.Materials;
-using BH.oM.Structure.Elements;
-using BH.oM.Architecture.Elements;
-using BH.oM.Structure.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using BH.oM.Adapters.Revit.Elements;
 
 namespace BH.UI.Cobra.Adapter
 {
@@ -43,12 +41,13 @@ namespace BH.UI.Cobra.Adapter
 
         private static Dictionary<Type, List<Type>> m_DependencyTypes = new Dictionary<Type, List<Type>>
         {
-            //{typeof(FramingElement), new List<Type> { typeof(ISectionProperty), typeof(Level) } },
+            {typeof(Viewport), new List<Type> { typeof(Sheet), typeof(FloorPlan) } },
+            {typeof(Sheet), new List<Type> { typeof(FloorPlan)} }
             //{typeof(ISectionProperty), new List<Type> { typeof(Material), typeof(IProfile) } },
             //{typeof(PanelPlanar), new List<Type> { typeof(IProperty2D), typeof(Level) } },
             //{typeof(IProperty2D), new List<Type> { typeof(Material) } }
         };
-        
+
         /***************************************************/
     }
 }
