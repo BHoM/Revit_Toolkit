@@ -11,7 +11,7 @@ namespace BH.UI.Cobra.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static FloorPlan ToBHoM(this ViewPlan viewPlan, PullSettings pullSettings = null)
+        internal static FloorPlan ToBHoMFloorPlan(this ViewPlan viewPlan, PullSettings pullSettings = null)
         {
             FloorPlan aFloorPlan = BH.Engine.Adapters.Revit.Create.FloorPlan(viewPlan.Name, viewPlan.GenLevel.Name);
 

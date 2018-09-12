@@ -111,15 +111,8 @@ namespace BH.UI.Cobra.Engine
                 return aResult;
             }
 
-            //if (element is SiteLocation)
-            //{
-            //    aResult.Add(typeof(Building));
-            //    return aResult;
-            //}
-
             if (element is Level)
             {
-                //aResult.Add(typeof(Storey));
                 aResult.Add(typeof(Level));
                 return aResult;
             }
@@ -127,6 +120,18 @@ namespace BH.UI.Cobra.Engine
             if (element is Grid)
             {
                 aResult.Add(typeof(oM.Architecture.Elements.Grid));
+                return aResult;
+            }
+
+            if(element is ViewSheet)
+            {
+                aResult.Add(typeof(oM.Adapters.Revit.Elements.Sheet));
+                return aResult;
+            }
+
+            if (element is Viewport)
+            {
+                aResult.Add(typeof(oM.Adapters.Revit.Elements.Viewport));
                 return aResult;
             }
 

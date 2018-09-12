@@ -124,6 +124,7 @@
     <Compile Include="Convert\Architecture\ToRevit\Level.cs" />
     <Compile Include="Convert\Common\ToBHoM\FloorPlan.cs" />
     <Compile Include="Convert\Common\ToBHoM\Material.cs" />
+    <Compile Include="Convert\Common\ToBHoM\Viewport.cs" />
     <Compile Include="Convert\Common\ToBHoM\Sheet.cs" />
     <Compile Include="Convert\Common\ToRevit\Element.cs" />
     <Compile Include="Convert\Common\ToRevit\Material.cs" />
