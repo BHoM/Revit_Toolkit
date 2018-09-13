@@ -16,6 +16,8 @@ namespace BH.oM.Adapters.Revit.Elements
 
         public string LevelName = null;
 
+        public bool IsTemplate = false;
+
         /***************************************************/
     }
 }
