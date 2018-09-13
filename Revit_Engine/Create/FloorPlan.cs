@@ -13,7 +13,8 @@ namespace BH.Engine.Adapters.Revit
             FloorPlan aFloorPlan = new FloorPlan()
             {
                 Name = name,
-                LevelName = levelName
+                LevelName = levelName,
+                IsTemplate = false
             };
 
             aFloorPlan.CustomData.Add("View Name", name);

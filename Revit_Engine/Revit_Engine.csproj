@@ -99,6 +99,7 @@
     <Compile Include="Query\Location.cs" />
     <Compile Include="Query\OmniClass.cs" />
     <Compile Include="Query\SheetNumber.cs" />
+    <Compile Include="Query\IsTemplate.cs" />
     <Compile Include="Query\ViewName.cs" />
     <Compile Include="Query\TypeName.cs" />
     <Compile Include="Query\TypeNames.cs" />

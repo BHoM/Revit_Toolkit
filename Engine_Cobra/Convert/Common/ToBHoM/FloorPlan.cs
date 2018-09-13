@@ -16,6 +16,7 @@ namespace BH.UI.Cobra.Engine
             FloorPlan aFloorPlan = BH.Engine.Adapters.Revit.Create.FloorPlan(viewPlan.Name, viewPlan.GenLevel.Name);
 
             aFloorPlan.Name = viewPlan.Name;
+            aFloorPlan.IsTemplate = viewPlan.IsTemplate;
             aFloorPlan = Modify.SetIdentifiers(aFloorPlan, viewPlan) as FloorPlan;
             aFloorPlan = Modify.SetCustomData(aFloorPlan, viewPlan, true) as FloorPlan;
 
