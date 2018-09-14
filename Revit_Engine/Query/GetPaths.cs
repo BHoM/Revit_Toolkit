@@ -13,7 +13,7 @@ namespace BH.Engine.Adapters.Revit
 
         public static List<string> GetPaths(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null, string typeName = null)
         {
-            if (familyLibrary == null)
+            if (familyLibrary == null || familyLibrary.Dictionary == null || familyLibrary.Dictionary.Keys.Count == 0)
                 return null;
 
             List<string> aPathList = new List<string>();
