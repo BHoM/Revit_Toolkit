@@ -74,6 +74,7 @@
     <Compile Include="Create\WorksetSettings.cs" />
     <Compile Include="Modify\AddBHoMObject.cs" />
     <Compile Include="Modify\AddBHoMObjects.cs" />
+    <Compile Include="Modify\Duplicate.cs" />
     <Compile Include="Modify\SetReplace.cs" />
     <Compile Include="Modify\Append.cs" />
     <Compile Include="Modify\AssignAdjacentSpaces.cs" />
