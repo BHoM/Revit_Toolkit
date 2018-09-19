@@ -16,6 +16,7 @@ using BH.oM.Adapters.Revit.Elements;
 using BH.UI.Cobra.Adapter;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Environment.Elements;
+using System.IO;
 
 namespace Revit_Test
 {
@@ -54,25 +55,33 @@ namespace Revit_Test
     {
         public Result Execute(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
-            //Creating Revit Adapter for active Revit Document
-            CobraAdapter pRevitInternalAdapter = new CobraAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
+            List<string> aResult = new List<string>();
+            DirectoryInfo aDirectoryInfo = Directory.CreateDirectory( @"\\SRV-bath03\non_project\Bath Region\Bath Building Services\Bath MEP Revit\Development Work (by permission only)\2019 Families");
+            foreach(FileInfo aFileInfo in aDirectoryInfo.GetFiles("*.rfa", SearchOption.AllDirectories))
+            {
+                try
+                {
+                    RevitFilePreview aReviFilePreview = Create.RevitFilePreview(aFileInfo.FullName);
+                    if (aReviFilePreview == null)
+                        continue;
 
-            SelectionSettings aSelectionSettings = Create.SelectionSettings(new string[] { "Sheets" });
+                    string aCategoryName = Query.CategoryName(aReviFilePreview);
+                    string aOmniClass = Query.OmniClass(aReviFilePreview);
+                    List<string> aTypeNameList = Query.TypeNames(aReviFilePreview);
+                    foreach(string aTypeName in aTypeNameList)
+                    {
+                        aResult.Add(string.Format("{0}\n{1}\n{2}\n{3}\n{4}", aFileInfo.FullName, Path.GetFileNameWithoutExtension(aFileInfo.FullName), aTypeName, aCategoryName, aOmniClass));
+                    }
 
-            FamilyLibrary aFamilyLibrary = Create.FamilyLibrary(@"C:\Users\jziolkow\Desktop\Families");
 
-            RevitSettings aRevitSetting = Create.RevitSettings();
-            aRevitSetting.Replace = false;
-            aRevitSetting.SelectionSettings = aSelectionSettings;
-            aRevitSetting = aRevitSetting.SetFamilyLibrary(aFamilyLibrary);
+                }
+                catch(Exception aException)
+                {
+                    aResult.Add(string.Format("{0}\n{1}", aFileInfo.FullName, aException.Message));
+                }
+            }
 
-            pRevitInternalAdapter.RevitSettings = aRevitSetting;
-
-            List<IBHoMObject> aIBHoMObjectList = new List<IBHoMObject>();
-
-            //FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(Building) };
-            FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(BHoMObject) };
-            aIBHoMObjectList = pRevitInternalAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            File.WriteAllLines(@"C:\Users\jziolkow\Desktop\Report.txt", aResult);
 
             return Result.Succeeded;
         }
@@ -181,6 +190,31 @@ namespace Revit_Test
             pRevitInternalAdapter.Push(aIObjects);
 
 
+
+            return Result.Succeeded;
+        }
+
+        public Result Execute_Old_3(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
+        {
+            //Creating Revit Adapter for active Revit Document
+            CobraAdapter pRevitInternalAdapter = new CobraAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
+
+            SelectionSettings aSelectionSettings = Create.SelectionSettings(new string[] { "Sheets" });
+
+            FamilyLibrary aFamilyLibrary = Create.FamilyLibrary(@"C:\Users\jziolkow\Desktop\Families");
+
+            RevitSettings aRevitSetting = Create.RevitSettings();
+            aRevitSetting.Replace = false;
+            aRevitSetting.SelectionSettings = aSelectionSettings;
+            aRevitSetting = aRevitSetting.SetFamilyLibrary(aFamilyLibrary);
+
+            pRevitInternalAdapter.RevitSettings = aRevitSetting;
+
+            List<IBHoMObject> aIBHoMObjectList = new List<IBHoMObject>();
+
+            //FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(Building) };
+            FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(BHoMObject) };
+            aIBHoMObjectList = pRevitInternalAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
             return Result.Succeeded;
         }
