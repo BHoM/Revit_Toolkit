@@ -15,7 +15,6 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Elements;
 using BH.UI.Cobra.Adapter;
 using BH.Engine.Adapters.Revit;
-using BH.oM.Environment.Elements;
 using System.IO;
 
 namespace Revit_Test
@@ -56,7 +55,7 @@ namespace Revit_Test
         public Result Execute(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
             List<string> aResult = new List<string>();
-            DirectoryInfo aDirectoryInfo = Directory.CreateDirectory( @"\\SRV-bath03\non_project\Bath Region\Bath Building Services\Bath MEP Revit\Development Work (by permission only)\2019 Families");
+            DirectoryInfo aDirectoryInfo = Directory.CreateDirectory(@"C:\Users\jziolkow\Documents\Tasks\Families\2018 Families");
             foreach(FileInfo aFileInfo in aDirectoryInfo.GetFiles("*.rfa", SearchOption.AllDirectories))
             {
                 try
@@ -70,14 +69,14 @@ namespace Revit_Test
                     List<string> aTypeNameList = Query.TypeNames(aReviFilePreview);
                     foreach(string aTypeName in aTypeNameList)
                     {
-                        aResult.Add(string.Format("{0}\n{1}\n{2}\n{3}\n{4}", aFileInfo.FullName, Path.GetFileNameWithoutExtension(aFileInfo.FullName), aTypeName, aCategoryName, aOmniClass));
+                        aResult.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\n", aFileInfo.FullName, Path.GetFileNameWithoutExtension(aFileInfo.FullName), aTypeName, aCategoryName, aOmniClass));
                     }
 
 
                 }
                 catch(Exception aException)
                 {
-                    aResult.Add(string.Format("{0}\n{1}", aFileInfo.FullName, aException.Message));
+                    aResult.Add(string.Format("{0}\t{1}\n", aFileInfo.FullName, aException.Message));
                 }
             }
 
