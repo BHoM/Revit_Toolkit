@@ -13,10 +13,14 @@ namespace BH.UI.Cobra.Engine
 
         internal static FloorPlan ToBHoMFloorPlan(this ViewPlan viewPlan, PullSettings pullSettings = null)
         {
-            FloorPlan aFloorPlan = BH.Engine.Adapters.Revit.Create.FloorPlan(viewPlan.Name, viewPlan.GenLevel.Name);
+            FloorPlan aFloorPlan = null;
+
+            if(!viewPlan.IsTemplate && viewPlan.GenLevel != null)
+                aFloorPlan = BH.Engine.Adapters.Revit.Create.FloorPlan(viewPlan.Name, viewPlan.GenLevel.Name);
+            else
+                aFloorPlan = BH.Engine.Adapters.Revit.Create.FloorPlan(viewPlan.Name);
 
             aFloorPlan.Name = viewPlan.Name;
-            aFloorPlan.IsTemplate = viewPlan.IsTemplate;
             aFloorPlan = Modify.SetIdentifiers(aFloorPlan, viewPlan) as FloorPlan;
             aFloorPlan = Modify.SetCustomData(aFloorPlan, viewPlan, true) as FloorPlan;
 

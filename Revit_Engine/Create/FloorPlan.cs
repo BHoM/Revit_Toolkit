@@ -26,5 +26,24 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
+
+        public static FloorPlan FloorPlan(string name)
+        {
+            FloorPlan aFloorPlan = new FloorPlan()
+            {
+                Name = name,
+                LevelName = null,
+                IsTemplate = true
+            };
+
+            aFloorPlan.CustomData.Add("View Name", name);
+
+            aFloorPlan.CustomData.Add(Convert.CategoryName, "Views");
+            aFloorPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
+
+            return aFloorPlan;
+        }
+
+        /***************************************************/
     }
 }

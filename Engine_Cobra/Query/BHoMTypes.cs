@@ -135,6 +135,12 @@ namespace BH.UI.Cobra.Engine
                 return aResult;
             }
 
+            if (element is ViewPlan)
+            {
+                aResult.Add(typeof(oM.Adapters.Revit.Elements.FloorPlan));
+                return aResult;
+            }
+
             return null; //TODO: shouldn't it be aResult?
         }
 
