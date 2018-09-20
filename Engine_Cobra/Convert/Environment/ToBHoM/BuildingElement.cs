@@ -103,30 +103,27 @@ namespace BH.UI.Cobra.Engine
             pullSettings = pullSettings.DefaultIfNull();
 
             BH.oM.Geometry.ICurve crv = null;
+            BuildingElementProperties properties = null;
+
+            //Get the geometry curve
             if (energyAnalysisSurface != null)
                 crv = energyAnalysisSurface.GetPolyloop().ToBHoM(pullSettings);
 
-            BuildingElementProperties properties = null;
-            string aName = string.Empty;
-
+            //Get the name and element type
             Document aDocument = energyAnalysisSurface.Document;
             Element aElement = Query.Element(aDocument, energyAnalysisSurface.CADObjectUniqueId, energyAnalysisSurface.CADLinkUniqueId);
             ElementType aElementType = null;
-            if (aElement == null)
-            {
-                EnergyAnalysisSpace aEnergyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
-                SpatialElement aSpatialElement = Query.Element(aEnergyAnalysisSpace.Document, aEnergyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
-            }
-            else
+            if (aElement != null)
             {
                 aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
                 properties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
                 pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, properties);
-                aName = aElement.Name;
             }
 
-            BuildingElement aBuildingElement = Create.BuildingElement(aName, crv, properties);
+            //Create the BuildingElement
+            BuildingElement aBuildingElement = Create.BuildingElement(aElement.Name, crv, properties);
 
+            //Set some custom data properties
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
             if (pullSettings.CopyCustomData)
             {
@@ -153,56 +150,29 @@ namespace BH.UI.Cobra.Engine
 
         internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
         {
-            return null;
-            /*pullSettings = pullSettings.DefaultIfNull();
+            pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementPanel aBuildingElementPanel = null;
-            if (energyAnalysisOpening != null)
-            {
-                Polyloop aPolyLoop = energyAnalysisOpening.GetPolyloop();
-                if (aPolyLoop != null)
-                    aBuildingElementPanel = Create.BuildingElementPanel(aPolyLoop.ToBHoM(pullSettings));
-            }
+            BH.oM.Geometry.ICurve crv = null;
+            BuildingElementProperties properties = null;
 
             Document aDocument = energyAnalysisOpening.Document;
-
             Element aElement = Query.Element(aDocument, energyAnalysisOpening.CADObjectUniqueId, energyAnalysisOpening.CADLinkUniqueId);
-
             if (aElement == null)
                 return null;
 
+            //Set the properties
             ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
+            properties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
+            pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, properties);
 
-            BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
-            pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElementProperties);
+            //Set the curve
+            if (energyAnalysisOpening != null)
+                crv = energyAnalysisOpening.GetPolyloop().ToBHoM(pullSettings);
 
-            List<Space> aSpaceList = new List<Space>();
-            List<ElementId> aElementIdList = Query.SpatialElementIds(energyAnalysisOpening.GetAnalyticalSurface());
-            if (aElementIdList != null && pullSettings.RefObjects != null)
-            {
-                List<IBHoMObject> aBHoMObjectList = null;
-                foreach (ElementId aElementId in aElementIdList)
-                    if (pullSettings.RefObjects.TryGetValue(aElementId.IntegerValue, out aBHoMObjectList))
-                        if (aBHoMObjectList != null)
-                            foreach (BHoMObject aBHoMObject in aBHoMObjectList)
-                                if (aBHoMObject is Space)
-                                    aSpaceList.Add(aBHoMObject as Space);
+            //Create BuildingElement
+            BuildingElement aBuildingElement = Create.BuildingElement(aElement.Name, crv, properties);
 
-
-            }
-
-            oM.Architecture.Elements.Level aLevel = Query.Level(aElement, pullSettings);
-
-            BuildingElement aBuildingElement = new BuildingElement
-            {
-                Level = aLevel,
-                Name = aElement.Name,
-                BuildingElementProperties = aBuildingElementProperties,
-                BuildingElementGeometry = aBuildingElementPanel,
-                AdjacentSpaces = aSpaceList.ConvertAll(x => x.BHoM_Guid)
-
-            };
-
+            //Set custom data on BuildingElement
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
             if (pullSettings.CopyCustomData)
             {
@@ -222,10 +192,7 @@ namespace BH.UI.Cobra.Engine
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElement;
             }
 
-
-            return aBuildingElement;*/
-
-
+            return aBuildingElement;
         }
 
         /***************************************************/
@@ -234,19 +201,24 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BuildingElement> aResult = new List<BuildingElement>();
-            BuildingElementProperties aBuildingElementProperties = (ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType).ToBHoM(pullSettings) as BuildingElementProperties;
-            foreach (BuildingElementPanel aBuildingElementPanel in ToBHoMBuildingElementPanels(ceiling))
+            List<BuildingElement> buildingElements = new List<BuildingElement>();
+
+            BuildingElementProperties properties = (ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType).ToBHoM(pullSettings) as BuildingElementProperties;
+
+            foreach(BH.oM.Geometry.ICurve crv in ToBHoMCurve(ceiling, pullSettings))
             {
-                BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aBuildingElementPanel, ToBHoM(ceiling.Document.GetElement(ceiling.LevelId) as Level, pullSettings) as oM.Architecture.Elements.Level);
+                //Create the BuildingElement
+                BuildingElement aElement = Create.BuildingElement(properties, crv);
 
-                aBuildingElement = Modify.SetIdentifiers(aBuildingElement, ceiling) as BuildingElement;
+                //Assign custom data
+                aElement = Modify.SetIdentifiers(aElement, ceiling) as BuildingElement;
                 if (pullSettings.CopyCustomData)
-                    aBuildingElement = Modify.SetCustomData(aBuildingElement, ceiling, pullSettings.ConvertUnits) as BuildingElement;
+                    aElement = Modify.SetCustomData(aElement, ceiling, pullSettings.ConvertUnits) as BuildingElement;
 
-                aResult.Add(aBuildingElement);
-            }
-            return aResult;
+                buildingElements.Add(aElement);
+            }        
+
+            return buildingElements;
         }
 
         /***************************************************/
