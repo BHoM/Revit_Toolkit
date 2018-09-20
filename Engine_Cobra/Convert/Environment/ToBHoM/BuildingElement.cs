@@ -69,16 +69,14 @@ namespace BH.UI.Cobra.Engine
 
         internal static BuildingElement ToBHoMBuildingElement(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
+            //Create a BuildingElement from the familyInstance geometry
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementType? aBuildingElementType = Query.BuildingElementType((BuiltInCategory)familyInstance.Category.Id.IntegerValue);
-            if (!aBuildingElementType.HasValue)
-                aBuildingElementType = BuildingElementType.Undefined;
+            BuildingElementType? aBEType = Query.BuildingElementType((BuiltInCategory)familyInstance.Category.Id.IntegerValue);
+            if (!aBEType.HasValue)
+                aBEType = BuildingElementType.Undefined;
 
-            List<BH.oM.Environment.Elements.Panel> aBuildingElementPanelList = ToBHoMBuildingElementPanels(familyInstance, pullSettings);
-            if (aBuildingElementPanelList != null && aBuildingElementPanelList.Count > 0)
-                return ToBHoMBuildingElement(familyInstance, pullSettings);
-            return ToBHoMBuildingElement(familyInstance, pullSettings);
+            return Create.BuildingElement(ToBHoMCurve(familyInstance, pullSettings));
         }
 
         /***************************************************/
@@ -89,7 +87,7 @@ namespace BH.UI.Cobra.Engine
 
             BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoM(pullSettings) as BuildingElementProperties;
 
-            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, ToBHoMBuildingElementCurve(wall, pullSettings), ToBHoM(wall.Document.GetElement(wall.LevelId) as Level, pullSettings) as oM.Architecture.Elements.Level);
+            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, ToBHoMCurve(wall, pullSettings));
 
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, wall) as BuildingElement;
             if (pullSettings.CopyCustomData)
@@ -104,63 +102,30 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BH.oM.Environment.Elements.Panel aBuildingElementPanel = null;
+            BH.oM.Geometry.ICurve crv = null;
             if (energyAnalysisSurface != null)
-            {
-                Polyloop aPolyLoop = energyAnalysisSurface.GetPolyloop();
-                if (aPolyLoop != null)
-                    aBuildingElementPanel = Create.Panel(aPolyLoop.ToBHoM(pullSettings));
-            }
+                crv = energyAnalysisSurface.GetPolyloop().ToBHoM(pullSettings);
+
+            BuildingElementProperties properties = null;
+            string aName = string.Empty;
 
             Document aDocument = energyAnalysisSurface.Document;
-
             Element aElement = Query.Element(aDocument, energyAnalysisSurface.CADObjectUniqueId, energyAnalysisSurface.CADLinkUniqueId);
-            BuildingElementProperties aBuildingElementProperties = null;
-            string aName = string.Empty;
-            oM.Architecture.Elements.Level aLevel = null;
-
             ElementType aElementType = null;
             if (aElement == null)
             {
                 EnergyAnalysisSpace aEnergyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
                 SpatialElement aSpatialElement = Query.Element(aEnergyAnalysisSpace.Document, aEnergyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
-                aLevel = Query.Level(aSpatialElement, pullSettings);
             }
             else
             {
                 aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
-                aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
-                pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElementProperties);
-
+                properties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
+                pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, properties);
                 aName = aElement.Name;
-                aLevel = Query.Level(aElement, pullSettings);
             }
 
-
-            List<Space> aSpaceList = new List<Space>();
-            List<ElementId> aElementIdList = Query.SpatialElementIds(energyAnalysisSurface);
-            if (aElementIdList != null && pullSettings.RefObjects != null)
-            {
-                List<IBHoMObject> aBHoMObjectList = null;
-                foreach (ElementId aElementId in aElementIdList)
-                    if (pullSettings.RefObjects.TryGetValue(aElementId.IntegerValue, out aBHoMObjectList))
-                        if (aBHoMObjectList != null)
-                            foreach (BHoMObject aBHoMObject in aBHoMObjectList)
-                                if (aBHoMObject is Space)
-                                    aSpaceList.Add(aBHoMObject as Space);
-
-
-            }
-
-            BuildingElement aBuildingElement = new BuildingElement
-            {
-                Level = aLevel,
-                Name = aName,
-                BuildingElementGeometry = aBuildingElementPanel,
-                BuildingElementProperties = aBuildingElementProperties,
-                AdjacentSpaces = aSpaceList.ConvertAll(x => x.BHoM_Guid)
-
-            };
+            BuildingElement aBuildingElement = Create.BuildingElement(aName, crv, properties);
 
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
             if (pullSettings.CopyCustomData)
@@ -181,7 +146,6 @@ namespace BH.UI.Cobra.Engine
                     aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElement;
             }
 
-
             return aBuildingElement;
         }
 
@@ -189,7 +153,8 @@ namespace BH.UI.Cobra.Engine
 
         internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            return null;
+            /*pullSettings = pullSettings.DefaultIfNull();
 
             BuildingElementPanel aBuildingElementPanel = null;
             if (energyAnalysisOpening != null)
@@ -258,7 +223,9 @@ namespace BH.UI.Cobra.Engine
             }
 
 
-            return aBuildingElement;
+            return aBuildingElement;*/
+
+
         }
 
         /***************************************************/
