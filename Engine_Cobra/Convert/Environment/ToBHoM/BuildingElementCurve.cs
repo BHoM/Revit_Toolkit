@@ -2,6 +2,7 @@
 
 using BH.oM.Environment.Elements;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Geometry;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -11,15 +12,11 @@ namespace BH.UI.Cobra.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static BuildingElementCurve ToBHoMBuildingElementCurve(this Wall wall, PullSettings pullSettings = null)
+        internal static ICurve ToBHoMBuildingElementCurve(this Wall wall, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementCurve aBuildingElementCurve = new BuildingElementCurve
-            {
-                Curve = (wall.Location as LocationCurve).ToBHoM(pullSettings)
-            };
-            return aBuildingElementCurve;
+            return (wall.Location as LocationCurve).ToBHoM(pullSettings);
         }
 
         /***************************************************/
