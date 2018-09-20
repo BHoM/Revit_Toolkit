@@ -134,7 +134,7 @@
     <Compile Include="Convert\Environment\ToBHoM\Building.cs" />
     <Compile Include="Convert\Environment\ToBHoM\BuildingElement.cs" />
     <Compile Include="Convert\Environment\ToBHoM\BuildingElementCurve.cs" />
-    <Compile Include="Convert\Environment\ToBHoM\BuildingElementPanel.cs" />
+    <Compile Include="Convert\Environment\ToBHoM\Panel.cs" />
     <Compile Include="Convert\Environment\ToBHoM\BuildingElementProperties.cs" />
     <Compile Include="Convert\Environment\ToBHoM\Space.cs" />
     <Compile Include="Convert\Environment\ToRevit\CompoundStructureLayer.cs" />
