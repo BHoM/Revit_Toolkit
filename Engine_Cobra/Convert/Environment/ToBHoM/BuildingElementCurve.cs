@@ -54,6 +54,51 @@ namespace BH.UI.Cobra.Engine
             return BH.Engine.Geometry.Create.Polyline(aPointList);
         }
 
+        internal static List<ICurve> ToBHoMCurve(this Element element, PullSettings pullSettings = null)
+        {
+            pullSettings = pullSettings.DefaultIfNull();
+
+            return ToBHoMCurve(element.get_Geometry(new Options()), pullSettings);
+        }
+
+        internal static List<ICurve> ToBHoMCurve(this GeometryElement geometryElement, PullSettings pullSettings = null)
+        {
+            pullSettings = pullSettings.DefaultIfNull();
+
+            List<ICurve> aResult = new List<ICurve>();
+            foreach (GeometryObject aGeometryObject in geometryElement)
+            {
+                Solid aSolid = aGeometryObject as Solid;
+                if (aSolid == null)
+                    continue;
+
+                PlanarFace aPlanarFace = Query.Top(aSolid);
+                if (aPlanarFace == null)
+                    continue;
+
+                EdgeArrayArray aEdgeArrayArray = aPlanarFace.EdgeLoops;
+                if (aEdgeArrayArray == null && aEdgeArrayArray.Size == 0)
+                    continue;
+
+                for (int i = 0; i < aEdgeArrayArray.Size; i++)
+                {
+                    EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
+                    List<oM.Geometry.ICurve> aCurveList = new List<oM.Geometry.ICurve>();
+                    foreach (Edge aEdge in aEdgeArray)
+                    {
+                        Curve aCurve = aEdge.AsCurve();
+                        if (aCurve != null)
+                            aCurveList.Add(aCurve.ToBHoM(pullSettings));
+                    }
+
+                    if (aCurveList != null && aCurveList.Count > 0)
+                        aResult.AddRange(aCurveList);
+                }
+            }
+
+            return aResult;
+        }
+
         /***************************************************/
     }
 }
