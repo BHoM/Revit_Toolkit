@@ -65,15 +65,7 @@ namespace BH.UI.Cobra.Engine
                 }
             }
 
-
-            Building aBuilding = new Building
-            {
-                //TODO: Include missing properties
-                Elevation = aElevation,
-                Longitude = aLongitude,
-                Latitude = aLatitude,
-                Location = new oM.Geometry.Point()
-            };
+            Building aBuilding = BH.Engine.Environment.Create.Building(aElevation, aLatitude, aLongitude, new oM.Geometry.Point());
 
             aBuilding = Modify.SetIdentifiers(aBuilding, aDocument.ProjectInformation) as Building;
             if (pullSettings.CopyCustomData)
@@ -90,11 +82,11 @@ namespace BH.UI.Cobra.Engine
                 aBuilding = Modify.SetCustomData(aBuilding, aDocument.ProjectInformation, pullSettings.ConvertUnits) as Building;
             }
 
-
             //-------- Create BHoM building structure -----
 
             List<IBHoMObject> aBHoMObjectList = Query.GetEnergyAnalysisModel(aDocument, pullSettings);
-            if(aBHoMObjectList != null && aBHoMObjectList.Count > 0)
+
+            /*if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
             {
                 foreach (BHoMObject aBHoMObject in aBHoMObjectList)
                 {
@@ -123,7 +115,7 @@ namespace BH.UI.Cobra.Engine
                         }
                     }
 
-            }
+            }*/
 
             //---------------------------------------------
 
