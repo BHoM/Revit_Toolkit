@@ -252,19 +252,23 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BuildingElement> aResult = new List<BuildingElement>();
-            BuildingElementProperties aBuildingElementProperties = roofBase.RoofType.ToBHoMBuildingElementProperties(pullSettings);
-            foreach (BuildingElementPanel aBuildingElementPanel in ToBHoMBuildingElementPanels(roofBase, pullSettings))
+            List<BuildingElement> buildingElements = new List<BuildingElement>();
+            BuildingElementProperties properties = roofBase.RoofType.ToBHoMBuildingElementProperties(pullSettings);
+
+            foreach(BH.oM.Geometry.ICurve crv in ToBHoMCurve(roofBase, pullSettings))
             {
-                BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aBuildingElementPanel, ToBHoM(roofBase.Document.GetElement(roofBase.LevelId) as Level, pullSettings) as BH.oM.Architecture.Elements.Level);
+                //Create the BuildingElement
+                BuildingElement aElement = Create.BuildingElement(properties, crv);
 
-                aBuildingElement = Modify.SetIdentifiers(aBuildingElement, roofBase) as BuildingElement;
+                //Assign custom data
+                aElement = Modify.SetIdentifiers(aElement, roofBase) as BuildingElement;
                 if (pullSettings.CopyCustomData)
-                    aBuildingElement = Modify.SetCustomData(aBuildingElement, roofBase, pullSettings.ConvertUnits) as BuildingElement;
+                    aElement = Modify.SetCustomData(aElement, roofBase, pullSettings.ConvertUnits) as BuildingElement;
 
-                aResult.Add(aBuildingElement);
+                buildingElements.Add(aElement);
             }
-            return aResult;
+
+            return buildingElements;
         }
 
         /***************************************************/
