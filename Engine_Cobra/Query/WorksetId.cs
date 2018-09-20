@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using BH.oM.Base;
+using System.Linq;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -34,6 +35,20 @@ namespace BH.UI.Cobra.Engine
             }
 
             return null;
+        }
+
+        /***************************************************/
+
+        public static WorksetId WorksetId(this Document document, string worksetName)
+        {
+            if (document == null || string.IsNullOrEmpty(worksetName))
+                return null;
+
+            Workset aWorkset = new FilteredWorksetCollector(document).OfKind(WorksetKind.UserWorkset).First(x => x.Name == worksetName);
+            if (aWorkset == null)
+                return null;
+
+            return aWorkset.Id;
         }
 
         /***************************************************/

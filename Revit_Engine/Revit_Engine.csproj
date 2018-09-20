@@ -114,6 +114,8 @@
     <Compile Include="Query\TypeNames.cs" />
     <Compile Include="Query\UniqueId.cs" />
     <Compile Include="Query\UniqueIds.cs" />
+    <Compile Include="Query\ActiveWorkset.cs" />
+    <Compile Include="Query\WorksetName.cs" />
     <Compile Include="Query\WorksetId.cs" />
   </ItemGroup>
   <ItemGroup>

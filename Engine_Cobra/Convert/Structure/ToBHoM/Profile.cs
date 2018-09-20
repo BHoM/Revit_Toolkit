@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using Autodesk.Revit.DB;
@@ -26,7 +27,7 @@ namespace BH.UI.Cobra.Engine
             Parameter sectionShapeParam = familySymbol.LookupParameter("Section Shape");
             StructuralSectionShape sectionShape = sectionShapeParam == null ? sectionShape = StructuralSectionShape.NotDefined : (StructuralSectionShape)sectionShapeParam.AsInteger();
             
-            List<Type> aTypes = Query.BHoMTypes(sectionShape);
+            List<Type> aTypes = Query.BHoMTypes(sectionShape).ToList();
             if (aTypes.Count == 0) aTypes.AddRange(Query.BHoMTypes(familyName));
 
             if (aTypes.Contains(typeof(CircleProfile)))
