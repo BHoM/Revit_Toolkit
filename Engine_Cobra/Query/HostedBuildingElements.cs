@@ -67,9 +67,7 @@ namespace BH.UI.Cobra.Engine
                     aPointList.Add(aXYZ_V.ToBHoM(pullSettings));
                     aPointList.Add(aXYZ_Max.ToBHoM(pullSettings));
 
-                    BuildingElementPanel aBuildingElementPanel = Create.BuildingElementPanel(new oM.Geometry.Polyline[] { BH.Engine.Geometry.Create.Polyline(aPointList) });
-
-                    BuildingElement aBuildingElement = Convert.ToBHoMBuildingElement(aElement_Hosted, aBuildingElementPanel, pullSettings);
+                    BuildingElement aBuildingElement = Convert.ToBHoMBuildingElement(aElement_Hosted, BH.Engine.Geometry.Create.Polyline(aPointList), pullSettings);
                     if (aBuildingElement != null)
                         aBuildingElmementList.Add(aBuildingElement);
 
