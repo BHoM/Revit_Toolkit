@@ -76,27 +76,38 @@ namespace BH.UI.Cobra.Engine
                 if (aPlanarFace == null)
                     continue;
 
-                EdgeArrayArray aEdgeArrayArray = aPlanarFace.EdgeLoops;
-                if (aEdgeArrayArray == null && aEdgeArrayArray.Size == 0)
-                    continue;
-
-                for (int i = 0; i < aEdgeArrayArray.Size; i++)
-                {
-                    EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
-                    List<oM.Geometry.ICurve> aCurveList = new List<oM.Geometry.ICurve>();
-                    foreach (Edge aEdge in aEdgeArray)
-                    {
-                        Curve aCurve = aEdge.AsCurve();
-                        if (aCurve != null)
-                            aCurveList.Add(aCurve.ToBHoM(pullSettings));
-                    }
-
-                    if (aCurveList != null && aCurveList.Count > 0)
-                        aResult.AddRange(aCurveList);
-                }
+                List<List<ICurve>> crvs = aPlanarFace.ToBHoMCurve(pullSettings);
+                foreach(List<ICurve> lst in crvs)
+                    aResult.AddRange(lst);
             }
 
             return aResult;
+        }
+
+        internal static List<List<ICurve>> ToBHoMCurve(this PlanarFace planarFace, PullSettings pullSettings = null)
+        {
+            List<List<ICurve>> crvs = new List<List<ICurve>>();
+
+            EdgeArrayArray aEdgeArrayArray = planarFace.EdgeLoops;
+            if (aEdgeArrayArray == null && aEdgeArrayArray.Size == 0)
+                return crvs;
+
+            for (int i = 0; i < aEdgeArrayArray.Size; i++)
+            {
+                EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
+                List<oM.Geometry.ICurve> aCurveList = new List<oM.Geometry.ICurve>();
+                foreach (Edge aEdge in aEdgeArray)
+                {
+                    Curve aCurve = aEdge.AsCurve();
+                    if (aCurve != null)
+                        aCurveList.Add(aCurve.ToBHoM(pullSettings));
+                }
+
+                if (aCurveList != null && aCurveList.Count > 0)
+                    crvs.Add(aCurveList);
+            }
+
+            return crvs;
         }
 
         /***************************************************/
