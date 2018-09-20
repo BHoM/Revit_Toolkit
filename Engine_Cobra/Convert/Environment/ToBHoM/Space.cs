@@ -38,7 +38,17 @@ namespace BH.UI.Cobra.Engine
 
             pullSettings = pullSettings.DefaultIfNull();
 
-            Document aDocument = spatialElement.Document;
+            //Create the Space
+            Space aSpace = Create.Space(spatialElement.Name, (spatialElement.Location as LocationPoint).ToBHoM(pullSettings));
+
+            //Set custom data
+            aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
+            if (pullSettings.CopyCustomData)
+                aSpace = Modify.SetCustomData(aSpace, spatialElement, pullSettings.ConvertUnits) as Space;
+
+            return aSpace;
+
+            /*Document aDocument = spatialElement.Document;
 
             oM.Architecture.Elements.Level aLevel = Query.Level(spatialElement, pullSettings);
 
@@ -73,11 +83,7 @@ namespace BH.UI.Cobra.Engine
 
             };
 
-            aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
-            if (pullSettings.CopyCustomData)
-                aSpace = Modify.SetCustomData(aSpace, spatialElement, pullSettings.ConvertUnits) as Space;
-
-            return aSpace;
+            */
         }
 
         /***************************************************/
@@ -92,7 +98,17 @@ namespace BH.UI.Cobra.Engine
 
             pullSettings = pullSettings.DefaultIfNull();
 
-            SpatialElementGeometryResults aSpatialElementGeometryResults = spatialElementGeometryCalculator.CalculateSpatialElementGeometry(spatialElement);
+            //Create the Space
+            Space aSpace = Create.Space(spatialElement.Name, (spatialElement.Location as LocationPoint).ToBHoM(pullSettings));
+
+            //Set custom data
+            aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
+            if (pullSettings.CopyCustomData)
+                aSpace = Modify.SetCustomData(aSpace, spatialElement, pullSettings.ConvertUnits) as Space;
+
+            return aSpace;
+
+            /*SpatialElementGeometryResults aSpatialElementGeometryResults = spatialElementGeometryCalculator.CalculateSpatialElementGeometry(spatialElement);
 
             Solid aSolid = aSpatialElementGeometryResults.GetGeometry();
 
@@ -179,7 +195,7 @@ namespace BH.UI.Cobra.Engine
             if (pullSettings.CopyCustomData)
                 aSpace = Modify.SetCustomData(aSpace, spatialElement, pullSettings.ConvertUnits) as Space;
 
-            return aSpace;
+            return aSpace;*/
         }
 
         /***************************************************/
@@ -201,14 +217,9 @@ namespace BH.UI.Cobra.Engine
             if (aSpatialElement != null && aSpatialElement.Location != null)
                 aPoint = (aSpatialElement.Location as LocationPoint).ToBHoM(pullSettings);
 
-            Space aSpace = new Space
-            {
-                Level = aLevel,
-                Name = energyAnalysisSpace.SpaceName,
-                Location = aPoint
+            Space aSpace = Create.Space(energyAnalysisSpace.SpaceName, aPoint);
 
-            };
-
+            //Set custom data
             aSpace = Modify.SetIdentifiers(aSpace, aSpatialElement) as Space;
             if (pullSettings.CopyCustomData)
             {
