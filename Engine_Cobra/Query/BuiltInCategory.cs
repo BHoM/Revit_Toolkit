@@ -136,10 +136,7 @@ namespace BH.UI.Cobra.Engine
             if (document == null || document.Settings == null || document.Settings.Categories == null || filterQuery == null)
                 return Autodesk.Revit.DB.BuiltInCategory.INVALID;
 
-            if(!filterQuery.Equalities.ContainsKey(BH.Engine.Adapters.Revit.Convert.FilterQuery.CategoryName))
-                return Autodesk.Revit.DB.BuiltInCategory.INVALID;
-
-            string aCategoryName = filterQuery.Equalities[BH.Engine.Adapters.Revit.Convert.FilterQuery.CategoryName] as string;
+            string aCategoryName = BH.Engine.Adapters.Revit.Query.CategoryName(filterQuery);
 
             return BuiltInCategory(document, aCategoryName);
         }

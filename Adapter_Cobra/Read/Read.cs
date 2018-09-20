@@ -361,6 +361,7 @@ namespace BH.UI.Cobra.Adapter
 
                         //Include ElementIds and UniqueIds if applicable
                         IEnumerable<Element> aElements = Query.Elements(RevitSettings, UIDocument);
+                        //IEnumerable<Element> aElements = Query.Elements(FilterQuery, UIDocument);
                         if (aElements != null && aElements.Count() > 0)
                             aBuiltInCategories = Modify.Append(aBuiltInCategories, Query.BuiltInCategories(aElements));
 
@@ -412,7 +413,8 @@ namespace BH.UI.Cobra.Adapter
                 if (aTuple.Item1 == typeof(Document))
                 {
                     if (Query.AllowElement(RevitSettings, UIDocument, Document.ProjectInformation))
-                        objects.Add(Document.ToBHoM(aTuple.Item3));
+                    //if (Query.AllowElement(FilterQuery, UIDocument, Document.ProjectInformation))
+                            objects.Add(Document.ToBHoM(aTuple.Item3));
                     continue;
                 }
 
@@ -438,6 +440,7 @@ namespace BH.UI.Cobra.Adapter
                         continue;
 
                     if (Query.AllowElement(RevitSettings, UIDocument, aElement))
+                    //if (Query.AllowElement(FilterQuery, UIDocument, aElement))
                         aElementIdList.Add(aElement.Id);
 
                 }

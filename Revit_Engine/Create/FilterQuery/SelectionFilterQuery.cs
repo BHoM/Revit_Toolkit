@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using BH.oM.DataManipulation.Queries;
 using BH.oM.Adapters.Revit.Enums;
@@ -16,7 +17,7 @@ namespace BH.Engine.Adapters.Revit
             return aFilterQuery;
         }
 
-        public static FilterQuery SelectionFilterQuery(IEquatable<int> elementIds)
+        public static FilterQuery SelectionFilterQuery(IEnumerable<int> elementIds)
         {
             FilterQuery aFilterQuery = new FilterQuery();
             aFilterQuery.Type = typeof(BHoMObject);
@@ -25,7 +26,7 @@ namespace BH.Engine.Adapters.Revit
             return aFilterQuery;
         }
 
-        public static FilterQuery SelectionFilterQuery(IEquatable<string> uniqueIds)
+        public static FilterQuery SelectionFilterQuery(IEnumerable<string> uniqueIds)
         {
             FilterQuery aFilterQuery = new FilterQuery();
             aFilterQuery.Type = typeof(BHoMObject);

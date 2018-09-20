@@ -11,6 +11,7 @@
             public const string ElementIds = "ElementIds";
             public const string UniqueIds = "UniqueIds";
             public const string WorksetName = "WorksetName";
+            public const string IncludeSelected = "IncludeSelected";
         }
     }
 }

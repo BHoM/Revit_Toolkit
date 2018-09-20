@@ -1,9 +1,12 @@
-﻿using Autodesk.Revit.DB;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
+
 using BH.oM.Adapters.Revit.Settings;
-using System.Collections.Generic;
-using System.Linq;
+using BH.oM.DataManipulation.Queries;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -213,5 +216,61 @@ namespace BH.UI.Cobra.Engine
         }
 
         /***************************************************/
+
+        public static bool AllowElement(this FilterQuery filterQuery, UIDocument uIDocument, Element Element)
+        {
+            if (filterQuery == null || uIDocument == null || Element == null)
+                return false;
+
+            string aCategoryName = null;
+            if (Element.Category != null)
+                aCategoryName = Element.Category.Name;
+
+            if(Element is Family && string.IsNullOrEmpty(aCategoryName))
+            {
+                if (((Family)Element).FamilyCategory != null)
+                    aCategoryName = ((Family)Element).FamilyCategory.Name;
+            }
+
+            return AllowElement(filterQuery, uIDocument, Element.UniqueId, Element.Id.IntegerValue, aCategoryName);
+        }
+
+        /***************************************************/
+
+        public static bool AllowElement(this FilterQuery filterQuery, UIDocument uIDocument, string uniqueId, int elementId, string categoryName)
+        {
+            if (filterQuery == null || uIDocument == null)
+                return false;
+
+            IEnumerable<string> aUniqueIds = BH.Engine.Adapters.Revit.Query.UniqueIds(filterQuery);
+            if (aUniqueIds != null && aUniqueIds.Count() > 0 && !string.IsNullOrEmpty(uniqueId) && !aUniqueIds.Contains(uniqueId))
+                return false;
+
+            bool aIncludeSelected = BH.Engine.Adapters.Revit.Query.IncludeSelected(filterQuery);
+
+            IEnumerable<int> aElementIds = BH.Engine.Adapters.Revit.Query.ElementIds(filterQuery);
+            if ((aElementIds == null || aElementIds.Count() == 0) && !aIncludeSelected)
+                return true;
+
+            if (elementId != -1 && !aElementIds.Contains(elementId) && !aIncludeSelected)
+                return false;
+
+            if (elementId != -1 && !aElementIds.Contains(elementId))
+            {
+                Selection aSelection = uIDocument.Selection;
+                if (aSelection == null)
+                    return false;
+
+                ICollection<ElementId> aElementIds_Selected = aSelection.GetElementIds();
+                if (aElementIds_Selected != null && aElementIds_Selected.Count() > 0 && !aElementIds_Selected.Contains(new ElementId(elementId)))
+                    return false;
+            }
+
+            string aCategoryName = BH.Engine.Adapters.Revit.Query.CategoryName(filterQuery);
+            if (!string.IsNullOrEmpty(aCategoryName) && !string.IsNullOrEmpty(categoryName) && aCategoryName != categoryName)
+                return false;
+
+            return true;
+        }
     }
 }
