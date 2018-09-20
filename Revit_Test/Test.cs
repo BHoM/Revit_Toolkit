@@ -16,6 +16,8 @@ using BH.oM.Adapters.Revit.Elements;
 using BH.UI.Cobra.Adapter;
 using BH.Engine.Adapters.Revit;
 using System.IO;
+using BH.Adapter.Revit;
+using BH.oM.Environment.Elements;
 
 namespace Revit_Test
 {
@@ -54,33 +56,11 @@ namespace Revit_Test
     {
         public Result Execute(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
-            List<string> aResult = new List<string>();
-            DirectoryInfo aDirectoryInfo = Directory.CreateDirectory(@"C:\Users\jziolkow\Documents\Tasks\Families\2018 Families");
-            foreach(FileInfo aFileInfo in aDirectoryInfo.GetFiles("*.rfa", SearchOption.AllDirectories))
-            {
-                try
-                {
-                    RevitFilePreview aReviFilePreview = Create.RevitFilePreview(aFileInfo.FullName);
-                    if (aReviFilePreview == null)
-                        continue;
+            RevitAdapter aRevitAdapter = new RevitAdapter(null, true);
+            //FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
+            FilterQuery aFilterQuery = Create.SelectionFilterQuery(typeof(BuildingElement));
 
-                    string aCategoryName = Query.CategoryName(aReviFilePreview);
-                    string aOmniClass = Query.OmniClass(aReviFilePreview);
-                    List<string> aTypeNameList = Query.TypeNames(aReviFilePreview);
-                    foreach(string aTypeName in aTypeNameList)
-                    {
-                        aResult.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\n", aFileInfo.FullName, Path.GetFileNameWithoutExtension(aFileInfo.FullName), aTypeName, aCategoryName, aOmniClass));
-                    }
-
-
-                }
-                catch(Exception aException)
-                {
-                    aResult.Add(string.Format("{0}\t{1}\n", aFileInfo.FullName, aException.Message));
-                }
-            }
-
-            File.WriteAllLines(@"C:\Users\jziolkow\Desktop\Report.txt", aResult);
+            List<IBHoMObject> aIBHoMObjectList = aRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
             return Result.Succeeded;
         }
@@ -214,6 +194,39 @@ namespace Revit_Test
             //FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(Building) };
             FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(BHoMObject) };
             aIBHoMObjectList = pRevitInternalAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+
+            return Result.Succeeded;
+        }
+
+        public Result Execute_Old_4(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
+        {
+            List<string> aResult = new List<string>();
+            DirectoryInfo aDirectoryInfo = Directory.CreateDirectory(@"C:\Users\jziolkow\Documents\Tasks\Families\2018 Families");
+            foreach (FileInfo aFileInfo in aDirectoryInfo.GetFiles("*.rfa", SearchOption.AllDirectories))
+            {
+                try
+                {
+                    RevitFilePreview aReviFilePreview = Create.RevitFilePreview(aFileInfo.FullName);
+                    if (aReviFilePreview == null)
+                        continue;
+
+                    string aCategoryName = Query.CategoryName(aReviFilePreview);
+                    string aOmniClass = Query.OmniClass(aReviFilePreview);
+                    List<string> aTypeNameList = Query.TypeNames(aReviFilePreview);
+                    foreach (string aTypeName in aTypeNameList)
+                    {
+                        aResult.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\n", aFileInfo.FullName, Path.GetFileNameWithoutExtension(aFileInfo.FullName), aTypeName, aCategoryName, aOmniClass));
+                    }
+
+
+                }
+                catch (Exception aException)
+                {
+                    aResult.Add(string.Format("{0}\t{1}\n", aFileInfo.FullName, aException.Message));
+                }
+            }
+
+            File.WriteAllLines(@"C:\Users\jziolkow\Desktop\Report.txt", aResult);
 
             return Result.Succeeded;
         }
