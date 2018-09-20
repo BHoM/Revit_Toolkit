@@ -15,11 +15,11 @@ namespace BH.UI.Cobra.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this PlanarFace planarFace, PullSettings pullSettings = null)
+        internal static List<BH.oM.Environment.Elements.Panel> ToBHoMBuildingElementPanels(this PlanarFace planarFace, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
+            List<BH.oM.Environment.Elements.Panel> aResult = new List<BH.oM.Environment.Elements.Panel>();
             
             EdgeArrayArray aEdgeArrayArray = planarFace.EdgeLoops;
             if (aEdgeArrayArray == null && aEdgeArrayArray.Size == 0)
@@ -38,7 +38,7 @@ namespace BH.UI.Cobra.Engine
 
                 if (aCurveList != null && aCurveList.Count > 0)
                 {
-                    BuildingElementPanel aBuildingElementPanel = new BuildingElementPanel();
+                    BH.oM.Environment.Elements.Panel aBuildingElementPanel = new BH.oM.Environment.Elements.Panel();
                     aBuildingElementPanel = aBuildingElementPanel.SetGeometry(BH.Engine.Geometry.Create.PolyCurve(aCurveList));
                     aResult.Add(aBuildingElementPanel);
                 }
@@ -48,7 +48,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this Element element, PullSettings pullSettings = null)
+        internal static List<BH.oM.Environment.Elements.Panel> ToBHoMBuildingElementPanels(this Element element, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -57,7 +57,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this RoofBase roofBase, PullSettings pullSettings = null)
+        internal static List<BH.oM.Environment.Elements.Panel> ToBHoMBuildingElementPanels(this RoofBase roofBase, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -66,11 +66,11 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this FamilyInstance familyInstance, PullSettings pullSettings = null)
+        internal static List<BH.oM.Environment.Elements.Panel> ToBHoMBuildingElementPanels(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
+            List<BH.oM.Environment.Elements.Panel> aResult = new List<BH.oM.Environment.Elements.Panel>();
 
             //TODO: Get more accurate shape. Currently, Windows and doors goes as rectangular panel
             BoundingBoxXYZ aBoundingBoxXYZ = familyInstance.get_BoundingBox(null);
@@ -97,7 +97,7 @@ namespace BH.UI.Cobra.Engine
             aPointList.Add(aXYZ_4.ToBHoM(pullSettings));
             aPointList.Add(aXYZ_1.ToBHoM(pullSettings));
 
-            BuildingElementPanel aBuildingElementPanel = Create.BuildingElementPanel(new oM.Geometry.Polyline[] { BH.Engine.Geometry.Create.Polyline(aPointList) });
+            BH.oM.Environment.Elements.Panel aBuildingElementPanel = Create.Panel(new oM.Geometry.Polyline[] { BH.Engine.Geometry.Create.Polyline(aPointList) });
             if (aBuildingElementPanel != null)
                 aResult.Add(aBuildingElementPanel);
 
@@ -106,11 +106,11 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        internal static List<BuildingElementPanel> ToBHoMBuildingElementPanels(this GeometryElement geometryElement, PullSettings pullSettings = null)
+        internal static List<BH.oM.Environment.Elements.Panel> ToBHoMBuildingElementPanels(this GeometryElement geometryElement, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BuildingElementPanel> aResult = new List<BuildingElementPanel>();
+            List<BH.oM.Environment.Elements.Panel> aResult = new List<BH.oM.Environment.Elements.Panel>();
             foreach (GeometryObject aGeometryObject in geometryElement)
             {
                 Solid aSolid = aGeometryObject as Solid;
@@ -121,7 +121,7 @@ namespace BH.UI.Cobra.Engine
                 if (aPlanarFace == null)
                     continue;
 
-                List<BuildingElementPanel> aBuildingElementPanelList = aPlanarFace.ToBHoMBuildingElementPanels(pullSettings);
+                List<BH.oM.Environment.Elements.Panel> aBuildingElementPanelList = aPlanarFace.ToBHoMBuildingElementPanels(pullSettings);
                 if (aBuildingElementPanelList == null || aBuildingElementPanelList.Count < 1)
                     continue;
 
