@@ -100,25 +100,14 @@ namespace BH.UI.Cobra.Engine
                         //------------ Cutting openings ----------------
                         if (aBHoMObjectList_Hosted != null && aBHoMObjectList_Hosted.Count > 0)
                         {
-                            BuildingElementPanel aBuildingElementPanel = aBuildingElement.BuildingElementGeometry as BuildingElementPanel;
-                            if (aBuildingElementPanel == null)
-                                continue;
-
                             foreach (BuildingElement aBuildingElement_Hosted in aBHoMObjectList_Hosted.FindAll(x => x is BuildingElement))
                             {
-                                BuildingElementPanel aBuildingElementPanel_Hosted = aBuildingElement_Hosted.BuildingElementGeometry as BuildingElementPanel;
-                                if (aBuildingElementPanel_Hosted == null)
-                                    continue;
-
-                                BuildingElementOpening aBuildingElementOpening = new BuildingElementOpening()
-                                {
-                                    PolyCurve = aBuildingElementPanel_Hosted.PolyCurve
-                                };
+                                BH.oM.Environment.Elements.Opening aBuildingElementOpening = BH.Engine.Environment.Create.Opening(aBuildingElement_Hosted.PanelCurve);
 
                                 if (pullSettings.CopyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(BH.Engine.Adapters.Revit.Convert.ElementId))
-                                    aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, BH.Engine.Adapters.Revit.Convert.ElementId, aBuildingElement_Hosted.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId]) as BuildingElementOpening;
+                                    aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, BH.Engine.Adapters.Revit.Convert.ElementId, aBuildingElement_Hosted.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId]) as BH.oM.Environment.Elements.Opening;
 
-                                aBuildingElementPanel.Openings.Add(aBuildingElementOpening);
+                                aBuildingElement.Openings.Add(aBuildingElementOpening);
                             }
 
                         }
@@ -128,7 +117,6 @@ namespace BH.UI.Cobra.Engine
                         aKeyValuePair.Value.ElementCouldNotBeQueried();
                     }
                 }
-
 
                 //AnalyticalShadingSurfaces
                 IList<EnergyAnalysisSurface> aAnalyticalShadingSurfaceList = aEnergyAnalysisDetailModel.GetAnalyticalShadingSurfaces();
@@ -153,26 +141,14 @@ namespace BH.UI.Cobra.Engine
                         //------------ Cutting openings ----------------
                         if (aBHoMObjectList_Hosted != null && aBHoMObjectList_Hosted.Count > 0)
                         {
-
-                            BuildingElementPanel aBuildingElementPanel = aBuildingElement.BuildingElementGeometry as BuildingElementPanel;
-                            if (aBuildingElementPanel == null)
-                                continue;
-
                             foreach (BuildingElement aBuildingElement_Hosted in aBHoMObjectList_Hosted.FindAll(x => x is BuildingElement))
                             {
-                                BuildingElementPanel aBuildingElementPanel_Hosted = aBuildingElement_Hosted.BuildingElementGeometry as BuildingElementPanel;
-                                if (aBuildingElementPanel_Hosted == null)
-                                    continue;
-
-                                BuildingElementOpening aBuildingElementOpening = new BuildingElementOpening()
-                                {
-                                    PolyCurve = aBuildingElementPanel_Hosted.PolyCurve
-                                };
+                                BH.oM.Environment.Elements.Opening aBuildingElementOpening = BH.Engine.Environment.Create.Opening(aBuildingElement_Hosted.PanelCurve);
 
                                 if (pullSettings.CopyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(BH.Engine.Adapters.Revit.Convert.ElementId))
-                                    aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, BH.Engine.Adapters.Revit.Convert.ElementId, aBuildingElement_Hosted.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId]) as BuildingElementOpening;
+                                    aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, BH.Engine.Adapters.Revit.Convert.ElementId, aBuildingElement_Hosted.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId]) as BH.oM.Environment.Elements.Opening;
 
-                                aBuildingElementPanel.Openings.Add(aBuildingElementOpening);
+                                aBuildingElement.Openings.Add(aBuildingElementOpening);
                             }
 
                         }

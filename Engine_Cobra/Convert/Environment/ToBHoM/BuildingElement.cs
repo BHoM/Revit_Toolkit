@@ -18,7 +18,7 @@ namespace BH.UI.Cobra.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static BuildingElement ToBHoMBuildingElement(this Element element, PullSettings pullSettings = null)
+        internal static BuildingElement ToBHoMBuildingElement(this Element element, BH.oM.Geometry.ICurve crv, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -47,7 +47,7 @@ namespace BH.UI.Cobra.Engine
                     pullSettings.RefObjects.Add(aElementType.Id.IntegerValue, new List<IBHoMObject>(new BHoMObject[] { aBuildingElementProperties }));
             }
 
-            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties);
+            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, crv);
 
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, element) as BuildingElement;
             if (pullSettings.CopyCustomData)

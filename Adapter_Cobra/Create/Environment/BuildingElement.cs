@@ -36,8 +36,8 @@ namespace BH.UI.Cobra.Adapter
 
 
             //Set Level
-            if (buildingElement.Level != null)
-                Create(buildingElement.Level, pushSettings);
+            /*if (buildingElement.Level != null)
+                Create(buildingElement.Level, pushSettings);*/
 
             if (pushSettings.Replace)
                 Delete(buildingElement);
