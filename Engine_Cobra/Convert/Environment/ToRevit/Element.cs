@@ -23,13 +23,8 @@ namespace BH.UI.Cobra.Engine
             pushSettings = pushSettings.DefaultIfNull();
 
             //Get Level
+            //TODO: Reimplement Level Query here - Issue #593 on BHoM_Engine - https://github.com/BuroHappoldEngineering/BHoM_Engine/issues/593
             Level aLevel = null;
-            if (buildingElement.Level != null)
-            {
-                List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
-                if (aLevelList != null && aLevelList.Count > 0)
-                    aLevel = aLevelList.Find(x => x.Name == buildingElement.Level.Name);
-            }
 
             //Get ElementType
             ElementType aElementType = null;
@@ -51,30 +46,20 @@ namespace BH.UI.Cobra.Engine
                     //TODO: Create Ceiling from BuildingElement
                     break;
                 case BuildingElementType.Floor:
-                    if (buildingElement.BuildingElementGeometry is BuildingElementPanel)
-                    {
-                        BuildingElementPanel aBuildingElementPanel = buildingElement.BuildingElementGeometry as BuildingElementPanel;
-
-                        if (aElementType != null)
-                            aElement = document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(pushSettings), aElementType as FloorType, aLevel, false);
-                        else
-                            aElement = document.Create.NewFloor(aBuildingElementPanel.PolyCurve.ToRevit(pushSettings), false);
-                    }
+                    if (aElementType != null)
+                        aElement = document.Create.NewFloor((buildingElement.PanelCurve as PolyCurve).ToRevit(pushSettings), aElementType as FloorType, aLevel, false);
+                    else
+                        aElement = document.Create.NewFloor((buildingElement.PanelCurve as PolyCurve).ToRevit(pushSettings), false);
                     aBuiltInParameters = new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM };
                     break;
                 case BuildingElementType.Roof:
-                    if (buildingElement.BuildingElementGeometry is BuildingElementPanel)
-                    {
-                        //TODO: Check Roof creation
-
-                        BuildingElementPanel aBuildingElementPanel = buildingElement.BuildingElementGeometry as BuildingElementPanel;
-                        ModelCurveArray aModelCurveArray = new ModelCurveArray();
-                        if (aElementType != null)
-                            aElement = document.Create.NewFootPrintRoof(aBuildingElementPanel.PolyCurve.ToRevit(pushSettings), aLevel, aElementType as RoofType, out aModelCurveArray);
-                    }
+                    //TODO: Check Roof Creation
+                    ModelCurveArray aModelCurveArray = new ModelCurveArray();
+                    if (aElementType != null)
+                        aElement = document.Create.NewFootPrintRoof((buildingElement.PanelCurve as PolyCurve).ToRevit(pushSettings), aLevel, aElementType as RoofType, out aModelCurveArray);
                     break;
                 case BuildingElementType.Wall:
-                    ICurve aICurve = buildingElement.BuildingElementGeometry.Bottom();
+                    ICurve aICurve = buildingElement.Bottom();
                     if (aICurve == null)
                         return null;
 
@@ -88,7 +73,7 @@ namespace BH.UI.Cobra.Engine
                     //TODO: Create Door from BuildingElement
                     break;
                 case BuildingElementType.Window:
-                    //TODO: Create Widnow from BuildingElement
+                    //TODO: Create Window from BuildingElement
                     break;
             }
 

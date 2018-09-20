@@ -13,43 +13,42 @@ namespace BH.Engine.Adapters.Revit
         
         public static Building AssignAdjacentSpaces(this Building building, bool removeDuplicates = true)
         {
-            if (building == null)
-                return null;
+            throw new NotImplementedException("Assigning Adjacent Spaces via the building is not compatible with the new framework at this time");
+            /* if (building == null)
+                 return null;
 
-            Building aBuilding = building.GetShallowClone() as Building;
-            
-            Dictionary<int, List<BuildingElement>> aData = new Dictionary<int, List<BuildingElement>>();
-            foreach (BuildingElement aBuildingElement in aBuilding.BuildingElements)
-            {
-                object aObject;
-                if(aBuildingElement.CustomData.TryGetValue(Convert.ElementId, out aObject))
-                {
-                    if(aObject is int)
-                    {
-                        int aId = (int)aObject;
-                        if (!aData.ContainsKey(aId))
-                            aData.Add(aId, Query.BuildingElements(building, aId));
-                    }
-                }
-            }
+             Building aBuilding = building.GetShallowClone() as Building;
 
-            List<BuildingElement> aResult = new List<BuildingElement>();
-            if (aData != null && aData.Count > 0)
-            {
-                foreach(KeyValuePair<int, List<BuildingElement>> aKeyValuePair in aData)
-                {
-                    List< BuildingElement > aBuildingElementList = AssignAdjacentSpaces(aKeyValuePair.Value, removeDuplicates);
-                    if (aKeyValuePair.Value != null)
-                        aResult.AddRange(aKeyValuePair.Value);
-                }
-            }
+             Dictionary<int, List<BuildingElement>> aData = new Dictionary<int, List<BuildingElement>>();
+             foreach (BuildingElement aBuildingElement in aBuilding.BuildingElements)
+             {
+                 object aObject;
+                 if(aBuildingElement.CustomData.TryGetValue(Convert.ElementId, out aObject))
+                 {
+                     if(aObject is int)
+                     {
+                         int aId = (int)aObject;
+                         if (!aData.ContainsKey(aId))
+                             aData.Add(aId, Query.BuildingElements(building, aId));
+                     }
+                 }
+             }
 
-            aBuilding.BuildingElements = aResult;
+             List<BuildingElement> aResult = new List<BuildingElement>();
+             if (aData != null && aData.Count > 0)
+             {
+                 foreach(KeyValuePair<int, List<BuildingElement>> aKeyValuePair in aData)
+                 {
+                     List< BuildingElement > aBuildingElementList = AssignAdjacentSpaces(aKeyValuePair.Value, removeDuplicates);
+                     if (aKeyValuePair.Value != null)
+                         aResult.AddRange(aKeyValuePair.Value);
+                 }
+             }
 
-            return aBuilding;
+             aBuilding.BuildingElements = aResult;
 
+             return aBuilding;*/
         }
-
 
         /***************************************************/
         /**** Private Methods                           ****/
@@ -57,7 +56,8 @@ namespace BH.Engine.Adapters.Revit
 
         private static List<BuildingElement> AssignAdjacentSpaces(List<BuildingElement> builidingElements, bool removeDuplicates = true)
         {
-            List<Tuple<Point, BuildingElement>> aTupleList = new List<Tuple<Point, BuildingElement>>();
+            throw new NotImplementedException("Assigning Adjacent Spaces is not compatible with the new framework at this time");
+            /*List<Tuple<Point, BuildingElement>> aTupleList = new List<Tuple<Point, BuildingElement>>();
             foreach (BuildingElement aBuildingElement in builidingElements)
             {
                 ICurve aICurve = BH.Engine.Environment.Query.ICurve(aBuildingElement.BuildingElementGeometry);
@@ -111,7 +111,7 @@ namespace BH.Engine.Adapters.Revit
                     aResult.Add(aBuildingElement);
                 }
             }
-            return aResult;
+            return aResult;*/
         }
 
         /***************************************************/

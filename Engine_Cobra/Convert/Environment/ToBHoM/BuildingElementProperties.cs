@@ -21,7 +21,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Wall, wallType.Name);
+            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(wallType.Name, BuildingElementType.Wall);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, wallType) as BuildingElementProperties;
             if (pullSettings.CopyCustomData)
@@ -39,7 +39,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Floor, floorType.Name);
+            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(floorType.Name, BuildingElementType.Floor);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, floorType) as BuildingElementProperties;
             if (pullSettings.CopyCustomData)
@@ -57,7 +57,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Ceiling, ceilingType.Name);
+            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(ceilingType.Name, BuildingElementType.Ceiling);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, ceilingType) as BuildingElementProperties;
             if (pullSettings.CopyCustomData)
@@ -75,7 +75,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(BuildingElementType.Roof, roofType.Name);
+            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(roofType.Name, BuildingElementType.Roof);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, roofType) as BuildingElementProperties;
             if (pullSettings.CopyCustomData)
@@ -97,7 +97,7 @@ namespace BH.UI.Cobra.Engine
             if (!aBuildingElementType.HasValue)
                 aBuildingElementType = BuildingElementType.Undefined;
 
-            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(aBuildingElementType.Value, familySymbol.Name);
+            BuildingElementProperties aBuildingElementProperties = Create.BuildingElementProperties(familySymbol.Name, aBuildingElementType.Value);
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, familySymbol) as BuildingElementProperties;
             if (pullSettings.CopyCustomData)
             {

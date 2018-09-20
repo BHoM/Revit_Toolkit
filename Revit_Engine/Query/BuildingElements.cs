@@ -11,7 +11,8 @@ namespace BH.Engine.Adapters.Revit
 
         public static List<BuildingElement> BuildingElements(this Building building, int elementId)
         {
-            if (building == null)
+            throw new System.NotImplementedException("Cannot get the Building Elements from the Building");
+            /*if (building == null)
                 return null;
 
             List<BuildingElement> aResult = new List<BuildingElement>();
@@ -22,7 +23,7 @@ namespace BH.Engine.Adapters.Revit
                     if (aValue is int && (int)aValue == elementId)
                         aResult.Add(aBuildingElement);
             }
-            return aResult;
+            return aResult;*/
         }
 
         /***************************************************/
