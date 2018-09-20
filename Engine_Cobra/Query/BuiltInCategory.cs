@@ -6,6 +6,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
+using BH.oM.DataManipulation.Queries;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -126,6 +127,21 @@ namespace BH.UI.Cobra.Engine
             }
 
             return aBuiltInCategory;
+        }
+
+        /***************************************************/
+
+        public static BuiltInCategory BuiltInCategory(this FilterQuery filterQuery, Document document)
+        {
+            if (document == null || document.Settings == null || document.Settings.Categories == null || filterQuery == null)
+                return Autodesk.Revit.DB.BuiltInCategory.INVALID;
+
+            if(!filterQuery.Equalities.ContainsKey(BH.Engine.Adapters.Revit.Convert.FilterQuery.CategoryName))
+                return Autodesk.Revit.DB.BuiltInCategory.INVALID;
+
+            string aCategoryName = filterQuery.Equalities[BH.Engine.Adapters.Revit.Convert.FilterQuery.CategoryName] as string;
+
+            return BuiltInCategory(document, aCategoryName);
         }
 
         /***************************************************/

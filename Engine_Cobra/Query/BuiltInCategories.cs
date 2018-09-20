@@ -1,9 +1,12 @@
-﻿using Autodesk.Revit.DB;
+﻿using System;
+using System.Collections.Generic;
+
+using Autodesk.Revit.DB;
+
 using BH.oM.Environment.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Structure.Elements;
-using System;
-using System.Collections.Generic;
+using BH.oM.DataManipulation.Queries;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -104,6 +107,23 @@ namespace BH.UI.Cobra.Engine
                 }
 
             return aBuiltInCategoryList;
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<BuiltInCategory> BuiltInCategories(IEnumerable<FilterQuery> filterQueries, Document document)
+        {
+            if (filterQueries == null || document == null)
+                return null;
+
+            List<BuiltInCategory> aBuiltInCategories = new List<BuiltInCategory>();
+            foreach (FilterQuery aFilterQuery in filterQueries)
+            {
+                BuiltInCategory aBuiltInCategory = Query.BuiltInCategory(aFilterQuery, document);
+                if (aBuiltInCategory != Autodesk.Revit.DB.BuiltInCategory.INVALID)
+                    aBuiltInCategories.Add(aBuiltInCategory);
+            }
+            return aBuiltInCategories;
         }
     }
 }

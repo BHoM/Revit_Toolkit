@@ -49,9 +49,9 @@ namespace BH.UI.Cobra.Adapter
         {
             IEnumerable<IBHoMObject> aResult = null;
 
-            if (query.Equalities.ContainsKey("QueryType"))
+            if (query.Equalities.ContainsKey(BH.Engine.Adapters.Revit.Convert.FilterQuery.QueryType))
             {
-                object aObject = query.Equalities["QueryType"];
+                object aObject = query.Equalities[BH.Engine.Adapters.Revit.Convert.FilterQuery.QueryType];
                 if(aObject is QueryType)
                 {
                     switch ((QueryType)aObject)
@@ -328,6 +328,7 @@ namespace BH.UI.Cobra.Adapter
 
                 //Getting Discipline related to type. If not BHoM type then defult disipline returned
                 Discipline aDiscipline = BH.Engine.Adapters.Revit.Query.Discipline(RevitSettings, aType);
+                //Discipline aDiscipline = BH.Engine.Adapters.Revit.Query.Discipline(FilterQuery, aType);
 
                 //Getting PullSettings and adding it to Dictionary if not exists
                 PullSettings aPullSettings = null;
@@ -351,9 +352,11 @@ namespace BH.UI.Cobra.Adapter
                     {
                         //Related Revit types for BHoM type have not been found
                         IEnumerable<BuiltInCategory> aBuiltInCategories = Query.BuiltInCategories(RevitSettings, Document);
+                        //IEnumerable<BuiltInCategory> aBuiltInCategories = new List<BuiltInCategory>() {Query.BuiltInCategory(FilterQuery, Document)};
 
                         //Include selection if applicable
                         if (BH.Engine.Adapters.Revit.Query.IncludeSelected(RevitSettings))
+                            //if (BH.Engine.Adapters.Revit.Query.IncludeSelected(FilterQuery))
                             aBuiltInCategories = Modify.Append(aBuiltInCategories, Query.SelectionBuiltInCategories(UIDocument));
 
                         //Include ElementIds and UniqueIds if applicable
