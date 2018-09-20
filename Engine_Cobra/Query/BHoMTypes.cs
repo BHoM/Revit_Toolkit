@@ -15,7 +15,7 @@ namespace BH.UI.Cobra.Engine
     
     public static partial class Query
     {
-        public static List<Type> BHoMTypes(this Element element)
+        public static IEnumerable<Type> BHoMTypes(this Element element)
         {
             List<Type> aResult = new List<Type>();
 
@@ -146,7 +146,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        public static List<Type> BHoMTypes(this StructuralSectionShape sectionShape)
+        public static IEnumerable<Type> BHoMTypes(this StructuralSectionShape sectionShape)
         {
             int shapeNum = (int)sectionShape;
             List<Type> aResult = new List<Type>();
@@ -270,7 +270,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        public static List<Type> BHoMTypes(this string familyName)
+        public static IEnumerable<Type> BHoMTypes(this string familyName)
         {
             List<Type> aResult = new List<Type>();
 

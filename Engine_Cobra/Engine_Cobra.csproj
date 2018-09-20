@@ -206,6 +206,7 @@
     <Compile Include="Query\RevitType.cs" />
     <Compile Include="Query\RevitTypes.cs" />
     <Compile Include="Query\Top.cs" />
+    <Compile Include="Query\ActiveWorksetId.cs" />
     <Compile Include="Query\WorksetId.cs" />
     <Compile Include="Query\WorksetIds.cs" />
     <Compile Include="Query\WorksetNames.cs" />

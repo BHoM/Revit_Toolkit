@@ -115,6 +115,8 @@ namespace BH.UI.Cobra.Adapter
         }
 
         /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
 
         private static void SetIdentifiers(IBHoMObject bHoMObject, Element element)
         {

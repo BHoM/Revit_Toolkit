@@ -45,26 +45,30 @@ namespace BH.UI.Cobra.Adapter
             return aObjects;
         }
 
-        protected new IEnumerable<IBHoMObject> Read(FilterQuery query)
+        protected new IEnumerable<IBHoMObject> Read(FilterQuery filterQuery)
         {
-            IEnumerable<IBHoMObject> aResult = null;
-
-            if (query.Equalities.ContainsKey(BH.Engine.Adapters.Revit.Convert.FilterQuery.QueryType))
+            if (Document == null)
             {
-                object aObject = query.Equalities[BH.Engine.Adapters.Revit.Convert.FilterQuery.QueryType];
-                if(aObject is QueryType)
-                {
-                    switch ((QueryType)aObject)
-                    {
-                        case QueryType.Selection:
-                            aResult = ReadSelectionResults(query);
-                            break;
-                    }
-                }
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
+                return null;
             }
 
+            if (filterQuery == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided FilterQuery is null.");
+                return null;
+            }
+
+            Autodesk.Revit.UI.UIDocument aUIDocument = UIDocument;
+
+
+            IEnumerable<IBHoMObject> aResult = null;
+
+            IEnumerable<Element> aElements = Query.Elements(filterQuery, aUIDocument); 
+
+
             if (aResult == null)
-                aResult = base.Read(query);
+                aResult = base.Read(filterQuery);
 
             return aResult;
         }
@@ -168,8 +172,8 @@ namespace BH.UI.Cobra.Adapter
                 object aObject = null;
                 bool aConverted = true;
 
-                List<Type> aTypeList = Query.BHoMTypes(aElement);
-                if (aTypeList != null && aTypeList.Count > 0)
+                IEnumerable<Type> aTypes = Query.BHoMTypes(aElement);
+                if (aTypes != null && aTypes.Count() > 0)
                 {
                     try
                     {
