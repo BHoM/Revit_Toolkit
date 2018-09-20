@@ -1,9 +1,13 @@
-﻿using Autodesk.Revit.DB;
+﻿using System.Linq;
 using System.Collections.Generic;
 
-using BH.oM.Adapters.Revit.Settings;
-using System.Linq;
+using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.DataManipulation.Queries;
+
+
 
 namespace BH.UI.Cobra.Engine
 {
@@ -66,6 +70,17 @@ namespace BH.UI.Cobra.Engine
             }
 
             return aDictionary_Elements.Values;
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<Element> Elements(this FilterQuery filterQuery, UIDocument uIDocument)
+        {
+            if (uIDocument == null || filterQuery == null)
+                return null;
+
+            Dictionary<int, Element> aDictionary_Elements = new Dictionary<int, Element>();
+
         }
 
         /***************************************************/

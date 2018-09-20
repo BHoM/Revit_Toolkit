@@ -12,25 +12,25 @@ namespace BH.Engine.Adapters.Revit
         {
             FilterQuery aFilterQuery = new FilterQuery();
             aFilterQuery.Type = type;
-            aFilterQuery.Equalities["QueryType"] = QueryType.Selection;
+            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.Selection;
             return aFilterQuery;
         }
 
-        public static FilterQuery SelectionFilterQuery(IEquatable<int> ElementIds)
+        public static FilterQuery SelectionFilterQuery(IEquatable<int> elementIds)
         {
             FilterQuery aFilterQuery = new FilterQuery();
             aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities["QueryType"] = QueryType.Selection;
-            aFilterQuery.Equalities["ElementIds"] = ElementIds;
+            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.Selection;
+            aFilterQuery.Equalities[Convert.FilterQuery.ElementIds] = elementIds;
             return aFilterQuery;
         }
 
-        public static FilterQuery SelectionFilterQuery(IEquatable<string> UniqueIds)
+        public static FilterQuery SelectionFilterQuery(IEquatable<string> uniqueIds)
         {
             FilterQuery aFilterQuery = new FilterQuery();
             aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities["QueryType"] = QueryType.Selection;
-            aFilterQuery.Equalities["UniqueIds"] = UniqueIds;
+            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.Selection;
+            aFilterQuery.Equalities[Convert.FilterQuery.UniqueIds] = uniqueIds;
             return aFilterQuery;
         }
     }

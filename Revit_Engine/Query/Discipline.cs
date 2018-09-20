@@ -2,6 +2,7 @@
 
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.DataManipulation.Queries;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -35,6 +36,16 @@ namespace BH.Engine.Adapters.Revit
             Discipline? aDiscipline = Query.Discipline(type);
             if (aDiscipline == null || !aDiscipline.HasValue)
                 aDiscipline = DefaultDiscipline(revitSettings);
+            return aDiscipline.Value;
+        }
+
+        /***************************************************/
+
+        public static Discipline Discipline(this FilterQuery filterQuery, Type type)
+        {
+            Discipline? aDiscipline = Query.Discipline(type);
+            if (aDiscipline == null || !aDiscipline.HasValue)
+                aDiscipline = DefaultDiscipline(filterQuery);
             return aDiscipline.Value;
         }
 

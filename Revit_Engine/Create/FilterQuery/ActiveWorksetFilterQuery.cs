@@ -8,12 +8,12 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        public static FilterQuery CategoryFilterQuery(string categoryName)
+        public static FilterQuery ActiveWorksetFilterQuery()
         {
             FilterQuery aFilterQuery = new FilterQuery();
             aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.Category;
-            aFilterQuery.Equalities[Convert.FilterQuery.CategoryName] = categoryName;
+            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.ActiveWorkset;
+            aFilterQuery.Equalities[Convert.FilterQuery.ActiveWorkset] = true;
             return aFilterQuery;
         }
     }

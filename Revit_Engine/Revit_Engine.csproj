@@ -60,12 +60,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Convert\AdapterID.cs" />
+    <Compile Include="Convert\FilterQuery.cs" />
     <Compile Include="Create\Elements\BHoMObject.cs" />
     <Compile Include="Create\Elements\DraftingObject.cs" />
     <Compile Include="Create\Elements\FloorPlan.cs" />
     <Compile Include="Create\Elements\GenericObject.cs" />
-    <Compile Include="Create\Elements\FamilyLibrary.cs" />
-    <Compile Include="Create\Elements\RevitFilePreview.cs" />
+    <Compile Include="Create\Generic\FamilyLibrary.cs" />
+    <Compile Include="Create\Generic\RevitFilePreview.cs" />
+    <Compile Include="Create\FilterQuery\ActiveWorksetFilterQuery.cs" />
+    <Compile Include="Create\FilterQuery\OrFilterQuery.cs" />
+    <Compile Include="Create\FilterQuery\AndFilterQuery.cs" />
+    <Compile Include="Create\FilterQuery\WorksetFilterQuery.cs" />
     <Compile Include="Create\FilterQuery\CategoryFilterQuery.cs" />
     <Compile Include="Create\Settings\RevitSettings.cs" />
     <Compile Include="Create\Settings\PullSettings.cs" />
@@ -88,6 +93,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\BuildingElements.cs" />
     <Compile Include="Query\CategoryNames.cs" />
+    <Compile Include="Query\ElementIds.cs" />
     <Compile Include="Query\FamilyName.cs" />
     <Compile Include="Query\CategoryName.cs" />
     <Compile Include="Query\DefaultDiscipline.cs" />

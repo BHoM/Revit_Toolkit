@@ -10,6 +10,10 @@
     public enum QueryType
     {
         Selection,
-        Category
+        Category,
+        Workset,
+        ActiveWorkset,
+        And,
+        Or
     }
 }
