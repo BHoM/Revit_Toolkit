@@ -24,11 +24,11 @@ namespace BH.Engine.Adapters.Revit
             if (filterQuery == null)
                 return false;
 
-            if (!filterQuery.Equalities.ContainsKey("IncludeSelected"))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.IncludeSelected))
                 return false;
 
-            if (filterQuery.Equalities["IncludeSelected"] is bool)
-                return (bool)filterQuery.Equalities["IncludeSelected"];
+            if (filterQuery.Equalities[Convert.FilterQuery.IncludeSelected] is bool)
+                return (bool)filterQuery.Equalities[Convert.FilterQuery.IncludeSelected];
             else
                 return false;
         }

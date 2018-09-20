@@ -1,5 +1,7 @@
-﻿using BH.oM.Base;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+using BH.oM.Base;
+using BH.oM.DataManipulation.Queries;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -25,6 +27,19 @@ namespace BH.Engine.Adapters.Revit
             }
 
             return aUniqueIdList;
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<string> UniqueIds(this FilterQuery filterQuery)
+        {
+            if (filterQuery == null)
+                return null;
+
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.UniqueIds))
+                return null;
+
+            return filterQuery.Equalities[Convert.FilterQuery.UniqueIds] as IEnumerable<string>;
         }
 
         /***************************************************/

@@ -4,6 +4,7 @@ using System.Xml.Linq;
 
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Generic;
+using BH.oM.DataManipulation.Queries;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -65,6 +66,19 @@ namespace BH.Engine.Adapters.Revit
             }
 
             return null;
+        }
+
+        /***************************************************/
+
+        public static string CategoryName(this FilterQuery filterQuery)
+        {
+            if (filterQuery == null)
+                return null;
+
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.CategoryName))
+                return null;
+
+            return filterQuery.Equalities[Convert.FilterQuery.CategoryName] as string;
         }
 
         /***************************************************/

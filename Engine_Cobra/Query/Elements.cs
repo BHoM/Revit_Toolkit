@@ -80,7 +80,37 @@ namespace BH.UI.Cobra.Engine
                 return null;
 
             Dictionary<int, Element> aDictionary_Elements = new Dictionary<int, Element>();
+            if (filterQuery.Equalities.ContainsKey(BH.Engine.Adapters.Revit.Convert.FilterQuery.ElementIds))
+            {
+                if (filterQuery.Equalities[BH.Engine.Adapters.Revit.Convert.FilterQuery.ElementIds] is IEnumerable<int>)
+                {
+                    foreach (int aId in (IEnumerable<int>)filterQuery.Equalities[BH.Engine.Adapters.Revit.Convert.FilterQuery.ElementIds])
+                    {
+                        ElementId aElementId = new ElementId(aId);
+                        Element aElement = uIDocument.Document.GetElement(aElementId);
+                        if (aElement != null && !aDictionary_Elements.ContainsKey(aElement.Id.IntegerValue) && AllowElement(filterQuery, uIDocument, aElement))
+                            aDictionary_Elements.Add(aElement.Id.IntegerValue, aElement);
+                    }
+                }
+            }
 
+            if (filterQuery.Equalities.ContainsKey(BH.Engine.Adapters.Revit.Convert.FilterQuery.UniqueIds))
+            {
+                if (filterQuery.Equalities[BH.Engine.Adapters.Revit.Convert.FilterQuery.UniqueIds] is IEnumerable<string>)
+                {
+                    foreach (string aUniqueId in (IEnumerable<string>)filterQuery.Equalities[BH.Engine.Adapters.Revit.Convert.FilterQuery.ElementIds])
+                    {
+                        if (string.IsNullOrEmpty(aUniqueId))
+                            continue;
+
+                        Element aElement = uIDocument.Document.GetElement(aUniqueId);
+                        if (aElement != null && !aDictionary_Elements.ContainsKey(aElement.Id.IntegerValue) && AllowElement(filterQuery, uIDocument, aElement))
+                            aDictionary_Elements.Add(aElement.Id.IntegerValue, aElement);
+                    }
+                }
+            }
+
+            return aDictionary_Elements.Values;
         }
 
         /***************************************************/

@@ -16,26 +16,10 @@ namespace BH.Engine.Adapters.Revit
             if (filterQuery == null)
                 return null;
 
-            object aValue = null;
-            if (bHoMObject.CustomData.TryGetValue(Convert.ElementId, out aValue))
-            {
-                if (aValue is string)
-                {
-                    int aInt = -1;
-                    if (int.TryParse((string)aValue, out aInt))
-                        return aInt;
-                }
-                else if (aValue is int)
-                {
-                    return (int)aValue;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.ElementIds))
+                return null;
 
-            return -1;
+            return filterQuery.Equalities[Convert.FilterQuery.ElementIds] as IEnumerable<int>;
         }
 
         /***************************************************/
