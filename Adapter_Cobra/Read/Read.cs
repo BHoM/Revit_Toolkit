@@ -11,7 +11,8 @@ using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Elements;
 using BH.UI.Cobra.Engine;
-
+using BH.oM.DataManipulation.Queries;
+using BH.oM.Common;
 
 namespace BH.UI.Cobra.Adapter
 {
@@ -21,14 +22,70 @@ namespace BH.UI.Cobra.Adapter
         /**** Protected Methods                         ****/
         /***************************************************/
         
-        protected void Read(BuiltInCategory builtInCategory, List<IBHoMObject> objects, PullSettings pullSettings = null)
+        protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
+        {
+            if (Document == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
+                return null;
+            }
+
+            if (type == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided type is null.");
+                return null;
+            }
+
+            List<IBHoMObject> aObjects = new List<IBHoMObject>();
+            if (ids == null)
+               Read(new Type[] { type }, aObjects);
+            else
+               Read(new Type[] { type }, aObjects, ids.Cast<string>().ToList());
+
+            return aObjects;
+        }
+
+        protected new IEnumerable<IBHoMObject> Read(FilterQuery query)
+        {
+            IEnumerable<IBHoMObject> aResult = null;
+
+            if (query.Equalities.ContainsKey("QueryType"))
+            {
+                object aObject = query.Equalities["QueryType"];
+                if(aObject is QueryType)
+                {
+                    switch ((QueryType)aObject)
+                    {
+                        case QueryType.Selection:
+                            aResult = ReadSelectionResults(query);
+                            break;
+                    }
+                }
+            }
+
+            if (aResult == null)
+                aResult = base.Read(query);
+
+            return aResult;
+        }
+
+        /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
+
+        private IEnumerable<IBHoMObject> ReadSelectionResults(FilterQuery filterQuery)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Read(BuiltInCategory builtInCategory, List<IBHoMObject> objects, PullSettings pullSettings = null)
         {
             Read(new BuiltInCategory[] { builtInCategory }, objects, pullSettings);
         }
 
         /***************************************************/
-        
-        protected void Read(IEnumerable<BuiltInCategory> builtInCategories, List<IBHoMObject> objects, PullSettings pullSettings = null)
+
+        private void Read(IEnumerable<BuiltInCategory> builtInCategories, List<IBHoMObject> objects, PullSettings pullSettings = null)
         {
             if (Document == null)
             {
@@ -53,8 +110,8 @@ namespace BH.UI.Cobra.Adapter
         }
 
         /***************************************************/
-        
-        protected void Read(ElementId elementId, List<IBHoMObject> objects, PullSettings pullSettings = null)
+
+        private void Read(ElementId elementId, List<IBHoMObject> objects, PullSettings pullSettings = null)
         {
             if (Document == null)
             {
@@ -125,7 +182,7 @@ namespace BH.UI.Cobra.Adapter
                     }
                 }
 
-                if(aObject == null)
+                if (aObject == null)
                 {
                     try
                     {
@@ -138,12 +195,12 @@ namespace BH.UI.Cobra.Adapter
                             {
                                 aIGeometry = aElement.Location.ToBHoM(pullSettings);
                             }
-                            catch(Exception aException)
+                            catch (Exception aException)
                             {
                                 BH.Engine.Reflection.Compute.RecordWarning(string.Format("Location of BHoM object could not be converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", elementId.IntegerValue, aElement.Name, aException.Message));
                             }
 
-                            if(aIGeometry != null)
+                            if (aIGeometry != null)
                             {
                                 if (aElement.ViewSpecific)
                                 {
@@ -182,7 +239,7 @@ namespace BH.UI.Cobra.Adapter
                     }
                 }
 
-                if(aObject != null)
+                if (aObject != null)
                 {
                     aResult = new List<IBHoMObject>();
                     if (aObject is BHoMObject)
@@ -192,15 +249,15 @@ namespace BH.UI.Cobra.Adapter
                 }
             }
 
-            if(aResult != null)
+            if (aResult != null)
             {
                 objects.AddRange(aResult);
             }
         }
 
         /***************************************************/
-        
-        protected void Read(IEnumerable<ElementId> elementIds, List<IBHoMObject> objects, PullSettings pullSettings = null)
+
+        private void Read(IEnumerable<ElementId> elementIds, List<IBHoMObject> objects, PullSettings pullSettings = null)
         {
             if (Document == null)
             {
@@ -221,7 +278,7 @@ namespace BH.UI.Cobra.Adapter
 
             foreach (ElementId aElementId in elementIds)
             {
-                if(aElementId == null || aElementId == ElementId.InvalidElementId)
+                if (aElementId == null || aElementId == ElementId.InvalidElementId)
                 {
                     BH.Engine.Reflection.Compute.RecordError("BHoM object could not be read because Revit elementId is null or Invalid.");
                     continue;
@@ -239,8 +296,8 @@ namespace BH.UI.Cobra.Adapter
         }
 
         /***************************************************/
-        
-        protected void Read(IEnumerable<Type> types, List<IBHoMObject> objects, IEnumerable<string> uniqueIds = null)
+
+        private void Read(IEnumerable<Type> types, List<IBHoMObject> objects, IEnumerable<string> uniqueIds = null)
         {
             if (Document == null)
             {
@@ -263,7 +320,7 @@ namespace BH.UI.Cobra.Adapter
             List<Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings>> aTupleList = new List<Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings>>();
             foreach (Type aType in types)
             {
-                if(aType == null)
+                if (aType == null)
                 {
                     BH.Engine.Reflection.Compute.RecordError("Provided type could not be read because is null.");
                     continue;
@@ -284,7 +341,7 @@ namespace BH.UI.Cobra.Adapter
                 {
                     //Code for Revit types (not applicable for BHoM 2.0)
                     if (aTupleList.Find(x => x.Item1 == aType) == null)
-                        aTupleList.Add(new Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings>(aType, new List<BuiltInCategory>(), aPullSettings));                        
+                        aTupleList.Add(new Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings>(aType, new List<BuiltInCategory>(), aPullSettings));
                 }
                 else if (BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(aType, typeof(BHoMObject)))
                 {
@@ -301,7 +358,7 @@ namespace BH.UI.Cobra.Adapter
 
                         //Include ElementIds and UniqueIds if applicable
                         IEnumerable<Element> aElements = Query.Elements(RevitSettings, UIDocument);
-                        if(aElements != null && aElements.Count() > 0)
+                        if (aElements != null && aElements.Count() > 0)
                             aBuiltInCategories = Modify.Append(aBuiltInCategories, Query.BuiltInCategories(aElements));
 
                         if (aBuiltInCategories != null && aBuiltInCategories.Count() > 0)
@@ -309,7 +366,7 @@ namespace BH.UI.Cobra.Adapter
                             //BuiltInCategories have been setup in RevitSettings so some default BHoM Objects can be created
                             Type aType_Temp = typeof(Element);
                             int aIndex = aTupleList.FindIndex(x => x.Item1 == aType_Temp);
-                            if(aIndex > -1)
+                            if (aIndex > -1)
                             {
                                 Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings> aTuple = aTupleList.ElementAt(aIndex);
                                 aTupleList.RemoveAt(aIndex);
@@ -349,10 +406,10 @@ namespace BH.UI.Cobra.Adapter
 
             foreach (Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings> aTuple in aTupleList)
             {
-                if(aTuple.Item1 == typeof(Document))
+                if (aTuple.Item1 == typeof(Document))
                 {
                     if (Query.AllowElement(RevitSettings, UIDocument, Document.ProjectInformation))
-                        objects.Add(Document.ToBHoM(aTuple.Item3));  
+                        objects.Add(Document.ToBHoM(aTuple.Item3));
                     continue;
                 }
 
@@ -366,7 +423,7 @@ namespace BH.UI.Cobra.Adapter
                     else
                         aFilteredElementCollector = new FilteredElementCollector(Document).OfClass(aTuple.Item1).WherePasses(new LogicalOrFilter(aTuple.Item2.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)));
                 }
-                    
+
 
                 List<ElementId> aElementIdList = new List<ElementId>();
                 foreach (Element aElement in aFilteredElementCollector)
@@ -379,38 +436,13 @@ namespace BH.UI.Cobra.Adapter
 
                     if (Query.AllowElement(RevitSettings, UIDocument, aElement))
                         aElementIdList.Add(aElement.Id);
-                        
+
                 }
                 if (aElementIdList == null || aElementIdList.Count < 1)
                     continue;
 
                 Read(aElementIdList, objects, aTuple.Item3);
             }
-        }
-
-        /***************************************************/
-        
-        protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
-        {
-            if (Document == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
-                return null;
-            }
-
-            if (type == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided type is null.");
-                return null;
-            }
-
-            List<IBHoMObject> aObjects = new List<IBHoMObject>();
-            if (ids == null)
-               Read(new Type[] { type }, aObjects);
-            else
-               Read(new Type[] { type }, aObjects, ids.Cast<string>().ToList());
-
-            return aObjects;
         }
 
         /***************************************************/

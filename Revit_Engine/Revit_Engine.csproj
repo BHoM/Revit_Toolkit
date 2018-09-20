@@ -60,18 +60,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Convert\AdapterID.cs" />
-    <Compile Include="Create\BHoMObject.cs" />
-    <Compile Include="Create\DraftingObject.cs" />
-    <Compile Include="Create\FloorPlan.cs" />
-    <Compile Include="Create\GenericObject.cs" />
-    <Compile Include="Create\FamilyLibrary.cs" />
-    <Compile Include="Create\RevitFilePreview.cs" />
-    <Compile Include="Create\RevitSettings.cs" />
-    <Compile Include="Create\PullSettings.cs" />
-    <Compile Include="Create\SelectionSettings.cs" />
-    <Compile Include="Create\Viewport.cs" />
-    <Compile Include="Create\Sheet.cs" />
-    <Compile Include="Create\WorksetSettings.cs" />
+    <Compile Include="Create\Elements\BHoMObject.cs" />
+    <Compile Include="Create\Elements\DraftingObject.cs" />
+    <Compile Include="Create\Elements\FloorPlan.cs" />
+    <Compile Include="Create\Elements\GenericObject.cs" />
+    <Compile Include="Create\Elements\FamilyLibrary.cs" />
+    <Compile Include="Create\Elements\RevitFilePreview.cs" />
+    <Compile Include="Create\FilterQuery\CategoryFilterQuery.cs" />
+    <Compile Include="Create\Settings\RevitSettings.cs" />
+    <Compile Include="Create\Settings\PullSettings.cs" />
+    <Compile Include="Create\FilterQuery\SelectionFilterQuery.cs" />
+    <Compile Include="Create\Settings\SelectionSettings.cs" />
+    <Compile Include="Create\Elements\Viewport.cs" />
+    <Compile Include="Create\Elements\Sheet.cs" />
+    <Compile Include="Create\Settings\WorksetSettings.cs" />
     <Compile Include="Modify\AddBHoMObject.cs" />
     <Compile Include="Modify\AddBHoMObjects.cs" />
     <Compile Include="Modify\Duplicate.cs" />

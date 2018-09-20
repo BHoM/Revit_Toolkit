@@ -6,4 +6,10 @@
         Structural,
         Architecture
     }
+
+    public enum QueryType
+    {
+        Selection,
+        Category
+    }
 }
