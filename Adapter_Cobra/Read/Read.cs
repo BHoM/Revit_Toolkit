@@ -77,11 +77,6 @@ namespace BH.UI.Cobra.Adapter
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private IEnumerable<IBHoMObject> ReadSelectionResults(FilterQuery filterQuery)
-        {
-            throw new NotImplementedException();
-        }
-
         private void Read(BuiltInCategory builtInCategory, List<IBHoMObject> objects, PullSettings pullSettings = null)
         {
             Read(new BuiltInCategory[] { builtInCategory }, objects, pullSettings);
