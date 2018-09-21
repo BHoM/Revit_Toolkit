@@ -241,9 +241,6 @@ namespace BH.UI.Cobra.Adapter
                 return false;
             }
 
-            if (!Query.AllowElement(RevitSettings, UIDocument, element))
-                return false;
-
             ICollection<ElementId> aElementIds = Document.Delete(element.Id);
             if (aElementIds != null && aElementIds.Count > 0)
                 return true;
@@ -267,8 +264,7 @@ namespace BH.UI.Cobra.Adapter
             List<ElementId> aElementIdList = new List<ElementId>();
 
             foreach (ElementId aElementId in elementIds)
-                if (Query.AllowElement(RevitSettings, UIDocument, aElementId))
-                    aElementIdList.Add(aElementId);
+                aElementIdList.Add(aElementId);
 
             ICollection<ElementId> aElementIds = Document.Delete(aElementIdList);
             if (aElementIds != null && aElementIds.Count > 0)

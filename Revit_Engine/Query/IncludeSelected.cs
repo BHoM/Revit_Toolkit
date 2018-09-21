@@ -8,16 +8,6 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
-        public static bool IncludeSelected(this RevitSettings revitSettings)
-        {
-            if (revitSettings == null || revitSettings.SelectionSettings == null)
-                return false;
-
-            return revitSettings.SelectionSettings.IncludeSelected;
-        }
-
-        /***************************************************/
 
         public static bool IncludeSelected(this FilterQuery filterQuery)
         {

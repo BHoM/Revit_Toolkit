@@ -178,7 +178,6 @@
     <Compile Include="Modify\SetParameters.cs" />
     <Compile Include="Modify\SetParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query\AllowElement.cs" />
     <Compile Include="Query\BottomLevel.cs" />
     <Compile Include="Query\BuildingElements.cs" />
     <Compile Include="Query\BuildingElementType.cs" />

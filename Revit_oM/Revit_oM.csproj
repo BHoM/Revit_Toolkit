@@ -73,9 +73,7 @@
     <Compile Include="Settings\UpdatePropertySettings.cs" />
     <Compile Include="Settings\PullSettings.cs" />
     <Compile Include="Settings\RevitSettings.cs" />
-    <Compile Include="Settings\SelectionSettings.cs" />
     <Compile Include="Settings\PushSettings.cs" />
-    <Compile Include="Settings\WorksetSettings.cs" />
     <Compile Include="Elements\Sheet.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

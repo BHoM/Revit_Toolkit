@@ -1,5 +1,8 @@
-﻿using Autodesk.Revit.DB;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+using Autodesk.Revit.DB;
+
+using BH.oM.DataManipulation.Queries;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -30,6 +33,21 @@ namespace BH.UI.Cobra.Engine
 
                 if (!removeNulls)
                     aElementIdList.Add(null);
+            }
+
+            return aElementIdList;
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this Dictionary<FilterQuery, List<Element>> filterQueryDictionary)
+        {
+            List<ElementId> aElementIdList = new List<ElementId>();
+            foreach (KeyValuePair<FilterQuery, List<Element>> aKeyValuePair in filterQueryDictionary)
+            {
+                foreach (Element aElement in aKeyValuePair.Value)
+                    if (aElementIdList.Find(x => x == aElement.Id) == null)
+                        aElementIdList.Add(aElement.Id);
             }
 
             return aElementIdList;

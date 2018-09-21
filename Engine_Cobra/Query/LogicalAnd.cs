@@ -19,13 +19,9 @@ namespace BH.UI.Cobra.Engine
             if (filterQueryDictionary == null)
                 return null;
 
-            List<ElementId> aElementIdList = new List<ElementId>();
-            foreach (KeyValuePair<FilterQuery, List<Element>> aKeyValuePair in filterQueryDictionary)
-            {
-                foreach (Element aElement in aKeyValuePair.Value)
-                    if (aElementIdList.Find(x => x == aElement.Id) == null)
-                        aElementIdList.Add(aElement.Id);
-            }
+            IEnumerable<ElementId> aElementIdList = Query.ElementIds(filterQueryDictionary);
+            if (aElementIdList == null || aElementIdList.Count() == 0)
+                return null;
 
             Dictionary<FilterQuery, List<Element>> aResult = new Dictionary<FilterQuery, List<Element>>();
             foreach (ElementId aElementId in aElementIdList)
