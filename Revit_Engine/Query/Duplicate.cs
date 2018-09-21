@@ -1,8 +1,10 @@
 ﻿using BH.oM.Base;
+using BH.oM.DataManipulation.Queries;
+using System.Collections.Generic;
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /**** Public Methods                            ****/
@@ -23,6 +25,28 @@ namespace BH.Engine.Adapters.Revit
 
 
             return aBHoMObject;
+        }
+
+        /***************************************************/
+
+        public static FilterQuery Duplicate(this FilterQuery filterQuery)
+        {
+            if (filterQuery == null)
+                return null;
+
+            FilterQuery aFilterQuery = new FilterQuery();
+
+            if (aFilterQuery.Equalities != null)
+                aFilterQuery.Equalities = new Dictionary<string, object>(aFilterQuery.Equalities);
+            else
+                aFilterQuery.Equalities = new Dictionary<string, object>();
+
+            aFilterQuery.Tag = filterQuery.Tag;
+
+            aFilterQuery.Type = filterQuery.Type;
+
+
+            return aFilterQuery;
         }
 
         /***************************************************/

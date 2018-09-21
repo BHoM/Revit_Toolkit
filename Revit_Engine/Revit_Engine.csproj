@@ -68,8 +68,8 @@
     <Compile Include="Create\Generic\FamilyLibrary.cs" />
     <Compile Include="Create\Generic\RevitFilePreview.cs" />
     <Compile Include="Create\FilterQuery\ActiveWorksetFilterQuery.cs" />
-    <Compile Include="Create\FilterQuery\OrFilterQuery.cs" />
-    <Compile Include="Create\FilterQuery\AndFilterQuery.cs" />
+    <Compile Include="Create\FilterQuery\LogicalOrFilterQuery.cs" />
+    <Compile Include="Create\FilterQuery\LogicalAndFilterQuery.cs" />
     <Compile Include="Create\FilterQuery\WorksetFilterQuery.cs" />
     <Compile Include="Create\FilterQuery\CategoryFilterQuery.cs" />
     <Compile Include="Create\Settings\RevitSettings.cs" />
@@ -81,7 +81,8 @@
     <Compile Include="Create\Settings\WorksetSettings.cs" />
     <Compile Include="Modify\AddBHoMObject.cs" />
     <Compile Include="Modify\AddBHoMObjects.cs" />
-    <Compile Include="Modify\Duplicate.cs" />
+    <Compile Include="Query\Duplicate.cs" />
+    <Compile Include="Modify\SetDefaultDiscipline.cs" />
     <Compile Include="Modify\SetReplace.cs" />
     <Compile Include="Modify\Append.cs" />
     <Compile Include="Modify\AssignAdjacentSpaces.cs" />
@@ -107,8 +108,10 @@
     <Compile Include="Query\IsZero.cs" />
     <Compile Include="Query\Location.cs" />
     <Compile Include="Query\OmniClass.cs" />
+    <Compile Include="Query\QueryType.cs" />
     <Compile Include="Query\SheetNumber.cs" />
     <Compile Include="Query\IsTemplate.cs" />
+    <Compile Include="Query\FilterQueries.cs" />
     <Compile Include="Query\ViewName.cs" />
     <Compile Include="Query\TypeName.cs" />
     <Compile Include="Query\TypeNames.cs" />

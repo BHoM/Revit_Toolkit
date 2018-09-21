@@ -9,11 +9,12 @@
 
     public enum QueryType
     {
+        Undefined,
         Selection,
         Category,
         Workset,
         ActiveWorkset,
-        And,
-        Or
+        LogicalAnd,
+        LogicalOr
     }
 }

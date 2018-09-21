@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using BH.oM.DataManipulation.Queries;
 using BH.oM.Adapters.Revit.Enums;
@@ -9,11 +8,11 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        public static FilterQuery OrFilterQuery(IEnumerable<FilterQuery> filterQueries)
+        public static FilterQuery LogicalAndFilterQuery(IEnumerable<FilterQuery> filterQueries)
         {
             FilterQuery aFilterQuery = new FilterQuery();
             aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.Or;
+            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.LogicalAnd;
             aFilterQuery.Equalities[Convert.FilterQuery.FilterQueries] = filterQueries;
             return aFilterQuery;
         }
