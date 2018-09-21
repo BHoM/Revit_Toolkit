@@ -76,7 +76,9 @@ namespace BH.UI.Cobra.Engine
             if (!aBEType.HasValue)
                 aBEType = BuildingElementType.Undefined;
 
-            return Create.BuildingElement(ToBHoMCurve(familyInstance, pullSettings));
+            BuildingElementProperties properties = Create.BuildingElementProperties(aBEType.Value);
+
+            return Create.BuildingElement(properties, ToBHoMCurve(familyInstance, pullSettings));
         }
 
         /***************************************************/
