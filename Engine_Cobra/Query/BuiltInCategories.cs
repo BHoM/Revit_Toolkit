@@ -66,32 +66,6 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        public static IEnumerable<BuiltInCategory> BuiltInCategories(this RevitSettings revitSettings, Document document)
-        {
-            if (document == null || revitSettings == null)
-                return null;
-
-            List<BuiltInCategory> aResult = new List<BuiltInCategory>();
-
-            if (revitSettings.SelectionSettings == null || revitSettings.SelectionSettings.CategoryNames == null)
-                return aResult;
-
-            Categories aCategories = document.Settings.Categories;
-            foreach (string aCategoryName in revitSettings.SelectionSettings.CategoryNames)
-            {
-                foreach (Category aCategory in aCategories)
-                    if (aCategory.Name == aCategoryName)
-                    {
-                        BuiltInCategory aBuiltInCategory = (BuiltInCategory)aCategory.Id.IntegerValue;
-                        aResult.Add(aBuiltInCategory);
-                        break;
-                    }
-            }
-            return aResult;
-        }
-
-        /***************************************************/
-
         public static IEnumerable<BuiltInCategory> BuiltInCategories(IEnumerable<Element> elements)
         {
             if (elements == null)

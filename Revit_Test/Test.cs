@@ -74,7 +74,6 @@ namespace Revit_Test
             List<IBHoMObject> aBHoMObjectList = null;
 
             RevitSettings aRevitSetting = new RevitSettings();
-            aRevitSetting.SelectionSettings.IncludeSelected = true;
             //aRevitSetting.SelectionSettings.ElementIds = new List<int>() { 2354 };
             //aRevitSetting.WorksetSettings.WorksetIds = new List<int>() { 0 };
             aRevitSetting.DefaultDiscipline = Discipline.Structural;
@@ -178,13 +177,10 @@ namespace Revit_Test
             //Creating Revit Adapter for active Revit Document
             CobraAdapter pRevitInternalAdapter = new CobraAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
 
-            SelectionSettings aSelectionSettings = Create.SelectionSettings(new string[] { "Sheets" });
-
             FamilyLibrary aFamilyLibrary = Create.FamilyLibrary(@"C:\Users\jziolkow\Desktop\Families");
 
             RevitSettings aRevitSetting = Create.RevitSettings();
             aRevitSetting.Replace = false;
-            aRevitSetting.SelectionSettings = aSelectionSettings;
             aRevitSetting = aRevitSetting.SetFamilyLibrary(aFamilyLibrary);
 
             pRevitInternalAdapter.RevitSettings = aRevitSetting;

@@ -9,7 +9,7 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static RevitSettings RevitSettings(int pushPort = 14128, int pullPort = 14129, int maxMinutesToWait = 10, WorksetSettings worksetSettings = null, SelectionSettings selectionSettings = null, Discipline defaultDiscipline = Discipline.Environmental)
+        public static RevitSettings RevitSettings(int pushPort = 14128, int pullPort = 14129, int maxMinutesToWait = 10, Discipline defaultDiscipline = Discipline.Environmental)
         {
             RevitSettings aRevitSettings = new RevitSettings()
             {
@@ -18,12 +18,6 @@ namespace BH.Engine.Adapters.Revit
                 MaxMinutesToWait = maxMinutesToWait,
                 DefaultDiscipline = defaultDiscipline
             };
-
-            if (worksetSettings != null)
-                aRevitSettings.WorksetSettings = worksetSettings;
-
-            if (selectionSettings != null)
-                aRevitSettings.SelectionSettings = selectionSettings;
 
             return aRevitSettings;
         }
