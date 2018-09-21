@@ -92,7 +92,7 @@ namespace BH.UI.Cobra.Engine
             if (aTypes.Count() == 1)
                 return new FilteredElementCollector(document).OfClass(aTypes.First());
             else
-                return new FilteredElementCollector(document).WherePasses(new LogicalAndFilter(aTypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter)));
+                return new FilteredElementCollector(document).WherePasses(new LogicalOrFilter(aTypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter)));
         }
 
         /***************************************************/
@@ -153,17 +153,6 @@ namespace BH.UI.Cobra.Engine
 
             Document aDocument = uIDocument.Document;
 
-            //Workset
-            string aWorksetName = BH.Engine.Adapters.Revit.Query.WorksetName(filterQuery);
-            bool aActiveWorkset = BH.Engine.Adapters.Revit.Query.ActiveWorkset(filterQuery);
-            aElements = Elements(aDocument, aActiveWorkset, aWorksetName);
-            if(aElements != null)
-            {
-                foreach (Element aElement in aElements)
-                    if (!aDictionary_Elements.ContainsKey(aElement.Id.IntegerValue))
-                        aDictionary_Elements.Add(aElement.Id.IntegerValue, aElement);
-            }
-
             //Type
             if (filterQuery.Type != null)
             {
@@ -174,6 +163,17 @@ namespace BH.UI.Cobra.Engine
                         if (!aDictionary_Elements.ContainsKey(aElement.Id.IntegerValue))
                             aDictionary_Elements.Add(aElement.Id.IntegerValue, aElement);
                 }
+            }
+
+            //Workset
+            string aWorksetName = BH.Engine.Adapters.Revit.Query.WorksetName(filterQuery);
+            bool aActiveWorkset = BH.Engine.Adapters.Revit.Query.ActiveWorkset(filterQuery);
+            aElements = Elements(aDocument, aActiveWorkset, aWorksetName);
+            if(aElements != null)
+            {
+                foreach (Element aElement in aElements)
+                    if (!aDictionary_Elements.ContainsKey(aElement.Id.IntegerValue))
+                        aDictionary_Elements.Add(aElement.Id.IntegerValue, aElement);
             }
 
             //Category

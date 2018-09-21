@@ -10,28 +10,28 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public static Discipline DefaultDiscipline(this RevitSettings revitSettings)
+        public static Discipline? DefaultDiscipline(this RevitSettings revitSettings)
         {
             if (revitSettings == null)
-                return oM.Adapters.Revit.Enums.Discipline.Environmental;
+                return null;
 
             return revitSettings.DefaultDiscipline;
         }
 
         /***************************************************/
 
-        public static Discipline DefaultDiscipline(this FilterQuery filterQuery)
+        public static Discipline? DefaultDiscipline(this FilterQuery filterQuery)
         {
             if (filterQuery == null)
-                return oM.Adapters.Revit.Enums.Discipline.Environmental;
+                return null;
 
-            if (!filterQuery.Equalities.ContainsKey("DefaultDiscipline"))
-                return oM.Adapters.Revit.Enums.Discipline.Environmental;
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.DefaultDiscipline))
+                return null;
 
-            if(!(filterQuery.Equalities["DefaultDiscipline"] is Discipline))
-                return oM.Adapters.Revit.Enums.Discipline.Environmental;
+            if(!(filterQuery.Equalities[Convert.FilterQuery.DefaultDiscipline] is Discipline))
+                return null;
 
-            return (Discipline)filterQuery.Equalities["DefaultDiscipline"];
+            return (Discipline)filterQuery.Equalities[Convert.FilterQuery.DefaultDiscipline];
         }
 
         /***************************************************/

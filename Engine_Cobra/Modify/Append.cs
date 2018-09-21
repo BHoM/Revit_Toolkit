@@ -1,6 +1,10 @@
-﻿using Autodesk.Revit.DB;
-
+﻿using System.Linq;
 using System.Collections.Generic;
+
+using Autodesk.Revit.DB;
+
+using BH.oM.DataManipulation.Queries;
+
 
 namespace BH.UI.Cobra.Engine
 {
@@ -9,8 +13,8 @@ namespace BH.UI.Cobra.Engine
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
-        public static IEnumerable<BuiltInCategory> Append(this IEnumerable<BuiltInCategory> builtInCategories_ToBeAppended, IEnumerable<BuiltInCategory>  builtInCategories, bool AllowDuplicates = false)
+
+        public static IEnumerable<BuiltInCategory> Append(this IEnumerable<BuiltInCategory> builtInCategories_ToBeAppended, IEnumerable<BuiltInCategory> builtInCategories, bool AllowDuplicates = false)
         {
             if (builtInCategories_ToBeAppended == null && builtInCategories == null)
                 return null;
@@ -18,7 +22,7 @@ namespace BH.UI.Cobra.Engine
             if (builtInCategories_ToBeAppended == null)
                 return new List<BuiltInCategory>(builtInCategories);
 
-            if(builtInCategories == null)
+            if (builtInCategories == null || builtInCategories.Count() == 0)
                 return new List<BuiltInCategory>(builtInCategories_ToBeAppended);
 
             List<BuiltInCategory> aBuiltInCategoryList = new List<BuiltInCategory>(builtInCategories_ToBeAppended);
@@ -33,5 +37,39 @@ namespace BH.UI.Cobra.Engine
         }
 
         /***************************************************/
+
+        public static Dictionary<FilterQuery, List<Element>> Append(this Dictionary<FilterQuery, List<Element>> filterQueryDictionary_ToBeAppended, Dictionary<FilterQuery, List<Element>> filterQueryDictionary)
+        {
+            if (filterQueryDictionary_ToBeAppended == null && filterQueryDictionary == null)
+                return null;
+
+            if (filterQueryDictionary_ToBeAppended == null)
+                return new Dictionary<FilterQuery, List<Element>>(filterQueryDictionary);
+
+            if (filterQueryDictionary == null || filterQueryDictionary.Count == 0)
+                return new Dictionary<FilterQuery, List<Element>>(filterQueryDictionary_ToBeAppended);
+
+            Dictionary<FilterQuery, List<Element>> aResult = new Dictionary<FilterQuery, List<Element>>(filterQueryDictionary_ToBeAppended);
+            foreach (KeyValuePair<FilterQuery, List<Element>> aKeyValuePair in filterQueryDictionary)
+            {
+                if (aKeyValuePair.Value == null || aKeyValuePair.Value.Count == 0)
+                    continue;
+
+                List<Element> aElementList = null;
+                if (!aResult.TryGetValue(aKeyValuePair.Key, out aElementList))
+                {
+                    aResult.Add(aKeyValuePair.Key, aKeyValuePair.Value);
+                }
+                else
+                {
+                    foreach (Element aElement in aKeyValuePair.Value)
+                        if (aElementList.Find(x => x.Id == aElement.Id) == null)
+                            aElementList.Add(aElement);
+                }
+            }
+
+            return aResult;
+        }
+
     }
 }

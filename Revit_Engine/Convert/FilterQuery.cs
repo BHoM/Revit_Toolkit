@@ -12,6 +12,7 @@
             public const string UniqueIds = "UniqueIds";
             public const string WorksetName = "WorksetName";
             public const string IncludeSelected = "IncludeSelected";
+            public const string DefaultDiscipline = "DefaultDiscipline";
         }
     }
 }

@@ -170,6 +170,7 @@
     <Compile Include="Convert\ToRevit.cs" />
     <Compile Include="Convert\ToSI.cs" />
     <Compile Include="Convert\FromSI.cs" />
+    <Compile Include="Query\LogicalAnd.cs" />
     <Compile Include="Modify\LoadFamilySymbol.cs" />
     <Compile Include="Modify\SetCustomData.cs" />
     <Compile Include="Modify\SetIdentifiers.cs" />
@@ -187,6 +188,7 @@
     <Compile Include="Query\Elements.cs" />
     <Compile Include="Query\ElementType.cs" />
     <Compile Include="Query\Family.cs" />
+    <Compile Include="Query\FilterQueryDictionary.cs" />
     <Compile Include="Query\SelectionBuiltInCategories.cs" />
     <Compile Include="Query\Element.cs" />
     <Compile Include="Query\ElementId.cs" />
@@ -205,6 +207,7 @@
     <Compile Include="Query\LookupParameter.cs" />
     <Compile Include="Query\RevitType.cs" />
     <Compile Include="Query\RevitTypes.cs" />
+    <Compile Include="Query\Discipline.cs" />
     <Compile Include="Query\Top.cs" />
     <Compile Include="Query\ActiveWorksetId.cs" />
     <Compile Include="Query\WorksetId.cs" />

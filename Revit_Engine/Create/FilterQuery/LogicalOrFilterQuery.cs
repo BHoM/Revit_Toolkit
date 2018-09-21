@@ -9,11 +9,11 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        public static FilterQuery AndFilterQuery(IEnumerable<FilterQuery> filterQueries)
+        public static FilterQuery LogicalOrFilterQuery(IEnumerable<FilterQuery> filterQueries)
         {
             FilterQuery aFilterQuery = new FilterQuery();
             aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.And;
+            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.LogicalOr;
             aFilterQuery.Equalities[Convert.FilterQuery.FilterQueries] = filterQueries;
             return aFilterQuery;
         }
