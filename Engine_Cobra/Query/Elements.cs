@@ -7,7 +7,7 @@ using Autodesk.Revit.UI;
 
 using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
-
+using System.Reflection;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -49,6 +49,48 @@ namespace BH.UI.Cobra.Engine
                 return null;
 
             return new FilteredElementCollector(document).OfCategory(aBuiltInCategory);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<Element> Elements(this Document document, string currentDomainAssembly, string typeName)
+        {
+            if (document == null || string.IsNullOrEmpty(currentDomainAssembly) || string.IsNullOrEmpty(typeName))
+                return null;
+
+            Assembly aAssembly = BH.Engine.Adapters.Revit.Query.CurrentDomainAssembly(currentDomainAssembly);
+            if (aAssembly == null)
+                return null;
+
+            string aFullTypeName = null; ;
+
+            if (currentDomainAssembly == "RevitAPI.dll")
+            {
+                if (!typeName.StartsWith("Autodesk.Revit.DB."))
+                    aFullTypeName = "Autodesk.Revit.DB." + typeName;
+                else
+                    aFullTypeName = typeName;
+            }
+
+            if (string.IsNullOrEmpty(aFullTypeName))
+                return null;
+
+            Type aType = null;
+
+            try
+            {
+                aType = aAssembly.GetType(aFullTypeName, false, false);
+            }
+            catch
+            {
+
+            }
+
+            if (aType == null)
+                return null;
+
+
+            return new FilteredElementCollector(document).OfClass(aType);
         }
 
         /***************************************************/
@@ -207,6 +249,19 @@ namespace BH.UI.Cobra.Engine
                     }
                 }
 
+            }
+
+            //TypeName
+            string aTypeName = BH.Engine.Adapters.Revit.Query.TypeName(filterQuery);
+            if (!string.IsNullOrEmpty(aTypeName))
+            {
+                aElements = Elements(aDocument, "RevitAPI.dll", aTypeName);
+                if (aElements != null)
+                {
+                    foreach (Element aElement in aElements)
+                        if (!aDictionary_Elements.ContainsKey(aElement.Id.IntegerValue))
+                            aDictionary_Elements.Add(aElement.Id.IntegerValue, aElement);
+                }
             }
 
 

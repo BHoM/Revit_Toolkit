@@ -13,6 +13,7 @@
             public const string IncludeSelected = "IncludeSelected";
             public const string DefaultDiscipline = "DefaultDiscipline";
             public const string ViewTemplateName = "ViewTemplateName";
+            public const string TypeName = "TypeName";
         }
     }
 }
