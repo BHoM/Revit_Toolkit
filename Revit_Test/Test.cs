@@ -57,8 +57,8 @@ namespace Revit_Test
         public Result Execute(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
             RevitAdapter aRevitAdapter = new RevitAdapter(null, true);
-            //FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
-            FilterQuery aFilterQuery = Create.LogicalOrFilterQuery(new List<FilterQuery>() { Create.LogicalAndFilterQuery(new List<FilterQuery>() { Create.SelectionFilterQuery(typeof(BuildingElement)), Create.CategoryFilterQuery("Walls") }), Create.CategoryFilterQuery("Sheets") });
+            FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
+            //FilterQuery aFilterQuery = Create.LogicalOrFilterQuery(new List<FilterQuery>() { Create.LogicalAndFilterQuery(new List<FilterQuery>() { Create.SelectionFilterQuery(typeof(BuildingElement)), Create.CategoryFilterQuery("Walls") }), Create.CategoryFilterQuery("Sheets") });
 
             List<IBHoMObject> aIBHoMObjectList = aRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 

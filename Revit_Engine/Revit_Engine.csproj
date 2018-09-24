@@ -101,7 +101,7 @@
     <Compile Include="Query\DefaultDiscipline.cs" />
     <Compile Include="Query\ElementId.cs" />
     <Compile Include="Query\Discipline.cs" />
-    <Compile Include="Query\GetPaths.cs" />
+    <Compile Include="Query\Paths.cs" />
     <Compile Include="Query\CustomDataValue.cs" />
     <Compile Include="Query\FullNames.cs" />
     <Compile Include="Query\IncludeSelected.cs" />

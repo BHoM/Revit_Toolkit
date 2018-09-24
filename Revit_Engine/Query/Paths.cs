@@ -11,7 +11,7 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<string> GetPaths(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null, string typeName = null)
+        public static List<string> Paths(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null, string typeName = null)
         {
             if (familyLibrary == null || familyLibrary.Dictionary == null || familyLibrary.Dictionary.Keys.Count == 0)
                 return null;

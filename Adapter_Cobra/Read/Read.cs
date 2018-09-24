@@ -36,8 +36,6 @@ namespace BH.UI.Cobra.Adapter
                 return null;
             }
 
-            Discipline aDiscipline = BH.Engine.Adapters.Revit.Query.Discipline(RevitSettings, type);
-
             List<FilterQuery> aFilterQueryList = new List<FilterQuery>();
             if (ids != null && ids.Count > 0)
             {
@@ -124,19 +122,23 @@ namespace BH.UI.Cobra.Adapter
             List<ElementId> aElementIdList = new List<ElementId>();
             foreach (KeyValuePair<FilterQuery, List<Element>> aKeyValuePair in aFilterQueryDictionary)
             {
-                Discipline aDiscipline = Query.Discipline(aKeyValuePair.Key, RevitSettings);
-
-                PullSettings aPullSettings = null;
-                if (!aDictionary_PullSettings.TryGetValue(aDiscipline, out aPullSettings))
-                {
-                    aPullSettings = BH.Engine.Adapters.Revit.Create.PullSettings(aDiscipline);
-                    aDictionary_PullSettings.Add(aDiscipline, aPullSettings);
-                }
-
                 foreach (Element aElement in aKeyValuePair.Value)
                 {
                     if (aElement == null || aElementIdList.Contains(aElement.Id))
                         continue;
+
+                    IEnumerable<FilterQuery> aFilterQueries = Query.FilterQueries(aFilterQueryDictionary, aElement.Id);
+                    if (aFilterQueries == null)
+                        continue;
+
+                    Discipline aDiscipline = Query.Discipline(aFilterQueries, RevitSettings);
+
+                    PullSettings aPullSettings = null;
+                    if (!aDictionary_PullSettings.TryGetValue(aDiscipline, out aPullSettings))
+                    {
+                        aPullSettings = BH.Engine.Adapters.Revit.Create.PullSettings(aDiscipline);
+                        aDictionary_PullSettings.Add(aDiscipline, aPullSettings);
+                    }
 
                     IEnumerable<IBHoMObject> aIBHoMObjects = Read(aElement, aPullSettings);
                     if (aIBHoMObjects != null && aIBHoMObjects.Count() > 0)

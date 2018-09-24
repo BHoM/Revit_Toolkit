@@ -19,7 +19,7 @@ namespace BH.UI.Cobra.Engine
             if (familyLibrary == null && document == null)
                 return null;
 
-            List<string> aPathList = BH.Engine.Adapters.Revit.Query.GetPaths(familyLibrary, categoryName, familyName, typeName);
+            List<string> aPathList = BH.Engine.Adapters.Revit.Query.Paths(familyLibrary, categoryName, familyName, typeName);
             if (aPathList != null && aPathList.Count > 0)
             {
                 return LoadFamilySymbol(document, aPathList.First(), typeName);

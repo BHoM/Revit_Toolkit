@@ -52,7 +52,7 @@ namespace BH.UI.Cobra.Engine
             Dictionary<FilterQuery, List<Element>> aResult = new Dictionary<FilterQuery, List<Element>>(filterQueryDictionary_ToBeAppended);
             foreach (KeyValuePair<FilterQuery, List<Element>> aKeyValuePair in filterQueryDictionary)
             {
-                if (aKeyValuePair.Value == null || aKeyValuePair.Value.Count == 0)
+                if (aKeyValuePair.Value == null)
                     continue;
 
                 List<Element> aElementList = null;

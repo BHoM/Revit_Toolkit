@@ -149,7 +149,7 @@ namespace BH.UI.Cobra.Engine
             Document aDocument = uIDocument.Document;
 
             //Type
-            if (filterQuery.Type != null)
+            if (BH.Engine.Adapters.Revit.Query.QueryType(filterQuery) == oM.Adapters.Revit.Enums.QueryType.Undefined && filterQuery.Type != null)
             {
                 aElements = Elements(uIDocument.Document, filterQuery.Type);
                 if (aElements != null)
