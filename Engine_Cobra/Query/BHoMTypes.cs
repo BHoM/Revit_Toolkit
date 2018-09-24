@@ -137,7 +137,7 @@ namespace BH.UI.Cobra.Engine
 
             if (element is ViewPlan)
             {
-                aResult.Add(typeof(oM.Adapters.Revit.Elements.FloorPlan));
+                aResult.Add(typeof(oM.Adapters.Revit.Elements.ViewPlan));
                 return aResult;
             }
 

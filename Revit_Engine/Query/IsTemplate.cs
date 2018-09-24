@@ -9,7 +9,7 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static bool IsTemplate(this FloorPlan floorPlan)
+        public static bool IsTemplate(this ViewPlan floorPlan)
         {
             if (floorPlan == null)
                 return false;

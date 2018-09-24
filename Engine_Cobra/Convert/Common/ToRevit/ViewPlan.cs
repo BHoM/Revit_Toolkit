@@ -15,7 +15,7 @@ namespace BH.UI.Cobra.Engine
         /**** Internal Methods                          ****/
         /***************************************************/
 
-        internal static ViewPlan ToRevit(this FloorPlan floorPlan, Document document, PushSettings pushSettings = null)
+        internal static Autodesk.Revit.DB.ViewPlan ToRevit(this oM.Adapters.Revit.Elements.ViewPlan floorPlan, Document document, PushSettings pushSettings = null)
         {
             if (floorPlan == null || string.IsNullOrEmpty(floorPlan.LevelName) || string.IsNullOrEmpty(floorPlan.Name))
                 return null;
@@ -52,7 +52,7 @@ namespace BH.UI.Cobra.Engine
             if (aElementId_ViewFamilyType == ElementId.InvalidElementId)
                 return null;
 
-            ViewPlan aViewPlan = ViewPlan.Create(document, aElementId_ViewFamilyType, aElementId_Level);
+            Autodesk.Revit.DB.ViewPlan aViewPlan = Autodesk.Revit.DB.ViewPlan.Create(document, aElementId_ViewFamilyType, aElementId_Level);
             aViewPlan.ViewName = floorPlan.Name;
 
             if (pushSettings.CopyCustomData)

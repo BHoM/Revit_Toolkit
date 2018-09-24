@@ -63,7 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Elements\DraftingObject.cs" />
-    <Compile Include="Elements\FloorPlan.cs" />
+    <Compile Include="Elements\ViewPlan.cs" />
     <Compile Include="Elements\GenericObject.cs" />
     <Compile Include="Elements\Viewport.cs" />
     <Compile Include="Enums.cs" />

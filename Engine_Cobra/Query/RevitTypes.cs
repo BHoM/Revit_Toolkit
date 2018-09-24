@@ -78,9 +78,9 @@ namespace BH.UI.Cobra.Engine
                 return aResult;
             }
 
-            if (type == typeof(FloorPlan))
+            if (type == typeof(oM.Adapters.Revit.Elements.ViewPlan))
             {
-                aResult.Add(typeof(ViewPlan));
+                aResult.Add(typeof(Autodesk.Revit.DB.ViewPlan));
                 return aResult;
             }
 

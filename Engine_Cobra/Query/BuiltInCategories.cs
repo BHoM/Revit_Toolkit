@@ -56,7 +56,7 @@ namespace BH.UI.Cobra.Engine
             {
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Viewports);
             }
-            if (type == typeof(oM.Adapters.Revit.Elements.FloorPlan))
+            if (type == typeof(oM.Adapters.Revit.Elements.ViewPlan))
             {
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Views);
             }

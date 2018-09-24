@@ -432,7 +432,7 @@ namespace BH.UI.Cobra.Engine
             switch (pullSettings.Discipline)
             {
                 default:
-                    return ToBHoMFloorPlan(viewPlan, pullSettings);
+                    return ToBHoMViewPlan(viewPlan, pullSettings);
             }
 
             viewPlan.NotConvertedError();
