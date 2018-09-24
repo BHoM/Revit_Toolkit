@@ -9,11 +9,12 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        public static FilterQuery SelectionFilterQuery(Type type)
+        public static FilterQuery SelectionFilterQuery()
         {
             FilterQuery aFilterQuery = new FilterQuery();
-            aFilterQuery.Type = type;
+            aFilterQuery.Type = typeof(BHoMObject);
             aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.Selection;
+            aFilterQuery.Equalities[Convert.FilterQuery.IncludeSelected] = true;
             return aFilterQuery;
         }
 

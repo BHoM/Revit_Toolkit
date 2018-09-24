@@ -170,6 +170,7 @@
     <Compile Include="Convert\ToRevit.cs" />
     <Compile Include="Convert\ToSI.cs" />
     <Compile Include="Convert\FromSI.cs" />
+    <Compile Include="Query\FilterQueries.cs" />
     <Compile Include="Query\OpenWorksetIds.cs" />
     <Compile Include="Query\LogicalAnd.cs" />
     <Compile Include="Modify\LoadFamilySymbol.cs" />

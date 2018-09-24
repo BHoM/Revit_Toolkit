@@ -30,7 +30,11 @@ namespace BH.UI.Cobra.Engine
                 {
                     Dictionary<FilterQuery, List<Element>> aFilterQueryDictionary = new Dictionary<FilterQuery, List<Element>>();
                     foreach (FilterQuery aFilterQuery in aFilterQueries)
-                        aFilterQueryDictionary = Modify.Append(aFilterQueryDictionary, FilterQueryDictionary(aFilterQuery, uIDocument));
+                    {
+                        Dictionary<FilterQuery, List<Element>> aFilterQueryDictionary_Temp = FilterQueryDictionary(aFilterQuery, uIDocument);
+                        aFilterQueryDictionary = Modify.Append(aFilterQueryDictionary, aFilterQueryDictionary_Temp);
+                    }
+                        
 
                     if(aQueryType == QueryType.LogicalAnd)
                         aFilterQueryDictionary = Query.LogicalAnd(aFilterQueryDictionary);
@@ -41,7 +45,7 @@ namespace BH.UI.Cobra.Engine
             else
             {
                 IEnumerable<Element> aElements = Elements(filterQuery, uIDocument);
-                if (aElements != null && aElements.Count() > 0)
+                if (aElements != null)
                 {
                     List<Element> aElementList = null;
                     if (!aResult.TryGetValue(filterQuery, out aElementList))
