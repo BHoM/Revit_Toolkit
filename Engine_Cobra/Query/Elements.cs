@@ -6,7 +6,6 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 
 using BH.oM.Base;
-using BH.oM.Adapters.Revit.Settings;
 using BH.oM.DataManipulation.Queries;
 
 
@@ -54,7 +53,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        public static IEnumerable<Element> Elements(this Document document, bool activeWorkset, string worksetName = null)
+        public static IEnumerable<Element> Elements(this Document document, bool activeWorkset, bool openWorksets, string worksetName = null)
         {
             if (document == null)
                 return null;
@@ -72,6 +71,17 @@ namespace BH.UI.Cobra.Engine
                 WorksetId aWorksetId = Query.ActiveWorksetId(document);
                 if (aWorksetId != null && aWorksetIdList.Find(x => x == aWorksetId) == null)
                     aWorksetIdList.Add(aWorksetId);
+            }
+
+            if(openWorksets)
+            {
+                IEnumerable<WorksetId> aWorksetIds = Query.OpenWorksetIds(document);
+                if (aWorksetIds != null && aWorksetIds.Count() > 0)
+                {
+                    foreach(WorksetId aWorksetId in aWorksetIds)
+                        if (aWorksetId != null && aWorksetIdList.Find(x => x == aWorksetId) == null)
+                            aWorksetIdList.Add(aWorksetId);
+                }
             }
 
             if (aWorksetIdList == null || aWorksetIdList.Count == 0)
@@ -110,8 +120,9 @@ namespace BH.UI.Cobra.Engine
 
             //Workset
             string aWorksetName = BH.Engine.Adapters.Revit.Query.WorksetName(filterQuery);
-            bool aActiveWorkset = BH.Engine.Adapters.Revit.Query.ActiveWorkset(filterQuery);
-            aElements = Elements(aDocument, aActiveWorkset, aWorksetName);
+            bool aActiveWorkset = BH.Engine.Adapters.Revit.Query.QueryType(filterQuery) == oM.Adapters.Revit.Enums.QueryType.ActiveWorkset;
+            bool aOpenWorksets = BH.Engine.Adapters.Revit.Query.QueryType(filterQuery) == oM.Adapters.Revit.Enums.QueryType.OpenWorksets;
+            aElements = Elements(aDocument, aActiveWorkset, aOpenWorksets, aWorksetName);
             if(aElements != null)
             {
                 foreach (Element aElement in aElements)
@@ -170,6 +181,34 @@ namespace BH.UI.Cobra.Engine
                         aDictionary_Elements.Add(aElement.Id.IntegerValue, aElement);
                 }
             }
+
+            //ViewTemplate
+            if(BH.Engine.Adapters.Revit.Query.QueryType(filterQuery) == oM.Adapters.Revit.Enums.QueryType.ViewTemplate)
+            {
+                List<View> aViewList = new FilteredElementCollector(aDocument).OfClass(typeof(View)).Cast<View>().ToList();
+                if(aViewList != null)
+                {
+                    aViewList.RemoveAll(x => !x.IsTemplate);
+                    if (aViewList.Count > 0)
+                    {
+                        string aViewTemplateName = BH.Engine.Adapters.Revit.Query.ViewTemplateName(filterQuery);
+
+                        if (!string.IsNullOrEmpty(aViewTemplateName))
+                        {
+                            View aView = aViewList.Find(x => x.Name == aViewTemplateName);
+                            aViewList = new List<View>();
+                            if (aView != null)
+                                aViewList.Add(aView);
+                        }
+
+                        foreach (View aView in aViewList)
+                            if (aView != null && !aDictionary_Elements.ContainsKey(aView.Id.IntegerValue))
+                                aDictionary_Elements.Add(aView.Id.IntegerValue, aView);
+                    }
+                }
+
+            }
+
 
             return aDictionary_Elements.Values;
         }
