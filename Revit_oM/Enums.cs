@@ -15,6 +15,8 @@
         Workset,
         ActiveWorkset,
         LogicalAnd,
-        LogicalOr
+        LogicalOr,
+        ViewTemplate,
+        OpenWorksets
     }
 }

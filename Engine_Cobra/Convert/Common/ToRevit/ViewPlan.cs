@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Adapters.Revit.Elements;
 
 
 namespace BH.UI.Cobra.Engine
@@ -15,7 +14,7 @@ namespace BH.UI.Cobra.Engine
         /**** Internal Methods                          ****/
         /***************************************************/
 
-        internal static Autodesk.Revit.DB.ViewPlan ToRevit(this oM.Adapters.Revit.Elements.ViewPlan floorPlan, Document document, PushSettings pushSettings = null)
+        internal static ViewPlan ToRevit(this oM.Adapters.Revit.Elements.ViewPlan floorPlan, Document document, PushSettings pushSettings = null)
         {
             if (floorPlan == null || string.IsNullOrEmpty(floorPlan.LevelName) || string.IsNullOrEmpty(floorPlan.Name))
                 return null;

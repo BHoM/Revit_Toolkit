@@ -14,7 +14,7 @@ namespace BH.UI.Cobra.Engine
                 return null;
 
             WorksetTable worksetTable = document.GetWorksetTable();
-            return worksetTable.GetActiveWorksetId(); ;
+            return worksetTable.GetActiveWorksetId();
         }
 
         /***************************************************/

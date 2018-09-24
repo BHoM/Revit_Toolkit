@@ -7,19 +7,16 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
-        public static bool ActiveWorkset(this FilterQuery filterQuery)
+
+        public static string ViewTemplateName(this FilterQuery filterQuery)
         {
             if (filterQuery == null)
-                return false;
+                return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.ActiveWorkset))
-                return false;
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.ViewTemplateName))
+                return null;
 
-            if (filterQuery.Equalities[Convert.FilterQuery.ActiveWorkset] is bool)
-                return false;
-
-            return (bool)filterQuery.Equalities[Convert.FilterQuery.ActiveWorkset];
+            return filterQuery.Equalities[Convert.FilterQuery.ViewTemplateName] as string;
         }
 
         /***************************************************/
