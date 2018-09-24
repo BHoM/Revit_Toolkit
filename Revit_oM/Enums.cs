@@ -17,6 +17,7 @@
         LogicalAnd,
         LogicalOr,
         ViewTemplate,
-        OpenWorksets
+        OpenWorksets,
+        TypeName
     }
 }
