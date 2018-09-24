@@ -8,7 +8,7 @@ using BH.oM.Base;
 
 namespace BH.oM.Adapters.Revit.Elements
 {
-    public class FloorPlan : BHoMObject
+    public class ViewPlan : BHoMObject
     {
         /***************************************************/
         /**** Public Properties                        ****/

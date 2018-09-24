@@ -8,40 +8,40 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static FloorPlan FloorPlan(string name, string levelName)
+        public static ViewPlan ViewPlan(string name, string levelName)
         {
-            FloorPlan aFloorPlan = new FloorPlan()
+            ViewPlan aViewPlan = new ViewPlan()
             {
                 Name = name,
                 LevelName = levelName,
                 IsTemplate = false
             };
 
-            aFloorPlan.CustomData.Add("View Name", name);
+            aViewPlan.CustomData.Add("View Name", name);
 
-            aFloorPlan.CustomData.Add(Convert.CategoryName, "Views");
-            aFloorPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
+            aViewPlan.CustomData.Add(Convert.CategoryName, "Views");
+            aViewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
 
-            return aFloorPlan;
+            return aViewPlan;
         }
 
         /***************************************************/
 
-        public static FloorPlan FloorPlan(string name)
+        public static ViewPlan ViewPlan(string name)
         {
-            FloorPlan aFloorPlan = new FloorPlan()
+            ViewPlan aViewPlan = new ViewPlan()
             {
                 Name = name,
                 LevelName = null,
                 IsTemplate = true
             };
 
-            aFloorPlan.CustomData.Add("View Name", name);
+            aViewPlan.CustomData.Add("View Name", name);
 
-            aFloorPlan.CustomData.Add(Convert.CategoryName, "Views");
-            aFloorPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
+            aViewPlan.CustomData.Add(Convert.CategoryName, "Views");
+            aViewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
 
-            return aFloorPlan;
+            return aViewPlan;
         }
 
         /***************************************************/

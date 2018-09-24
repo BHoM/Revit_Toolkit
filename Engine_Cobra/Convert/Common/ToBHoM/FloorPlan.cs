@@ -11,20 +11,20 @@ namespace BH.UI.Cobra.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static FloorPlan ToBHoMFloorPlan(this ViewPlan viewPlan, PullSettings pullSettings = null)
+        internal static oM.Adapters.Revit.Elements.ViewPlan ToBHoMViewPlan(this Autodesk.Revit.DB.ViewPlan viewPlan, PullSettings pullSettings = null)
         {
-            FloorPlan aFloorPlan = null;
+            oM.Adapters.Revit.Elements.ViewPlan aViewPlan = null;
 
             if(!viewPlan.IsTemplate && viewPlan.GenLevel != null)
-                aFloorPlan = BH.Engine.Adapters.Revit.Create.FloorPlan(viewPlan.Name, viewPlan.GenLevel.Name);
+                aViewPlan = BH.Engine.Adapters.Revit.Create.ViewPlan(viewPlan.Name, viewPlan.GenLevel.Name);
             else
-                aFloorPlan = BH.Engine.Adapters.Revit.Create.FloorPlan(viewPlan.Name);
+                aViewPlan = BH.Engine.Adapters.Revit.Create.ViewPlan(viewPlan.Name);
 
-            aFloorPlan.Name = viewPlan.Name;
-            aFloorPlan = Modify.SetIdentifiers(aFloorPlan, viewPlan) as FloorPlan;
-            aFloorPlan = Modify.SetCustomData(aFloorPlan, viewPlan, true) as FloorPlan;
+            aViewPlan.Name = viewPlan.Name;
+            aViewPlan = Modify.SetIdentifiers(aViewPlan, viewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
+            aViewPlan = Modify.SetCustomData(aViewPlan, viewPlan, true) as oM.Adapters.Revit.Elements.ViewPlan;
 
-            return aFloorPlan;
+            return aViewPlan;
         }
 
         /***************************************************/
