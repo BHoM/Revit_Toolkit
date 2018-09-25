@@ -17,5 +17,14 @@ namespace BH.Engine.Adapters.Revit
             aFilterQuery.Equalities[Convert.FilterQuery.FilterQueries] = filterQueries;
             return aFilterQuery;
         }
+
+        public static FilterQuery LogicalOrFilterQuery(FilterQuery filterQuery_1, FilterQuery filterQuery_2)
+        {
+            FilterQuery aFilterQuery = new FilterQuery();
+            aFilterQuery.Type = typeof(BHoMObject);
+            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.LogicalOr;
+            aFilterQuery.Equalities[Convert.FilterQuery.FilterQueries] = new List<FilterQuery>() { filterQuery_1, filterQuery_2 };
+            return aFilterQuery;
+        }
     }
 }

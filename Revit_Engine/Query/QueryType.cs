@@ -1,8 +1,4 @@
-﻿using System.Linq;
-using System.Xml.Linq;
-using System.Collections.Generic;
-
-using BH.oM.DataManipulation.Queries;
+﻿using BH.oM.DataManipulation.Queries;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -20,7 +16,7 @@ namespace BH.Engine.Adapters.Revit
             if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.QueryType))
                 return oM.Adapters.Revit.Enums.QueryType.Undefined;
 
-            if (filterQuery.Equalities[Convert.FilterQuery.QueryType] is oM.Adapters.Revit.Enums.QueryType)
+            if (filterQuery.Equalities[Convert.FilterQuery.QueryType] is oM.Adapters.Revit.Enums.QueryType || filterQuery.Equalities[Convert.FilterQuery.QueryType] is int)
                 return (oM.Adapters.Revit.Enums.QueryType)filterQuery.Equalities[Convert.FilterQuery.QueryType];
 
             return oM.Adapters.Revit.Enums.QueryType.Undefined;

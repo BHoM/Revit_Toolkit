@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Collections.Generic;
 
-using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
+
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -19,7 +20,17 @@ namespace BH.Engine.Adapters.Revit
             if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.FilterQueries))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterQuery.FilterQueries] as IEnumerable<FilterQuery>;
+            if (filterQuery.Equalities[Convert.FilterQuery.FilterQueries] is IEnumerable<FilterQuery>)
+                return (IEnumerable<FilterQuery>)filterQuery.Equalities[Convert.FilterQuery.FilterQueries];
+
+            if (filterQuery.Equalities[Convert.FilterQuery.FilterQueries] is IEnumerable<object>)
+            {
+                IEnumerable<object> aObjects = filterQuery.Equalities[Convert.FilterQuery.FilterQueries] as IEnumerable<object>;
+                if (aObjects != null)
+                    return aObjects.Cast<FilterQuery>();
+            }
+
+            return null;
         }
 
         /***************************************************/
