@@ -63,13 +63,5 @@ namespace BH.UI.Cobra.Engine
         }
 
         /***************************************************/
-
-        internal static void CheckIfNulPull(this Document document)
-        {
-            if (document == null)
-                NullDocumentError();
-        }
-
-        /***************************************************/
     }
 }

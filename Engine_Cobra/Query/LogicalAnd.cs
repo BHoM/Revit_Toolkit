@@ -14,41 +14,32 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Dictionary<FilterQuery, List<Element>> LogicalAnd(this Dictionary<FilterQuery, List<Element>> filterQueryDictionary)
+        public static Dictionary<ElementId, List<FilterQuery>> LogicalAnd(this Dictionary<ElementId, List<FilterQuery>> filterQueryDictionary_1, Dictionary<ElementId, List<FilterQuery>> filterQueryDictionary_2)
         {
-            if (filterQueryDictionary == null)
+            if (filterQueryDictionary_1 == null || filterQueryDictionary_2 == null)
                 return null;
 
-            IEnumerable<ElementId> aElementIdList = Query.ElementIds(filterQueryDictionary);
-            if (aElementIdList == null || aElementIdList.Count() == 0)
-                return null;
+            Dictionary<ElementId, List<FilterQuery>> aResult = new Dictionary<ElementId, List<FilterQuery>>();
 
-            Dictionary<FilterQuery, List<Element>> aResult = new Dictionary<FilterQuery, List<Element>>();
-            foreach (ElementId aElementId in aElementIdList)
+            if (filterQueryDictionary_1.Count() == 0 || filterQueryDictionary_2.Count() == 0)
+                return aResult;
+
+            foreach(KeyValuePair<ElementId, List<FilterQuery>> aKeyValuePair in filterQueryDictionary_1)
             {
-                Element aElement = null;
-                foreach (KeyValuePair<FilterQuery, List<Element>> aKeyValuePair in filterQueryDictionary)
-                {
-                    aElement = aKeyValuePair.Value.Find(x => x.Id == aElementId);
-                    if (aElement == null)
-                        break;
-                }
+                if (aKeyValuePair.Value == null || aKeyValuePair.Value.Count == 0)
+                    continue;
 
-                if(aElement != null)
+                List<FilterQuery> aFilterQueryList = null;
+                if (filterQueryDictionary_2.TryGetValue(aKeyValuePair.Key, out aFilterQueryList))
                 {
-                    foreach (KeyValuePair<FilterQuery, List<Element>> aKeyValuePair in filterQueryDictionary)
-                    {
-                        List<Element> aElementList = null;
-                        if(!aResult.TryGetValue(aKeyValuePair.Key, out aElementList))
-                        {
-                            aElementList = new List<Element>();
-                            aResult.Add(aKeyValuePair.Key, aElementList);
-                        }
-                        aElementList.Add(aElement);
-                    }
+                    if (aFilterQueryList == null || aFilterQueryList.Count == 0)
+                        continue;
+
+                    List<FilterQuery> aFilterQueryList_Temp = new List<FilterQuery>(aKeyValuePair.Value);
+                    aFilterQueryList_Temp.AddRange(aFilterQueryList);
+                    aResult.Add(aKeyValuePair.Key, aFilterQueryList_Temp);
                 }
             }
-
             return aResult;
         }
 

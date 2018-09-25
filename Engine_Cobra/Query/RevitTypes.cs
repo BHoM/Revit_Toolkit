@@ -50,7 +50,7 @@ namespace BH.UI.Cobra.Engine
 
             if (type == typeof(Building))
             {
-                aResult.Add(typeof(Document));
+                aResult.Add(typeof(ProjectInfo));
                 return aResult;
             }
 

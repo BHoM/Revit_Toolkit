@@ -15,46 +15,51 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Dictionary<FilterQuery, List<Element>> FilterQueryDictionary(this FilterQuery filterQuery, UIDocument uIDocument)
+        public static Dictionary<ElementId, List<FilterQuery>> FilterQueryDictionary(this FilterQuery filterQuery, UIDocument uIDocument)
         {
             if (uIDocument == null || filterQuery == null)
                 return null;
 
-            Dictionary<FilterQuery, List<Element>> aResult = new Dictionary<FilterQuery, List<Element>>();
+            Dictionary<ElementId, List<FilterQuery>> aResult = new Dictionary<ElementId, List<FilterQuery>>();
 
-            QueryType aQueryType = BH.Engine.Adapters.Revit.Query.QueryType(filterQuery);
-            if(aQueryType == QueryType.LogicalOr || aQueryType == QueryType.LogicalAnd)
+            IEnumerable<FilterQuery> aFilterQueries = BH.Engine.Adapters.Revit.Query.FilterQueries(filterQuery);
+            if (aFilterQueries != null && aFilterQueries.Count() > 0)
             {
-                IEnumerable<FilterQuery> aFilterQueries = BH.Engine.Adapters.Revit.Query.FilterQueries(filterQuery);
-                if(aFilterQueries != null && aFilterQueries.Count() > 0)
+                QueryType aQueryType = BH.Engine.Adapters.Revit.Query.QueryType(filterQuery);
+
+                Dictionary<ElementId, List<FilterQuery>> aFilterQueryDictionary = null;
+                foreach (FilterQuery aFilterQuery in aFilterQueries)
                 {
-                    Dictionary<FilterQuery, List<Element>> aFilterQueryDictionary = new Dictionary<FilterQuery, List<Element>>();
-                    foreach (FilterQuery aFilterQuery in aFilterQueries)
+                    Dictionary<ElementId, List<FilterQuery>> aFilterQueryDictionary_Temp = FilterQueryDictionary(aFilterQuery, uIDocument);
+                    if (aFilterQueryDictionary == null)
                     {
-                        Dictionary<FilterQuery, List<Element>> aFilterQueryDictionary_Temp = FilterQueryDictionary(aFilterQuery, uIDocument);
-                        aFilterQueryDictionary = Modify.Append(aFilterQueryDictionary, aFilterQueryDictionary_Temp);
+                        aFilterQueryDictionary = aFilterQueryDictionary_Temp;
                     }
-                        
-
-                    if(aQueryType == QueryType.LogicalAnd)
-                        aFilterQueryDictionary = Query.LogicalAnd(aFilterQueryDictionary);
-
-                    aResult = aFilterQueryDictionary;
+                    else
+                    {
+                        if (aQueryType == QueryType.LogicalAnd)
+                            aFilterQueryDictionary = Query.LogicalAnd(aFilterQueryDictionary, aFilterQueryDictionary_Temp);
+                        else
+                            aFilterQueryDictionary = Query.LogicalOr(aFilterQueryDictionary, aFilterQueryDictionary_Temp);
+                    }
                 }
+                aResult = aFilterQueryDictionary;
             }
             else
             {
-                IEnumerable<Element> aElements = Elements(filterQuery, uIDocument);
-                if (aElements != null)
+                IEnumerable<ElementId> aElementIds = ElementIds(filterQuery, uIDocument);
+                if (aElementIds != null)
                 {
-                    List<Element> aElementList = null;
-                    if (!aResult.TryGetValue(filterQuery, out aElementList))
+                    foreach(ElementId aElementId in aElementIds)
                     {
-                        aElementList = new List<Element>();
-                        aResult.Add(filterQuery, aElementList);
+                        List<FilterQuery> aFilterQueryList = null;
+                        if (!aResult.TryGetValue(aElementId, out aFilterQueryList))
+                        {
+                            aFilterQueryList = new List<FilterQuery>();
+                            aResult.Add(aElementId, aFilterQueryList);
+                        }
+                        aFilterQueryList.Add(filterQuery);
                     }
-
-                    aElementList.AddRange(aElements);
                 }
             }
 

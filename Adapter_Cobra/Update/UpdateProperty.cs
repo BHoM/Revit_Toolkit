@@ -60,12 +60,8 @@ namespace BH.UI.Cobra.Adapter
                 return -1;
             }
 
-            Dictionary<FilterQuery, List<Element>> aFilterQueryDictionary = Query.FilterQueryDictionary(filter, UIDocument);
+            Dictionary<ElementId, List<FilterQuery>> aFilterQueryDictionary = Query.FilterQueryDictionary(filter, UIDocument);
             if (aFilterQueryDictionary == null || aFilterQueryDictionary.Count == 0)
-                return -1;
-
-            IEnumerable<ElementId> aElementIds = Query.ElementIds(aFilterQueryDictionary);
-            if (aElementIds == null || aElementIds.Count() == 0)
                 return -1;
 
             UpdatePropertySettings aUpdatePropertySettings = new UpdatePropertySettings()
@@ -80,7 +76,7 @@ namespace BH.UI.Cobra.Adapter
             UIDocument aUIDocument = UIDocument; 
 
             int aCount = 0;
-            foreach(ElementId aElementId in aElementIds)
+            foreach(ElementId aElementId in aFilterQueryDictionary.Keys)
             {
                 Element aElement = aDocument.GetElement(aElementId);
                 if (aElement != null)

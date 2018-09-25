@@ -171,6 +171,7 @@
     <Compile Include="Convert\ToSI.cs" />
     <Compile Include="Convert\FromSI.cs" />
     <Compile Include="Query\FilterQueries.cs" />
+    <Compile Include="Query\LogicalOr.cs" />
     <Compile Include="Query\OpenWorksetIds.cs" />
     <Compile Include="Query\LogicalAnd.cs" />
     <Compile Include="Modify\LoadFamilySymbol.cs" />
@@ -186,7 +187,6 @@
     <Compile Include="Query\BuiltInCategories.cs" />
     <Compile Include="Query\BuiltInCategory.cs" />
     <Compile Include="Query\CategoryName.cs" />
-    <Compile Include="Query\Elements.cs" />
     <Compile Include="Query\ElementType.cs" />
     <Compile Include="Query\Family.cs" />
     <Compile Include="Query\FilterQueryDictionary.cs" />
