@@ -95,6 +95,8 @@ namespace BH.UI.Cobra.Engine
             if (pullSettings.CopyCustomData)
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, wall, pullSettings.ConvertUnits) as BuildingElement;
 
+            
+
             return aBuildingElement;
         }
 

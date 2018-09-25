@@ -16,7 +16,8 @@ namespace BH.UI.Cobra.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static Building ToBHoMBuilding(this ProjectInfo projectInfo, PullSettings pullSettings = null)
+        //internal static Building ToBHoMBuilding(this Document document, PullSettings pullSettings = null)
+        internal static List<IBHoMObject> ToBHoMObjects(this ProjectInfo projectInfo, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -85,8 +86,7 @@ namespace BH.UI.Cobra.Engine
             //-------- Create BHoM building structure -----
 
             List<IBHoMObject> aBHoMObjectList = Query.GetEnergyAnalysisModel(aDocument, pullSettings);
-
-            /*if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
+            /*if(aBHoMObjectList != null && aBHoMObjectList.Count > 0)
             {
                 foreach (BHoMObject aBHoMObject in aBHoMObjectList)
                 {
@@ -119,7 +119,10 @@ namespace BH.UI.Cobra.Engine
 
             //---------------------------------------------
 
-            return aBuilding;
+            //return aBuilding;
+
+            aBHoMObjectList.Add(aBuilding);
+            return aBHoMObjectList;
         }
 
         /***************************************************/

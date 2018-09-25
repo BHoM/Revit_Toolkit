@@ -50,14 +50,14 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
         
-        public static IBHoMObject ToBHoM(this ProjectInfo projectInfo, PullSettings pullSettings = null)
+        public static List<IBHoMObject> ToBHoM(this ProjectInfo projectInfo, PullSettings pullSettings = null)
         {
             projectInfo.CheckIfNullPull();
 
             switch (pullSettings.Discipline)
             {
                 case Discipline.Environmental:
-                    return projectInfo.ToBHoMBuilding(pullSettings);
+                    return projectInfo.ToBHoMObjects(pullSettings);
  
             }
 

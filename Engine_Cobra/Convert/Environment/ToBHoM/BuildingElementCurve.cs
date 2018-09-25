@@ -7,6 +7,8 @@ using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
 
+using BH.Engine.Geometry;
+
 namespace BH.UI.Cobra.Engine
 {
     public static partial class Convert
