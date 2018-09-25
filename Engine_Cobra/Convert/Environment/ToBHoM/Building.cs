@@ -16,9 +16,11 @@ namespace BH.UI.Cobra.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static Building ToBHoMBuilding(this Document document, PullSettings pullSettings = null)
+        internal static Building ToBHoMBuilding(this ProjectInfo projectInfo, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
+
+            Document aDocument = projectInfo.Document;
 
             double aElevation = 0;
             double aLongitude = 0;
@@ -27,14 +29,14 @@ namespace BH.UI.Cobra.Engine
             string aPlaceName = string.Empty;
             string aWeatherStationName = string.Empty;
 
-            if (document.SiteLocation != null)
+            if (aDocument.SiteLocation != null)
             {
-                aElevation = document.SiteLocation.Elevation;
-                aLongitude = document.SiteLocation.Longitude;
-                aLatitude = document.SiteLocation.Latitude;
-                aTimeZone = document.SiteLocation.TimeZone;
-                aPlaceName = document.SiteLocation.PlaceName;
-                aWeatherStationName = document.SiteLocation.WeatherStationName;
+                aElevation = aDocument.SiteLocation.Elevation;
+                aLongitude = aDocument.SiteLocation.Longitude;
+                aLatitude = aDocument.SiteLocation.Latitude;
+                aTimeZone = aDocument.SiteLocation.TimeZone;
+                aPlaceName = aDocument.SiteLocation.PlaceName;
+                aWeatherStationName = aDocument.SiteLocation.WeatherStationName;
 
                 if (pullSettings.ConvertUnits)
                 {
@@ -49,9 +51,9 @@ namespace BH.UI.Cobra.Engine
             double aProjectElevation = 0;
             double aProjectNorthSouthOffset = 0;
 
-            if (document.ActiveProjectLocation != null)
+            if (aDocument.ActiveProjectLocation != null)
             {
-                ProjectLocation aProjectLocation = document.ActiveProjectLocation;
+                ProjectLocation aProjectLocation = aDocument.ActiveProjectLocation;
                 XYZ aXYZ = new XYZ(0, 0, 0);
                 ProjectPosition aProjectPosition = aProjectLocation.GetProjectPosition(aXYZ);
                 if (aProjectPosition != null)
@@ -73,7 +75,7 @@ namespace BH.UI.Cobra.Engine
                 Location = new oM.Geometry.Point()
             };
 
-            aBuilding = Modify.SetIdentifiers(aBuilding, document.ProjectInformation) as Building;
+            aBuilding = Modify.SetIdentifiers(aBuilding, aDocument.ProjectInformation) as Building;
             if (pullSettings.CopyCustomData)
             {
                 aBuilding = Modify.SetCustomData(aBuilding, "Time Zone", aTimeZone) as Building;
@@ -85,13 +87,13 @@ namespace BH.UI.Cobra.Engine
                 aBuilding = Modify.SetCustomData(aBuilding, "Project North/South Offset", aProjectNorthSouthOffset) as Building;
                 aBuilding = Modify.SetCustomData(aBuilding, "Project Elevation", aProjectElevation) as Building;
 
-                aBuilding = Modify.SetCustomData(aBuilding, document.ProjectInformation, pullSettings.ConvertUnits) as Building;
+                aBuilding = Modify.SetCustomData(aBuilding, aDocument.ProjectInformation, pullSettings.ConvertUnits) as Building;
             }
 
 
             //-------- Create BHoM building structure -----
 
-            List<IBHoMObject> aBHoMObjectList = Query.GetEnergyAnalysisModel(document, pullSettings);
+            List<IBHoMObject> aBHoMObjectList = Query.GetEnergyAnalysisModel(aDocument, pullSettings);
             if(aBHoMObjectList != null && aBHoMObjectList.Count > 0)
             {
                 foreach (BHoMObject aBHoMObject in aBHoMObjectList)

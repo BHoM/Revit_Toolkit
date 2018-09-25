@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 using Autodesk.Revit.DB;
 
-using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
 
 
@@ -15,15 +13,14 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static IEnumerable<FilterQuery> FilterQueries(this Dictionary<FilterQuery, List<Element>> filterQueryDictionary, ElementId ElementId)
+        public static IEnumerable<FilterQuery> FilterQueries(this Dictionary<ElementId, List<FilterQuery>> filterQueryDictionary, ElementId ElementId)
         {
             if (filterQueryDictionary == null)
                 return null;
 
-            List<FilterQuery> aFilterQueryList = new List<FilterQuery>();
-            foreach (KeyValuePair<FilterQuery, List<Element>> aKeyValuePair in filterQueryDictionary)
-                if (aKeyValuePair.Value.Find(x => x.Id == ElementId) != null)
-                    aFilterQueryList.Add(aKeyValuePair.Key);
+            List<FilterQuery> aFilterQueryList = null;
+            if (!filterQueryDictionary.TryGetValue(ElementId, out aFilterQueryList))
+                return null;
 
             return aFilterQueryList;
         }

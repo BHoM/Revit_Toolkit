@@ -141,6 +141,12 @@ namespace BH.UI.Cobra.Engine
                 return aResult;
             }
 
+            if (element is ProjectInfo)
+            {
+                aResult.Add(typeof(Building));
+                return aResult;
+            }
+
             return null; //TODO: shouldn't it be aResult?
         }
 

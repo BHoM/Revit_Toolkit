@@ -110,42 +110,39 @@ namespace BH.UI.Cobra.Adapter
 
             Autodesk.Revit.UI.UIDocument aUIDocument = UIDocument;
 
-
             List<IBHoMObject> aResult = new List<IBHoMObject>();
 
-            Dictionary<FilterQuery, List<Element>> aFilterQueryDictionary = Query.FilterQueryDictionary(filterQuery, aUIDocument);
+            Dictionary<ElementId, List<FilterQuery>> aFilterQueryDictionary = Query.FilterQueryDictionary(filterQuery, aUIDocument);
             if (aFilterQueryDictionary == null)
                 return null;
 
             Dictionary<Discipline, PullSettings> aDictionary_PullSettings = new Dictionary<Discipline, PullSettings>();
 
             List<ElementId> aElementIdList = new List<ElementId>();
-            foreach (KeyValuePair<FilterQuery, List<Element>> aKeyValuePair in aFilterQueryDictionary)
+            foreach (KeyValuePair<ElementId, List<FilterQuery>> aKeyValuePair in aFilterQueryDictionary)
             {
-                foreach (Element aElement in aKeyValuePair.Value)
+                Element aElement = Document.GetElement(aKeyValuePair.Key);
+                if (aElement == null || aElementIdList.Contains(aElement.Id))
+                    continue;
+
+                IEnumerable<FilterQuery> aFilterQueries = Query.FilterQueries(aFilterQueryDictionary, aElement.Id);
+                if (aFilterQueries == null)
+                    continue;
+
+                Discipline aDiscipline = Query.Discipline(aFilterQueries, RevitSettings);
+
+                PullSettings aPullSettings = null;
+                if (!aDictionary_PullSettings.TryGetValue(aDiscipline, out aPullSettings))
                 {
-                    if (aElement == null || aElementIdList.Contains(aElement.Id))
-                        continue;
+                    aPullSettings = BH.Engine.Adapters.Revit.Create.PullSettings(aDiscipline);
+                    aDictionary_PullSettings.Add(aDiscipline, aPullSettings);
+                }
 
-                    IEnumerable<FilterQuery> aFilterQueries = Query.FilterQueries(aFilterQueryDictionary, aElement.Id);
-                    if (aFilterQueries == null)
-                        continue;
-
-                    Discipline aDiscipline = Query.Discipline(aFilterQueries, RevitSettings);
-
-                    PullSettings aPullSettings = null;
-                    if (!aDictionary_PullSettings.TryGetValue(aDiscipline, out aPullSettings))
-                    {
-                        aPullSettings = BH.Engine.Adapters.Revit.Create.PullSettings(aDiscipline);
-                        aDictionary_PullSettings.Add(aDiscipline, aPullSettings);
-                    }
-
-                    IEnumerable<IBHoMObject> aIBHoMObjects = Read(aElement, aPullSettings);
-                    if (aIBHoMObjects != null && aIBHoMObjects.Count() > 0)
-                    {
-                        aResult.AddRange(aIBHoMObjects);
-                        aElementIdList.Add(aElement.Id);
-                    }
+                IEnumerable<IBHoMObject> aIBHoMObjects = Read(aElement, aPullSettings);
+                if (aIBHoMObjects != null && aIBHoMObjects.Count() > 0)
+                {
+                    aResult.AddRange(aIBHoMObjects);
+                    aElementIdList.Add(aElement.Id);
                 }
             }
 
