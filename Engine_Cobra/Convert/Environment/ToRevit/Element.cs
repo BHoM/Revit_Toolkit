@@ -24,7 +24,8 @@ namespace BH.UI.Cobra.Engine
 
             //Get Level
             //TODO: Reimplement Level Query here - Issue #593 on BHoM_Engine - https://github.com/BuroHappoldEngineering/BHoM_Engine/issues/593
-            Level aLevel = null;
+            List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
+            Level aLevel = aLevelList.Where(x => x.Elevation >= buildingElement.MinimumLevel() && x.Elevation <= buildingElement.MaximumLevel()).FirstOrDefault();
 
             //Get ElementType
             ElementType aElementType = null;
