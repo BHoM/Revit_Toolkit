@@ -218,7 +218,6 @@ namespace BH.UI.Cobra.Adapter
                     if (aIBHoMObject == null)
                         aIBHoMObject = new BHoMObject();
 
-//<<<<<<< HEAD
                     if (aIBHoMObject != null)
                     {
                         aIBHoMObject.Name = element.Name;
@@ -226,16 +225,6 @@ namespace BH.UI.Cobra.Adapter
                         aIBHoMObject = Modify.SetCustomData(aIBHoMObject, element, true);
                         aObject = aIBHoMObject;
                     }
-//=======
-            /*foreach (Tuple<Type, IEnumerable<BuiltInCategory>, PullSettings> aTuple in aTupleList)
-            {
-                if(aTuple.Item1 == typeof(Document))
-                {
-                    if (Query.AllowElement(RevitSettings, UIDocument, Document.ProjectInformation))
-                        objects.AddRange(Document.ToBHoM(aTuple.Item3));  
-                    continue;
-                }
->>>>>>> Updating levels*/
 
                 }
                 catch (Exception aException)
