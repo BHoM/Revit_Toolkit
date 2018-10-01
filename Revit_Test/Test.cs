@@ -57,10 +57,21 @@ namespace Revit_Test
         public Result Execute(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
             RevitAdapter aRevitAdapter = new RevitAdapter(null, true);
-            FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
+            //FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
             //FilterQuery aFilterQuery = Create.LogicalOrFilterQuery(new List<FilterQuery>() { Create.LogicalAndFilterQuery(new List<FilterQuery>() { Create.SelectionFilterQuery(typeof(BuildingElement)), Create.CategoryFilterQuery("Walls") }), Create.CategoryFilterQuery("Sheets") });
+            aRevitAdapter.RevitSettings.Replace = false;
+
+            FilterQuery aFilterQuery = Create.LogicalAndFilterQuery(Create.CategoryFilterQuery("Mechanical Equipment"), Create.TypeNameFilterQuery("FamilyInstance"));
 
             List<IBHoMObject> aIBHoMObjectList = aRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+
+            List<GenericObject> aGenericObjectList = aIBHoMObjectList.ConvertAll(x => x as GenericObject);
+            aGenericObjectList.RemoveAll(x => x == null);
+
+            for(int i=0; i < aGenericObjectList.Count; i++)
+                aGenericObjectList[i] = aGenericObjectList[i].Move(BH.Engine.Geometry.Create.Vector(100, 0, 0));
+
+            aRevitAdapter.Push(aGenericObjectList);
 
             return Result.Succeeded;
         }

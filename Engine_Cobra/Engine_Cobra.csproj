@@ -119,6 +119,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modify\Move.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Grid.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Level.cs" />
     <Compile Include="Convert\Architecture\ToRevit\Level.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="Convert\ToSI.cs" />
     <Compile Include="Convert\FromSI.cs" />
     <Compile Include="Query\FilterQueries.cs" />
+    <Compile Include="Query\IsSimilar.cs" />
     <Compile Include="Query\LogicalOr.cs" />
     <Compile Include="Query\OpenWorksetIds.cs" />
     <Compile Include="Query\LogicalAnd.cs" />

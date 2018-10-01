@@ -1,4 +1,5 @@
-﻿using BH.oM.Base;
+﻿using BH.Engine.Adapters.Revit;
+using BH.oM.Base;
 using System;
 
 namespace BH.UI.Cobra.Adapter
@@ -33,6 +34,13 @@ namespace BH.UI.Cobra.Adapter
         private static void ObjectNotCreatedCreateError(IBHoMObject iBHoMObject)
         {
             BH.Engine.Reflection.Compute.RecordError(string.Format("Revit object could not be created. BHoM object Guid: {0}", iBHoMObject.BHoM_Guid));
+        }
+
+        /***************************************************/
+
+        private static void ObjectNotMovedWarning(IBHoMObject iBHoMObject)
+        {
+            BH.Engine.Reflection.Compute.RecordWarning(string.Format("Revit object could not be moved. Revit element id: {0}, BHoM object Guid: {1}", Query.ElementId( iBHoMObject).ToString(),  iBHoMObject.BHoM_Guid));
         }
 
         /***************************************************/
