@@ -9,6 +9,7 @@ using BH.oM.Adapters.Revit.Settings;
 
 using Autodesk.Revit.DB;
 using BH.UI.Cobra.Engine;
+using BH.oM.Adapters.Revit.Elements;
 
 namespace BH.UI.Cobra.Adapter
 {
@@ -95,8 +96,20 @@ namespace BH.UI.Cobra.Adapter
 
                         }
                         else
-                        {
+                        { 
                             aElement = Modify.SetParameters(aElement, aBHOMObject);
+                            if(aElement != null && aElement.Location != null)
+                            {
+                                try
+                                {
+                                    Location aLocation = Modify.Move(aElement.Location, aBHOMObject, aPushSettings);
+                                }
+                                catch
+                                {
+                                    ObjectNotMovedWarning(aBHOMObject);
+                                }
+                                
+                            }
                         }
 
 

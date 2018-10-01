@@ -82,6 +82,7 @@
     <Compile Include="Create\Elements\Sheet.cs" />
     <Compile Include="Modify\AddBHoMObject.cs" />
     <Compile Include="Modify\AddBHoMObjects.cs" />
+    <Compile Include="Modify\Move.cs" />
     <Compile Include="Query\CurrentDomainAssembly.cs" />
     <Compile Include="Query\ViewTemplateName.cs" />
     <Compile Include="Query\Duplicate.cs" />

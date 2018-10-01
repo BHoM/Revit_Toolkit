@@ -144,7 +144,10 @@ namespace BH.UI.Cobra.Engine
 
                                     result.AddRange(lc.IJoin().Select(c => c.Translate(toFloorLine)));
                                 }
-                                break;                          //TODO: is this OK?
+                                break;
+                                //TODO: is this OK?
+                                //Try this:
+                                //IList<Reference> aReferences = HostObjectUtils.GetTopFaces(floor);
                             }
                         }
                     }
