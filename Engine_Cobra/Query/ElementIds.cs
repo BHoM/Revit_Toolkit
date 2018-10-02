@@ -50,10 +50,14 @@ namespace BH.UI.Cobra.Engine
                 return null;
 
             IEnumerable<Type> aTypes = null;
+            IEnumerable<BuiltInCategory> aBuiltInCategories = null;
             if (BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(type, typeof(Element)))
                 aTypes = new List<Type>() { type };
             else if (BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(type, typeof(BHoMObject)))
+            {
                 aTypes = RevitTypes(type);
+                aBuiltInCategories = BuiltInCategories(type);
+            }
 
             if (aTypes == null || aTypes.Count() == 0)
                 return null;
@@ -63,9 +67,20 @@ namespace BH.UI.Cobra.Engine
                 return null;
 
             if (aTypes.Count() == 1)
-                return new FilteredElementCollector(document).OfClass(aTypes.First()).ToElementIds();
+            {
+                if (aBuiltInCategories == null || aBuiltInCategories.Count() == 0)
+                    return new FilteredElementCollector(document).OfClass(aTypes.First()).ToElementIds();
+
+                return new FilteredElementCollector(document).OfClass(aTypes.First()).WherePasses(new LogicalOrFilter(aBuiltInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
+            }
             else
-                return new FilteredElementCollector(document).WherePasses(new LogicalOrFilter(aTypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter))).ToElementIds();
+            {
+                if (aBuiltInCategories == null || aBuiltInCategories.Count() == 0)
+                    return new FilteredElementCollector(document).WherePasses(new LogicalOrFilter(aTypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter))).ToElementIds();
+
+                return new FilteredElementCollector(document).WherePasses(new LogicalAndFilter(new LogicalOrFilter(aTypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter)), new LogicalOrFilter(aTypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter)))).ToElementIds();
+            }
+                
         }
 
         /***************************************************/
