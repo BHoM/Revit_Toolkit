@@ -36,8 +36,8 @@ namespace BH.Engine.Adapters.Revit
 
             FilterQuery aFilterQuery = new FilterQuery();
 
-            if (aFilterQuery.Equalities != null)
-                aFilterQuery.Equalities = new Dictionary<string, object>(aFilterQuery.Equalities);
+            if (filterQuery.Equalities != null)
+                aFilterQuery.Equalities = new Dictionary<string, object>(filterQuery.Equalities);
             else
                 aFilterQuery.Equalities = new Dictionary<string, object>();
 

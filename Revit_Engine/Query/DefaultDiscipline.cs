@@ -28,8 +28,8 @@ namespace BH.Engine.Adapters.Revit
             if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.DefaultDiscipline))
                 return null;
 
-            if(!(filterQuery.Equalities[Convert.FilterQuery.DefaultDiscipline] is Discipline))
-                return null;
+            //if(!(filterQuery.Equalities[Convert.FilterQuery.DefaultDiscipline] is Discipline))
+            //    return null;
 
             return (Discipline)filterQuery.Equalities[Convert.FilterQuery.DefaultDiscipline];
         }
