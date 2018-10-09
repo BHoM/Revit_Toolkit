@@ -85,6 +85,64 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
+        public static IEnumerable<ElementId> ElementIds(this Document document, string familyName, string familySymbolName, bool CaseSensitive)
+        {
+            if (document == null )
+                return null;
+
+            List<Family> aFamilyList = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>().ToList();
+
+            if(!string.IsNullOrEmpty(familyName))
+            {
+                Family aFamily = null;
+                if (CaseSensitive)
+                    aFamily = aFamilyList.Find(x => x.Name == familyName);
+                else
+                    aFamily = aFamilyList.Find(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper() == familyName.ToUpper());
+
+                aFamilyList = new List<Family>();
+                if (aFamily != null)
+                    aFamilyList.Add(aFamily);
+            }
+
+            List<FamilySymbol> aFamilySymbolList = new List<FamilySymbol>();
+            foreach(Family aFamily in aFamilyList)
+            {
+                
+                foreach (ElementId aElementId in aFamily.GetFamilySymbolIds())
+                {
+                    FamilySymbol aFamilySymbol = document.GetElement(aElementId) as FamilySymbol;
+                    if (aFamilySymbol == null || string.IsNullOrEmpty(aFamilySymbol.Name))
+                        continue;
+
+                    if (string.IsNullOrEmpty(familySymbolName))
+                        aFamilySymbolList.Add(aFamilySymbol);
+
+                    if (CaseSensitive)
+                    {
+                        if (aFamilySymbol.Name == familySymbolName)
+                            aFamilySymbolList.Add(aFamilySymbol);
+                    }
+                    else
+                    {
+                        if (aFamilySymbol.Name.ToUpper() == familySymbolName.ToUpper())
+                            aFamilySymbolList.Add(aFamilySymbol);
+                    }
+                }
+            }
+
+            List<ElementId> aResult = new List<ElementId>();
+            foreach(FamilySymbol aFamilySymbol in aFamilySymbolList)
+            {
+                foreach (ElementId aElementId in new FilteredElementCollector(document).WherePasses(new FamilyInstanceFilter(document, aFamilySymbol.Id)).ToElementIds())
+                    aResult.Add(aElementId);
+            }
+
+            return aResult;
+        }
+
+        /***************************************************/
+
         public static IEnumerable<ElementId> ElementIds(this Document document, string categoryName)
         {
             if (document == null || string.IsNullOrEmpty(categoryName))
@@ -236,8 +294,8 @@ namespace BH.UI.Cobra.Engine
                 ICollection<ElementId> aElementIdCollection = uIDocument.Selection.GetElementIds();
                 if (aElementIdCollection != null)
                     foreach (ElementId aElementId in aElementIdCollection)
-                            if (!aResult.Contains(aElementId))
-                                aResult.Add(aElementId);
+                        if (!aResult.Contains(aElementId))
+                            aResult.Add(aElementId);
             }
 
             //ElementIds
@@ -305,6 +363,15 @@ namespace BH.UI.Cobra.Engine
                 }
             }
 
+            //FamilyName and FamilySymbolName
+            if (BH.Engine.Adapters.Revit.Query.QueryType(filterQuery) == oM.Adapters.Revit.Enums.QueryType.Family)
+            {
+                aElementIds = ElementIds(aDocument, BH.Engine.Adapters.Revit.Query.FamilyName(filterQuery), BH.Engine.Adapters.Revit.Query.FamilySymbolName(filterQuery), true);
+                if(aElementIds != null && aElementIds.Count() > 0)
+                    foreach(ElementId aElementId in aElementIds)
+                        if(!aResult.Contains(aElementId))
+                            aResult.Add(aElementId);
+            }
 
             return aResult;
         }

@@ -18,6 +18,7 @@
         LogicalOr,
         ViewTemplate,
         OpenWorksets,
-        TypeName
+        TypeName,
+        Family
     }
 }
