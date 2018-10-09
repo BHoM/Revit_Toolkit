@@ -1,4 +1,5 @@
 ﻿using BH.oM.Base;
+using BH.oM.DataManipulation.Queries;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -23,6 +24,19 @@ namespace BH.Engine.Adapters.Revit
             }
 
             return null;
+        }
+
+        /***************************************************/
+
+        public static string FamilyName(this FilterQuery filterQuery)
+        {
+            if (filterQuery == null)
+                return null;
+
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.FamilyName))
+                return null;
+
+            return filterQuery.Equalities[Convert.FilterQuery.FamilyName] as string;
         }
 
         /***************************************************/

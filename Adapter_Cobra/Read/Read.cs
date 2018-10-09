@@ -12,7 +12,6 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Elements;
 using BH.UI.Cobra.Engine;
 using BH.oM.DataManipulation.Queries;
-using BH.oM.Common;
 
 namespace BH.UI.Cobra.Adapter
 {
