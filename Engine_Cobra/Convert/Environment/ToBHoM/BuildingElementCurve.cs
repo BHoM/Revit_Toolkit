@@ -53,7 +53,7 @@ namespace BH.UI.Cobra.Engine
             aPointList.Add(aXYZ_4.ToBHoM(pullSettings));
             aPointList.Add(aXYZ_1.ToBHoM(pullSettings));
 
-            return BH.Engine.Geometry.Create.Polyline(aPointList);
+            return Create.Polyline(aPointList);
         }
 
         internal static List<ICurve> ToBHoMCurve(this Element element, PullSettings pullSettings = null)
@@ -73,7 +73,7 @@ namespace BH.UI.Cobra.Engine
                 Solid aSolid = aGeometryObject as Solid;
                 if (aSolid == null)
                     continue;
-
+                
                 PlanarFace aPlanarFace = Query.Top(aSolid);
                 if (aPlanarFace == null)
                     continue;
@@ -97,7 +97,7 @@ namespace BH.UI.Cobra.Engine
             for (int i = 0; i < aEdgeArrayArray.Size; i++)
             {
                 EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
-                List<oM.Geometry.ICurve> aCurveList = new List<oM.Geometry.ICurve>();
+                List<ICurve> aCurveList = new List<ICurve>();
                 foreach (Edge aEdge in aEdgeArray)
                 {
                     Curve aCurve = aEdge.AsCurve();
