@@ -85,59 +85,83 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this Document document, string familyName, string familySymbolName, bool CaseSensitive)
+        public static IEnumerable<ElementId> ElementIds(this Document document, string familyName, string familyTypeName, bool caseSensitive)
         {
             if (document == null )
                 return null;
 
-            List<Family> aFamilyList = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>().ToList();
-
-            if(!string.IsNullOrEmpty(familyName))
+            List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>().ToList();
+            if (!string.IsNullOrEmpty(familyName))
             {
-                Family aFamily = null;
-                if (CaseSensitive)
-                    aFamily = aFamilyList.Find(x => x.Name == familyName);
+                if (caseSensitive)
+                    aElementTypeList = aElementTypeList.FindAll(x => x.FamilyName == familyName);
                 else
-                    aFamily = aFamilyList.Find(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper() == familyName.ToUpper());
-
-                aFamilyList = new List<Family>();
-                if (aFamily != null)
-                    aFamilyList.Add(aFamily);
+                    aElementTypeList = aElementTypeList.FindAll(x => !string.IsNullOrEmpty(x.FamilyName) && x.FamilyName.ToUpper() == familyName.ToUpper());
             }
 
-            List<FamilySymbol> aFamilySymbolList = new List<FamilySymbol>();
-            foreach(Family aFamily in aFamilyList)
+            if (aElementTypeList == null)
+                return null;
+
+            if(!string.IsNullOrEmpty(familyTypeName))
             {
-                
-                foreach (ElementId aElementId in aFamily.GetFamilySymbolIds())
-                {
-                    FamilySymbol aFamilySymbol = document.GetElement(aElementId) as FamilySymbol;
-                    if (aFamilySymbol == null || string.IsNullOrEmpty(aFamilySymbol.Name))
-                        continue;
-
-                    if (string.IsNullOrEmpty(familySymbolName))
-                        aFamilySymbolList.Add(aFamilySymbol);
-
-                    if (CaseSensitive)
-                    {
-                        if (aFamilySymbol.Name == familySymbolName)
-                            aFamilySymbolList.Add(aFamilySymbol);
-                    }
-                    else
-                    {
-                        if (aFamilySymbol.Name.ToUpper() == familySymbolName.ToUpper())
-                            aFamilySymbolList.Add(aFamilySymbol);
-                    }
-                }
+                if (caseSensitive)
+                    aElementTypeList = aElementTypeList.FindAll(x => x.Name == familyTypeName);
+                else
+                    aElementTypeList = aElementTypeList.FindAll(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper() == familyTypeName.ToUpper());
             }
+
+            if (aElementTypeList == null)
+                return null;
+
 
             List<ElementId> aResult = new List<ElementId>();
-            foreach(FamilySymbol aFamilySymbol in aFamilySymbolList)
+            foreach (ElementType aElementType in aElementTypeList)
             {
-                foreach (ElementId aElementId in new FilteredElementCollector(document).WherePasses(new FamilyInstanceFilter(document, aFamilySymbol.Id)).ToElementIds())
-                    aResult.Add(aElementId);
-            }
+                if(aElementType is FamilySymbol)
+                {
+                    foreach (ElementId aElementId in new FilteredElementCollector(document).WherePasses(new FamilyInstanceFilter(document, aElementType.Id)).ToElementIds())
+                        aResult.Add(aElementId);
+                }
+                else
+                {
+                    Type aType = null;
 
+                    if (aElementType is WallType)
+                        aType = typeof(Wall);
+                    else if (aElementType is FloorType)
+                        aType = typeof(Floor);
+                    else if (aElementType is CeilingType)
+                        aType = typeof(Ceiling);
+                    else if (aElementType is CurtainSystemType)
+                        aType = typeof(CurtainSystem);
+                    else if (aElementType is PanelType)
+                        aType = typeof(Panel);
+                    else if (aElementType is MullionType)
+                        aType = typeof(Mullion);
+                    else if (aElementType is Autodesk.Revit.DB.Mechanical.DuctType)
+                        aType = typeof(Autodesk.Revit.DB.Mechanical.Duct);
+                    else if (aElementType is Autodesk.Revit.DB.Mechanical.FlexDuctType)
+                        aType = typeof(Autodesk.Revit.DB.Mechanical.FlexDuct);
+                    else if (aElementType is Autodesk.Revit.DB.Mechanical.DuctInsulationType)
+                        aType = typeof(Autodesk.Revit.DB.Mechanical.DuctInsulation);
+                    else if (aElementType is Autodesk.Revit.DB.Plumbing.PipeType)
+                        aType = typeof(Autodesk.Revit.DB.Plumbing.Pipe);
+                    else if (aElementType is Autodesk.Revit.DB.Plumbing.FlexPipeType)
+                        aType = typeof(Autodesk.Revit.DB.Plumbing.FlexPipe);
+                    else if (aElementType is Autodesk.Revit.DB.Plumbing.PipeInsulationType)
+                        aType = typeof(Autodesk.Revit.DB.Plumbing.PipeInsulation);
+                    else if (aElementType is Autodesk.Revit.DB.Electrical.ConduitType)
+                        aType = typeof(Autodesk.Revit.DB.Electrical.Conduit);
+                    else if (aElementType is Autodesk.Revit.DB.Electrical.CableTrayType)
+                        aType = typeof(Autodesk.Revit.DB.Electrical.CableTray);
+
+                    if (aType == null)
+                        return null;
+
+                    foreach (ElementId aElementId in new FilteredElementCollector(document).OfClass(aType).ToElementIds())
+                        aResult.Add(aElementId);
+                }
+            }
             return aResult;
         }
 
@@ -153,6 +177,27 @@ namespace BH.UI.Cobra.Engine
                 return null;
 
             return new FilteredElementCollector(document).OfCategory(aBuiltInCategory).ToElementIds();
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this Document document, string selectionFilterElementName, bool caseSensitive)
+        {
+            if (document == null || string.IsNullOrEmpty(selectionFilterElementName))
+                return null;
+
+            List<SelectionFilterElement> aSelectionFilterElementList = new FilteredElementCollector(document).OfClass(typeof(SelectionFilterElement)).Cast<SelectionFilterElement>().ToList();
+
+            SelectionFilterElement aSelectionFilterElement = null;
+            if (caseSensitive)
+                aSelectionFilterElement = aSelectionFilterElementList.Find(x => x.Name == selectionFilterElementName);
+            else
+                aSelectionFilterElement = aSelectionFilterElementList.Find(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper() == selectionFilterElementName.ToUpper());
+
+            if (aSelectionFilterElement == null)
+                return null;
+
+            return aSelectionFilterElement.GetElementIds();
         }
 
         /***************************************************/
@@ -251,8 +296,10 @@ namespace BH.UI.Cobra.Engine
 
             IEnumerable<ElementId> aElementIds = null;
 
+            oM.Adapters.Revit.Enums.QueryType aQueryType = BH.Engine.Adapters.Revit.Query.QueryType(filterQuery);
+
             //Type
-            if (BH.Engine.Adapters.Revit.Query.QueryType(filterQuery) == oM.Adapters.Revit.Enums.QueryType.Undefined && filterQuery.Type != null)
+            if (aQueryType == oM.Adapters.Revit.Enums.QueryType.Undefined && filterQuery.Type != null)
             {
                 aElementIds = ElementIds(uIDocument.Document, filterQuery.Type);
                 if (aElementIds != null)
@@ -265,8 +312,8 @@ namespace BH.UI.Cobra.Engine
 
             //Workset
             string aWorksetName = BH.Engine.Adapters.Revit.Query.WorksetName(filterQuery);
-            bool aActiveWorkset = BH.Engine.Adapters.Revit.Query.QueryType(filterQuery) == oM.Adapters.Revit.Enums.QueryType.ActiveWorkset;
-            bool aOpenWorksets = BH.Engine.Adapters.Revit.Query.QueryType(filterQuery) == oM.Adapters.Revit.Enums.QueryType.OpenWorksets;
+            bool aActiveWorkset = aQueryType == oM.Adapters.Revit.Enums.QueryType.ActiveWorkset;
+            bool aOpenWorksets = aQueryType == oM.Adapters.Revit.Enums.QueryType.OpenWorksets;
             aElementIds = ElementIds(aDocument, aActiveWorkset, aOpenWorksets, aWorksetName);
             if (aElementIds != null)
             {
@@ -324,7 +371,7 @@ namespace BH.UI.Cobra.Engine
             }
 
             //ViewTemplate
-            if (BH.Engine.Adapters.Revit.Query.QueryType(filterQuery) == oM.Adapters.Revit.Enums.QueryType.ViewTemplate)
+            if (aQueryType == oM.Adapters.Revit.Enums.QueryType.ViewTemplate)
             {
                 List<View> aViewList = new FilteredElementCollector(aDocument).OfClass(typeof(View)).Cast<View>().ToList();
                 if (aViewList != null)
@@ -364,12 +411,22 @@ namespace BH.UI.Cobra.Engine
             }
 
             //FamilyName and FamilySymbolName
-            if (BH.Engine.Adapters.Revit.Query.QueryType(filterQuery) == oM.Adapters.Revit.Enums.QueryType.Family)
+            if (aQueryType == oM.Adapters.Revit.Enums.QueryType.Family)
             {
                 aElementIds = ElementIds(aDocument, BH.Engine.Adapters.Revit.Query.FamilyName(filterQuery), BH.Engine.Adapters.Revit.Query.FamilySymbolName(filterQuery), true);
                 if(aElementIds != null && aElementIds.Count() > 0)
                     foreach(ElementId aElementId in aElementIds)
                         if(!aResult.Contains(aElementId))
+                            aResult.Add(aElementId);
+            }
+
+            //SelectionSet
+            if (aQueryType == oM.Adapters.Revit.Enums.QueryType.SelectionSet)
+            {
+                aElementIds = ElementIds(aDocument, BH.Engine.Adapters.Revit.Query.SelectionSetName(filterQuery), true);
+                if (aElementIds != null && aElementIds.Count() > 0)
+                    foreach (ElementId aElementId in aElementIds)
+                        if (!aResult.Contains(aElementId))
                             aResult.Add(aElementId);
             }
 

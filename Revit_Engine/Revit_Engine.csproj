@@ -67,6 +67,7 @@
     <Compile Include="Create\Elements\GenericObject.cs" />
     <Compile Include="Create\FilterQuery\ActiveWorksetFilterQuery.cs" />
     <Compile Include="Create\FilterQuery\FamilyFilterQuery.cs" />
+    <Compile Include="Create\FilterQuery\SelectionSetFilterQuery.cs" />
     <Compile Include="Create\FilterQuery\TypeNameFilterQuery.cs" />
     <Compile Include="Create\FilterQuery\ViewTemplateFilterQuery.cs" />
     <Compile Include="Create\Generic\FamilyLibrary.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="Query\UniqueIds.cs" />
     <Compile Include="Query\WorksetName.cs" />
     <Compile Include="Query\WorksetId.cs" />
+    <Compile Include="Query\SelectionSetName.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
