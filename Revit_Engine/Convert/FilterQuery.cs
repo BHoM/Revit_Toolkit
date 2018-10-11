@@ -15,7 +15,8 @@
             public const string ViewTemplateName = "ViewTemplateName";
             public const string TypeName = "TypeName";
             public const string FamilyName = "FamilyName";
-            public const string FamilySymbolName = "FamilySymbolName";
+            public const string FamilyTypeName = "FamilyTypeName";
+            public const string SelectionSetName = "SelectionSetName";
         }
     }
 }

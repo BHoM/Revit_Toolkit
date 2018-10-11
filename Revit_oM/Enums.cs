@@ -19,6 +19,7 @@
         ViewTemplate,
         OpenWorksets,
         TypeName,
-        Family
+        Family,
+        SelectionSet
     }
 }
