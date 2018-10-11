@@ -18,7 +18,7 @@ namespace BH.UI.Cobra.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static BuildingElement ToBHoMBuildingElement(this Element element, BH.oM.Geometry.ICurve crv, PullSettings pullSettings = null)
+        internal static BuildingElement ToBHoMBuildingElement(this Element element, oM.Geometry.ICurve crv, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -209,10 +209,11 @@ namespace BH.UI.Cobra.Engine
 
             BuildingElementProperties properties = (ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType).ToBHoM(pullSettings) as BuildingElementProperties;
 
-            foreach(BH.oM.Geometry.ICurve crv in ToBHoMCurve(ceiling, pullSettings))
+            List<oM.Geometry.PolyCurve> aPolyCurveList = Query.Profiles(ceiling, pullSettings);
+            foreach(oM.Geometry.PolyCurve aPolyCurve in aPolyCurveList)
             {
                 //Create the BuildingElement
-                BuildingElement aElement = Create.BuildingElement(properties, crv);
+                BuildingElement aElement = Create.BuildingElement(properties, aPolyCurve);
 
                 //Assign custom data
                 aElement = Modify.SetIdentifiers(aElement, ceiling) as BuildingElement;
@@ -220,7 +221,7 @@ namespace BH.UI.Cobra.Engine
                     aElement = Modify.SetCustomData(aElement, ceiling, pullSettings.ConvertUnits) as BuildingElement;
 
                 buildingElements.Add(aElement);
-            }        
+            }       
 
             return buildingElements;
         }

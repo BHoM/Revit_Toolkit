@@ -65,22 +65,6 @@ namespace BH.UI.Cobra.Engine
             return ToBHoM(locationCurve.Curve, pullSettings);
         }
 
-        /***************************************************/
-
-        internal static List<oM.Geometry.ICurve> ToBHoM(this CurveArray curves, PullSettings pullSettings = null)
-        {
-            if (curves == null)
-                return null;
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
-            for (int i = 0; i < curves.Size; i++)
-            {
-                result.Add(curves.get_Item(i).ToBHoM(pullSettings));
-            }
-            return result;
-        }
 
         /***************************************************/
 
