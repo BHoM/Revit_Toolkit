@@ -94,7 +94,7 @@ namespace BH.UI.Cobra.Engine
             switch (pullSettings.Discipline)
             {
                 case Discipline.Environmental:
-                    return new List<IBHoMObject>() { wall.ToBHoMBuildingElement(pullSettings) };
+                    return wall.ToBHoMBuildingElements(pullSettings).ConvertAll(x => x as IBHoMObject);
                 case Discipline.Structural:
                     return wall.ToBHoMPanelPlanar(pullSettings).ConvertAll(p => p as IBHoMObject);
             }

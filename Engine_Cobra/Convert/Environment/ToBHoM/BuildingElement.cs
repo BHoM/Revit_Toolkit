@@ -83,25 +83,6 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        internal static BuildingElement ToBHoMBuildingElement(this Wall wall, PullSettings pullSettings = null)
-        {
-            pullSettings = pullSettings.DefaultIfNull();
-
-            BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoM(pullSettings) as BuildingElementProperties;
-
-            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, ToBHoMCurve(wall, pullSettings));
-
-            aBuildingElement = Modify.SetIdentifiers(aBuildingElement, wall) as BuildingElement;
-            if (pullSettings.CopyCustomData)
-                aBuildingElement = Modify.SetCustomData(aBuildingElement, wall, pullSettings.ConvertUnits) as BuildingElement;
-
-            
-
-            return aBuildingElement;
-        }
-
-        /***************************************************/
-
         internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisSurface energyAnalysisSurface, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
@@ -210,6 +191,9 @@ namespace BH.UI.Cobra.Engine
             BuildingElementProperties properties = (ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType).ToBHoM(pullSettings) as BuildingElementProperties;
 
             List<oM.Geometry.PolyCurve> aPolyCurveList = Query.Profiles(ceiling, pullSettings);
+            if (aPolyCurveList == null)
+                return buildingElements;
+
             foreach(oM.Geometry.PolyCurve aPolyCurve in aPolyCurveList)
             {
                 //Create the BuildingElement
@@ -235,7 +219,11 @@ namespace BH.UI.Cobra.Engine
             List<BuildingElement> buildingElements = new List<BuildingElement>();
             BuildingElementProperties properties = floor.FloorType.ToBHoMBuildingElementProperties(pullSettings);
 
-            foreach(BH.oM.Geometry.ICurve crv in ToBHoMCurve(floor, pullSettings))
+            List<oM.Geometry.PolyCurve> aPolyCurveList = Query.Profiles(floor, pullSettings);
+            if (aPolyCurveList == null)
+                return buildingElements;
+
+            foreach (oM.Geometry.ICurve crv in aPolyCurveList)
             {
                 //Create the BuildingElement
                 BuildingElement aElement = Create.BuildingElement(properties, crv);
@@ -260,7 +248,11 @@ namespace BH.UI.Cobra.Engine
             List<BuildingElement> buildingElements = new List<BuildingElement>();
             BuildingElementProperties properties = roofBase.RoofType.ToBHoMBuildingElementProperties(pullSettings);
 
-            foreach(BH.oM.Geometry.ICurve crv in ToBHoMCurve(roofBase, pullSettings))
+            List<oM.Geometry.PolyCurve> aPolyCurveList = Query.Profiles(roofBase, pullSettings);
+            if (aPolyCurveList == null)
+                return buildingElements;
+
+            foreach (oM.Geometry.ICurve crv in aPolyCurveList)
             {
                 //Create the BuildingElement
                 BuildingElement aElement = Create.BuildingElement(properties, crv);
@@ -271,6 +263,46 @@ namespace BH.UI.Cobra.Engine
                     aElement = Modify.SetCustomData(aElement, roofBase, pullSettings.ConvertUnits) as BuildingElement;
 
                 buildingElements.Add(aElement);
+            }
+
+            return buildingElements;
+        }
+
+        /***************************************************/
+
+        internal static List<BuildingElement> ToBHoMBuildingElements(this Wall wall, PullSettings pullSettings = null)
+        {
+            pullSettings = pullSettings.DefaultIfNull();
+
+            BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoM(pullSettings) as BuildingElementProperties;
+
+            List<BuildingElement> buildingElements = new List<BuildingElement>();
+
+            IList<Reference> aReferences = HostObjectUtils.GetSideFaces(wall, ShellLayerType.Interior);
+            foreach (Reference aReference in aReferences)
+            {
+                //Element aElement = wall.Document.GetElement(aReference);
+                Face aFace = wall.GetGeometryObjectFromReference(aReference) as Face;
+                if (aFace == null)
+                    continue;
+
+                List<oM.Geometry.PolyCurve> aPolyCurveList = Query.PolyCurves(aFace, pullSettings);
+                if (aPolyCurveList == null)
+                    continue;
+
+                foreach(oM.Geometry.PolyCurve aPolyCurve in aPolyCurveList)
+                {
+                    //Create the BuildingElement
+                    BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aPolyCurve);
+
+                    //Assign custom data
+                    aBuildingElement = Modify.SetIdentifiers(aBuildingElement, wall) as BuildingElement;
+                    if (pullSettings.CopyCustomData)
+                        aBuildingElement = Modify.SetCustomData(aBuildingElement, wall, pullSettings.ConvertUnits) as BuildingElement;
+
+                    buildingElements.Add(aBuildingElement);
+                }
+
             }
 
             return buildingElements;

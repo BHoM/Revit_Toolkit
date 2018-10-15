@@ -121,6 +121,7 @@
   <ItemGroup>
     <Compile Include="Convert\Geometry\ToBHoM\CurveArray.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\CurveArrArray.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\EdgeArray.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Grid.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Level.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="Query\ElementType.cs" />
     <Compile Include="Query\Family.cs" />
     <Compile Include="Query\FilterQueryDictionary.cs" />
+    <Compile Include="Query\PolyCurves.cs" />
     <Compile Include="Query\SelectionBuiltInCategories.cs" />
     <Compile Include="Query\Element.cs" />
     <Compile Include="Query\ElementId.cs" />
@@ -201,7 +203,7 @@
     <Compile Include="Query\GetEnergyAnalysisModel.cs" />
     <Compile Include="Query\IntegerValue.cs" />
     <Compile Include="Query\MaterialGrade.cs" />
-    <Compile Include="Query\Outline.cs" />
+    <Compile Include="Query\Outlines.cs" />
     <Compile Include="Query\SpatialElementId.cs" />
     <Compile Include="Query\SpatialElementIds.cs" />
     <Compile Include="Query\HostedBuildingElements.cs" />
