@@ -81,7 +81,14 @@ namespace BH.UI.Cobra.Engine
                     aTypeName = bHoMObject.Name;
 
                 string aFamilyName = bHoMObject.FamilyName();
-                aElementType = familyLibrary.LoadFamilySymbol(document, aCategoryName, aFamilyName, aTypeName);
+                FamilySymbol aFamilySymbol = familyLibrary.LoadFamilySymbol(document, aCategoryName, aFamilyName, aTypeName);
+                if(aFamilySymbol != null)
+                {
+                    if (!aFamilySymbol.IsActive)
+                        aFamilySymbol.Activate();
+
+                    aElementType = aFamilySymbol;
+                }
             }
 
             //Duplicate if not exists
@@ -95,15 +102,20 @@ namespace BH.UI.Cobra.Engine
                 {
                     if (aElementTypeList.Count > 0 && !(aElementTypeList.First() is FamilySymbol))
                     {
+                        FamilySymbol aFamilySymbol = aElementTypeList.First() as FamilySymbol;
+
+                        if (!aFamilySymbol.IsActive)
+                            aFamilySymbol.Activate();
+
                         // Duplicate Type for object which is not Family Symbol
-                        aElementType = aElementTypeList.First().Duplicate(aTypeName);
+                        aElementType = aFamilySymbol.Duplicate(aTypeName);
                     }
                     else
                     {
                         // Duplicate Type for object which is Family Symbol
 
                         Family aFamily = bHoMObject.Family(document);
-                        if(aFamily == null)
+                        if (aFamily == null)
                         {
                             // Load and Duplicate Type from not existsing Family
 
@@ -114,10 +126,18 @@ namespace BH.UI.Cobra.Engine
                             if (familyLibrary != null)
                             {
                                 string aFamilyName = bHoMObject.FamilyName();
-                                if(!string.IsNullOrEmpty(aFamilyName ))
+                                if (!string.IsNullOrEmpty(aFamilyName))
                                 {
-                                    aElementType = familyLibrary.LoadFamilySymbol(document, aCategoryName, aFamilyName);
-                                    aElementType.Name = aTypeName;
+                                    FamilySymbol aFamilySymbol = familyLibrary.LoadFamilySymbol(document, aCategoryName, aFamilyName);
+                                    if(aFamilySymbol != null)
+                                    {
+                                        if (!aFamilySymbol.IsActive)
+                                            aFamilySymbol.Activate();
+
+                                        aElementType = aFamilySymbol;
+                                        aElementType.Name = aTypeName;
+                                    }
+                                    
                                 }
                             }
                         }
@@ -126,17 +146,28 @@ namespace BH.UI.Cobra.Engine
                             // Duplicate from existing family
 
                             ISet<ElementId> aElementIdSet = aFamily.GetFamilySymbolIds();
-                            if(aElementIdSet != null && aElementIdSet.Count > 0)
+                            if (aElementIdSet != null && aElementIdSet.Count > 0)
                             {
-                                aElementType = document.GetElement( aElementIdSet.First()) as ElementType;
-                                if(aElementType != null)
+                                FamilySymbol aFamilySymbol = document.GetElement(aElementIdSet.First()) as FamilySymbol;
+                                if (aFamilySymbol != null)
+                                {
+                                    if (!aFamilySymbol.IsActive)
+                                        aFamilySymbol.Activate();
+
+                                    aElementType = aFamilySymbol;
                                     aElementType = aElementType.Duplicate(aTypeName);
+                                }
                             }
                         }
                     }
                 }
+            }
 
-
+            if(aElementType is FamilySymbol)
+            {
+                FamilySymbol aFamilySymbol = aElementType as FamilySymbol;
+                if (!aFamilySymbol.IsActive)
+                    aFamilySymbol.Activate();
             }
 
             return aElementType;
