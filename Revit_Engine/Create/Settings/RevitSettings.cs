@@ -9,14 +9,15 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static RevitSettings RevitSettings(int pushPort = 14128, int pullPort = 14129, int maxMinutesToWait = 10, Discipline defaultDiscipline = Discipline.Environmental)
+        public static RevitSettings RevitSettings(int pushPort = 14128, int pullPort = 14129, int maxMinutesToWait = 10, Discipline defaultDiscipline = Discipline.Environmental, string tagsParameterName = "BHE_Tags")
         {
             RevitSettings aRevitSettings = new RevitSettings()
             {
                 PushPort = pushPort,
                 PullPort = pullPort,
                 MaxMinutesToWait = maxMinutesToWait,
-                DefaultDiscipline = defaultDiscipline
+                DefaultDiscipline = defaultDiscipline,
+                TagsParameterName = tagsParameterName
             };
 
             return aRevitSettings;

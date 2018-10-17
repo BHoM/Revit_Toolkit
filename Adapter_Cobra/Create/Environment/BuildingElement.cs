@@ -13,7 +13,7 @@ namespace BH.UI.Cobra.Adapter
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private Element Create(BuildingElement buildingElement, PushSettings pushSettings = null)
+        private static Element Create(BuildingElement buildingElement, Document document, PushSettings pushSettings = null)
         {
             if (buildingElement == null)
             {
@@ -30,9 +30,9 @@ namespace BH.UI.Cobra.Adapter
             pushSettings = pushSettings.DefaultIfNull();
 
             if (pushSettings.Replace)
-                Delete(buildingElement.BuildingElementProperties);
+                Delete(buildingElement.BuildingElementProperties, document);
 
-            buildingElement.BuildingElementProperties.ToRevit(Document, pushSettings);
+            buildingElement.BuildingElementProperties.ToRevit(document, pushSettings);
 
 
             //Set Level
@@ -40,9 +40,9 @@ namespace BH.UI.Cobra.Adapter
                 Create(buildingElement.Level, pushSettings);*/
 
             if (pushSettings.Replace)
-                Delete(buildingElement);
+                Delete(buildingElement, document);
 
-            return buildingElement.ToRevit(Document, pushSettings);
+            return buildingElement.ToRevit(document, pushSettings);
         }
 
         /***************************************************/

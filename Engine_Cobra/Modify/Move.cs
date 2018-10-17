@@ -109,16 +109,6 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        public static Location Move(this Location location, IBHoMObject iBHoMObject, PushSettings pullSettings = null)
-        {
-            if (location == null || iBHoMObject == null)
-                return null;
-           
-            return Move(location, iBHoMObject as dynamic, pullSettings);
-        }
-
-        /***************************************************/
-
         public static Location Move(this Location location, GenericObject genericObject, PushSettings pullSettings = null)
         {
             if (location == null || genericObject == null)

@@ -36,99 +36,123 @@ namespace BH.UI.Cobra.Adapter
             if (objects.Count() < 1)
                 return false;
 
-            using (Transaction aTransaction = new Transaction(Document, "Create"))
+            Document aDocument = Document;
+
+            bool aResult = false;
+            if (aDocument.IsModifiable && !aDocument.IsReadOnly)
             {
-                aTransaction.Start();
-
-                PushSettings aPushSettings = new PushSettings()
+                //Transaction has to be opened
+                using (Transaction aTransaction = new Transaction(aDocument, "Create"))
                 {
-                    Replace = RevitSettings.Replace,
-                    ConvertUnits = true,
-                    CopyCustomData = true,
-                    FamilyLibrary = RevitSettings.FamilyLibrary
+                    aTransaction.Start();
+                    aResult = Create(objects, aDocument, RevitSettings);
+                    aTransaction.Commit();
+                }
+            }
+            else
+            {
+                //Transaction is already opened
+                aResult = Create(objects, aDocument, RevitSettings);
+            }
 
-                };
+            return aResult; ;
+        }
 
-                for (int i = 0; i < objects.Count(); i++)
+        /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
+
+            private static bool Create<T>(IEnumerable<T> objects, Document document, RevitSettings revitSettings) where T : IObject
+        {
+            string aTagsParameterName = revitSettings.TagsParameterName;
+
+            PushSettings aPushSettings = new PushSettings()
+            {
+                Replace = revitSettings.Replace,
+                ConvertUnits = true,
+                CopyCustomData = true,
+                FamilyLibrary = revitSettings.FamilyLibrary
+
+            };
+
+            for (int i = 0; i < objects.Count(); i++)
+            {
+                IBHoMObject aBHoMObject = objects.ElementAt<T>(i) as IBHoMObject;
+
+                if (aBHoMObject == null)
                 {
-                    IBHoMObject aBHOMObject = objects.ElementAt<T>(i) as IBHoMObject;
-
-                    if (aBHOMObject == null)
-                    {
-                        NullObjectCreateError(typeof(IBHoMObject));
-                        continue;
-                    }
-
-                    try
-                    {
-                        Element aElement = null;
-
-                        string aUniqueId = BH.Engine.Adapters.Revit.Query.UniqueId(aBHOMObject);
-                        if (!string.IsNullOrEmpty(aUniqueId))
-                            aElement = Document.GetElement(aUniqueId);
-
-                        if (aElement == null)
-                        {
-                            int aId = BH.Engine.Adapters.Revit.Query.ElementId(aBHOMObject);
-                            if (aId != -1)
-                                aElement = Document.GetElement(new ElementId(aId));
-                        }
-
-                        if (RevitSettings.Replace && aElement != null)
-                        {
-                            Document.Delete(aElement.Id);
-                            aElement = null;
-                        }
-
-                        if (aElement == null)
-                        {
-                            Type aType = aBHOMObject.GetType();
-
-                            if(aType != typeof(BHoMObject))
-                            {
-                                if (aBHOMObject is oM.Architecture.Elements.Level || aBHOMObject is BuildingElement || aBHOMObject is BuildingElementProperties)
-                                    aElement = Create(aBHOMObject as dynamic, aPushSettings);
-                                else
-                                    aElement = BH.UI.Cobra.Engine.Convert.ToRevit(aBHOMObject as dynamic, Document, aPushSettings);
-
-                                SetIdentifiers(aBHOMObject, aElement);
-                            }
-
-                        }
-                        else
-                        { 
-                            aElement = Modify.SetParameters(aElement, aBHOMObject);
-                            if(aElement != null && aElement.Location != null)
-                            {
-                                try
-                                {
-                                    Location aLocation = Modify.Move(aElement.Location, aBHOMObject, aPushSettings);
-                                }
-                                catch
-                                {
-                                    ObjectNotMovedWarning(aBHOMObject);
-                                }
-                                
-                            }
-                        }
-
-
-                    }
-                    catch (Exception aException)
-                    {
-                        ObjectNotCreatedCreateError(aBHOMObject);
-                    }
-
+                    NullObjectCreateError(typeof(IBHoMObject));
+                    continue;
                 }
 
-                aTransaction.Commit();
+                try
+                {
+                    Element aElement = null;
+
+                    string aUniqueId = BH.Engine.Adapters.Revit.Query.UniqueId(aBHoMObject);
+                    if (!string.IsNullOrEmpty(aUniqueId))
+                        aElement = document.GetElement(aUniqueId);
+
+                    if (aElement == null)
+                    {
+                        int aId = BH.Engine.Adapters.Revit.Query.ElementId(aBHoMObject);
+                        if (aId != -1)
+                            aElement = document.GetElement(new ElementId(aId));
+                    }
+
+                    if (revitSettings.Replace && aElement != null)
+                    {
+                        document.Delete(aElement.Id);
+                        aElement = null;
+                    }
+
+                    if (aElement == null)
+                    {
+                        Type aType = aBHoMObject.GetType();
+
+                        if (aType != typeof(BHoMObject))
+                        {
+                            if (aBHoMObject is oM.Architecture.Elements.Level || aBHoMObject is BuildingElement || aBHoMObject is BuildingElementProperties)
+                                aElement = Create(aBHoMObject as dynamic, document, aPushSettings);
+                            else
+                                aElement = BH.UI.Cobra.Engine.Convert.ToRevit(aBHoMObject as dynamic, document, aPushSettings);
+
+                            SetIdentifiers(aBHoMObject, aElement);
+                        }
+
+                    }
+                    else
+                    {
+                        aElement = Modify.SetParameters(aElement, aBHoMObject);
+                        if (aElement != null && aElement.Location != null)
+                        {
+                            try
+                            {
+                                Location aLocation = Modify.Move(aElement.Location, aBHoMObject as dynamic, aPushSettings);
+                            }
+                            catch
+                            {
+                                ObjectNotMovedWarning(aBHoMObject);
+                            }
+
+                        }
+                    }
+
+                    //Assign Tags
+                    if (aElement != null)
+                    {
+                        Modify.SetTags(aElement, aBHoMObject, aTagsParameterName);
+                    }
+                }
+                catch (Exception aException)
+                {
+                    ObjectNotCreatedCreateError(aBHoMObject);
+                }
             }
 
             return true;
         }
 
-        /***************************************************/
-        /**** Private Methods                           ****/
         /***************************************************/
 
         private static void SetIdentifiers(IBHoMObject bHoMObject, Element element)
