@@ -14,7 +14,7 @@ namespace BH.UI.Cobra.Adapter
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private Level Create(oM.Architecture.Elements.Level level, PushSettings pushSettings = null)
+        private static Level Create(oM.Architecture.Elements.Level level, Document document, PushSettings pushSettings = null)
         {
             if (level == null)
             {
@@ -25,15 +25,15 @@ namespace BH.UI.Cobra.Adapter
             pushSettings = pushSettings.DefaultIfNull();
 
             if (pushSettings.Replace)
-                Delete(level);
+                Delete(level, document);
 
-            List<Element> aElementList = new FilteredElementCollector(Document).OfClass(typeof(Level)).ToList();
+            List<Element> aElementList = new FilteredElementCollector(document).OfClass(typeof(Level)).ToList();
             if (aElementList == null || aElementList.Count < 1)
-                return level.ToRevit(Document, pushSettings) as Level;
+                return level.ToRevit(document, pushSettings) as Level;
 
             Element aElement = aElementList.Find(x => x.Name == level.Name);
             if (aElement == null)
-                return level.ToRevit(Document, pushSettings) as Level;
+                return level.ToRevit(document, pushSettings) as Level;
 
             return null;
         }

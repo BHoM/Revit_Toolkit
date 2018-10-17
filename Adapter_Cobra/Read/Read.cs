@@ -117,6 +117,8 @@ namespace BH.UI.Cobra.Adapter
 
             Dictionary<Discipline, PullSettings> aDictionary_PullSettings = new Dictionary<Discipline, PullSettings>();
 
+            RevitSettings aRevitSettings = RevitSettings;
+
             List<ElementId> aElementIdList = new List<ElementId>();
             foreach (KeyValuePair<ElementId, List<FilterQuery>> aKeyValuePair in aFilterQueryDictionary)
             {
@@ -128,7 +130,7 @@ namespace BH.UI.Cobra.Adapter
                 if (aFilterQueries == null)
                     continue;
 
-                Discipline aDiscipline = Query.Discipline(aFilterQueries, RevitSettings);
+                Discipline aDiscipline = Query.Discipline(aFilterQueries, aRevitSettings);
 
                 PullSettings aPullSettings = null;
                 if (!aDictionary_PullSettings.TryGetValue(aDiscipline, out aPullSettings))
@@ -137,7 +139,7 @@ namespace BH.UI.Cobra.Adapter
                     aDictionary_PullSettings.Add(aDiscipline, aPullSettings);
                 }
 
-                IEnumerable<IBHoMObject> aIBHoMObjects = Read(aElement, aPullSettings);
+                IEnumerable<IBHoMObject> aIBHoMObjects = Read(aElement, aRevitSettings, aPullSettings);
                 if (aIBHoMObjects != null && aIBHoMObjects.Count() > 0)
                 {
                     aResult.AddRange(aIBHoMObjects);
@@ -152,7 +154,7 @@ namespace BH.UI.Cobra.Adapter
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private IEnumerable<IBHoMObject> Read(Element element, PullSettings pullSettings = null)
+        private static IEnumerable<IBHoMObject> Read(Element element, RevitSettings revitSettings, PullSettings pullSettings = null)
         {
             if (element == null)
                 return new List<IBHoMObject>();
@@ -236,10 +238,21 @@ namespace BH.UI.Cobra.Adapter
             if (aObject != null)
             {
                 aResult = new List<IBHoMObject>();
-                if (aObject is BHoMObject)
-                    aResult.Add(aObject as BHoMObject);
-                else if (aObject is List<IBHoMObject>)
-                    aResult.AddRange(aObject as List<IBHoMObject>);
+                if (aObject is IBHoMObject)
+                    aResult.Add((IBHoMObject)aObject);
+                else if (aObject is IEnumerable<IBHoMObject>)
+                    aResult.AddRange((IEnumerable<IBHoMObject>)aObject);  
+            }
+
+            //Assign Tags
+            if (aResult != null && revitSettings != null)
+            {
+                for(int i=0; i < aResult.Count; i++)
+                {
+                    IBHoMObject aIBHoMObject = Modify.SetTags(aResult[i], element, revitSettings.TagsParameterName);
+                    if (aIBHoMObject != null)
+                        aResult[i] = aIBHoMObject;
+                }
             }
 
             return aResult;

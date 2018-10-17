@@ -15,9 +15,9 @@ namespace BH.UI.Cobra.Adapter
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public bool Delete(IEnumerable<BHoMObject> bHoMObjects)
+        public static bool Delete(IEnumerable<BHoMObject> bHoMObjects, Document document)
         {
-            if (Document == null)
+            if (document == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because Revit Document is null.");
                 return false;
@@ -32,16 +32,16 @@ namespace BH.UI.Cobra.Adapter
             if (bHoMObjects.Count() < 1)
                 return false;
 
-            List<ElementId> aElementIdList = Query.ElementIds(Document, BH.Engine.Adapters.Revit.Query.UniqueIds(bHoMObjects, true), true);
+            List<ElementId> aElementIdList = Query.ElementIds(document, BH.Engine.Adapters.Revit.Query.UniqueIds(bHoMObjects, true), true);
 
             if (aElementIdList == null || aElementIdList.Count < 1)
                 return false;
 
             bool aResult = false;
-            using (Transaction aTransaction = new Transaction(Document, "Create"))
+            using (Transaction aTransaction = new Transaction(document, "Create"))
             {
                 aTransaction.Start();
-                aResult = Delete(aElementIdList);
+                aResult = Delete(aElementIdList, document);
                 aTransaction.Commit();
             }
             return aResult;
@@ -49,9 +49,9 @@ namespace BH.UI.Cobra.Adapter
 
         /***************************************************/
         
-        public bool Delete(BHoMObject bHoMObject)
+        public static bool Delete(BHoMObject bHoMObject, Document document)
         {
-            if (Document == null)
+            if (document == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because Revit Document is null.");
                 return false;
@@ -64,10 +64,10 @@ namespace BH.UI.Cobra.Adapter
             }
 
             bool aResult = false;
-            using (Transaction aTransaction = new Transaction(Document, "Create"))
+            using (Transaction aTransaction = new Transaction(document, "Create"))
             {
                 aTransaction.Start();
-                aResult = DeleteByUniqueId(bHoMObject);
+                aResult = DeleteByUniqueId(bHoMObject, document);
                 aTransaction.Commit();
             }
             return aResult;
@@ -76,9 +76,9 @@ namespace BH.UI.Cobra.Adapter
 
         /***************************************************/
         
-        public bool Delete(BuildingElementProperties buildingElementProperties, bool deleteByName)
+        public static bool Delete(BuildingElementProperties buildingElementProperties, Document document, bool deleteByName)
         {
-            if (Document == null)
+            if (document == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because Revit Document is null.");
                 return false;
@@ -91,13 +91,13 @@ namespace BH.UI.Cobra.Adapter
             }
 
             bool aResult = false;
-            using (Transaction aTransaction = new Transaction(Document, "Create"))
+            using (Transaction aTransaction = new Transaction(document, "Create"))
             {
                 aTransaction.Start();
                 if (deleteByName)
-                    aResult = this.DeleteByName(typeof(Level), buildingElementProperties);
+                    aResult = DeleteByName(typeof(Level), buildingElementProperties, document);
                 else
-                    aResult = DeleteByUniqueId(buildingElementProperties);
+                    aResult = DeleteByUniqueId(buildingElementProperties, document);
                 aTransaction.Commit();
             }
             return aResult;
@@ -105,9 +105,9 @@ namespace BH.UI.Cobra.Adapter
 
         /***************************************************/
         
-        public bool Delete(IEnumerable<BuildingElementProperties> buildingElementProperties, bool deleteByName)
+        public static bool Delete(IEnumerable<BuildingElementProperties> buildingElementProperties, Document document, bool deleteByName)
         {
-            if (Document == null)
+            if (document == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because Revit Document is null.");
                 return false;
@@ -123,7 +123,7 @@ namespace BH.UI.Cobra.Adapter
                 return false;
 
             bool aResult = false;
-            using (Transaction aTransaction = new Transaction(Document, "Create"))
+            using (Transaction aTransaction = new Transaction(document, "Create"))
             {
                 aTransaction.Start();
                 if (deleteByName)
@@ -132,12 +132,12 @@ namespace BH.UI.Cobra.Adapter
                     foreach(BuildingElementType aBuildingElementType in aBuildingElementPropertiesList.ConvertAll(x => x.BuildingElementType).Distinct())
                     {
                         Type aType = Query.RevitType(aBuildingElementType);
-                        this.DeleteByName(aType, aBuildingElementPropertiesList.FindAll(x => x.BuildingElementType == aBuildingElementType));
+                        DeleteByName(aType, aBuildingElementPropertiesList.FindAll(x => x.BuildingElementType == aBuildingElementType), document);
                     }
                 } 
                 else
                 {
-                    return Delete(buildingElementProperties.Cast<BHoMObject>());
+                    return Delete(buildingElementProperties.Cast<BHoMObject>(), document);
                 }
                     
                 aTransaction.Commit();
@@ -150,7 +150,7 @@ namespace BH.UI.Cobra.Adapter
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private bool DeleteByUniqueId(BHoMObject bHoMObject)
+        private static bool DeleteByUniqueId(BHoMObject bHoMObject, Document document)
         {
             if(bHoMObject == null)
             {
@@ -161,7 +161,7 @@ namespace BH.UI.Cobra.Adapter
             string aUniqueId = BH.Engine.Adapters.Revit.Query.UniqueId(bHoMObject);
             if (aUniqueId != null)
             {
-                Element aElement = Document.GetElement(aUniqueId);
+                Element aElement = document.GetElement(aUniqueId);
                 return Delete(aElement);
             }
 
@@ -170,7 +170,7 @@ namespace BH.UI.Cobra.Adapter
 
         /***************************************************/
 
-        private bool DeleteByName(Type type, BHoMObject bHoMObject)
+        private static bool DeleteByName(Type type, BHoMObject bHoMObject, Document document)
         {
             if (bHoMObject == null)
             {
@@ -184,7 +184,7 @@ namespace BH.UI.Cobra.Adapter
                 return false;
             }
 
-            List<Element> aElementList = new FilteredElementCollector(Document).OfClass(type).ToList();
+            List<Element> aElementList = new FilteredElementCollector(document).OfClass(type).ToList();
             if (aElementList == null || aElementList.Count < 1)
                 return false;
 
@@ -194,7 +194,7 @@ namespace BH.UI.Cobra.Adapter
 
         /***************************************************/
 
-        private bool DeleteByName(Type type, IEnumerable<BHoMObject> bHoMObjects)
+        private static bool DeleteByName(Type type, IEnumerable<BHoMObject> bHoMObjects, Document document)
         {
             if (bHoMObjects == null)
             {
@@ -211,7 +211,7 @@ namespace BH.UI.Cobra.Adapter
             if (bHoMObjects.Count() < 1)
                 return false;
 
-            List<Element> aElementList = new FilteredElementCollector(Document).OfClass(type).ToList();
+            List<Element> aElementList = new FilteredElementCollector(document).OfClass(type).ToList();
             if (aElementList == null || aElementList.Count < 1)
                 return false;
 
@@ -228,12 +228,12 @@ namespace BH.UI.Cobra.Adapter
                 }
             }
 
-            return Delete(aElementIdList);
+            return Delete(aElementIdList, document);
         }
 
         /***************************************************/
 
-        private bool Delete(Element element)
+        private static bool Delete(Element element)
         {
             if(element == null)
             {
@@ -241,7 +241,7 @@ namespace BH.UI.Cobra.Adapter
                 return false;
             }
 
-            ICollection<ElementId> aElementIds = Document.Delete(element.Id);
+            ICollection<ElementId> aElementIds = element.Document.Delete(element.Id);
             if (aElementIds != null && aElementIds.Count > 0)
                 return true;
 
@@ -250,7 +250,7 @@ namespace BH.UI.Cobra.Adapter
 
         /***************************************************/
 
-        private bool Delete(ICollection<ElementId> elementIds)
+        private static bool Delete(ICollection<ElementId> elementIds, Document document)
         {
             if (elementIds == null)
             {
@@ -266,7 +266,7 @@ namespace BH.UI.Cobra.Adapter
             foreach (ElementId aElementId in elementIds)
                 aElementIdList.Add(aElementId);
 
-            ICollection<ElementId> aElementIds = Document.Delete(aElementIdList);
+            ICollection<ElementId> aElementIds = document.Delete(aElementIdList);
             if (aElementIds != null && aElementIds.Count > 0)
                 return true;
 
