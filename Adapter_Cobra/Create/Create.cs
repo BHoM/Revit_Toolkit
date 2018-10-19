@@ -39,7 +39,7 @@ namespace BH.UI.Cobra.Adapter
             Document aDocument = Document;
 
             bool aResult = false;
-            if (aDocument.IsModifiable && !aDocument.IsReadOnly)
+            if (!aDocument.IsModifiable && !aDocument.IsReadOnly)
             {
                 //Transaction has to be opened
                 using (Transaction aTransaction = new Transaction(aDocument, "Create"))
@@ -139,7 +139,7 @@ namespace BH.UI.Cobra.Adapter
                     }
 
                     //Assign Tags
-                    if (aElement != null)
+                    if (aElement != null && !string.IsNullOrEmpty(aTagsParameterName))
                     {
                         Modify.SetTags(aElement, aBHoMObject, aTagsParameterName);
                     }

@@ -245,7 +245,7 @@ namespace BH.UI.Cobra.Adapter
             }
 
             //Assign Tags
-            if (aResult != null && revitSettings != null)
+            if (aResult != null && revitSettings != null &&  !string.IsNullOrEmpty(revitSettings.TagsParameterName))
             {
                 for(int i=0; i < aResult.Count; i++)
                 {
