@@ -55,7 +55,7 @@ namespace BH.UI.Cobra.Adapter
 
         private static void ConvertBeforePushError(IBHoMObject iBHoMObject, Type TypeToConvert)
         {
-            BH.Engine.Reflection.Compute.RecordError(string.Format("{0} has to be converted to (1) before pushing. BHoM object Guid: {1}", iBHoMObject.GetType().Name, TypeToConvert.Name, iBHoMObject.BHoM_Guid));
+            BH.Engine.Reflection.Compute.RecordError(string.Format("{0} has to be converted to {1} before pushing. BHoM object Guid: {2}", iBHoMObject.GetType().Name, TypeToConvert.Name, iBHoMObject.BHoM_Guid));
         }
 
         /***************************************************/
