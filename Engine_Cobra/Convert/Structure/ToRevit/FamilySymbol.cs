@@ -10,12 +10,15 @@ namespace BH.UI.Cobra.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static FamilySymbol ToRevitFamilySymbol_Column(this oM.Structure.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        private static FamilySymbol ToRevitFamilySymbol_Column(this oM.Structure.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
         {
             if (framingElementProperty == null || document == null)
                 return null;
-
-            pushSettings = pushSettings.DefaultIfNull();
 
             return Query.ElementType(framingElementProperty, document, BuiltInCategory.OST_StructuralColumns, pushSettings.FamilyLibrary) as FamilySymbol;
             
@@ -37,7 +40,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        internal static FamilySymbol ToRevitFamilySymbol_Framing(this oM.Structure.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
+        private static FamilySymbol ToRevitFamilySymbol_Framing(this oM.Structure.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
         {
             if (framingElementProperty == null || document == null)
                 return null;
