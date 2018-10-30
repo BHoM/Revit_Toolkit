@@ -11,7 +11,7 @@ namespace BH.UI.Cobra.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static Curve ToRevit(this ICurve curve, PushSettings pushSettings = null)
+        internal static Curve ToRevitCurve(this ICurve curve, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
@@ -41,22 +41,6 @@ namespace BH.UI.Cobra.Engine
             }
 
             return null;
-        }
-
-        /***************************************************/
-
-        internal static CurveArray ToRevit(this PolyCurve polyCurve, PushSettings pushSettings = null)
-        {
-            if (polyCurve == null)
-                return null;
-
-            pushSettings = pushSettings.DefaultIfNull();
-
-            CurveArray aCurveArray = new CurveArray();
-            foreach (ICurve aICurve in polyCurve.Curves)
-                aCurveArray.Append(aICurve.ToRevit(pushSettings));
-
-            return aCurveArray;
         }
 
         /***************************************************/

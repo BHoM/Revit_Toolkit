@@ -1,5 +1,7 @@
 ﻿using Autodesk.Revit.DB;
+using BH.oM.Geometry;
 using BH.oM.Adapters.Revit.Settings;
+using System.Linq;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -9,14 +11,18 @@ namespace BH.UI.Cobra.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static XYZ ToRevitXYZ(this oM.Geometry.Point point, PushSettings pushSettings = null)
+        internal static CurveArray ToRevitCurveArray(this PolyCurve polyCurve, PushSettings pushSettings = null)
         {
+            if (polyCurve == null)
+                return null;
+
             pushSettings = pushSettings.DefaultIfNull();
 
-            if (pushSettings.ConvertUnits)
-                return new XYZ(UnitUtils.ConvertToInternalUnits(point.X, DisplayUnitType.DUT_METERS), UnitUtils.ConvertToInternalUnits(point.Y, DisplayUnitType.DUT_METERS), UnitUtils.ConvertToInternalUnits(point.Z, DisplayUnitType.DUT_METERS));
-            else
-                return new XYZ(point.X, point.Y, point.Z);
+            CurveArray aCurveArray = new CurveArray();
+            foreach (ICurve aICurve in polyCurve.Curves)
+                aCurveArray.Append(aICurve.ToRevitCurve(pushSettings));
+
+            return aCurveArray;
         }
 
         /***************************************************/

@@ -62,7 +62,7 @@ namespace BH.UI.Cobra.Adapter
         /**** Private Methods                           ****/
         /***************************************************/
 
-            private static bool Create<T>(IEnumerable<T> objects, Document document, RevitSettings revitSettings) where T : IObject
+        private static bool Create<T>(IEnumerable<T> objects, Document document, RevitSettings revitSettings) where T : IObject
         {
             string aTagsParameterName = revitSettings.TagsParameterName;
 

@@ -23,12 +23,10 @@ namespace BH.UI.Cobra.Engine
             if (panelPlanar == null || document == null)
                 return null;
 
-            pushSettings = pushSettings.DefaultIfNull();
-
             object aCustomDataValue = null;
 
             CurveArray aCurves = new CurveArray();
-            foreach (Curve c in panelPlanar.ExternalEdgeCurves().Select(c => c.ToRevit(pushSettings)))
+            foreach (Curve c in panelPlanar.ExternalEdgeCurves().Select(c => c.ToRevitCurve(pushSettings)))
             {
                 aCurves.Append(c);
             }

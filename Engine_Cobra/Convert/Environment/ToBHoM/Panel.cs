@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Autodesk.Revit.DB;
 
 using BH.Engine.Environment;
-using BH.oM.Environment.Elements;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Cobra.Engine
@@ -15,11 +13,11 @@ namespace BH.UI.Cobra.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static List<BH.oM.Environment.Elements.Panel> ToBHoMBuildingElementPanels(this PlanarFace planarFace, PullSettings pullSettings = null)
+        internal static List<oM.Environment.Elements.Panel> ToBHoMBuildingElementPanels(this PlanarFace planarFace, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BH.oM.Environment.Elements.Panel> aResult = new List<BH.oM.Environment.Elements.Panel>();
+            List<oM.Environment.Elements.Panel> aResult = new List<oM.Environment.Elements.Panel>();
 
             List<List<BH.oM.Geometry.ICurve>> crvs = planarFace.ToBHoMCurve(pullSettings);
 

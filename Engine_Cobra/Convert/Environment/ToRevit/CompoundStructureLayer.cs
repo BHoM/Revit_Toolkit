@@ -11,28 +11,12 @@ namespace BH.UI.Cobra.Engine
         /**** Internal Methods                          ****/
         /***************************************************/
 
-        internal static CompoundStructureLayer ToRevit(this ConstructionLayer constructionLayer, Document document, PushSettings pushSettings = null)
+        internal static CompoundStructureLayer ToRevitCompoundStructureLayer(this ConstructionLayer constructionLayer, Document document, PushSettings pushSettings = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
             MaterialFunctionAssignment aMaterialFunctionAssignment = GetMaterialFunctionAssignment(constructionLayer);
 
-            return new CompoundStructureLayer(UnitUtils.ConvertToInternalUnits(constructionLayer.Thickness, DisplayUnitType.DUT_METERS), aMaterialFunctionAssignment, constructionLayer.Material.ToRevit(document, pushSettings).Id);
+            return new CompoundStructureLayer(UnitUtils.ConvertToInternalUnits(constructionLayer.Thickness, DisplayUnitType.DUT_METERS), aMaterialFunctionAssignment, constructionLayer.Material.ToRevitMaterial(document, pushSettings).Id);
         }
-
-        /***************************************************/
-
-        internal static CompoundStructure ToRevit(IEnumerable<ConstructionLayer> constructionLayers, Document document, PushSettings pushSettings = null)
-        {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            List<CompoundStructureLayer> aCompoundStructureLayerList = new List<CompoundStructureLayer>();
-            foreach (ConstructionLayer aConstructionLayer in constructionLayers)
-                aCompoundStructureLayerList.Add(aConstructionLayer.ToRevit(document, pushSettings));
-
-            return CompoundStructure.CreateSimpleCompoundStructure(aCompoundStructureLayerList);
-        }
-
 
         /***************************************************/
         /**** Private Methods                           ****/

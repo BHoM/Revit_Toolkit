@@ -10,13 +10,13 @@ namespace BH.UI.Cobra.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static Autodesk.Revit.DB.Plane ToRevit(this CoordinateSystem CS, PushSettings pushSettings = null)
+        internal static Autodesk.Revit.DB.Plane ToRevitPlane(this CoordinateSystem coordinateSystem, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            XYZ origin = CS.Origin.ToRevit(pushSettings);
-            XYZ X = CS.X.ToRevit(pushSettings);
-            XYZ Y = CS.Y.ToRevit(pushSettings);
+            XYZ origin = coordinateSystem.Origin.ToRevit(pushSettings);
+            XYZ X = coordinateSystem.X.ToRevit(pushSettings);
+            XYZ Y = coordinateSystem.Y.ToRevit(pushSettings);
             return Autodesk.Revit.DB.Plane.CreateByOriginAndBasis(origin, X, Y);
         }
 

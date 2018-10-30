@@ -9,11 +9,9 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        internal static Grid ToRevit(this oM.Architecture.Elements.Grid grid, Document document, PushSettings pushSettings = null)
+        internal static Grid ToRevitGrid(this oM.Architecture.Elements.Grid grid, Document document, PushSettings pushSettings = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            Curve aCurve = Convert.ToRevit(grid.Curve, pushSettings);
+            Curve aCurve = Convert.ToRevitCurve(grid.Curve, pushSettings);
 
             Grid aGrid = null;
 

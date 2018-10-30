@@ -9,10 +9,8 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        internal static Level ToRevit(this oM.Architecture.Elements.Level level, Document document, PushSettings pushSettings = null)
+        internal static Level ToRevitLevel(this oM.Architecture.Elements.Level level, Document document, PushSettings pushSettings = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
             Element aElement = Level.Create(document, level.Elevation);
             aElement.Name = level.Name;
 

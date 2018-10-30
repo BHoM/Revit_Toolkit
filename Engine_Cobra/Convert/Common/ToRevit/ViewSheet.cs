@@ -15,7 +15,7 @@ namespace BH.UI.Cobra.Engine
         /**** Internal Methods                          ****/
         /***************************************************/
 
-        internal static ViewSheet ToRevit(this Sheet sheet, Document document, PushSettings pushSettings = null)
+        internal static ViewSheet ToRevitViewSheet(this Sheet sheet, Document document, PushSettings pushSettings = null)
         {
             if (sheet == null)
                 return null;

@@ -1,8 +1,13 @@
 ﻿using Autodesk.Revit.DB;
 
-using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Environment.Interface;
+using BH.oM.Geometry;
+using BH.oM.Environment.Elements;
+using System.Collections.Generic;
+using BH.oM.Environment.Properties;
+using BH.oM.Structure.Elements;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -12,13 +17,149 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Element ToRevit(this IBHoMObject bHoMObject, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Architecture.Elements.Grid grid, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevit(bHoMObject as dynamic, document, pushSettings);
+            return ToRevitGrid(grid, document, pushSettings);
         }
 
         /***************************************************/
+
+        public static Element ToRevit(this oM.Architecture.Elements.Level level, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitLevel(level, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this GenericObject genericObject, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitElement(genericObject, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this IMaterial material, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitMaterial(material, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this oM.Adapters.Revit.Elements.ViewPlan floorPlan, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitViewPlan(floorPlan, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this oM.Adapters.Revit.Elements.Viewport viewport, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitViewport(viewport, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this Sheet sheet, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitViewSheet(sheet, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this BuildingElement buildingElement, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitElement(buildingElement, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this BuildingElementProperties buildingElementProperties, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitElementType(buildingElementProperties, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this PanelPlanar panelPlanar, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitFloor(panelPlanar, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Autodesk.Revit.DB.Plane ToRevit(this CoordinateSystem coordinateSystem, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitPlane(coordinateSystem, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Curve ToRevit(this ICurve curve, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitCurve(curve, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static CurveArray ToRevit(this PolyCurve polyCurve, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitCurveArray(polyCurve, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static XYZ ToRevit(this oM.Geometry.Point point, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitXYZ(point, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static CompoundStructureLayer ToRevit(this ConstructionLayer constructionLayer, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitCompoundStructureLayer(constructionLayer, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static CompoundStructure ToRevit(this IEnumerable<ConstructionLayer> constructionLayers, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitCompoundStructure(constructionLayers, document, pushSettings);
+        }
+
+        /***************************************************/
+
     }
 }

@@ -21,7 +21,7 @@ namespace BH.UI.Cobra.Engine
 
             object aCustomDataValue = null;
 
-            Curve aCurve = framingElement.LocationCurve.ToRevit(pushSettings);
+            Curve aCurve = framingElement.LocationCurve.ToRevitCurve(pushSettings);
             Level aLevel = null;
 
             aCustomDataValue = framingElement.CustomDataValue("Reference Level");
@@ -34,7 +34,7 @@ namespace BH.UI.Cobra.Engine
             if (aLevel == null)
                 aLevel = Query.BottomLevel(framingElement.LocationCurve, document);
 
-            FamilySymbol aFamilySymbol = framingElement.Property.ToRevitFramingSymbol(document, pushSettings);
+            FamilySymbol aFamilySymbol = framingElement.Property.ToRevitFamilySymbol_Framing(document, pushSettings);
 
             if (aFamilySymbol == null)
             {

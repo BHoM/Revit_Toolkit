@@ -120,9 +120,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Convert\Architecture\ToRevit\Grid.cs" />
+    <Compile Include="Convert\Environment\ToRevit\CompoundStructure.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\CurveArray.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\CurveArrArray.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\EdgeArray.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\CurveArray.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Grid.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Level.cs" />
