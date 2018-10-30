@@ -102,6 +102,12 @@ namespace BH.UI.Cobra.Adapter
 
                     if (revitSettings.Replace && aElement != null)
                     {
+                        if (aElement.Pinned)
+                        {
+                            DeletePinnedElementError(aElement);
+                            continue;
+                        }
+
                         document.Delete(aElement.Id);
                         aElement = null;
                     }
