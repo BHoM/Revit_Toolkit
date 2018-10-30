@@ -16,8 +16,6 @@ namespace BH.UI.Cobra.Engine
             if (property2D == null || document == null)
                 return null;
 
-            pushSettings = pushSettings.DefaultIfNull();
-
             return Query.ElementType(property2D, document, BuiltInCategory.OST_Floors) as FloorType;
 
             //List<FloorType> aFloorTypeList = new FilteredElementCollector(document).OfClass(typeof(FloorType)).OfCategory(BuiltInCategory.OST_Floors).Cast<FloorType>().ToList();

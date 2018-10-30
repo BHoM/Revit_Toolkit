@@ -102,7 +102,25 @@ namespace BH.UI.Cobra.Engine
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitFloor(panelPlanar, document, pushSettings);
+            return ToRevitHostObject(panelPlanar, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this oM.Structure.Properties.IProperty2D property2D, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitFloorType(property2D, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this FramingElement framingElement, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitFamilyInstance(framingElement, document, pushSettings);
         }
 
         /***************************************************/
