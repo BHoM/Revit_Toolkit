@@ -15,12 +15,10 @@ namespace BH.UI.Cobra.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static Element ToRevit(this BuildingElement buildingElement, Document document, PushSettings pushSettings = null)
+        internal static Element ToRevitElement(this BuildingElement buildingElement, Document document, PushSettings pushSettings = null)
         {
             if (buildingElement == null || buildingElement.BuildingElementProperties == null || document == null)
                 return null;
-
-            pushSettings = pushSettings.DefaultIfNull();
 
             //Get Level
             //TODO: Reimplement Level Query here - Issue #593 on BHoM_Engine - https://github.com/BuroHappoldEngineering/BHoM_Engine/issues/593
@@ -48,23 +46,23 @@ namespace BH.UI.Cobra.Engine
                     break;
                 case BuildingElementType.Floor:
                     if (aElementType != null)
-                        aElement = document.Create.NewFloor((buildingElement.PanelCurve as PolyCurve).ToRevit(pushSettings), aElementType as FloorType, aLevel, false);
+                        aElement = document.Create.NewFloor((buildingElement.PanelCurve as PolyCurve).ToRevitCurveArray(pushSettings), aElementType as FloorType, aLevel, false);
                     else
-                        aElement = document.Create.NewFloor((buildingElement.PanelCurve as PolyCurve).ToRevit(pushSettings), false);
+                        aElement = document.Create.NewFloor((buildingElement.PanelCurve as PolyCurve).ToRevitCurveArray(pushSettings), false);
                     aBuiltInParameters = new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM };
                     break;
                 case BuildingElementType.Roof:
                     //TODO: Check Roof Creation
                     ModelCurveArray aModelCurveArray = new ModelCurveArray();
                     if (aElementType != null)
-                        aElement = document.Create.NewFootPrintRoof((buildingElement.PanelCurve as PolyCurve).ToRevit(pushSettings), aLevel, aElementType as RoofType, out aModelCurveArray);
+                        aElement = document.Create.NewFootPrintRoof((buildingElement.PanelCurve as PolyCurve).ToRevitCurveArray(pushSettings), aLevel, aElementType as RoofType, out aModelCurveArray);
                     break;
                 case BuildingElementType.Wall:
                     ICurve aICurve = buildingElement.Bottom();
                     if (aICurve == null)
                         return null;
 
-                    aElement = Wall.Create(document, ToRevit(aICurve, pushSettings), aLevel.Id, false);
+                    aElement = Wall.Create(document, ToRevitCurve(aICurve, pushSettings), aLevel.Id, false);
                     if (aElementType != null)
                         aElement.ChangeTypeId(aElementType.Id);
 

@@ -14,13 +14,8 @@ namespace BH.UI.Cobra.Engine
         /**** Internal Methods                          ****/
         /***************************************************/
 
-        internal static Element ToRevit(this GenericObject genericObject, Document document, PushSettings pushSettings = null)
+        internal static Element ToRevitElement(this GenericObject genericObject, Document document, PushSettings pushSettings = null)
         {
-            if (genericObject == null || document == null)
-                return null;
-
-            pushSettings = pushSettings.DefaultIfNull();
-
             Element aElement = null;
 
             BuiltInCategory aBuiltInCategory = genericObject.BuiltInCategory(document, pushSettings.FamilyLibrary);
@@ -49,7 +44,7 @@ namespace BH.UI.Cobra.Engine
                                 if (aLevel == null)
                                     break;
 
-                                Curve aCurve = ToRevit((ICurve)aIGeometry, pushSettings);
+                                Curve aCurve = ToRevitCurve((ICurve)aIGeometry, pushSettings);
                                 aElement = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
                             }
                             break;

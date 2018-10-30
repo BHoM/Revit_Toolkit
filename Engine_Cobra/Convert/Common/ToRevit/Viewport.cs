@@ -14,7 +14,7 @@ namespace BH.UI.Cobra.Engine
         /**** Internal Methods                          ****/
         /***************************************************/
 
-        internal static Viewport ToRevit(this oM.Adapters.Revit.Elements.Viewport viewport, Document document, PushSettings pushSettings = null)
+        internal static Viewport ToRevitViewport(this oM.Adapters.Revit.Elements.Viewport viewport, Document document, PushSettings pushSettings = null)
         {
             if (viewport == null)
                 return null;

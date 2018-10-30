@@ -13,7 +13,7 @@ namespace BH.UI.Cobra.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static ElementType ToRevit(this BuildingElementProperties buildingElementProperties, Document document, PushSettings pushSettings = null)
+        internal static ElementType ToRevitElementType(this BuildingElementProperties buildingElementProperties, Document document, PushSettings pushSettings = null)
         {
             if (buildingElementProperties == null || document == null)
                 return null;
@@ -21,8 +21,6 @@ namespace BH.UI.Cobra.Engine
             BuiltInCategory aBuiltInCategory = buildingElementProperties.BuildingElementType.BuiltInCategory();
             if (aBuiltInCategory == BuiltInCategory.INVALID)
                 return null;
-
-            pushSettings = pushSettings.DefaultIfNull();
 
             ElementType aElementType = buildingElementProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLibrary);
             if(aElementType == null)

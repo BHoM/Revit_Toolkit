@@ -10,7 +10,7 @@ namespace BH.UI.Cobra.Engine
         /**** Internal Methods                          ****/
         /***************************************************/
 
-        internal static Material ToRevit(this IMaterial material, Document document, PushSettings pushSettings = null)
+        internal static Material ToRevitMaterial(this IMaterial material, Document document, PushSettings pushSettings = null)
         {
             ElementId aElementId = Material.Create(document, material.Name);
             return document.GetElement(aElementId) as Material;

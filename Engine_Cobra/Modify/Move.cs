@@ -66,7 +66,7 @@ namespace BH.UI.Cobra.Engine
             if (locationCurve.IsReadOnly)
                 return null;
 
-            Curve aCurve = iCurve.ToRevit(pushSettings);
+            Curve aCurve = iCurve.ToRevitCurve(pushSettings);
             if (Query.IsSimilar(aCurve, locationCurve.Curve))
                 return locationCurve;
 
