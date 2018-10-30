@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Autodesk.Revit.DB;
+
+using BH.UI.Cobra.Engine;
+
 using BH.oM.Base;
+using BH.oM.Structure.Elements;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Properties;
 using BH.oM.Adapters.Revit.Settings;
-
-using Autodesk.Revit.DB;
-using BH.UI.Cobra.Engine;
-using BH.oM.Adapters.Revit.Elements;
 
 namespace BH.UI.Cobra.Adapter
 {
@@ -82,6 +83,12 @@ namespace BH.UI.Cobra.Adapter
                 if (aBHoMObject == null)
                 {
                     NullObjectCreateError(typeof(IBHoMObject));
+                    continue;
+                }
+
+                if(aBHoMObject is Bar)
+                {
+                    ConvertBeforePushError(aBHoMObject, typeof(FramingElement));
                     continue;
                 }
 
