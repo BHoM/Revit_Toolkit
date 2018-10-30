@@ -1,4 +1,5 @@
-﻿using BH.Engine.Adapters.Revit;
+﻿using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Base;
 using System;
 
@@ -41,6 +42,13 @@ namespace BH.UI.Cobra.Adapter
         private static void ObjectNotMovedWarning(IBHoMObject iBHoMObject)
         {
             BH.Engine.Reflection.Compute.RecordWarning(string.Format("Revit object could not be moved. Revit element id: {0}, BHoM object Guid: {1}", Query.ElementId( iBHoMObject).ToString(),  iBHoMObject.BHoM_Guid));
+        }
+
+        /***************************************************/
+
+        private static void DeletePinnedElementError(Element Element)
+        {
+            BH.Engine.Reflection.Compute.RecordError(string.Format("Could not delete pinned element. Element Id: {0}", Element.Id));
         }
 
         /***************************************************/
