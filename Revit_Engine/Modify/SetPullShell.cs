@@ -9,17 +9,17 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static FilterQuery SetPullShell(this FilterQuery filterQuery, bool PullShell)
+        public static FilterQuery SetDefaultDiscipline(this FilterQuery filterQuery, Discipline Discipline)
         {
             if (filterQuery == null)
                 return null;
 
             FilterQuery aFilterQuery = Query.Duplicate(filterQuery);
 
-            if (aFilterQuery.Equalities.ContainsKey(Convert.FilterQuery.PullShell))
-                aFilterQuery.Equalities[Convert.FilterQuery.PullShell] = PullShell;
+            if (aFilterQuery.Equalities.ContainsKey(Convert.FilterQuery.DefaultDiscipline))
+                aFilterQuery.Equalities[Convert.FilterQuery.DefaultDiscipline] = Discipline;
             else
-                aFilterQuery.Equalities.Add(Convert.FilterQuery.PullShell, PullShell);
+                aFilterQuery.Equalities.Add(Convert.FilterQuery.DefaultDiscipline, Discipline);
 
             return aFilterQuery;
         }
