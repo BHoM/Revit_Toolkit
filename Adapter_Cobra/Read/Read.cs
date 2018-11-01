@@ -140,8 +140,21 @@ namespace BH.UI.Cobra.Adapter
                 }
 
                 IEnumerable<IBHoMObject> aIBHoMObjects = Read(aElement, aRevitSettings, aPullSettings);
+
                 if (aIBHoMObjects != null && aIBHoMObjects.Count() > 0)
-                {
+                { 
+                    //Pull Element Shell
+                    if (BH.Engine.Adapters.Revit.Query.PullShell(filterQuery))
+                    {
+                        Options aOptions = new Options();
+                        aOptions.ComputeReferences = false;
+                        aOptions.DetailLevel = ViewDetailLevel.Fine;
+                        aOptions.IncludeNonVisibleObjects = false;
+
+                        List<ICurve> aCurveList = aElement.Curves(aOptions, aPullSettings);
+                        aIBHoMObjects = aIBHoMObjects.ToList().ConvertAll(x => x.SetCustomData(BH.Engine.Adapters.Revit.Convert.Shell, aCurveList));
+                    }
+
                     aResult.AddRange(aIBHoMObjects);
                     aElementIdList.Add(aElement.Id);
                 }

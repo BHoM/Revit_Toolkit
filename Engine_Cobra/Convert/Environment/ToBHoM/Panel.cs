@@ -19,12 +19,12 @@ namespace BH.UI.Cobra.Engine
 
             List<oM.Environment.Elements.Panel> aResult = new List<oM.Environment.Elements.Panel>();
 
-            List<List<BH.oM.Geometry.ICurve>> crvs = planarFace.ToBHoMCurve(pullSettings);
+            List<List<oM.Geometry.ICurve>> crvs = planarFace.ToBHoMCurve(pullSettings);
 
-            foreach(List<BH.oM.Geometry.ICurve> lst in crvs)
+            foreach(List<oM.Geometry.ICurve> lst in crvs)
             {
                 //Create the Panel
-                BH.oM.Environment.Elements.Panel aPanel = Create.Panel(BH.Engine.Geometry.Create.PolyCurve(lst));
+                oM.Environment.Elements.Panel aPanel = Create.Panel(BH.Engine.Geometry.Create.PolyCurve(lst));
                 aResult.Add(aPanel);
             }
 
