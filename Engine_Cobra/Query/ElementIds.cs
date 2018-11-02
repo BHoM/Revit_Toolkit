@@ -156,10 +156,15 @@ namespace BH.UI.Cobra.Engine
                         aType = typeof(Autodesk.Revit.DB.Electrical.CableTray);
 
                     if (aType == null)
-                        return null;
+                        continue;
 
-                    foreach (ElementId aElementId in new FilteredElementCollector(document).OfClass(aType).ToElementIds())
-                        aResult.Add(aElementId);
+                    List<Element> aElementList = new FilteredElementCollector(document).OfClass(aType).ToList();
+                    if (aElementList == null || aElementList.Count == 0)
+                        continue;
+
+                    foreach(Element aElement in aElementList)
+                        if (aElement != null && aElement.GetTypeId() == aElementType.Id)
+                            aResult.Add(aElement.Id);
                 }
             }
             return aResult;
