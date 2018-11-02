@@ -1,4 +1,5 @@
 ﻿using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.Engine.Adapters.Revit
@@ -9,7 +10,7 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static RevitSettings RevitSettings(int pushPort = 14128, int pullPort = 14129, int maxMinutesToWait = 10, Discipline defaultDiscipline = Discipline.Environmental, string tagsParameterName = "BHE_Tags")
+        public static RevitSettings RevitSettings(int pushPort = 14128, int pullPort = 14129, int maxMinutesToWait = 10, Discipline defaultDiscipline = Discipline.Structural, string tagsParameterName = "BHE_Tags", FamilyLibrary familyLibrary = null)
         {
             RevitSettings aRevitSettings = new RevitSettings()
             {
@@ -19,6 +20,9 @@ namespace BH.Engine.Adapters.Revit
                 DefaultDiscipline = defaultDiscipline,
                 TagsParameterName = tagsParameterName
             };
+
+            if (familyLibrary != null)
+                aRevitSettings.FamilyLibrary = familyLibrary;
 
             return aRevitSettings;
         }
