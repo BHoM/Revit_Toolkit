@@ -95,7 +95,9 @@ namespace BH.UI.Cobra.Adapter
 
         public override IEnumerable<IBHoMObject> Read(FilterQuery filterQuery)
         {
-            if (Document == null)
+            Document aDocument = Document;
+
+            if (aDocument == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
                 return null;
@@ -122,7 +124,7 @@ namespace BH.UI.Cobra.Adapter
             List<ElementId> aElementIdList = new List<ElementId>();
             foreach (KeyValuePair<ElementId, List<FilterQuery>> aKeyValuePair in aFilterQueryDictionary)
             {
-                Element aElement = Document.GetElement(aKeyValuePair.Key);
+                Element aElement = aDocument.GetElement(aKeyValuePair.Key);
                 if (aElement == null || aElementIdList.Contains(aElement.Id))
                     continue;
 
@@ -151,8 +153,18 @@ namespace BH.UI.Cobra.Adapter
                         aOptions.DetailLevel = ViewDetailLevel.Fine;
                         aOptions.IncludeNonVisibleObjects = false;
 
-                        List<ICurve> aCurveList = aElement.Curves(aOptions, aPullSettings);
-                        aIBHoMObjects = aIBHoMObjects.ToList().ConvertAll(x => x.SetCustomData(BH.Engine.Adapters.Revit.Convert.Shell, aCurveList));
+                        foreach(IBHoMObject aIBHoMObject in aIBHoMObjects)
+                        {
+                            ElementId aElementId = aIBHoMObject.ElementId();
+                            if (aElementId == null || aElementId == ElementId.InvalidElementId)
+                                continue;
+
+                            Element aElement_Temp = aDocument.GetElement(aElementId);
+                            if (aElement_Temp == null)
+                                continue;
+
+                            aIBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Shell] = aElement_Temp.Curves(aOptions, aPullSettings);
+                        }
                     }
 
                     aResult.AddRange(aIBHoMObjects);
