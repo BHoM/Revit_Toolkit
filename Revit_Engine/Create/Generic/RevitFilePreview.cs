@@ -33,8 +33,28 @@ namespace BH.Engine.Adapters.Revit
                 {
                     if (aStreamInfo.Name.Equals("PartAtom"))
                     {
-                        byte[] aFileInfoData = ParseStreamInfo(aStreamInfo);
-                        aXDocument = XDocument.Parse(Encoding.Default.GetString(aFileInfoData));
+                        byte[] aBytes = ParseStreamInfo(aStreamInfo);
+                        try
+                        {
+                            aXDocument = XDocument.Parse(Encoding.UTF8.GetString(aBytes));
+                        }
+                        catch
+                        {
+                            aXDocument = null;
+                        }
+
+                        if(aXDocument == null)
+                        {
+                            try
+                            {
+                                aXDocument = XDocument.Parse(Encoding.Default.GetString(aBytes));
+                            }
+                            catch
+                            {
+                                aXDocument = null;
+                            }
+                        }
+                        
                         break;
                     }
                 }
