@@ -7,6 +7,7 @@ using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.DataManipulation.Queries;
+using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -126,6 +127,20 @@ namespace BH.UI.Cobra.Engine
             }
 
             return aBuiltInCategory;
+        }
+
+        /***************************************************/
+
+        public static BuiltInCategory BuiltInCategory(this IBHoMObject bHoMObject, Document document, FamilyLoadSettings familyLoadSettings = null)
+        {
+            if (bHoMObject == null || document == null)
+                return Autodesk.Revit.DB.BuiltInCategory.INVALID;
+
+            FamilyLibrary aFamilyLibrary = null;
+            if (familyLoadSettings != null)
+                aFamilyLibrary = familyLoadSettings.FamilyLibrary;
+
+            return BuiltInCategory(bHoMObject, document, aFamilyLibrary);
         }
 
         /***************************************************/

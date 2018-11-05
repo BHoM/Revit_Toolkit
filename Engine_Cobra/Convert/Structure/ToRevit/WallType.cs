@@ -15,7 +15,7 @@ namespace BH.UI.Cobra.Engine
             if (property2D == null || document == null)
                 return null;
 
-            return Query.ElementType(property2D, document, BuiltInCategory.OST_Walls, pushSettings.FamilyLibrary) as WallType;
+            return Query.ElementType(property2D, document, BuiltInCategory.OST_Walls, pushSettings.FamilyLoadSettings) as WallType;
 
             //List<WallType> aWallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).OfCategory(BuiltInCategory.OST_Walls).Cast<WallType>().ToList();
             //if (aWallTypeList == null || aWallTypeList.Count < 1)

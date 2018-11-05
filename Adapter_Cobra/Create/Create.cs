@@ -72,7 +72,7 @@ namespace BH.UI.Cobra.Adapter
                 Replace = revitSettings.GeneralSettings.Replace,
                 ConvertUnits = true,
                 CopyCustomData = true,
-                FamilyLibrary = revitSettings.FamilyLoadSettings.FamilyLibrary
+                FamilyLoadSettings = revitSettings.FamilyLoadSettings
 
             };
 

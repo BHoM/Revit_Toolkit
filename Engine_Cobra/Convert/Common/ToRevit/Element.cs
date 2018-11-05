@@ -18,9 +18,9 @@ namespace BH.UI.Cobra.Engine
         {
             Element aElement = null;
 
-            BuiltInCategory aBuiltInCategory = genericObject.BuiltInCategory(document, pushSettings.FamilyLibrary);
+            BuiltInCategory aBuiltInCategory = genericObject.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
 
-            ElementType aElementType = genericObject.ElementType(document, aBuiltInCategory, pushSettings.FamilyLibrary);
+            ElementType aElementType = genericObject.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
 
             if (aElementType != null)
             {
@@ -84,9 +84,9 @@ namespace BH.UI.Cobra.Engine
 
             Element aElement = null;
 
-            BuiltInCategory aBuiltInCategory = draftingObject.BuiltInCategory(document, pushSettings.FamilyLibrary);
+            BuiltInCategory aBuiltInCategory = draftingObject.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
 
-            ElementType aElementType = draftingObject.ElementType(document, aBuiltInCategory, pushSettings.FamilyLibrary);
+            ElementType aElementType = draftingObject.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
 
             if (aElementType != null)
             {

@@ -20,7 +20,7 @@ namespace BH.UI.Cobra.Engine
             if (framingElementProperty == null || document == null)
                 return null;
 
-            return Query.ElementType(framingElementProperty, document, BuiltInCategory.OST_StructuralColumns, pushSettings.FamilyLibrary) as FamilySymbol;
+            return Query.ElementType(framingElementProperty, document, BuiltInCategory.OST_StructuralColumns, pushSettings.FamilyLoadSettings) as FamilySymbol;
             
             //framingElementProperty.ElementType()
 
@@ -47,7 +47,7 @@ namespace BH.UI.Cobra.Engine
 
             pushSettings = pushSettings.DefaultIfNull();
 
-            return Query.ElementType(framingElementProperty, document, BuiltInCategory.OST_StructuralFraming, pushSettings.FamilyLibrary) as FamilySymbol;
+            return Query.ElementType(framingElementProperty, document, BuiltInCategory.OST_StructuralFraming, pushSettings.FamilyLoadSettings) as FamilySymbol;
 
             //List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilySymbol>().ToList();
             //if (aFamilySymbolList == null || aFamilySymbolList.Count < 1)
