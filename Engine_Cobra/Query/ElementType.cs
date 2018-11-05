@@ -15,7 +15,7 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public ElementType ElementType(this IBHoMObject bHoMObject, IEnumerable<ElementType> elementTypes)
+        static public ElementType ElementType(this IBHoMObject bHoMObject, IEnumerable<ElementType> elementTypes, bool exactMatch = true)
         {
             if (elementTypes == null || bHoMObject == null)
                 return null;
@@ -39,7 +39,7 @@ namespace BH.UI.Cobra.Engine
                 }
             }
 
-            if (!string.IsNullOrEmpty(aFamilyName))
+            if (!string.IsNullOrEmpty(aFamilyName) && !exactMatch)
             {
                 foreach (ElementType aElementType in elementTypes)
                 {
@@ -64,7 +64,7 @@ namespace BH.UI.Cobra.Engine
             List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(typeof(ElementType)).OfCategory(builtInCategory).Cast<ElementType>().ToList();
 
             //Find Existing ElementType in Document
-            ElementType aElementType = bHoMObject.ElementType(aElementTypeList);
+            ElementType aElementType = bHoMObject.ElementType(aElementTypeList, true);
             if (aElementType != null)
                 return aElementType;
 

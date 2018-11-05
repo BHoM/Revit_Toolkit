@@ -78,6 +78,7 @@
     <Compile Include="Create\FilterQuery\LogicalAndFilterQuery.cs" />
     <Compile Include="Create\FilterQuery\WorksetFilterQuery.cs" />
     <Compile Include="Create\FilterQuery\CategoryFilterQuery.cs" />
+    <Compile Include="Create\Settings\GeneralSettings.cs" />
     <Compile Include="Create\Settings\FamilyLoadSettings.cs" />
     <Compile Include="Create\Settings\ConnectionSettings.cs" />
     <Compile Include="Create\Settings\RevitSettings.cs" />
