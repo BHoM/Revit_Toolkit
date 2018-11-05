@@ -9,12 +9,9 @@ namespace BH.oM.Adapters.Revit.Settings
         /***************************************************/
 
         public bool CopyCustomData { get; set; } = true;
-
         public bool ConvertUnits { get; set; } = true;
-
         public bool Replace { get; set; } = true;
-
-        public Generic.FamilyLibrary FamilyLibrary { get; set; } = null;
+        public FamilyLoadSettings FamilyLoadSettings { get; set; } = null;
 
         /***************************************************/
 

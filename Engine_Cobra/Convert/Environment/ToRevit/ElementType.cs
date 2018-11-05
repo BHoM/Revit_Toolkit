@@ -22,7 +22,7 @@ namespace BH.UI.Cobra.Engine
             if (aBuiltInCategory == BuiltInCategory.INVALID)
                 return null;
 
-            ElementType aElementType = buildingElementProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLibrary);
+            ElementType aElementType = buildingElementProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
             if(aElementType == null)
             {
                 List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfCategory(aBuiltInCategory).WhereElementIsElementType().Cast<ElementType>().ToList();

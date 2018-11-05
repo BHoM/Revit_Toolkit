@@ -5,8 +5,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Base;
 using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Generic;
-
+using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -57,7 +56,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        static public ElementType ElementType(this IBHoMObject bHoMObject, Document document, BuiltInCategory builtInCategory, FamilyLibrary familyLibrary = null, bool DuplicateTypeIfNotExists = true)
+        static public ElementType ElementType(this IBHoMObject bHoMObject, Document document, BuiltInCategory builtInCategory, FamilyLoadSettings familyLoadSettings = null, bool DuplicateTypeIfNotExists = true)
         {
             if (bHoMObject == null || document == null)
                 return null;
@@ -70,7 +69,7 @@ namespace BH.UI.Cobra.Engine
                 return aElementType;
 
             //Find ElementType in FamilyLibrary
-            if (familyLibrary != null)
+            if (familyLoadSettings != null)
             {
                 string aCategoryName = builtInCategory.CategoryName(document);
                 if (string.IsNullOrEmpty(aCategoryName))
@@ -81,7 +80,7 @@ namespace BH.UI.Cobra.Engine
                     aFamilyTypeName = bHoMObject.Name;
 
                 string aFamilyName = bHoMObject.FamilyName();
-                FamilySymbol aFamilySymbol = familyLibrary.LoadFamilySymbol(document, aCategoryName, aFamilyName, aFamilyTypeName);
+                FamilySymbol aFamilySymbol = familyLoadSettings.LoadFamilySymbol(document, aCategoryName, aFamilyName, aFamilyTypeName);
                 if(aFamilySymbol != null)
                 {
                     if (!aFamilySymbol.IsActive)
@@ -123,12 +122,12 @@ namespace BH.UI.Cobra.Engine
                             if (string.IsNullOrEmpty(aCategoryName))
                                 aCategoryName = bHoMObject.CategoryName();
 
-                            if (familyLibrary != null)
+                            if (familyLoadSettings != null)
                             {
                                 string aFamilyName = bHoMObject.FamilyName();
                                 if (!string.IsNullOrEmpty(aFamilyName))
                                 {
-                                    FamilySymbol aFamilySymbol = familyLibrary.LoadFamilySymbol(document, aCategoryName, aFamilyName);
+                                    FamilySymbol aFamilySymbol = familyLoadSettings.LoadFamilySymbol(document, aCategoryName, aFamilyName);
                                     if(aFamilySymbol != null)
                                     {
                                         if (!aFamilySymbol.IsActive)
