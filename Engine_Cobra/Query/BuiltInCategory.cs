@@ -58,7 +58,7 @@ namespace BH.UI.Cobra.Engine
                 if (string.IsNullOrEmpty(aFamilyName))
                     return Autodesk.Revit.DB.BuiltInCategory.INVALID;
 
-                string aTypeName = BH.Engine.Adapters.Revit.Query.TypeName(bHoMObject);
+                string aTypeName = BH.Engine.Adapters.Revit.Query.FamilyTypeName(bHoMObject);
 
                 List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>().ToList();
 
@@ -112,7 +112,7 @@ namespace BH.UI.Cobra.Engine
 
                 if (aBuiltInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID && familyLibrary != null)
                 {
-                    List<string> aCategoryNameList = BH.Engine.Adapters.Revit.Query.CategoryNames(familyLibrary, aFamilyName, BH.Engine.Adapters.Revit.Query.TypeName(bHoMObject));
+                    List<string> aCategoryNameList = BH.Engine.Adapters.Revit.Query.CategoryNames(familyLibrary, aFamilyName, BH.Engine.Adapters.Revit.Query.FamilyTypeName(bHoMObject));
                     if (aCategoryNameList != null && aCategoryNameList.Count > 0)
                         aBuiltInCategory = document.BuiltInCategory(aCategoryNameList.First());
 

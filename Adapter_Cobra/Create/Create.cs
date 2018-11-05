@@ -193,7 +193,7 @@ namespace BH.UI.Cobra.Adapter
 
             aParameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
             if (aParameter != null)
-                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.TypeName, aParameter.AsValueString());
+                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyTypeName, aParameter.AsValueString());
 
             aParameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
             if (aParameter != null)

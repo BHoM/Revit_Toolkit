@@ -18,7 +18,7 @@ namespace BH.Engine.Adapters.Revit
             };
 
             aGenericObject.CustomData.Add(Convert.FamilyName, familyName);
-            aGenericObject.CustomData.Add(Convert.TypeName, typeName);
+            aGenericObject.CustomData.Add(Convert.FamilyTypeName, typeName);
 
             return aGenericObject;
         }
@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.Revit
             };
 
             aGenericObject.CustomData.Add(Convert.FamilyName, familyName);
-            aGenericObject.CustomData.Add(Convert.TypeName, typeName);
+            aGenericObject.CustomData.Add(Convert.FamilyTypeName, typeName);
 
             return aGenericObject;
         }

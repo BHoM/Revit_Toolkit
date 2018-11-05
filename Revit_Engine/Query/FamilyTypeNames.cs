@@ -12,12 +12,12 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<string> TypeNames(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null)
+        public static List<string> FamilyTypeNames(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null)
         {
             if (familyLibrary == null)
                 return null;
 
-            List<string> aTypeNames = new List<string>();
+            List<string> aFamilyTypeNames = new List<string>();
 
             List<Dictionary<string, Dictionary<string, string>>> aDictionaryList_Category = new List<Dictionary<string, Dictionary<string, string>>>();
 
@@ -34,22 +34,22 @@ namespace BH.Engine.Adapters.Revit
             {
                 if (string.IsNullOrEmpty(familyName))
                 {
-                    aTypeNames.AddRange(aDictionary_Category.Keys);
+                    aFamilyTypeNames.AddRange(aDictionary_Category.Keys);
                 }
                 else
                 {
                     foreach (KeyValuePair<string, Dictionary<string, string>> aKeyValuePair_Category in aDictionary_Category)
                         if (aKeyValuePair_Category.Value.ContainsKey(familyName))
-                            aTypeNames.Add(aKeyValuePair_Category.Key);
+                            aFamilyTypeNames.Add(aKeyValuePair_Category.Key);
                 }
             }
 
-            return aTypeNames;
+            return aFamilyTypeNames;
         }
 
         /***************************************************/
 
-        public static List<string> TypeNames(this RevitFilePreview RevitFilePreview)
+        public static List<string> FamilyTypeNames(this RevitFilePreview RevitFilePreview)
         {
             if (RevitFilePreview == null || RevitFilePreview.XDocument == null)
                 return null;

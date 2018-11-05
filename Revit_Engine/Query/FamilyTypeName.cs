@@ -9,7 +9,7 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static string FamilySymbolName(this FilterQuery filterQuery)
+        public static string FamilyTypeName(this FilterQuery filterQuery)
         {
             if (filterQuery == null)
                 return null;
@@ -18,6 +18,25 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             return filterQuery.Equalities[Convert.FilterQuery.FamilyTypeName] as string;
+        }
+
+        /***************************************************/
+
+        public static string FamilyTypeName(this IBHoMObject bHoMObject)
+        {
+            if (bHoMObject == null)
+                return null;
+
+            object aValue = null;
+            if (bHoMObject.CustomData.TryGetValue(Convert.FamilyTypeName, out aValue))
+            {
+                if (aValue == null)
+                    return null;
+
+                return aValue.ToString();
+            }
+
+            return null;
         }
 
         /***************************************************/

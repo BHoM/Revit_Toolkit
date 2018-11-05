@@ -219,7 +219,7 @@ namespace Revit_Test
 
                     string aCategoryName = Query.CategoryName(aReviFilePreview);
                     string aOmniClass = Query.OmniClass(aReviFilePreview);
-                    List<string> aTypeNameList = Query.TypeNames(aReviFilePreview);
+                    List<string> aTypeNameList = Query.FamilyTypeNames(aReviFilePreview);
                     foreach (string aTypeName in aTypeNameList)
                     {
                         aResult.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\n", aFileInfo.FullName, Path.GetFileNameWithoutExtension(aFileInfo.FullName), aTypeName, aCategoryName, aOmniClass));

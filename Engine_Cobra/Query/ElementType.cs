@@ -21,7 +21,7 @@ namespace BH.UI.Cobra.Engine
             if (elementTypes == null || bHoMObject == null)
                 return null;
 
-            string aTypeName = bHoMObject.TypeName();
+            string aTypeName = bHoMObject.FamilyTypeName();
             if (string.IsNullOrEmpty(aTypeName))
                 aTypeName = bHoMObject.Name;
 
@@ -76,12 +76,12 @@ namespace BH.UI.Cobra.Engine
                 if (string.IsNullOrEmpty(aCategoryName))
                     aCategoryName = bHoMObject.CategoryName();
 
-                string aTypeName = bHoMObject.TypeName();
-                if (string.IsNullOrEmpty(aTypeName))
-                    aTypeName = bHoMObject.Name;
+                string aFamilyTypeName = bHoMObject.FamilyTypeName();
+                if (string.IsNullOrEmpty(aFamilyTypeName))
+                    aFamilyTypeName = bHoMObject.Name;
 
                 string aFamilyName = bHoMObject.FamilyName();
-                FamilySymbol aFamilySymbol = familyLibrary.LoadFamilySymbol(document, aCategoryName, aFamilyName, aTypeName);
+                FamilySymbol aFamilySymbol = familyLibrary.LoadFamilySymbol(document, aCategoryName, aFamilyName, aFamilyTypeName);
                 if(aFamilySymbol != null)
                 {
                     if (!aFamilySymbol.IsActive)
@@ -94,7 +94,7 @@ namespace BH.UI.Cobra.Engine
             //Duplicate if not exists
             if (aElementType == null && DuplicateTypeIfNotExists)
             {
-                string aTypeName = bHoMObject.TypeName();
+                string aTypeName = bHoMObject.FamilyTypeName();
                 if (string.IsNullOrEmpty(aTypeName))
                     aTypeName = bHoMObject.Name;
 

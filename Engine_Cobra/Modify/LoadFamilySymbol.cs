@@ -14,15 +14,15 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static FamilySymbol LoadFamilySymbol(this FamilyLibrary familyLibrary, Document document, string categoryName, string familyName, string typeName = null)
+        public static FamilySymbol LoadFamilySymbol(this FamilyLibrary familyLibrary, Document document, string categoryName, string familyName, string familyTypeName = null)
         {
             if (familyLibrary == null && document == null)
                 return null;
 
-            List<string> aPathList = BH.Engine.Adapters.Revit.Query.Paths(familyLibrary, categoryName, familyName, typeName);
+            List<string> aPathList = BH.Engine.Adapters.Revit.Query.Paths(familyLibrary, categoryName, familyName, familyTypeName);
             if (aPathList != null && aPathList.Count > 0)
             {
-                return LoadFamilySymbol(document, aPathList.First(), typeName);
+                return LoadFamilySymbol(document, aPathList.First(), familyTypeName);
             }
 
             return null;
@@ -30,12 +30,12 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        public static FamilySymbol LoadFamilySymbol(this Document document, string path, string typeName = null)
+        public static FamilySymbol LoadFamilySymbol(this Document document, string path, string familyTypeName = null)
         {
             if (string.IsNullOrEmpty(path) || document == null || !System.IO.File.Exists(path))
                 return null;
 
-            string aTypeName = typeName;
+            string aTypeName = familyTypeName;
             if(string.IsNullOrEmpty(aTypeName))
             {
                 //Look for first available type name if type name not provided
@@ -44,7 +44,7 @@ namespace BH.UI.Cobra.Engine
                 if (aRevitFilePreview == null)
                     return null;
 
-                List<string> aTypeNameList = BH.Engine.Adapters.Revit.Query.TypeNames(aRevitFilePreview);
+                List<string> aTypeNameList = BH.Engine.Adapters.Revit.Query.FamilyTypeNames(aRevitFilePreview);
                 if (aTypeNameList == null || aTypeNameList.Count < 1)
                     return null;
 
