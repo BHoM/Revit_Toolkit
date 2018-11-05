@@ -53,7 +53,7 @@ namespace BH.Engine.Adapters.Revit
             }
 
 
-            foreach (string aTypeName in aRevitFilePreview.TypeNames())
+            foreach (string aTypeName in aRevitFilePreview.FamilyTypeNames())
             {
                 Dictionary<string, string> aDictionary_Type = null;
                 if (!aDictionary_Category.TryGetValue(aTypeName, out aDictionary_Type))

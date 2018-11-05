@@ -19,7 +19,7 @@ namespace BH.Engine.Adapters.Revit
             };
 
             aDraftingObject.CustomData.Add(Convert.FamilyName, familyName);
-            aDraftingObject.CustomData.Add(Convert.TypeName, typeName);
+            aDraftingObject.CustomData.Add(Convert.FamilyTypeName, typeName);
 
             return aDraftingObject;
         }

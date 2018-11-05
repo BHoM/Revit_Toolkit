@@ -418,7 +418,7 @@ namespace BH.UI.Cobra.Engine
             //FamilyName and FamilySymbolName
             if (aQueryType == oM.Adapters.Revit.Enums.QueryType.Family)
             {
-                aElementIds = ElementIds(aDocument, BH.Engine.Adapters.Revit.Query.FamilyName(filterQuery), BH.Engine.Adapters.Revit.Query.FamilySymbolName(filterQuery), true);
+                aElementIds = ElementIds(aDocument, BH.Engine.Adapters.Revit.Query.FamilyName(filterQuery), BH.Engine.Adapters.Revit.Query.FamilyTypeName(filterQuery), true);
                 if(aElementIds != null && aElementIds.Count() > 0)
                     foreach(ElementId aElementId in aElementIds)
                         if(!aResult.Contains(aElementId))

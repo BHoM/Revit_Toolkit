@@ -37,7 +37,7 @@ namespace BH.UI.Cobra.Engine
 
             aParameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
             if (aParameter != null)
-                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.TypeName, aParameter.AsValueString());
+                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyTypeName, aParameter.AsValueString());
 
             aParameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
             if (aParameter != null)

@@ -10,7 +10,7 @@
         public const string ElementId = "Revit_elementId";
         public const string WorksetId = "Revit_worksetId";
         public const string FamilyName = "Revit_familyName";
-        public const string TypeName = "Revit_typeName";
+        public const string FamilyTypeName = "Revit_familyTypeName";
         public const string CategoryName = "Revit_categoryName";
         public const string Shell = "Revit_shell";
 

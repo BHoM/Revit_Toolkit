@@ -23,7 +23,7 @@ namespace BH.Engine.Adapters.Revit
             aSheet.CustomData.Add("Sheet Number", number);
 
             aSheet.CustomData.Add(Convert.FamilyName, "Sheet");
-            aSheet.CustomData.Add(Convert.TypeName, "Sheet");
+            aSheet.CustomData.Add(Convert.FamilyTypeName, "Sheet");
             aSheet.CustomData.Add(Convert.CategoryName, "Sheets");
 
             return aSheet;
