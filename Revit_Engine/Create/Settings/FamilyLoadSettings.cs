@@ -11,12 +11,16 @@ namespace BH.Engine.Adapters.Revit
 
         public static FamilyLoadSettings FamilyLoadSettings(FamilyLibrary familyLibrary = null, bool overwriteFamily = true, bool overwriteParameterValues = true)
         {
-            return new FamilyLoadSettings()
+            FamilyLoadSettings aFamilyLoadSettings = new FamilyLoadSettings()
             {
-                FamilyLibrary = familyLibrary,
                 OverwriteFamily = overwriteFamily,
                 OverwriteParameterValues = overwriteParameterValues
             };
+
+            if (familyLibrary != null)
+                aFamilyLoadSettings.FamilyLibrary = familyLibrary;
+
+            return aFamilyLoadSettings;
         }
 
         /***************************************************/

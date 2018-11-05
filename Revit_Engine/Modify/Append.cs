@@ -15,11 +15,18 @@ namespace BH.Engine.Adapters.Revit
             if (familyLibrary == null)
                 return null;
 
+            if (string.IsNullOrEmpty(directory) || !Directory.Exists(directory))
+                return familyLibrary;
+
             FamilyLibrary aFamilyLibrary = familyLibrary.GetShallowClone() as FamilyLibrary;
 
             DirectoryInfo aDirectoryInfo = new DirectoryInfo(directory);
 
-            FileInfo[] aFileInfos = aDirectoryInfo.GetFiles("*.rfa", SearchOption.AllDirectories);
+            SearchOption aSearchOption = SearchOption.AllDirectories;
+            if (topDirectoryOnly)
+                aSearchOption = SearchOption.TopDirectoryOnly;
+
+            FileInfo[] aFileInfos = aDirectoryInfo.GetFiles("*.rfa", aSearchOption);
             foreach (FileInfo aFileInfo in aFileInfos)
                 aFamilyLibrary = aFamilyLibrary.Append(aFileInfo.FullName);
 
@@ -33,6 +40,9 @@ namespace BH.Engine.Adapters.Revit
             if (familyLibrary == null)
                 return null;
 
+            if (string.IsNullOrEmpty(path) || !File.Exists(path))
+                return familyLibrary;
+
             FamilyLibrary aFamilyLibrary = familyLibrary.GetShallowClone() as FamilyLibrary;
 
             if (aFamilyLibrary.Dictionary == null)
@@ -42,7 +52,6 @@ namespace BH.Engine.Adapters.Revit
             RevitFilePreview aRevitFilePreview = Create.RevitFilePreview(path);
 
             string aCategoryName = aRevitFilePreview.CategoryName();
-
 
             Dictionary<string, Dictionary<string, string>> aDictionary_Category = null;
 

@@ -30,7 +30,7 @@ namespace BH.Adapter.Revit
             if (!active)
                 return;
 
-            if (revitSettings == null)
+            if (revitSettings != null)
                 RevitSettings = revitSettings;
 
             if (revitSettings.ConnectionSettings == null)

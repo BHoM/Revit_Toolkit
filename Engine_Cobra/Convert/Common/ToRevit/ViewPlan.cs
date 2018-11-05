@@ -35,7 +35,7 @@ namespace BH.UI.Cobra.Engine
 
             IEnumerable<ElementType> aViewFamilyTypes = new FilteredElementCollector(document).OfClass(typeof(ViewFamilyType)).Cast<ElementType>();
 
-            ElementType aElementType = floorPlan.ElementType(aViewFamilyTypes);
+            ElementType aElementType = floorPlan.ElementType(aViewFamilyTypes, false);
             if (aElementType == null)
                 return null;
 
