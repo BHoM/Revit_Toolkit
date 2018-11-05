@@ -11,14 +11,28 @@ namespace BH.Engine.Adapters.Revit
 
         public static RevitSettings SetFamilyLibrary(this RevitSettings revitSettings, FamilyLibrary familyLibrary)
         {
-            if (revitSettings == null)
+            if (revitSettings == null || revitSettings.FamilyLoadSettings == null)
                 return null;
 
             RevitSettings aRevitSettings = revitSettings.GetShallowClone() as RevitSettings;
 
-            aRevitSettings.FamilyLibrary = familyLibrary;
+            aRevitSettings.FamilyLoadSettings = SetFamilyLibrary(revitSettings.FamilyLoadSettings, familyLibrary);
 
             return aRevitSettings;
+        }
+
+        /***************************************************/
+
+        public static FamilyLoadSettings SetFamilyLibrary(this FamilyLoadSettings familyLoadSettings, FamilyLibrary familyLibrary)
+        {
+            if (familyLoadSettings == null)
+                return null;
+
+            FamilyLoadSettings aFamilyLoadSettings = familyLoadSettings.GetShallowClone() as FamilyLoadSettings;
+
+            aFamilyLoadSettings.FamilyLibrary = familyLibrary;
+
+            return aFamilyLoadSettings;
         }
 
         /***************************************************/

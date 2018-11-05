@@ -270,11 +270,15 @@ namespace BH.UI.Cobra.Adapter
             }
 
             //Assign Tags
-            if (aResult != null && revitSettings != null &&  !string.IsNullOrEmpty(revitSettings.TagsParameterName))
+            string aTagsParameterName = null;
+            if (revitSettings != null && revitSettings.GeneralSettings != null)
+                aTagsParameterName = revitSettings.GeneralSettings.TagsParameterName;
+
+            if (aResult != null && !string.IsNullOrEmpty(aTagsParameterName))
             {
                 for(int i=0; i < aResult.Count; i++)
                 {
-                    IBHoMObject aIBHoMObject = Modify.SetTags(aResult[i], element, revitSettings.TagsParameterName);
+                    IBHoMObject aIBHoMObject = Modify.SetTags(aResult[i], element, aTagsParameterName);
                     if (aIBHoMObject != null)
                         aResult[i] = aIBHoMObject;
                 }

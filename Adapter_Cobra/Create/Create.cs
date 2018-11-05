@@ -65,14 +65,14 @@ namespace BH.UI.Cobra.Adapter
 
         private static bool Create<T>(IEnumerable<T> objects, Document document, RevitSettings revitSettings) where T : IObject
         {
-            string aTagsParameterName = revitSettings.TagsParameterName;
+            string aTagsParameterName = revitSettings.GeneralSettings.TagsParameterName;
 
             PushSettings aPushSettings = new PushSettings()
             {
-                Replace = revitSettings.Replace,
+                Replace = revitSettings.GeneralSettings.Replace,
                 ConvertUnits = true,
                 CopyCustomData = true,
-                FamilyLibrary = revitSettings.FamilyLibrary
+                FamilyLibrary = revitSettings.FamilyLoadSettings.FamilyLibrary
 
             };
 
@@ -107,7 +107,7 @@ namespace BH.UI.Cobra.Adapter
                             aElement = document.GetElement(new ElementId(aId));
                     }
 
-                    if (revitSettings.Replace && aElement != null)
+                    if (revitSettings.GeneralSettings.Replace && aElement != null)
                     {
                         if (aElement.Pinned)
                         {

@@ -46,7 +46,6 @@ namespace BH.UI.Cobra.Engine
             if (bHoMObject == null || document == null)
                 return Autodesk.Revit.DB.BuiltInCategory.INVALID;
 
-
             BuiltInCategory aBuiltInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID;
             string aCategoryName = BH.Engine.Adapters.Revit.Query.CategoryName(bHoMObject);
             if (!string.IsNullOrEmpty(aCategoryName))
@@ -97,7 +96,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        public static BuiltInCategory BuiltInCategory(this IBHoMObject bHoMObject, Document document, FamilyLibrary familyLibrary)
+        public static BuiltInCategory BuiltInCategory(this IBHoMObject bHoMObject, Document document, FamilyLibrary familyLibrary = null)
         {
             BuiltInCategory aBuiltInCategory = bHoMObject.BuiltInCategory(document);
             if (aBuiltInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)

@@ -13,11 +13,11 @@ namespace BH.Engine.Adapters.Revit
 
         public static RevitSettings SetReplace(this RevitSettings RevitSettings, bool Replace)
         {
-            if (RevitSettings == null)
+            if (RevitSettings == null || RevitSettings.GeneralSettings == null)
                 return null;
 
             RevitSettings aRevitSettings = RevitSettings.GetShallowClone() as RevitSettings;
-            aRevitSettings.Replace = Replace;
+            aRevitSettings.GeneralSettings.Replace = Replace;
 
             return aRevitSettings;
         }

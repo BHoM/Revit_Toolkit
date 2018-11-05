@@ -10,11 +10,8 @@ namespace BH.oM.Adapters.Revit.Settings
         /***************************************************/
 
         public Enums.Discipline Discipline { get; set; } = Enums.Discipline.Structural;
-
         public bool CopyCustomData { get; set; } = true;
-
         public bool ConvertUnits { get; set; } = true;
-
         public Dictionary<int, List<IBHoMObject>> RefObjects = null;
 
         /***************************************************/

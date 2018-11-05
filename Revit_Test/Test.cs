@@ -59,7 +59,7 @@ namespace Revit_Test
             RevitAdapter aRevitAdapter = new RevitAdapter(null, true);
             //FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
             //FilterQuery aFilterQuery = Create.LogicalOrFilterQuery(new List<FilterQuery>() { Create.LogicalAndFilterQuery(new List<FilterQuery>() { Create.SelectionFilterQuery(typeof(BuildingElement)), Create.CategoryFilterQuery("Walls") }), Create.CategoryFilterQuery("Sheets") });
-            aRevitAdapter.RevitSettings.Replace = false;
+            aRevitAdapter.RevitSettings.GeneralSettings.Replace = false;
 
             FilterQuery aFilterQuery = Create.LogicalAndFilterQuery(Create.CategoryFilterQuery("Mechanical Equipment"), Create.TypeNameFilterQuery("FamilyInstance"));
 
@@ -87,7 +87,7 @@ namespace Revit_Test
             RevitSettings aRevitSetting = new RevitSettings();
             //aRevitSetting.SelectionSettings.ElementIds = new List<int>() { 2354 };
             //aRevitSetting.WorksetSettings.WorksetIds = new List<int>() { 0 };
-            aRevitSetting.DefaultDiscipline = Discipline.Structural;
+            aRevitSetting.GeneralSettings.DefaultDiscipline = Discipline.Structural;
 
             pRevitInternalAdapter.RevitSettings = aRevitSetting;
 
@@ -151,7 +151,7 @@ namespace Revit_Test
             FamilyLibrary aFamilyLibrary = Create.FamilyLibrary(@"C:\Users\jziolkow\Desktop\Families");
 
             RevitSettings aRevitSetting = Create.RevitSettings();
-            aRevitSetting.Replace = false;
+            aRevitSetting.GeneralSettings.Replace = false;
             aRevitSetting = aRevitSetting.SetFamilyLibrary(aFamilyLibrary);
 
             List<IBHoMObject> aIBHoMObjectList = new List<IBHoMObject>();
@@ -191,7 +191,7 @@ namespace Revit_Test
             FamilyLibrary aFamilyLibrary = Create.FamilyLibrary(@"C:\Users\jziolkow\Desktop\Families");
 
             RevitSettings aRevitSetting = Create.RevitSettings();
-            aRevitSetting.Replace = false;
+            aRevitSetting.GeneralSettings.Replace = false;
             aRevitSetting = aRevitSetting.SetFamilyLibrary(aFamilyLibrary);
 
             pRevitInternalAdapter.RevitSettings = aRevitSetting;
