@@ -12,10 +12,10 @@ namespace BH.Engine.Adapters.Revit
         
         public static Discipline? DefaultDiscipline(this RevitSettings revitSettings)
         {
-            if (revitSettings == null)
+            if (revitSettings == null || revitSettings.GeneralSettings == null)
                 return null;
 
-            return revitSettings.DefaultDiscipline;
+            return revitSettings.GeneralSettings.DefaultDiscipline;
         }
 
         /***************************************************/

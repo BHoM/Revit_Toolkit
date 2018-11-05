@@ -30,18 +30,21 @@ namespace BH.Adapter.Revit
             if (!active)
                 return;
 
-            if (revitSettings != null)
+            if (revitSettings == null)
                 RevitSettings = revitSettings;
 
-            m_linkIn = new SocketLink_Tcp(RevitSettings.PushPort);
-            m_linkOut = new SocketLink_Tcp(RevitSettings.PullPort);
+            if (revitSettings.ConnectionSettings == null)
+                revitSettings.ConnectionSettings = new ConnectionSettings();
+
+            m_linkIn = new SocketLink_Tcp(RevitSettings.ConnectionSettings.PushPort);
+            m_linkOut = new SocketLink_Tcp(RevitSettings.ConnectionSettings.PullPort);
             m_linkOut.DataObservers += M_linkOut_DataObservers;
 
             m_waitEvent = new ManualResetEvent(false);
             m_returnPackage = new List<object>();
             m_returnEvents = new List<Event>();
 
-            m_waitTime = RevitSettings.MaxMinutesToWait;
+            m_waitTime = RevitSettings.ConnectionSettings.MaxMinutesToWait;
         } 
 
 

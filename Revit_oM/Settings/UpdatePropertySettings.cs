@@ -9,9 +9,7 @@ namespace BH.oM.Adapters.Revit.Settings
         /***************************************************/
 
         public string ParameterName { get; set; } = null;
-
         public object Value { get; set; } = null;
-
         public bool ConvertUnits { get; set; } = true;
 
         /***************************************************/

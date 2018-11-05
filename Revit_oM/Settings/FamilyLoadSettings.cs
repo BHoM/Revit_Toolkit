@@ -3,15 +3,15 @@ using BH.oM.Base;
 
 namespace BH.oM.Adapters.Revit.Settings
 {
-    public class RevitSettings : BHoMObject
+    public class FamilyLoadSettings : BHoMObject
     {
         /***************************************************/
         /**** Public Properties                        ****/
         /***************************************************/
 
-        public ConnectionSettings ConnectionSettings { get; set; } = new ConnectionSettings();
-        public FamilyLoadSettings FamilyLoadSettings { get; set; } = new FamilyLoadSettings();
-        public GeneralSettings GeneralSettings { get; set; } = new GeneralSettings();
+        public Generic.FamilyLibrary FamilyLibrary { get; set; } = new Generic.FamilyLibrary();
+        public bool OverwriteFamily { get; set; } = true;
+        public bool OverwriteParameterValues { get; set; } = true;
 
         /***************************************************/
     }

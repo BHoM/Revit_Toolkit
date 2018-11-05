@@ -5,6 +5,7 @@ using BH.oM.Adapters.Revit.Generic;
 using BH.Engine.Adapters.Revit;
 
 using Autodesk.Revit.DB;
+using System;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -55,6 +56,7 @@ namespace BH.UI.Cobra.Engine
                 return null;
 
             FamilySymbol aFamilySymbol = null;
+
             if(document.LoadFamilySymbol(path, aTypeName, out aFamilySymbol))
             {
                 if (!aFamilySymbol.IsActive)
@@ -65,5 +67,19 @@ namespace BH.UI.Cobra.Engine
         }
 
         /***************************************************/
+    }
+
+    internal class FamilyLoadOptions : IFamilyLoadOptions
+    {
+        public bool OnFamilyFound(bool familyInUse, out bool overwriteParameterValues)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool OnSharedFamilyFound(Family sharedFamily, bool familyInUse, out FamilySource source, out bool overwriteParameterValues)
+        {
+            throw new NotImplementedException();
+         
+        }
     }
 }
