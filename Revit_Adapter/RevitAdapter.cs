@@ -33,8 +33,8 @@ namespace BH.Adapter.Revit
             if (revitSettings != null)
                 RevitSettings = revitSettings;
 
-            if (revitSettings.ConnectionSettings == null)
-                revitSettings.ConnectionSettings = new ConnectionSettings();
+            if (RevitSettings.ConnectionSettings == null)
+                RevitSettings.ConnectionSettings = new ConnectionSettings();
 
             m_linkIn = new SocketLink_Tcp(RevitSettings.ConnectionSettings.PushPort);
             m_linkOut = new SocketLink_Tcp(RevitSettings.ConnectionSettings.PullPort);
