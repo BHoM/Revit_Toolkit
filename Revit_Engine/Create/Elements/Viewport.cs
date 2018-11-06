@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.ComponentModel;
 
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -12,6 +12,11 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Creates Viewport on specific location point and which is assigned to the view by given name and to the sheet by given sheet Number.")]
+        [Input("sheetNumber", "Sheet Number linked with this Viewport")]
+        [Input("viewName", "View Name linked with this Viewport")]
+        [Input("location", "Location of the view port on sheet")]
+        [Output("Viewport")]
         public static Viewport Viewport(string sheetNumber, string viewName, Point location)
         {
             Viewport aViewport = new Viewport()
