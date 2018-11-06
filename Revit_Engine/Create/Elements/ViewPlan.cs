@@ -1,4 +1,7 @@
-﻿using BH.oM.Adapters.Revit.Elements;
+﻿using System.ComponentModel;
+
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -8,6 +11,10 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Creates ViewPlan object by given name and Level Name.")]
+        [Input("name", "View plan Name")]
+        [Input("levelName", "Level Name")]
+        [Output("ViewPlan")]
         public static ViewPlan ViewPlan(string name, string levelName)
         {
             ViewPlan aViewPlan = new ViewPlan()
@@ -27,6 +34,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Creates ViewPlan object by given name.")]
+        [Input("name", "View plan Name")]
+        [Output("ViewPlan")]
         public static ViewPlan ViewPlan(string name)
         {
             ViewPlan aViewPlan = new ViewPlan()

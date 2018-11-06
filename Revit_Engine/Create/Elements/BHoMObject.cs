@@ -1,4 +1,7 @@
-﻿using BH.oM.Base;
+﻿using System.ComponentModel;
+
+using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -8,28 +11,34 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static BHoMObject BHoMObject(int ElementId)
+        [Description("Creates BHoMObject by given Revit ElementId (Element.Id). Allows to pull parameters from any element from Revit")]
+        [Input("elementId", "Integer value for Revit ElementId")]
+        [Output("BHoMObject")]
+        public static BHoMObject BHoMObject(int elementId)
         {
             BHoMObject aBHoMObject = new BHoMObject()
             {
 
             };
 
-            aBHoMObject.CustomData.Add(Convert.ElementId, ElementId);
+            aBHoMObject.CustomData.Add(Convert.ElementId, elementId);
 
             return aBHoMObject;
         }
 
         /***************************************************/
 
-        public static BHoMObject BHoMObject(string UniqueId)
+        [Description("Creates BHoMObject by given Revit UniqueID (Element.UniqueId). Allows to pull parameters from any element from Revit")]
+        [Input("elementId", "Integer value for Revit ElementId")]
+        [Output("BHoMObject")]
+        public static BHoMObject BHoMObject(string uniqueId)
         {
             BHoMObject aBHoMObject = new BHoMObject()
             {
 
             };
 
-            aBHoMObject.CustomData.Add(Convert.AdapterId, UniqueId);
+            aBHoMObject.CustomData.Add(Convert.AdapterId, uniqueId);
 
             return aBHoMObject;
         }
