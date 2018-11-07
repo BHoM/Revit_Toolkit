@@ -1,12 +1,15 @@
-﻿using BH.oM.Adapters.Revit.Generic;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.IO.Packaging;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
+
+using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -16,6 +19,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Creates Revit File Preview Class which stores basic information about Revit File such as Family Category, Familiy Type Names etc.")]
+        [Input("path", "Path to the Revit file")]
+        [Output("RevitFilePreview")]
         public static RevitFilePreview RevitFilePreview(string path)
         {
             XDocument aXDocument = null;
@@ -71,6 +77,8 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
 
         private static object InvokeStorageRootMethod(StorageInfo storageInfoRoot, string methodName, params object[] methodArgs)
         {
@@ -79,6 +87,8 @@ namespace BH.Engine.Adapters.Revit
             object aResult = aStorageRootType.InvokeMember(methodName, aBindingFlags, null, storageInfoRoot, methodArgs);
             return aResult;
         }
+
+        /***************************************************/
 
         private static byte[] ParseStreamInfo(StreamInfo streamInfo)
         {
@@ -102,10 +112,16 @@ namespace BH.Engine.Adapters.Revit
             }
         }
 
+        /***************************************************/
+
         private static void CloseStorageInfo(StorageInfo storageInfo)
         {
             InvokeStorageRootMethod(storageInfo, "Close");
         }
+
+        /***************************************************/
+
+
     }
 }
 

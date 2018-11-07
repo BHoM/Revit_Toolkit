@@ -114,14 +114,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementProperties aBuildingElementProperties = null;
-            if (pullSettings.RefObjects != null)
-            {
-                List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
-                if (pullSettings.RefObjects.TryGetValue(elementType.Id.IntegerValue, out aBHoMObjectList))
-                    if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                        aBuildingElementProperties = aBHoMObjectList.First() as BuildingElementProperties;
-            }
+            BuildingElementProperties aBuildingElementProperties = pullSettings.FindRefObject(elementType.Id.IntegerValue) as BuildingElementProperties;
 
             if (aBuildingElementProperties == null)
             {

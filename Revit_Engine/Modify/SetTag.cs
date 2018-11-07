@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.ComponentModel;
+using System.Collections.Generic;
 
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -10,6 +12,10 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Sets Tag for BHoMObject.")]
+        [Input("bHoMObject", "BHoMObject")]
+        [Input("tag", "tag to be set")]
+        [Output("IBHoMObject")]
         public static IBHoMObject SetTag(this IBHoMObject bHoMObject, string tag)
         {
             if (bHoMObject == null)

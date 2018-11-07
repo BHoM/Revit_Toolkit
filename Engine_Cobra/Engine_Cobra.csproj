@@ -176,6 +176,8 @@
     <Compile Include="Convert\ToSI.cs" />
     <Compile Include="Convert\FromSI.cs" />
     <Compile Include="Modify\SetTags.cs" />
+    <Compile Include="Query\AppendRefObjects.cs" />
+    <Compile Include="Query\FindRefObject.cs" />
     <Compile Include="Query\FilterQueries.cs" />
     <Compile Include="Query\IsSimilar.cs" />
     <Compile Include="Query\LogicalOr.cs" />
@@ -189,7 +191,6 @@
     <Compile Include="Modify\SetParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\BottomLevel.cs" />
-    <Compile Include="Query\BuildingElements.cs" />
     <Compile Include="Query\BuildingElementType.cs" />
     <Compile Include="Query\BuiltInCategories.cs" />
     <Compile Include="Query\BuiltInCategory.cs" />
