@@ -66,7 +66,7 @@ namespace BH.UI.Cobra.Engine
                     try
                     {
                         Space aSpace = aEnergyAnalysisSpace.ToBHoMSpace(pullSettings);
-                        pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aSpace);
+                        pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddRefObject(pullSettings.RefObjects, aSpace);
 
                         foreach (EnergyAnalysisSurface aEnergyAnalysisSurface in aEnergyAnalysisSpace.GetAnalyticalSurfaces())
                             if (!aEnergyAnalysisSurfaces.ContainsKey(aEnergyAnalysisSurface.SurfaceName))
@@ -84,7 +84,7 @@ namespace BH.UI.Cobra.Engine
                     try
                     {
                         BuildingElement aBuildingElement = aKeyValuePair.Value.ToBHoMBuildingElement(pullSettings);
-                        pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
+                        pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddRefObject(pullSettings.RefObjects, aBuildingElement);
 
                         List<IBHoMObject> aBHoMObjectList_Hosted = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aKeyValuePair.Value.GetAnalyticalOpenings())
@@ -93,7 +93,7 @@ namespace BH.UI.Cobra.Engine
                             if (aBuildingElement_Opening != null)
                             {
                                 aBHoMObjectList_Hosted.Add(aBuildingElement_Opening);
-                                pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement_Opening);
+                                pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddRefObject(pullSettings.RefObjects, aBuildingElement_Opening);
                             }
                         }
 
@@ -125,7 +125,7 @@ namespace BH.UI.Cobra.Engine
                     try
                     {
                         BuildingElement aBuildingElement = aEnergyAnalysisSurface.ToBHoMBuildingElement(pullSettings);
-                        pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
+                        pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddRefObject(pullSettings.RefObjects, aBuildingElement);
 
                         List<IBHoMObject> aBHoMObjectList_Hosted = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aEnergyAnalysisSurface.GetAnalyticalOpenings())
@@ -134,7 +134,7 @@ namespace BH.UI.Cobra.Engine
                             if (aBuildingElement_Opening != null)
                             {
                                 aBHoMObjectList_Hosted.Add(aBuildingElement_Opening);
-                                pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement_Opening);
+                                pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddRefObject(pullSettings.RefObjects, aBuildingElement_Opening);
                             }
                         }
 

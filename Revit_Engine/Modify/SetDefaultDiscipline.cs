@@ -1,5 +1,7 @@
 ﻿using BH.oM.Adapters.Revit.Enums;
 using BH.oM.DataManipulation.Queries;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -9,17 +11,21 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static FilterQuery SetPullShell(this FilterQuery filterQuery, bool PullShell)
+        [Description("Sets Default Discipline for FilterQuery.")]
+        [Input("filterQuery", "FilterQuery")]
+        [Input("discipline", "Discipline to be set")]
+        [Output("FilterQuery")]
+        public static FilterQuery SetDefaultDiscipline(this FilterQuery filterQuery, Discipline discipline)
         {
             if (filterQuery == null)
                 return null;
 
             FilterQuery aFilterQuery = Query.Duplicate(filterQuery);
 
-            if (aFilterQuery.Equalities.ContainsKey(Convert.FilterQuery.PullShell))
-                aFilterQuery.Equalities[Convert.FilterQuery.PullShell] = PullShell;
+            if (aFilterQuery.Equalities.ContainsKey(Convert.FilterQuery.DefaultDiscipline))
+                aFilterQuery.Equalities[Convert.FilterQuery.DefaultDiscipline] = discipline;
             else
-                aFilterQuery.Equalities.Add(Convert.FilterQuery.PullShell, PullShell);
+                aFilterQuery.Equalities.Add(Convert.FilterQuery.DefaultDiscipline, discipline);
 
             return aFilterQuery;
         }

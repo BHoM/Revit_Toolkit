@@ -23,14 +23,7 @@ namespace BH.UI.Cobra.Engine
             pullSettings = pullSettings.DefaultIfNull();
 
             ElementType aElementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-            BuildingElementProperties aBuildingElementProperties = null;
-            if (pullSettings.RefObjects != null)
-            {
-                List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
-                if (pullSettings.RefObjects.TryGetValue(aElementType.Id.IntegerValue, out aBHoMObjectList))
-                    if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                        aBuildingElementProperties = aBHoMObjectList.First() as BuildingElementProperties;
-            }
+            BuildingElementProperties aBuildingElementProperties = pullSettings.FindRefObject(aElementType.Id.IntegerValue) as BuildingElementProperties;
 
             if (aBuildingElementProperties == null)
             {
@@ -43,8 +36,7 @@ namespace BH.UI.Cobra.Engine
                 if (pullSettings.CopyCustomData)
                     aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, aElementType, pullSettings.ConvertUnits) as BuildingElementProperties;
 
-                if (pullSettings.RefObjects != null)
-                    pullSettings.RefObjects.Add(aElementType.Id.IntegerValue, new List<IBHoMObject>(new BHoMObject[] { aBuildingElementProperties }));
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElementProperties);
             }
 
             BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, crv);
@@ -53,14 +45,7 @@ namespace BH.UI.Cobra.Engine
             if (pullSettings.CopyCustomData)
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, element, pullSettings.ConvertUnits) as BuildingElement;
 
-            if (pullSettings.RefObjects != null)
-            {
-                List<IBHoMObject> aBHoMObjectList = null;
-                if (pullSettings.RefObjects.TryGetValue(element.Id.IntegerValue, out aBHoMObjectList))
-                    aBHoMObjectList.Add(aBuildingElement);
-                else
-                    pullSettings.RefObjects.Add(element.Id.IntegerValue, new List<IBHoMObject>(new BHoMObject[] { aBuildingElement }));
-            }
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
 
             return aBuildingElement;
         }
@@ -102,7 +87,7 @@ namespace BH.UI.Cobra.Engine
             {
                 aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
                 properties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
-                pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, properties);
+                pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddRefObject(pullSettings.RefObjects, properties);
             }
 
             //Create the BuildingElement
@@ -148,7 +133,7 @@ namespace BH.UI.Cobra.Engine
             //Set the properties
             ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
             properties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
-            pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, properties);
+            pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddRefObject(pullSettings.RefObjects, properties);
 
             //Set the curve
             if (energyAnalysisOpening != null)

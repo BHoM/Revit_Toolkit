@@ -1,4 +1,7 @@
-﻿using BH.oM.Base;
+﻿using System.ComponentModel;
+
+using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -7,7 +10,10 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
+
+        [Description("Removes Revit Identifiers from BHoM object.")]
+        [Input("bHoMObject", "BHoMObject")]
+        [Output("IBHoMObject")]
         public static IBHoMObject RemoveIdentifiers(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using BH.oM.Adapters.Revit.Generic;
 using System.IO;
+using System.ComponentModel;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -10,6 +12,10 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Adds new directory to FamilyLibrary.")]
+        [Input("directory", "Directory from where famlies will be loaded if not exists in model")]
+        [Input("topDirectoryOnly", "Search through top dilectory folder and skip subfolders")]
+        [Output("FamilyLibrary")]
         public static FamilyLibrary Append(this FamilyLibrary familyLibrary, string directory, bool topDirectoryOnly = false)
         {
             if (familyLibrary == null)
@@ -35,6 +41,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Adds new path to FamilyLibrary.")]
+        [Input("path", "path of Revit file")]
+        [Output("FamilyLibrary")]
         public static FamilyLibrary Append(this FamilyLibrary familyLibrary, string path)
         {
             if (familyLibrary == null)

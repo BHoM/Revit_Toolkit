@@ -1,4 +1,7 @@
-﻿using BH.oM.Base;
+﻿using System.ComponentModel;
+
+using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -8,6 +11,11 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Updates CustomData Value for given name.")]
+        [Input("bHoMObject", "BHoMObject")]
+        [Input("name", "CustomData Name")]
+        [Input("value", "New CustomData Value")]
+        [Output("IBHoMObject")]
         public static IBHoMObject UpdateCustomDataValue(this IBHoMObject bHoMObject, string name, object value)
         {
             if (bHoMObject == null)

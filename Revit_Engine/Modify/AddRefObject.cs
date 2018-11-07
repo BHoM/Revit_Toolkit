@@ -1,5 +1,8 @@
-﻿using BH.oM.Base;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+
+using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -9,19 +12,23 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Dictionary<int, List<IBHoMObject>> AddBHoMObject(this Dictionary<int, List<IBHoMObject>> objects, IBHoMObject bHoMObject)
+        [Description("Adds reference object to existsing reference Dictionary. Method will create new dictionary if refObjects is null")]
+        [Input("refObjects", "Existing reference objects")]
+        [Input("bHoMObject", "BHoM object to be added")]
+        [Output("RefObjects")]
+        public static Dictionary<int, List<IBHoMObject>> AddRefObject(this Dictionary<int, List<IBHoMObject>> refObjects, IBHoMObject bHoMObject)
         {
             if (bHoMObject == null && bHoMObject == null)
                 return null;
 
             Dictionary<int, List<IBHoMObject>> aResult = null;
-            if (objects == null)
+            if (refObjects == null)
                 aResult = new Dictionary<int, List<IBHoMObject>>();
             else
-                aResult = new Dictionary<int, List<IBHoMObject>>(objects);
+                aResult = new Dictionary<int, List<IBHoMObject>>(refObjects);
 
             if (bHoMObject == null)
-                return new Dictionary<int, List<IBHoMObject>>(objects);
+                return new Dictionary<int, List<IBHoMObject>>(refObjects);
 
             int aId = Query.ElementId(bHoMObject);
 
