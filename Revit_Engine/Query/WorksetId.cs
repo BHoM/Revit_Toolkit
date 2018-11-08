@@ -1,4 +1,7 @@
-﻿using BH.oM.Base;
+﻿using System.ComponentModel;
+
+using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -7,7 +10,10 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
+
+        [Description("Returns integer represetation of WorksetId for given BHoMObject (stored in CustomData).")]
+        [Input("bHoMObject", "BHoMObject")]
+        [Output("WorksetId")]
         public static int WorksetId(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)

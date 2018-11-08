@@ -1,4 +1,7 @@
+using System.ComponentModel;
+
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -7,7 +10,11 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
+
+        [Description("Gets value of CustomData for given name.")]
+        [Input("bHoMObject", "BHoMObject")]
+        [Input("name", "CustomData Name")]
+        [Output("Value")]
         public static object CustomDataValue(this IBHoMObject bHoMObject, string name)
         {
             if (bHoMObject == null)

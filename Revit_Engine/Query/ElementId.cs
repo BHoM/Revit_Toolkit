@@ -1,4 +1,7 @@
-﻿using BH.oM.Base;
+﻿using System.ComponentModel;
+
+using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -8,6 +11,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("gets integer representation of ElementId (stored in CustomData) for given BHoMObject.")]
+        [Input("bHoMObject", "BHoMObject")]
+        [Output("ElementId")]
         public static int ElementId(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)

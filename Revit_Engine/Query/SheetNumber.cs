@@ -1,4 +1,7 @@
-﻿using BH.oM.Adapters.Revit.Elements;
+﻿using System.ComponentModel;
+
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -8,6 +11,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Returns SheetNumber assigned to given Viewport")]
+        [Input("viewport", "Viewport")]
+        [Output("SheetNumber")]
         public static string SheetNumber(this Viewport viewport)
         {
             if (viewport == null)

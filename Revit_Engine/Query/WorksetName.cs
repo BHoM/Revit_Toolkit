@@ -1,4 +1,6 @@
 ﻿using BH.oM.DataManipulation.Queries;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -7,7 +9,10 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
+
+        [Description("Returns WorksetName assigned to FilterQuery.")]
+        [Input("filterQuery", "FilterQuery")]
+        [Output("WorksetName")]
         public static string WorksetName(this FilterQuery filterQuery)
         {
             if (filterQuery == null)

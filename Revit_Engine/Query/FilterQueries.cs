@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 
 using BH.oM.DataManipulation.Queries;
-
+using System.ComponentModel;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -12,6 +13,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Gets child FilterQueries for given FiletrQuery (FilterQuery can be combined by logical operation - LogicalAndSelectionFilter, LogicalOrSelectionFilter).")]
+        [Input("filterQuery", "FilterQuery")]
+        [Output("FilterQueries")]
         public static IEnumerable<FilterQuery> FilterQueries(this FilterQuery filterQuery)
         {
             if (filterQuery == null)

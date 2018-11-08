@@ -1,5 +1,7 @@
 ﻿using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
@@ -10,6 +12,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Returns shell of given BHoMObject (stored in CustomData)")]
+        [Input("bHoMObject", "BHoMObject")]
+        [Output("Shell")]
         public static List<oM.Geometry.ICurve> Shell(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)

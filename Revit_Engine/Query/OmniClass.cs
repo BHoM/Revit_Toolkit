@@ -1,7 +1,10 @@
-﻿using BH.oM.Adapters.Revit.Generic;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Xml.Linq;
+
+using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -11,6 +14,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Returns OmniClass assigned to Revit Family (RevitFilePreview)")]
+        [Input("revitFilePreview", "RevitFilePreview")]
+        [Output("OmniClass")]
         public static string OmniClass(this RevitFilePreview revitFilePreview)
         {
             if (revitFilePreview == null || revitFilePreview.XDocument == null)

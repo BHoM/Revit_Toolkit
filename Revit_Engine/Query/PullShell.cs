@@ -1,4 +1,6 @@
 ﻿using BH.oM.DataManipulation.Queries;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -8,6 +10,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Returns true if FilterQuery shall pull shell from Revit Element")]
+        [Input("filterQuery", "FilterQuery")]
+        [Output("PullShell")]
         public static bool PullShell(this FilterQuery filterQuery)
         {
             if (filterQuery == null)

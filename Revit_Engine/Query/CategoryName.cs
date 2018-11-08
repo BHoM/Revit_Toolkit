@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using System.ComponentModel;
 
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.DataManipulation.Queries;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -14,6 +16,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Gets Revit Category name from RevitFilePreview.")]
+        [Input("revitFilePreview", "RevitFilePreview")]
+        [Output("CategoryName")]
         public static string CategoryName(this RevitFilePreview revitFilePreview)
         {
             if (revitFilePreview == null || revitFilePreview.XDocument == null)
@@ -51,6 +56,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Gets Revit Category name from BHoMObject.")]
+        [Input("bHoMObject", "BHoMObject")]
+        [Output("CategoryName")]
         public static string CategoryName(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
@@ -70,6 +78,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Gets Revit Category name from FilterQuery.")]
+        [Input("filterQuery", "FilterQuery")]
+        [Output("CategoryName")]
         public static string CategoryName(this FilterQuery filterQuery)
         {
             if (filterQuery == null)

@@ -1,10 +1,11 @@
 ﻿using System;
 
 using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Settings;
 using BH.oM.DataManipulation.Queries;
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -13,7 +14,10 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
+
+        [Description("Gets Discipline for given BHoM Type.")]
+        [Input("type", "BHoM Type")]
+        [Output("Discipline")]
         public static Discipline? Discipline(this Type type)
         {
             if (type == null)
@@ -33,6 +37,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Gets Discipline for given FilterQuery.")]
+        [Input("filterQuery", "FilterQuery")]
+        [Output("Discipline")]
         public static Discipline? Discipline(this FilterQuery filterQuery)
         {
             if (filterQuery == null)
