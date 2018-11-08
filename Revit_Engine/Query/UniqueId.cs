@@ -1,4 +1,6 @@
 ﻿using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -8,6 +10,10 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+
+        [Description("Returns Revit UniqueId of given BHoMObject (stored in CustomData).")]
+        [Input("bHoMObject", "BHoMObject")]
+        [Output("UniqueId")]
         public static string UniqueId(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)

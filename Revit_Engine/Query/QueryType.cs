@@ -1,4 +1,7 @@
-﻿using BH.oM.DataManipulation.Queries;
+﻿using System.ComponentModel;
+
+using BH.oM.DataManipulation.Queries;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -8,6 +11,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Returns Query Type of given FilterQuery")]
+        [Input("filterQuery", "FilterQuery")]
+        [Output("QueryType")]
         public static oM.Adapters.Revit.Enums.QueryType QueryType(this FilterQuery filterQuery)
         {
             if (filterQuery == null)

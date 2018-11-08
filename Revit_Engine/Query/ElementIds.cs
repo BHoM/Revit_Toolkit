@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.ComponentModel;
+using System.Collections.Generic;
 
-using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -11,6 +12,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Gets integer representation of ElementIds for given FilterQuery (Example: SelectionFilterQuery).")]
+        [Input("filterQuery", "FilterQuery")]
+        [Output("ElementIds")]
         public static IEnumerable<int> ElementIds(this FilterQuery filterQuery)
         {
             if (filterQuery == null)

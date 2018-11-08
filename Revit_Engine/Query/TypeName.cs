@@ -1,5 +1,7 @@
-﻿using BH.oM.Base;
+﻿using System.ComponentModel;
+
 using BH.oM.DataManipulation.Queries;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -9,6 +11,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Returns Type Name for given FilterQuery")]
+        [Input("filterQuery", "FilterQuery")]
+        [Output("TypeName")]
         public static string TypeName(this FilterQuery filterQuery)
         {
             if (filterQuery == null)

@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
+﻿using System.ComponentModel;
 
 using BH.oM.Geometry;
 using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -13,6 +12,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Returns Location (Point or Curve) of given GenericObject.")]
+        [Input("genericObject", "GenericObject")]
+        [Output("Location")]
         public static IGeometry Location(this GenericObject genericObject)
         {
             if (genericObject == null)

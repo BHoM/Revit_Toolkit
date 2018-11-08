@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.ComponentModel;
+using System.Collections.Generic;
 using System.Linq;
 
 using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -11,6 +13,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Returns all Paths in FamilyLibrary of given Category, Family and Family Type")]
+        [Input("familyLibrary", "FamilyLibrary")]
+        [Output("Paths")]
         public static List<string> Paths(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null, string typeName = null)
         {
             if (familyLibrary == null || familyLibrary.Dictionary == null || familyLibrary.Dictionary.Keys.Count == 0)

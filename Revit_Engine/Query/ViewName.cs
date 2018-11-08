@@ -1,4 +1,6 @@
-﻿using BH.oM.Adapters.Revit.Elements;
+﻿using System.ComponentModel;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -8,6 +10,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Returns ViewName assigned to Viewport.")]
+        [Input("viewport", "Viewport")]
+        [Output("ViewName")]
         public static string ViewName(this Viewport viewport)
         {
             if (viewport == null)

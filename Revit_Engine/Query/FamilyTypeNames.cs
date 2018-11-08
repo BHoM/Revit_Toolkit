@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.ComponentModel;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
 using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -12,6 +14,11 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Gets Revit Family Type names in FamilyLibrary for given Category and Family Name.")]
+        [Input("familyLibrary", "FamilyLibrary")]
+        [Input("categoryName", "Category Name")]
+        [Input("familyName", "Family Name")]
+        [Output("FamilyTypeNames")]
         public static List<string> FamilyTypeNames(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null)
         {
             if (familyLibrary == null)
@@ -49,6 +56,11 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Gets all Revit Family Type names in RevitFilePreview")]
+        [Input("familyLibrary", "FamilyLibrary")]
+        [Input("categoryName", "Category Name")]
+        [Input("familyName", "Family Name")]
+        [Output("FamilyTypeNames")]
         public static List<string> FamilyTypeNames(this RevitFilePreview RevitFilePreview)
         {
             if (RevitFilePreview == null || RevitFilePreview.XDocument == null)

@@ -1,6 +1,8 @@
 ﻿using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -10,15 +12,15 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static IBHoMObject Duplicate(this IBHoMObject BHoMObject)
+        [Description("Duplicates given BHoMObject and removes its identity data (ElementId, AdapterId).")]
+        [Input("bHoMObject", "BHoMObject")]
+        [Output("BHoMObject")]
+        public static IBHoMObject Duplicate(this IBHoMObject bHoMObject)
         {
-            if (BHoMObject == null)
+            if (bHoMObject == null)
                 return null;
 
-            IBHoMObject aBHoMObject = BHoMObject.GetShallowClone();
-
-            //aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.ElementId, element.Id.IntegerValue);
-            //aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.AdapterId, element.UniqueId);
+            IBHoMObject aBHoMObject = bHoMObject.GetShallowClone();
 
             aBHoMObject.CustomData.Remove(Convert.ElementId);
             aBHoMObject.CustomData.Remove(Convert.AdapterId);
@@ -29,6 +31,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Duplicates FilterQuery.")]
+        [Input("filterQuery", "FilterQuery")]
+        [Output("FilterQuery")]
         public static FilterQuery Duplicate(this FilterQuery filterQuery)
         {
             if (filterQuery == null)

@@ -1,5 +1,7 @@
 ﻿using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -9,6 +11,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Gets Revit Family Type name for given FilterQuery (Example: FamilyFilterQuery).")]
+        [Input("filterQuery", "FilterQuery")]
+        [Output("FamilyTypeName")]
         public static string FamilyTypeName(this FilterQuery filterQuery)
         {
             if (filterQuery == null)
@@ -22,6 +27,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Gets Revit Family Type name (stored in CustomData) for given BHoMObject.")]
+        [Input("bHoMObject", "BHoMObject")]
+        [Output("FamilyTypeName")]
         public static string FamilyTypeName(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
