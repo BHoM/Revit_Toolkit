@@ -113,7 +113,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
+        internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisOpening energyAnalysisOpening, EnergyAnalysisSurface energyAnalysisSurface = null, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -154,7 +154,7 @@ namespace BH.UI.Cobra.Engine
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, "Opening Type", energyAnalysisOpening.OpeningType.ToString()) as BuildingElement;
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, "Opening Name", energyAnalysisOpening.OpeningName) as BuildingElement;
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElement;
-                aBuildingElement = Modify.AddSpaceId(aBuildingElement, energyAnalysisOpening.GetAnalyticalSurface());
+                aBuildingElement = Modify.AddSpaceId(aBuildingElement, energyAnalysisSurface);
 
             }
 

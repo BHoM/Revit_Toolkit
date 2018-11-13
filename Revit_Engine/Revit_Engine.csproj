@@ -92,6 +92,7 @@
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Query\CurrentDomainAssembly.cs" />
+    <Compile Include="Query\FilterByType.cs" />
     <Compile Include="Query\SpaceId.cs" />
     <Compile Include="Query\PullShell.cs" />
     <Compile Include="Query\Shell.cs" />
