@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-
-using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 
 using BH.Engine.Environment;
 using BH.oM.Environment.Elements;
-using BH.oM.Environment.Properties;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Cobra.Engine
@@ -207,6 +204,10 @@ namespace BH.UI.Cobra.Engine
 
             pullSettings = pullSettings.DefaultIfNull();
 
+            Space aSpace = pullSettings.FindRefObject(energyAnalysisSpace.Id.IntegerValue) as Space;
+            if (aSpace != null)
+                return aSpace;
+
             SpatialElement aSpatialElement = Query.Element(energyAnalysisSpace.Document, energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
 
             oM.Architecture.Elements.Level aLevel = null;
@@ -217,7 +218,7 @@ namespace BH.UI.Cobra.Engine
             if (aSpatialElement != null && aSpatialElement.Location != null)
                 aPoint = (aSpatialElement.Location as LocationPoint).ToBHoM(pullSettings);
 
-            Space aSpace = Create.Space(energyAnalysisSpace.SpaceName, aPoint);
+            aSpace = Create.Space(energyAnalysisSpace.SpaceName, aPoint);
 
             //Set custom data
             aSpace = Modify.SetIdentifiers(aSpace, aSpatialElement) as Space;
@@ -238,6 +239,8 @@ namespace BH.UI.Cobra.Engine
 
             if (aSpace.CustomData.ContainsKey("Number"))
                 aSpace.Number = aSpace.CustomData["Number"].ToString();
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSpace);
 
             return aSpace;
         }

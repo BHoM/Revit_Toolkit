@@ -66,7 +66,6 @@ namespace BH.UI.Cobra.Engine
                     try
                     {
                         Space aSpace = aEnergyAnalysisSpace.ToBHoMSpace(pullSettings);
-                        pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddRefObject(pullSettings.RefObjects, aSpace);
 
                         foreach (EnergyAnalysisSurface aEnergyAnalysisSurface in aEnergyAnalysisSpace.GetAnalyticalSurfaces())
                             if (!aEnergyAnalysisSurfaces.ContainsKey(aEnergyAnalysisSurface.SurfaceName))
@@ -91,10 +90,7 @@ namespace BH.UI.Cobra.Engine
                         {
                             BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(pullSettings);
                             if (aBuildingElement_Opening != null)
-                            {
                                 aBHoMObjectList_Hosted.Add(aBuildingElement_Opening);
-                                pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddRefObject(pullSettings.RefObjects, aBuildingElement_Opening);
-                            }
                         }
 
                         //------------ Cutting openings ----------------
@@ -102,7 +98,7 @@ namespace BH.UI.Cobra.Engine
                         {
                             foreach (BuildingElement aBuildingElement_Hosted in aBHoMObjectList_Hosted.FindAll(x => x is BuildingElement))
                             {
-                                BH.oM.Environment.Elements.Opening aBuildingElementOpening = BH.Engine.Environment.Create.Opening(aBuildingElement_Hosted.PanelCurve);
+                                oM.Environment.Elements.Opening aBuildingElementOpening = BH.Engine.Environment.Create.Opening(aBuildingElement_Hosted.PanelCurve);
 
                                 if (pullSettings.CopyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(BH.Engine.Adapters.Revit.Convert.ElementId))
                                     aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, BH.Engine.Adapters.Revit.Convert.ElementId, aBuildingElement_Hosted.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId]) as BH.oM.Environment.Elements.Opening;
@@ -132,10 +128,7 @@ namespace BH.UI.Cobra.Engine
                         {
                             BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(pullSettings);
                             if (aBuildingElement_Opening != null)
-                            {
                                 aBHoMObjectList_Hosted.Add(aBuildingElement_Opening);
-                                pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddRefObject(pullSettings.RefObjects, aBuildingElement_Opening);
-                            }
                         }
 
                         //------------ Cutting openings ----------------

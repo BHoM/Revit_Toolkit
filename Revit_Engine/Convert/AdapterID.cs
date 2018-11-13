@@ -9,6 +9,7 @@
         public const string AdapterId = "Revit_id";
         public const string ElementId = "Revit_elementId";
         public const string WorksetId = "Revit_worksetId";
+        public const string SpaceId = "Revit_spaceId";
         public const string FamilyName = "Revit_familyName";
         public const string FamilyTypeName = "Revit_familyTypeName";
         public const string CategoryName = "Revit_categoryName";
