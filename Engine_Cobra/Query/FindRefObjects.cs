@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
@@ -12,14 +11,14 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static IBHoMObject FindRefObject(this PullSettings pullSettings, int elementId)
+        public static List<IBHoMObject> FindRefObjects(this PullSettings pullSettings, int elementId)
         {
             if (pullSettings.RefObjects == null)
                 return null;
 
-            List<IBHoMObject> aBHoMObjectList = FindRefObjects(pullSettings, elementId);
-            if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                return aBHoMObjectList.First();
+            List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
+            if (pullSettings.RefObjects.TryGetValue(elementId, out aBHoMObjectList))
+                return aBHoMObjectList;
 
             return null;
         }

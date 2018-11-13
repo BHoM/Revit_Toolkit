@@ -22,24 +22,15 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
+            BuildingElement aBuildingElement = pullSettings.FindRefObject(element.Id.IntegerValue) as BuildingElement;
+            if (aBuildingElement != null)
+                return aBuildingElement;
+
             ElementType aElementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-            BuildingElementProperties aBuildingElementProperties = pullSettings.FindRefObject(aElementType.Id.IntegerValue) as BuildingElementProperties;
 
-            if (aBuildingElementProperties == null)
-            {
-                BuildingElementType? aBuildingElementType = Query.BuildingElementType((BuiltInCategory)aElementType.Category.Id.IntegerValue);
-                if (!aBuildingElementType.HasValue)
-                    aBuildingElementType = BuildingElementType.Undefined;
+            BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
 
-                aBuildingElementProperties = Create.BuildingElementProperties(aElementType.Name, aBuildingElementType.Value);
-                aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, aElementType) as BuildingElementProperties;
-                if (pullSettings.CopyCustomData)
-                    aBuildingElementProperties = Modify.SetCustomData(aBuildingElementProperties, aElementType, pullSettings.ConvertUnits) as BuildingElementProperties;
-
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElementProperties);
-            }
-
-            BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, crv);
+            aBuildingElement = Create.BuildingElement(aBuildingElementProperties, crv);
 
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, element) as BuildingElement;
             if (pullSettings.CopyCustomData)
@@ -57,13 +48,17 @@ namespace BH.UI.Cobra.Engine
             //Create a BuildingElement from the familyInstance geometry
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementType? aBEType = Query.BuildingElementType((BuiltInCategory)familyInstance.Category.Id.IntegerValue);
-            if (!aBEType.HasValue)
-                aBEType = BuildingElementType.Undefined;
+            BuildingElement aBuildingElement = pullSettings.FindRefObject(familyInstance.Id.IntegerValue) as BuildingElement;
+            if (aBuildingElement != null)
+                return aBuildingElement;
 
-            BuildingElementProperties properties = Create.BuildingElementProperties(aBEType.Value);
+            BuildingElementProperties aBuildingElementProperties = familyInstance.Symbol.ToBHoMBuildingElementProperties(pullSettings);
 
-            return Create.BuildingElement(properties, ToBHoMCurve(familyInstance, pullSettings));
+            aBuildingElement = Create.BuildingElement(aBuildingElementProperties, ToBHoMCurve(familyInstance, pullSettings));
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
+
+            return aBuildingElement;
         }
 
         /***************************************************/
@@ -72,26 +67,24 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BH.oM.Geometry.ICurve crv = null;
-            BuildingElementProperties properties = null;
+            BuildingElement aBuildingElement = pullSettings.FindRefObject(energyAnalysisSurface.Id.IntegerValue) as BuildingElement;
+            if (aBuildingElement != null)
+                return aBuildingElement;
 
-            //Get the geometry curve
+            //Get the geometry Curve
+            oM.Geometry.ICurve aCurve = null;
             if (energyAnalysisSurface != null)
-                crv = energyAnalysisSurface.GetPolyloop().ToBHoM(pullSettings);
+                aCurve = energyAnalysisSurface.GetPolyloop().ToBHoM(pullSettings);
 
             //Get the name and element type
-            Document aDocument = energyAnalysisSurface.Document;
-            Element aElement = Query.Element(aDocument, energyAnalysisSurface.CADObjectUniqueId, energyAnalysisSurface.CADLinkUniqueId);
+            Element aElement = Query.Element(energyAnalysisSurface.Document, energyAnalysisSurface.CADObjectUniqueId, energyAnalysisSurface.CADLinkUniqueId);
             ElementType aElementType = null;
             if (aElement != null)
             {
-                aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
-                properties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
-                pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddRefObject(pullSettings.RefObjects, properties);
+                aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
+                BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
+                aBuildingElement = Create.BuildingElement(aElement.Name, aCurve, aBuildingElementProperties);
             }
-
-            //Create the BuildingElement
-            BuildingElement aBuildingElement = Create.BuildingElement(aElement.Name, crv, properties);
 
             //Set some custom data properties
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
@@ -109,9 +102,11 @@ namespace BH.UI.Cobra.Engine
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, "Height", aHeight) as BuildingElement;
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, "Width", aWidth) as BuildingElement;
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, "Azimuth", aAzimuth) as BuildingElement;
-                if (aElementType != null)
-                    aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElement;
+                aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElement;
+                aBuildingElement = Modify.AddSpaceId(aBuildingElement, energyAnalysisSurface);
             }
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
 
             return aBuildingElement;
         }
@@ -122,25 +117,24 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BH.oM.Geometry.ICurve crv = null;
-            BuildingElementProperties properties = null;
+            BuildingElement aBuildingElement = pullSettings.FindRefObject(energyAnalysisOpening.Id.IntegerValue) as BuildingElement;
+            if (aBuildingElement != null)
+                return aBuildingElement;
 
-            Document aDocument = energyAnalysisOpening.Document;
-            Element aElement = Query.Element(aDocument, energyAnalysisOpening.CADObjectUniqueId, energyAnalysisOpening.CADLinkUniqueId);
-            if (aElement == null)
-                return null;
-
-            //Set the properties
-            ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
-            properties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
-            pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddRefObject(pullSettings.RefObjects, properties);
-
-            //Set the curve
+            //Get the geometry Curve
+            oM.Geometry.ICurve aCurve = null;
             if (energyAnalysisOpening != null)
-                crv = energyAnalysisOpening.GetPolyloop().ToBHoM(pullSettings);
+                aCurve = energyAnalysisOpening.GetPolyloop().ToBHoM(pullSettings);
 
-            //Create BuildingElement
-            BuildingElement aBuildingElement = Create.BuildingElement(aElement.Name, crv, properties);
+            //Get the name and element type
+            Element aElement = Query.Element(energyAnalysisOpening.Document, energyAnalysisOpening.CADObjectUniqueId, energyAnalysisOpening.CADLinkUniqueId);
+            ElementType aElementType = null;
+            if (aElement != null)
+            {
+                aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
+                BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
+                aBuildingElement = Create.BuildingElement(aElement.Name, aCurve, aBuildingElementProperties);
+            }
 
             //Set custom data on BuildingElement
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
@@ -160,7 +154,11 @@ namespace BH.UI.Cobra.Engine
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, "Opening Type", energyAnalysisOpening.OpeningType.ToString()) as BuildingElement;
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, "Opening Name", energyAnalysisOpening.OpeningName) as BuildingElement;
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElement;
+                aBuildingElement = Modify.AddSpaceId(aBuildingElement, energyAnalysisOpening.GetAnalyticalSurface());
+
             }
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
 
             return aBuildingElement;
         }
@@ -171,28 +169,39 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BuildingElement> buildingElements = new List<BuildingElement>();
+            List<BuildingElement> aBuildingElements = null;
 
-            BuildingElementProperties properties = (ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType).ToBHoM(pullSettings) as BuildingElementProperties;
+            List<IBHoMObject> aIBHoMObjectList = pullSettings.FindRefObjects(ceiling.Id.IntegerValue);
+            if(aIBHoMObjectList != null && aIBHoMObjectList.Count > 0)
+                aBuildingElements = aIBHoMObjectList.FindAll(x => x is BuildingElement).Cast<BuildingElement>().ToList();
+
+            if (aBuildingElements != null && aBuildingElements.Count > 0)
+                return aBuildingElements;
 
             List<oM.Geometry.PolyCurve> aPolyCurveList = Query.Profiles(ceiling, pullSettings);
             if (aPolyCurveList == null)
-                return buildingElements;
+                return aBuildingElements;
+
+            aBuildingElements = new List<BuildingElement>();
+
+            BuildingElementProperties aBuildingElementProperties = (ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType).ToBHoMBuildingElementProperties(pullSettings);
 
             foreach(oM.Geometry.PolyCurve aPolyCurve in aPolyCurveList)
             {
                 //Create the BuildingElement
-                BuildingElement aElement = Create.BuildingElement(properties, aPolyCurve);
+                BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aPolyCurve);
 
                 //Assign custom data
-                aElement = Modify.SetIdentifiers(aElement, ceiling) as BuildingElement;
+                aBuildingElement = Modify.SetIdentifiers(aBuildingElement, ceiling) as BuildingElement;
                 if (pullSettings.CopyCustomData)
-                    aElement = Modify.SetCustomData(aElement, ceiling, pullSettings.ConvertUnits) as BuildingElement;
+                    aBuildingElement = Modify.SetCustomData(aBuildingElement, ceiling, pullSettings.ConvertUnits) as BuildingElement;
 
-                buildingElements.Add(aElement);
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
+
+                aBuildingElements.Add(aBuildingElement);
             }       
 
-            return buildingElements;
+            return aBuildingElements;
         }
 
         /***************************************************/
@@ -201,27 +210,39 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BuildingElement> buildingElements = new List<BuildingElement>();
-            BuildingElementProperties properties = floor.FloorType.ToBHoMBuildingElementProperties(pullSettings);
+            List<BuildingElement> aBuildingElements = null;
+
+            List<IBHoMObject> aIBHoMObjectList = pullSettings.FindRefObjects(floor.Id.IntegerValue);
+            if (aIBHoMObjectList != null && aIBHoMObjectList.Count > 0)
+                aBuildingElements = aIBHoMObjectList.FindAll(x => x is BuildingElement).Cast<BuildingElement>().ToList();
+
+            if (aBuildingElements != null && aBuildingElements.Count > 0)
+                return aBuildingElements;
 
             List<oM.Geometry.PolyCurve> aPolyCurveList = Query.Profiles(floor, pullSettings);
             if (aPolyCurveList == null)
-                return buildingElements;
+                return aBuildingElements;
+
+            aBuildingElements = new List<BuildingElement>();
+
+            BuildingElementProperties aBuildingElementProperties = floor.FloorType.ToBHoMBuildingElementProperties(pullSettings);
 
             foreach (oM.Geometry.ICurve crv in aPolyCurveList)
             {
                 //Create the BuildingElement
-                BuildingElement aElement = Create.BuildingElement(properties, crv);
+                BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, crv);
 
                 //Assign custom data
-                aElement = Modify.SetIdentifiers(aElement, floor) as BuildingElement;
+                aBuildingElement = Modify.SetIdentifiers(aBuildingElement, floor) as BuildingElement;
                 if (pullSettings.CopyCustomData)
-                    aElement = Modify.SetCustomData(aElement, floor, pullSettings.ConvertUnits) as BuildingElement;
+                    aBuildingElement = Modify.SetCustomData(aBuildingElement, floor, pullSettings.ConvertUnits) as BuildingElement;
 
-                buildingElements.Add(aElement);
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
+
+                aBuildingElements.Add(aBuildingElement);
             }
 
-            return buildingElements;
+            return aBuildingElements;
         }
 
         /***************************************************/
@@ -230,27 +251,39 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BuildingElement> buildingElements = new List<BuildingElement>();
-            BuildingElementProperties properties = roofBase.RoofType.ToBHoMBuildingElementProperties(pullSettings);
+            List<BuildingElement> aBuildingElements = null;
+
+            List<IBHoMObject> aIBHoMObjectList = pullSettings.FindRefObjects(roofBase.Id.IntegerValue);
+            if (aIBHoMObjectList != null && aIBHoMObjectList.Count > 0)
+                aBuildingElements = aIBHoMObjectList.FindAll(x => x is BuildingElement).Cast<BuildingElement>().ToList();
+
+            if (aBuildingElements != null && aBuildingElements.Count > 0)
+                return aBuildingElements;
 
             List<oM.Geometry.PolyCurve> aPolyCurveList = Query.Profiles(roofBase, pullSettings);
             if (aPolyCurveList == null)
-                return buildingElements;
+                return aBuildingElements;
+
+            aBuildingElements = new List<BuildingElement>();
+
+            BuildingElementProperties aBuildingElementProperties = roofBase.RoofType.ToBHoMBuildingElementProperties(pullSettings);
 
             foreach (oM.Geometry.ICurve crv in aPolyCurveList)
             {
                 //Create the BuildingElement
-                BuildingElement aElement = Create.BuildingElement(properties, crv);
+                BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, crv);
 
                 //Assign custom data
-                aElement = Modify.SetIdentifiers(aElement, roofBase) as BuildingElement;
+                aBuildingElement = Modify.SetIdentifiers(aBuildingElement, roofBase) as BuildingElement;
                 if (pullSettings.CopyCustomData)
-                    aElement = Modify.SetCustomData(aElement, roofBase, pullSettings.ConvertUnits) as BuildingElement;
+                    aBuildingElement = Modify.SetCustomData(aBuildingElement, roofBase, pullSettings.ConvertUnits) as BuildingElement;
 
-                buildingElements.Add(aElement);
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
+
+                aBuildingElements.Add(aBuildingElement);
             }
 
-            return buildingElements;
+            return aBuildingElements;
         }
 
         /***************************************************/
@@ -259,9 +292,18 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoM(pullSettings) as BuildingElementProperties;
+            List<BuildingElement> aBuildingElements = null;
 
-            List<BuildingElement> buildingElements = new List<BuildingElement>();
+            List<IBHoMObject> aIBHoMObjectList = pullSettings.FindRefObjects(wall.Id.IntegerValue);
+            if (aIBHoMObjectList != null && aIBHoMObjectList.Count > 0)
+                aBuildingElements = aIBHoMObjectList.FindAll(x => x is BuildingElement).Cast<BuildingElement>().ToList();
+
+            if (aBuildingElements != null && aBuildingElements.Count > 0)
+                return aBuildingElements;
+
+            aBuildingElements = new List<BuildingElement>();
+
+            BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoMBuildingElementProperties(pullSettings);
 
             IList<Reference> aReferences = HostObjectUtils.GetSideFaces(wall, ShellLayerType.Interior);
             foreach (Reference aReference in aReferences)
@@ -285,12 +327,14 @@ namespace BH.UI.Cobra.Engine
                     if (pullSettings.CopyCustomData)
                         aBuildingElement = Modify.SetCustomData(aBuildingElement, wall, pullSettings.ConvertUnits) as BuildingElement;
 
-                    buildingElements.Add(aBuildingElement);
+                    pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
+
+                    aBuildingElements.Add(aBuildingElement);
                 }
 
             }
 
-            return buildingElements;
+            return aBuildingElements;
         }
 
         /***************************************************/

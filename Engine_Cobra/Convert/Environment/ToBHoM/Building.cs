@@ -21,6 +21,10 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
+            List<IBHoMObject> aIBHoMObjectList = pullSettings.FindRefObjects(projectInfo.Id.IntegerValue);
+            if (aIBHoMObjectList != null && aIBHoMObjectList.Count > 0)
+                return aIBHoMObjectList;
+
             Document aDocument = projectInfo.Document;
 
             double aElevation = 0;
@@ -83,45 +87,12 @@ namespace BH.UI.Cobra.Engine
                 aBuilding = Modify.SetCustomData(aBuilding, aDocument.ProjectInformation, pullSettings.ConvertUnits) as Building;
             }
 
-            //-------- Create BHoM building structure -----
 
             List<IBHoMObject> aBHoMObjectList = Query.GetEnergyAnalysisModel(aDocument, pullSettings);
-            /*if(aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-            {
-                foreach (BHoMObject aBHoMObject in aBHoMObjectList)
-                {
-                    if (aBHoMObject is Space)
-                        aBuilding.Spaces.Add(aBHoMObject as Space);
-                    else if (aBHoMObject is oM.Architecture.Elements.Level)
-                        aBuilding.Levels.Add(aBHoMObject as oM.Architecture.Elements.Level);
-                    else if (aBHoMObject is BuildingElementProperties)
-                        aBuilding.BuildingElementProperties.Add(aBHoMObject as BuildingElementProperties);
-                    else if (aBHoMObject is BuildingElement)
-                        aBuilding.BuildingElements.Add(aBHoMObject as BuildingElement);
-                }
-            }
-
-            //TODO: To be removed for next release when Space.BuildingElements removed from Space
-            foreach (BuildingElement aBuildingElement in aBuilding.BuildingElements)
-            {
-                if (aBuildingElement.AdjacentSpaces != null && aBuildingElement.AdjacentSpaces.Count > 0)
-                    foreach (Guid aGuid in aBuildingElement.AdjacentSpaces)
-                    {
-                        Space aSpace = aBuilding.Spaces.Find(x => x.BHoM_Guid == aGuid);
-                        if (aSpace != null)
-                        {
-                            if (aSpace.BuildingElements.Find(x => x.BHoM_Guid == aBuildingElement.BHoM_Guid) == null)
-                                aSpace.BuildingElements.Add(aBuildingElement);
-                        }
-                    }
-
-            }*/
-
-            //---------------------------------------------
-
-            //return aBuilding;
 
             aBHoMObjectList.Add(aBuilding);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuilding);
+
             return aBHoMObjectList;
         }
 
