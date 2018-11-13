@@ -378,7 +378,7 @@ namespace BH.UI.Cobra.Engine
             switch (pullSettings.Discipline)
             {
                 case Discipline.Environmental:
-                    return energyAnalysisOpening.ToBHoMBuildingElement(pullSettings);
+                    return energyAnalysisOpening.ToBHoMBuildingElement(null, pullSettings);
             }
 
             energyAnalysisOpening.NotConvertedError();
