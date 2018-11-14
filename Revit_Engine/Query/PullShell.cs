@@ -10,17 +10,17 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns true if FilterQuery shall pull shell from Revit Element")]
+        [Description("Returns true if FilterQuery should pull edges from Revit Element")]
         [Input("filterQuery", "FilterQuery")]
-        [Output("PullShell")]
-        public static bool PullShell(this FilterQuery filterQuery)
+        [Output("PullEdges")]
+        public static bool PullEdges(this FilterQuery filterQuery)
         {
             if (filterQuery == null)
                 return false;
 
-            if (filterQuery.Equalities.ContainsKey(Convert.FilterQuery.PullShell))
+            if (filterQuery.Equalities.ContainsKey(Convert.FilterQuery.PullEdges))
             {
-                object aObject = filterQuery.Equalities[Convert.FilterQuery.PullShell];
+                object aObject = filterQuery.Equalities[Convert.FilterQuery.PullEdges];
                 if (aObject is bool)
                     return (bool)aObject;
             }

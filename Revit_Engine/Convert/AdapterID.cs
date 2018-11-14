@@ -14,7 +14,7 @@
         public const string FamilyName = "Revit_familyName";
         public const string FamilyTypeName = "Revit_familyTypeName";
         public const string CategoryName = "Revit_categoryName";
-        public const string Shell = "Revit_shell";
+        public const string Edges = "Revit_edges";
 
         /***************************************************/
     }

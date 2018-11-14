@@ -9,13 +9,13 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Create
     {
         [Description("Creates FilterQuery which filters all spaces in Active Revit Document.")]
-        [Input("pullShell", "Pull shell (3D Mesh represenation) of space")]
+        [Input("pullEdges", "Pull edges (3D represenation) of space")]
         [Output("FilterQuery")]
-        public static FilterQuery SpaceFilterQuery(bool pullShell = true)
+        public static FilterQuery SpaceFilterQuery(bool pullEdges = true)
         {
             FilterQuery aFilterQuery = new FilterQuery();
             aFilterQuery.Type = typeof(Space);
-            aFilterQuery.Equalities[Convert.FilterQuery.PullShell] = pullShell;
+            aFilterQuery.Equalities[Convert.FilterQuery.PullEdges] = pullEdges;
             return aFilterQuery;
         }
     }

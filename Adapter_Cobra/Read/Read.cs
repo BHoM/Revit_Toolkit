@@ -145,8 +145,8 @@ namespace BH.UI.Cobra.Adapter
 
                 if (aIBHoMObjects != null && aIBHoMObjects.Count() > 0)
                 { 
-                    //Pull Element Shell
-                    if (BH.Engine.Adapters.Revit.Query.PullShell(filterQuery))
+                    //Pull Element Edges
+                    if (BH.Engine.Adapters.Revit.Query.PullEdges(filterQuery))
                     {
                         Options aOptions = new Options();
                         aOptions.ComputeReferences = false;
@@ -163,7 +163,7 @@ namespace BH.UI.Cobra.Adapter
                             if (aElement_Temp == null)
                                 continue;
 
-                            aIBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Shell] = aElement_Temp.Curves(aOptions, aPullSettings);
+                            aIBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Edges] = aElement_Temp.Curves(aOptions, aPullSettings);
                         }
                     }
 
