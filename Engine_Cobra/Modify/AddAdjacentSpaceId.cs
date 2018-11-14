@@ -11,18 +11,18 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public static BuildingElement AddSpaceId(this BuildingElement buildingElement, EnergyAnalysisSurface energyAnalysisSurface)
+        public static BuildingElement AddAdjacentSpaceId(this BuildingElement buildingElement, EnergyAnalysisSurface energyAnalysisSurface)
         {
             if (buildingElement == null)
                 return null;
 
             BuildingElement aBuildingElement = buildingElement.GetShallowClone() as BuildingElement;
-            aBuildingElement.CustomData.Add(BH.Engine.Adapters.Revit.Convert.SpaceId, -1);
+            aBuildingElement.CustomData.Add(BH.Engine.Adapters.Revit.Convert.AdjacentSpaceId, -1);
 
             if (energyAnalysisSurface == null)
                 return aBuildingElement;
 
-            EnergyAnalysisSpace aEnergyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
+            EnergyAnalysisSpace aEnergyAnalysisSpace = energyAnalysisSurface.GetAdjacentAnalyticalSpace();
             if (aEnergyAnalysisSpace == null)
                 return aBuildingElement;
 
@@ -30,7 +30,7 @@ namespace BH.UI.Cobra.Engine
             if (aSpatialElement == null)
                 return aBuildingElement;
 
-            aBuildingElement.CustomData[BH.Engine.Adapters.Revit.Convert.SpaceId] = aSpatialElement.Id.IntegerValue;
+            aBuildingElement.CustomData[BH.Engine.Adapters.Revit.Convert.AdjacentSpaceId] = aSpatialElement.Id.IntegerValue;
 
             return aBuildingElement;
         }

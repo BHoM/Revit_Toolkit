@@ -104,6 +104,7 @@ namespace BH.UI.Cobra.Engine
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, "Azimuth", aAzimuth) as BuildingElement;
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElement;
                 aBuildingElement = Modify.AddSpaceId(aBuildingElement, energyAnalysisSurface);
+                aBuildingElement = Modify.AddAdjacentSpaceId(aBuildingElement, energyAnalysisSurface);
             }
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
@@ -155,6 +156,7 @@ namespace BH.UI.Cobra.Engine
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, "Opening Name", energyAnalysisOpening.OpeningName) as BuildingElement;
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElement;
                 aBuildingElement = Modify.AddSpaceId(aBuildingElement, energyAnalysisSurface);
+                aBuildingElement = Modify.AddAdjacentSpaceId(aBuildingElement, energyAnalysisSurface);
 
             }
 
