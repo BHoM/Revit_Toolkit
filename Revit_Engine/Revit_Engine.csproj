@@ -98,12 +98,12 @@
     <Compile Include="Query\FilterByType.cs" />
     <Compile Include="Query\AdjacentSpaceId.cs" />
     <Compile Include="Query\SpaceId.cs" />
-    <Compile Include="Query\PullShell.cs" />
+    <Compile Include="Query\PullEdges.cs" />
     <Compile Include="Query\Shell.cs" />
     <Compile Include="Query\FamilyTypeName.cs" />
     <Compile Include="Query\ViewTemplateName.cs" />
     <Compile Include="Query\Duplicate.cs" />
-    <Compile Include="Modify\SetPullShell.cs" />
+    <Compile Include="Modify\SetPullEdges.cs" />
     <Compile Include="Modify\SetReplace.cs" />
     <Compile Include="Modify\Append.cs" />
     <Compile Include="Modify\RemoveIdentifiers.cs" />
