@@ -17,7 +17,7 @@
             public const string FamilyName = "FamilyName";
             public const string FamilyTypeName = "FamilyTypeName";
             public const string SelectionSetName = "SelectionSetName";
-            public const string PullShell = "PullShell";
+            public const string PullEdges = "PullEdges";
         }
     }
 }

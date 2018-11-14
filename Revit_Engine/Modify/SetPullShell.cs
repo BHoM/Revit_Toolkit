@@ -11,21 +11,21 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Sets Pull Shell option for FilterQuery.")]
+        [Description("Sets Pull Edges option for FilterQuery.")]
         [Input("filterQuery", "FilterQuery")]
-        [Input("pullShell", "Set to true if include shell geometry of Revit Element in CustomData of BHoMObject")]
+        [Input("pullEdges", "Set to true if include geometry edges of Revit Element in CustomData of BHoMObject")]
         [Output("FilterQuery")]
-        public static FilterQuery SetPullShell(this FilterQuery filterQuery, bool pullShell)
+        public static FilterQuery SetPullEdges(this FilterQuery filterQuery, bool pullEdges)
         {
             if (filterQuery == null)
                 return null;
 
             FilterQuery aFilterQuery = Query.Duplicate(filterQuery);
 
-            if (aFilterQuery.Equalities.ContainsKey(Convert.FilterQuery.PullShell))
-                aFilterQuery.Equalities[Convert.FilterQuery.PullShell] = pullShell;
+            if (aFilterQuery.Equalities.ContainsKey(Convert.FilterQuery.PullEdges))
+                aFilterQuery.Equalities[Convert.FilterQuery.PullEdges] = pullEdges;
             else
-                aFilterQuery.Equalities.Add(Convert.FilterQuery.PullShell, pullShell);
+                aFilterQuery.Equalities.Add(Convert.FilterQuery.PullEdges, pullEdges);
 
             return aFilterQuery;
         }
