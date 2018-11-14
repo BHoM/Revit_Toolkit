@@ -1,15 +1,9 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using Autodesk.Revit.DB;
 
-using Autodesk.Revit.DB;
-
-using BH.oM.DataManipulation.Queries;
 using BH.oM.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Structure.Elements;
-using BH.Engine.Structure;
 
 namespace BH.UI.Cobra.Engine
 {

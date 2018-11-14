@@ -178,7 +178,7 @@
     <Compile Include="Convert\FromSI.cs" />
     <Compile Include="Modify\AddSpaceId.cs" />
     <Compile Include="Modify\SetTags.cs" />
-    <Compile Include="Query\AppendRefObjects.cs" />
+    <Compile Include="Modify\AppendRefObjects.cs" />
     <Compile Include="Query\FindRefObjects.cs" />
     <Compile Include="Query\FindRefObject.cs" />
     <Compile Include="Query\FilterQueries.cs" />
@@ -189,7 +189,7 @@
     <Compile Include="Modify\LoadFamilySymbol.cs" />
     <Compile Include="Modify\SetCustomData.cs" />
     <Compile Include="Modify\SetIdentifiers.cs" />
-    <Compile Include="Modify\Append.cs" />
+    <Compile Include="Modify\AppendBuiltInCategories.cs" />
     <Compile Include="Modify\SetParameters.cs" />
     <Compile Include="Modify\SetParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
