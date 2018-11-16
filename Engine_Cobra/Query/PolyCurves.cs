@@ -13,13 +13,20 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<oM.Geometry.PolyCurve> PolyCurves(this Face face, PullSettings pullSettings = null)
+        public static List<oM.Geometry.PolyCurve> PolyCurves(this Face face, Transform transform = null, PullSettings pullSettings = null)
         {
             List<oM.Geometry.PolyCurve> aResult = new List<oM.Geometry.PolyCurve>();
 
-            foreach(EdgeArray aEdgeArray in face.EdgeLoops)
+            foreach(CurveLoop aCurveLoop in face.GetEdgesAsCurveLoops())
             {
-                List<oM.Geometry.ICurve> aCurveList = Convert.ToBHoM(aEdgeArray, pullSettings);
+                List<oM.Geometry.ICurve> aCurveList = new List<oM.Geometry.ICurve>();
+                foreach (Curve aCurve in aCurveLoop)
+                {
+                    if (transform != null)
+                        aCurveList.Add(Convert.ToBHoM(aCurve.CreateTransformed(transform), pullSettings));
+                    else
+                        aCurveList.Add(Convert.ToBHoM(aCurve, pullSettings));
+                }
                 aResult.Add(Create.PolyCurve(aCurveList));
             }
 

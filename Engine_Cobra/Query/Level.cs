@@ -38,5 +38,33 @@ namespace BH.UI.Cobra.Engine
         }
 
         /***************************************************/
+
+        static public Level Level(this Document document, double Elevation, bool convertUnits = true)
+        {
+            List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
+            aLevelList.Sort((x, y) => x.ProjectElevation.CompareTo(y.ProjectElevation));
+
+            double aElevation = aLevelList.First().ProjectElevation;
+            if (convertUnits)
+                aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+
+            if (Elevation <= aElevation)
+                return aLevelList.First();
+
+            foreach (Level aLevel in aLevelList)
+            {
+                aElevation = aLevel.ProjectElevation;
+                if (convertUnits)
+                    aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+
+                if (Elevation >= aElevation)
+                    return aLevel;
+            }
+
+
+            return aLevelList.Last();
+        }
+
+        /***************************************************/
     }
 }

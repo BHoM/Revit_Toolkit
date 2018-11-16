@@ -22,19 +22,24 @@ namespace BH.UI.Cobra.Engine
 
             //Get Level
             //TODO: Reimplement Level Query here - Issue #593 on BHoM_Engine - https://github.com/BuroHappoldEngineering/BHoM_Engine/issues/593
-            List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
-            Level aLevel = aLevelList.Where(x => x.Elevation >= buildingElement.MinimumLevel() && x.Elevation <= buildingElement.MaximumLevel()).FirstOrDefault();
+            //List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
+            //Level aLevel = aLevelList.Where(x => x.Elevation >= buildingElement.MinimumLevel() && x.Elevation <= buildingElement.MaximumLevel()).FirstOrDefault();
+
+            Level aLevel = document.Level(buildingElement.MinimumLevel(), true);
+
+            ElementType aElementType = buildingElement.BuildingElementProperties.ToRevitElementType(document, pushSettings);
+
 
             //Get ElementType
-            ElementType aElementType = null;
-            Type aType = Query.RevitType(buildingElement.BuildingElementProperties.BuildingElementType);
-            List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(aType).Cast<ElementType>().ToList();
-            if (aElementTypeList != null && aElementTypeList.Count > 0)
-            {
-                aElementType = aElementTypeList.Find(x => x.Name == buildingElement.BuildingElementProperties.Name);
-                if (aElementType == null)
-                    aElementType = aElementTypeList.First();
-            }
+            //ElementType aElementType = null;
+            //Type aType = Query.RevitType(buildingElement.BuildingElementProperties.BuildingElementType);
+            //List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(aType).Cast<ElementType>().ToList();
+            //if (aElementTypeList != null && aElementTypeList.Count > 0)
+            //{
+            //    aElementType = aElementTypeList.Find(x => x.Name == buildingElement.BuildingElementProperties.Name);
+            //    if (aElementType == null)
+            //        aElementType = aElementTypeList.First();
+            //}
 
             Element aElement = null;
 
