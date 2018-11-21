@@ -20,26 +20,9 @@ namespace BH.UI.Cobra.Engine
             if (buildingElement == null || buildingElement.BuildingElementProperties == null || document == null)
                 return null;
 
-            //Get Level
-            //TODO: Reimplement Level Query here - Issue #593 on BHoM_Engine - https://github.com/BuroHappoldEngineering/BHoM_Engine/issues/593
-            //List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
-            //Level aLevel = aLevelList.Where(x => x.Elevation >= buildingElement.MinimumLevel() && x.Elevation <= buildingElement.MaximumLevel()).FirstOrDefault();
-
             Level aLevel = document.Level(buildingElement.MinimumLevel(), true);
 
             ElementType aElementType = buildingElement.BuildingElementProperties.ToRevitElementType(document, pushSettings);
-
-
-            //Get ElementType
-            //ElementType aElementType = null;
-            //Type aType = Query.RevitType(buildingElement.BuildingElementProperties.BuildingElementType);
-            //List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(aType).Cast<ElementType>().ToList();
-            //if (aElementTypeList != null && aElementTypeList.Count > 0)
-            //{
-            //    aElementType = aElementTypeList.Find(x => x.Name == buildingElement.BuildingElementProperties.Name);
-            //    if (aElementType == null)
-            //        aElementType = aElementTypeList.First();
-            //}
 
             Element aElement = null;
 
@@ -60,7 +43,31 @@ namespace BH.UI.Cobra.Engine
                     //TODO: Check Roof Creation
                     ModelCurveArray aModelCurveArray = new ModelCurveArray();
                     if (aElementType != null)
-                        aElement = document.Create.NewFootPrintRoof((buildingElement.PanelCurve as PolyCurve).ToRevitCurveArray(pushSettings), aLevel, aElementType as RoofType, out aModelCurveArray);
+                    {
+                        double aElevation = aLevel.Elevation;
+                        if (pushSettings.ConvertUnits)
+                            aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+
+                        oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
+                        ICurve aCurve = BH.Engine.Geometry.Modify.Project(buildingElement.PanelCurve as dynamic, aPlane) as ICurve;
+                        FootPrintRoof aFootPrintRoof = document.Create.NewFootPrintRoof((aCurve as PolyCurve).ToRevitCurveArray(pushSettings), aLevel, aElementType as RoofType, out aModelCurveArray);
+                        if(aFootPrintRoof != null)
+                        {
+                            List<ICurve> aCurveList = (buildingElement.PanelCurve as PolyCurve).Curves;
+                            if (aCurveList != null && aCurveList.Count > 0)
+                            {
+                                SlabShapeEditor aSlabShapeEditor = aFootPrintRoof.SlabShapeEditor;
+                                aSlabShapeEditor.ResetSlabShape();
+
+                                List<oM.Geometry.Point> aPointList = new List<oM.Geometry.Point>();
+                                foreach(ICurve aCurve_Temp in aCurveList)
+                                    aSlabShapeEditor.DrawPoint(BH.Engine.Geometry.Query.IStartPoint(aCurve_Temp).ToRevit(pushSettings));
+                            }
+
+                            aElement = aFootPrintRoof;
+                        }
+                    }
+                        
                     break;
                 case BuildingElementType.Wall:
                     ICurve aICurve = buildingElement.Bottom();

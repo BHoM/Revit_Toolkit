@@ -88,6 +88,8 @@
     <Compile Include="Create\Elements\Sheet.cs" />
     <Compile Include="Modify\AddRefObject.cs" />
     <Compile Include="Modify\AddRefObjects.cs" />
+    <Compile Include="Modify\SetFamilyTypeName.cs" />
+    <Compile Include="Modify\SetFamilyName.cs" />
     <Compile Include="Modify\SetDefaultDiscipline.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
