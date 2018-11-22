@@ -42,7 +42,7 @@ namespace BH.UI.Cobra.Engine
             }
 
             if (aLevel == null)
-                aLevel = Query.BottomLevel(panelPlanar.Outline(), document);
+                aLevel = Query.BottomLevel(panelPlanar.Outline(), document, pushSettings.ConvertUnits);
 
             FloorType aFloorType = panelPlanar.Property.ToRevitFloorType(document, pushSettings);
 

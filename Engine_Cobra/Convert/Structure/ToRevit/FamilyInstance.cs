@@ -58,7 +58,7 @@ namespace BH.UI.Cobra.Engine
             }
 
             if (aLevel == null)
-                aLevel = Query.BottomLevel(framingElement.LocationCurve, document);
+                aLevel = Query.BottomLevel(framingElement.LocationCurve, document, pushSettings.ConvertUnits);
 
             FamilySymbol aFamilySymbol = framingElement.Property.ToRevitFamilySymbol_Column(document, pushSettings);
 
@@ -147,7 +147,7 @@ namespace BH.UI.Cobra.Engine
             }
 
             if (aLevel == null)
-                aLevel = Query.BottomLevel(framingElement.LocationCurve, document);
+                aLevel = Query.BottomLevel(framingElement.LocationCurve, document, pushSettings.ConvertUnits);
 
             FamilySymbol aFamilySymbol = framingElement.Property.ToRevitFamilySymbol_Framing(document, pushSettings);
 

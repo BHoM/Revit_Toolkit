@@ -40,7 +40,7 @@ namespace BH.UI.Cobra.Engine
                         case FamilyPlacementType.CurveBased:
                             if (aIGeometry is ICurve)
                             {
-                                Level aLevel = ((ICurve)aIGeometry).BottomLevel(document);
+                                Level aLevel = ((ICurve)aIGeometry).BottomLevel(document, pushSettings.ConvertUnits);
                                 if (aLevel == null)
                                     break;
 

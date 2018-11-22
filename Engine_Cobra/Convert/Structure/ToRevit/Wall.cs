@@ -38,7 +38,7 @@ namespace BH.UI.Cobra.Engine
             }
 
             if (aLevel == null)
-                aLevel = Query.BottomLevel(panelPlanar.Outline(), document);
+                aLevel = Query.BottomLevel(panelPlanar.Outline(), document, pushSettings.ConvertUnits);
 
             WallType aWallType = panelPlanar.Property.ToRevitWallType(document, pushSettings);
 
