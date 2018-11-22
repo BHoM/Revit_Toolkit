@@ -23,7 +23,7 @@ namespace BH.UI.Cobra.Engine
             FamilyLibrary aFamilyLibrary = FamilyLoadSettings.FamilyLibrary;
 
             List<string> aPathList = BH.Engine.Adapters.Revit.Query.Paths(aFamilyLibrary, categoryName, familyName, familyTypeName);
-            if (aPathList == null && aPathList.Count == 0)
+            if (aPathList == null || aPathList.Count == 0)
                 return null;
 
             string aPath = aPathList.First();
