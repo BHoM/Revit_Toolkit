@@ -307,64 +307,83 @@ namespace BH.UI.Cobra.Engine
 
             BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoMBuildingElementProperties(pullSettings);
 
-            Curve aCurve = null;
-            LocationCurve aLocationCurve = wall.Location as LocationCurve;
-            if (aLocationCurve != null)
-                aCurve = aLocationCurve.Curve;
 
-
-            IList<Reference> aReferences = HostObjectUtils.GetSideFaces(wall, ShellLayerType.Interior);
-            foreach (Reference aReference in aReferences)
+            List<oM.Geometry.PolyCurve> aPolyCurveList = Query.Profiles(wall, pullSettings);
+            foreach (oM.Geometry.PolyCurve aPolyCurve in aPolyCurveList)
             {
-                Face aFace = wall.GetGeometryObjectFromReference(aReference) as Face;
-                if (aFace == null)
-                    continue;
+                //Create the BuildingElement
+                BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aPolyCurve);
 
-                //MinDistance between LocationCurve and Face
-                double aMinDistance = double.MaxValue;
-                foreach (CurveLoop aCurveLoop in aFace.GetEdgesAsCurveLoops())
-                {
-                    foreach (Curve aCurve_Temp in aCurveLoop)
-                    {
-                        for (int i = 0; i < 2; i++)
-                            for (int j = 0; j < 2; j++)
-                            {
-                                double aDistance = aCurve_Temp.GetEndPoint(i).DistanceTo(aCurve.GetEndPoint(j));
-                                if (aDistance < aMinDistance)
-                                    aMinDistance = aDistance;
-                            }
-                    }
-                }
+                //Assign custom data
+                aBuildingElement = Modify.SetIdentifiers(aBuildingElement, wall) as BuildingElement;
+                if (pullSettings.CopyCustomData)
+                    aBuildingElement = Modify.SetCustomData(aBuildingElement, wall, pullSettings.ConvertUnits) as BuildingElement;
 
-                Transform aTransaform = null;
-                if (aMinDistance < double.MaxValue)
-                {
-                    XYZ aXYZ = aFace.ComputeNormal(new UV(0, 0));
-                    aTransaform = Transform.CreateTranslation(aXYZ.Negate() * aMinDistance);
-                }
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
 
-                List<oM.Geometry.PolyCurve> aPolyCurveList = Query.PolyCurves(aFace, aTransaform, pullSettings);
-                if (aPolyCurveList == null)
-                    continue;
-
-                foreach (oM.Geometry.PolyCurve aPolyCurve in aPolyCurveList)
-                {
-                    //Create the BuildingElement
-                    BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aPolyCurve);
-
-                    //Assign custom data
-                    aBuildingElement = Modify.SetIdentifiers(aBuildingElement, wall) as BuildingElement;
-                    if (pullSettings.CopyCustomData)
-                        aBuildingElement = Modify.SetCustomData(aBuildingElement, wall, pullSettings.ConvertUnits) as BuildingElement;
-
-                    pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
-
-                    aBuildingElements.Add(aBuildingElement);
-                }
-
+                aBuildingElements.Add(aBuildingElement);
             }
 
             return aBuildingElements;
+
+            //Curve aCurve = null;
+            //LocationCurve aLocationCurve = wall.Location as LocationCurve;
+            //if (aLocationCurve != null)
+            //    aCurve = aLocationCurve.Curve;
+
+
+            //IList<Reference> aReferences = HostObjectUtils.GetSideFaces(wall, ShellLayerType.Interior);
+            //foreach (Reference aReference in aReferences)
+            //{
+            //    Face aFace = wall.GetGeometryObjectFromReference(aReference) as Face;
+            //    if (aFace == null)
+            //        continue;
+
+            //    //MinDistance between LocationCurve and Face
+            //    double aMinDistance = double.MaxValue;
+            //    foreach (CurveLoop aCurveLoop in aFace.GetEdgesAsCurveLoops())
+            //    {
+            //        foreach (Curve aCurve_Temp in aCurveLoop)
+            //        {
+            //            for (int i = 0; i < 2; i++)
+            //                for (int j = 0; j < 2; j++)
+            //                {
+            //                    double aDistance = aCurve_Temp.GetEndPoint(i).DistanceTo(aCurve.GetEndPoint(j));
+            //                    if (aDistance < aMinDistance)
+            //                        aMinDistance = aDistance;
+            //                }
+            //        }
+            //    }
+
+            //    Transform aTransaform = null;
+            //    if (aMinDistance < double.MaxValue)
+            //    {
+            //        XYZ aXYZ = aFace.ComputeNormal(new UV(0, 0));
+            //        aTransaform = Transform.CreateTranslation(aXYZ.Negate() * aMinDistance);
+            //    }
+
+            //    List<oM.Geometry.PolyCurve> aPolyCurveList = Query.PolyCurves(aFace, aTransaform, pullSettings);
+            //    if (aPolyCurveList == null)
+            //        continue;
+
+            //    foreach (oM.Geometry.PolyCurve aPolyCurve in aPolyCurveList)
+            //    {
+            //        //Create the BuildingElement
+            //        BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aPolyCurve);
+
+            //        //Assign custom data
+            //        aBuildingElement = Modify.SetIdentifiers(aBuildingElement, wall) as BuildingElement;
+            //        if (pullSettings.CopyCustomData)
+            //            aBuildingElement = Modify.SetCustomData(aBuildingElement, wall, pullSettings.ConvertUnits) as BuildingElement;
+
+            //        pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
+
+            //        aBuildingElements.Add(aBuildingElement);
+            //    }
+
+            //}
+
+            //return aBuildingElements;
         }
 
         /***************************************************/

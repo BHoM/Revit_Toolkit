@@ -1,10 +1,11 @@
-﻿using Autodesk.Revit.DB;
+﻿using System.Collections.Generic;
+
+using Autodesk.Revit.DB;
+
 using BH.Engine.Environment;
 using BH.oM.Environment.Elements;
 using BH.oM.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace BH.UI.Cobra.Engine
@@ -22,12 +23,47 @@ namespace BH.UI.Cobra.Engine
 
             Level aLevel = document.Level(buildingElement.MinimumLevel(), true);
 
-            ElementType aElementType = buildingElement.BuildingElementProperties.ToRevitElementType(document, pushSettings);
+            ElementType aElementType = null;
+
+            if(buildingElement.BuildingElementProperties != null)
+                aElementType = buildingElement.BuildingElementProperties.ToRevitElementType(document, pushSettings);
+            
+            if(aElementType == null)
+            {
+                string aFamilyTypeName = BH.Engine.Adapters.Revit.Query.FamilyTypeName(buildingElement);
+                if(!string.IsNullOrEmpty(aFamilyTypeName))
+                {
+                    List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>().ToList().FindAll(x => x.Name == aFamilyTypeName && x.Category != null);
+                    aElementType = aElementTypeList.First();
+                }
+            }
+
+            if (aElementType == null)
+            {
+                string aFamilyTypeName = buildingElement.Name;
+                if (!string.IsNullOrEmpty(aFamilyTypeName))
+                {
+                    List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>().ToList().FindAll(x => x.Name == aFamilyTypeName && x.Category != null);
+                    aElementType = aElementTypeList.First();
+                }
+            }
+
+            if (aElementType == null)
+                return null;
+
+            BuildingElementType? aBuildingElementType = null;
+            if (buildingElement.BuildingElementProperties != null)
+                aBuildingElementType = buildingElement.BuildingElementProperties.BuildingElementType;
+            else
+                aBuildingElementType = Query.BuildingElementType(aElementType.Category);
+
+            if (aBuildingElementType == null || !aBuildingElementType.HasValue)
+                return null;
 
             Element aElement = null;
 
             BuiltInParameter[] aBuiltInParameters = null;
-            switch (buildingElement.BuildingElementProperties.BuildingElementType)
+            switch (aBuildingElementType.Value)
             {
                 case BuildingElementType.Ceiling:
                     //TODO: Create Ceiling from BuildingElement
