@@ -1,7 +1,4 @@
-﻿using Autodesk.Revit.DB;
-
-using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Adapters.Revit.Settings;
+﻿using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -13,7 +10,11 @@ namespace BH.UI.Cobra.Engine
 
         internal static oM.Adapters.Revit.Elements.ViewPlan ToBHoMViewPlan(this Autodesk.Revit.DB.ViewPlan viewPlan, PullSettings pullSettings = null)
         {
-            oM.Adapters.Revit.Elements.ViewPlan aViewPlan = null;
+            pullSettings = pullSettings.DefaultIfNull();
+
+            oM.Adapters.Revit.Elements.ViewPlan aViewPlan = pullSettings.FindRefObject(viewPlan.Id.IntegerValue) as oM.Adapters.Revit.Elements.ViewPlan;
+            if (aViewPlan != null)
+                return aViewPlan;
 
             if(!viewPlan.IsTemplate && viewPlan.GenLevel != null)
                 aViewPlan = BH.Engine.Adapters.Revit.Create.ViewPlan(viewPlan.Name, viewPlan.GenLevel.Name);
@@ -22,7 +23,10 @@ namespace BH.UI.Cobra.Engine
 
             aViewPlan.Name = viewPlan.Name;
             aViewPlan = Modify.SetIdentifiers(aViewPlan, viewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
-            aViewPlan = Modify.SetCustomData(aViewPlan, viewPlan, true) as oM.Adapters.Revit.Elements.ViewPlan;
+            if (pullSettings.CopyCustomData)
+                aViewPlan = Modify.SetCustomData(aViewPlan, viewPlan, true) as oM.Adapters.Revit.Elements.ViewPlan;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aViewPlan);
 
             return aViewPlan;
         }

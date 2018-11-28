@@ -15,9 +15,19 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            Curve gridLine = grid.Curve;
-            oM.Architecture.Elements.Grid aGrid = BH.Engine.Architecture.Elements.Create.Grid(gridLine.ToBHoM(pullSettings));
+            oM.Architecture.Elements.Grid aGrid = pullSettings.FindRefObject(grid.Id.IntegerValue) as oM.Architecture.Elements.Grid;
+            if (aGrid != null)
+                return aGrid;
+
+            aGrid = BH.Engine.Architecture.Elements.Create.Grid(grid.Curve.ToBHoM(pullSettings));
             aGrid.Name = grid.Name;
+
+            aGrid = Modify.SetIdentifiers(aGrid, grid) as oM.Architecture.Elements.Grid;
+            if (pullSettings.CopyCustomData)
+                aGrid = Modify.SetCustomData(aGrid, grid, pullSettings.ConvertUnits) as oM.Architecture.Elements.Grid;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aGrid);
+
             return aGrid;
         }
 

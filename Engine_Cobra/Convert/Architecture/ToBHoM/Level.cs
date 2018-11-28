@@ -11,16 +11,22 @@ namespace BH.UI.Cobra.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static BHoMObject ToBHoMLevel(this Level Level, PullSettings pullSettings = null)
+        internal static BHoMObject ToBHoMLevel(this Level level, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Architecture.Elements.Level aLevel = BH.Engine.Architecture.Elements.Create.Level(ToSI(Level.ProjectElevation, UnitType.UT_Length));
-            aLevel.Name = Level.Name;
+            oM.Architecture.Elements.Level aLevel = pullSettings.FindRefObject(level.Id.IntegerValue) as oM.Architecture.Elements.Level;
+            if (aLevel != null)
+                return aLevel;
 
-            aLevel = Modify.SetIdentifiers(aLevel, Level) as oM.Architecture.Elements.Level;
+            aLevel = BH.Engine.Architecture.Elements.Create.Level(ToSI(level.ProjectElevation, UnitType.UT_Length));
+            aLevel.Name = level.Name;
+
+            aLevel = Modify.SetIdentifiers(aLevel, level) as oM.Architecture.Elements.Level;
             if (pullSettings.CopyCustomData)
-                aLevel = Modify.SetCustomData(aLevel, Level, pullSettings.ConvertUnits) as oM.Architecture.Elements.Level;
+                aLevel = Modify.SetCustomData(aLevel, level, pullSettings.ConvertUnits) as oM.Architecture.Elements.Level;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aLevel);
 
             return aLevel;
         }

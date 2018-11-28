@@ -44,7 +44,7 @@ namespace BH.UI.Cobra.Engine
                 if (materialId.IntegerValue == -1)
                 {
                     string materialGrade = familyInstance.MaterialGrade();
-                    aMaterial = familyInstance.StructuralMaterialType.ToBHoMMaterial(materialGrade);
+                    aMaterial = Query.Material( familyInstance.StructuralMaterialType, materialGrade);
                 }
                 else
                 {
