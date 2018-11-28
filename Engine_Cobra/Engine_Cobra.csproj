@@ -236,6 +236,7 @@
     <Compile Include="Query\Discipline.cs" />
     <Compile Include="Query\Profiles.cs" />
     <Compile Include="Query\Curves.cs" />
+    <Compile Include="Query\Material.cs" />
     <Compile Include="Query\Top.cs" />
     <Compile Include="Query\ActiveWorksetId.cs" />
     <Compile Include="Query\WorksetId.cs" />

@@ -2,6 +2,7 @@
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using System;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -16,8 +17,22 @@ namespace BH.UI.Cobra.Engine
             if (pullSettings.RefObjects == null)
                 return null;
 
-            List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
+            List<IBHoMObject> aBHoMObjectList = null;
             if (pullSettings.RefObjects.TryGetValue(elementId, out aBHoMObjectList))
+                return aBHoMObjectList;
+
+            return null;
+        }
+
+        /***************************************************/
+
+        public static List<int> FindRefObjects(this PushSettings pushSettings, Guid guid)
+        {
+            if (pushSettings.RefObjects == null)
+                return null;
+
+            List<int> aBHoMObjectList = null;
+            if (pushSettings.RefObjects.TryGetValue(guid, out aBHoMObjectList))
                 return aBHoMObjectList;
 
             return null;
