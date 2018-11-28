@@ -100,6 +100,7 @@
     <Compile Include="Query\IsExternal.cs" />
     <Compile Include="Query\FilterByType.cs" />
     <Compile Include="Query\AdjacentSpaceId.cs" />
+    <Compile Include="Query\Height.cs" />
     <Compile Include="Query\SpaceId.cs" />
     <Compile Include="Query\PullEdges.cs" />
     <Compile Include="Query\Shell.cs" />

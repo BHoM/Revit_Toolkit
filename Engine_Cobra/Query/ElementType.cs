@@ -100,14 +100,9 @@ namespace BH.UI.Cobra.Engine
                 if(!string.IsNullOrEmpty(aTypeName))
                 {
                     if (aElementTypeList.Count > 0 && !(aElementTypeList.First() is FamilySymbol))
-                    {
-                        FamilySymbol aFamilySymbol = aElementTypeList.First() as FamilySymbol;
-
-                        if (!aFamilySymbol.IsActive)
-                            aFamilySymbol.Activate();
-
+                    { 
                         // Duplicate Type for object which is not Family Symbol
-                        aElementType = aFamilySymbol.Duplicate(aTypeName);
+                        aElementType = aElementTypeList.First().Duplicate(aTypeName);
                     }
                     else
                     {

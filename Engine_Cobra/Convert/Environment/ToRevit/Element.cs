@@ -21,8 +21,6 @@ namespace BH.UI.Cobra.Engine
             if (buildingElement == null || buildingElement.BuildingElementProperties == null || document == null)
                 return null;
 
-            Level aLevel = document.Level(buildingElement.MinimumLevel(), true);
-
             ElementType aElementType = null;
 
             if(buildingElement.BuildingElementProperties != null)
@@ -54,7 +52,8 @@ namespace BH.UI.Cobra.Engine
             BuildingElementType? aBuildingElementType = null;
             if (buildingElement.BuildingElementProperties != null)
                 aBuildingElementType = buildingElement.BuildingElementProperties.BuildingElementType;
-            else
+
+            if (aBuildingElementType == null || !aBuildingElementType.HasValue || aBuildingElementType == BuildingElementType.Undefined)
                 aBuildingElementType = Query.BuildingElementType(aElementType.Category);
 
             if (aBuildingElementType == null || !aBuildingElementType.HasValue)
@@ -70,16 +69,21 @@ namespace BH.UI.Cobra.Engine
                     break;
                 case BuildingElementType.Floor:
                     if (aElementType != null)
+                    {
+                        Level aLevel = document.Level(buildingElement.MinimumLevel(), true);
                         aElement = document.Create.NewFloor((buildingElement.PanelCurve as PolyCurve).ToRevitCurveArray(pushSettings), aElementType as FloorType, aLevel, false);
+                    }
                     else
+                    {
                         aElement = document.Create.NewFloor((buildingElement.PanelCurve as PolyCurve).ToRevitCurveArray(pushSettings), false);
+                    }  
                     aBuiltInParameters = new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM };
                     break;
                 case BuildingElementType.Roof:
-                    //TODO: Check Roof Creation
                     ModelCurveArray aModelCurveArray = new ModelCurveArray();
                     if (aElementType != null)
                     {
+                        Level aLevel = document.Level(buildingElement.MinimumLevel(), true);
                         double aElevation = aLevel.Elevation;
                         if (pushSettings.ConvertUnits)
                             aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
@@ -106,11 +110,7 @@ namespace BH.UI.Cobra.Engine
                         
                     break;
                 case BuildingElementType.Wall:
-                    ICurve aICurve = buildingElement.Bottom();
-                    if (aICurve == null)
-                        return null;
-
-                    aElement = Wall.Create(document, ToRevitCurve(aICurve, pushSettings), aLevel.Id, false);
+                    aElement = Wall.Create(document, Convert.ToRevitCurveIList(buildingElement.Curve(), pushSettings), false); //(document, ToRevitCurve(aICurve, pushSettings), aLevel.Id, false);
                     if (aElementType != null)
                         aElement.ChangeTypeId(aElementType.Id);
 

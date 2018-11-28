@@ -136,6 +136,7 @@
     <Compile Include="Convert\Geometry\ToBHoM\CurveArray.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\CurveArrArray.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\EdgeArray.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\CurveIList.cs" />
     <Compile Include="Convert\Geometry\ToRevit\CurveArray.cs" />
     <Compile Include="Modify\AddAdjacentSpaceId.cs" />
     <Compile Include="Modify\Move.cs" />

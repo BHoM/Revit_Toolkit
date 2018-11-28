@@ -4,6 +4,8 @@ using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Properties;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -39,12 +41,41 @@ namespace BH.Engine.Adapters.Revit
             BuildingElementProperties aBuildingElementProperties = Environment.Create.BuildingElementProperties(familyTypeName, BuildingElementType.Wall);
             aBuildingElementProperties = Modify.SetFamilyTypeName(aBuildingElementProperties, familyTypeName);
 
-            BuildingElement aBuildingElement = Environment.Create.BuildingElement(aPolyCurve);
-            aBuildingElement.BuildingElementProperties = Environment.Create.BuildingElementProperties(familyTypeName, BuildingElementType.Wall);
+            BuildingElement aBuildingElement = Environment.Create.BuildingElement(aBuildingElementProperties, aPolyCurve);
             aBuildingElement.Name = familyTypeName;
             aBuildingElement.CustomData.Add(Convert.CategoryName, "Walls");
 
             return aBuildingElement;
+        }
+
+        /***************************************************/
+
+        public static BuildingElement BuildingElement(PolyCurve polyCurve, string familyTypeName)
+        {
+            if (polyCurve == null || string.IsNullOrEmpty(familyTypeName))
+                return null;
+
+            BuildingElement aBuildingElement = Environment.Create.BuildingElement(Environment.Create.BuildingElementProperties(familyTypeName), polyCurve);
+            aBuildingElement.Name = familyTypeName;
+
+            return aBuildingElement;
+        }
+
+        /***************************************************/
+
+        public static BuildingElement BuildingElement(IEnumerable<Point> points, string familyTypeName)
+        {
+            if (points == null || string.IsNullOrEmpty(familyTypeName) || points.Count() < 3)
+                return null;
+
+            PolyCurve aPolyCurve = new PolyCurve();
+            for (int i = 1; i < points.Count(); i++)
+                aPolyCurve.Curves.Add(Geometry.Create.Line(points.ElementAt(i - 1), points.ElementAt(i)));
+
+            if (points.Count() > 2)
+                aPolyCurve.Curves.Add(Geometry.Create.Line(points.ElementAt(points.Count() - 1), points.ElementAt(0)));
+
+            return BuildingElement(aPolyCurve, familyTypeName);
         }
 
         /***************************************************/
