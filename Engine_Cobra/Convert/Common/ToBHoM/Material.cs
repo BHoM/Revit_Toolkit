@@ -11,11 +11,11 @@ namespace BH.UI.Cobra.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static oM.Common.Materials.Material ToBHoMMaterial(this Material material, PullSettings pullSettings)
+        internal static oM.Common.Materials.Material ToBHoMMaterial(this Material material, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Common.Materials.Material aMaterial = pullSettings.FindRefObject(material.Id.IntegerValue) as oM.Common.Materials.Material;
+            oM.Common.Materials.Material aMaterial = pullSettings.FindRefObject<oM.Common.Materials.Material>(material.Id.IntegerValue);
             if (aMaterial != null)
                 return aMaterial;
 

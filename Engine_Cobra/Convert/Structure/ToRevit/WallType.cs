@@ -15,20 +15,24 @@ namespace BH.UI.Cobra.Engine
             if (property2D == null || document == null)
                 return null;
 
-            return Query.ElementType(property2D, document, BuiltInCategory.OST_Walls, pushSettings.FamilyLoadSettings) as WallType;
+            WallType aWallType = pushSettings.FindRefObject<WallType>(document, property2D.BHoM_Guid);
+            if (aWallType != null)
+                return aWallType;
 
-            //List<WallType> aWallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).OfCategory(BuiltInCategory.OST_Walls).Cast<WallType>().ToList();
-            //if (aWallTypeList == null || aWallTypeList.Count < 1)
-            //    return null;
+            pushSettings.DefaultIfNull();
 
-            //WallType aWallType = null;
+            aWallType = Query.ElementType(property2D, document, BuiltInCategory.OST_Walls, pushSettings.FamilyLoadSettings) as WallType;
 
-            //aWallType = aWallTypeList.Find(x => x.Name == property2D.Name);
+            aWallType.CheckIfNullPush(property2D);
+            if (aWallType == null)
+                return null;
 
-            //if (aWallType != null)
-            //    return aWallType;
+            if (pushSettings.CopyCustomData)
+                Modify.SetParameters(aWallType, property2D, null, pushSettings.ConvertUnits);
 
-            //return null;
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(property2D, aWallType);
+
+            return aWallType;
         }
     }
 }

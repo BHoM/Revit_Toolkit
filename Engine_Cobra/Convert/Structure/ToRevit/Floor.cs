@@ -23,6 +23,12 @@ namespace BH.UI.Cobra.Engine
             if (panelPlanar == null || document == null)
                 return null;
 
+            Floor aFloor = pushSettings.FindRefObject<Floor>(document, panelPlanar.BHoM_Guid);
+            if (aFloor != null)
+                return aFloor;
+
+            pushSettings.DefaultIfNull();
+
             object aCustomDataValue = null;
 
             CurveArray aCurves = new CurveArray();
@@ -50,19 +56,6 @@ namespace BH.UI.Cobra.Engine
             {
                 aFloorType = Query.ElementType(panelPlanar, document, BuiltInCategory.OST_Floors) as FloorType;
 
-                //List<FloorType> aFloorTypeList = new FilteredElementCollector(document).OfClass(typeof(FloorType)).OfCategory(BuiltInCategory.OST_Floors).Cast<FloorType>().ToList();
-                //aFloorTypeList.AddRange(new FilteredElementCollector(document).OfClass(typeof(FloorType)).OfCategory(BuiltInCategory.OST_StructuralFoundation).Cast<FloorType>());
-
-                //aCustomDataValue = panelPlanar.ICustomData("Type");
-                //if (aCustomDataValue != null && aCustomDataValue is int)
-                //{
-                //    ElementId aElementId = new ElementId((int)aCustomDataValue);
-                //    aFloorType = aFloorTypeList.Find(x => x.Id == aElementId);
-                //}
-
-                //if (aFloorType == null)
-                //    aFloorType = aFloorTypeList.Find(x => x.Name == panelPlanar.Name);
-
                 if (aFloorType == null)
                 {
                     BH.Engine.Reflection.Compute.RecordError(string.Format("Floor type has not been found for given BHoM panel property. BHoM Guid: {0}", panelPlanar.BHoM_Guid));
@@ -70,28 +63,28 @@ namespace BH.UI.Cobra.Engine
                 }
             }
 
-            Floor aFloor;
             if (aFloorType.IsFoundationSlab)
                 aFloor = document.Create.NewFoundationSlab(aCurves, aFloorType, aLevel, true, XYZ.BasisZ);
             else
                 aFloor = document.Create.NewFloor(aCurves, aFloorType, aLevel, true);
 
             aFloor.CheckIfNullPush(panelPlanar);
+            if (aFloorType == null)
+                return null;
 
-            if (aFloor != null)
+            if (pushSettings.CopyCustomData)
             {
-                if (pushSettings.CopyCustomData)
+                BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
                 {
-                    BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
-                    {
                         BuiltInParameter.ELEM_FAMILY_PARAM,
                         BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
                         BuiltInParameter.ALL_MODEL_IMAGE,
                         BuiltInParameter.ELEM_TYPE_PARAM
-                    };
-                    Modify.SetParameters(aFloor, panelPlanar, paramsToIgnore, pushSettings.ConvertUnits);
-                }
+                };
+                Modify.SetParameters(aFloor, panelPlanar, paramsToIgnore, pushSettings.ConvertUnits);
             }
+
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(panelPlanar, aFloor);
 
             return aFloor;
         }

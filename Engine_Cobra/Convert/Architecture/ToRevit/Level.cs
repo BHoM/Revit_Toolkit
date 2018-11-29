@@ -12,9 +12,14 @@ namespace BH.UI.Cobra.Engine
 
         internal static Level ToRevitLevel(this oM.Architecture.Elements.Level level, Document document, PushSettings pushSettings = null)
         {
+            Level aLevel = pushSettings.FindRefObject<Level>(document, level.BHoM_Guid);
+            if (aLevel != null)
+                return aLevel;
+
+            pushSettings.DefaultIfNull();
+
             ElementId aElementId = level.ElementId();
 
-            Level aLevel = null;
             if (aElementId != null && aElementId != ElementId.InvalidElementId)
                 aLevel = document.GetElement(aElementId) as Level;
 
@@ -27,8 +32,14 @@ namespace BH.UI.Cobra.Engine
                 aLevel.Name = level.Name;
             }
 
+            aLevel.CheckIfNullPush(level);
+            if (aLevel == null)
+                return null;
+
             if (pushSettings.CopyCustomData)
                 Modify.SetParameters(aLevel, level, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV }, pushSettings.ConvertUnits);
+
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(level, aLevel);
 
             return aLevel;
         }

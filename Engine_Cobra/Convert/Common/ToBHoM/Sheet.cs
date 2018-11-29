@@ -13,11 +13,21 @@ namespace BH.UI.Cobra.Engine
 
         internal static Sheet ToBHoMSheet(this ViewSheet viewSheet, PullSettings pullSettings = null)
         {
-            Sheet aSheet = BH.Engine.Adapters.Revit.Create.Sheet(viewSheet.Name, viewSheet.SheetNumber);
+            pullSettings = pullSettings.DefaultIfNull();
+
+            Sheet aSheet = pullSettings.FindRefObject<Sheet>(viewSheet.Id.IntegerValue);
+            if (aSheet != null)
+                return aSheet;
+
+            aSheet = BH.Engine.Adapters.Revit.Create.Sheet(viewSheet.Name, viewSheet.SheetNumber);
 
             aSheet.Name = viewSheet.Name;
+
             aSheet = Modify.SetIdentifiers(aSheet, viewSheet) as Sheet;
-            aSheet = Modify.SetCustomData(aSheet, viewSheet, true) as Sheet;
+            if (pullSettings.CopyCustomData)
+                aSheet = Modify.SetCustomData(aSheet, viewSheet, pullSettings.ConvertUnits) as Sheet;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSheet);
 
             return aSheet;
         }

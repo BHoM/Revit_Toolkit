@@ -46,13 +46,13 @@ namespace BH.UI.Cobra.Engine
                     if (aSketch.Profile == null)
                         continue;
 
-                    List<List<ICurve>> aCurveListList = Convert.ToBHoM(aSketch.Profile, pullSettings);
-                    if (aCurveListList == null)
+                    List<PolyCurve> aPolyCurveList = Convert.ToBHoM(aSketch.Profile, pullSettings);
+                    if (aPolyCurveList == null)
                         continue;
 
-                    foreach (List<ICurve> aCureList in aCurveListList)
-                        if (aCureList != null)
-                            aResult.Add(BH.Engine.Geometry.Create.PolyCurve(aCureList));
+                    foreach (PolyCurve aPolyCurve in aPolyCurveList)
+                        if (aPolyCurve != null)
+                            aResult.Add(aPolyCurve);
                 }
             }
 

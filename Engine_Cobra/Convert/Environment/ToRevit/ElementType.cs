@@ -1,9 +1,10 @@
-﻿using Autodesk.Revit.DB;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using Autodesk.Revit.DB;
+
 using BH.oM.Environment.Properties;
 using BH.oM.Adapters.Revit.Settings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -18,11 +19,17 @@ namespace BH.UI.Cobra.Engine
             if (buildingElementProperties == null || document == null)
                 return null;
 
+            ElementType aElementType = pushSettings.FindRefObject<ElementType>(document, buildingElementProperties.BHoM_Guid);
+            if (aElementType != null)
+                return aElementType;
+
+            pushSettings.DefaultIfNull();
+
             BuiltInCategory aBuiltInCategory = buildingElementProperties.BuildingElementType.BuiltInCategory();
             if (aBuiltInCategory == BuiltInCategory.INVALID)
                 return null;
 
-            ElementType aElementType = buildingElementProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
+            aElementType = buildingElementProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
             if(aElementType == null)
             {
                 List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfCategory(aBuiltInCategory).WhereElementIsElementType().Cast<ElementType>().ToList();
@@ -33,8 +40,14 @@ namespace BH.UI.Cobra.Engine
                 aElementType = aElementType.Duplicate(buildingElementProperties.Name);
             }
 
+            aElementType.CheckIfNullPush(buildingElementProperties);
+            if (aElementType == null)
+                return null;
+
             if (pushSettings.CopyCustomData)
                 Modify.SetParameters(aElementType, buildingElementProperties, null, pushSettings.ConvertUnits);
+
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(buildingElementProperties, aElementType);
 
             return aElementType;
         }

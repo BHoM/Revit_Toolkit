@@ -16,21 +16,26 @@ namespace BH.UI.Cobra.Engine
             if (property2D == null || document == null)
                 return null;
 
-            return Query.ElementType(property2D, document, BuiltInCategory.OST_Floors) as FloorType;
+            FloorType aFloorType = pushSettings.FindRefObject<FloorType>(document, property2D.BHoM_Guid);
+            if (aFloorType != null)
+                return aFloorType;
 
-            //List<FloorType> aFloorTypeList = new FilteredElementCollector(document).OfClass(typeof(FloorType)).OfCategory(BuiltInCategory.OST_Floors).Cast<FloorType>().ToList();
-            //aFloorTypeList.AddRange(new FilteredElementCollector(document).OfClass(typeof(FloorType)).OfCategory(BuiltInCategory.OST_StructuralFoundation).Cast<FloorType>());
-            //if (aFloorTypeList == null || aFloorTypeList.Count < 1)
-            //    return null;
+            pushSettings.DefaultIfNull();
 
-            //FloorType aFloorType = null;
+            aFloorType = Query.ElementType(property2D, document, BuiltInCategory.OST_Floors) as FloorType;
+            if (aFloorType == null)
+                return null;
 
-            //aFloorType = aFloorTypeList.Find(x => x.Name == property2D.Name);
+            aFloorType.CheckIfNullPush(property2D);
+            if (aFloorType == null)
+                return null;
 
-            //if (aFloorType != null)
-            //    return aFloorType;
+            if (pushSettings.CopyCustomData)
+                Modify.SetParameters(aFloorType, property2D, null, pushSettings.ConvertUnits);
 
-            //return null;
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(property2D, aFloorType);
+
+            return aFloorType;
         }
     }
 }

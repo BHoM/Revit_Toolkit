@@ -42,7 +42,7 @@ namespace BH.UI.Cobra.Engine
             switch (pullSettings.Discipline)
             {
                 case Discipline.Environmental:
-                    return planarFace.ToBHoMBuildingElementPanels(pullSettings).ConvertAll(x => x as IBHoMObject);
+                    return planarFace.Panels(pullSettings).ConvertAll(x => x as IBHoMObject);
             }
             
             return null;

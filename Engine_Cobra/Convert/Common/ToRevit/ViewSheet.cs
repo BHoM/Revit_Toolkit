@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-
-using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Elements;
@@ -20,10 +17,18 @@ namespace BH.UI.Cobra.Engine
             if (sheet == null)
                 return null;
 
-            ViewSheet aViewSheet = ViewSheet.Create(document, ElementId.InvalidElementId);
+            ViewSheet aViewSheet = pushSettings.FindRefObject<ViewSheet>(document, sheet.BHoM_Guid);
+            if (aViewSheet != null)
+                return aViewSheet;
+
+            pushSettings.DefaultIfNull();
+
+            aViewSheet = ViewSheet.Create(document, ElementId.InvalidElementId);
 
             if (pushSettings.CopyCustomData)
                 Modify.SetParameters(aViewSheet, sheet, null, pushSettings.ConvertUnits);
+
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(sheet, aViewSheet);
 
             return aViewSheet;
         }
