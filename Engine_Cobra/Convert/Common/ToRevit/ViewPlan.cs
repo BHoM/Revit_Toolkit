@@ -19,6 +19,12 @@ namespace BH.UI.Cobra.Engine
             if (floorPlan == null || string.IsNullOrEmpty(floorPlan.LevelName) || string.IsNullOrEmpty(floorPlan.Name))
                 return null;
 
+            ViewPlan aViewPlan = pushSettings.FindRefObject<ViewPlan>(document, floorPlan.BHoM_Guid);
+            if (aViewPlan != null)
+                return aViewPlan;
+
+            pushSettings.DefaultIfNull();
+
             ElementId aElementId_Level = null;
 
             List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
@@ -51,11 +57,13 @@ namespace BH.UI.Cobra.Engine
             if (aElementId_ViewFamilyType == ElementId.InvalidElementId)
                 return null;
 
-            Autodesk.Revit.DB.ViewPlan aViewPlan = Autodesk.Revit.DB.ViewPlan.Create(document, aElementId_ViewFamilyType, aElementId_Level);
+            aViewPlan = ViewPlan.Create(document, aElementId_ViewFamilyType, aElementId_Level);
             aViewPlan.ViewName = floorPlan.Name;
 
             if (pushSettings.CopyCustomData)
                 Modify.SetParameters(aViewPlan, floorPlan, null, pushSettings.ConvertUnits);
+
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(floorPlan, aViewPlan);
 
             return aViewPlan;
         }

@@ -21,6 +21,12 @@ namespace BH.UI.Cobra.Engine
             if (buildingElement == null || buildingElement.BuildingElementProperties == null || document == null)
                 return null;
 
+            Element aElement = pushSettings.FindRefObject<Element>(document, buildingElement.BHoM_Guid);
+            if (aElement != null)
+                return aElement;
+
+            pushSettings.DefaultIfNull();
+
             ElementType aElementType = null;
 
             if(buildingElement.BuildingElementProperties != null)
@@ -58,8 +64,6 @@ namespace BH.UI.Cobra.Engine
 
             if (aBuildingElementType == null || !aBuildingElementType.HasValue)
                 return null;
-
-            Element aElement = null;
 
             BuiltInParameter[] aBuiltInParameters = null;
             switch (aBuildingElementType.Value)
@@ -124,8 +128,14 @@ namespace BH.UI.Cobra.Engine
                     break;
             }
 
+            aElement.CheckIfNullPush(buildingElement);
+            if (aElement == null)
+                return null;
+
             if (pushSettings.CopyCustomData)
                 Modify.SetParameters(aElement, buildingElement, aBuiltInParameters, pushSettings.ConvertUnits);
+
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(buildingElement, aElement);
 
             return aElement;
         }

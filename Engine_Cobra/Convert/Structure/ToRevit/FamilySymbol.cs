@@ -20,22 +20,24 @@ namespace BH.UI.Cobra.Engine
             if (framingElementProperty == null || document == null)
                 return null;
 
-            return Query.ElementType(framingElementProperty, document, BuiltInCategory.OST_StructuralColumns, pushSettings.FamilyLoadSettings) as FamilySymbol;
-            
-            //framingElementProperty.ElementType()
+            FamilySymbol aFamilySymbol= pushSettings.FindRefObject<FamilySymbol>(document, framingElementProperty.BHoM_Guid);
+            if (aFamilySymbol != null)
+                return aFamilySymbol;
 
-            //List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralColumns).Cast<FamilySymbol>().ToList();
-            //if (aFamilySymbolList == null || aFamilySymbolList.Count < 1)
-            //    return null;
+            pushSettings = pushSettings.DefaultIfNull();
 
-            //FamilySymbol aFamilySymbol = null;
+            aFamilySymbol = Query.ElementType(framingElementProperty, document, BuiltInCategory.OST_StructuralColumns, pushSettings.FamilyLoadSettings) as FamilySymbol;
 
-            //aFamilySymbol = aFamilySymbolList.Find(x => x.Name == framingElementProperty.Name);
+            aFamilySymbol.CheckIfNullPush(framingElementProperty);
+            if (aFamilySymbol == null)
+                return null;
 
-            //if (aFamilySymbol != null)
-            //    return aFamilySymbol;
+            if (pushSettings.CopyCustomData)
+                Modify.SetParameters(aFamilySymbol, framingElementProperty, null, pushSettings.ConvertUnits);
 
-            //return null;
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElementProperty, aFamilySymbol);
+
+            return aFamilySymbol;
         }
 
         /***************************************************/
@@ -45,21 +47,24 @@ namespace BH.UI.Cobra.Engine
             if (framingElementProperty == null || document == null)
                 return null;
 
+            FamilySymbol aFamilySymbol = pushSettings.FindRefObject<FamilySymbol>(document, framingElementProperty.BHoM_Guid);
+            if (aFamilySymbol != null)
+                return aFamilySymbol;
+
             pushSettings = pushSettings.DefaultIfNull();
 
-            return Query.ElementType(framingElementProperty, document, BuiltInCategory.OST_StructuralFraming, pushSettings.FamilyLoadSettings) as FamilySymbol;
+            aFamilySymbol = Query.ElementType(framingElementProperty, document, BuiltInCategory.OST_StructuralFraming, pushSettings.FamilyLoadSettings) as FamilySymbol;
 
-            //List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilySymbol>().ToList();
-            //if (aFamilySymbolList == null || aFamilySymbolList.Count < 1)
-            //    return null;
+            aFamilySymbol.CheckIfNullPush(framingElementProperty);
+            if (aFamilySymbol == null)
+                return null;
 
-            //FamilySymbol aFamilySymbol = null;
+            if (pushSettings.CopyCustomData)
+                Modify.SetParameters(aFamilySymbol, framingElementProperty, null, pushSettings.ConvertUnits);
 
-            //aFamilySymbol = aFamilySymbolList.Find(x => x.Name == framingElementProperty.Name);
-            //if (aFamilySymbol != null)
-            //    return aFamilySymbol;
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElementProperty, aFamilySymbol);
 
-            //return null;
+            return aFamilySymbol;
         }
 
         /***************************************************/

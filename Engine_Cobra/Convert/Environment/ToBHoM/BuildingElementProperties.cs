@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.DB;
 
 using BH.Engine.Environment;
-using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Properties;
 using BH.oM.Adapters.Revit.Settings;
@@ -47,7 +43,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementProperties aBuildingElementProperties = pullSettings.FindRefObject(wallType.Id.IntegerValue) as BuildingElementProperties;
+            BuildingElementProperties aBuildingElementProperties = pullSettings.FindRefObject<BuildingElementProperties>(wallType.Id.IntegerValue);
             if (aBuildingElementProperties != null)
                 return aBuildingElementProperties;
 
@@ -71,7 +67,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementProperties aBuildingElementProperties = pullSettings.FindRefObject(floorType.Id.IntegerValue) as BuildingElementProperties;
+            BuildingElementProperties aBuildingElementProperties = pullSettings.FindRefObject<BuildingElementProperties>(floorType.Id.IntegerValue);
             if (aBuildingElementProperties != null)
                 return aBuildingElementProperties;
 
@@ -95,7 +91,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementProperties aBuildingElementProperties = pullSettings.FindRefObject(ceilingType.Id.IntegerValue) as BuildingElementProperties;
+            BuildingElementProperties aBuildingElementProperties = pullSettings.FindRefObject<BuildingElementProperties>(ceilingType.Id.IntegerValue);
             if (aBuildingElementProperties != null)
                 return aBuildingElementProperties;
 
@@ -119,7 +115,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementProperties aBuildingElementProperties = pullSettings.FindRefObject(roofType.Id.IntegerValue) as BuildingElementProperties;
+            BuildingElementProperties aBuildingElementProperties = pullSettings.FindRefObject<BuildingElementProperties>(roofType.Id.IntegerValue);
             if (aBuildingElementProperties != null)
                 return aBuildingElementProperties;
 
@@ -143,7 +139,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElementProperties aBuildingElementProperties = pullSettings.FindRefObject(familySymbol.Id.IntegerValue) as BuildingElementProperties;
+            BuildingElementProperties aBuildingElementProperties = pullSettings.FindRefObject<BuildingElementProperties>(familySymbol.Id.IntegerValue);
             if (aBuildingElementProperties != null)
                 return aBuildingElementProperties;
 

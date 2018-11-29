@@ -3,6 +3,8 @@
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using System;
+using System.Linq;
+using Autodesk.Revit.DB;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -12,14 +14,15 @@ namespace BH.UI.Cobra.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<IBHoMObject> FindRefObjects(this PullSettings pullSettings, int elementId)
+        public static List<T> FindRefObjects<T>(this PullSettings pullSettings, int elementId) where T : IBHoMObject
         {
             if (pullSettings.RefObjects == null)
                 return null;
 
             List<IBHoMObject> aBHoMObjectList = null;
             if (pullSettings.RefObjects.TryGetValue(elementId, out aBHoMObjectList))
-                return aBHoMObjectList;
+                if (aBHoMObjectList != null)
+                    return aBHoMObjectList.FindAll(x => x is T).Cast<T>().ToList();
 
             return null;
         }
@@ -39,5 +42,24 @@ namespace BH.UI.Cobra.Engine
         }
 
         /***************************************************/
+
+        public static List<T> FindRefObjects<T>(this PushSettings pushSettings, Document Document, Guid guid) where T : Element
+        {
+            if (pushSettings.RefObjects == null)
+                return null;
+
+            List<int> aBHoMObjectList = null;
+            if (!pushSettings.RefObjects.TryGetValue(guid, out aBHoMObjectList))
+                return null;
+
+            if (aBHoMObjectList == null)
+                return null;
+
+            List<T> aResult = new List<T>();
+            if (aBHoMObjectList.Count == 0)
+                return aResult;
+
+            return aBHoMObjectList.ConvertAll(x => Document.GetElement(new ElementId(x))).FindAll(x => x is T).Cast<T>().ToList();
+        }
     }
 }

@@ -12,7 +12,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Adapters.Revit.Elements.ViewPlan aViewPlan = pullSettings.FindRefObject(viewPlan.Id.IntegerValue) as oM.Adapters.Revit.Elements.ViewPlan;
+            oM.Adapters.Revit.Elements.ViewPlan aViewPlan = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.ViewPlan>(viewPlan.Id.IntegerValue);
             if (aViewPlan != null)
                 return aViewPlan;
 

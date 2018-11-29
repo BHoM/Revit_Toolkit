@@ -43,18 +43,6 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        internal static List<oM.Geometry.ICurve> ToBHoM(this List<Curve> curves, PullSettings pullSettings = null)
-        {
-            if (curves == null)
-                return null;
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            return curves.Select(c => c.ToBHoM(pullSettings)).ToList();
-        }
-
-        /***************************************************/
-
         internal static oM.Geometry.ICurve ToBHoM(this LocationCurve locationCurve, PullSettings pullSettings = null)
         {
             if (locationCurve == null)
@@ -65,21 +53,13 @@ namespace BH.UI.Cobra.Engine
             return ToBHoM(locationCurve.Curve, pullSettings);
         }
 
-
         /***************************************************/
 
-        internal static oM.Geometry.PolyCurve ToBHoM(this CurveLoop curveLoop, PullSettings pullSettings = null)
+        internal static oM.Geometry.ICurve ToBHoM(this Edge edge, PullSettings pullSettings = null)
         {
-            if (curveLoop == null)
-                return null;
-
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Geometry.ICurve> aICurveList = new List<oM.Geometry.ICurve>();
-            foreach (Curve aCurve in curveLoop)
-                aICurveList.Add(aCurve.ToBHoM(pullSettings));
-
-            return BH.Engine.Geometry.Create.PolyCurve(aICurveList);
+            return ToBHoM(edge.AsCurve(), pullSettings);
         }
 
         /***************************************************/

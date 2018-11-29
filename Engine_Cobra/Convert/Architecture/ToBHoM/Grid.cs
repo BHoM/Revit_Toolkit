@@ -15,7 +15,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Architecture.Elements.Grid aGrid = pullSettings.FindRefObject(grid.Id.IntegerValue) as oM.Architecture.Elements.Grid;
+            oM.Architecture.Elements.Grid aGrid = pullSettings.FindRefObject<oM.Architecture.Elements.Grid>(grid.Id.IntegerValue);
             if (aGrid != null)
                 return aGrid;
 

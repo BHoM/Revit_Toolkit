@@ -16,11 +16,14 @@ namespace BH.UI.Cobra.Engine
 
         internal static Viewport ToRevitViewport(this oM.Adapters.Revit.Elements.Viewport viewport, Document document, PushSettings pushSettings = null)
         {
-            if (viewport == null)
+            if (viewport == null || viewport.Location == null)
                 return null;
 
-            if (viewport.Location == null)
-                return null;
+            Viewport aViewport = pushSettings.FindRefObject<Viewport>(document, viewport.BHoM_Guid);
+            if (aViewport != null)
+                return aViewport;
+
+            pushSettings.DefaultIfNull();
 
             string aViewName = BH.Engine.Adapters.Revit.Query.ViewName(viewport);
             if (string.IsNullOrEmpty(aViewName))
@@ -40,10 +43,12 @@ namespace BH.UI.Cobra.Engine
             if (aViewSheet == null)
                 return null;
 
-            Viewport aViewport = Viewport.Create(document, aViewSheet.Id, aView.Id, ToRevit(viewport.Location, pushSettings));
+            aViewport = Viewport.Create(document, aViewSheet.Id, aView.Id, ToRevit(viewport.Location, pushSettings));
 
             if (pushSettings.CopyCustomData)
                 Modify.SetParameters(aViewport, viewport, null, pushSettings.ConvertUnits);
+
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(viewport, aViewport);
 
             return aViewport;
         }

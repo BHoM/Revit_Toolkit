@@ -35,52 +35,21 @@ namespace BH.UI.Cobra.Engine
 
             pullSettings = pullSettings.DefaultIfNull();
 
+            Space aSpace = pullSettings.FindRefObject<Space>(spatialElement.Id.IntegerValue);
+            if (aSpace != null)
+                return aSpace;
+
             //Create the Space
-            Space aSpace = Create.Space(spatialElement.Name, (spatialElement.Location as LocationPoint).ToBHoM(pullSettings));
+            aSpace = Create.Space(spatialElement.Name, (spatialElement.Location as LocationPoint).ToBHoM(pullSettings));
 
             //Set custom data
             aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
             if (pullSettings.CopyCustomData)
                 aSpace = Modify.SetCustomData(aSpace, spatialElement, pullSettings.ConvertUnits) as Space;
 
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSpace);
+
             return aSpace;
-
-            /*Document aDocument = spatialElement.Document;
-
-            oM.Architecture.Elements.Level aLevel = Query.Level(spatialElement, pullSettings);
-
-            List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
-            IList<IList<BoundarySegment>> aBoundarySegmentListList = spatialElement.GetBoundarySegments(spatialElementBoundaryOptions);
-            if (aBoundarySegmentListList != null)
-                foreach (IList<BoundarySegment> aBoundarySegmentList in aBoundarySegmentListList)
-                    foreach (BoundarySegment aBoundarySegment in aBoundarySegmentList)
-                    {
-                        oM.Geometry.ICurve aICurve = aBoundarySegment.GetCurve().ToBHoM(pullSettings);
-                        Element aElement = aDocument.GetElement(aBoundarySegment.ElementId);
-                        ElementType aElementType = aDocument.GetElement(aElement.GetTypeId()) as ElementType;
-
-                        BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(pullSettings) as BuildingElementProperties;
-                        pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElementProperties);
-
-                        BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementCurve(aICurve), aLevel);
-                        aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
-                        if (pullSettings.CopyCustomData)
-                            aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement, pullSettings.ConvertUnits) as BuildingElement;
-                        aBuildingElmementList.Add(aBuildingElement);
-
-                        pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
-                    }
-
-            Space aSpace = new Space
-            {
-                Level = aLevel,
-                BuildingElements = aBuildingElmementList,
-                Name = spatialElement.Name,
-                Location = (spatialElement.Location as LocationPoint).ToBHoM(pullSettings)
-
-            };
-
-            */
         }
 
         /***************************************************/
@@ -95,104 +64,21 @@ namespace BH.UI.Cobra.Engine
 
             pullSettings = pullSettings.DefaultIfNull();
 
+            Space aSpace = pullSettings.FindRefObject<Space>(spatialElement.Id.IntegerValue);
+            if (aSpace != null)
+                return aSpace;
+
             //Create the Space
-            Space aSpace = Create.Space(spatialElement.Name, (spatialElement.Location as LocationPoint).ToBHoM(pullSettings));
+            aSpace = Create.Space(spatialElement.Name, (spatialElement.Location as LocationPoint).ToBHoM(pullSettings));
 
             //Set custom data
             aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
             if (pullSettings.CopyCustomData)
                 aSpace = Modify.SetCustomData(aSpace, spatialElement, pullSettings.ConvertUnits) as Space;
 
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSpace);
+
             return aSpace;
-
-            /*SpatialElementGeometryResults aSpatialElementGeometryResults = spatialElementGeometryCalculator.CalculateSpatialElementGeometry(spatialElement);
-
-            Solid aSolid = aSpatialElementGeometryResults.GetGeometry();
-
-            oM.Architecture.Elements.Level aLevel = Query.Level(spatialElement, pullSettings);
-
-            List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
-            if (aSolid != null)
-                foreach (Face aFace in aSolid.Faces)
-                {
-                    foreach (SpatialElementBoundarySubface aSpatialElementBoundarySubface in aSpatialElementGeometryResults.GetBoundaryFaceInfo(aFace))
-                    {
-                        Element aElement = Query.Element(spatialElement.Document, aSpatialElementBoundarySubface.SpatialBoundaryElement);
-                        if (aElement == null)
-                            continue;
-
-                        ElementType aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
-
-                        BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoM(pullSettings) as BuildingElementProperties;
-                        pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElementProperties);
-
-                        //Face aFace_BoundingElementFace = aSpatialElementBoundarySubface.GetBoundingElementFace();
-                        //Face aFace_Subface = aSpatialElementBoundarySubface.GetSubface();
-                        //Face aFace_SpatialElementFace = aSpatialElementBoundarySubface.GetSpatialElementFace();
-                        Face aFace_BuildingElement = aSpatialElementBoundarySubface.GetSubface();
-                        if (aFace_BuildingElement == null)
-                            aFace_BuildingElement = aSpatialElementBoundarySubface.GetSpatialElementFace();
-
-                        if (aFace_BuildingElement != null)
-                            foreach (CurveLoop aCurveLoop in aFace_BuildingElement.GetEdgesAsCurveLoops())
-                            {
-                                BuildingElement aBuildingElement = null;
-
-                                aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Create.BuildingElementPanel(aCurveLoop.ToBHoM(pullSettings)));
-                                aBuildingElement.Level = aLevel;
-                                aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
-                                if (pullSettings.CopyCustomData)
-                                    aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement, pullSettings.ConvertUnits) as BuildingElement;
-                                aBuildingElmementList.Add(aBuildingElement);
-
-
-                                //---- Get Hosted Building Elements -----------
-                                List<BuildingElement> aBuildingElmementList_Hosted = Query.HostedBuildingElements(aElement as HostObject, aFace_BuildingElement, pullSettings);
-                                if (aBuildingElmementList_Hosted != null && aBuildingElmementList_Hosted.Count > 0)
-                                {
-                                    aBuildingElmementList.AddRange(aBuildingElmementList_Hosted);
-
-                                    //------------ Cutting openings ----------------
-                                    BuildingElementPanel aBuildingElementPanel = aBuildingElement.BuildingElementGeometry as BuildingElementPanel;
-                                    if (aBuildingElementPanel == null)
-                                        continue;
-
-                                    foreach (BuildingElement aBuildingElement_Hosted in aBuildingElmementList_Hosted)
-                                    {
-                                        BuildingElementPanel aBuildingElementPanel_Hosted = aBuildingElement_Hosted.BuildingElementGeometry as BuildingElementPanel;
-                                        if (aBuildingElementPanel_Hosted == null)
-                                            continue;
-
-                                        aBuildingElementPanel.Openings.Add(new BuildingElementOpening() { PolyCurve = aBuildingElementPanel_Hosted.PolyCurve });
-                                    }
-                                    //---------------------------------------------
-                                }
-
-                                //---------------------------------------------
-
-                                pullSettings.RefObjects = BH.Engine.Adapters.Revit.Modify.AddBHoMObject(pullSettings.RefObjects, aBuildingElement);
-                            }
-                    }
-                }
-
-            Space aSpace = new Space
-            {
-                Level = aLevel,
-                BuildingElements = aBuildingElmementList,
-                Name = spatialElement.Name,
-                Location = (spatialElement.Location as LocationPoint).ToBHoM(pullSettings)
-
-            };
-
-            if (aBuildingElmementList != null)
-                foreach (BuildingElement aBuildingElement in aBuildingElmementList)
-                    aBuildingElement.AdjacentSpaces.Add(aSpace.BHoM_Guid);
-
-            aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
-            if (pullSettings.CopyCustomData)
-                aSpace = Modify.SetCustomData(aSpace, spatialElement, pullSettings.ConvertUnits) as Space;
-
-            return aSpace;*/
         }
 
         /***************************************************/
@@ -204,7 +90,7 @@ namespace BH.UI.Cobra.Engine
 
             pullSettings = pullSettings.DefaultIfNull();
 
-            Space aSpace = pullSettings.FindRefObject(energyAnalysisSpace.Id.IntegerValue) as Space;
+            Space aSpace = pullSettings.FindRefObject<Space>(energyAnalysisSpace.Id.IntegerValue);
             if (aSpace != null)
                 return aSpace;
 

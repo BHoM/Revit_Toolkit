@@ -133,9 +133,9 @@
   <ItemGroup>
     <Compile Include="Convert\Architecture\ToRevit\Grid.cs" />
     <Compile Include="Convert\Environment\ToRevit\CompoundStructure.cs" />
-    <Compile Include="Convert\Geometry\ToBHoM\CurveArray.cs" />
-    <Compile Include="Convert\Geometry\ToBHoM\CurveArrArray.cs" />
-    <Compile Include="Convert\Geometry\ToBHoM\EdgeArray.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\PolyCurveList.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\PolyCurve.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\ICurveList.cs" />
     <Compile Include="Convert\Geometry\ToRevit\CurveIList.cs" />
     <Compile Include="Convert\Geometry\ToRevit\CurveArray.cs" />
     <Compile Include="Modify\AddAdjacentSpaceId.cs" />
@@ -154,7 +154,6 @@
     <Compile Include="Convert\Common\ToRevit\ViewSheet.cs" />
     <Compile Include="Convert\Environment\ToBHoM\Building.cs" />
     <Compile Include="Convert\Environment\ToBHoM\BuildingElement.cs" />
-    <Compile Include="Convert\Environment\ToBHoM\BuildingElementCurve.cs" />
     <Compile Include="Convert\Environment\ToBHoM\Panel.cs" />
     <Compile Include="Convert\Environment\ToBHoM\BuildingElementProperties.cs" />
     <Compile Include="Convert\Environment\ToBHoM\Space.cs" />
@@ -163,12 +162,11 @@
     <Compile Include="Convert\Environment\ToRevit\ElementType.cs" />
     <Compile Include="Compute\Warnings.cs" />
     <Compile Include="Compute\Errors.cs" />
-    <Compile Include="Convert\Geometry\ToBHoM\Curve.cs" />
-    <Compile Include="Convert\Geometry\ToBHoM\Edge.cs" />
-    <Compile Include="Convert\Geometry\ToBHoM\LocationPoint.cs" />
-    <Compile Include="Convert\Geometry\ToBHoM\Plane.cs" />
-    <Compile Include="Convert\Geometry\ToBHoM\Polyloop.cs" />
-    <Compile Include="Convert\Geometry\ToBHoM\XYZ.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\ICurve.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\Point.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\CoordinateSystem.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\Polyline.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\Vector.cs" />
     <Compile Include="Convert\Geometry\ToRevit\CoordinateSystem.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Curve.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Point.cs" />
@@ -195,6 +193,9 @@
     <Compile Include="Query\FindRefObjects.cs" />
     <Compile Include="Query\FindRefObject.cs" />
     <Compile Include="Query\FilterQueries.cs" />
+    <Compile Include="Query\Panels.cs" />
+    <Compile Include="Query\VerticalBounds.cs" />
+    <Compile Include="Query\Location.cs" />
     <Compile Include="Query\IsSimilar.cs" />
     <Compile Include="Query\LogicalOr.cs" />
     <Compile Include="Query\OpenWorksetIds.cs" />

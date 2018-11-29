@@ -15,7 +15,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Architecture.Elements.Level aLevel = pullSettings.FindRefObject(level.Id.IntegerValue) as oM.Architecture.Elements.Level;
+            oM.Architecture.Elements.Level aLevel = pullSettings.FindRefObject<oM.Architecture.Elements.Level>(level.Id.IntegerValue);
             if (aLevel != null)
                 return aLevel;
 

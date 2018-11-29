@@ -16,7 +16,11 @@ namespace BH.UI.Cobra.Engine
 
         internal static Element ToRevitElement(this GenericObject genericObject, Document document, PushSettings pushSettings = null)
         {
-            Element aElement = null;
+            Element aElement = pushSettings.FindRefObject<Element>(document, genericObject.BHoM_Guid);
+            if (aElement != null)
+                return aElement;
+
+            pushSettings.DefaultIfNull();
 
             BuiltInCategory aBuiltInCategory = genericObject.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
 
@@ -59,8 +63,14 @@ namespace BH.UI.Cobra.Engine
                 }
             }
 
-            if (aElement != null && pushSettings.CopyCustomData)
+            aElement.CheckIfNullPush(genericObject);
+            if (aElement == null)
+                return null;
+
+            if (pushSettings.CopyCustomData)
                 Modify.SetParameters(aElement, genericObject, null, pushSettings.ConvertUnits);
+
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(genericObject, aElement);
 
             return aElement;
         }
@@ -72,6 +82,10 @@ namespace BH.UI.Cobra.Engine
             if (draftingObject == null || string.IsNullOrEmpty(draftingObject.ViewName) || document == null)
                 return null;
 
+            Element aElement = pushSettings.FindRefObject<Element>(document, draftingObject.BHoM_Guid);
+            if (aElement != null)
+                return aElement;
+
             pushSettings = pushSettings.DefaultIfNull();
 
             List<ViewDrafting> aViewDraftingList = new FilteredElementCollector(document).OfClass(typeof(ViewDrafting)).Cast<ViewDrafting>().ToList();
@@ -81,8 +95,6 @@ namespace BH.UI.Cobra.Engine
             ViewDrafting aViewDrafting = aViewDraftingList.Find(x => x.Name == draftingObject.ViewName);
             if (aViewDrafting == null)
                 return null;
-
-            Element aElement = null;
 
             BuiltInCategory aBuiltInCategory = draftingObject.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
 
@@ -114,8 +126,14 @@ namespace BH.UI.Cobra.Engine
                 }
             }
 
+            aElement.CheckIfNullPush(draftingObject);
+            if (aElement == null)
+                return null;
+
             if (aElement != null && pushSettings.CopyCustomData)
                 Modify.SetParameters(aElement, draftingObject, null, pushSettings.ConvertUnits);
+
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(draftingObject, aElement);
 
             return aElement;
         }

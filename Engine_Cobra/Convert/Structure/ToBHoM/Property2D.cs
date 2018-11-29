@@ -21,6 +21,10 @@ namespace BH.UI.Cobra.Engine
 
             pullSettings = pullSettings.DefaultIfNull();
 
+            ConstantThickness aConstantThickness = pullSettings.FindRefObject<ConstantThickness>(wallType.Id.IntegerValue);
+            if (aConstantThickness != null)
+                return aConstantThickness;
+
             double aThickness = 0;
             oM.Common.Materials.Material aMaterial = null;
 
@@ -53,8 +57,8 @@ namespace BH.UI.Cobra.Engine
 
                     if (!materialFound)
                     {
-                        Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == materialId ? wallType.Category.Material : document.GetElement(materialId) as Material;
-                        aMaterial = m.ToBHoMMaterial() as oM.Common.Materials.Material;
+                        Material m = ElementId.InvalidElementId == materialId ? wallType.Category.Material : document.GetElement(materialId) as Material;
+                        aMaterial = m.ToBHoMMaterial(pullSettings) as oM.Common.Materials.Material;
                         if (pullSettings.RefObjects != null)
                             pullSettings.RefObjects.Add(materialId.IntegerValue, new List<IBHoMObject>(new IBHoMObject[] { aMaterial }));
                     }
@@ -69,7 +73,9 @@ namespace BH.UI.Cobra.Engine
             aProperty2D = Modify.SetIdentifiers(aProperty2D, wallType) as ConstantThickness;
             if (pullSettings.CopyCustomData)
                 aProperty2D = Modify.SetCustomData(aProperty2D, wallType, pullSettings.ConvertUnits) as ConstantThickness;
-            
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aProperty2D);
+
             return aProperty2D;
         }
 
@@ -77,9 +83,13 @@ namespace BH.UI.Cobra.Engine
 
         internal static IProperty2D ToBHoMProperty2D(this FloorType floorType, PullSettings pullSettings = null)
         {
+            Document document = floorType.Document;
+
             pullSettings = pullSettings.DefaultIfNull();
 
-            Document document = floorType.Document;
+            ConstantThickness aConstantThickness = pullSettings.FindRefObject<ConstantThickness>(floorType.Id.IntegerValue);
+            if (aConstantThickness != null)
+                return aConstantThickness;
 
             double aThickness = 0;
             oM.Common.Materials.Material aMaterial = null;
@@ -113,8 +123,8 @@ namespace BH.UI.Cobra.Engine
 
                     if (!materialFound)
                     {
-                        Material m = Autodesk.Revit.DB.ElementId.InvalidElementId == materialId ? floorType.Category.Material : document.GetElement(materialId) as Material;
-                        aMaterial = m.ToBHoMMaterial() as oM.Common.Materials.Material;
+                        Material m = ElementId.InvalidElementId == materialId ? floorType.Category.Material : document.GetElement(materialId) as Material;
+                        aMaterial = m.ToBHoMMaterial(pullSettings) as oM.Common.Materials.Material;
                         if (pullSettings.RefObjects != null)
                             pullSettings.RefObjects.Add(materialId.IntegerValue, new List<IBHoMObject>(new IBHoMObject[] { aMaterial }));
                     }
@@ -129,6 +139,8 @@ namespace BH.UI.Cobra.Engine
             aProperty2D = Modify.SetIdentifiers(aProperty2D, floorType) as ConstantThickness;
             if (pullSettings.CopyCustomData)
                 aProperty2D = Modify.SetCustomData(aProperty2D, floorType, pullSettings.ConvertUnits) as ConstantThickness;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aProperty2D);
 
             return aProperty2D;
         }

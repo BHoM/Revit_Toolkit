@@ -43,7 +43,11 @@ namespace BH.UI.Cobra.Engine
             if (framingElement == null || document == null)
                 return null;
 
-            pushSettings = pushSettings.DefaultIfNull();
+            FamilyInstance aFamilyInstance = pushSettings.FindRefObject<FamilyInstance>(document, framingElement.BHoM_Guid);
+            if (aFamilyInstance != null)
+                return aFamilyInstance;
+
+            pushSettings.DefaultIfNull();
 
             object aCustomDataValue = null;
 
@@ -66,18 +70,6 @@ namespace BH.UI.Cobra.Engine
             {
                 aFamilySymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralColumns, pushSettings.FamilyLoadSettings) as FamilySymbol;
 
-                //List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralColumns).Cast<FamilySymbol>().ToList();
-
-                //aCustomDataValue = framingElement.ICustomData("Type");
-                //if (aCustomDataValue != null && aCustomDataValue is int)
-                //{
-                //    ElementId aElementId = new ElementId((int)aCustomDataValue);
-                //    aFamilySymbol = aFamilySymbolList.Find(x => x.Id == aElementId);
-                //}
-
-                //if (aFamilySymbol == null)
-                //    aFamilySymbol = aFamilySymbolList.Find(x => x.Name == framingElement.Name);
-
                 if (aFamilySymbol == null)
                 {
                     BH.Engine.Reflection.Compute.RecordError(string.Format("Family symbol has not been found for given BHoM framing property. BHoM Guid: {0}", framingElement.BHoM_Guid));
@@ -85,24 +77,24 @@ namespace BH.UI.Cobra.Engine
                 }
             }
 
-            FamilyInstance aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Column);
+            aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Column);
 
             aFamilyInstance.CheckIfNullPush(framingElement);
+            if (aFamilyInstance == null)
+                return null;
 
-            if (aFamilyInstance != null)
+            oM.Structure.Properties.ConstantFramingElementProperty barProperty = framingElement.Property as oM.Structure.Properties.ConstantFramingElementProperty;
+            if (barProperty != null)
             {
-                oM.Structure.Properties.ConstantFramingElementProperty barProperty = framingElement.Property as oM.Structure.Properties.ConstantFramingElementProperty;
-                if (barProperty != null)
-                {
-                    double orientationAngle = (Math.PI * 0.5 - barProperty.OrientationAngle) % (2 * Math.PI);
-                    Parameter rotation = aFamilyInstance.LookupParameter("Cross-Section Rotation");
-                    rotation.Set(orientationAngle);
-                }
+                double orientationAngle = (Math.PI * 0.5 - barProperty.OrientationAngle) % (2 * Math.PI);
+                Parameter rotation = aFamilyInstance.LookupParameter("Cross-Section Rotation");
+                rotation.Set(orientationAngle);
+            }
 
-                if (pushSettings.CopyCustomData)
+            if (pushSettings.CopyCustomData)
+            {
+                BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
                 {
-                    BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
-                    {
                     //BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM,
                     //BuiltInParameter.FAMILY_BASE_LEVEL_PARAM,
                     BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM,
@@ -117,10 +109,11 @@ namespace BH.UI.Cobra.Engine
                     BuiltInParameter.SCHEDULE_TOP_LEVEL_OFFSET_PARAM,
                     BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM,
                     BuiltInParameter.ELEM_TYPE_PARAM
-                    };
-                    Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
-                }
+                };
+                Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
             }
+
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElement, aFamilyInstance);
 
             return aFamilyInstance;
         }
@@ -132,7 +125,11 @@ namespace BH.UI.Cobra.Engine
             if (framingElement == null || document == null)
                 return null;
 
-            pushSettings = pushSettings.DefaultIfNull();
+            FamilyInstance aFamilyInstance = pushSettings.FindRefObject<FamilyInstance>(document, framingElement.BHoM_Guid);
+            if (aFamilyInstance != null)
+                return aFamilyInstance;
+
+            pushSettings.DefaultIfNull();
 
             object aCustomDataValue = null;
 
@@ -155,18 +152,6 @@ namespace BH.UI.Cobra.Engine
             {
                 aFamilySymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralColumns, pushSettings.FamilyLoadSettings) as FamilySymbol;
 
-                //List<FamilySymbol> aFamilySymbolList = new FilteredElementCollector(document).OfClass(typeof(FamilySymbol)).OfCategory(BuiltInCategory.OST_StructuralFraming).Cast<FamilySymbol>().ToList();
-
-                //aCustomDataValue = framingElement.ICustomData("Type");
-                //if (aCustomDataValue != null && aCustomDataValue is int)
-                //{
-                //    ElementId aElementId = new ElementId((int)aCustomDataValue);
-                //    aFamilySymbol = aFamilySymbolList.Find(x => x.Id == aElementId);
-                //}
-
-                //if (aFamilySymbol == null)
-                //    aFamilySymbol = aFamilySymbolList.Find(x => x.Name == framingElement.Name);
-
                 if (aFamilySymbol == null)
                 {
                     BH.Engine.Reflection.Compute.RecordError(string.Format("Family symbol has not been found for given BHoM framing property. BHoM Guid: {0}", framingElement.BHoM_Guid));
@@ -174,7 +159,6 @@ namespace BH.UI.Cobra.Engine
                 }
             }
 
-            FamilyInstance aFamilyInstance;
             switch (framingElement.StructuralUsage)
             {
                 case StructuralUsage1D.Beam:
@@ -192,8 +176,10 @@ namespace BH.UI.Cobra.Engine
             }
 
             aFamilyInstance.CheckIfNullPush(framingElement);
+            if (aFamilyInstance == null)
+                return null;
 
-            if (aFamilyInstance != null && pushSettings.CopyCustomData)
+            if (pushSettings.CopyCustomData)
             {
                 BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
                 {
@@ -206,6 +192,8 @@ namespace BH.UI.Cobra.Engine
                 };
                 Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
             }
+
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElement, aFamilyInstance);
 
             return aFamilyInstance;
         }

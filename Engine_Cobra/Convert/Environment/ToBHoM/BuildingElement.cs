@@ -22,7 +22,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElement aBuildingElement = pullSettings.FindRefObject(element.Id.IntegerValue) as BuildingElement;
+            BuildingElement aBuildingElement = pullSettings.FindRefObject<BuildingElement>(element.Id.IntegerValue);
             if (aBuildingElement != null)
                 return aBuildingElement;
 
@@ -48,13 +48,17 @@ namespace BH.UI.Cobra.Engine
             //Create a BuildingElement from the familyInstance geometry
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElement aBuildingElement = pullSettings.FindRefObject(familyInstance.Id.IntegerValue) as BuildingElement;
+            BuildingElement aBuildingElement = pullSettings.FindRefObject<BuildingElement>(familyInstance.Id.IntegerValue);
             if (aBuildingElement != null)
                 return aBuildingElement;
 
             BuildingElementProperties aBuildingElementProperties = familyInstance.Symbol.ToBHoMBuildingElementProperties(pullSettings);
 
-            aBuildingElement = Create.BuildingElement(aBuildingElementProperties, ToBHoMCurve(familyInstance, pullSettings));
+            aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Query.VerticalBounds(familyInstance, pullSettings));
+
+            aBuildingElement = Modify.SetIdentifiers(aBuildingElement, familyInstance) as BuildingElement;
+            if (pullSettings.CopyCustomData)
+                aBuildingElement = Modify.SetCustomData(aBuildingElement, familyInstance, pullSettings.ConvertUnits) as BuildingElement;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
 
@@ -67,7 +71,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElement aBuildingElement = pullSettings.FindRefObject(energyAnalysisSurface.Id.IntegerValue) as BuildingElement;
+            BuildingElement aBuildingElement = pullSettings.FindRefObject<BuildingElement>(energyAnalysisSurface.Id.IntegerValue);
             if (aBuildingElement != null)
                 return aBuildingElement;
 
@@ -118,7 +122,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElement aBuildingElement = pullSettings.FindRefObject(energyAnalysisOpening.Id.IntegerValue) as BuildingElement;
+            BuildingElement aBuildingElement = pullSettings.FindRefObject<BuildingElement>(energyAnalysisOpening.Id.IntegerValue);
             if (aBuildingElement != null)
                 return aBuildingElement;
 
@@ -171,12 +175,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BuildingElement> aBuildingElements = null;
-
-            List<IBHoMObject> aIBHoMObjectList = pullSettings.FindRefObjects(ceiling.Id.IntegerValue);
-            if(aIBHoMObjectList != null && aIBHoMObjectList.Count > 0)
-                aBuildingElements = aIBHoMObjectList.FindAll(x => x is BuildingElement).Cast<BuildingElement>().ToList();
-
+            List<BuildingElement> aBuildingElements = pullSettings.FindRefObjects<BuildingElement>(ceiling.Id.IntegerValue);
             if (aBuildingElements != null && aBuildingElements.Count > 0)
                 return aBuildingElements;
 
@@ -212,12 +211,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BuildingElement> aBuildingElements = null;
-
-            List<IBHoMObject> aIBHoMObjectList = pullSettings.FindRefObjects(floor.Id.IntegerValue);
-            if (aIBHoMObjectList != null && aIBHoMObjectList.Count > 0)
-                aBuildingElements = aIBHoMObjectList.FindAll(x => x is BuildingElement).Cast<BuildingElement>().ToList();
-
+            List<BuildingElement> aBuildingElements = pullSettings.FindRefObjects<BuildingElement>(floor.Id.IntegerValue);
             if (aBuildingElements != null && aBuildingElements.Count > 0)
                 return aBuildingElements;
 
@@ -253,12 +247,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BuildingElement> aBuildingElements = null;
-
-            List<IBHoMObject> aIBHoMObjectList = pullSettings.FindRefObjects(roofBase.Id.IntegerValue);
-            if (aIBHoMObjectList != null && aIBHoMObjectList.Count > 0)
-                aBuildingElements = aIBHoMObjectList.FindAll(x => x is BuildingElement).Cast<BuildingElement>().ToList();
-
+            List<BuildingElement> aBuildingElements = pullSettings.FindRefObjects<BuildingElement>(roofBase.Id.IntegerValue);
             if (aBuildingElements != null && aBuildingElements.Count > 0)
                 return aBuildingElements;
 
@@ -294,12 +283,7 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BuildingElement> aBuildingElements = null;
-
-            List<IBHoMObject> aIBHoMObjectList = pullSettings.FindRefObjects(wall.Id.IntegerValue);
-            if (aIBHoMObjectList != null && aIBHoMObjectList.Count > 0)
-                aBuildingElements = aIBHoMObjectList.FindAll(x => x is BuildingElement).Cast<BuildingElement>().ToList();
-
+            List<BuildingElement> aBuildingElements = pullSettings.FindRefObjects<BuildingElement>(wall.Id.IntegerValue);
             if (aBuildingElements != null && aBuildingElements.Count > 0)
                 return aBuildingElements;
 
@@ -325,65 +309,6 @@ namespace BH.UI.Cobra.Engine
             }
 
             return aBuildingElements;
-
-            //Curve aCurve = null;
-            //LocationCurve aLocationCurve = wall.Location as LocationCurve;
-            //if (aLocationCurve != null)
-            //    aCurve = aLocationCurve.Curve;
-
-
-            //IList<Reference> aReferences = HostObjectUtils.GetSideFaces(wall, ShellLayerType.Interior);
-            //foreach (Reference aReference in aReferences)
-            //{
-            //    Face aFace = wall.GetGeometryObjectFromReference(aReference) as Face;
-            //    if (aFace == null)
-            //        continue;
-
-            //    //MinDistance between LocationCurve and Face
-            //    double aMinDistance = double.MaxValue;
-            //    foreach (CurveLoop aCurveLoop in aFace.GetEdgesAsCurveLoops())
-            //    {
-            //        foreach (Curve aCurve_Temp in aCurveLoop)
-            //        {
-            //            for (int i = 0; i < 2; i++)
-            //                for (int j = 0; j < 2; j++)
-            //                {
-            //                    double aDistance = aCurve_Temp.GetEndPoint(i).DistanceTo(aCurve.GetEndPoint(j));
-            //                    if (aDistance < aMinDistance)
-            //                        aMinDistance = aDistance;
-            //                }
-            //        }
-            //    }
-
-            //    Transform aTransaform = null;
-            //    if (aMinDistance < double.MaxValue)
-            //    {
-            //        XYZ aXYZ = aFace.ComputeNormal(new UV(0, 0));
-            //        aTransaform = Transform.CreateTranslation(aXYZ.Negate() * aMinDistance);
-            //    }
-
-            //    List<oM.Geometry.PolyCurve> aPolyCurveList = Query.PolyCurves(aFace, aTransaform, pullSettings);
-            //    if (aPolyCurveList == null)
-            //        continue;
-
-            //    foreach (oM.Geometry.PolyCurve aPolyCurve in aPolyCurveList)
-            //    {
-            //        //Create the BuildingElement
-            //        BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aPolyCurve);
-
-            //        //Assign custom data
-            //        aBuildingElement = Modify.SetIdentifiers(aBuildingElement, wall) as BuildingElement;
-            //        if (pullSettings.CopyCustomData)
-            //            aBuildingElement = Modify.SetCustomData(aBuildingElement, wall, pullSettings.ConvertUnits) as BuildingElement;
-
-            //        pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
-
-            //        aBuildingElements.Add(aBuildingElement);
-            //    }
-
-            //}
-
-            //return aBuildingElements;
         }
 
         /***************************************************/

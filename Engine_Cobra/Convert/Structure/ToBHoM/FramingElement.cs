@@ -19,6 +19,10 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
+            FramingElement aFramingElement = pullSettings.FindRefObject<FramingElement>(familyInstance.Id.IntegerValue);
+            if (aFramingElement != null)
+                return aFramingElement;
+
             oM.Geometry.Line barCurve = null;
             bool nonlinear = false;
             ConstantFramingElementProperty property = null;
@@ -92,14 +96,17 @@ namespace BH.UI.Cobra.Engine
             //TODO: Allow varying orientation angle and varying cross sections (tapers etc) - TBC
             property = BHS.Create.ConstantFramingElementProperty(aSectionProperty, rotation, aSectionProperty.Name);
             
-            if (familyInstance.Name != null) name = familyInstance.Name;
+            if (familyInstance.Name != null)
+                name = familyInstance.Name;
 
-            FramingElement element = BHS.Create.FramingElement(barCurve, property, usage, name);
-            element = Modify.SetIdentifiers(element, familyInstance) as FramingElement;
+            aFramingElement = BHS.Create.FramingElement(barCurve, property, usage, name);
+            aFramingElement = Modify.SetIdentifiers(aFramingElement, familyInstance) as FramingElement;
             if (pullSettings.CopyCustomData)
-                element = Modify.SetCustomData(element, familyInstance, pullSettings.ConvertUnits) as FramingElement;
-            
-            return element;
+                aFramingElement = Modify.SetCustomData(aFramingElement, familyInstance, pullSettings.ConvertUnits) as FramingElement;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aFramingElement);
+
+            return aFramingElement;
         }
 
         /***************************************************/

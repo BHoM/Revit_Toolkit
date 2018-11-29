@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 
-using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Structure.Properties;
 using BHS = BH.Engine.Structure;
@@ -19,24 +17,15 @@ namespace BH.UI.Cobra.Engine
 
         internal static ISectionProperty ToBHoMSectionProperty(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
-            ISectionProperty aSectionProperty = null;
-
             pullSettings = pullSettings.DefaultIfNull();
-            
-            oM.Common.Materials.Material aMaterial = null;
-            bool materialFound = false;
-            if (pullSettings.RefObjects != null)
-            {
-                List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
-                if (pullSettings.RefObjects.TryGetValue(familyInstance.StructuralMaterialId.IntegerValue, out aBHoMObjectList))
-                    if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                    {
-                        aMaterial = aBHoMObjectList.First() as oM.Common.Materials.Material;
-                        materialFound = true;
-                    }
-            }
 
-            if (!materialFound)
+            ISectionProperty aSectionProperty = pullSettings.FindRefObject<ISectionProperty>(familyInstance.Id.IntegerValue);
+            if (aSectionProperty != null)
+                return aSectionProperty;
+
+            oM.Common.Materials.Material aMaterial = pullSettings.FindRefObject<oM.Common.Materials.Material>(familyInstance.StructuralMaterialId.IntegerValue);
+
+            if (aMaterial == null)
             {
                 ElementId materialId = familyInstance.StructuralMaterialId;
 
@@ -46,21 +35,9 @@ namespace BH.UI.Cobra.Engine
                     string materialGrade = familyInstance.MaterialGrade();
                     aMaterial = Query.Material( familyInstance.StructuralMaterialType, materialGrade);
                 }
-                else
-                {
-                    aMaterial = (familyInstance.Document.GetElement(materialId) as Material).ToBHoMMaterial();
-                    if (pullSettings.RefObjects != null)
-                        pullSettings.RefObjects.Add(familyInstance.StructuralMaterialId.IntegerValue, new List<IBHoMObject>(new IBHoMObject[] { aMaterial }));
-                }
-            }
 
-
-            if (pullSettings.RefObjects != null)
-            {
-                List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
-                if (pullSettings.RefObjects.TryGetValue(familyInstance.Symbol.Id.IntegerValue, out aBHoMObjectList))
-                    if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                        return aBHoMObjectList.First() as ISectionProperty;
+                if(aMaterial == null)
+                    aMaterial = (familyInstance.Document.GetElement(materialId) as Material).ToBHoMMaterial(pullSettings);
             }
 
             string symbolName = familyInstance.Symbol.Name;
@@ -74,9 +51,7 @@ namespace BH.UI.Cobra.Engine
             }
             else
             {
-                IProfile aSectionDimensions = null;
-
-                if (aSectionDimensions == null) aSectionDimensions = familyInstance.Symbol.ToBHoMProfile(pullSettings);
+                IProfile aSectionDimensions = familyInstance.Symbol.ToBHoMProfile(pullSettings);
 
                 if (aSectionDimensions.Edges.Count == 0)
                 {
@@ -110,15 +85,15 @@ namespace BH.UI.Cobra.Engine
                             }
                         }
                     }
+
                     aSectionDimensions = new FreeFormProfile(profileCurves);
+
+                    aSectionDimensions = Modify.SetIdentifiers(aSectionDimensions, familyInstance.Symbol) as IProfile;
+                    if (pullSettings.CopyCustomData)
+                        aSectionDimensions = Modify.SetCustomData(aSectionDimensions, familyInstance.Symbol, pullSettings.ConvertUnits) as IProfile;
+
+                    pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSectionDimensions);
                 }
-
-                aSectionDimensions = Modify.SetIdentifiers(aSectionDimensions, familyInstance.Symbol) as IProfile;
-                if (pullSettings.CopyCustomData)
-                    aSectionDimensions = Modify.SetCustomData(aSectionDimensions, familyInstance.Symbol, pullSettings.ConvertUnits) as IProfile;
-
-
-
 
                 string name = familyInstance.Name;
                 bool emptyProfile = aSectionDimensions.Edges.Count == 0;
@@ -169,9 +144,7 @@ namespace BH.UI.Cobra.Engine
             if (pullSettings.CopyCustomData)
                 aSectionProperty = Modify.SetCustomData(aSectionProperty, familyInstance, pullSettings.ConvertUnits) as ISectionProperty;
 
-
-            if (pullSettings.RefObjects != null)
-                pullSettings.RefObjects.Add(familyInstance.Symbol.Id.IntegerValue, new List<IBHoMObject>(new IBHoMObject[] { aSectionProperty }));
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSectionProperty);
 
             return aSectionProperty;
         }

@@ -12,8 +12,17 @@ namespace BH.UI.Cobra.Engine
 
         internal static Material ToRevitMaterial(this IMaterial material, Document document, PushSettings pushSettings = null)
         {
-            ElementId aElementId = Material.Create(document, material.Name);
-            return document.GetElement(aElementId) as Material;
+            Material aMaterial = pushSettings.FindRefObject<Material>(document, material.BHoM_Guid);
+            if (aMaterial != null)
+                return aMaterial;
+
+            pushSettings.DefaultIfNull();
+
+            aMaterial = document.GetElement(Material.Create(document, material.Name)) as Material;
+
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(material, aMaterial);
+
+            return aMaterial;
         }
 
         /***************************************************/

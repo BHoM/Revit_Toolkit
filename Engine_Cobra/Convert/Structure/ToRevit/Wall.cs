@@ -23,6 +23,12 @@ namespace BH.UI.Cobra.Engine
             if (panelPlanar == null || document == null)
                 return null;
 
+            Wall aWall = pushSettings.FindRefObject<Wall>(document, panelPlanar.BHoM_Guid);
+            if (aWall != null)
+                return aWall;
+
+            pushSettings.DefaultIfNull();
+
             object aCustomDataValue = null;
 
             List<Curve> aCurves = panelPlanar.ExternalEdgeCurves().Select(c => c.ToRevitCurve(pushSettings)).ToList();
@@ -46,18 +52,6 @@ namespace BH.UI.Cobra.Engine
             {
                 aWallType = Query.ElementType(panelPlanar, document, BuiltInCategory.OST_Walls) as WallType;
 
-                //List<WallType> aWallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).OfCategory(BuiltInCategory.OST_Walls).Cast<WallType>().ToList();
-
-                //aCustomDataValue = panelPlanar.ICustomData("Type");
-                //if (aCustomDataValue != null && aCustomDataValue is int)
-                //{
-                //    ElementId aElementId = new ElementId((int)aCustomDataValue);
-                //    aWallType = aWallTypeList.Find(x => x.Id == aElementId);
-                //}
-
-                //if (aWallType == null)
-                //    aWallType = aWallTypeList.Find(x => x.Name == panelPlanar.Name);
-
                 if (aWallType == null)
                 {
                     BH.Engine.Reflection.Compute.RecordError(string.Format("Wall type has not been found for given BHoM panel property. BHoM Guid: {0}", panelPlanar.BHoM_Guid));
@@ -65,29 +59,30 @@ namespace BH.UI.Cobra.Engine
                 }
             }
 
-            Wall aWall = Wall.Create(document, aCurves, aWallType.Id, aLevel.Id, true);
+            aWall = Wall.Create(document, aCurves, aWallType.Id, aLevel.Id, true);
 
             aWall.CheckIfNullPush(panelPlanar);
+            if (aWall == null)
+                return null;
 
-            if (aWall != null)
+            if (pushSettings.CopyCustomData)
             {
-                if (pushSettings.CopyCustomData)
+                BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
                 {
-                    BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
-                    {
                         BuiltInParameter.ELEM_FAMILY_PARAM,
                         BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
                         BuiltInParameter.ALL_MODEL_IMAGE,
                         BuiltInParameter.WALL_KEY_REF_PARAM,
                         BuiltInParameter.ELEM_TYPE_PARAM,
-                        //BuiltInParameter.WALL_BASE_CONSTRAINT,
-                        //BuiltInParameter.WALL_BASE_OFFSET,
-                        //BuiltInParameter.WALL_HEIGHT_TYPE,
-                        //BuiltInParameter.WALL_TOP_OFFSET
-                    };
-                    Modify.SetParameters(aWall, panelPlanar, paramsToIgnore, pushSettings.ConvertUnits);
-                }
+                    //BuiltInParameter.WALL_BASE_CONSTRAINT,
+                    //BuiltInParameter.WALL_BASE_OFFSET,
+                    //BuiltInParameter.WALL_HEIGHT_TYPE,
+                    //BuiltInParameter.WALL_TOP_OFFSET
+                };
+                Modify.SetParameters(aWall, panelPlanar, paramsToIgnore, pushSettings.ConvertUnits);
             }
+
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(panelPlanar, aWall);
 
             return aWall;
         }

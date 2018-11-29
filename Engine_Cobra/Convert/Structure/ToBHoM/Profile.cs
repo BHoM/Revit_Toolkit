@@ -21,7 +21,9 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            IProfile aProfile = null;
+            IProfile aProfile = pullSettings.FindRefObject<IProfile>(familySymbol.Id.IntegerValue);
+            if (aProfile != null)
+                return aProfile;
 
             string familyName = familySymbol.Family.Name;
             Parameter sectionShapeParam = familySymbol.LookupParameter("Section Shape");
@@ -516,6 +518,8 @@ namespace BH.UI.Cobra.Engine
             if (pullSettings.CopyCustomData)
                 aProfile = Modify.SetCustomData(aProfile, familySymbol, pullSettings.ConvertUnits) as IProfile;
             aProfile.Name = familySymbol.Name;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aProfile);
 
             return aProfile;
         }
