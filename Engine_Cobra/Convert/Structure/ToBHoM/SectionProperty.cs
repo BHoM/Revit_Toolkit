@@ -36,8 +36,13 @@ namespace BH.UI.Cobra.Engine
                     aMaterial = Query.Material( familyInstance.StructuralMaterialType, materialGrade);
                 }
 
-                if(aMaterial == null)
-                    aMaterial = (familyInstance.Document.GetElement(materialId) as Material).ToBHoMMaterial(pullSettings);
+                if (aMaterial == null && materialId.IntegerValue != -1)
+                {
+                    Material aMaterial_Revit = familyInstance.Document.GetElement(materialId) as Material;
+                    if (aMaterial_Revit != null)
+                        aMaterial = aMaterial_Revit.ToBHoMMaterial(pullSettings);
+                }
+                    
             }
 
             string symbolName = familyInstance.Symbol.Name;
