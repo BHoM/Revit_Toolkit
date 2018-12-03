@@ -42,26 +42,8 @@ namespace BH.UI.Cobra.Engine
                     aThickness = csl.Width;
                     if (pullSettings.ConvertUnits) aThickness = aThickness.ToSI(UnitType.UT_Section_Dimension);
 
-                    ElementId materialId = csl.MaterialId;
-                    bool materialFound = false;
-                    if (pullSettings.RefObjects != null)
-                    {
-                        List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
-                        if (pullSettings.RefObjects.TryGetValue(materialId.IntegerValue, out aBHoMObjectList))
-                            if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                            {
-                                aMaterial = aBHoMObjectList.First() as oM.Common.Materials.Material;
-                                materialFound = true;
-                            }
-                    }
-
-                    if (!materialFound)
-                    {
-                        Material m = ElementId.InvalidElementId == materialId ? wallType.Category.Material : document.GetElement(materialId) as Material;
-                        aMaterial = m.ToBHoMMaterial(pullSettings) as oM.Common.Materials.Material;
-                        if (pullSettings.RefObjects != null)
-                            pullSettings.RefObjects.Add(materialId.IntegerValue, new List<IBHoMObject>(new IBHoMObject[] { aMaterial }));
-                    }
+                    Material aMaterial_Revit = ElementId.InvalidElementId == csl.MaterialId ? wallType.Category.Material : document.GetElement(csl.MaterialId) as Material;
+                    aMaterial = aMaterial_Revit.ToBHoMMaterial(pullSettings);
                 }
             }
 
@@ -108,26 +90,8 @@ namespace BH.UI.Cobra.Engine
                     aThickness = csl.Width;
                     if (pullSettings.ConvertUnits) aThickness = aThickness.ToSI(UnitType.UT_Section_Dimension);
 
-                    ElementId materialId = csl.MaterialId;
-                    bool materialFound = false;
-                    if (pullSettings.RefObjects != null)
-                    {
-                        List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
-                        if (pullSettings.RefObjects.TryGetValue(materialId.IntegerValue, out aBHoMObjectList))
-                            if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                            {
-                                aMaterial = aBHoMObjectList.First() as oM.Common.Materials.Material;
-                                materialFound = true;
-                            }
-                    }
-
-                    if (!materialFound)
-                    {
-                        Material m = ElementId.InvalidElementId == materialId ? floorType.Category.Material : document.GetElement(materialId) as Material;
-                        aMaterial = m.ToBHoMMaterial(pullSettings) as oM.Common.Materials.Material;
-                        if (pullSettings.RefObjects != null)
-                            pullSettings.RefObjects.Add(materialId.IntegerValue, new List<IBHoMObject>(new IBHoMObject[] { aMaterial }));
-                    }
+                    Material aMaterial_Revit = ElementId.InvalidElementId == csl.MaterialId ? floorType.Category.Material : document.GetElement(csl.MaterialId) as Material;
+                    aMaterial = aMaterial_Revit.ToBHoMMaterial(pullSettings);
                 }
             }
 
