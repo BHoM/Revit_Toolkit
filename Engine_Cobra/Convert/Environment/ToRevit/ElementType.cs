@@ -30,7 +30,7 @@ namespace BH.UI.Cobra.Engine
                 return null;
 
             aElementType = buildingElementProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
-            if(aElementType == null)
+            if(aElementType == null && !string.IsNullOrWhiteSpace(buildingElementProperties.Name))
             {
                 List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfCategory(aBuiltInCategory).WhereElementIsElementType().Cast<ElementType>().ToList();
                 if (aElementTypeList == null || aElementTypeList.Count < 1)
