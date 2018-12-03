@@ -71,21 +71,7 @@ namespace BH.UI.Cobra.Engine
             if (aResult != null && aResult.Count > 0)
                 return aResult;
 
-            IProperty2D aProperty2D = null;
-            if (pullSettings.RefObjects != null)
-            {
-                List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
-                if (pullSettings.RefObjects.TryGetValue(floor.FloorType.Id.IntegerValue, out aBHoMObjectList))
-                    if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                        aProperty2D = aBHoMObjectList.First() as IProperty2D;
-            }
-
-            if (aProperty2D == null)
-            {
-                aProperty2D = floor.FloorType.ToBHoMProperty2D(pullSettings) as IProperty2D;
-                if (pullSettings.RefObjects != null)
-                    pullSettings.RefObjects.Add(floor.FloorType.Id.IntegerValue, new List<IBHoMObject>(new IBHoMObject[] { aProperty2D }));
-            }
+            IProperty2D aProperty2D = aProperty2D = floor.FloorType.ToBHoMProperty2D(pullSettings);
 
             List<oM.Geometry.ICurve> outlines = floor.Outlines(pullSettings);
             aResult = outlines != null ? BHS.Create.PanelPlanar(outlines) : new List<PanelPlanar> { new PanelPlanar { ExternalEdges = new List<oM.Structure.Elements.Edge>(), Openings = new List<oM.Structure.Elements.Opening>(), Property = aProperty2D } };
