@@ -63,5 +63,12 @@ namespace BH.UI.Cobra.Engine
         }
 
         /***************************************************/
+
+        internal static void NullObjectError()
+        {
+            BH.Engine.Reflection.Compute.RecordError("BHoM object could not be created becasue Revit object is null.");
+        }
+
+        /***************************************************/
     }
 }

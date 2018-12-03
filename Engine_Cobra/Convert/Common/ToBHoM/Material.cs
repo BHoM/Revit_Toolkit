@@ -1,4 +1,5 @@
-﻿using Autodesk.Revit.DB;
+﻿using System;
+using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
@@ -14,6 +15,12 @@ namespace BH.UI.Cobra.Engine
         internal static oM.Common.Materials.Material ToBHoMMaterial(this Material material, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
+
+            if(material == null)
+            {
+                Compute.NullObjectError();
+                return null;
+            }
 
             oM.Common.Materials.Material aMaterial = pullSettings.FindRefObject<oM.Common.Materials.Material>(material.Id.IntegerValue);
             if (aMaterial != null)
