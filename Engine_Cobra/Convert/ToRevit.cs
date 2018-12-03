@@ -161,7 +161,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        public static CompoundStructureLayer ToRevit(this BH.oM.Environment.Elements.Construction constructionLayer, Document document, PushSettings pushSettings = null)
+        public static CompoundStructureLayer ToRevit(this BH.oM.Environment.Elements.ConstructionLayer constructionLayer, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
@@ -170,7 +170,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        public static CompoundStructure ToRevit(this IEnumerable<BH.oM.Environment.Elements.Construction> constructionLayers, Document document, PushSettings pushSettings = null)
+        public static CompoundStructure ToRevit(this IEnumerable<BH.oM.Environment.Elements.ConstructionLayer> constructionLayers, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
