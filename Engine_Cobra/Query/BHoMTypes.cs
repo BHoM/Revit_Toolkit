@@ -51,6 +51,18 @@ namespace BH.UI.Cobra.Engine
                 }
             }
 
+            if(element is FamilySymbol)
+            {
+                //Environmental Windows and Doors
+                switch ((BuiltInCategory)element.Category.Id.IntegerValue)
+                {
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_Windows:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_Doors:
+                        aResult.Add(typeof(BuildingElementProperties));
+                        return aResult;
+                }
+            }
+
             if (element is CeilingType)
             {
                 aResult.Add(typeof(BuildingElementProperties));
