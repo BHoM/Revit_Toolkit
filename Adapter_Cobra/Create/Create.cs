@@ -145,7 +145,7 @@ namespace BH.UI.Cobra.Adapter
                             {
                                 Location aLocation = Modify.Move(aElement.Location, aBHoMObject as dynamic, aPushSettings);
                             }
-                            catch
+                            catch(Exception aException)
                             {
                                 ObjectNotMovedWarning(aBHoMObject);
                             }

@@ -16,6 +16,18 @@ namespace BH.UI.Cobra.Engine
                 case UnitType.UT_Bar_Diameter:
                 case UnitType.UT_Section_Dimension:
                 case UnitType.UT_Section_Property:
+                case UnitType.UT_PipeSize:
+                case UnitType.UT_HVAC_DuctSize:
+                case UnitType.UT_HVAC_DuctLiningThickness:
+                case UnitType.UT_HVAC_DuctInsulationThickness:
+                case UnitType.UT_PipeInsulationThickness:
+                case UnitType.UT_SheetLength:
+                case UnitType.UT_WireSize:
+                case UnitType.UT_Crack_Width:
+                case UnitType.UT_DecSheetLength:
+                case UnitType.UT_Electrical_CableTraySize:
+                case UnitType.UT_Electrical_ConduitSize:
+                case UnitType.UT_Reinforcement_Length:
                     return UnitUtils.ConvertToInternalUnits(Value, DisplayUnitType.DUT_METERS);
                 case UnitType.UT_Mass:
                     return UnitUtils.ConvertToInternalUnits(Value, DisplayUnitType.DUT_KILOGRAMS_MASS);
