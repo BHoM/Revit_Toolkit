@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
@@ -86,6 +87,22 @@ namespace BH.UI.Cobra.Engine
                                         break;
                                     }
                                 }
+
+
+                                //Checking if the curves are in the horisontal plane, if not roating them.
+                                BH.oM.Geometry.Point dirPt = direction.ToBHoM(pullSettings);
+                                BH.oM.Geometry.Vector tan = new oM.Geometry.Vector { X = dirPt.X, Y = dirPt.Y, Z = dirPt.Z };
+
+                                double angle = BH.Engine.Geometry.Query.Angle(tan, BH.oM.Geometry.Vector.ZAxis);
+
+                                if (angle > BH.oM.Geometry.Tolerance.Angle)
+                                {
+                                    BH.oM.Geometry.Vector rotAxis = BH.Engine.Geometry.Query.CrossProduct(tan, BH.oM.Geometry.Vector.ZAxis);
+
+                                    profileCurves = profileCurves.Select(x => BH.Engine.Geometry.Modify.IRotate(x, oM.Geometry.Point.Origin, rotAxis, angle)).ToList();
+                                }
+                                //
+
                                 break;
                             }
                         }
