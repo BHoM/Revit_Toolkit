@@ -1,7 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using BH.oM.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -20,7 +20,13 @@ namespace BH.UI.Cobra.Engine
 
             CurveArray aCurveArray = new CurveArray();
             foreach (ICurve aICurve in polyCurve.Curves)
-                aCurveArray.Append(aICurve.ToRevitCurve(pushSettings));
+            {
+                List<Curve> aCurveList = aICurve.ToRevitCurveList(pushSettings);
+                if (aCurveList == null || aCurveList.Count == 0)
+                    continue;
+
+                aCurveList.ForEach(x => aCurveArray.Append(x));
+            } 
 
             return aCurveArray;
         }

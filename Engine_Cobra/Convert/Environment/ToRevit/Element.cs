@@ -114,7 +114,7 @@ namespace BH.UI.Cobra.Engine
                         
                     break;
                 case BuildingElementType.Wall:
-                    aElement = Wall.Create(document, Convert.ToRevitCurveIList(buildingElement.Curve(), pushSettings), false); //(document, ToRevitCurve(aICurve, pushSettings), aLevel.Id, false);
+                    aElement = Wall.Create(document, Convert.ToRevitCurveList(buildingElement.Curve(), pushSettings), false); //(document, ToRevitCurve(aICurve, pushSettings), aLevel.Id, false);
                     if (aElementType != null)
                         aElement.ChangeTypeId(aElementType.Id);
 
