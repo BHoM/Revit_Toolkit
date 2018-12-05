@@ -77,7 +77,10 @@ namespace BH.Engine.Adapters.Revit
             if (polyCurve == null || string.IsNullOrEmpty(familyTypeName))
                 return null;
 
-            BuildingElement aBuildingElement = Environment.Create.BuildingElement(Environment.Create.BuildingElementProperties(familyTypeName, buildingElementType), polyCurve);
+            BuildingElementProperties aBuildingElementProperties = Environment.Create.BuildingElementProperties(familyTypeName, buildingElementType);
+            aBuildingElementProperties = Modify.SetFamilyTypeName(aBuildingElementProperties, familyTypeName);
+
+            BuildingElement aBuildingElement = Environment.Create.BuildingElement(aBuildingElementProperties, polyCurve);
             aBuildingElement.Name = familyTypeName;
 
             return aBuildingElement;

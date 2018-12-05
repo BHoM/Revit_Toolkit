@@ -136,7 +136,7 @@
     <Compile Include="Convert\Geometry\ToBHoM\PolyCurveList.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\PolyCurve.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\ICurveList.cs" />
-    <Compile Include="Convert\Geometry\ToRevit\CurveIList.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\CurveList.cs" />
     <Compile Include="Convert\Geometry\ToRevit\CurveArray.cs" />
     <Compile Include="Modify\AddAdjacentSpaceId.cs" />
     <Compile Include="Modify\Move.cs" />

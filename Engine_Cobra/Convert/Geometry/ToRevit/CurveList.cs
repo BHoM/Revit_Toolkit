@@ -12,7 +12,7 @@ namespace BH.UI.Cobra.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static IList<Curve> ToRevitCurveIList(this ICurve curve, PushSettings pushSettings = null)
+        internal static List<Curve> ToRevitCurveList(this ICurve curve, PushSettings pushSettings = null)
         {
             if (curve == null)
                 return null;
@@ -45,7 +45,11 @@ namespace BH.UI.Cobra.Engine
             }
             else if (curve is PolyCurve)
             {
-                ((PolyCurve)curve).Curves.ToList().ForEach(x => aResult.Add(x.ToRevit(pushSettings)));
+                PolyCurve aPolyCurve = (PolyCurve)curve;
+                if (aPolyCurve.Curves == null)
+                    return null;
+
+                aPolyCurve.Curves.ToList().ForEach(x => aResult.Add(x.ToRevit(pushSettings)));
             }
 
             return aResult;
