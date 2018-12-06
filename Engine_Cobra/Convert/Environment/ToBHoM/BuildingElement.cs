@@ -31,6 +31,8 @@ namespace BH.UI.Cobra.Engine
             BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
 
             aBuildingElement = Create.BuildingElement(aBuildingElementProperties, crv);
+            if (aBuildingElementProperties != null)
+                aBuildingElement.Name = aBuildingElementProperties.Name;
 
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, element) as BuildingElement;
             if (pullSettings.CopyCustomData)
@@ -55,6 +57,8 @@ namespace BH.UI.Cobra.Engine
             BuildingElementProperties aBuildingElementProperties = familyInstance.Symbol.ToBHoMBuildingElementProperties(pullSettings);
 
             aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Query.VerticalBounds(familyInstance, pullSettings));
+            if (aBuildingElementProperties != null)
+                aBuildingElement.Name = aBuildingElementProperties.Name;
 
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, familyInstance) as BuildingElement;
             if (pullSettings.CopyCustomData)
@@ -191,6 +195,8 @@ namespace BH.UI.Cobra.Engine
             {
                 //Create the BuildingElement
                 BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aPolyCurve);
+                if (aBuildingElementProperties != null)
+                    aBuildingElement.Name = aBuildingElementProperties.Name;
 
                 //Assign custom data
                 aBuildingElement = Modify.SetIdentifiers(aBuildingElement, ceiling) as BuildingElement;
@@ -227,6 +233,8 @@ namespace BH.UI.Cobra.Engine
             {
                 //Create the BuildingElement
                 BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, crv);
+                if (aBuildingElementProperties != null)
+                    aBuildingElement.Name = aBuildingElementProperties.Name;
 
                 //Assign custom data
                 aBuildingElement = Modify.SetIdentifiers(aBuildingElement, floor) as BuildingElement;
@@ -263,6 +271,8 @@ namespace BH.UI.Cobra.Engine
             {
                 //Create the BuildingElement
                 BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, crv);
+                if (aBuildingElementProperties != null)
+                    aBuildingElement.Name = aBuildingElementProperties.Name;
 
                 //Assign custom data
                 aBuildingElement = Modify.SetIdentifiers(aBuildingElement, roofBase) as BuildingElement;
@@ -297,6 +307,8 @@ namespace BH.UI.Cobra.Engine
             {
                 //Create the BuildingElement
                 BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aPolyCurve);
+                if (aBuildingElementProperties != null)
+                    aBuildingElement.Name = aBuildingElementProperties.Name;
 
                 //Assign custom data
                 aBuildingElement = Modify.SetIdentifiers(aBuildingElement, wall) as BuildingElement;
