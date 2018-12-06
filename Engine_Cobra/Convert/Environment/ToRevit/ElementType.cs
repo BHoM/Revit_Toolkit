@@ -5,6 +5,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Environment.Properties;
 using BH.oM.Adapters.Revit.Settings;
+using System;
 
 namespace BH.UI.Cobra.Engine
 {
@@ -25,20 +26,17 @@ namespace BH.UI.Cobra.Engine
 
             pushSettings.DefaultIfNull();
 
+            List<BuiltInCategory> aBuiltInCategoryList = null;
             BuiltInCategory aBuiltInCategory = buildingElementProperties.BuildingElementType.BuiltInCategory();
-            if (aBuiltInCategory == BuiltInCategory.INVALID)
+            if(aBuiltInCategory == BuiltInCategory.INVALID)
+                aBuiltInCategoryList = Enum.GetValues(typeof(oM.Environment.Elements.BuildingElementType)).Cast<oM.Environment.Elements.BuildingElementType>().ToList().ConvertAll(x => Query.BuiltInCategory(x));
+            else
+                aBuiltInCategoryList.Add(aBuiltInCategory);
+
+            if (aBuiltInCategoryList == null || aBuiltInCategoryList.Count == 0)
                 return null;
 
-            aElementType = buildingElementProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
-            if(aElementType == null && !string.IsNullOrWhiteSpace(buildingElementProperties.Name))
-            {
-                List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfCategory(aBuiltInCategory).WhereElementIsElementType().Cast<ElementType>().ToList();
-                if (aElementTypeList == null || aElementTypeList.Count < 1)
-                    return null;
-
-                aElementType = aElementTypeList.First() as ElementType;
-                aElementType = aElementType.Duplicate(buildingElementProperties.Name);
-            }
+            aElementType = buildingElementProperties.ElementType(document, aBuiltInCategoryList, pushSettings.FamilyLoadSettings, true);
 
             aElementType.CheckIfNullPush(buildingElementProperties);
             if (aElementType == null)
