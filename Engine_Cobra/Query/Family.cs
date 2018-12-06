@@ -18,7 +18,10 @@ namespace BH.UI.Cobra.Engine
                 return null;
 
             string aFamilyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject);
-            if (string.IsNullOrEmpty(aFamilyName))
+            if (string.IsNullOrEmpty(aFamilyName) && !string.IsNullOrEmpty(bHoMObject.Name) && bHoMObject.Name.Contains(":"))
+                aFamilyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject.Name);
+
+            if (string.IsNullOrWhiteSpace(aFamilyName))
                 return null;
 
             List<Family> aFamilyList = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>().ToList();
