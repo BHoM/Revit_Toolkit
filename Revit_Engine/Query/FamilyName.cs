@@ -49,5 +49,22 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
+
+        [Description("Gets Revit Family name from Family Type Full Name in format [Family Name] : [Family Type Name].")]
+        [Input("familyTypeFullName", "Family Type Full Name")]
+        [Output("FamilyName")]
+        public static string FamilyName(this string familyTypeFullName)
+        {
+            if (string.IsNullOrWhiteSpace(familyTypeFullName))
+                return null;
+
+            int aIndex = familyTypeFullName.IndexOf(":");
+            if (aIndex >= 0)
+                return null;
+
+            return familyTypeFullName.Substring(0, aIndex).Trim();
+        }
+
+        /***************************************************/
     }
 }
