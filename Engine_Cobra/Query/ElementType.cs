@@ -203,6 +203,8 @@ namespace BH.UI.Cobra.Engine
         }
 
         /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
 
         static private bool TryGetRevitNames(this IBHoMObject bHoMObject, out string FamilyName, out string FamilyTypeName)
         {
@@ -223,6 +225,8 @@ namespace BH.UI.Cobra.Engine
             }
 
             return !string.IsNullOrWhiteSpace(FamilyName) && !string.IsNullOrWhiteSpace(FamilyTypeName);
-        } 
+        }
+
+        /***************************************************/
     }
 }
