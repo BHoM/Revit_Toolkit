@@ -38,7 +38,7 @@ namespace BH.UI.Cobra.Engine
                 if(!string.IsNullOrEmpty(aFamilyTypeName))
                 {
                     List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>().ToList().FindAll(x => x.Name == aFamilyTypeName && x.Category != null);
-                    if (aElementTypeList != null || aElementTypeList.Count() == 0)
+                    if (aElementTypeList != null || aElementTypeList.Count() != 0)
                         aElementType = aElementTypeList.First();
                 }
             }
@@ -50,7 +50,7 @@ namespace BH.UI.Cobra.Engine
                 if (!string.IsNullOrEmpty(aFamilyTypeName))
                 {
                     List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>().ToList().FindAll(x => x.Name == aFamilyTypeName && x.Category != null);
-                    if (aElementTypeList != null || aElementTypeList.Count() == 0)
+                    if (aElementTypeList != null || aElementTypeList.Count() != 0)
                         aElementType = aElementTypeList.First();
                 }
             }

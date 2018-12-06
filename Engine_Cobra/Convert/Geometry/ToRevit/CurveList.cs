@@ -38,8 +38,9 @@ namespace BH.UI.Cobra.Engine
                 {
                     for (int i = 1; i < aPolyline.ControlPoints.Count; i++)
                         aResult.Add(BH.Engine.Geometry.Create.Line(aPolyline.ControlPoints[i - 1], aPolyline.ControlPoints[i]).ToRevit(pushSettings));
+                    if (BH.Engine.Geometry.Query.Distance(aPolyline.ControlPoints[aPolyline.ControlPoints.Count - 1] , aPolyline.ControlPoints[0]) > oM.Geometry.Tolerance.MicroDistance )
+                        aResult.Add(BH.Engine.Geometry.Create.Line(aPolyline.ControlPoints[aPolyline.ControlPoints.Count - 1], aPolyline.ControlPoints[0]).ToRevit(pushSettings));
 
-                    aResult.Add(BH.Engine.Geometry.Create.Line(aPolyline.ControlPoints[aPolyline.ControlPoints.Count - 1], aPolyline.ControlPoints[0]).ToRevit(pushSettings));
                 }
 
             }
@@ -49,7 +50,14 @@ namespace BH.UI.Cobra.Engine
                 if (aPolyCurve.Curves == null)
                     return null;
 
-                aPolyCurve.Curves.ToList().ForEach(x => aResult.Add(x.ToRevit(pushSettings)));
+                foreach (ICurve aCurve in aPolyCurve.Curves)
+                {
+                    List<Curve> aCurveList = aCurve.ToRevitCurveList(pushSettings);
+                    if (aCurveList != null && aCurveList.Count > 0)
+                    {
+                        aResult.AddRange(aCurveList);
+                    }
+                }
             }
 
             return aResult;
