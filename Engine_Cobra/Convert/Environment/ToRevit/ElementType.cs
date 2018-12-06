@@ -31,7 +31,7 @@ namespace BH.UI.Cobra.Engine
             if(aBuiltInCategory == BuiltInCategory.INVALID)
                 aBuiltInCategoryList = Enum.GetValues(typeof(oM.Environment.Elements.BuildingElementType)).Cast<oM.Environment.Elements.BuildingElementType>().ToList().ConvertAll(x => Query.BuiltInCategory(x));
             else
-                aBuiltInCategoryList.Add(aBuiltInCategory);
+                aBuiltInCategoryList = new List<BuiltInCategory>() { aBuiltInCategory};
 
             if (aBuiltInCategoryList == null || aBuiltInCategoryList.Count == 0)
                 return null;
