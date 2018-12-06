@@ -46,6 +46,7 @@ namespace BH.UI.Cobra.Engine
             if (aElementType == null)
             {
                 string aFamilyTypeName = buildingElement.Name;
+
                 if (!string.IsNullOrEmpty(aFamilyTypeName))
                 {
                     List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>().ToList().FindAll(x => x.Name == aFamilyTypeName && x.Category != null);

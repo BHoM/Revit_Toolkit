@@ -86,8 +86,12 @@ namespace BH.UI.Cobra.Engine
                 }  
             }
 
+            string aFamilyName = null;
+            string aFamilyTypeName = null;
+            TryGetRevitNames(bHoMObject, out aFamilyName, out aFamilyTypeName);
+
             //Find ElementType in FamilyLibrary
-            if(familyLoadSettings != null)
+            if (familyLoadSettings != null && !string.IsNullOrWhiteSpace(aFamilyName) && !string.IsNullOrWhiteSpace(aFamilyTypeName))
             {
                 foreach (BuiltInCategory builtInCategory in builtInCategories)
                 {
@@ -97,12 +101,6 @@ namespace BH.UI.Cobra.Engine
                     string aCategoryName = builtInCategory.CategoryName(document);
                     if (string.IsNullOrEmpty(aCategoryName))
                         aCategoryName = bHoMObject.CategoryName();
-
-                    string aFamilyName = null;
-                    string aFamilyTypeName = null;
-
-                    if (!TryGetRevitNames(bHoMObject, out aFamilyName, out aFamilyTypeName))
-                        continue;
 
                     FamilySymbol aFamilySymbol = familyLoadSettings.LoadFamilySymbol(document, aCategoryName, aFamilyName, aFamilyTypeName);
                     if (aFamilySymbol != null)
@@ -116,75 +114,72 @@ namespace BH.UI.Cobra.Engine
             }
 
             //Duplicate if not exists
-            if(DuplicateTypeIfNotExists)
+            if (DuplicateTypeIfNotExists && !string.IsNullOrWhiteSpace(aFamilyTypeName))
             {
                 foreach (BuiltInCategory builtInCategory in builtInCategories)
                 {
                     if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
                         continue;
 
-                    string aFamilyName = null;
-                    string aFamilyTypeName = null;
+                    List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(typeof(ElementType)).OfCategory(builtInCategory).Cast<ElementType>().ToList();
 
-                    TryGetRevitNames(bHoMObject, out aFamilyName, out aFamilyTypeName);
-
-                    if (!string.IsNullOrEmpty(aFamilyTypeName))
+                    if (aElementTypeList.Count > 0 && !(aElementTypeList.First() is FamilySymbol))
                     {
-                        List <ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(typeof(ElementType)).OfCategory(builtInCategory).Cast<ElementType>().ToList();
-                        if(!string.IsNullOrEmpty(aFamilyName))
+                        // Duplicate Type for object which is not Family Symbol
+
+                        if (!string.IsNullOrEmpty(aFamilyName))
                             aElementTypeList.RemoveAll(x => x.FamilyName != aFamilyName);
 
-                        if (aElementTypeList.Count > 0 && !(aElementTypeList.First() is FamilySymbol))
+                        if (aElementTypeList.Count == 0)
+                            continue;
+
+                        ElementType aElementType = aElementTypeList.First().Duplicate(aFamilyTypeName);
+                        return aElementType;
+                    }
+                    else
+                    {
+                        // Duplicate Type for object which is Family Symbol
+
+                        Family aFamily = bHoMObject.Family(document);
+                        if (aFamily == null && builtInCategory != Autodesk.Revit.DB.BuiltInCategory.INVALID)
                         {
-                            // Duplicate Type for object which is not Family Symbol
-                            ElementType aElementType = aElementTypeList.First().Duplicate(aFamilyTypeName);
-                            return aElementType;
-                        }
-                        else
-                        {
-                            // Duplicate Type for object which is Family Symbol
+                            // Load and Duplicate Type from not existsing Family
 
-                            Family aFamily = bHoMObject.Family(document);
-                            if (aFamily == null && builtInCategory != Autodesk.Revit.DB.BuiltInCategory.INVALID)
+                            string aCategoryName = builtInCategory.CategoryName(document);
+                            if (string.IsNullOrEmpty(aCategoryName))
+                                aCategoryName = bHoMObject.CategoryName();
+
+                            if (familyLoadSettings != null)
                             {
-                                // Load and Duplicate Type from not existsing Family
-
-                                string aCategoryName = builtInCategory.CategoryName(document);
-                                if (string.IsNullOrEmpty(aCategoryName))
-                                    aCategoryName = bHoMObject.CategoryName();
-
-                                if (familyLoadSettings != null)
+                                if (!string.IsNullOrEmpty(aFamilyName))
                                 {
-                                    if (!string.IsNullOrEmpty(aFamilyName))
-                                    {
-                                        FamilySymbol aFamilySymbol = familyLoadSettings.LoadFamilySymbol(document, aCategoryName, aFamilyName);
-                                        if (aFamilySymbol != null)
-                                        {
-                                            if (!aFamilySymbol.IsActive)
-                                                aFamilySymbol.Activate();
-
-                                            aFamilySymbol.Name = aFamilyTypeName;
-                                            return aFamilySymbol;
-                                        }
-
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // Duplicate from existing family
-
-                                ISet<ElementId> aElementIdSet = aFamily.GetFamilySymbolIds();
-                                if (aElementIdSet != null && aElementIdSet.Count > 0)
-                                {
-                                    FamilySymbol aFamilySymbol = document.GetElement(aElementIdSet.First()) as FamilySymbol;
+                                    FamilySymbol aFamilySymbol = familyLoadSettings.LoadFamilySymbol(document, aCategoryName, aFamilyName);
                                     if (aFamilySymbol != null)
                                     {
                                         if (!aFamilySymbol.IsActive)
                                             aFamilySymbol.Activate();
 
-                                        return aFamilySymbol.Duplicate(aFamilyTypeName);
+                                        aFamilySymbol.Name = aFamilyTypeName;
+                                        return aFamilySymbol;
                                     }
+
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Duplicate from existing family
+
+                            ISet<ElementId> aElementIdSet = aFamily.GetFamilySymbolIds();
+                            if (aElementIdSet != null && aElementIdSet.Count > 0)
+                            {
+                                FamilySymbol aFamilySymbol = document.GetElement(aElementIdSet.First()) as FamilySymbol;
+                                if (aFamilySymbol != null)
+                                {
+                                    if (!aFamilySymbol.IsActive)
+                                        aFamilySymbol.Activate();
+
+                                    return aFamilySymbol.Duplicate(aFamilyTypeName);
                                 }
                             }
                         }
