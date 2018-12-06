@@ -62,7 +62,7 @@ namespace BH.Engine.Adapters.Revit
             if (aIndex <= 0)
                 return null;
 
-            return familyTypeFullName.Substring(0, aIndex-1).Trim();
+            return familyTypeFullName.Substring(0, aIndex).Trim();
         }
 
         /***************************************************/
