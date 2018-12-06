@@ -28,10 +28,10 @@ namespace BH.UI.Cobra.Engine
 
             List<BuiltInCategory> aBuiltInCategoryList = null;
             BuiltInCategory aBuiltInCategory = buildingElementProperties.BuildingElementType.BuiltInCategory();
-            if(aBuiltInCategory == BuiltInCategory.INVALID)
+            if (aBuiltInCategory == BuiltInCategory.INVALID)
                 aBuiltInCategoryList = Enum.GetValues(typeof(oM.Environment.Elements.BuildingElementType)).Cast<oM.Environment.Elements.BuildingElementType>().ToList().ConvertAll(x => Query.BuiltInCategory(x));
             else
-                aBuiltInCategoryList = new List<BuiltInCategory>() { aBuiltInCategory};
+                aBuiltInCategoryList = new List<BuiltInCategory>() { aBuiltInCategory };
 
             if (aBuiltInCategoryList == null || aBuiltInCategoryList.Count == 0)
                 return null;
