@@ -21,18 +21,18 @@ namespace BH.UI.Cobra.Engine
             if (elementTypes == null || bHoMObject == null)
                 return null;
 
-            string aTypeName = bHoMObject.FamilyTypeName();
-            if (string.IsNullOrEmpty(aTypeName))
-                aTypeName = bHoMObject.Name;
+            string aFamilyName = null;
+            string aFamilyTypeName = null;
 
-            string aFamilyName = bHoMObject.FamilyName();
+            if (!TryGetRevitNames(bHoMObject, out aFamilyName, out aFamilyTypeName))
+                return null;
 
             ElementType aResult = null;
-            if (!string.IsNullOrEmpty(aTypeName))
+            if (!string.IsNullOrEmpty(aFamilyTypeName))
             {
                 foreach (ElementType aElementType in elementTypes)
                 {
-                    if ((aElementType.FamilyName == aFamilyName && aElementType.Name == aTypeName) || (string.IsNullOrEmpty(aFamilyName) && aElementType.Name == aTypeName))
+                    if ((aElementType.FamilyName == aFamilyName && aElementType.Name == aFamilyTypeName) || (string.IsNullOrEmpty(aFamilyName) && aElementType.Name == aFamilyTypeName))
                     {
                         aResult = aElementType;
                         break;
@@ -98,11 +98,12 @@ namespace BH.UI.Cobra.Engine
                     if (string.IsNullOrEmpty(aCategoryName))
                         aCategoryName = bHoMObject.CategoryName();
 
-                    string aFamilyTypeName = bHoMObject.FamilyTypeName();
-                    if (string.IsNullOrEmpty(aFamilyTypeName))
-                        aFamilyTypeName = bHoMObject.Name;
+                    string aFamilyName = null;
+                    string aFamilyTypeName = null;
 
-                    string aFamilyName = bHoMObject.FamilyName();
+                    if (!TryGetRevitNames(bHoMObject, out aFamilyName, out aFamilyTypeName))
+                        continue;
+
                     FamilySymbol aFamilySymbol = familyLoadSettings.LoadFamilySymbol(document, aCategoryName, aFamilyName, aFamilyTypeName);
                     if (aFamilySymbol != null)
                     {
@@ -122,18 +123,21 @@ namespace BH.UI.Cobra.Engine
                     if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
                         continue;
 
-                    string aTypeName = bHoMObject.FamilyTypeName();
-                    if (string.IsNullOrEmpty(aTypeName))
-                        aTypeName = bHoMObject.Name;
+                    string aFamilyName = null;
+                    string aFamilyTypeName = null;
 
-                    if (!string.IsNullOrEmpty(aTypeName))
+                    TryGetRevitNames(bHoMObject, out aFamilyName, out aFamilyTypeName);
+
+                    if (!string.IsNullOrEmpty(aFamilyTypeName))
                     {
                         List <ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(typeof(ElementType)).OfCategory(builtInCategory).Cast<ElementType>().ToList();
+                        if(!string.IsNullOrEmpty(aFamilyName))
+                            aElementTypeList.RemoveAll(x => x.FamilyName != aFamilyName);
 
                         if (aElementTypeList.Count > 0 && !(aElementTypeList.First() is FamilySymbol))
                         {
                             // Duplicate Type for object which is not Family Symbol
-                            ElementType aElementType = aElementTypeList.First().Duplicate(aTypeName);
+                            ElementType aElementType = aElementTypeList.First().Duplicate(aFamilyTypeName);
                             return aElementType;
                         }
                         else
@@ -151,7 +155,6 @@ namespace BH.UI.Cobra.Engine
 
                                 if (familyLoadSettings != null)
                                 {
-                                    string aFamilyName = bHoMObject.FamilyName();
                                     if (!string.IsNullOrEmpty(aFamilyName))
                                     {
                                         FamilySymbol aFamilySymbol = familyLoadSettings.LoadFamilySymbol(document, aCategoryName, aFamilyName);
@@ -160,7 +163,7 @@ namespace BH.UI.Cobra.Engine
                                             if (!aFamilySymbol.IsActive)
                                                 aFamilySymbol.Activate();
 
-                                            aFamilySymbol.Name = aTypeName;
+                                            aFamilySymbol.Name = aFamilyTypeName;
                                             return aFamilySymbol;
                                         }
 
@@ -180,7 +183,7 @@ namespace BH.UI.Cobra.Engine
                                         if (!aFamilySymbol.IsActive)
                                             aFamilySymbol.Activate();
 
-                                        return aFamilySymbol.Duplicate(aTypeName);
+                                        return aFamilySymbol.Duplicate(aFamilyTypeName);
                                     }
                                 }
                             }
@@ -200,5 +203,26 @@ namespace BH.UI.Cobra.Engine
         }
 
         /***************************************************/
+
+        static private bool TryGetRevitNames(this IBHoMObject bHoMObject, out string FamilyName, out string FamilyTypeName)
+        {
+            FamilyTypeName = bHoMObject.FamilyTypeName();
+            if (string.IsNullOrEmpty(FamilyTypeName))
+            {
+                FamilyTypeName = bHoMObject.Name;
+                if (FamilyTypeName != null && FamilyTypeName.Contains(":"))
+                    FamilyTypeName = BH.Engine.Adapters.Revit.Query.FamilyTypeName(FamilyTypeName);
+            }
+
+            FamilyName = bHoMObject.FamilyName();
+            if (string.IsNullOrEmpty(FamilyName))
+            {
+                FamilyName = bHoMObject.Name;
+                if (FamilyName != null && FamilyName.Contains(":"))
+                    FamilyName = BH.Engine.Adapters.Revit.Query.FamilyName(FamilyName);
+            }
+
+            return !string.IsNullOrWhiteSpace(FamilyName) && !string.IsNullOrWhiteSpace(FamilyTypeName);
+        } 
     }
 }
