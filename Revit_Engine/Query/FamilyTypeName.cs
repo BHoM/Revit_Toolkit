@@ -58,10 +58,10 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             int aIndex = familyTypeFullName.IndexOf(":");
-            if (aIndex >= 0)
+            if (aIndex <= 0)
                 return null;
 
-            string aResult = familyTypeFullName.Substring(aIndex);
+            string aResult = familyTypeFullName.Substring(aIndex+1);
             return aResult.Trim();
         }
 
