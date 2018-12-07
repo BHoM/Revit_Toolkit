@@ -121,10 +121,15 @@ namespace BH.UI.Cobra.Engine
                     aElement = Wall.Create(document, Convert.ToRevitCurveList(buildingElement.Curve(), pushSettings), aElementType.Id, aLevel.Id, false);
                     Parameter aParameter = aElement.get_Parameter(BuiltInParameter.WALL_HEIGHT_TYPE);
                     if(aParameter != null)
+                        aParameter.Set(ElementId.InvalidElementId);
+                    aParameter = aElement.get_Parameter(BuiltInParameter.WALL_USER_HEIGHT_PARAM);
+                    if (aParameter != null)
                     {
-                        ElementId aElementId = null;
-                        aParameter.Set(aElementId);
+                        double aHeight = UnitUtils.ConvertToInternalUnits(buildingElement.MaximumLevel() - buildingElement.MinimumLevel(),DisplayUnitType.DUT_METERS);
+                        aParameter.Set(aHeight);
                     }
+
+
                     aBuiltInParameters = new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT };
                     break;
                 case BuildingElementType.Door:
