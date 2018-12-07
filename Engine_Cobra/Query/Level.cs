@@ -60,7 +60,7 @@ namespace BH.UI.Cobra.Engine
                 if (convertUnits)
                     aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
 
-                if (Elevation >= aElevation)
+                if (Elevation <= aElevation)
                     return aLevelList[i];
             }
 
