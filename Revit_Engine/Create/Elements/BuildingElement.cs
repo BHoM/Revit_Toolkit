@@ -102,7 +102,13 @@ namespace BH.Engine.Adapters.Revit
                 aPolyCurve.Curves.Add(Geometry.Create.Line(points.ElementAt(i - 1), points.ElementAt(i)));
 
             if (points.Count() > 2)
-                aPolyCurve.Curves.Add(Geometry.Create.Line(points.ElementAt(points.Count() - 1), points.ElementAt(0)));
+            {
+                Point aPoint_1 = points.ElementAt(points.Count() - 1);
+                Point aPoint_2 = points.ElementAt(0);
+                if (Geometry.Query.Distance(aPoint_1, aPoint_2) > Tolerance.MicroDistance)
+                    aPolyCurve.Curves.Add(Geometry.Create.Line(aPoint_1, aPoint_2));
+            }
+                
 
             return BuildingElement(aPolyCurve, familyTypeName);
         }
@@ -119,14 +125,13 @@ namespace BH.Engine.Adapters.Revit
             if (points == null || string.IsNullOrEmpty(familyTypeName) || points.Count() < 3)
                 return null;
 
-            PolyCurve aPolyCurve = new PolyCurve();
-            for (int i = 1; i < points.Count(); i++)
-                aPolyCurve.Curves.Add(Geometry.Create.Line(points.ElementAt(i - 1), points.ElementAt(i)));
+            BuildingElementProperties aBuildingElementProperties = Environment.Create.BuildingElementProperties(familyTypeName, buildingElementType);
+            aBuildingElementProperties = Modify.SetFamilyTypeName(aBuildingElementProperties, familyTypeName);
 
-            if (points.Count() > 2)
-                aPolyCurve.Curves.Add(Geometry.Create.Line(points.ElementAt(points.Count() - 1), points.ElementAt(0)));
+            BuildingElement aBuildingElement = BuildingElement(points, familyTypeName);
+            aBuildingElement.BuildingElementProperties = aBuildingElementProperties;
 
-            return BuildingElement(aPolyCurve, buildingElementType, familyTypeName);
+            return aBuildingElement;
         }
 
         /***************************************************/
