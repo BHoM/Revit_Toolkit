@@ -193,6 +193,7 @@
     <Compile Include="Query\FindRefObjects.cs" />
     <Compile Include="Query\FindRefObject.cs" />
     <Compile Include="Query\FilterQueries.cs" />
+    <Compile Include="Query\NextLevel.cs" />
     <Compile Include="Query\Panels.cs" />
     <Compile Include="Query\VerticalBounds.cs" />
     <Compile Include="Query\Location.cs" />
