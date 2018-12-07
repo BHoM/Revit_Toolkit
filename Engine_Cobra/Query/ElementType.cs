@@ -214,12 +214,12 @@ namespace BH.UI.Cobra.Engine
             FamilyName = bHoMObject.FamilyName();
             if (string.IsNullOrEmpty(FamilyName))
             {
-                FamilyName = bHoMObject.Name;
-                if (FamilyName != null && FamilyName.Contains(":"))
-                    FamilyName = BH.Engine.Adapters.Revit.Query.FamilyName(FamilyName);
+                string aFamilyName = bHoMObject.Name;
+                if (aFamilyName != null && aFamilyName.Contains(":"))
+                    FamilyName = BH.Engine.Adapters.Revit.Query.FamilyName(aFamilyName);
             }
 
-            return !string.IsNullOrWhiteSpace(FamilyName) && !string.IsNullOrWhiteSpace(FamilyTypeName);
+            return !string.IsNullOrWhiteSpace(FamilyName) || !string.IsNullOrWhiteSpace(FamilyTypeName);
         }
 
         /***************************************************/
