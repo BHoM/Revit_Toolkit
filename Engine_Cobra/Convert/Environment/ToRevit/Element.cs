@@ -97,7 +97,8 @@ namespace BH.UI.Cobra.Engine
 
                         oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
                         ICurve aCurve = BH.Engine.Geometry.Modify.Project(buildingElement.PanelCurve as dynamic, aPlane) as ICurve;
-                        FootPrintRoof aFootPrintRoof = document.Create.NewFootPrintRoof((aCurve as PolyCurve).ToRevitCurveArray(pushSettings), aLevel, aElementType as RoofType, out aModelCurveArray);
+                        CurveArray aCurveArray = (aCurve as PolyCurve).ToRevitCurveArray(pushSettings);
+                        FootPrintRoof aFootPrintRoof = document.Create.NewFootPrintRoof(aCurveArray, aLevel, aElementType as RoofType, out aModelCurveArray);
                         if(aFootPrintRoof != null)
                         {
                             List<ICurve> aCurveList = (buildingElement.PanelCurve as PolyCurve).Curves;
