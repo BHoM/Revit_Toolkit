@@ -37,7 +37,7 @@ namespace BH.UI.Cobra.Adapter
         {
             //{typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
             //{typeof(IProfile), new BHoMObjectNameOrToStringComparer() },
-            //{typeof(IProperty2D), new BHoMObjectNameOrToStringComparer() },
+            //{typeof(ISurfaceProperty), new BHoMObjectNameOrToStringComparer() },
             //{typeof(Material), new BHoMObjectNameComparer() },
             //{typeof(Level), new BHoMObjectNameComparer() },
         };

@@ -11,7 +11,7 @@ namespace BH.UI.Cobra.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static FloorType ToRevitFloorType(this oM.Structure.Properties.IProperty2D property2D, Document document, PushSettings pushSettings = null)
+        public static FloorType ToRevitFloorType(this oM.Structure.Properties.Surface.ISurfaceProperty property2D, Document document, PushSettings pushSettings = null)
         {
             if (property2D == null || document == null)
                 return null;

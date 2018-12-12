@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure.StructuralSections;
 
-using BH.oM.Structure.Properties;
+using BH.oM.Structure.Properties.Section;
+using BH.oM.Structure.Properties.Section.ShapeProfiles;
 using BHS = BH.Engine.Structure;
 using BH.oM.Adapters.Revit.Settings;
 

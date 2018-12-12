@@ -44,8 +44,8 @@ namespace BH.UI.Cobra.Adapter
             {typeof(Viewport), new List<Type> { typeof(Sheet), typeof(ViewPlan) } },
             {typeof(Sheet), new List<Type> { typeof(ViewPlan)} }
             //{typeof(ISectionProperty), new List<Type> { typeof(Material), typeof(IProfile) } },
-            //{typeof(PanelPlanar), new List<Type> { typeof(IProperty2D), typeof(Level) } },
-            //{typeof(IProperty2D), new List<Type> { typeof(Material) } }
+            //{typeof(PanelPlanar), new List<Type> { typeof(ISurfaceProperty), typeof(Level) } },
+            //{typeof(ISurfaceProperty), new List<Type> { typeof(Material) } }
         };
 
         /***************************************************/

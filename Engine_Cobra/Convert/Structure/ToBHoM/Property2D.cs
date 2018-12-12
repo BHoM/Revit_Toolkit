@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using BH.oM.Base;
-using BH.oM.Structure.Properties;
+using BH.oM.Structure.Properties.Surface;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Cobra.Engine
@@ -15,7 +15,7 @@ namespace BH.UI.Cobra.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static IProperty2D ToBHoMProperty2D(this WallType wallType, PullSettings pullSettings = null)
+        internal static ISurfaceProperty ToBHoMProperty2D(this WallType wallType, PullSettings pullSettings = null)
         {
             Document document = wallType.Document;
 
@@ -50,7 +50,7 @@ namespace BH.UI.Cobra.Engine
             if (composite) wallType.CompositePanelWarning();
             else if (aThickness == 0) BH.Engine.Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", wallType.Id.IntegerValue));
 
-            ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structure.Properties.PanelType.Wall, Thickness = aThickness, Material = aMaterial, Name = wallType.Name };
+            ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structure.Properties.Surface.PanelType.Wall, Thickness = aThickness, Material = aMaterial, Name = wallType.Name };
 
             aProperty2D = Modify.SetIdentifiers(aProperty2D, wallType) as ConstantThickness;
             if (pullSettings.CopyCustomData)
@@ -63,7 +63,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        internal static IProperty2D ToBHoMProperty2D(this FloorType floorType, PullSettings pullSettings = null)
+        internal static ISurfaceProperty ToBHoMProperty2D(this FloorType floorType, PullSettings pullSettings = null)
         {
             Document document = floorType.Document;
 
@@ -98,7 +98,7 @@ namespace BH.UI.Cobra.Engine
             if (composite) floorType.CompositePanelWarning();
             else if (aThickness == 0) BH.Engine.Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", floorType.Id.IntegerValue));
 
-            ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structure.Properties.PanelType.Slab, Thickness = aThickness, Material = aMaterial, Name = floorType.Name };
+            ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structure.Properties.Surface.PanelType.Slab, Thickness = aThickness, Material = aMaterial, Name = floorType.Name };
 
             aProperty2D = Modify.SetIdentifiers(aProperty2D, floorType) as ConstantThickness;
             if (pullSettings.CopyCustomData)
