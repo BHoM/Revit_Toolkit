@@ -1,7 +1,7 @@
 ﻿using BH.Adapter.Socket;
 using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
-using BH.oM.Reflection.Debuging;
+using BH.oM.Reflection.Debugging;
 using BH.oM.Adapters.Revit.Settings;
 using System;
 using System.Collections;
