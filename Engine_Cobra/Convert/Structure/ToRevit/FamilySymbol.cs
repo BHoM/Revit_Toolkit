@@ -15,7 +15,7 @@ namespace BH.UI.Cobra.Engine
         /****              Private methods              ****/
         /***************************************************/
 
-        private static FamilySymbol ToRevitFamilySymbol_Column(this oM.Structure.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
+        private static FamilySymbol ToRevitFamilySymbol_Column(this oM.Structure.Properties.Framing.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
         {
             if (framingElementProperty == null || document == null)
                 return null;
@@ -42,7 +42,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        private static FamilySymbol ToRevitFamilySymbol_Framing(this oM.Structure.Properties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
+        private static FamilySymbol ToRevitFamilySymbol_Framing(this oM.Structure.Properties.Framing.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
         {
             if (framingElementProperty == null || document == null)
                 return null;

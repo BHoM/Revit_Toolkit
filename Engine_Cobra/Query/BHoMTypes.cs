@@ -3,7 +3,8 @@ using Autodesk.Revit.DB.Structure.StructuralSections;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Properties;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties;
+using BH.oM.Structure.Properties.Section.ShapeProfiles;
+using BH.oM.Structure.Properties.Surface;
 using System;
 using System.Collections.Generic;
 
@@ -72,21 +73,21 @@ namespace BH.UI.Cobra.Engine
             if (element is WallType)
             {
                 aResult.Add(typeof(BuildingElementProperties));
-                aResult.Add(typeof(IProperty2D));
+                aResult.Add(typeof(ISurfaceProperty));
                 return aResult;
             }
 
             if (element is FloorType)
             {
                 aResult.Add(typeof(BuildingElementProperties));
-                aResult.Add(typeof(IProperty2D));
+                aResult.Add(typeof(ISurfaceProperty));
                 return aResult;
             }
 
             if (element is RoofType)
             {
                 aResult.Add(typeof(BuildingElementProperties));
-                aResult.Add(typeof(IProperty2D));
+                aResult.Add(typeof(ISurfaceProperty));
                 return aResult;
             }
 

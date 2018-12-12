@@ -6,7 +6,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties;
+using BH.oM.Structure.Properties.Surface;
 using BHS = BH.Engine.Structure;
 
 namespace BH.UI.Cobra.Engine
@@ -25,7 +25,7 @@ namespace BH.UI.Cobra.Engine
             if (aResult != null && aResult.Count > 0)
                 return aResult;
 
-            IProperty2D aProperty2D = wall.WallType.ToBHoMProperty2D(pullSettings);
+            ISurfaceProperty aProperty2D = wall.WallType.ToBHoMProperty2D(pullSettings);
             
             List<oM.Geometry.ICurve> outlines = wall.Outlines(pullSettings);
             aResult = outlines != null ? BHS.Create.PanelPlanar(outlines) : new List<PanelPlanar> { new PanelPlanar { ExternalEdges = new List<oM.Structure.Elements.Edge>(), Openings = new List<oM.Structure.Elements.Opening>(), Property = aProperty2D } };
@@ -57,7 +57,7 @@ namespace BH.UI.Cobra.Engine
             if (aResult != null && aResult.Count > 0)
                 return aResult;
 
-            IProperty2D aProperty2D = aProperty2D = floor.FloorType.ToBHoMProperty2D(pullSettings);
+            ISurfaceProperty aProperty2D = aProperty2D = floor.FloorType.ToBHoMProperty2D(pullSettings);
 
             List<oM.Geometry.ICurve> outlines = floor.Outlines(pullSettings);
             aResult = outlines != null ? BHS.Create.PanelPlanar(outlines) : new List<PanelPlanar> { new PanelPlanar { ExternalEdges = new List<oM.Structure.Elements.Edge>(), Openings = new List<oM.Structure.Elements.Opening>(), Property = aProperty2D } };

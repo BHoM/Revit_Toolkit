@@ -83,7 +83,7 @@ namespace BH.UI.Cobra.Engine
             if (aFamilyInstance == null)
                 return null;
 
-            oM.Structure.Properties.ConstantFramingElementProperty barProperty = framingElement.Property as oM.Structure.Properties.ConstantFramingElementProperty;
+            oM.Structure.Properties.Framing.ConstantFramingElementProperty barProperty = framingElement.Property as oM.Structure.Properties.Framing.ConstantFramingElementProperty;
             if (barProperty != null)
             {
                 double orientationAngle = (Math.PI * 0.5 - barProperty.OrientationAngle) % (2 * Math.PI);

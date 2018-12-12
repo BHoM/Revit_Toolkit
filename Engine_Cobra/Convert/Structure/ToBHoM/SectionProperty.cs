@@ -5,7 +5,8 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Structure.Properties;
+using BH.oM.Structure.Properties.Section;
+using BH.oM.Structure.Properties.Section.ShapeProfiles;
 using BHS = BH.Engine.Structure;
 
 namespace BH.UI.Cobra.Engine
