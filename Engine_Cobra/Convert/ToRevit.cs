@@ -44,6 +44,15 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
+        public static Element ToRevit(this DraftingObject draftingObject, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitElement(draftingObject, document, pushSettings);
+        }
+
+        /***************************************************/
+
         public static Element ToRevit(this IMaterial material, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
