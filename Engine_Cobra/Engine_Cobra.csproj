@@ -59,18 +59,38 @@
       <HintPath>..\..\BHoM_Engine\Build\Architecture_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Architecture_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM\Build\Architecture_oM.dll</HintPath>
+    </Reference>
     <Reference Include="BHoM">
       <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Common_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
+    </Reference>
+    <Reference Include="DataManipulation_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM\Build\DataManipulation_oM.dll</HintPath>
     </Reference>
     <Reference Include="Environment_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Engine\Build\Environment_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Environment_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM\Build\Environment_oM.dll</HintPath>
+    </Reference>
     <Reference Include="Geometry_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Geometry_Engine.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Geometry_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM\Build\Geometry_oM.dll</HintPath>
     </Reference>
     <Reference Include="Library_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Library_Engine.dll</HintPath>
@@ -120,6 +140,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Engine\Build\Structure_Engine.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Structure_oM">
+      <HintPath>..\..\BHoM\Build\Structure_oM.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
