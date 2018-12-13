@@ -115,6 +115,12 @@ namespace BH.UI.Cobra
 
         public Result OnStartup(UIControlledApplication application)
         {
+            //Make sure all BHoM assemblies are loaded
+            string versionNumber = application.ControlledApplication.VersionNumber;
+            string path = Environment.GetEnvironmentVariable("APPDATA") + @"\Autodesk\Revit\Addins\" + versionNumber +  @"\Cobra";
+            BH.Engine.Reflection.Compute.LoadAllAssemblies(path);
+
+            //Add button to set socket ports
             AddRibbonItems(application);
 
             //Define static instance of the listener
