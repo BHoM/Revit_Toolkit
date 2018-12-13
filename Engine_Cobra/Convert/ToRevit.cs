@@ -116,11 +116,11 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Structure.Properties.Surface.ISurfaceProperty property2D, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Structure.Properties.Surface.ISurfaceProperty surfaceProperty, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitFloorType(property2D, document, pushSettings);
+            return ToRevitFloorType(surfaceProperty, document, pushSettings);
         }
 
         /***************************************************/

@@ -25,7 +25,7 @@ namespace BH.UI.Cobra.Engine
             if (aResult != null && aResult.Count > 0)
                 return aResult;
 
-            ISurfaceProperty aProperty2D = wall.WallType.ToBHoMProperty2D(pullSettings);
+            ISurfaceProperty aProperty2D = wall.WallType.ToBHoMSurfaceProperty(pullSettings);
             
             List<oM.Geometry.ICurve> outlines = wall.Outlines(pullSettings);
             aResult = outlines != null ? BHS.Create.PanelPlanar(outlines) : new List<PanelPlanar> { new PanelPlanar { ExternalEdges = new List<oM.Structure.Elements.Edge>(), Openings = new List<oM.Structure.Elements.Opening>(), Property = aProperty2D } };
@@ -57,7 +57,7 @@ namespace BH.UI.Cobra.Engine
             if (aResult != null && aResult.Count > 0)
                 return aResult;
 
-            ISurfaceProperty aProperty2D = aProperty2D = floor.FloorType.ToBHoMProperty2D(pullSettings);
+            ISurfaceProperty aProperty2D = aProperty2D = floor.FloorType.ToBHoMSurfaceProperty(pullSettings);
 
             List<oM.Geometry.ICurve> outlines = floor.Outlines(pullSettings);
             aResult = outlines != null ? BHS.Create.PanelPlanar(outlines) : new List<PanelPlanar> { new PanelPlanar { ExternalEdges = new List<oM.Structure.Elements.Edge>(), Openings = new List<oM.Structure.Elements.Opening>(), Property = aProperty2D } };

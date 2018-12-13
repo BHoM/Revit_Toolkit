@@ -10,27 +10,27 @@ namespace BH.UI.Cobra.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static WallType ToRevitWallType(this oM.Structure.Properties.Surface.ISurfaceProperty property2D, Document document, PushSettings pushSettings = null)
+        internal static WallType ToRevitWallType(this oM.Structure.Properties.Surface.ISurfaceProperty surfaceProperty, Document document, PushSettings pushSettings = null)
         {
-            if (property2D == null || document == null)
+            if (surfaceProperty == null || document == null)
                 return null;
 
-            WallType aWallType = pushSettings.FindRefObject<WallType>(document, property2D.BHoM_Guid);
+            WallType aWallType = pushSettings.FindRefObject<WallType>(document, surfaceProperty.BHoM_Guid);
             if (aWallType != null)
                 return aWallType;
 
             pushSettings.DefaultIfNull();
 
-            aWallType = Query.ElementType(property2D, document, BuiltInCategory.OST_Walls, pushSettings.FamilyLoadSettings) as WallType;
+            aWallType = Query.ElementType(surfaceProperty, document, BuiltInCategory.OST_Walls, pushSettings.FamilyLoadSettings) as WallType;
 
-            aWallType.CheckIfNullPush(property2D);
+            aWallType.CheckIfNullPush(surfaceProperty);
             if (aWallType == null)
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aWallType, property2D, null, pushSettings.ConvertUnits);
+                Modify.SetParameters(aWallType, surfaceProperty, null, pushSettings.ConvertUnits);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(property2D, aWallType);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(surfaceProperty, aWallType);
 
             return aWallType;
         }

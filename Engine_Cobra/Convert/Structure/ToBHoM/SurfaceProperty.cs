@@ -15,7 +15,7 @@ namespace BH.UI.Cobra.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static ISurfaceProperty ToBHoMProperty2D(this WallType wallType, PullSettings pullSettings = null)
+        internal static ISurfaceProperty ToBHoMSurfaceProperty(this WallType wallType, PullSettings pullSettings = null)
         {
             Document document = wallType.Document;
 
@@ -63,7 +63,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        internal static ISurfaceProperty ToBHoMProperty2D(this FloorType floorType, PullSettings pullSettings = null)
+        internal static ISurfaceProperty ToBHoMSurfaceProperty(this FloorType floorType, PullSettings pullSettings = null)
         {
             Document document = floorType.Document;
 
