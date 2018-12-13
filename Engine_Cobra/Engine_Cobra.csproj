@@ -197,7 +197,7 @@
     <Compile Include="Convert\Structure\ToBHoM\FramingElement.cs" />
     <Compile Include="Convert\Structure\ToBHoM\PanelPlanar.cs" />
     <Compile Include="Convert\Structure\ToBHoM\Profile.cs" />
-    <Compile Include="Convert\Structure\ToBHoM\Property2D.cs" />
+    <Compile Include="Convert\Structure\ToBHoM\SurfaceProperty.cs" />
     <Compile Include="Convert\Structure\ToBHoM\SectionProperty.cs" />
     <Compile Include="Convert\Structure\ToRevit\Floor.cs" />
     <Compile Include="Convert\Structure\ToRevit\FloorType.cs" />

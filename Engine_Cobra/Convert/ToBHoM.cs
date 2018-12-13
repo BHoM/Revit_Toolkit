@@ -172,7 +172,7 @@ namespace BH.UI.Cobra.Engine
                 case Discipline.Environmental:
                     return wallType.ToBHoMBuildingElementProperties(pullSettings); 
                 case Discipline.Structural:
-                    return wallType.ToBHoMProperty2D(pullSettings) as IBHoMObject;
+                    return wallType.ToBHoMSurfaceProperty(pullSettings) as IBHoMObject;
             }
 
             wallType.NotConvertedError();
@@ -192,7 +192,7 @@ namespace BH.UI.Cobra.Engine
                 case Discipline.Environmental:
                     return floorType.ToBHoMBuildingElementProperties(pullSettings);
                 case Discipline.Structural:
-                    return floorType.ToBHoMProperty2D(pullSettings) as IBHoMObject;
+                    return floorType.ToBHoMSurfaceProperty(pullSettings) as IBHoMObject;
             }
 
             floorType.NotConvertedError();
