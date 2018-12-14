@@ -88,14 +88,8 @@ namespace BH.UI.Cobra.Engine
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuilding);
             }
 
-
-
-
             List<IBHoMObject> aBHoMObjectList = Query.GetEnergyAnalysisModel(aDocument, pullSettings);
-
-            aBHoMObjectList.Add(aBuilding);
             
-
             return aBHoMObjectList;
         }
 
