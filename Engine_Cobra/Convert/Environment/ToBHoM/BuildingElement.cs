@@ -301,7 +301,6 @@ namespace BH.UI.Cobra.Engine
 
             BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoMBuildingElementProperties(pullSettings);
 
-
             List<oM.Geometry.PolyCurve> aPolyCurveList = Query.Profiles(wall, pullSettings);
             foreach (oM.Geometry.PolyCurve aPolyCurve in aPolyCurveList)
             {
