@@ -75,10 +75,13 @@ namespace BH.UI.Cobra.Engine
             }
             else
             {
-                if (aBuiltInCategories == null || aBuiltInCategories.Count() == 0)
+                if ((aBuiltInCategories == null || aBuiltInCategories.Count() == 0) && (aTypes != null && aTypes.Count() > 0))
                     return new FilteredElementCollector(document).WherePasses(new LogicalOrFilter(aTypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter))).ToElementIds();
 
-                return new FilteredElementCollector(document).WherePasses(new LogicalAndFilter(new LogicalOrFilter(aTypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter)), new LogicalOrFilter(aTypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter)))).ToElementIds();
+                if ((aTypes == null || aTypes.Count() == 0) && (aBuiltInCategories != null && aBuiltInCategories.Count() > 0))
+                    return new FilteredElementCollector(document).WherePasses(new LogicalOrFilter(aBuiltInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
+
+                return new FilteredElementCollector(document).WherePasses(new LogicalAndFilter(new LogicalOrFilter(aTypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter)), new LogicalOrFilter(aBuiltInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)))).ToElementIds();
             }
                 
         }
