@@ -18,23 +18,14 @@ namespace BH.UI.Cobra.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Architecture.Elements.Level aLevel = null;
-            if (pullSettings.RefObjects != null)
-            {
-                List<IBHoMObject> aBHoMObjectList = new List<IBHoMObject>();
-                if (pullSettings.RefObjects.TryGetValue(element.LevelId.IntegerValue, out aBHoMObjectList))
-                    if (aBHoMObjectList != null && aBHoMObjectList.Count > 0)
-                        aLevel = aBHoMObjectList.First() as oM.Architecture.Elements.Level;
-            }
+            if (element == null || element.LevelId == null || element.LevelId == Autodesk.Revit.DB.ElementId.InvalidElementId)
+                return null;
 
+            Level aLevel = element.Document.GetElement(element.LevelId) as Level;
             if (aLevel == null)
-            {
-                aLevel = (element.Document.GetElement(element.LevelId) as Level).ToBHoM(pullSettings) as oM.Architecture.Elements.Level;
-                if (pullSettings.RefObjects != null)
-                    pullSettings.RefObjects.Add(element.LevelId.IntegerValue, new List<IBHoMObject>(new BHoMObject[] { aLevel }));
-            }
+                return null;
 
-            return aLevel;
+            return Convert.ToBHoMLevel(aLevel, pullSettings) as oM.Architecture.Elements.Level;
         }
 
         /***************************************************/
