@@ -1,5 +1,5 @@
 ﻿using Autodesk.Revit.DB;
-using BH.oM.Geometry;
+using BH.oM.Geometry.CoordinateSystem;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Cobra.Engine
@@ -10,7 +10,7 @@ namespace BH.UI.Cobra.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static Autodesk.Revit.DB.Plane ToRevitPlane(this CoordinateSystem coordinateSystem, PushSettings pushSettings = null)
+        internal static Autodesk.Revit.DB.Plane ToRevitPlane(this Cartesian coordinateSystem, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 

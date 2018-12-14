@@ -4,6 +4,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Environment.Interface;
 using BH.oM.Geometry;
+using BH.oM.Geometry.CoordinateSystem;
 using BH.oM.Environment.Elements;
 using System.Collections.Generic;
 using BH.oM.Environment.Properties;
@@ -134,7 +135,7 @@ namespace BH.UI.Cobra.Engine
 
         /***************************************************/
 
-        public static Autodesk.Revit.DB.Plane ToRevit(this CoordinateSystem coordinateSystem, PushSettings pushSettings = null)
+        public static Autodesk.Revit.DB.Plane ToRevit(this Cartesian coordinateSystem, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
