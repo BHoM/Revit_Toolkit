@@ -7,7 +7,7 @@ using BH.oM.Base;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class CobraAdapter
+    public partial class BHoMRevitAdapter
     {
 
         /***************************************************/

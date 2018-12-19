@@ -24,7 +24,7 @@ namespace BH.UI.Revit
                     RevitListener listener = RevitListener.Listener;
 
                     //Get the revit adapter
-                    CobraAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
+                    BHoMRevitAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
 
                     //Push the data
                     int result = adapter.UpdateProperty(listener.LatestQuery as BH.oM.DataManipulation.Queries.FilterQuery, listener.LatestKeyValuePair.Key, listener.LatestKeyValuePair.Value, listener.LatestConfig);

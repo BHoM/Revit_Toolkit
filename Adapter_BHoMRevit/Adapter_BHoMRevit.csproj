@@ -142,7 +142,7 @@
     <Compile Include="Messages\Errors.cs" />
     <Compile Include="Messages\Warnings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CobraAdapter.cs" />
+    <Compile Include="BHoMRevitAdapter.cs" />
     <Compile Include="Update\UpdateProperty.cs" />
   </ItemGroup>
   <ItemGroup>

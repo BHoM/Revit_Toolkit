@@ -54,13 +54,13 @@ namespace BH.UI.Revit
         /**** Public methods                            ****/
         /***************************************************/
 
-        public CobraAdapter GetAdapter(Document document)
+        public BHoMRevitAdapter GetAdapter(Document document)
         {
-            CobraAdapter adapter;
+            BHoMRevitAdapter adapter;
 
             if (!m_adapters.TryGetValue(document, out adapter))
             {
-                adapter = new CobraAdapter(document);
+                adapter = new BHoMRevitAdapter(document);
                 m_adapters[document] = adapter;
             }
 
@@ -260,7 +260,7 @@ namespace BH.UI.Revit
         private ExternalEvent m_pushEvent;
         private ExternalEvent m_pullEvent;
         private ExternalEvent m_updatePropertyEvent;
-        private Dictionary<Document, CobraAdapter> m_adapters = new Dictionary<Document, CobraAdapter>();
+        private Dictionary<Document, BHoMRevitAdapter> m_adapters = new Dictionary<Document, BHoMRevitAdapter>();
         
         public object m_packageLock = new object();
 

@@ -7,7 +7,7 @@ using BH.Engine.Base.Objects;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class CobraAdapter
+    public partial class BHoMRevitAdapter
     {
         /***************************************************/
         /**** BHoM Adapter Interface                    ****/
