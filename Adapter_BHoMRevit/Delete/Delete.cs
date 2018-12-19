@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class CobraAdapter
+    public partial class BHoMRevitAdapter
     {
         /***************************************************/
         /**** Public Methods                            ****/

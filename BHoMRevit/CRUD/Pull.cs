@@ -24,7 +24,7 @@ namespace BH.UI.Revit
                     RevitListener listener = RevitListener.Listener;
 
                     //Get the revit adapter
-                    CobraAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
+                    BHoMRevitAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
 
                     //Push the data
                     IEnumerable<object> objs = adapter.Pull(listener.LatestQuery, listener.LatestConfig);

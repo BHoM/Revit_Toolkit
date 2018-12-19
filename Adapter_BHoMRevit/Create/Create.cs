@@ -12,7 +12,7 @@ using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class CobraAdapter : BH.Adapter.Revit.InternalRevitAdapter
+    public partial class BHoMRevitAdapter : BH.Adapter.Revit.InternalRevitAdapter
     {
         /***************************************************/
         /**** Protected Methods                         ****/

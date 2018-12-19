@@ -79,7 +79,7 @@ namespace Revit_Test
         public Result Execute_Old_1(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
             //Creating Revit Adapter for active Revit Document
-            CobraAdapter pRevitInternalAdapter = new CobraAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
+            BHoMRevitAdapter pRevitInternalAdapter = new BHoMRevitAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
 
             FilterQuery aFilterQuery = null;
             List<IBHoMObject> aBHoMObjectList = null;
@@ -146,7 +146,7 @@ namespace Revit_Test
         public Result Execute_Old_2(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
             //Creating Revit Adapter for active Revit Document
-            CobraAdapter pRevitInternalAdapter = new CobraAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
+            BHoMRevitAdapter pRevitInternalAdapter = new BHoMRevitAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
 
             FamilyLibrary aFamilyLibrary = Create.FamilyLibrary(@"C:\Users\jziolkow\Desktop\Families");
 
@@ -186,7 +186,7 @@ namespace Revit_Test
         public Result Execute_Old_3(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
             //Creating Revit Adapter for active Revit Document
-            CobraAdapter pRevitInternalAdapter = new CobraAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
+            BHoMRevitAdapter pRevitInternalAdapter = new BHoMRevitAdapter(ExternalCommandData.Application.ActiveUIDocument.Document);
 
             FamilyLibrary aFamilyLibrary = Create.FamilyLibrary(@"C:\Users\jziolkow\Desktop\Families");
 

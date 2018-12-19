@@ -13,7 +13,7 @@ using Autodesk.Revit.UI;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class CobraAdapter
+    public partial class BHoMRevitAdapter
     {
         /***************************************************/
         /**** Public Methods                            ****/

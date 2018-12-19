@@ -4,7 +4,7 @@ using BH.Adapter.Revit;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class CobraAdapter : InternalRevitAdapter
+    public partial class BHoMRevitAdapter : InternalRevitAdapter
     {
         /***************************************************/
         /**** Private Properties                        ****/
@@ -17,7 +17,7 @@ namespace BH.UI.Revit.Adapter
         /**** Public Constructors                       ****/
         /***************************************************/
         
-        public CobraAdapter(Document document)
+        public BHoMRevitAdapter(Document document)
             : base()
         {
             AdapterId = BH.Engine.Adapters.Revit.Convert.AdapterId;

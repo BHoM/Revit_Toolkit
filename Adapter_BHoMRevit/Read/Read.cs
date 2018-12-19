@@ -15,7 +15,7 @@ using BH.oM.DataManipulation.Queries;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class CobraAdapter
+    public partial class BHoMRevitAdapter
     {
         /***************************************************/
         /**** Protected Methods                         ****/
