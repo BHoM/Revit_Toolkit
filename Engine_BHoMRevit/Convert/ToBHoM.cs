@@ -61,7 +61,7 @@ namespace BH.UI.Revit.Engine
  
             }
 
-            projectInfo.NotConvertedError();
+            projectInfo.NotConvertedWarning();
             return null;
         }
 
@@ -79,7 +79,7 @@ namespace BH.UI.Revit.Engine
                     return familyInstance.ToBHoMBuildingElement(pullSettings);
             }
 
-            familyInstance.NotConvertedError();
+            familyInstance.NotConvertedWarning();
             return null;
         }
 
@@ -102,7 +102,7 @@ namespace BH.UI.Revit.Engine
                     return wall.ToBHoMPanelPlanar(pullSettings).ConvertAll(p => p as IBHoMObject);
             }
 
-            wall.NotConvertedError();
+            wall.NotConvertedWarning();
             return null;
         }
 
@@ -120,7 +120,7 @@ namespace BH.UI.Revit.Engine
                     return ceiling.ToBHoMBuildingElements(pullSettings).ConvertAll(x => x as IBHoMObject);
             }
 
-            ceiling.NotConvertedError();
+            ceiling.NotConvertedWarning();
             return null;
         }
 
@@ -140,7 +140,7 @@ namespace BH.UI.Revit.Engine
                     return floor.ToBHoMPanelPlanar(pullSettings).ConvertAll(p => p as IBHoMObject);
             }
 
-            floor.NotConvertedError();
+            floor.NotConvertedWarning();
             return null;
         }
 
@@ -158,7 +158,7 @@ namespace BH.UI.Revit.Engine
                     return roofBase.ToBHoMBuildingElements(pullSettings).ConvertAll(x => x as IBHoMObject);
             }
 
-            roofBase.NotConvertedError();
+            roofBase.NotConvertedWarning();
             return null;
         }
 
@@ -178,7 +178,7 @@ namespace BH.UI.Revit.Engine
                     return wallType.ToBHoMSurfaceProperty(pullSettings) as IBHoMObject;
             }
 
-            wallType.NotConvertedError();
+            wallType.NotConvertedWarning();
             return null;
         }
 
@@ -198,7 +198,7 @@ namespace BH.UI.Revit.Engine
                     return floorType.ToBHoMSurfaceProperty(pullSettings) as IBHoMObject;
             }
 
-            floorType.NotConvertedError();
+            floorType.NotConvertedWarning();
             return null;
         }
 
@@ -216,7 +216,7 @@ namespace BH.UI.Revit.Engine
                     return ceilingType.ToBHoMBuildingElementProperties(pullSettings);
             }
 
-            ceilingType.NotConvertedError();
+            ceilingType.NotConvertedWarning();
             return null;
         }
 
@@ -234,7 +234,7 @@ namespace BH.UI.Revit.Engine
                     return roofType.ToBHoMBuildingElementProperties(pullSettings);
             }
 
-            roofType.NotConvertedError();
+            roofType.NotConvertedWarning();
             return null;
         }
 
@@ -254,7 +254,7 @@ namespace BH.UI.Revit.Engine
                     return familySymbol.ToBHoMProfile(pullSettings);
             }
 
-            familySymbol.NotConvertedError();
+            familySymbol.NotConvertedWarning();
             return null;
         }
 
@@ -274,7 +274,7 @@ namespace BH.UI.Revit.Engine
                     return level.ToBHoMLevel(pullSettings);
             }
 
-            level.NotConvertedError();
+            level.NotConvertedWarning();
             return null;
         }
 
@@ -294,7 +294,7 @@ namespace BH.UI.Revit.Engine
                     return grid.ToBHoMGrid(pullSettings);
             }
 
-            grid.NotConvertedError();
+            grid.NotConvertedWarning();
             return null;
         }
 
@@ -312,7 +312,7 @@ namespace BH.UI.Revit.Engine
                     return elementType.ToBHoMBuildingElementProperties(pullSettings);
             }
 
-            elementType.NotConvertedError();
+            elementType.NotConvertedWarning();
             return null;
         }
 
@@ -330,7 +330,7 @@ namespace BH.UI.Revit.Engine
                     return spatialElement.ToBHoMSpace(pullSettings);
             }
 
-            spatialElement.NotConvertedError();
+            spatialElement.NotConvertedWarning();
             return null;
         }
 
@@ -348,7 +348,7 @@ namespace BH.UI.Revit.Engine
                     return energyAnalysisSpace.ToBHoMSpace(pullSettings);
             }
 
-            energyAnalysisSpace.NotConvertedError();
+            energyAnalysisSpace.NotConvertedWarning();
             return null;
         }
 
@@ -366,7 +366,7 @@ namespace BH.UI.Revit.Engine
                     return energyAnalysisSurface.ToBHoMBuildingElement(pullSettings);
             }
 
-            energyAnalysisSurface.NotConvertedError();
+            energyAnalysisSurface.NotConvertedWarning();
             return null;
         }
 
@@ -384,7 +384,7 @@ namespace BH.UI.Revit.Engine
                     return energyAnalysisOpening.ToBHoMBuildingElement(null, pullSettings);
             }
 
-            energyAnalysisOpening.NotConvertedError();
+            energyAnalysisOpening.NotConvertedWarning();
             return null;
         }
 
@@ -402,7 +402,7 @@ namespace BH.UI.Revit.Engine
                     return ToBHoMSheet(viewSheet, pullSettings);
             }
 
-            viewSheet.NotConvertedError();
+            viewSheet.NotConvertedWarning();
             return null;
         }
 
@@ -420,7 +420,7 @@ namespace BH.UI.Revit.Engine
                     return ToBHoMViewport(viewport, pullSettings);
             }
 
-            viewport.NotConvertedError();
+            viewport.NotConvertedWarning();
             return null;
         }
 
@@ -438,7 +438,7 @@ namespace BH.UI.Revit.Engine
                     return ToBHoMViewPlan(viewPlan, pullSettings);
             }
 
-            viewPlan.NotConvertedError();
+            viewPlan.NotConvertedWarning();
             return null;
         }
 

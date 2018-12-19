@@ -17,7 +17,7 @@ namespace BH.UI.Revit.Engine
 
             if(material == null)
             {
-                Compute.NullObjectError();
+                Compute.NullObjectWarning();
                 return null;
             }
 

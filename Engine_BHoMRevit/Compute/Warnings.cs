@@ -14,7 +14,7 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static void NotConvertedError(this Element element)
+        internal static void NotConvertedWarning(this Element element)
         {
             string aMessage = "Revit element could not be converted because conversion method does not exist.";
 
@@ -26,19 +26,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void NotConvertedError(this Document document)
-        {
-            string aMessage = "Revit document could not be converted because conversion method does not exist.";
-
-            if (document != null)
-                aMessage = string.Format("{0} Document title: {1}", aMessage, document.Title);
-
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
-        }
-
-        /***************************************************/
-
-        internal static void NotConvertedError(this StructuralMaterialType structuralMaterialType)
+        internal static void NotConvertedWarning(this StructuralMaterialType structuralMaterialType)
         {
             BH.Engine.Reflection.Compute.RecordWarning("Structural meterial type " + structuralMaterialType + " could not be converted because conversion method does not exist.");
         }
@@ -61,14 +49,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void NullDocumentError()
-        {
-            BH.Engine.Reflection.Compute.RecordWarning("BHoM object could not be read because Revit document does not exist.");
-        }
-
-        /***************************************************/
-
-        internal static void NullObjectError()
+        internal static void NullObjectWarning()
         {
             BH.Engine.Reflection.Compute.RecordWarning("BHoM object could not be created becasue Revit object is null.");
         }
@@ -192,7 +173,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void ElementCouldNotBeQueried(this Element element)
+        internal static void ElementCouldNotBeQueriedWarning(this Element element)
         {
             string aMessage = "Revit element could not be queried.";
 

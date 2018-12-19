@@ -73,7 +73,7 @@ namespace BH.UI.Revit.Engine
                     }
                     catch(Exception aException)
                     {
-                        aEnergyAnalysisSpace.ElementCouldNotBeQueried();
+                        aEnergyAnalysisSpace.ElementCouldNotBeQueriedWarning();
                     }
                 }
 
@@ -110,7 +110,7 @@ namespace BH.UI.Revit.Engine
                     }
                     catch (Exception aException)
                     {
-                        aKeyValuePair.Value.ElementCouldNotBeQueried();
+                        aKeyValuePair.Value.ElementCouldNotBeQueriedWarning();
                     }
                 }
 
@@ -148,7 +148,7 @@ namespace BH.UI.Revit.Engine
                     }
                     catch (Exception aException)
                     {
-                        aEnergyAnalysisSurface.ElementCouldNotBeQueried();
+                        aEnergyAnalysisSurface.ElementCouldNotBeQueriedWarning();
                     }
 
                 }

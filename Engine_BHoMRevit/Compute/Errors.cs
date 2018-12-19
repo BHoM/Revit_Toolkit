@@ -11,8 +11,13 @@ namespace BH.UI.Revit.Engine
     public static partial class Compute
     {
         /***************************************************/
-        /****               Public methods              ****/
+        /****               Internal methods            ****/
         /***************************************************/
+
+        internal static void NullDocumentError()
+        {
+            BH.Engine.Reflection.Compute.RecordError("BHoM object could not be read because Revit document does not exist.");
+        }
 
         /***************************************************/
 
