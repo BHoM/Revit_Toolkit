@@ -68,14 +68,14 @@
       <HintPath>..\..\BHoM_Adapter\Build\BHoM_Adapter.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="DataManipulation_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="DataManipulation_oM">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM\Build\DataManipulation_oM.dll</HintPath>
     </Reference>
     <Reference Include="Environment_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Environment_Engine.dll</HintPath>
     </Reference>
-    <Reference Include="Environment_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Environment_oM">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM\Build\Environment_oM.dll</HintPath>
     </Reference>
@@ -83,7 +83,7 @@
       <HintPath>..\..\BHoM_Engine\Build\Geometry_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Geometry_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Geometry_oM">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM\Build\Geometry_oM.dll</HintPath>
     </Reference>
