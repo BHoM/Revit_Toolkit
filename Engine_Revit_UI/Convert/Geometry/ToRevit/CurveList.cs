@@ -28,7 +28,7 @@ namespace BH.UI.Revit.Engine
                 aResult.Add(curve.ToRevit(pushSettings));
             else if (curve is oM.Geometry.Line)
                 aResult.Add(curve.ToRevit(pushSettings));
-            else if (curve is NurbCurve)
+            else if (curve is NurbsCurve)
                 aResult.Add(curve.ToRevit(pushSettings));
             else if (curve is Polyline)
             {
