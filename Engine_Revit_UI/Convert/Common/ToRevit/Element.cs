@@ -104,18 +104,31 @@ namespace BH.UI.Revit.Engine
             if (draftingObject == null || string.IsNullOrEmpty(draftingObject.ViewName) || document == null)
                 return null;
 
+            if (string.IsNullOrWhiteSpace(draftingObject.ViewName))
+                return null;
+
             Element aElement = pushSettings.FindRefObject<Element>(document, draftingObject.BHoM_Guid);
             if (aElement != null)
                 return aElement;
 
             pushSettings = pushSettings.DefaultIfNull();
 
-            List<ViewDrafting> aViewDraftingList = new FilteredElementCollector(document).OfClass(typeof(ViewDrafting)).Cast<ViewDrafting>().ToList();
-            if(aViewDraftingList == null || aViewDraftingList.Count == 0)
+            List<View> aViewList = new FilteredElementCollector(document).OfClass(typeof(ViewDrafting)).Cast<View>().ToList();
+            if(aViewList == null || aViewList.Count == 0)
                 return null;
 
-            ViewDrafting aViewDrafting = aViewDraftingList.Find(x => x.Name == draftingObject.ViewName);
-            if (aViewDrafting == null)
+            View aView = aViewList.Find(x => x.Name == draftingObject.ViewName);
+            if (aView == null)
+            {
+                aViewList = new FilteredElementCollector(document).OfClass(typeof(ViewSheet)).Cast<View>().ToList();
+                string aTitle = draftingObject.ViewName;
+                if (!aTitle.StartsWith("Sheet: "))
+                    aTitle = string.Format("Sheet: {0}", aTitle);
+
+                aView = aViewList.Find(x => x.Title == aTitle);
+            }
+
+            if (aView == null)
                 return null;
 
             BuiltInCategory aBuiltInCategory = draftingObject.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
@@ -139,7 +152,7 @@ namespace BH.UI.Revit.Engine
                             if (aIGeometry is oM.Geometry.Point)
                             {
                                 XYZ aXYZ = ToRevit((oM.Geometry.Point)aIGeometry, pushSettings);
-                                aElement = document.Create.NewFamilyInstance(aXYZ, aFamilySymbol, aViewDrafting);
+                                aElement = document.Create.NewFamilyInstance(aXYZ, aFamilySymbol, aView);
                             }
                             break;
                         case FamilyPlacementType.OneLevelBased:
