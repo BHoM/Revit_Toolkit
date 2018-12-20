@@ -28,9 +28,9 @@ namespace BH.UI.Revit.Engine
                 return Autodesk.Revit.DB.Arc.Create(ToRevit(aArc.CoordinateSystem, pushSettings), radius, aArc.StartAngle, aArc.EndAngle);
             }
 
-            if (curve is NurbCurve)
+            if (curve is NurbsCurve)
             {
-                NurbCurve aNurbCurve = curve as NurbCurve;
+                NurbsCurve aNurbCurve = curve as NurbsCurve;
                 return NurbSpline.Create(HermiteSpline.Create(aNurbCurve.ControlPoints.Cast<oM.Geometry.Point>().ToList().ConvertAll(x => ToRevit(x, pushSettings)), false));
             }
 
