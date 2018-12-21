@@ -36,4 +36,4 @@ Work plan for Revit_Toolkit can be found here:
 Revit_Toolkit is a BuroHappold open-source project and would be nothing without its community.  You can submit your own code to the BHoM project via a Github [pull request](https://help.github.com/articles/using-pull-requests).
 
 ## License ##
-Revit_Toolkit is licensed under the Apache License. Revit_Toolkit also uses a number of third party libraries, some with different licenses.
+Revit_Toolkit is licensed under the LGPL License. Revit_Toolkit also uses a number of third party libraries, some with different licenses.
