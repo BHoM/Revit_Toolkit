@@ -8,10 +8,10 @@ You will need the following to build Revit_Toolkit:
 - Microsoft .NET Framework
     - .NET Framework 4.5.2 for Revit 2018
     - .NET Framework 4.7.2 for Revit 2019
-- [BHoM](https://github.com/BuroHappoldEngineering/BHoM)
-- [BHoM_Engine](https://github.com/BuroHappoldEngineering/BHoM_Engine)
-- [BHoM_Adapter](https://github.com/BuroHappoldEngineering/BHoM_Adapter)
-- [Socket_Toolkit](https://github.com/BuroHappoldEngineering/Socket_Toolkit)
+- [BHoM](https://github.com/BHoM/BHoM)
+- [BHoM_Engine](https://github.com/BHoM/BHoM_Engine)
+- [BHoM_Adapter](https://github.com/BHoM/BHoM_Adapter)
+- [Socket_Toolkit](https://github.com/BHoM/Socket_Toolkit)
 
 ## Supported Revit Versions ##
 Revit_Toolkit supports following Revit versions:
@@ -26,11 +26,7 @@ Debug2018 -> Revit 2018
 
 Debug2019 -> Revit 2019
 
-Revit_Toolkit require Revit to be installed on computer
-
-## Planning ##
-Work plan for Revit_Toolkit can be found here:
-[Revit_Toolkit Planning](https://github.com/orgs/BuroHappoldEngineering/projects/8)
+Revit_Toolkit require Revit 2018 or higher to be installed on computer
 
 ## Contribute ##
 Revit_Toolkit is a BuroHappold open-source project and would be nothing without its community.  You can submit your own code to the BHoM project via a Github [pull request](https://help.github.com/articles/using-pull-requests).
