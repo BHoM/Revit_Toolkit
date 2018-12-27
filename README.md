@@ -1,5 +1,13 @@
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+
 # Revit_Toolkit
 Revit tools for use in other applications and repositories, and for the Revit tools plugin itself. 
+
+### Quick start ##
+
+A great place to start is reading our Wiki [here](https://github.com/BHoM/documentation/wiki) including pages like the [Structure of the BHoM](https://github.com/BHoM/documentation/wiki/Structure-of-the-BHoM) and [Using the BHoM](https://github.com/BHoM/documentation/wiki/Using-the-BHoM).
+
+Try the [installer](http://bhom.xyz/assets/installers/v2.1/BHoM%20Alpha%20v2.1.0.5%20Installer.exe) and a selection of [sample scripts](https://github.com/BHoM/samples).
 
 ### Build Revit_Toolkit from Source ###
 You will need the following to build Revit_Toolkit:
@@ -29,7 +37,10 @@ Debug2019 -> Revit 2019
 Revit_Toolkit require Revit 2018 or higher to be installed on computer
 
 ## Contribute ##
-Revit_Toolkit is a BuroHappold open-source project and would be nothing without its community.  You can submit your own code to the BHoM project via a Github [pull request](https://help.github.com/articles/using-pull-requests).
+BHoM is an open-source project and would be nothing without its community. Take a look at our contributing guidelines and tips [here](https://github.com/BHoM/BHoM/blob/master/CONTRIBUTING.md).
 
 ## License ##
-Revit_Toolkit is licensed under the [LGPL](https://github.com/BHoM/Revit_Toolkit/blob/master/LICENSE) License. Revit_Toolkit also uses a number of third party libraries, some with different licenses.
+BHoM is free software licenced under GNU Lesser General Public Licence - [https://www.gnu.org/licenses/lgpl-3.0.html](https://www.gnu.org/licenses/lgpl-3.0.html)  
+Each contributor holds copyright over their respective contributions.
+The project versioning (Git) records all such contribution source information.
+See [LICENSE](https://github.com/BHoM/BHoM/blob/master/LICENSE) and [COPYRIGHT_HEADER](https://github.com/BHoM/BHoM/blob/master/COPYRIGHT_HEADER.txt).
