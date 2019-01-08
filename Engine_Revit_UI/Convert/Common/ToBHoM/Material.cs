@@ -130,10 +130,23 @@ namespace BH.UI.Revit.Engine
             if (aStructuralAsset.Behavior != StructuralBehavior.Isotropic)
                 return;
 
-            material_Destination.YoungsModulus = aStructuralAsset.YoungModulus.X;
-            material_Destination.Density = aStructuralAsset.Density;
-            material_Destination.CoeffThermalExpansion = aStructuralAsset.ThermalExpansionCoefficient.X;
+            material_Destination.YoungsModulus = UnitUtils.ConvertFromInternalUnits(aStructuralAsset.YoungModulus.X, DisplayUnitType.DUT_PASCALS);
+            material_Destination.Density = UnitUtils.ConvertFromInternalUnits(aStructuralAsset.Density, DisplayUnitType.DUT_KILOGRAMS_PER_CUBIC_METER);
+            material_Destination.CoeffThermalExpansion = UnitUtils.ConvertFromInternalUnits(aStructuralAsset.ThermalExpansionCoefficient.X,DisplayUnitType.DUT_INV_CELSIUS);
             material_Destination.PoissonsRatio = aStructuralAsset.PoissonRatio.X;
+            material_Destination.CompressiveYieldStrength = UnitUtils.ConvertFromInternalUnits(aStructuralAsset.ConcreteCompression, DisplayUnitType.DUT_PASCALS);
+
+            //material_Destination.CustomData["Damping Ratio"] = aStructuralAsset.DampingRatio;
+            //material_Destination.CustomData["Lightweight"] = aStructuralAsset.Lightweight;
+
+            //switch (material_Destination.Type)
+            //{
+            //    case oM.Common.Materials.MaterialType.Concrete:
+            //        material_Destination.CustomData["Concrete Bending Reinforcement"] = aStructuralAsset.ConcreteBendingReinforcement;
+            //        material_Destination.CustomData["Concrete Shear Reinforcement"] = aStructuralAsset.ConcreteShearReinforcement;
+            //        material_Destination.CustomData["Concrete Shear Strength Reduction"] = aStructuralAsset.ConcreteShearStrengthReduction;
+            //        break;
+            //}
         }
     }
 }
