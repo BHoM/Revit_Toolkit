@@ -51,7 +51,10 @@ namespace BH.UI.Revit.Engine
             switch (material.MaterialClass)
             {
                 case "Aluminium":
-                    aMaterial = BH.Engine.Library.Query.Match("MaterialsEurope", "ALUM") as oM.Common.Materials.Material;
+                    //aMaterial = BH.Engine.Library.Query.Match("MaterialsEurope", "ALUM") as oM.Common.Materials.Material;
+
+                    aMaterial = BH.Engine.Common.Create.Material(material.Name, oM.Common.Materials.MaterialType.Aluminium, 0, 0, 0, 0);
+                    aMaterial.Update(material);
                     break;
                 case "Concrete":
                     if (materialGrade != null)
@@ -64,9 +67,14 @@ namespace BH.UI.Revit.Engine
                             }
                         }
                     }
-                    aMaterial = BH.Engine.Library.Query.Match("MaterialsEurope", "C30/37") as oM.Common.Materials.Material;
+                    //aMaterial = BH.Engine.Library.Query.Match("MaterialsEurope", "C30/37") as oM.Common.Materials.Material;
+                    aMaterial = BH.Engine.Common.Create.Material(material.Name, oM.Common.Materials.MaterialType.Concrete, 0, 0, 0, 0);
+                    aMaterial.Update(material);
                     break;
                 case "Steel":
+                    aMaterial = BH.Engine.Common.Create.Material(material.Name, oM.Common.Materials.MaterialType.Steel, 0, 0, 0, 0);
+                    aMaterial.Update(material);
+                    break;
                 case "Metal":
                     if (materialGrade != null)
                     {
@@ -78,10 +86,13 @@ namespace BH.UI.Revit.Engine
                             }
                         }
                     }
-                    aMaterial = BH.Engine.Library.Query.Match("MaterialsEurope", "S355") as oM.Common.Materials.Material;
+                    aMaterial = BH.Engine.Common.Create.Material(material.Name, oM.Common.Materials.MaterialType.Steel, 0, 0, 0, 0);
+                    aMaterial.Update(material);
                     break;
                 case "Wood":
-                    aMaterial = BH.Engine.Library.Query.Match("MaterialsEurope", "TIMBER") as oM.Common.Materials.Material;
+                    //aMaterial = BH.Engine.Library.Query.Match("MaterialsEurope", "TIMBER") as oM.Common.Materials.Material;
+                    aMaterial = BH.Engine.Common.Create.Material(material.Name, oM.Common.Materials.MaterialType.Timber, 0, 0, 0, 0);
+                    aMaterial.Update(material);
                     break;
                 default:
                     materialGrade.MaterialNotFoundWarning();
@@ -98,5 +109,31 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+        /****             Private methods               ****/
+        /***************************************************/
+
+        private static void Update(this oM.Common.Materials.Material material_Destination, Material material_Source)
+        {
+            if (material_Source == null)
+                return;
+
+            ElementId aElementId = material_Source.StructuralAssetId;
+            if (aElementId == null || aElementId == ElementId.InvalidElementId)
+                return;
+
+            Document aDocument = material_Source.Document;
+
+            PropertySetElement aPropertySetElement = aDocument.GetElement(aElementId) as PropertySetElement;
+
+            StructuralAsset aStructuralAsset = aPropertySetElement.GetStructuralAsset();
+
+            if (aStructuralAsset.Behavior != StructuralBehavior.Isotropic)
+                return;
+
+            material_Destination.YoungsModulus = aStructuralAsset.YoungModulus.X;
+            material_Destination.Density = aStructuralAsset.Density;
+            material_Destination.CoeffThermalExpansion = aStructuralAsset.ThermalExpansionCoefficient.X;
+            material_Destination.PoissonsRatio = aStructuralAsset.PoissonRatio.X;
+        }
     }
 }
