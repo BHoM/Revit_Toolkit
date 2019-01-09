@@ -78,6 +78,18 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        internal static void NullRevitElementWarning(this IBHoMObject BHoMObject)
+        {
+            string aMessage = "Referenced Revit element could not be find.";
+
+            if (BHoMObject != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, BHoMObject.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
         internal static void LogNullProperties(this BHoMObject obj, IEnumerable<string> propertyNames = null)
         {
             //TODO: Move this one to the BHoM_Engine?
@@ -201,6 +213,42 @@ namespace BH.UI.Revit.Engine
 
             if (element != null)
                 aMessage = string.Format("{0} Element Id: {1}", aMessage, element.Id.IntegerValue);
+
+            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void NullStructuralAssetWarning(this oM.Common.Materials.Material material)
+        {
+            string aMessage = "Could not find Revit Structural Asset from BHoM Material.";
+
+            if (material != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, material.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void MaterialTypeNotFoundWarning(this Material material)
+        {
+            string aMessage = "Matching BHoM ElementType could not be found.";
+
+            if (material != null)
+                aMessage = string.Format("{0} Material Element Id: {1}", aMessage, material.Id.IntegerValue);
+
+            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void InvalidDataMaterialWarning(this Material material)
+        {
+            string aMessage = "Material could not be correctly converted. Some BHoM Material data may not be valid.";
+
+            if (material != null)
+                aMessage = string.Format("{0} Material Element Id: {1}", aMessage, material.Id.IntegerValue);
 
             BH.Engine.Reflection.Compute.RecordWarning(aMessage);
         }
