@@ -243,12 +243,36 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        internal static void MaterialTypeNotFoundWarning(this FamilyInstance familyInstance)
+        {
+            string aMessage = "Matching BHoM ElementType could not be found.";
+
+            if (familyInstance != null)
+                aMessage = string.Format("{0} Element Id: {1}", aMessage, familyInstance.Id.IntegerValue);
+
+            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
         internal static void InvalidDataMaterialWarning(this Material material)
         {
             string aMessage = "Material could not be correctly converted. Some BHoM Material data may not be valid.";
 
             if (material != null)
                 aMessage = string.Format("{0} Material Element Id: {1}", aMessage, material.Id.IntegerValue);
+
+            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void InvalidDataMaterialWarning(this FamilyInstance familyInstance)
+        {
+            string aMessage = "Material could not be correctly converted. Some BHoM Material data may not be valid.";
+
+            if (familyInstance != null)
+                aMessage = string.Format("{0} Element Id: {1}", aMessage, familyInstance.Id.IntegerValue);
 
             BH.Engine.Reflection.Compute.RecordWarning(aMessage);
         }

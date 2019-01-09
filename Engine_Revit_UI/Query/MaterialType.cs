@@ -22,8 +22,9 @@
 
 using System;
 
-using BH.oM.Common.Materials;
+using Autodesk.Revit.DB.Structure;
 
+using BH.oM.Common.Materials;
 
 namespace BH.UI.Revit.Engine
 {
@@ -60,6 +61,26 @@ namespace BH.UI.Revit.Engine
 
             return null;
 
+        }
+
+        /***************************************************/
+
+        static public MaterialType? MaterialType(this StructuralMaterialType StructuralMaterialType)
+        {
+            switch (StructuralMaterialType)
+            {
+                case StructuralMaterialType.Aluminum:
+                    return oM.Common.Materials.MaterialType.Aluminium;
+                case StructuralMaterialType.PrecastConcrete:
+                case StructuralMaterialType.Concrete:
+                    return oM.Common.Materials.MaterialType.Concrete;
+                case StructuralMaterialType.Steel:
+                    return oM.Common.Materials.MaterialType.Steel;
+                case StructuralMaterialType.Wood:
+                    return oM.Common.Materials.MaterialType.Timber;
+            }
+
+            return null;
         }
 
         /***************************************************/
