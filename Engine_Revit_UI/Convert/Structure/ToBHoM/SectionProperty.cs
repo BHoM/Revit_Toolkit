@@ -57,7 +57,7 @@ namespace BH.UI.Revit.Engine
                 if (materialId.IntegerValue == -1)
                 {
                     string materialGrade = familyInstance.MaterialGrade();
-                    aMaterial = Query.Material( familyInstance.StructuralMaterialType, materialGrade);
+                    aMaterial = Query.LibraryMaterial(familyInstance.StructuralMaterialType, materialGrade);
                 }
 
                 if (aMaterial == null && materialId.IntegerValue != -1)

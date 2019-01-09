@@ -221,6 +221,8 @@
     <Compile Include="Query\FindRefObjects.cs" />
     <Compile Include="Query\FindRefObject.cs" />
     <Compile Include="Query\FilterQueries.cs" />
+    <Compile Include="Query\MaterialType.cs" />
+    <Compile Include="Query\StructuralMaterialType.cs" />
     <Compile Include="Query\NextLevel.cs" />
     <Compile Include="Query\Panels.cs" />
     <Compile Include="Query\VerticalBounds.cs" />
@@ -266,7 +268,7 @@
     <Compile Include="Query\Discipline.cs" />
     <Compile Include="Query\Profiles.cs" />
     <Compile Include="Query\Curves.cs" />
-    <Compile Include="Query\Material.cs" />
+    <Compile Include="Query\LibraryMaterial.cs" />
     <Compile Include="Query\Top.cs" />
     <Compile Include="Query\ActiveWorksetId.cs" />
     <Compile Include="Query\WorksetId.cs" />
