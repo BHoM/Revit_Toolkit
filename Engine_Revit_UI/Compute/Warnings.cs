@@ -80,7 +80,7 @@ namespace BH.UI.Revit.Engine
 
         internal static void NullRevitElementWarning(this IBHoMObject BHoMObject)
         {
-            string aMessage = "Referenced Revit element could not be find.";
+            string aMessage = "Referenced Revit element could not be found.";
 
             if (BHoMObject != null)
                 aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, BHoMObject.BHoM_Guid);
