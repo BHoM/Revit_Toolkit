@@ -108,7 +108,7 @@ namespace BH.UI.Revit.Engine
 
             PropertySetElement aPropertySetElement = aDocument.GetElement(aElementId) as PropertySetElement;
             material_Destination.Update(aPropertySetElement.GetStructuralAsset());
-            material_Destination.Update(aPropertySetElement.GetThermalAsset());
+            //material_Destination.Update(aPropertySetElement.GetThermalAsset());
         }
 
         /***************************************************/
@@ -123,7 +123,7 @@ namespace BH.UI.Revit.Engine
 
             switch (material_Destination.Type)
             {
-                case oM.Common.Materials.MaterialType.Concrete:
+                case MaterialType.Concrete:
                     material_Destination.CustomData["Concrete Bending Reinforcement"] = structuralAsset.ConcreteBendingReinforcement;
                     material_Destination.CustomData["Concrete Shear Reinforcement"] = structuralAsset.ConcreteShearReinforcement;
                     material_Destination.CustomData["Concrete Shear Strength Reduction"] = structuralAsset.ConcreteShearStrengthReduction;

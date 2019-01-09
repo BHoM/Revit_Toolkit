@@ -30,6 +30,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Structure.Properties.Section;
 using BH.oM.Structure.Properties.Section.ShapeProfiles;
 using BHS = BH.Engine.Structure;
+using BH.oM.Common.Materials;
 
 namespace BH.UI.Revit.Engine
 {
@@ -62,11 +63,20 @@ namespace BH.UI.Revit.Engine
 
                 if (aMaterial == null && materialId.IntegerValue != -1)
                 {
-                    Material aMaterial_Revit = familyInstance.Document.GetElement(materialId) as Material;
+                    Autodesk.Revit.DB.Material aMaterial_Revit = familyInstance.Document.GetElement(materialId) as Autodesk.Revit.DB.Material;
                     if (aMaterial_Revit != null)
                         aMaterial = aMaterial_Revit.ToBHoMMaterial(pullSettings);
                 }
-                    
+
+                if (aMaterial == null)
+                {
+                    Compute.InvalidDataMaterialWarning(familyInstance);
+                    MaterialType? aMaterialType = Query.MaterialType(familyInstance.StructuralMaterialType);
+                    if (aMaterialType != null && aMaterialType.HasValue)
+                        aMaterial = BH.Engine.Common.Create.Material(null, aMaterialType.Value, 0, 0, 0, 0);
+                    else
+                        Compute.MaterialTypeNotFoundWarning(familyInstance);
+                }
             }
 
             string symbolName = familyInstance.Symbol.Name;
