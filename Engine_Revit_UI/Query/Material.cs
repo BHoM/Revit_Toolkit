@@ -38,7 +38,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public oM.Environment.Materials.Material Material(this CompoundStructureLayer compoundStructureLayer, Document document, PullSettings pullSettings = null)
+        static public oM.Environment.Materials.Material Material(this CompoundStructureLayer compoundStructureLayer, Document document, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
         {
             if (compoundStructureLayer == null)
                 return null;
@@ -54,10 +54,22 @@ namespace BH.UI.Revit.Engine
             aMaterial.Thickness = aThickness;
 
             ElementId aElementId = compoundStructureLayer.MaterialId;
-            if (aElementId == null || aElementId == Autodesk.Revit.DB.ElementId.InvalidElementId)
-                return null;
+            Material aMaterial_Revit = null;
+            if(aElementId != null && aElementId != Autodesk.Revit.DB.ElementId.InvalidElementId)
+                aMaterial_Revit = document.GetElement(aElementId) as Material;
 
-            Material aMaterial_Revit = document.GetElement(aElementId) as Material;
+            if (aMaterial_Revit == null && builtInCategory != Autodesk.Revit.DB.BuiltInCategory.INVALID)
+            {
+                Category aCategory = document.Settings.Categories.get_Item(builtInCategory);
+                if (aCategory != null)
+                    aMaterial_Revit = aCategory.Material;
+            }
+
+            if (aMaterial_Revit == null)
+            {
+                Compute.MaterialNotFoundWarning(aMaterial);
+                return aMaterial;
+            } 
 
             switch(aMaterial_Revit.MaterialClass)
             {
@@ -80,7 +92,7 @@ namespace BH.UI.Revit.Engine
 
             aMaterial.Name = aMaterial_Revit.Name;
 
-            IMaterialProperties aMaterialProperties = Convert.ToBHoMMaterial(aMaterial_Revit, pullSettings) as IMaterialProperties;
+            IMaterialProperties aMaterialProperties = Convert.ToBHoM(aMaterial_Revit, pullSettings) as IMaterialProperties;
 
             aMaterial.MaterialProperties = aMaterialProperties;
 

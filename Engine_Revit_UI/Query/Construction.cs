@@ -45,12 +45,12 @@ namespace BH.UI.Revit.Engine
             if (aCompoundStructure == null)
                 return null;
 
-            return Construction(aCompoundStructure, hostObjAttributes.Document, pullSettings);
+            return Construction(aCompoundStructure, hostObjAttributes.Document, (BuiltInCategory)hostObjAttributes.Category.Id.IntegerValue, pullSettings);
         }
 
         /***************************************************/
 
-        static public oM.Environment.Elements.Construction Construction(this CompoundStructure compoundStructure, Document document, PullSettings pullSettings = null)
+        static public oM.Environment.Elements.Construction Construction(this CompoundStructure compoundStructure, Document document, BuiltInCategory BuiltInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
         {
             if (compoundStructure == null)
                 return null;
@@ -63,7 +63,7 @@ namespace BH.UI.Revit.Engine
 
             oM.Environment.Elements.Construction aConstruction = new oM.Environment.Elements.Construction();
             foreach (CompoundStructureLayer aCompoundStructureLayer in aCompoundStructureLayers)
-                aConstruction.Materials.Add(Query.Material(aCompoundStructureLayer, document, pullSettings));
+                aConstruction.Materials.Add(Query.Material(aCompoundStructureLayer, document, BuiltInCategory, pullSettings));
 
             return aConstruction;
         }

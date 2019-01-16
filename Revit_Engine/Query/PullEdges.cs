@@ -20,9 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System.Collections.Generic;
+using System.ComponentModel;
+
 using BH.oM.DataManipulation.Queries;
 using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -48,6 +51,19 @@ namespace BH.Engine.Adapters.Revit
             }
 
             return false;
+        }
+
+        /***************************************************/
+
+        [Description("Returns true if at least one FilterQuery on list should pull edges from Revit Element")]
+        [Input("filterQueries", "FilterQueries")]
+        [Output("PullEdges")]
+        public static bool PullEdges(this IEnumerable<FilterQuery> filterQueries)
+        {
+            if (filterQueries == null)
+                return false;
+
+            return filterQueries.ToList().Any(x => x.PullEdges());
         }
 
         /***************************************************/
