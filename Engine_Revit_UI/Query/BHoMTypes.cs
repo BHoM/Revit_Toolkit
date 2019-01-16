@@ -115,8 +115,11 @@ namespace BH.UI.Revit.Engine
 
             if (BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(element.GetType(), typeof(SpatialElement)))
             {
-                aResult.Add(typeof(Space));
-                return aResult;
+                if(element is Autodesk.Revit.DB.Mechanical.Space)
+                {
+                    aResult.Add(typeof(Space));
+                    return aResult;
+                }
             }
 
             if (element is Wall)

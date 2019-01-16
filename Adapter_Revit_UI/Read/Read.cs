@@ -168,7 +168,7 @@ namespace BH.UI.Revit.Adapter
                 if (aIBHoMObjects != null && aIBHoMObjects.Count() > 0)
                 { 
                     //Pull Element Edges
-                    if (BH.Engine.Adapters.Revit.Query.PullEdges(filterQuery))
+                    if (BH.Engine.Adapters.Revit.Query.PullEdges(aFilterQueries))
                     {
                         Options aOptions = new Options();
                         aOptions.ComputeReferences = false;
