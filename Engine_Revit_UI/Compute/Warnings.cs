@@ -221,10 +221,22 @@ namespace BH.UI.Revit.Engine
 
         internal static void NullStructuralAssetWarning(this oM.Common.Materials.Material material)
         {
-            string aMessage = "Could not find Revit Structural Asset from BHoM Material.";
+            string aMessage = "Could not find Revit Structural Asset for BHoM Object.";
 
             if (material != null)
                 aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, material.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void NullThermalAssetWarning(this oM.Environment.Interface.IMaterialProperties IMaterialProperties)
+        {
+            string aMessage = "Could not find Revit Thermal Asset for BHoM Object.";
+
+            if (IMaterialProperties != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, IMaterialProperties.BHoM_Guid);
 
             BH.Engine.Reflection.Compute.RecordWarning(aMessage);
         }

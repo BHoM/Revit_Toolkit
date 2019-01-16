@@ -465,5 +465,25 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        public static IBHoMObject ToBHoM(this Material material, PullSettings pullSettings = null)
+        {
+            material.CheckIfNullPull();
+
+            pullSettings = pullSettings.DefaultIfNull();
+
+            switch (pullSettings.Discipline)
+            {
+                case Discipline.Environmental:
+                    return ToBHoMMaterialPropertiesOpaque(material, pullSettings);
+                default:
+                    return ToBHoMMaterial(material, pullSettings);
+            }
+
+            material.NotConvertedWarning();
+            return null;
+        }
+
+        /***************************************************/
     }
 }

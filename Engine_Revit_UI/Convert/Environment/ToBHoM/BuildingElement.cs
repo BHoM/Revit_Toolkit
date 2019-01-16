@@ -53,8 +53,9 @@ namespace BH.UI.Revit.Engine
             BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
 
             aBuildingElement = Create.BuildingElement(aBuildingElementProperties, crv);
-            if (aBuildingElementProperties != null)
-                aBuildingElement.Name = aBuildingElementProperties.Name;
+            aBuildingElement.Name = Query.FamilyTypeFullName(element);
+            //if (aBuildingElementProperties != null)
+            //    aBuildingElement.Name = aBuildingElementProperties.Name;
 
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, element) as BuildingElement;
             if (pullSettings.CopyCustomData)
@@ -79,8 +80,9 @@ namespace BH.UI.Revit.Engine
             BuildingElementProperties aBuildingElementProperties = familyInstance.Symbol.ToBHoMBuildingElementProperties(pullSettings);
 
             aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Query.VerticalBounds(familyInstance, pullSettings));
-            if (aBuildingElementProperties != null)
-                aBuildingElement.Name = aBuildingElementProperties.Name;
+            aBuildingElement.Name = Query.FamilyTypeFullName(familyInstance);
+            //if (aBuildingElementProperties != null)
+            //    aBuildingElement.Name = aBuildingElementProperties.Name;
 
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, familyInstance) as BuildingElement;
             if (pullSettings.CopyCustomData)
@@ -113,7 +115,8 @@ namespace BH.UI.Revit.Engine
             {
                 aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
                 BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
-                aBuildingElement = Create.BuildingElement(aElement.Name, aCurve, aBuildingElementProperties);
+                aBuildingElement = Create.BuildingElement(Query.FamilyTypeFullName(aElement), aCurve, aBuildingElementProperties);
+                //aBuildingElement = Create.BuildingElement(aElement.Name, aCurve, aBuildingElementProperties);
             }
 
             //Set some custom data properties
@@ -164,7 +167,8 @@ namespace BH.UI.Revit.Engine
             {
                 aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
                 BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
-                aBuildingElement = Create.BuildingElement(aElement.Name, aCurve, aBuildingElementProperties);
+                aBuildingElement = Create.BuildingElement(Query.FamilyTypeFullName(aElement), aCurve, aBuildingElementProperties);
+                //aBuildingElement = Create.BuildingElement(aElement.Name, aCurve, aBuildingElementProperties);
             }
 
             //Set custom data on BuildingElement
@@ -217,8 +221,9 @@ namespace BH.UI.Revit.Engine
             {
                 //Create the BuildingElement
                 BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aPolyCurve);
-                if (aBuildingElementProperties != null)
-                    aBuildingElement.Name = aBuildingElementProperties.Name;
+                aBuildingElement.Name = Query.FamilyTypeFullName(ceiling);
+                //if (aBuildingElementProperties != null)
+                //    aBuildingElement.Name = aBuildingElementProperties.Name;
 
                 //Assign custom data
                 aBuildingElement = Modify.SetIdentifiers(aBuildingElement, ceiling) as BuildingElement;
@@ -255,8 +260,9 @@ namespace BH.UI.Revit.Engine
             {
                 //Create the BuildingElement
                 BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, crv);
-                if (aBuildingElementProperties != null)
-                    aBuildingElement.Name = aBuildingElementProperties.Name;
+                aBuildingElement.Name = Query.FamilyTypeFullName(floor);
+                //if (aBuildingElementProperties != null)
+                //    aBuildingElement.Name = aBuildingElementProperties.Name;
 
                 //Assign custom data
                 aBuildingElement = Modify.SetIdentifiers(aBuildingElement, floor) as BuildingElement;
@@ -293,8 +299,9 @@ namespace BH.UI.Revit.Engine
             {
                 //Create the BuildingElement
                 BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, crv);
-                if (aBuildingElementProperties != null)
-                    aBuildingElement.Name = aBuildingElementProperties.Name;
+                aBuildingElement.Name = Query.FamilyTypeFullName(roofBase);
+                //if (aBuildingElementProperties != null)
+                //    aBuildingElement.Name = aBuildingElementProperties.Name;
 
                 //Assign custom data
                 aBuildingElement = Modify.SetIdentifiers(aBuildingElement, roofBase) as BuildingElement;
@@ -328,8 +335,9 @@ namespace BH.UI.Revit.Engine
             {
                 //Create the BuildingElement
                 BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aPolyCurve);
-                if (aBuildingElementProperties != null)
-                    aBuildingElement.Name = aBuildingElementProperties.Name;
+                aBuildingElement.Name = Query.FamilyTypeFullName(wall);
+                //if (aBuildingElementProperties != null)
+                //    aBuildingElement.Name = aBuildingElementProperties.Name;
 
                 //Assign custom data
                 aBuildingElement = Modify.SetIdentifiers(aBuildingElement, wall) as BuildingElement;

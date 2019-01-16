@@ -69,7 +69,9 @@ namespace BH.UI.Revit.Engine
             if (aBuildingElementProperties != null)
                 return aBuildingElementProperties;
 
-            aBuildingElementProperties = Create.BuildingElementProperties(wallType.Name, BuildingElementType.Wall);
+            aBuildingElementProperties = Create.BuildingElementProperties(Query.FamilyTypeFullName(wallType), BuildingElementType.Wall);
+            aBuildingElementProperties.Construction = Query.Construction(wallType, pullSettings);
+            //aBuildingElementProperties = Create.BuildingElementProperties(wallType.Name, BuildingElementType.Wall);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, wallType) as BuildingElementProperties;
             if (pullSettings.CopyCustomData)
@@ -93,7 +95,9 @@ namespace BH.UI.Revit.Engine
             if (aBuildingElementProperties != null)
                 return aBuildingElementProperties;
 
-            aBuildingElementProperties = Create.BuildingElementProperties(floorType.Name, BuildingElementType.Floor);
+            aBuildingElementProperties = Create.BuildingElementProperties(Query.FamilyTypeFullName(floorType), BuildingElementType.Floor);
+            aBuildingElementProperties.Construction = Query.Construction(floorType, pullSettings);
+            //aBuildingElementProperties = Create.BuildingElementProperties(floorType.Name, BuildingElementType.Floor);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, floorType) as BuildingElementProperties;
             if (pullSettings.CopyCustomData)
@@ -117,7 +121,9 @@ namespace BH.UI.Revit.Engine
             if (aBuildingElementProperties != null)
                 return aBuildingElementProperties;
 
-            aBuildingElementProperties = Create.BuildingElementProperties(ceilingType.Name, BuildingElementType.Ceiling);
+            aBuildingElementProperties = Create.BuildingElementProperties(Query.FamilyTypeFullName(ceilingType), BuildingElementType.Ceiling);
+            aBuildingElementProperties.Construction = Query.Construction(ceilingType, pullSettings);
+            //aBuildingElementProperties = Create.BuildingElementProperties(ceilingType.Name, BuildingElementType.Ceiling);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, ceilingType) as BuildingElementProperties;
             if (pullSettings.CopyCustomData)
@@ -141,7 +147,9 @@ namespace BH.UI.Revit.Engine
             if (aBuildingElementProperties != null)
                 return aBuildingElementProperties;
 
-            aBuildingElementProperties = Create.BuildingElementProperties(roofType.Name, BuildingElementType.Roof);
+            aBuildingElementProperties = Create.BuildingElementProperties(Query.FamilyTypeFullName(roofType), BuildingElementType.Roof);
+            aBuildingElementProperties.Construction = Query.Construction(roofType, pullSettings);
+            //aBuildingElementProperties = Create.BuildingElementProperties(roofType.Name, BuildingElementType.Roof);
 
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, roofType) as BuildingElementProperties;
             if (pullSettings.CopyCustomData)
@@ -169,7 +177,9 @@ namespace BH.UI.Revit.Engine
             if (!aBuildingElementType.HasValue)
                 aBuildingElementType = BuildingElementType.Undefined;
 
-            aBuildingElementProperties = Create.BuildingElementProperties(familySymbol.Name, aBuildingElementType.Value);
+            aBuildingElementProperties = Create.BuildingElementProperties(Query.FamilyTypeFullName(familySymbol), aBuildingElementType.Value);
+            //aBuildingElementProperties = Create.BuildingElementProperties(familySymbol.Name, aBuildingElementType.Value);
+
             aBuildingElementProperties = Modify.SetIdentifiers(aBuildingElementProperties, familySymbol) as BuildingElementProperties;
             if (pullSettings.CopyCustomData)
             {
