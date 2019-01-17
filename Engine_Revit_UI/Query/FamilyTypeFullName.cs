@@ -35,26 +35,18 @@ namespace BH.UI.Revit.Engine
             if (Element == null)
                 return null;
 
-            ElementType aElementType = null;
-            if (Element is ElementType)
-            {
-                aElementType = (ElementType)Element;
-                if (aElementType == null)
-                    return null;
-            }
-            else if(Element is Family)
-            {
+            if (Element is Family)
                 return null;
-            }
-            else
+
+            ElementType aElementType = Element as ElementType;
+
+            if(aElementType == null)
             {
                 ElementId aElementId = Element.GetTypeId();
                 if (aElementId == null || aElementId == Autodesk.Revit.DB.ElementId.InvalidElementId)
                     return null;
 
                 aElementType = Element.Document.GetElement(aElementId) as ElementType;
-                if (aElementType == null)
-                    return null;
             }
 
             if (aElementType == null)
