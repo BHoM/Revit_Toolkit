@@ -61,8 +61,7 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             string aFamilyName = aElementType.FamilyName;
-            string aFamilyTypeName = aElementType.Name; ;
-
+            string aFamilyTypeName = aElementType.Name;
 
             if (string.IsNullOrEmpty(aFamilyName) || string.IsNullOrEmpty(aFamilyTypeName))
                 return null;
