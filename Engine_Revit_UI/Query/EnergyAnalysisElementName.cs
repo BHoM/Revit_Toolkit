@@ -48,10 +48,10 @@ namespace BH.UI.Revit.Engine
             if (Name == string.Empty)
                 return string.Empty;
 
-            string aName = Name.Replace(":", "_");
-            aName = aName.Replace(" ", string.Empty);
+            //string aName = Name.Replace(":", "_");
+            //aName = aName.Replace(" ", string.Empty);
 
-            return aName;
+            return Name;
         }
 
         /***************************************************/
