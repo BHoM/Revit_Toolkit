@@ -45,12 +45,16 @@ namespace BH.UI.Revit.Engine
             if (aCompoundStructure == null)
                 return null;
 
-            return Construction(aCompoundStructure, hostObjAttributes.Document, (BuiltInCategory)hostObjAttributes.Category.Id.IntegerValue, pullSettings);
+            string aName = hostObjAttributes.FamilyTypeFullName();
+            aName = aName.Replace(" ", string.Empty);
+            aName = aName.Replace(":", "_");
+
+            return Construction(aCompoundStructure, aName, hostObjAttributes.Document, (BuiltInCategory)hostObjAttributes.Category.Id.IntegerValue, pullSettings);
         }
 
         /***************************************************/
 
-        static public oM.Environment.Elements.Construction Construction(this CompoundStructure compoundStructure, Document document, BuiltInCategory BuiltInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
+        static public oM.Environment.Elements.Construction Construction(this CompoundStructure compoundStructure, string Name, Document document, BuiltInCategory BuiltInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
         {
             if (compoundStructure == null)
                 return null;
@@ -62,6 +66,7 @@ namespace BH.UI.Revit.Engine
             pullSettings = pullSettings.DefaultIfNull();
 
             oM.Environment.Elements.Construction aConstruction = new oM.Environment.Elements.Construction();
+            aConstruction.Name = Name;
             foreach (CompoundStructureLayer aCompoundStructureLayer in aCompoundStructureLayers)
                 aConstruction.Materials.Add(Query.Material(aCompoundStructureLayer, document, BuiltInCategory, pullSettings));
 
