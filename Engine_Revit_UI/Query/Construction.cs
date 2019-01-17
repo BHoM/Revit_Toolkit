@@ -27,6 +27,8 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
+using Autodesk.Revit.DB.Analysis;
+using BH.oM.Environment.Properties;
 
 namespace BH.UI.Revit.Engine
 {
@@ -64,5 +66,25 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        static public oM.Environment.Elements.Construction Construction(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
+        {
+            if (energyAnalysisOpening == null)
+                return null;
+
+            MaterialPropertiesTransparent aMaterialPropertiesTransparent = new MaterialPropertiesTransparent();
+            aMaterialPropertiesTransparent.Name = string.Format("Default {0} Material", energyAnalysisOpening.OpeningType.ToString());
+
+            oM.Environment.Materials.Material aMaterial = new oM.Environment.Materials.Material();
+            aMaterial.MaterialProperties = aMaterialPropertiesTransparent;
+
+            oM.Environment.Elements.Construction aConstruction = new oM.Environment.Elements.Construction();
+            aConstruction.Materials.Add(aMaterial);
+
+            return aConstruction;
+        }
+
+        /***************************************************/
+
     }
 }

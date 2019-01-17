@@ -167,6 +167,7 @@ namespace BH.UI.Revit.Engine
             {
                 aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
                 BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
+                aBuildingElementProperties.Construction = Query.Construction(energyAnalysisOpening, pullSettings);
                 aBuildingElement = Create.BuildingElement(Query.FamilyTypeFullName(aElement), aCurve, aBuildingElementProperties);
                 //aBuildingElement = Create.BuildingElement(aElement.Name, aCurve, aBuildingElementProperties);
             }
