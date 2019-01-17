@@ -79,6 +79,36 @@ namespace BH.UI.Revit.Engine
                 aEnergyDataSettings.AnalysisType = AnalysisMode.BuildingElements;
                 aEnergyDataSettings.EnergyModel = false;
 
+                //Reseting Project Base Point
+                IEnumerable<Element> aElementList = new FilteredElementCollector(document).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_ProjectBasePoint);
+                foreach (Element aElement in aElementList)
+                {
+                    if (aElement.Pinned)
+                        aElement.Pinned = false;
+
+                    Parameter aParameter = null;
+
+                    aParameter = aElement.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM);
+                    if (aParameter != null && !aParameter.IsReadOnly)
+                        aParameter.Set(0.0);
+
+                    aParameter = aElement.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM);
+                    if (aParameter != null && !aParameter.IsReadOnly)
+                        aParameter.Set(0.0);
+
+                    aParameter = aElement.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM);
+                    if (aParameter != null && !aParameter.IsReadOnly)
+                        aParameter.Set(0.0);
+
+                    aParameter = aElement.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM);
+                    if(aParameter != null && !aParameter.IsReadOnly)
+                        aParameter.Set(0.0);
+
+                    aParameter = aElement.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM);
+                    if (aParameter != null && !aParameter.IsReadOnly)
+                        aParameter.Set(0.0);
+                }
+
                 //AnalyticalSpaces
                 aEnergyAnalysisDetailModel = EnergyAnalysisDetailModel.Create(document, aEnergyAnalysisDetailModelOptions);
                 IList<EnergyAnalysisSpace> aEnergyAnalysisSpaces = aEnergyAnalysisDetailModel.GetAnalyticalSpaces();
@@ -121,6 +151,7 @@ namespace BH.UI.Revit.Engine
                             foreach (BuildingElement aBuildingElement_Hosted in aBHoMObjectList_Hosted.FindAll(x => x is BuildingElement))
                             {
                                 oM.Environment.Elements.Opening aBuildingElementOpening = BH.Engine.Environment.Create.Opening(aBuildingElement_Hosted.PanelCurve);
+                                aBuildingElementOpening.Name = Query.EnergyAnalysisElementName(aBuildingElement_Hosted.Name);
 
                                 if (pullSettings.CopyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(BH.Engine.Adapters.Revit.Convert.ElementId))
                                     aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, BH.Engine.Adapters.Revit.Convert.ElementId, aBuildingElement_Hosted.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId]) as BH.oM.Environment.Elements.Opening;
@@ -158,6 +189,7 @@ namespace BH.UI.Revit.Engine
                             foreach (BuildingElement aBuildingElement_Hosted in aBHoMObjectList_Hosted.FindAll(x => x is BuildingElement))
                             {
                                 BH.oM.Environment.Elements.Opening aBuildingElementOpening = BH.Engine.Environment.Create.Opening(aBuildingElement_Hosted.PanelCurve);
+                                aBuildingElementOpening.Name = Query.EnergyAnalysisElementName(aBuildingElement_Hosted.Name);
 
                                 if (pullSettings.CopyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(BH.Engine.Adapters.Revit.Convert.ElementId))
                                     aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, BH.Engine.Adapters.Revit.Convert.ElementId, aBuildingElement_Hosted.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId]) as BH.oM.Environment.Elements.Opening;

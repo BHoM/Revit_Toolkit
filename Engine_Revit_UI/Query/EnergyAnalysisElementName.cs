@@ -20,13 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
-
-using BH.oM.Base;
-using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Revit.Engine
 {
@@ -36,31 +30,28 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public oM.Environment.Elements.Construction Construction(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null)
+        static public string EnergyAnalysisElementName(this Element element)
         {
-            if (hostObjAttributes == null)
+            if (element == null)
                 return null;
 
-            CompoundStructure aCompoundStructure = hostObjAttributes.GetCompoundStructure();
-            if (aCompoundStructure == null)
+            return EnergyAnalysisElementName(element.FamilyTypeFullName());
+        }
+
+        /***************************************************/
+
+        static public string EnergyAnalysisElementName(this string Name)
+        {
+            if (Name == null)
                 return null;
 
-            IEnumerable<CompoundStructureLayer> aCompoundStructureLayers = aCompoundStructure.GetLayers();
-            if (aCompoundStructureLayers == null)
-                return null;
+            if (Name == string.Empty)
+                return string.Empty;
 
-            BuiltInCategory aBuiltInCategory = (BuiltInCategory)hostObjAttributes.Category.Id.IntegerValue;
-            if (aBuiltInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
-                return null;
+            string aName = Name.Replace(":", "_");
+            aName = aName.Replace(" ", string.Empty);
 
-            pullSettings = pullSettings.DefaultIfNull();
-
-            oM.Environment.Elements.Construction aConstruction = new oM.Environment.Elements.Construction();
-            aConstruction.Name = hostObjAttributes.EnergyAnalysisElementName();
-            foreach (CompoundStructureLayer aCompoundStructureLayer in aCompoundStructureLayers)
-                aConstruction.Materials.Add(Query.Material(aCompoundStructureLayer, hostObjAttributes.Document, aBuiltInCategory, pullSettings));
-
-            return aConstruction;
+            return aName;
         }
 
         /***************************************************/

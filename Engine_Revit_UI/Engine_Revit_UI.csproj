@@ -219,6 +219,7 @@
     <Compile Include="Modify\AddSpaceId.cs" />
     <Compile Include="Modify\SetTags.cs" />
     <Compile Include="Modify\AppendRefObjects.cs" />
+    <Compile Include="Query\EnergyAnalysisElementName.cs" />
     <Compile Include="Query\Material.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
     <Compile Include="Query\FindRefObjects.cs" />
