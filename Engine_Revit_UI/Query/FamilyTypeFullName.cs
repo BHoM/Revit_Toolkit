@@ -52,13 +52,7 @@ namespace BH.UI.Revit.Engine
             if (aElementType == null)
                 return null;
 
-            string aFamilyName = aElementType.FamilyName;
-            string aFamilyTypeName = aElementType.Name;
-
-            if (string.IsNullOrEmpty(aFamilyName) || string.IsNullOrEmpty(aFamilyTypeName))
-                return null;
-
-            return BH.Engine.Adapters.Revit.Query.FamilyTypeFullName(aFamilyName, aFamilyTypeName);
+            return BH.Engine.Adapters.Revit.Query.FamilyTypeFullName(aElementType.FamilyName, aElementType.Name);
         }
 
         /***************************************************/
