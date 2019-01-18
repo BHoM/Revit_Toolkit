@@ -73,7 +73,7 @@ namespace BH.UI.Revit.Engine
             if (aIndex_End == -1)
                 return null;
 
-            string aElementIdString = originatingElementDescription.Substring(aIndex_Start, aIndex_End - aIndex_Start);
+            string aElementIdString = originatingElementDescription.Substring(aIndex_Start + 1, aIndex_End - aIndex_Start - 1);
 
             int aElementIdInt;
             if (!int.TryParse(aElementIdString, out aElementIdInt))
