@@ -91,12 +91,13 @@ namespace BH.UI.Revit.Engine
                 aName = "Default Material";
 
             MaterialPropertiesTransparent aMaterialPropertiesTransparent = new MaterialPropertiesTransparent();
-            aMaterialPropertiesTransparent.Name = string.Format("Default {0} Material", aName);
+            aMaterialPropertiesTransparent.Name = aName;
 
             oM.Environment.Materials.Material aMaterial = new oM.Environment.Materials.Material();
             aMaterial.MaterialProperties = aMaterialPropertiesTransparent;
 
             oM.Environment.Elements.Construction aConstruction = new oM.Environment.Elements.Construction();
+            aConstruction.Name = element.EnergyAnalysisElementName();
             aConstruction.Materials.Add(aMaterial);
 
             return aConstruction;
