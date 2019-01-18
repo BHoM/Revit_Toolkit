@@ -59,5 +59,29 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        public static ElementId ElementId(this string originatingElementDescription)
+        {
+            if (string.IsNullOrEmpty(originatingElementDescription))
+                return null;
+
+            int aIndex_Start = originatingElementDescription.LastIndexOf("[");
+            if (aIndex_Start == -1)
+                return null;
+
+            int aIndex_End = originatingElementDescription.IndexOf("]", aIndex_Start);
+            if (aIndex_End == -1)
+                return null;
+
+            string aElementIdString = originatingElementDescription.Substring(aIndex_Start, aIndex_End - aIndex_Start);
+
+            int aElementIdInt;
+            if (!int.TryParse(aElementIdString, out aElementIdInt))
+                return null;
+
+            return new ElementId(aElementIdInt);
+        }
+
+        /***************************************************/
     }
 }
