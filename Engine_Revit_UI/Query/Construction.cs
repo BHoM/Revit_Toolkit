@@ -21,11 +21,9 @@
  */
 
 using System.Collections.Generic;
-using System.Linq;
 
 using Autodesk.Revit.DB;
 
-using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
 using Autodesk.Revit.DB.Analysis;
 using BH.oM.Environment.Properties;
@@ -43,24 +41,28 @@ namespace BH.UI.Revit.Engine
             if (hostObjAttributes == null)
                 return null;
 
+            oM.Environment.Elements.Construction aConstruction = null;
+
             CompoundStructure aCompoundStructure = hostObjAttributes.GetCompoundStructure();
-            if (aCompoundStructure == null)
-                return null;
+            if (aCompoundStructure != null)
+            {
+                IEnumerable<CompoundStructureLayer> aCompoundStructureLayers = aCompoundStructure.GetLayers();
+                if (aCompoundStructureLayers != null)
+                {
+                    BuiltInCategory aBuiltInCategory = (BuiltInCategory)hostObjAttributes.Category.Id.IntegerValue;
 
-            IEnumerable<CompoundStructureLayer> aCompoundStructureLayers = aCompoundStructure.GetLayers();
-            if (aCompoundStructureLayers == null)
-                return null;
+                    pullSettings = pullSettings.DefaultIfNull();
 
-            BuiltInCategory aBuiltInCategory = (BuiltInCategory)hostObjAttributes.Category.Id.IntegerValue;
-            if (aBuiltInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
-                return null;
+                    aConstruction = new oM.Environment.Elements.Construction();
+                    aConstruction.Name = hostObjAttributes.EnergyAnalysisElementName();
+                    foreach (CompoundStructureLayer aCompoundStructureLayer in aCompoundStructureLayers)
+                        aConstruction.Materials.Add(Query.Material(aCompoundStructureLayer, hostObjAttributes.Document, aBuiltInCategory, pullSettings));
+                }
 
-            pullSettings = pullSettings.DefaultIfNull();
+            }
 
-            oM.Environment.Elements.Construction aConstruction = new oM.Environment.Elements.Construction();
-            aConstruction.Name = hostObjAttributes.EnergyAnalysisElementName();
-            foreach (CompoundStructureLayer aCompoundStructureLayer in aCompoundStructureLayers)
-                aConstruction.Materials.Add(Query.Material(aCompoundStructureLayer, hostObjAttributes.Document, aBuiltInCategory, pullSettings));
+            if(aConstruction == null)
+                aConstruction = Construction(hostObjAttributes, hostObjAttributes.FamilyName);
 
             return aConstruction;
         }
@@ -72,8 +74,24 @@ namespace BH.UI.Revit.Engine
             if (energyAnalysisOpening == null)
                 return null;
 
+            return Construction(energyAnalysisOpening, energyAnalysisOpening.OpeningType.ToString());
+        }
+
+        /***************************************************/
+
+        static public oM.Environment.Elements.Construction Construction(this Element element, string name)
+        {
+            if (element == null)
+                return null;
+
+            string aName = null;
+            if (!string.IsNullOrEmpty(name))
+                aName = string.Format("Default {0} Material", name);
+            else
+                aName = "Default Material";
+
             MaterialPropertiesTransparent aMaterialPropertiesTransparent = new MaterialPropertiesTransparent();
-            aMaterialPropertiesTransparent.Name = string.Format("Default {0} Material", energyAnalysisOpening.OpeningType.ToString());
+            aMaterialPropertiesTransparent.Name = string.Format("Default {0} Material", aName);
 
             oM.Environment.Materials.Material aMaterial = new oM.Environment.Materials.Material();
             aMaterial.MaterialProperties = aMaterialPropertiesTransparent;
