@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Analysis;
 
 namespace BH.UI.Revit.Engine
 {
@@ -71,6 +72,17 @@ namespace BH.UI.Revit.Engine
                 return aDocument.GetElement(linkElementId.LinkedElementId);
             else
                 return aDocument.GetElement(linkElementId.HostElementId);
+        }
+
+        /***************************************************/
+
+        public static Element Element(this EnergyAnalysisOpening energyAnalysisOpening)
+        {
+            ElementId aElementId = Query.ElementId(energyAnalysisOpening.OriginatingElementDescription);
+            if (aElementId == null || aElementId == Autodesk.Revit.DB.ElementId.InvalidElementId)
+                return null;
+
+            return energyAnalysisOpening.Document.GetElement(aElementId);
         }
 
         /***************************************************/

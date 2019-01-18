@@ -62,7 +62,7 @@ namespace BH.UI.Revit.Engine
             }
 
             if(aConstruction == null)
-                aConstruction = Construction(hostObjAttributes, hostObjAttributes.FamilyName);
+                aConstruction = Construction(hostObjAttributes.EnergyAnalysisElementName(), hostObjAttributes.FamilyName);
 
             return aConstruction;
         }
@@ -74,30 +74,34 @@ namespace BH.UI.Revit.Engine
             if (energyAnalysisOpening == null)
                 return null;
 
-            return Construction(energyAnalysisOpening, energyAnalysisOpening.OpeningType.ToString());
+            Element aElement = Query.Element(energyAnalysisOpening);
+            if (aElement == null)
+                return null;
+
+            return Construction(aElement.EnergyAnalysisElementName(), energyAnalysisOpening.OpeningType.ToString());
         }
 
         /***************************************************/
 
-        static public oM.Environment.Elements.Construction Construction(this Element element, string name)
+        static public oM.Environment.Elements.Construction Construction(string constructionName, string materialName)
         {
-            if (element == null)
+            if (string.IsNullOrEmpty(constructionName) || string.IsNullOrEmpty(materialName))
                 return null;
 
-            string aName = null;
-            if (!string.IsNullOrEmpty(name))
-                aName = string.Format("Default {0} Material", name);
+            string aMaterialName = null;
+            if (!string.IsNullOrEmpty(materialName))
+                aMaterialName = string.Format("Default {0} Material", materialName);
             else
-                aName = "Default Material";
+                aMaterialName = "Default Material";
 
             MaterialPropertiesTransparent aMaterialPropertiesTransparent = new MaterialPropertiesTransparent();
-            aMaterialPropertiesTransparent.Name = aName;
+            aMaterialPropertiesTransparent.Name = aMaterialName;
 
             oM.Environment.Materials.Material aMaterial = new oM.Environment.Materials.Material();
             aMaterial.MaterialProperties = aMaterialPropertiesTransparent;
 
             oM.Environment.Elements.Construction aConstruction = new oM.Environment.Elements.Construction();
-            aConstruction.Name = element.EnergyAnalysisElementName();
+            aConstruction.Name = constructionName;
             aConstruction.Materials.Add(aMaterial);
 
             return aConstruction;
