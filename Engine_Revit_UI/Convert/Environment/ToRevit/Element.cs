@@ -100,7 +100,7 @@ namespace BH.UI.Revit.Engine
                     break;
                 case BuildingElementType.Floor:
                     aLevel = document.Level(buildingElement.MinimumLevel(), true);
-                    aElement = document.Create.NewFloor((buildingElement.PanelCurve as PolyCurve).ToRevitCurveArray(pushSettings), aElementType as FloorType, aLevel, false);
+                    aElement = document.Create.NewFloor((buildingElement.PanelCurve as dynamic).ToRevitCurveArray(pushSettings), aElementType as FloorType, aLevel, false);
 
                     aBuiltInParameters = new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM };
                     break;
@@ -110,9 +110,9 @@ namespace BH.UI.Revit.Engine
                     if (aLevel == null)
                         break;
 
-                    Level aLevel_Temp = aLevel.NextLevel();
-                    if (aLevel_Temp != null)
-                        aLevel = aLevel_Temp;
+                    //Level aLevel_Temp = aLevel.NextLevel();
+                    //if (aLevel_Temp != null)
+                    //    aLevel = aLevel_Temp;
 
                     double aElevation = aLevel.Elevation;
                     if (pushSettings.ConvertUnits)
@@ -120,7 +120,7 @@ namespace BH.UI.Revit.Engine
 
                     oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
                     ICurve aCurve = BH.Engine.Geometry.Modify.Project(buildingElement.PanelCurve as dynamic, aPlane) as ICurve;
-                    CurveArray aCurveArray = (aCurve as PolyCurve).ToRevitCurveArray(pushSettings);
+                    CurveArray aCurveArray = (aCurve as dynamic).ToRevitCurveArray(pushSettings);
                     FootPrintRoof aFootPrintRoof = document.Create.NewFootPrintRoof(aCurveArray, aLevel, aElementType as RoofType, out aModelCurveArray);
                     if (aFootPrintRoof != null)
                     {

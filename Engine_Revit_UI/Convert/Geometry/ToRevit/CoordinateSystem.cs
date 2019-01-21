@@ -32,14 +32,14 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static Autodesk.Revit.DB.Plane ToRevitPlane(this Cartesian coordinateSystem, PushSettings pushSettings = null)
+        internal static Plane ToRevitPlane(this Cartesian coordinateSystem, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
             XYZ origin = coordinateSystem.Origin.ToRevit(pushSettings);
             XYZ X = coordinateSystem.X.ToRevit(pushSettings);
             XYZ Y = coordinateSystem.Y.ToRevit(pushSettings);
-            return Autodesk.Revit.DB.Plane.CreateByOriginAndBasis(origin, X, Y);
+            return Plane.CreateByOriginAndBasis(origin, X, Y);
         }
 
         /***************************************************/

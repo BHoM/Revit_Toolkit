@@ -54,5 +54,23 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        internal static CurveArray ToRevitCurveArray(this Polyline polyline, PushSettings pushSettings = null)
+        {
+            if (polyline == null)
+                return null;
+
+            pushSettings = pushSettings.DefaultIfNull();
+
+            List<ICurve> aCureList = Query.Curves(polyline);
+            if (aCureList == null)
+                return null;
+
+            CurveArray aCurveArray = new CurveArray();
+            aCureList.ForEach(x => aCurveArray.Append(x.ToRevit(pushSettings)));
+            return aCurveArray;
+        }
+
+        /***************************************************/
     }
 }
