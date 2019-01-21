@@ -120,7 +120,15 @@ namespace BH.UI.Revit.Engine
 
                     oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
                     ICurve aCurve = BH.Engine.Geometry.Modify.Project(buildingElement.PanelCurve as dynamic, aPlane) as ICurve;
-                    CurveArray aCurveArray = (aCurve as dynamic).ToRevitCurveArray(pushSettings);
+                    CurveArray aCurveArray = null;
+                    if (aCurve is PolyCurve)
+                        aCurveArray = ((PolyCurve)aCurve).ToRevitCurveArray(pushSettings);
+                    else if(aCurve is Polyline)
+                        aCurveArray = ((Polyline)aCurve).ToRevitCurveArray(pushSettings);
+
+                    if (aCurveArray == null)
+                        break;
+
                     FootPrintRoof aFootPrintRoof = document.Create.NewFootPrintRoof(aCurveArray, aLevel, aElementType as RoofType, out aModelCurveArray);
                     if (aFootPrintRoof != null)
                     {

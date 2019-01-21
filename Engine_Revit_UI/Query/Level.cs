@@ -27,6 +27,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
+using System;
 
 namespace BH.UI.Revit.Engine
 {
@@ -64,7 +65,7 @@ namespace BH.UI.Revit.Engine
             if (convertUnits)
                 aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
 
-            if (Elevation <= aElevation)
+            if (Math.Abs(Elevation - aElevation) < oM.Geometry.Tolerance.MacroDistance)
                 return aLevelList.First();
 
             for (int i = 1; i < aLevelList.Count; i++)
@@ -73,7 +74,7 @@ namespace BH.UI.Revit.Engine
                 if (convertUnits)
                     aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
 
-                if (Elevation <= aElevation)
+                if (Elevation <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
                     return aLevelList[i];
             }
 
