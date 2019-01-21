@@ -35,17 +35,19 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static List<PolyCurve> ToBHoM(this Sketch Sketch, PullSettings pullSettings = null)
+        internal static List<PolyCurve> ToBHoM(this Sketch sketch, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            SketchPlane aSketchPlane = Sketch.SketchPlane;
+            SketchPlane aSketchPlane = sketch.SketchPlane;
             oM.Geometry.CoordinateSystem.Cartesian aCartesian = ToBHoM(aSketchPlane.GetPlane(), pullSettings);
+
+            Location aLocation = sketch.Location;
 
             Vector aVector = BH.Engine.Geometry.Create.Vector(aCartesian.Origin);
 
             List<PolyCurve> aResult = new List<PolyCurve>();
-            foreach (CurveArray aCurveArray in Sketch.Profile)
+            foreach (CurveArray aCurveArray in sketch.Profile)
             {
                 PolyCurve aPolyCurve = BH.Engine.Geometry.Create.PolyCurve(ToBHoM(aCurveArray, pullSettings));
 
