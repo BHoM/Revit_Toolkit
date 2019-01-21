@@ -54,17 +54,11 @@ namespace BH.UI.Revit.Engine
                 aResult.Add(curve.ToRevit(pushSettings));
             else if (curve is Polyline)
             {
-                Polyline aPolyline = (Polyline)curve;
+                List<ICurve> aCureList = Query.Curves((Polyline)curve);
+                if (aCureList == null)
+                    return null;
 
-                if (aPolyline.ControlPoints != null && aPolyline.ControlPoints.Count > 1)
-                {
-                    for (int i = 1; i < aPolyline.ControlPoints.Count; i++)
-                        aResult.Add(BH.Engine.Geometry.Create.Line(aPolyline.ControlPoints[i - 1], aPolyline.ControlPoints[i]).ToRevit(pushSettings));
-                    if (BH.Engine.Geometry.Query.Distance(aPolyline.ControlPoints[aPolyline.ControlPoints.Count - 1] , aPolyline.ControlPoints[0]) > oM.Geometry.Tolerance.MicroDistance )
-                        aResult.Add(BH.Engine.Geometry.Create.Line(aPolyline.ControlPoints[aPolyline.ControlPoints.Count - 1], aPolyline.ControlPoints[0]).ToRevit(pushSettings));
-
-                }
-
+                aCureList.ForEach(x => aResult.Add(x.ToRevit(pushSettings)));
             }
             else if (curve is PolyCurve)
             {

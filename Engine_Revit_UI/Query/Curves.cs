@@ -86,5 +86,24 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        static public List<oM.Geometry.ICurve> Curves(this oM.Geometry.Polyline polyline)
+        {
+            if (polyline == null)
+                return null;
+
+            if (polyline.ControlPoints == null || polyline.ControlPoints.Count < 2)
+                return null;
+
+            List<oM.Geometry.ICurve> aResult = new List<oM.Geometry.ICurve>();
+
+            for (int i = 1; i < polyline.ControlPoints.Count; i++)
+                aResult.Add(BH.Engine.Geometry.Create.Line(polyline.ControlPoints[i - 1], polyline.ControlPoints[i]));
+
+            if (BH.Engine.Geometry.Query.Distance(polyline.ControlPoints[polyline.ControlPoints.Count - 1], polyline.ControlPoints[0]) > oM.Geometry.Tolerance.MicroDistance)
+                aResult.Add(BH.Engine.Geometry.Create.Line(polyline.ControlPoints[polyline.ControlPoints.Count - 1], polyline.ControlPoints[0]));
+
+            return aResult;
+        }
     }
 }

@@ -68,7 +68,7 @@ namespace BH.UI.Revit.Engine
                     if (aSketch.Profile == null)
                         continue;
 
-                    List<PolyCurve> aPolyCurveList = Convert.ToBHoM(aSketch.Profile, pullSettings);
+                    List<PolyCurve> aPolyCurveList = Convert.ToBHoM(aSketch, pullSettings);
                     if (aPolyCurveList == null)
                         continue;
 
