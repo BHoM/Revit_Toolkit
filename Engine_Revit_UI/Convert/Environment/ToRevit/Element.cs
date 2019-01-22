@@ -132,20 +132,17 @@ namespace BH.UI.Revit.Engine
                     if (aLevel == null)
                         break;
 
-                    //Level aLevel_Temp = aLevel.NextLevel();
-                    //if (aLevel_Temp != null)
-                    //    aLevel = aLevel_Temp;
-
                     //double 
                     aElevation = aLevel.Elevation;
                     if (pushSettings.ConvertUnits)
                         aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
 
                     //oM.Geometry.Plane
-                    //aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
                     aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aElevation_BuildingElement), BH.Engine.Geometry.Create.Vector(0, 0, 1));
+                    
                     //ICurve 
                     aCurve = BH.Engine.Geometry.Modify.Project(buildingElement.PanelCurve as dynamic, aPlane) as ICurve;
+                    
                     //CurveArray 
                     aCurveArray = null;
                     if (aCurve is PolyCurve)
@@ -162,32 +159,34 @@ namespace BH.UI.Revit.Engine
                         List<ICurve> aCurveList = null;
 
                         if (buildingElement.PanelCurve is PolyCurve)
-                            aCurveList = ((PolyCurve)buildingElement.PanelCurve).Curves;
+                            aCurveList = ((PolyCurve)aCurve).Curves;
                         else if (buildingElement.PanelCurve is Polyline)
-                            aCurveList = Query.Curves(((Polyline)buildingElement.PanelCurve));
+                            aCurveList = Query.Curves((Polyline)aCurve);
 
-                        if (aCurveList != null && aCurveList.Count > 0)
+                        if (aCurveList != null && aCurveList.Count > 2)
                         {
                             SlabShapeEditor aSlabShapeEditor = aFootPrintRoof.SlabShapeEditor;
                             aSlabShapeEditor.ResetSlabShape();
 
-                            List<oM.Geometry.Point> aPointList = new List<oM.Geometry.Point>();
+                            aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Query.IStartPoint(aCurveList[0]), BH.Engine.Geometry.Query.IStartPoint(aCurveList[1]), BH.Engine.Geometry.Query.IStartPoint(aCurveList[2]));
+                            
+                            Parameter aParameter_Thickness = aFootPrintRoof.get_Parameter(BuiltInParameter.ROOF_ATTR_THICKNESS_PARAM);
+                            double aThickness = aParameter_Thickness.AsDouble();
+                            if (pushSettings.ConvertUnits)
+                                aThickness = UnitUtils.ConvertFromInternalUnits(aThickness, DisplayUnitType.DUT_METERS);
+
+                            Vector aVector = BH.Engine.Geometry.Create.Vector(aPlane.Normal.X * aThickness, aPlane.Normal.Y * aThickness, aPlane.Normal.Z * aThickness);
+                            if (aVector.Z < 0)
+                                aVector = BH.Engine.Geometry.Modify.Reverse(aVector);
+
                             foreach (ICurve aCurve_Temp in aCurveList)
-                                aSlabShapeEditor.DrawPoint(BH.Engine.Geometry.Query.IStartPoint(aCurve_Temp).ToRevit(pushSettings));
+                            {
+                                oM.Geometry.Point aPoint = BH.Engine.Geometry.Query.IStartPoint(aCurve_Temp);
+                                aPoint = BH.Engine.Geometry.Modify.Translate(aPoint, aVector);
+                                aSlabShapeEditor.DrawPoint(aPoint.ToRevit(pushSettings));
+                            }
+
                         }
-
-                        //if(aElevation_BuildingElement != aElevation)
-                        //{
-                        //    Parameter aParameter_Offset = aFootPrintRoof.get_Parameter(BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM);
-
-                        //    aElevation = (aElevation_BuildingElement - aElevation);
-                        //    if (pushSettings.ConvertUnits)
-                        //        aElevation = UnitUtils.ConvertToInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
-
-                        //    aParameter_Offset.Set(aElevation);
-                        //}
-
-                        
 
                         aElement = aFootPrintRoof;
                     }
