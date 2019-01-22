@@ -36,50 +36,63 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public List<PolyCurve> Profiles(this Element element, PullSettings pullSettings = null)
+        static public List<PolyCurve> Profiles(this HostObject hostObject, PullSettings pullSettings = null)
         {
-            if (element == null || element.Document == null)
+            if (hostObject == null || hostObject.Document == null)
                 return null;
 
-            Document aDocument = element.Document;
+            Document aDocument = hostObject.Document;
 
             IEnumerable<ElementId> aElementIds = null;
             using (Transaction aTransaction = new Transaction(aDocument, "Temp"))
             {
                 aTransaction.Start();
-                aElementIds = aDocument.Delete(element.Id);
+                aElementIds = aDocument.Delete(hostObject.Id);
                 aTransaction.RollBack();
             }
 
-            if (aElementIds == null || aElementIds.Count() == 0)
-                return null;
-
             List<PolyCurve> aResult = new List<PolyCurve>();
-            foreach (ElementId aElementId in aElementIds)
+            if (aElementIds != null || aElementIds.Count() > 0)
             {
-                Element aElement = aDocument.GetElement(aElementId);
-                if (aElement == null)
-                    continue;
+                Level aLevel = aDocument.GetElement(hostObject.LevelId) as Level;
 
-                if (aElement is Sketch)
+                foreach (ElementId aElementId in aElementIds)
                 {
-                    Sketch aSketch = (Sketch)aElement;
-
-                    if (aSketch.Profile == null)
+                    Element aElement = aDocument.GetElement(aElementId);
+                    if (aElement == null)
                         continue;
 
-                    List<PolyCurve> aPolyCurveList = Convert.ToBHoM(aSketch, pullSettings);
-                    if (aPolyCurveList == null)
-                        continue;
+                    if (aElement is Sketch)
+                    {
+                        Sketch aSketch = (Sketch)aElement;
 
-                    foreach (PolyCurve aPolyCurve in aPolyCurveList)
-                        if (aPolyCurve != null)
-                            aResult.Add(aPolyCurve);
+                        if (aSketch.Profile == null)
+                            continue;
+
+                        List<PolyCurve> aPolyCurveList = Convert.ToBHoM(aSketch, pullSettings);
+                        if (aPolyCurveList == null)
+                            continue;
+
+                        foreach (PolyCurve aPolyCurve in aPolyCurveList)
+                            if (aPolyCurve != null)
+                                aResult.Add(aPolyCurve);
+                    }
+                }
+
+                if (aLevel != null && aResult.Count > 0)
+                {
+                    double aElevation = aLevel.Elevation;
+                    if (pullSettings.ConvertUnits)
+                        aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+
+                    Vector aVector = BH.Engine.Geometry.Create.Vector(0, 0, aElevation);
+                    for (int i = 0; i < aResult.Count; i++)
+                        aResult[i] = BH.Engine.Geometry.Modify.Translate(aResult[i], aVector);
                 }
             }
 
-            if (element is Wall && aResult.Count == 0)
-                return Profiles_Wall((Wall)element, pullSettings);
+            if (hostObject is Wall && aResult.Count == 0)
+                return Profiles_Wall((Wall)hostObject, pullSettings);
 
             return aResult;
         }
