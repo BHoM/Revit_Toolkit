@@ -74,7 +74,8 @@ namespace BH.UI.Revit.Engine
                 if (convertUnits)
                     aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
 
-                if (Elevation <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
+                //if (Elevation) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
+                if (Math.Round(Elevation, 3, MidpointRounding.AwayFromZero) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
                     return aLevelList[i];
             }
 

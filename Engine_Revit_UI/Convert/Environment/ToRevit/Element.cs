@@ -100,7 +100,24 @@ namespace BH.UI.Revit.Engine
                     break;
                 case BuildingElementType.Floor:
                     aLevel = document.Level(buildingElement.MinimumLevel(), true);
-                    aElement = document.Create.NewFloor((buildingElement.PanelCurve as dynamic).ToRevitCurveArray(pushSettings), aElementType as FloorType, aLevel, false);
+
+                    double aElevation = aLevel.Elevation;
+                    if (pushSettings.ConvertUnits)
+                        aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+
+                    oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
+                    ICurve aCurve = BH.Engine.Geometry.Modify.Project(buildingElement.PanelCurve as dynamic, aPlane) as ICurve;
+
+                    CurveArray aCurveArray = null;
+                    if (aCurve is PolyCurve)
+                        aCurveArray = ((PolyCurve)aCurve).ToRevitCurveArray(pushSettings);
+                    else if (aCurve is Polyline)
+                        aCurveArray = ((Polyline)aCurve).ToRevitCurveArray(pushSettings);
+
+                    if (aCurveArray == null)
+                        break;
+
+                    aElement = document.Create.NewFloor(aCurveArray, aElementType as FloorType, aLevel, false);
 
                     aBuiltInParameters = new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM };
                     break;
@@ -114,13 +131,17 @@ namespace BH.UI.Revit.Engine
                     //if (aLevel_Temp != null)
                     //    aLevel = aLevel_Temp;
 
-                    double aElevation = aLevel.Elevation;
+                    //double 
+                    aElevation = aLevel.Elevation;
                     if (pushSettings.ConvertUnits)
                         aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
 
-                    oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
-                    ICurve aCurve = BH.Engine.Geometry.Modify.Project(buildingElement.PanelCurve as dynamic, aPlane) as ICurve;
-                    CurveArray aCurveArray = null;
+                    //oM.Geometry.Plane
+                    aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
+                    //ICurve 
+                    aCurve = BH.Engine.Geometry.Modify.Project(buildingElement.PanelCurve as dynamic, aPlane) as ICurve;
+                    //CurveArray 
+                    aCurveArray = null;
                     if (aCurve is PolyCurve)
                         aCurveArray = ((PolyCurve)aCurve).ToRevitCurveArray(pushSettings);
                     else if(aCurve is Polyline)
