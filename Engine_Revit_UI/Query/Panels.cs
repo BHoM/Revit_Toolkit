@@ -70,11 +70,10 @@ namespace BH.UI.Revit.Engine
 
             List<oM.Environment.Elements.Panel> aResult = new List<oM.Environment.Elements.Panel>();
 
-            List<PolyCurve> aPolyCurveList = planarFace.ToBHoMPolyCurveList(pullSettings);
+            List<PolyCurve> aPolyCurveList = Query.PolyCurves(planarFace, pullSettings);
 
             foreach (PolyCurve aPolyCurve in aPolyCurveList)
             {
-                //Create the Panel
                 oM.Environment.Elements.Panel aPanel = Create.Panel(aPolyCurve);
                 aResult.Add(aPanel);
             }

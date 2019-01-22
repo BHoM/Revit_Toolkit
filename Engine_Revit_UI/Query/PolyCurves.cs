@@ -26,6 +26,7 @@ using Autodesk.Revit.DB;
 
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Geometry;
 
 namespace BH.UI.Revit.Engine
 {
@@ -35,13 +36,13 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<oM.Geometry.PolyCurve> PolyCurves(this Face face, Transform transform = null, PullSettings pullSettings = null)
+        public static List<PolyCurve> PolyCurves(this Autodesk.Revit.DB.Face face, Transform transform = null, PullSettings pullSettings = null)
         {
-            List<oM.Geometry.PolyCurve> aResult = new List<oM.Geometry.PolyCurve>();
+            List<PolyCurve> aResult = new List<PolyCurve>();
 
             foreach(CurveLoop aCurveLoop in face.GetEdgesAsCurveLoops())
             {
-                List<oM.Geometry.ICurve> aCurveList = new List<oM.Geometry.ICurve>();
+                List<ICurve> aCurveList = new List<ICurve>();
                 foreach (Curve aCurve in aCurveLoop)
                 {
                     if (transform != null)
@@ -50,6 +51,34 @@ namespace BH.UI.Revit.Engine
                         aCurveList.Add(Convert.ToBHoM(aCurve, pullSettings));
                 }
                 aResult.Add(Create.PolyCurve(aCurveList));
+            }
+
+            return aResult;
+        }
+
+        /***************************************************/
+
+        internal static List<PolyCurve> PolyCurves(this PlanarFace planarFace, PullSettings pullSettings = null)
+        {
+            List<PolyCurve> aResult = new List<PolyCurve>();
+
+            EdgeArrayArray aEdgeArrayArray = planarFace.EdgeLoops;
+            if (aEdgeArrayArray == null && aEdgeArrayArray.Size == 0)
+                return aResult;
+
+            for (int i = 0; i < aEdgeArrayArray.Size; i++)
+            {
+                EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
+                List<ICurve> aCurveList = new List<ICurve>();
+                foreach (Edge aEdge in aEdgeArray)
+                {
+                    Curve aCurve = aEdge.AsCurve();
+                    if (aCurve != null)
+                        aCurveList.Add(aCurve.ToBHoM(pullSettings));
+                }
+
+                if (aCurveList != null && aCurveList.Count > 0)
+                    aResult.Add(Create.PolyCurve(aCurveList));
             }
 
             return aResult;
