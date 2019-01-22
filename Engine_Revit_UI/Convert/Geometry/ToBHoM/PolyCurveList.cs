@@ -59,6 +59,8 @@ namespace BH.UI.Revit.Engine
             return aResult;
         }
 
+        /***************************************************/
+
         internal static List<PolyCurve> ToBHoM(this CurveArrArray curveArrArray, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
@@ -86,30 +88,8 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static List<PolyCurve> ToBHoMPolyCurveList(this PlanarFace planarFace, PullSettings pullSettings = null)
-        {
-            List<PolyCurve> aResult = new List<PolyCurve>();
 
-            EdgeArrayArray aEdgeArrayArray = planarFace.EdgeLoops;
-            if (aEdgeArrayArray == null && aEdgeArrayArray.Size == 0)
-                return aResult;
 
-            for (int i = 0; i < aEdgeArrayArray.Size; i++)
-            {
-                EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
-                List<ICurve> aCurveList = new List<ICurve>();
-                foreach (Edge aEdge in aEdgeArray)
-                {
-                    Curve aCurve = aEdge.AsCurve();
-                    if (aCurve != null)
-                        aCurveList.Add(aCurve.ToBHoM(pullSettings));
-                }
-
-                if (aCurveList != null && aCurveList.Count > 0)
-                    aResult.Add(BH.Engine.Geometry.Create.PolyCurve(aCurveList));
-            }
-
-            return aResult;
-        }
+        /***************************************************/
     }
 }
