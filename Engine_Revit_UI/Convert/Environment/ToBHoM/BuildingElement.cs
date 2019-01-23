@@ -284,7 +284,9 @@ namespace BH.UI.Revit.Engine
             if (aBuildingElements != null && aBuildingElements.Count > 0)
                 return aBuildingElements;
 
-            List<oM.Geometry.PolyCurve> aPolyCurveList = Query.Profiles(roofBase, pullSettings);
+            List<oM.Geometry.PolyCurve> aPolyCurveList = Query.TopFacesPolyCurves(roofBase, pullSettings);
+            //List<oM.Geometry.PolyCurve> aPolyCurveList = Query.Profiles(roofBase, pullSettings);
+
             if (aPolyCurveList == null)
                 return aBuildingElements;
 

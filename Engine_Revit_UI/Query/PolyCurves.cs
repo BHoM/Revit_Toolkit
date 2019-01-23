@@ -38,9 +38,12 @@ namespace BH.UI.Revit.Engine
 
         public static List<PolyCurve> PolyCurves(this Autodesk.Revit.DB.Face face, Transform transform = null, PullSettings pullSettings = null)
         {
+            if (face == null)
+                return null;
+
             List<PolyCurve> aResult = new List<PolyCurve>();
 
-            foreach(CurveLoop aCurveLoop in face.GetEdgesAsCurveLoops())
+            foreach (CurveLoop aCurveLoop in face.GetEdgesAsCurveLoops())
             {
                 List<ICurve> aCurveList = new List<ICurve>();
                 foreach (Curve aCurve in aCurveLoop)
@@ -60,6 +63,9 @@ namespace BH.UI.Revit.Engine
 
         internal static List<PolyCurve> PolyCurves(this PlanarFace planarFace, PullSettings pullSettings = null)
         {
+            if (planarFace == null)
+                return null;
+
             List<PolyCurve> aResult = new List<PolyCurve>();
 
             EdgeArrayArray aEdgeArrayArray = planarFace.EdgeLoops;
@@ -85,5 +91,23 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        internal static List<PolyCurve> PolyCurves(this Autodesk.Revit.DB.Mesh mesh, PullSettings pullSettings = null)
+        {
+            if (mesh == null)
+                return null;
+
+            List<PolyCurve> aResult = new List<PolyCurve>();
+            for (int i=0; i < mesh.NumTriangles; i++)
+            {
+                PolyCurve aPolyCurve = mesh.get_Triangle(i).PolyCurve(pullSettings);
+                if (aPolyCurve != null)
+                    aResult.Add(aPolyCurve);
+            }
+            return aResult;
+        }
+
+        /***************************************************/
+
     }
 }
