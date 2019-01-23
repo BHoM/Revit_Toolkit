@@ -61,8 +61,13 @@ namespace BH.UI.Revit.Engine
             if (aSpace != null)
                 return aSpace;
 
+            string aName = null;
+            Parameter aParameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
+            if (aParameter != null)
+                aName = aParameter.AsString();
+
             //Create the Space
-            aSpace = Create.Space(spatialElement.Name, (spatialElement.Location as LocationPoint).ToBHoM(pullSettings));
+            aSpace = Create.Space(aName, (spatialElement.Location as LocationPoint).ToBHoM(pullSettings));
 
             //Set custom data
             aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
@@ -90,8 +95,13 @@ namespace BH.UI.Revit.Engine
             if (aSpace != null)
                 return aSpace;
 
+            string aName = null;
+            Parameter aParameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
+            if (aParameter != null)
+                aName = aParameter.AsString();
+
             //Create the Space
-            aSpace = Create.Space(spatialElement.Name, (spatialElement.Location as LocationPoint).ToBHoM(pullSettings));
+            aSpace = Create.Space(aName, (spatialElement.Location as LocationPoint).ToBHoM(pullSettings));
 
             //Set custom data
             aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
@@ -118,15 +128,25 @@ namespace BH.UI.Revit.Engine
 
             SpatialElement aSpatialElement = Query.Element(energyAnalysisSpace.Document, energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
 
-            oM.Architecture.Elements.Level aLevel = null;
-            if(aSpatialElement != null)
-                aLevel = Query.Level(aSpatialElement, pullSettings);
-
+            string aName = energyAnalysisSpace.SpaceName;
             oM.Geometry.Point aPoint = null;
-            if (aSpatialElement != null && aSpatialElement.Location != null)
-                aPoint = (aSpatialElement.Location as LocationPoint).ToBHoM(pullSettings);
 
-            aSpace = Create.Space(energyAnalysisSpace.SpaceName, aPoint);
+            if (aSpatialElement != null)
+            {
+                Parameter aParameter = aSpatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
+                if (aParameter != null)
+                {
+                    string aName_Temp = aParameter.AsString();
+                    if(!string.IsNullOrWhiteSpace(aName_Temp))
+                        aName = aName_Temp;
+                }
+
+                if (aSpatialElement.Location != null)
+                    aPoint = (aSpatialElement.Location as LocationPoint).ToBHoM(pullSettings);
+
+            }
+
+            aSpace = Create.Space(aName, aPoint);
 
             //Set custom data
             aSpace = Modify.SetIdentifiers(aSpace, aSpatialElement) as Space;
