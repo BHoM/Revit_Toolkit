@@ -159,33 +159,20 @@ namespace BH.UI.Revit.Engine
                         List<ICurve> aCurveList = null;
 
                         if (buildingElement.PanelCurve is PolyCurve)
-                            aCurveList = ((PolyCurve)aCurve).Curves;
+                            aCurveList = ((PolyCurve)buildingElement.PanelCurve).Curves;
                         else if (buildingElement.PanelCurve is Polyline)
-                            aCurveList = Query.Curves((Polyline)aCurve);
+                            aCurveList = Query.Curves((Polyline)buildingElement.PanelCurve);
 
                         if (aCurveList != null && aCurveList.Count > 2)
                         {
                             SlabShapeEditor aSlabShapeEditor = aFootPrintRoof.SlabShapeEditor;
                             aSlabShapeEditor.ResetSlabShape();
 
-                            aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Query.IStartPoint(aCurveList[0]), BH.Engine.Geometry.Query.IStartPoint(aCurveList[1]), BH.Engine.Geometry.Query.IStartPoint(aCurveList[2]));
-                            
-                            Parameter aParameter_Thickness = aFootPrintRoof.get_Parameter(BuiltInParameter.ROOF_ATTR_THICKNESS_PARAM);
-                            double aThickness = aParameter_Thickness.AsDouble();
-                            if (pushSettings.ConvertUnits)
-                                aThickness = UnitUtils.ConvertFromInternalUnits(aThickness, DisplayUnitType.DUT_METERS);
-
-                            Vector aVector = BH.Engine.Geometry.Create.Vector(aPlane.Normal.X * aThickness, aPlane.Normal.Y * aThickness, aPlane.Normal.Z * aThickness);
-                            if (aVector.Z < 0)
-                                aVector = BH.Engine.Geometry.Modify.Reverse(aVector);
-
                             foreach (ICurve aCurve_Temp in aCurveList)
                             {
                                 oM.Geometry.Point aPoint = BH.Engine.Geometry.Query.IStartPoint(aCurve_Temp);
-                                aPoint = BH.Engine.Geometry.Modify.Translate(aPoint, aVector);
                                 aSlabShapeEditor.DrawPoint(aPoint.ToRevit(pushSettings));
                             }
-
                         }
 
                         aElement = aFootPrintRoof;
