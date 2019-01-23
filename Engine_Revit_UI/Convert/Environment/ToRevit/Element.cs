@@ -177,6 +177,7 @@ namespace BH.UI.Revit.Engine
 
                         aElement = aFootPrintRoof;
                     }
+                    aBuiltInParameters = new BuiltInParameter[] { BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM };
                     break;
                 case BuildingElementType.Wall:
                     aLevel = document.Level(buildingElement.MinimumLevel(), true);
