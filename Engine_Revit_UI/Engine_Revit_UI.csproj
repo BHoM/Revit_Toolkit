@@ -219,6 +219,8 @@
     <Compile Include="Modify\AddSpaceId.cs" />
     <Compile Include="Modify\SetTags.cs" />
     <Compile Include="Modify\AppendRefObjects.cs" />
+    <Compile Include="Query\LowLevel.cs" />
+    <Compile Include="Query\HighLevel.cs" />
     <Compile Include="Query\TopFacesPolyCurves.cs" />
     <Compile Include="Query\EnergyAnalysisElementName.cs" />
     <Compile Include="Query\Material.cs" />
