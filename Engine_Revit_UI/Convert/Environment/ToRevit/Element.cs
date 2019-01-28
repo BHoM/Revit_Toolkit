@@ -102,7 +102,7 @@ namespace BH.UI.Revit.Engine
                 case BuildingElementType.Floor:
                     aElevation_BuildingElement = buildingElement.MinimumLevel();
 
-                    aLevel = document.Level(aElevation_BuildingElement, true);
+                    aLevel = document.HighLevel(aElevation_BuildingElement, true);
 
                     double aElevation = aLevel.Elevation;
                     if (pushSettings.ConvertUnits)
@@ -128,7 +128,7 @@ namespace BH.UI.Revit.Engine
                     ModelCurveArray aModelCurveArray = new ModelCurveArray();
                     aElevation_BuildingElement = buildingElement.MinimumLevel();
 
-                    aLevel = document.Level(aElevation_BuildingElement, true);
+                    aLevel = document.HighLevel(aElevation_BuildingElement, true);
                     if (aLevel == null)
                         break;
 
@@ -180,20 +180,42 @@ namespace BH.UI.Revit.Engine
                     aBuiltInParameters = new BuiltInParameter[] { BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM };
                     break;
                 case BuildingElementType.Wall:
-                    aLevel = document.Level(buildingElement.MinimumLevel(), true);
+
+                    double aElevation_Minimum = buildingElement.MinimumLevel();
+
+                    aLevel = document.LowLevel(aElevation_Minimum, true);
                     aElement = Wall.Create(document, Convert.ToRevitCurveList(buildingElement.Curve(), pushSettings), aElementType.Id, aLevel.Id, false);
-                    Parameter aParameter = aElement.get_Parameter(BuiltInParameter.WALL_HEIGHT_TYPE);
+
+                    Parameter aParameter = null;
+
+                    aParameter = aElement.get_Parameter(BuiltInParameter.WALL_HEIGHT_TYPE);
                     if(aParameter != null)
                         aParameter.Set(ElementId.InvalidElementId);
                     aParameter = aElement.get_Parameter(BuiltInParameter.WALL_USER_HEIGHT_PARAM);
                     if (aParameter != null)
                     {
-                        double aHeight = UnitUtils.ConvertToInternalUnits(buildingElement.MaximumLevel() - buildingElement.MinimumLevel(),DisplayUnitType.DUT_METERS);
+                        double aHeight = UnitUtils.ConvertToInternalUnits(buildingElement.MaximumLevel() - buildingElement.MinimumLevel(), DisplayUnitType.DUT_METERS);
                         aParameter.Set(aHeight);
                     }
 
+                    double aElevation_Level = aLevel.Elevation;
+                    if (pushSettings.ConvertUnits)
+                        aElevation_Level = UnitUtils.ConvertFromInternalUnits(aElevation_Level, DisplayUnitType.DUT_METERS);
 
-                    aBuiltInParameters = new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT };
+                    if(System.Math.Abs(aElevation_Minimum - aElevation_Level) > Tolerance.MacroDistance)
+                    {
+                        aParameter = aElement.get_Parameter(BuiltInParameter.WALL_BASE_OFFSET);
+                        if (aParameter != null)
+                        {
+                            double aOffset = aElevation_Minimum - aElevation_Level;
+                            if(pushSettings.ConvertUnits)
+                                aOffset = UnitUtils.ConvertToInternalUnits(aOffset, DisplayUnitType.DUT_METERS);
+
+                            aParameter.Set(aOffset);
+                        }
+                    }
+
+                    aBuiltInParameters = new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT, BuiltInParameter.WALL_BASE_OFFSET };
                     break;
                 case BuildingElementType.Door:
                     //TODO: Create Door from BuildingElement

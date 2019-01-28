@@ -36,19 +36,35 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
-        static public oM.Architecture.Elements.Level Level(this Element element, PullSettings pullSettings = null)
+
+        static public Level LowLevel(this Document document, double Elevation, bool convertUnits = true)
         {
-            pullSettings = pullSettings.DefaultIfNull();
-
-            if (element == null || element.LevelId == null || element.LevelId == Autodesk.Revit.DB.ElementId.InvalidElementId)
+            List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
+            if (aLevelList == null || aLevelList.Count == 0)
                 return null;
 
-            Level aLevel = element.Document.GetElement(element.LevelId) as Level;
-            if (aLevel == null)
-                return null;
+            aLevelList.Sort((x, y) => y.ProjectElevation.CompareTo(x.ProjectElevation));
 
-            return Convert.ToBHoMLevel(aLevel, pullSettings) as oM.Architecture.Elements.Level;
+            double aElevation = aLevelList.First().ProjectElevation;
+            if (convertUnits)
+                aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+
+            if (Math.Abs(Elevation - aElevation) < oM.Geometry.Tolerance.MacroDistance)
+                return aLevelList.First();
+
+            for (int i = 1; i < aLevelList.Count; i++)
+            {
+                aElevation = aLevelList[i].ProjectElevation;
+                if (convertUnits)
+                    aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+
+                //if (Elevation) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
+                if (Math.Round(Elevation, 3, MidpointRounding.AwayFromZero) >= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
+                    return aLevelList[i];
+            }
+
+
+            return aLevelList.Last();
         }
 
         /***************************************************/
