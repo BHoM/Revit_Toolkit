@@ -37,34 +37,35 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public Level LowLevel(this Document document, double Elevation, bool convertUnits = true)
+        static public Level LowLevel(this Document document, double elevation, bool convertUnits = true)
         {
             List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
             if (aLevelList == null || aLevelList.Count == 0)
                 return null;
 
-            aLevelList.Sort((x, y) => y.ProjectElevation.CompareTo(x.ProjectElevation));
+            aLevelList.Sort((x, y) => y.Elevation.CompareTo(x.Elevation));
 
-            double aElevation = aLevelList.First().ProjectElevation;
+            double aElevation = elevation;
             if (convertUnits)
-                aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+                aElevation = UnitUtils.ConvertToInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
 
-            if (Math.Abs(Elevation - aElevation) < oM.Geometry.Tolerance.MacroDistance)
+            if (Math.Abs(aElevation - aLevelList.First().Elevation) < oM.Geometry.Tolerance.MacroDistance)
                 return aLevelList.First();
 
             for (int i = 1; i < aLevelList.Count; i++)
-            {
-                aElevation = aLevelList[i].ProjectElevation;
-                if (convertUnits)
-                    aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
-
-                //if (Elevation) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
-                if (Math.Round(Elevation, 3, MidpointRounding.AwayFromZero) >= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
+                if (Math.Round(aElevation, 3, MidpointRounding.AwayFromZero) >= Math.Round(aLevelList[i].Elevation, 3, MidpointRounding.AwayFromZero))
                     return aLevelList[i];
-            }
-
 
             return aLevelList.Last();
+        }
+
+        /***************************************************/
+
+        static public Level LowLevel(this Document document, oM.Geometry.ICurve curve, bool convertUnits = true)
+        {
+            double aElevation = BH.Engine.Geometry.Query.Bounds(curve as dynamic).Min.Z;
+
+            return LowLevel(document, aElevation, convertUnits);
         }
 
         /***************************************************/

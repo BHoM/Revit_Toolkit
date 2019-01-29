@@ -219,8 +219,10 @@
     <Compile Include="Modify\AddSpaceId.cs" />
     <Compile Include="Modify\SetTags.cs" />
     <Compile Include="Modify\AppendRefObjects.cs" />
+    <Compile Include="Query\BoundingBox.cs" />
     <Compile Include="Query\LowLevel.cs" />
     <Compile Include="Query\HighLevel.cs" />
+    <Compile Include="Query\Polyline.cs" />
     <Compile Include="Query\TopFacesPolyCurves.cs" />
     <Compile Include="Query\EnergyAnalysisElementName.cs" />
     <Compile Include="Query\Material.cs" />
@@ -278,7 +280,7 @@
     <Compile Include="Query\Profiles.cs" />
     <Compile Include="Query\Curves.cs" />
     <Compile Include="Query\LibraryMaterial.cs" />
-    <Compile Include="Query\Top.cs" />
+    <Compile Include="Query\TopPlanarFace.cs" />
     <Compile Include="Query\ActiveWorksetId.cs" />
     <Compile Include="Query\WorksetId.cs" />
     <Compile Include="Query\WorksetIds.cs" />

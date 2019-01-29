@@ -41,6 +41,12 @@ namespace BH.UI.Revit.Engine
             if (hostObject == null || hostObject.Document == null)
                 return null;
 
+            if (hostObject is Floor)
+                return Profiles_Floor((Floor)hostObject, pullSettings);
+
+            if(hostObject is RoofBase)
+                return Profiles_RoofBase((RoofBase)hostObject, pullSettings);
+
             Document aDocument = hostObject.Document;
 
             IEnumerable<ElementId> aElementIds = null;
@@ -146,7 +152,7 @@ namespace BH.UI.Revit.Engine
 
 
                         aPolyCurveList = new List<PolyCurve>();
-                        aPolyCurveList.Add(BH.Engine.Geometry.Create.PolyCurve(new ICurve[] {aCurve_Min, aLine_1, aCurve_Max, aLine_2}));
+                        aPolyCurveList.Add(BH.Engine.Geometry.Create.PolyCurve(new ICurve[] { aCurve_Min, aLine_1, aCurve_Max, aLine_2 }));
                         return aPolyCurveList;
                     }
 
@@ -162,13 +168,27 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             aPolyCurveList = new List<PolyCurve>();
-            foreach(CurveLoop aCurveLoop in aCurveLoopList)
+            foreach (CurveLoop aCurveLoop in aCurveLoopList)
             {
                 PolyCurve aPolyCurve = Convert.ToBHoM(aCurveLoop, pullSettings);
                 if (aPolyCurve != null)
                     aPolyCurveList.Add(aPolyCurve);
             }
             return aPolyCurveList;
+        }
+
+        /***************************************************/
+
+        private static List<PolyCurve> Profiles_Floor(this Floor floor, PullSettings pullSettings = null)
+        {
+            return TopFacesPolyCurves(floor, pullSettings);
+        }
+
+        /***************************************************/
+
+        private static List<PolyCurve> Profiles_RoofBase(this RoofBase roofBase, PullSettings pullSettings = null)
+        {
+            return TopFacesPolyCurves(roofBase, pullSettings);
         }
 
         /***************************************************/

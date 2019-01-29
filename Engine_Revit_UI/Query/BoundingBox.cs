@@ -25,9 +25,8 @@ using System.Linq;
 
 using Autodesk.Revit.DB;
 
-using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
-using System;
+using BH.oM.Geometry;
 
 namespace BH.UI.Revit.Engine
 {
@@ -37,34 +36,18 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public Level HighLevel(this Document document, double Elevation, bool convertUnits = true)
+        static public BoundingBox BoundingBox(this Element Element, Options Options, PullSettings pullSettings = null)
         {
-            List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
-            if (aLevelList == null || aLevelList.Count == 0)
+            List<ICurve> aCurves = Element.Curves(Options, pullSettings);
+
+            if (aCurves == null || aCurves.Count == 0)
                 return null;
 
-            aLevelList.Sort((x, y) => x.Elevation.CompareTo(y.Elevation));
+            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.IBounds(aCurves[0]);
+            for (int i = 1; i < aCurves.Count; i++)
+                aBoundingBox += BH.Engine.Geometry.Query.IBounds(aCurves[i]);
 
-            double aElevation = aLevelList.First().Elevation;
-            if (convertUnits)
-                aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
-
-            if (Math.Abs(Elevation - aElevation) < oM.Geometry.Tolerance.MacroDistance)
-                return aLevelList.First();
-
-            for (int i = 1; i < aLevelList.Count; i++)
-            {
-                aElevation = aLevelList[i].Elevation;
-                if (convertUnits)
-                    aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
-
-                //if (Elevation) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
-                if (Math.Round(Elevation, 3, MidpointRounding.AwayFromZero) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
-                    return aLevelList[i];
-            }
-
-
-            return aLevelList.Last();
+            return aBoundingBox;
         }
 
         /***************************************************/
