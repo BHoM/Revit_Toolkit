@@ -31,6 +31,7 @@ using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Properties;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Geometry;
 
 namespace BH.UI.Revit.Engine
 {
@@ -78,7 +79,11 @@ namespace BH.UI.Revit.Engine
 
             BuildingElementProperties aBuildingElementProperties = familyInstance.Symbol.ToBHoMBuildingElementProperties(pullSettings);
 
-            aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Query.VerticalBounds(familyInstance, pullSettings));
+            Polyline aPolyline = Query.Polyline(familyInstance, pullSettings);
+
+            aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aPolyline);
+
+            //aBuildingElement = Create.BuildingElement(aBuildingElementProperties, Query.VerticalBounds(familyInstance, pullSettings));
             aBuildingElement.Name = Query.FamilyTypeFullName(familyInstance);
             aBuildingElement.ElementID = familyInstance.Id.IntegerValue.ToString();
 
@@ -284,8 +289,8 @@ namespace BH.UI.Revit.Engine
             if (aBuildingElements != null && aBuildingElements.Count > 0)
                 return aBuildingElements;
 
-            List<oM.Geometry.PolyCurve> aPolyCurveList = Query.TopFacesPolyCurves(roofBase, pullSettings);
-            //List<oM.Geometry.PolyCurve> aPolyCurveList = Query.Profiles(roofBase, pullSettings);
+            List<oM.Geometry.PolyCurve> aPolyCurveList = Query.Profiles(roofBase, pullSettings);
+            //List<oM.Geometry.PolyCurve> aPolyCurveList = Query.TopFacesPolyCurves(roofBase, pullSettings);
 
             if (aPolyCurveList == null)
                 return aBuildingElements;

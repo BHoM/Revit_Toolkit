@@ -23,13 +23,12 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Autodesk.Revit.DB;
-
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
 using System;
+using BH.oM.Geometry;
 
-namespace BH.UI.Revit.Engine
+namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {
@@ -37,34 +36,65 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public Level HighLevel(this Document document, double Elevation, bool convertUnits = true)
+        static public Plane Plane(this PolyCurve polyCurve, double tolerance = Tolerance.Distance)
         {
-            List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
-            if (aLevelList == null || aLevelList.Count == 0)
+            if (polyCurve == null)
                 return null;
 
-            aLevelList.Sort((x, y) => x.Elevation.CompareTo(y.Elevation));
+            List<Point> aPointList = Geometry.Query.ControlPoints(polyCurve);
 
-            double aElevation = aLevelList.First().Elevation;
-            if (convertUnits)
-                aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+            if (aPointList == null || aPointList.Count < 2)
+                return null;
 
-            if (Math.Abs(Elevation - aElevation) < oM.Geometry.Tolerance.MacroDistance)
-                return aLevelList.First();
+            if (!Geometry.Query.IsCoplanar(aPointList, tolerance))
+                return null;
 
-            for (int i = 1; i < aLevelList.Count; i++)
+            return Plane(aPointList);
+
+        }
+
+        /***************************************************/
+
+        static public Plane Plane(this Polyline polyline, double tolerance = Tolerance.Distance)
+        {
+            if (polyline == null)
+                return null;
+
+            if (polyline.ControlPoints == null || polyline.ControlPoints.Count < 2)
+                return null;
+
+            if (!Geometry.Query.IsCoplanar(polyline.ControlPoints, tolerance))
+                return null;
+
+            return Plane(polyline.ControlPoints);
+
+        }
+
+        /***************************************************/
+
+        static public Plane Plane(this IEnumerable<Point> points)
+        {
+            if (points == null || points.Count() < 2)
+                return null;
+
+            Point aPoint_1 = points.ElementAt(0);
+            Point aPoint_2 = null;
+            Point aPoint_3 = null;
+
+            for (int i = 1; i < points.Count() - 1; i++)
             {
-                aElevation = aLevelList[i].Elevation;
-                if (convertUnits)
-                    aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+                aPoint_2 = points.ElementAt(i);
+                for (int j = 1; j < points.Count() - 1; j++)
+                {
+                    aPoint_3 = points.ElementAt(j);
 
-                //if (Elevation) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
-                if (Math.Round(Elevation, 3, MidpointRounding.AwayFromZero) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
-                    return aLevelList[i];
+                    Vector aVector = Geometry.Query.CrossProduct(aPoint_2 - aPoint_1, aPoint_3 - aPoint_1);
+                    if (Geometry.Query.Length(aVector) > Tolerance.Distance)
+                        return Geometry.Create.Plane(aPoint_1, aPoint_2, aPoint_3);
+                }
             }
 
-
-            return aLevelList.Last();
+            return null;
         }
 
         /***************************************************/
