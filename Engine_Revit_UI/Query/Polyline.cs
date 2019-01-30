@@ -96,28 +96,36 @@ namespace BH.UI.Revit.Engine
             }
 
             oM.Geometry.Point aCenter = BH.Engine.Geometry.Query.Centre(aBoundingBox);
+            Vector aExtent = BH.Engine.Geometry.Query.Extents(aBoundingBox) / 2;
 
+            double aDotProduct;
+
+            //Hand Direction
             XYZ aHandOrientation = familyInstance.HandOrientation;
+            Vector aHandDirection = Create.Vector(aHandOrientation.X, aHandOrientation.Y, aHandOrientation.Z);
+            aHandDirection = BH.Engine.Geometry.Modify.Project(aHandDirection, aPlane).Normalise();
 
-            XYZ aFacingOrientation = familyInstance.FacingOrientation;
-
-            XYZ aUpOrientation = familyInstance.FacingOrientation.CrossProduct(familyInstance.HandOrientation);
-            aUpOrientation = aUpOrientation.Normalize();
-
-            Vector aExtent = BH.Engine.Geometry.Query.Extents(aBoundingBox);
-
-            Vector aUpDirection = Create.Vector(aUpOrientation.X * aExtent.X / 2, aUpOrientation.Y * aExtent.Y / 2, aUpOrientation.Z * aExtent.Z / 2);
-            Vector aHandDirection = Create.Vector(aHandOrientation.X * aExtent.X / 2, aHandOrientation.Y * aExtent.Y / 2, aHandOrientation.Z * aExtent.Z / 2);
+            aDotProduct = BH.Engine.Geometry.Query.DotProduct(aExtent, aHandDirection);
+            aHandDirection = aHandDirection * aDotProduct;
 
             Vector aHandDirection_Invert = Create.Vector(-aHandDirection.X, -aHandDirection.Y, -aHandDirection.Z);
+
+            //Up Direction
+            Vector aUpDirection = BH.Engine.Geometry.Query.CrossProduct(aHandDirection, aPlane.Normal);
+            aUpDirection = aUpDirection.Normalise();
+
+            aDotProduct = BH.Engine.Geometry.Query.DotProduct(aExtent, aUpDirection);
+            aUpDirection = aUpDirection * aDotProduct;
+
+            Vector aUpDirection_Invert = Create.Vector(-aUpDirection.X, -aUpDirection.Y, -aUpDirection.Z);
+
+
 
             oM.Geometry.Point aPoint_1 = BH.Engine.Geometry.Modify.Translate(aCenter, aUpDirection);
             aPoint_1 = BH.Engine.Geometry.Modify.Translate(aPoint_1, aHandDirection_Invert);
 
             oM.Geometry.Point aPoint_2 = BH.Engine.Geometry.Modify.Translate(aCenter, aUpDirection);
             aPoint_2 = BH.Engine.Geometry.Modify.Translate(aPoint_2, aHandDirection);
-
-            Vector aUpDirection_Invert = Create.Vector(-aUpDirection.X, -aUpDirection.Y, -aUpDirection.Z);
 
             oM.Geometry.Point aPoint_3 = BH.Engine.Geometry.Modify.Translate(aCenter, aUpDirection_Invert);
             aPoint_3 = BH.Engine.Geometry.Modify.Translate(aPoint_3, aHandDirection);
