@@ -109,6 +109,7 @@
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Query\CurrentDomainAssembly.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
+    <Compile Include="Query\OuterPolyCurves.cs" />
     <Compile Include="Query\IsShade.cs" />
     <Compile Include="Query\IsInternal.cs" />
     <Compile Include="Query\IsExternal.cs" />

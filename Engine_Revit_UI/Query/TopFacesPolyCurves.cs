@@ -52,7 +52,7 @@ namespace BH.UI.Revit.Engine
                 List<PolyCurve> aPolyCurveList_Temp = null;
 
                 if (aFace is PlanarFace)
-                    aPolyCurveList_Temp = ((PlanarFace)aFace).PolyCurves(pullSettings);
+                    aPolyCurveList_Temp = ((PlanarFace)aFace).PolyCurves(null, pullSettings);
                 else
                     aPolyCurveList_Temp = aFace.Triangulate().PolyCurves(pullSettings);
 

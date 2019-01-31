@@ -61,34 +61,58 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static List<PolyCurve> PolyCurves(this PlanarFace planarFace, PullSettings pullSettings = null)
-        {
-            if (planarFace == null)
-                return null;
+        //internal static List<PolyCurve> PolyCurves(this PlanarFace planarFace, PullSettings pullSettings = null)
+        //{
+        //    if (planarFace == null)
+        //        return null;
 
-            List<PolyCurve> aResult = new List<PolyCurve>();
+        //    List<PolyCurve> aResult = null;
 
-            EdgeArrayArray aEdgeArrayArray = planarFace.EdgeLoops;
-            if (aEdgeArrayArray == null && aEdgeArrayArray.Size == 0)
-                return aResult;
+        //    IList<Autodesk.Revit.DB.Face> aFaceList = planarFace.GetRegions();
 
-            for (int i = 0; i < aEdgeArrayArray.Size; i++)
-            {
-                EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
-                List<ICurve> aCurveList = new List<ICurve>();
-                foreach (Edge aEdge in aEdgeArray)
-                {
-                    Curve aCurve = aEdge.AsCurve();
-                    if (aCurve != null)
-                        aCurveList.Add(aCurve.ToBHoM(pullSettings));
-                }
+        //    //IList<CurveLoop> aCurveLoopList = planarFace.GetEdgesAsCurveLoops();
+        //    //if(aCurveLoopList != null && aCurveLoopList.Count > 0)
+        //    //{
+        //    //    List<CurveLoop> aCurveLoopList_Temp = new List<CurveLoop>();
+        //    //    foreach (CurveLoop aCurveLoop in aCurveLoopList)
+        //    //    {
+        //    //        if (aCurveLoop.IsOpen())
+        //    //            continue;
 
-                if (aCurveList != null && aCurveList.Count > 0)
-                    aResult.Add(Create.PolyCurve(aCurveList));
-            }
+        //    //        foreach(Curve aCurve in aCurveLoop)
+        //    //        {
+        //    //            planarFace.
+        //    //        }
+        //    //    }
+        //    //    aResult = new List<PolyCurve>();
+        //    //}
 
-            return aResult;
-        }
+        //    if (aResult != null)
+        //        return aResult;
+
+        //    aResult = new List<PolyCurve>();
+
+        //    EdgeArrayArray aEdgeArrayArray = planarFace.EdgeLoops;
+        //    if (aEdgeArrayArray == null && aEdgeArrayArray.Size == 0)
+        //        return aResult;
+
+        //    for (int i = 0; i < aEdgeArrayArray.Size; i++)
+        //    {
+        //        EdgeArray aEdgeArray = aEdgeArrayArray.get_Item(i);
+        //        List<ICurve> aCurveList = new List<ICurve>();
+        //        foreach (Edge aEdge in aEdgeArray)
+        //        {
+        //            Curve aCurve = aEdge.AsCurve();
+        //            if (aCurve != null)
+        //                aCurveList.Add(aCurve.ToBHoM(pullSettings));
+        //        }
+
+        //        if (aCurveList != null && aCurveList.Count > 0)
+        //            aResult.Add(Create.PolyCurve(aCurveList));
+        //    }
+
+        //    return aResult;
+        //}
 
         /***************************************************/
 

@@ -20,15 +20,17 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
+using System.ComponentModel;
 
-using Autodesk.Revit.DB;
-
-using BH.Engine.Environment;
-using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Reflection.Attributes;
+using BH.oM.Environment.Elements;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
-namespace BH.UI.Revit.Engine
+namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {
@@ -36,51 +38,44 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        internal static List<oM.Environment.Elements.Panel> Panels(this GeometryElement geometryElement, PullSettings pullSettings = null)
+        [Description("Returns the outer PolyCurves from list")]
+        [Input("polyCurves", "PolyCurves")]
+        [Output("PolyCurve")]
+        public static List<PolyCurve> OuterPolyCurves(this IEnumerable<PolyCurve> polyCurves)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            if (polyCurves == null || polyCurves.Count() == 0)
+                return null;
 
-            List<oM.Environment.Elements.Panel> aResult = new List<oM.Environment.Elements.Panel>();
-            foreach (GeometryObject aGeometryObject in geometryElement)
+            if (polyCurves.Count() == 1)
+                return new List<PolyCurve>() { polyCurves.ElementAt(0) };
+
+            List<Tuple<BoundingBox, List<int>>> aTupleList = polyCurves.ToList().ConvertAll(x => new Tuple<BoundingBox, List<int>>(Geometry.Query.Bounds(x), new List<int>()));
+            for (int i = 0; i < aTupleList.Count; i++)
             {
-                Solid aSolid = aGeometryObject as Solid;
-                if (aSolid == null)
-                    continue;
+                BoundingBox aBoundingBox_1 = aTupleList[i].Item1;
+                for (int j = i + 1; j < aTupleList.Count; j++)
+                {
+                    BoundingBox aBoundingBox_2 = aTupleList[j].Item1;
 
-                PlanarFace aPlanarFace = Query.Top(aSolid);
-                if (aPlanarFace == null)
-                    continue;
-
-                List<BH.oM.Environment.Elements.Panel> aBuildingElementPanelList = aPlanarFace.Panels(pullSettings);
-                if (aBuildingElementPanelList == null || aBuildingElementPanelList.Count < 1)
-                    continue;
-
-                aResult.AddRange(aBuildingElementPanelList);
+                    if (Geometry.Query.IsContaining(aBoundingBox_1, aBoundingBox_2))
+                        aTupleList[j].Item2.Add(i);
+                    else if (Geometry.Query.IsContaining(aBoundingBox_2, aBoundingBox_1))
+                        aTupleList[i].Item2.Add(j);
+                }
             }
 
-            return aResult;
-
-        }
-
-        /***************************************************/
-
-        internal static List<oM.Environment.Elements.Panel> Panels(this PlanarFace planarFace, PullSettings pullSettings = null)
-        {
-            pullSettings = pullSettings.DefaultIfNull();
-
-            List<oM.Environment.Elements.Panel> aResult = new List<oM.Environment.Elements.Panel>();
-
-            List<PolyCurve> aPolyCurveList = Query.PolyCurves(planarFace, null, pullSettings);
-
-            foreach (PolyCurve aPolyCurve in aPolyCurveList)
+            List<PolyCurve> aPolyCurveList = new List<PolyCurve>();
+            for (int i = 0; i < aTupleList.Count; i++)
             {
-                oM.Environment.Elements.Panel aPanel = Create.Panel(aPolyCurve);
-                aResult.Add(aPanel);
+                if (aTupleList[i].Item2.Count > 0)
+                    aPolyCurveList.Add(polyCurves.ElementAt(i));
             }
 
-            return aResult;
+
+            return aPolyCurveList;
         }
 
         /***************************************************/
     }
 }
+
