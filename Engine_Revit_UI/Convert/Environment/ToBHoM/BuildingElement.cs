@@ -77,9 +77,9 @@ namespace BH.UI.Revit.Engine
 
             BuildingElementProperties aBuildingElementProperties = familyInstance.Symbol.ToBHoMBuildingElementProperties(pullSettings);
 
-            Polyline aPolyline = Query.Polyline(familyInstance, pullSettings);
+            PolyCurve aPolyCurve = Query.PolyCurve(familyInstance, pullSettings);
 
-            aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aPolyline);
+            aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aPolyCurve);
             aBuildingElement.Name = Query.FamilyTypeFullName(familyInstance);
             aBuildingElement.ElementID = familyInstance.Id.IntegerValue.ToString();
 
