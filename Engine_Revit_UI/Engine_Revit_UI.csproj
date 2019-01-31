@@ -222,7 +222,6 @@
     <Compile Include="Query\BoundingBox.cs" />
     <Compile Include="Query\LowLevel.cs" />
     <Compile Include="Query\HighLevel.cs" />
-    <Compile Include="Query\Polyline.cs" />
     <Compile Include="Query\TopFacesPolyCurves.cs" />
     <Compile Include="Query\EnergyAnalysisElementName.cs" />
     <Compile Include="Query\Material.cs" />
