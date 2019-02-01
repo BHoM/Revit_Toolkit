@@ -97,7 +97,7 @@ namespace BH.UI.Revit.Engine
                     double ZOffset = familyInstance.LookupParameterDouble("z Offset Value", pullSettings.ConvertUnits);
                     barCurve = BHG.Modify.Translate(barCurve, new oM.Geometry.Vector { X = 0, Y = 0, Z = ZOffset });
                 }
-                rotation = -familyInstance.LookupParameterDouble("Cross-Section Rotation", false);
+                rotation = -familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, false);
             }
 
             if (!nonlinear && barCurve == null) familyInstance.BarCurveNotFoundWarning();
