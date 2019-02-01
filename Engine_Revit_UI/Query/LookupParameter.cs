@@ -58,6 +58,21 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static double LookupParameterDouble(this Element element, BuiltInParameter builtInParameter, bool convertUnits = true)
+        {
+            double value = double.NaN;
+            Parameter p = element.get_Parameter(builtInParameter);
+            if (p != null && p.HasValue)
+            {
+                value = p.AsDouble();
+                if (convertUnits)
+                    value = Convert.ToSI(value, p.Definition.UnitType);
+            }
+            return value;
+        }
+
+        /***************************************************/
+
         public static double LookupParameterDouble(this Element element, IEnumerable<string> parameterNames, bool convertUnits = true)
         {
             double value = double.NaN;
