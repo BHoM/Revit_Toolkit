@@ -109,8 +109,9 @@ namespace BH.UI.Revit.Engine
             if (barProperty != null)
             {
                 double orientationAngle = (Math.PI * 0.5 - barProperty.OrientationAngle) % (2 * Math.PI);
-                Parameter rotation = aFamilyInstance.LookupParameter("Cross-Section Rotation");
-                rotation.Set(orientationAngle);
+                Parameter aParameter = aFamilyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+                if(aParameter != null && !aParameter.IsReadOnly)
+                    aParameter.Set(orientationAngle);
             }
 
             if (pushSettings.CopyCustomData)
