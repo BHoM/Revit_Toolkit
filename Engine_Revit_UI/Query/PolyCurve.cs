@@ -81,13 +81,13 @@ namespace BH.UI.Revit.Engine
             oM.Geometry.Plane aPlane = null;
             foreach (ICurve aICurve in aCurveList)
             {
-                List<oM.Geometry.Point> aPointList = BH.Engine.Geometry.Query.IControlPoints(aICurve);
-                if (aPointList == null || aPointList.Count == 0)
+                List<oM.Geometry.Point> aPointList_Temp = BH.Engine.Geometry.Query.IControlPoints(aICurve);
+                if (aPointList_Temp == null || aPointList_Temp.Count == 0)
                     continue;
 
                 foreach (oM.Geometry.Plane aPlane_Temp in aPlaneList)
                 {
-                    double aMin_Temp = aPointList.ConvertAll(x => BH.Engine.Geometry.Query.Distance(x, aPlane_Temp)).Min();
+                    double aMin_Temp = aPointList_Temp.ConvertAll(x => BH.Engine.Geometry.Query.Distance(x, aPlane_Temp)).Min();
                     if (aMin_Temp < aMin)
                     {
                         aPlane = aPlane_Temp;
@@ -97,57 +97,77 @@ namespace BH.UI.Revit.Engine
             }
 
             BoundingBox aBoundingBox = null;
-
-            for (int i = 0; i < aCurveList.Count; i++)
+            List<oM.Geometry.Point> aPointList = new List<oM.Geometry.Point>();
+            foreach (ICurve aICurve in aCurveList)
             {
-                ICurve aICurve = BH.Engine.Geometry.Modify.IProject(aCurveList[i], aPlane);
+                ICurve aICurve_Temp = BH.Engine.Geometry.Modify.IProject(aICurve, aPlane);
 
                 if (aBoundingBox == null)
-                    aBoundingBox = BH.Engine.Geometry.Query.IBounds(aICurve);
+                    aBoundingBox = BH.Engine.Geometry.Query.IBounds(aICurve_Temp);
                 else
-                    aBoundingBox += BH.Engine.Geometry.Query.IBounds(aICurve);
+                    aBoundingBox += BH.Engine.Geometry.Query.IBounds(aICurve_Temp);
 
-                aCurveList[i] = aICurve;
+                aPointList.AddRange(aICurve_Temp.IControlPoints());
             }
 
-            oM.Geometry.Point aCenter = BH.Engine.Geometry.Query.Centre(aBoundingBox);
-            Vector aExtent = BH.Engine.Geometry.Query.Extents(aBoundingBox) / 2;
-
-            double aDotProduct;
-
-            //Hand Direction
             XYZ aHandOrientation = familyInstance.HandOrientation;
             Vector aHandDirection = Create.Vector(aHandOrientation.X, aHandOrientation.Y, aHandOrientation.Z);
             aHandDirection = BH.Engine.Geometry.Modify.Project(aHandDirection, aPlane).Normalise();
 
-            aDotProduct = BH.Engine.Geometry.Query.DotProduct(aExtent, aHandDirection);
-            aHandDirection = aHandDirection * aDotProduct;
+            Vector aUpDirection = BH.Engine.Geometry.Query.CrossProduct(aHandDirection, aPlane.Normal).Normalise();
 
-            Vector aHandDirection_Invert = Create.Vector(-aHandDirection.X, -aHandDirection.Y, -aHandDirection.Z);
+            double aMax_Up = double.MinValue;
+            double aMax_Hand = double.MinValue;
 
-            //Up Direction
-            Vector aUpDirection = BH.Engine.Geometry.Query.CrossProduct(aHandDirection, aPlane.Normal);
-            aUpDirection = aUpDirection.Normalise();
+            for (int i = 0; i < aPointList.Count; i++)
+            {
+                for (int j = i + 1; j < aPointList.Count; j++)
+                {
+                    double aDotProduct;
 
-            aDotProduct = BH.Engine.Geometry.Query.DotProduct(aExtent, aUpDirection);
-            aUpDirection = aUpDirection * aDotProduct;
+                    Vector aVector = Create.Vector(aPointList[i].X - aPointList[j].X, aPointList[i].Y - aPointList[j].Y, aPointList[i].Z - aPointList[j].Z);
 
-            Vector aUpDirection_Invert = Create.Vector(-aUpDirection.X, -aUpDirection.Y, -aUpDirection.Z);
+                    aDotProduct = BH.Engine.Geometry.Query.DotProduct(aVector, aHandDirection);
+                    if (aDotProduct > 0)
+                    {
+                        Vector aVector_Temp = aHandDirection * aDotProduct;
+                        double aHand = BH.Engine.Geometry.Query.Length(aVector_Temp);
+                        if (aHand > aMax_Hand)
+                            aMax_Hand = aHand;
+                    }
 
+                    aDotProduct = BH.Engine.Geometry.Query.DotProduct(aVector, aUpDirection);
+                    if (aDotProduct > 0)
+                    {
+                        Vector aVector_Temp = aUpDirection * aDotProduct;
+                        double aUp = BH.Engine.Geometry.Query.Length(aVector_Temp);
+                        if (aUp > aMax_Up)
+                            aMax_Up = aUp;
+                    }
+                }
+            }
+
+            if (aMax_Up < 0 || aMax_Hand < 0)
+                return null;
+
+            aUpDirection = aUpDirection * aMax_Up / 2;
+            aHandDirection = aHandDirection * aMax_Hand / 2;
+
+            oM.Geometry.Point aCenter = BH.Engine.Geometry.Query.Centre(aBoundingBox);
 
             oM.Geometry.Point aPoint_1 = BH.Engine.Geometry.Modify.Translate(aCenter, aUpDirection);
-            aPoint_1 = BH.Engine.Geometry.Modify.Translate(aPoint_1, aHandDirection_Invert);
+            aPoint_1 = BH.Engine.Geometry.Modify.Translate(aPoint_1, aHandDirection);
 
             oM.Geometry.Point aPoint_2 = BH.Engine.Geometry.Modify.Translate(aCenter, aUpDirection);
-            aPoint_2 = BH.Engine.Geometry.Modify.Translate(aPoint_2, aHandDirection);
+            aPoint_2 = BH.Engine.Geometry.Modify.Translate(aPoint_2, -aHandDirection);
 
-            oM.Geometry.Point aPoint_3 = BH.Engine.Geometry.Modify.Translate(aCenter, aUpDirection_Invert);
-            aPoint_3 = BH.Engine.Geometry.Modify.Translate(aPoint_3, aHandDirection);
+            oM.Geometry.Point aPoint_3 = BH.Engine.Geometry.Modify.Translate(aCenter, -aUpDirection);
+            aPoint_3 = BH.Engine.Geometry.Modify.Translate(aPoint_3, -aHandDirection);
 
-            oM.Geometry.Point aPoint_4 = BH.Engine.Geometry.Modify.Translate(aCenter, aUpDirection_Invert);
-            aPoint_4 = BH.Engine.Geometry.Modify.Translate(aPoint_4, aHandDirection_Invert);
+            oM.Geometry.Point aPoint_4 = BH.Engine.Geometry.Modify.Translate(aCenter, -aUpDirection);
+            aPoint_4 = BH.Engine.Geometry.Modify.Translate(aPoint_4, aHandDirection);
 
-            return Create.PolyCurve(new oM.Geometry.Line[] { Create.Line( aPoint_1, aPoint_2), Create.Line(aPoint_2, aPoint_3), Create.Line(aPoint_3, aPoint_4), Create.Line(aPoint_4, aPoint_1)});
+            return Create.PolyCurve(new oM.Geometry.Line[] { Create.Line(aPoint_1, aPoint_2), Create.Line(aPoint_2, aPoint_3), Create.Line(aPoint_3, aPoint_4), Create.Line(aPoint_4, aPoint_1) });
         }
 
         /***************************************************/
