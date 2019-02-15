@@ -31,9 +31,10 @@ namespace BH.oM.Adapters.Revit.Settings
         /**** Public Properties                        ****/
         /***************************************************/
 
-        public Enums.Discipline DefaultDiscipline { get; set; } = Enums.Discipline.Structural;
+        public Enums.Discipline DefaultDiscipline { get; set; } = Enums.Discipline.Undefined;
         public bool Replace { get; set; } = true;
         public string TagsParameterName { get; set; } = "BHE_Tags";
+        public bool SuppressFailureMessages { get; set; } = false;
 
         /***************************************************/
     }

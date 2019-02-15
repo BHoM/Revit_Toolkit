@@ -24,6 +24,7 @@ namespace BH.oM.Adapters.Revit.Enums
 {
     public enum Discipline
     {
+        Undefined,
         Environmental,
         Structural,
         Architecture

@@ -31,6 +31,7 @@ using BH.UI.Revit.Engine;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.Revit.Settings;
+using Autodesk.Revit.UI;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -66,14 +67,14 @@ namespace BH.UI.Revit.Adapter
                 using (Transaction aTransaction = new Transaction(aDocument, "Create"))
                 {
                     aTransaction.Start();
-                    aResult = Create(objects, aDocument, RevitSettings);
+                    aResult = Create(objects, UIControlledApplication, aDocument, RevitSettings);
                     aTransaction.Commit();
                 }
             }
             else
             {
                 //Transaction is already opened
-                aResult = Create(objects, aDocument, RevitSettings);
+                aResult = Create(objects, UIControlledApplication, aDocument, RevitSettings);
             }
 
             return aResult; ;
@@ -83,9 +84,12 @@ namespace BH.UI.Revit.Adapter
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private static bool Create<T>(IEnumerable<T> objects, Document document, RevitSettings revitSettings) where T : IObject
+        private static bool Create<T>(IEnumerable<T> objects, UIControlledApplication UIContralledApplication, Document document, RevitSettings revitSettings) where T : IObject
         {
             string aTagsParameterName = revitSettings.GeneralSettings.TagsParameterName;
+
+            if (UIContralledApplication != null && revitSettings.GeneralSettings.SuppressFailureMessages)
+                UIContralledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
 
             PushSettings aPushSettings = new PushSettings()
             {
@@ -106,7 +110,7 @@ namespace BH.UI.Revit.Adapter
                     continue;
                 }
 
-                if(aBHoMObject is Bar)
+                if (aBHoMObject is Bar)
                 {
                     ConvertBeforePushError(aBHoMObject, typeof(FramingElement));
                     continue;
@@ -165,7 +169,7 @@ namespace BH.UI.Revit.Adapter
                             {
                                 Location aLocation = Modify.Move(aElement.Location, aBHoMObject as dynamic, aPushSettings);
                             }
-                            catch(Exception aException)
+                            catch (Exception aException)
                             {
                                 ObjectNotMovedWarning(aBHoMObject);
                             }
@@ -185,7 +189,59 @@ namespace BH.UI.Revit.Adapter
                 }
             }
 
+            if (UIContralledApplication != null)
+                UIContralledApplication.ControlledApplication.FailuresProcessing -= ControlledApplication_FailuresProcessing;
+
             return true;
+        }
+
+        /***************************************************/
+
+        private static void ControlledApplication_FailuresProcessing(object sender, Autodesk.Revit.DB.Events.FailuresProcessingEventArgs e)
+        {
+            bool aHasFailure = false;
+            FailuresAccessor aFailuresAccessor = e.GetFailuresAccessor();
+            List<FailureMessageAccessor> aFailureMessageAccessorList = aFailuresAccessor.GetFailureMessages().ToList();
+            List<ElementId> ElemntsToDelete = new List<ElementId>();
+            foreach (FailureMessageAccessor aFailureMessageAccessor in aFailureMessageAccessorList)
+            {
+                try
+                {
+                    if (aFailureMessageAccessor.GetSeverity() == FailureSeverity.Warning)
+                    {
+                        aFailuresAccessor.DeleteWarning(aFailureMessageAccessor);
+                        continue;
+                    }
+                    else
+                    {
+                        aFailuresAccessor.ResolveFailure(aFailureMessageAccessor);
+                        aHasFailure = true;
+                        continue;
+                        //return FailureProcessingResult.ProceedWithCommit;
+                    }
+
+                    //List<ElementId> FailingElementIds = aFailureMessageAccessor.GetFailingElementIds().ToList();
+                    //ElementId FailingElementId = FailingElementIds[0];
+                    //if (!ElemntsToDelete.Contains(FailingElementId))
+                    //    ElemntsToDelete.Add(FailingElementId);
+
+                    //aHasFailure = true;
+
+                    //aFailuresAccessor.DeleteWarning(aFailureMessageAccessor);
+
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+
+            if (ElemntsToDelete.Count > 0)
+                aFailuresAccessor.DeleteElements(ElemntsToDelete);
+
+            if (aHasFailure)
+                e.SetProcessingResult(FailureProcessingResult.ProceedWithCommit);
+
+            e.SetProcessingResult(FailureProcessingResult.Continue);
         }
 
         /***************************************************/
@@ -236,6 +292,5 @@ namespace BH.UI.Revit.Adapter
         }
 
         /***************************************************/
-
     }
 }

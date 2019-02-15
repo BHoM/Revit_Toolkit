@@ -37,15 +37,16 @@ namespace BH.Engine.Adapters.Revit
         [Input("defaultDiscipline", "Default disciplne for pull method")]
         [Input("replace", "Replace existing elements in the model for push method. Update parameters (CustomData) only if set to false.")]
         [Input("tagsParameterName", "Name of the parameter which stores Tags assigned to BHoM object")]
+        [Input("suppressFailureMessages", "Revit will suppress pop up messages")]
         [Output("GeneralSettings")]
-        public static GeneralSettings GeneralSettings(Discipline defaultDiscipline = Discipline.Structural, bool replace = true, string tagsParameterName = "BHE_Tags")
+        public static GeneralSettings GeneralSettings(Discipline defaultDiscipline = Discipline.Undefined, bool replace = true, string tagsParameterName = "BHE_Tags", bool suppressFailureMessages = false)
         {
             return new GeneralSettings()
             {
                 DefaultDiscipline = defaultDiscipline,
                 Replace = replace,
-                TagsParameterName = tagsParameterName
-
+                TagsParameterName = tagsParameterName,
+                SuppressFailureMessages = suppressFailureMessages
             };
         }
 
