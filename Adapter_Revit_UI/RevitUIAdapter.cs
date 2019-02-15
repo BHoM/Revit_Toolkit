@@ -33,6 +33,10 @@ namespace BH.UI.Revit.Adapter
         /**** Private Properties                        ****/
         /***************************************************/
 
+        private UIControlledApplication m_UIControlledApplication;
+
+        /***************************************************/
+
         private Document m_Document;
 
 
@@ -40,7 +44,7 @@ namespace BH.UI.Revit.Adapter
         /**** Public Constructors                       ****/
         /***************************************************/
         
-        public RevitUIAdapter(Document document)
+        public RevitUIAdapter(UIControlledApplication uIControlledApplication, Document document)
             : base()
         {
             AdapterId = BH.Engine.Adapters.Revit.Convert.AdapterId;
@@ -48,7 +52,9 @@ namespace BH.UI.Revit.Adapter
             Config.ProcessInMemory = false;
             Config.SeparateProperties = true;
             Config.CloneBeforePush = true;
+
             m_Document = document;
+            m_UIControlledApplication = uIControlledApplication;
         }
 
 
@@ -74,6 +80,16 @@ namespace BH.UI.Revit.Adapter
                     return null;
 
                 return new UIDocument(m_Document);
+            }
+        }
+
+        /***************************************************/
+
+        public UIControlledApplication UIControlledApplication
+        {
+            get
+            {
+                return m_UIControlledApplication;
             }
         }
 

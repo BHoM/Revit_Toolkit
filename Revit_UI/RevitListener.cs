@@ -61,6 +61,10 @@ namespace BH.UI.Revit
 
         /***************************************************/
 
+        public UIControlledApplication UIControlledApplication = null;
+
+        /***************************************************/
+
         public KeyValuePair<string, object> LatestKeyValuePair { get; set; }
 
         /***************************************************/
@@ -70,7 +74,6 @@ namespace BH.UI.Revit
         /***************************************************/
 
         public static RevitSettings AdapterSettings { get; set; } = null;
-
 
         /***************************************************/
         /**** Public methods                            ****/
@@ -82,7 +85,7 @@ namespace BH.UI.Revit
 
             if (!m_adapters.TryGetValue(document, out adapter))
             {
-                adapter = new RevitUIAdapter(document);
+                adapter = new RevitUIAdapter(UIControlledApplication, document);
                 m_adapters[document] = adapter;
             }
 
@@ -135,15 +138,17 @@ namespace BH.UI.Revit
 
         /***************************************************/
 
-        public Result OnStartup(UIControlledApplication application)
+        public Result OnStartup(UIControlledApplication uIControlledApplication)
         {
+            UIControlledApplication = uIControlledApplication;
+
             //Make sure all BHoM assemblies are loaded
-            string versionNumber = application.ControlledApplication.VersionNumber;
+            string versionNumber = uIControlledApplication.ControlledApplication.VersionNumber;
             string path = Environment.GetEnvironmentVariable("APPDATA") + @"\Autodesk\Revit\Addins\" + versionNumber +  @"\BHoM";
             BH.Engine.Reflection.Compute.LoadAllAssemblies(path);
 
             //Add button to set socket ports
-            AddRibbonItems(application);
+            AddRibbonItems(uIControlledApplication);
 
             //Define static instance of the listener
             Listener = this;
@@ -167,7 +172,7 @@ namespace BH.UI.Revit
 
             m_linkOut = new SocketLink_Tcp(14129);
 
-            application.ViewActivated += Application_ViewActivated;
+            uIControlledApplication.ViewActivated += Application_ViewActivated;
 
             return Result.Succeeded;
         }

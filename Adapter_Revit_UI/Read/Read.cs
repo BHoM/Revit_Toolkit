@@ -211,17 +211,20 @@ namespace BH.UI.Revit.Adapter
 
             List<IBHoMObject> aResult = new List<IBHoMObject>();
 
-            IEnumerable<Type> aTypes = Query.BHoMTypes(element);
-            if (aTypes != null && aTypes.Count() > 0)
+            if(pullSettings.Discipline != Discipline.Undefined)
             {
-                try
+                IEnumerable<Type> aTypes = Query.BHoMTypes(element);
+                if (aTypes != null && aTypes.Count() > 0)
                 {
-                    aObject = Engine.Convert.ToBHoM(element as dynamic, pullSettings);
-                }
-                catch (Exception aException)
-                {
-                    BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted becasue of missing ToBHoM method. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, aException.Message));
-                    aConverted = false;
+                    try
+                    {
+                        aObject = Engine.Convert.ToBHoM(element as dynamic, pullSettings);
+                    }
+                    catch (Exception aException)
+                    {
+                        BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted becasue of missing ToBHoM method. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, aException.Message));
+                        aConverted = false;
+                    }
                 }
             }
 

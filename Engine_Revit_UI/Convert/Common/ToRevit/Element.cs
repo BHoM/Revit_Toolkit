@@ -81,6 +81,46 @@ namespace BH.UI.Revit.Engine
                                 aElement = document.Create.NewFamilyInstance(aXYZ, aFamilySymbol, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
                             }
                             break;
+                        case FamilyPlacementType.CurveDrivenStructural:
+                            if(aIGeometry is ICurve)
+                            {
+                                Level aLevel = ((ICurve)aIGeometry).BottomLevel(document, pushSettings.ConvertUnits);
+                                if (aLevel == null)
+                                    break;
+
+                                Curve aCurve = ToRevitCurve((ICurve)aIGeometry, pushSettings);
+
+                                Autodesk.Revit.DB.Structure.StructuralType aStructuralType = Autodesk.Revit.DB.Structure.StructuralType.NonStructural;
+
+                                aBuiltInCategory = (BuiltInCategory)aFamilySymbol.Category.Id.IntegerValue;
+                                switch (aBuiltInCategory)
+                                {
+                                    case BuiltInCategory.OST_StructuralColumns:
+                                        aStructuralType = Autodesk.Revit.DB.Structure.StructuralType.Column;
+                                        break;
+                                    case BuiltInCategory.OST_StructuralFraming:
+                                        aStructuralType = Autodesk.Revit.DB.Structure.StructuralType.Beam;
+                                        break;
+                                }
+                                if (aStructuralType == Autodesk.Revit.DB.Structure.StructuralType.NonStructural)
+                                    break;
+
+                                aElement = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, aStructuralType);
+                            }
+                            break;
+                    }
+                }
+                else if(aElementType is WallType)
+                {
+                    IGeometry aIGeometry = genericObject.Location;
+                    if(aIGeometry is ICurve)
+                    {
+                        Level aLevel = ((ICurve)aIGeometry).BottomLevel(document, pushSettings.ConvertUnits);
+                        if (aLevel != null)
+                        {
+                            Curve aCurve = ToRevitCurve((ICurve)aIGeometry, pushSettings);
+                            aElement = Wall.Create(document, aCurve, aLevel.Id, false);
+                        }
                     }
                 }
             }
