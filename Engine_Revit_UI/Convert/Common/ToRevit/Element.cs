@@ -47,97 +47,97 @@ namespace BH.UI.Revit.Engine
             BuiltInCategory aBuiltInCategory = genericObject.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
 
             ElementType aElementType = genericObject.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
+            if (aElementType == null)
+                return null;
 
-            if (aElementType != null)
+
+            if (aElementType is FamilySymbol)
             {
-                if (aElementType is FamilySymbol)
+                FamilySymbol aFamilySymbol = (FamilySymbol)aElementType;
+                Family aFamily = aFamilySymbol.Family;
+
+                IGeometry aIGeometry = genericObject.Location;
+
+                switch (aFamily.FamilyPlacementType)
                 {
-                    FamilySymbol aFamilySymbol = (FamilySymbol)aElementType;
-                    Family aFamily = aFamilySymbol.Family;
+                    //TODO: Implement rest of the cases
 
-                    IGeometry aIGeometry = genericObject.Location;
+                    case FamilyPlacementType.ViewBased:
+                        break;
+                    case FamilyPlacementType.CurveBased:
+                        if (aIGeometry is ICurve)
+                        {
+                            Level aLevel = ((ICurve)aIGeometry).BottomLevel(document, pushSettings.ConvertUnits);
+                            if (aLevel == null)
+                                break;
 
-                    switch (aFamily.FamilyPlacementType)
+                            Curve aCurve = ToRevitCurve((ICurve)aIGeometry, pushSettings);
+                            aElement = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
+                        }
+                        else
+                        {
+                            Compute.InvalidLocationTypeWarning(genericObject, aElementType);
+                        }
+                        break;
+                    case FamilyPlacementType.OneLevelBased:
+                        if (aIGeometry is oM.Geometry.Point)
+                        {
+                            XYZ aXYZ = ToRevit((oM.Geometry.Point)aIGeometry, pushSettings);
+                            aElement = document.Create.NewFamilyInstance(aXYZ, aFamilySymbol, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
+                        }
+                        else
+                        {
+                            Compute.InvalidLocationTypeWarning(genericObject, aElementType);
+                        }
+                        break;
+                    case FamilyPlacementType.CurveDrivenStructural:
+                        if (aIGeometry is ICurve)
+                        {
+                            Level aLevel = ((ICurve)aIGeometry).BottomLevel(document, pushSettings.ConvertUnits);
+                            if (aLevel == null)
+                                break;
+
+                            Curve aCurve = ToRevitCurve((ICurve)aIGeometry, pushSettings);
+
+                            Autodesk.Revit.DB.Structure.StructuralType aStructuralType = Autodesk.Revit.DB.Structure.StructuralType.NonStructural;
+
+                            aBuiltInCategory = (BuiltInCategory)aFamilySymbol.Category.Id.IntegerValue;
+                            switch (aBuiltInCategory)
+                            {
+                                case BuiltInCategory.OST_StructuralColumns:
+                                    aStructuralType = Autodesk.Revit.DB.Structure.StructuralType.Column;
+                                    break;
+                                case BuiltInCategory.OST_StructuralFraming:
+                                    aStructuralType = Autodesk.Revit.DB.Structure.StructuralType.Beam;
+                                    break;
+                            }
+                            if (aStructuralType == Autodesk.Revit.DB.Structure.StructuralType.NonStructural)
+                                break;
+
+                            aElement = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, aStructuralType);
+                        }
+                        else
+                        {
+                            Compute.InvalidLocationTypeWarning(genericObject, aElementType);
+                        }
+                        break;
+                }
+            }
+            else if (aElementType is WallType)
+            {
+                IGeometry aIGeometry = genericObject.Location;
+                if (aIGeometry is ICurve)
+                {
+                    Level aLevel = ((ICurve)aIGeometry).BottomLevel(document, pushSettings.ConvertUnits);
+                    if (aLevel != null)
                     {
-                        //TODO: Implement rest of the cases
-
-                        case FamilyPlacementType.ViewBased:
-                            break;
-                        case FamilyPlacementType.CurveBased:
-                            if (aIGeometry is ICurve)
-                            {
-                                Level aLevel = ((ICurve)aIGeometry).BottomLevel(document, pushSettings.ConvertUnits);
-                                if (aLevel == null)
-                                    break;
-
-                                Curve aCurve = ToRevitCurve((ICurve)aIGeometry, pushSettings);
-                                aElement = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                            }
-                            else
-                            {
-                                Compute.InvalidLocationTypeWarning(genericObject, aElementType);
-                            }
-                            break;
-                        case FamilyPlacementType.OneLevelBased:
-                            if (aIGeometry is oM.Geometry.Point)
-                            {
-                                XYZ aXYZ = ToRevit((oM.Geometry.Point)aIGeometry, pushSettings);
-                                aElement = document.Create.NewFamilyInstance(aXYZ, aFamilySymbol, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                            }
-                            else
-                            {
-                                Compute.InvalidLocationTypeWarning(genericObject, aElementType);
-                            }
-                            break;
-                        case FamilyPlacementType.CurveDrivenStructural:
-                            if(aIGeometry is ICurve)
-                            {
-                                Level aLevel = ((ICurve)aIGeometry).BottomLevel(document, pushSettings.ConvertUnits);
-                                if (aLevel == null)
-                                    break;
-
-                                Curve aCurve = ToRevitCurve((ICurve)aIGeometry, pushSettings);
-
-                                Autodesk.Revit.DB.Structure.StructuralType aStructuralType = Autodesk.Revit.DB.Structure.StructuralType.NonStructural;
-
-                                aBuiltInCategory = (BuiltInCategory)aFamilySymbol.Category.Id.IntegerValue;
-                                switch (aBuiltInCategory)
-                                {
-                                    case BuiltInCategory.OST_StructuralColumns:
-                                        aStructuralType = Autodesk.Revit.DB.Structure.StructuralType.Column;
-                                        break;
-                                    case BuiltInCategory.OST_StructuralFraming:
-                                        aStructuralType = Autodesk.Revit.DB.Structure.StructuralType.Beam;
-                                        break;
-                                }
-                                if (aStructuralType == Autodesk.Revit.DB.Structure.StructuralType.NonStructural)
-                                    break;
-
-                                aElement = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, aStructuralType);
-                            }
-                            else
-                            {
-                                Compute.InvalidLocationTypeWarning(genericObject, aElementType);
-                            }
-                            break;
+                        Curve aCurve = ToRevitCurve((ICurve)aIGeometry, pushSettings);
+                        aElement = Wall.Create(document, aCurve, aLevel.Id, false);
                     }
                 }
-                else if(aElementType is WallType)
+                else
                 {
-                    IGeometry aIGeometry = genericObject.Location;
-                    if(aIGeometry is ICurve)
-                    {
-                        Level aLevel = ((ICurve)aIGeometry).BottomLevel(document, pushSettings.ConvertUnits);
-                        if (aLevel != null)
-                        {
-                            Curve aCurve = ToRevitCurve((ICurve)aIGeometry, pushSettings);
-                            aElement = Wall.Create(document, aCurve, aLevel.Id, false);
-                        }
-                    }
-                    else
-                    {
-                        Compute.InvalidLocationTypeWarning(genericObject, aElementType);
-                    }
+                    Compute.InvalidLocationTypeWarning(genericObject, aElementType);
                 }
             }
 
