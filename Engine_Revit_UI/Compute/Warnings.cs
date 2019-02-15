@@ -297,5 +297,20 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        internal static void InvalidLocationTypeWarning(this IBHoMObject iBHoMObject, ElementType elementType)
+        {
+            string aMessage = "BHoM Object location does not match with the required Location of family";
+
+            if (iBHoMObject != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, iBHoMObject.BHoM_Guid);
+
+            if (elementType != null)
+                aMessage = string.Format("{0} Element Id : {1}", aMessage, elementType.Id.IntegerValue);
+
+            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
     }
 }

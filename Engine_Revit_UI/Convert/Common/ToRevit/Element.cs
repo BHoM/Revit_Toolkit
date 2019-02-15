@@ -73,12 +73,20 @@ namespace BH.UI.Revit.Engine
                                 Curve aCurve = ToRevitCurve((ICurve)aIGeometry, pushSettings);
                                 aElement = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
                             }
+                            else
+                            {
+                                Compute.InvalidLocationTypeWarning(genericObject, aElementType);
+                            }
                             break;
                         case FamilyPlacementType.OneLevelBased:
                             if (aIGeometry is oM.Geometry.Point)
                             {
                                 XYZ aXYZ = ToRevit((oM.Geometry.Point)aIGeometry, pushSettings);
                                 aElement = document.Create.NewFamilyInstance(aXYZ, aFamilySymbol, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
+                            }
+                            else
+                            {
+                                Compute.InvalidLocationTypeWarning(genericObject, aElementType);
                             }
                             break;
                         case FamilyPlacementType.CurveDrivenStructural:
@@ -107,6 +115,10 @@ namespace BH.UI.Revit.Engine
 
                                 aElement = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, aStructuralType);
                             }
+                            else
+                            {
+                                Compute.InvalidLocationTypeWarning(genericObject, aElementType);
+                            }
                             break;
                     }
                 }
@@ -121,6 +133,10 @@ namespace BH.UI.Revit.Engine
                             Curve aCurve = ToRevitCurve((ICurve)aIGeometry, pushSettings);
                             aElement = Wall.Create(document, aCurve, aLevel.Id, false);
                         }
+                    }
+                    else
+                    {
+                        Compute.InvalidLocationTypeWarning(genericObject, aElementType);
                     }
                 }
             }
