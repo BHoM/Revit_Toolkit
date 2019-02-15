@@ -29,6 +29,7 @@ using Autodesk.Revit.DB.Analysis;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Adapters.Revit.Settings;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -209,6 +210,11 @@ namespace BH.UI.Revit.Engine
 
                 aTransaction.RollBack();
             }
+
+            //Levels
+            IEnumerable<Level> aLevels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>();
+            foreach (Level aLevel in aLevels)
+                Convert.ToBHoMLevel(aLevel, pullSettings);
 
             List<IBHoMObject> aResult = new List<IBHoMObject>();
             foreach (List<IBHoMObject> aBHoMObjectList in pullSettings.RefObjects.Values)
