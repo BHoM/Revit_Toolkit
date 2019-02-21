@@ -55,6 +55,29 @@ namespace BH.UI.Revit.Engine
             aBuildingElement.Name = Query.FamilyTypeFullName(element);
             aBuildingElement.ElementID = element.Id.IntegerValue.ToString();
 
+            //Set ExtendedProperties
+            EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+            aEnvironmentContextProperties.ElementID = element.Id.IntegerValue.ToString();
+            aEnvironmentContextProperties.TypeName = Query.FamilyTypeFullName(element);
+            aBuildingElement.ExtendedProperties.Add(aEnvironmentContextProperties);
+
+            BuildingElementAnalyticalProperties aBuildingElementAnalyticalProperties = new BuildingElementAnalyticalProperties();
+            aBuildingElement.ExtendedProperties.Add(aBuildingElementAnalyticalProperties);
+
+            BuildingElementContextProperties aBuildingElementContextProperties = new BuildingElementContextProperties();
+            aBuildingElement.ExtendedProperties.Add(aBuildingElementContextProperties);
+
+            BuildingResultsProperties aBuildingResultsProperties = new BuildingResultsProperties();
+            aBuildingElement.ExtendedProperties.Add(aBuildingResultsProperties);
+
+            ElementProperties aElementProperties = new ElementProperties();
+            BuildingElementType? aBuildingElementType = Query.BuildingElementType(element.Category);
+            if (aBuildingElementType.HasValue)
+                aElementProperties.BuildingElementType = aBuildingElementType.Value;
+            else
+                aElementProperties.BuildingElementType = BuildingElementType.Undefined;
+            aBuildingElement.AddExtendedProperty(aElementProperties);
+
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, element) as BuildingElement;
             if (pullSettings.CopyCustomData)
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, element, pullSettings.ConvertUnits) as BuildingElement;
@@ -83,6 +106,29 @@ namespace BH.UI.Revit.Engine
             aBuildingElement.Name = Query.FamilyTypeFullName(familyInstance);
             aBuildingElement.ElementID = familyInstance.Id.IntegerValue.ToString();
 
+            //Set ExtendedProperties
+            EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+            aEnvironmentContextProperties.ElementID = familyInstance.Id.IntegerValue.ToString();
+            aEnvironmentContextProperties.TypeName = Query.FamilyTypeFullName(familyInstance);
+            aBuildingElement.ExtendedProperties.Add(aEnvironmentContextProperties);
+
+            BuildingElementAnalyticalProperties aBuildingElementAnalyticalProperties = new BuildingElementAnalyticalProperties();
+            aBuildingElement.ExtendedProperties.Add(aBuildingElementAnalyticalProperties);
+
+            BuildingElementContextProperties aBuildingElementContextProperties = new BuildingElementContextProperties();
+            aBuildingElement.ExtendedProperties.Add(aBuildingElementContextProperties);
+
+            BuildingResultsProperties aBuildingResultsProperties = new BuildingResultsProperties();
+            aBuildingElement.ExtendedProperties.Add(aBuildingResultsProperties);
+
+            ElementProperties aElementProperties = new ElementProperties();
+            BuildingElementType? aBuildingElementType = Query.BuildingElementType(familyInstance.Category);
+            if (aBuildingElementType.HasValue)
+                aElementProperties.BuildingElementType = aBuildingElementType.Value;
+            else
+                aElementProperties.BuildingElementType = BuildingElementType.Undefined;
+            aBuildingElement.AddExtendedProperty(aElementProperties);
+
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, familyInstance) as BuildingElement;
             if (pullSettings.CopyCustomData)
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, familyInstance, pullSettings.ConvertUnits) as BuildingElement;
@@ -103,7 +149,7 @@ namespace BH.UI.Revit.Engine
                 return aBuildingElement;
 
             //Get the geometry Curve
-            oM.Geometry.ICurve aCurve = null;
+            ICurve aCurve = null;
             if (energyAnalysisSurface != null)
                 aCurve = energyAnalysisSurface.GetPolyloop().ToBHoM(pullSettings);
 
@@ -117,6 +163,29 @@ namespace BH.UI.Revit.Engine
                 aBuildingElement = Create.BuildingElement(Query.FamilyTypeFullName(aElement), aCurve, aBuildingElementProperties);
                 aBuildingElement.ElementID = aElement.Id.IntegerValue.ToString();
             }
+
+            //Set ExtendedProperties
+            EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+            aEnvironmentContextProperties.ElementID = aElement.Id.IntegerValue.ToString();
+            aEnvironmentContextProperties.TypeName = Query.FamilyTypeFullName(aElement);
+            aBuildingElement.AddExtendedProperty(aEnvironmentContextProperties);
+
+            BuildingElementAnalyticalProperties aBuildingElementAnalyticalProperties = new BuildingElementAnalyticalProperties();
+            aBuildingElement.AddExtendedProperty(aBuildingElementAnalyticalProperties);
+
+            BuildingElementContextProperties aBuildingElementContextProperties = new BuildingElementContextProperties();
+            aBuildingElement.AddExtendedProperty(aBuildingElementContextProperties);
+
+            BuildingResultsProperties aBuildingResultsProperties = new BuildingResultsProperties();
+            aBuildingElement.AddExtendedProperty(aBuildingResultsProperties);
+
+            ElementProperties aElementProperties = new ElementProperties();
+            BuildingElementType? aBuildingElementType = Query.BuildingElementType(aElement.Category);
+            if (aBuildingElementType.HasValue)
+                aElementProperties.BuildingElementType = aBuildingElementType.Value;
+            else
+                aElementProperties.BuildingElementType = BuildingElementType.Undefined;
+            aBuildingElement.AddExtendedProperty(aElementProperties);
 
             //Set some custom data properties
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
@@ -155,7 +224,7 @@ namespace BH.UI.Revit.Engine
                 return aBuildingElement;
 
             //Get the geometry Curve
-            oM.Geometry.ICurve aCurve = null;
+            ICurve aCurve = null;
             if (energyAnalysisOpening != null)
                 aCurve = energyAnalysisOpening.GetPolyloop().ToBHoM(pullSettings);
 
@@ -170,6 +239,30 @@ namespace BH.UI.Revit.Engine
                 aBuildingElement = Create.BuildingElement(Query.FamilyTypeFullName(aElement), aCurve, aBuildingElementProperties);
                 aBuildingElement.ElementID = aElement.Id.IntegerValue.ToString();
             }
+
+            //Set ExtendedProperties
+            EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+            aEnvironmentContextProperties.ElementID = aElement.Id.IntegerValue.ToString();
+            aEnvironmentContextProperties.TypeName = Query.FamilyTypeFullName(aElement);
+            aBuildingElement.ExtendedProperties.Add(aEnvironmentContextProperties);
+
+            BuildingElementAnalyticalProperties aBuildingElementAnalyticalProperties = new BuildingElementAnalyticalProperties();
+            aBuildingElement.AddExtendedProperty(aBuildingElementAnalyticalProperties);
+
+            BuildingElementContextProperties aBuildingElementContextProperties = new BuildingElementContextProperties();
+            aBuildingElement.AddExtendedProperty(aBuildingElementContextProperties);
+
+            BuildingResultsProperties aBuildingResultsProperties = new BuildingResultsProperties();
+            aBuildingElement.AddExtendedProperty(aBuildingResultsProperties);
+
+            ElementProperties aElementProperties = new ElementProperties();
+            aElementProperties.Construction = Query.Construction(energyAnalysisOpening, pullSettings);
+            BuildingElementType? aBuildingElementType = Query.BuildingElementType(aElement.Category);
+            if (aBuildingElementType.HasValue)
+                aElementProperties.BuildingElementType = aBuildingElementType.Value;
+            else
+                aElementProperties.BuildingElementType = BuildingElementType.Undefined;
+            aBuildingElement.AddExtendedProperty(aElementProperties);
 
             //Set custom data on BuildingElement
             aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
@@ -215,7 +308,9 @@ namespace BH.UI.Revit.Engine
 
             aBuildingElements = new List<BuildingElement>();
 
-            BuildingElementProperties aBuildingElementProperties = (ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType).ToBHoMBuildingElementProperties(pullSettings);
+            CeilingType aCeilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
+            BuildingElementProperties aBuildingElementProperties = aCeilingType.ToBHoMBuildingElementProperties(pullSettings);
+            aBuildingElementProperties.Construction = Query.Construction(aCeilingType, pullSettings);
 
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
             foreach (ICurve aCurve in aPolyCurveList_Outer)
@@ -224,6 +319,26 @@ namespace BH.UI.Revit.Engine
                 BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aCurve);
                 aBuildingElement.Name = Query.FamilyTypeFullName(ceiling);
                 aBuildingElement.ElementID = ceiling.Id.IntegerValue.ToString();
+
+                //Set ExtendedProperties
+                EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+                aEnvironmentContextProperties.ElementID = ceiling.Id.IntegerValue.ToString();
+                aEnvironmentContextProperties.TypeName = Query.FamilyTypeFullName(ceiling);
+                aBuildingElement.AddExtendedProperty(aEnvironmentContextProperties);
+
+                BuildingElementAnalyticalProperties aBuildingElementAnalyticalProperties = new BuildingElementAnalyticalProperties();
+                aBuildingElement.AddExtendedProperty(aBuildingElementAnalyticalProperties);
+
+                BuildingElementContextProperties aBuildingElementContextProperties = new BuildingElementContextProperties();
+                aBuildingElement.AddExtendedProperty(aBuildingElementContextProperties);
+
+                BuildingResultsProperties aBuildingResultsProperties = new BuildingResultsProperties();
+                aBuildingElement.AddExtendedProperty(aBuildingResultsProperties);
+
+                ElementProperties aElementProperties = new ElementProperties();
+                aElementProperties.Construction = Query.Construction(aCeilingType, pullSettings);
+                aElementProperties.BuildingElementType = BuildingElementType.Ceiling;
+                aBuildingElement.AddExtendedProperty(aElementProperties);
 
                 //Assign custom data
                 aBuildingElement = Modify.SetIdentifiers(aBuildingElement, ceiling) as BuildingElement;
@@ -255,6 +370,7 @@ namespace BH.UI.Revit.Engine
             aBuildingElements = new List<BuildingElement>();
 
             BuildingElementProperties aBuildingElementProperties = floor.FloorType.ToBHoMBuildingElementProperties(pullSettings);
+            aBuildingElementProperties.Construction = Query.Construction(floor.FloorType);
 
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
             foreach (ICurve aCurve in aPolyCurveList_Outer)
@@ -263,6 +379,26 @@ namespace BH.UI.Revit.Engine
                 BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aCurve);
                 aBuildingElement.Name = Query.FamilyTypeFullName(floor);
                 aBuildingElement.ElementID = floor.Id.IntegerValue.ToString();
+
+                //Set ExtendedProperties
+                EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+                aEnvironmentContextProperties.ElementID = floor.Id.IntegerValue.ToString();
+                aEnvironmentContextProperties.TypeName = Query.FamilyTypeFullName(floor);
+                aBuildingElement.AddExtendedProperty(aEnvironmentContextProperties);
+
+                BuildingElementAnalyticalProperties aBuildingElementAnalyticalProperties = new BuildingElementAnalyticalProperties();
+                aBuildingElement.AddExtendedProperty(aBuildingElementAnalyticalProperties);
+
+                BuildingElementContextProperties aBuildingElementContextProperties = new BuildingElementContextProperties();
+                aBuildingElement.AddExtendedProperty(aBuildingElementContextProperties);
+
+                BuildingResultsProperties aBuildingResultsProperties = new BuildingResultsProperties();
+                aBuildingElement.AddExtendedProperty(aBuildingResultsProperties);
+
+                ElementProperties aElementProperties = new ElementProperties();
+                aElementProperties.Construction = Query.Construction(floor.FloorType, pullSettings);
+                aElementProperties.BuildingElementType = BuildingElementType.Floor;
+                aBuildingElement.AddExtendedProperty(aElementProperties);
 
                 //Assign custom data
                 aBuildingElement = Modify.SetIdentifiers(aBuildingElement, floor) as BuildingElement;
@@ -294,6 +430,7 @@ namespace BH.UI.Revit.Engine
             aBuildingElements = new List<BuildingElement>();
 
             BuildingElementProperties aBuildingElementProperties = roofBase.RoofType.ToBHoMBuildingElementProperties(pullSettings);
+            aBuildingElementProperties.Construction = Query.Construction(roofBase.RoofType, pullSettings);
 
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
             foreach (ICurve aCurve in aPolyCurveList_Outer)
@@ -302,6 +439,26 @@ namespace BH.UI.Revit.Engine
                 BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aCurve);
                 aBuildingElement.Name = Query.FamilyTypeFullName(roofBase);
                 aBuildingElement.ElementID = roofBase.Id.IntegerValue.ToString();
+
+                //Set ExtendedProperties
+                EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+                aEnvironmentContextProperties.ElementID = roofBase.Id.IntegerValue.ToString();
+                aEnvironmentContextProperties.TypeName = Query.FamilyTypeFullName(roofBase);
+                aBuildingElement.AddExtendedProperty(aEnvironmentContextProperties);
+
+                BuildingElementAnalyticalProperties aBuildingElementAnalyticalProperties = new BuildingElementAnalyticalProperties();
+                aBuildingElement.AddExtendedProperty(aBuildingElementAnalyticalProperties);
+
+                BuildingElementContextProperties aBuildingElementContextProperties = new BuildingElementContextProperties();
+                aBuildingElement.AddExtendedProperty(aBuildingElementContextProperties);
+
+                BuildingResultsProperties aBuildingResultsProperties = new BuildingResultsProperties();
+                aBuildingElement.AddExtendedProperty(aBuildingResultsProperties);
+
+                ElementProperties aElementProperties = new ElementProperties();
+                aElementProperties.Construction = Query.Construction(roofBase.RoofType, pullSettings);
+                aElementProperties.BuildingElementType = BuildingElementType.Roof;
+                aBuildingElement.AddExtendedProperty(aElementProperties);
 
                 //Assign custom data
                 aBuildingElement = Modify.SetIdentifiers(aBuildingElement, roofBase) as BuildingElement;
@@ -329,6 +486,7 @@ namespace BH.UI.Revit.Engine
             aBuildingElements = new List<BuildingElement>();
 
             BuildingElementProperties aBuildingElementProperties = wall.WallType.ToBHoMBuildingElementProperties(pullSettings);
+            aBuildingElementProperties.Construction = Query.Construction(wall.WallType, pullSettings);
 
             List<PolyCurve> aPolyCurveList = Query.Profiles(wall, pullSettings);
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
@@ -339,6 +497,26 @@ namespace BH.UI.Revit.Engine
                 BuildingElement aBuildingElement = Create.BuildingElement(aBuildingElementProperties, aCurve);
                 aBuildingElement.Name = Query.FamilyTypeFullName(wall);
                 aBuildingElement.ElementID = wall.Id.IntegerValue.ToString();
+
+                //Set ExtendedProperties
+                EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+                aEnvironmentContextProperties.ElementID = wall.Id.IntegerValue.ToString();
+                aEnvironmentContextProperties.TypeName = Query.FamilyTypeFullName(wall);
+                aBuildingElement.AddExtendedProperty(aEnvironmentContextProperties);
+
+                BuildingElementAnalyticalProperties aBuildingElementAnalyticalProperties = new BuildingElementAnalyticalProperties();
+                aBuildingElement.AddExtendedProperty(aBuildingElementAnalyticalProperties);
+
+                BuildingElementContextProperties aBuildingElementContextProperties = new BuildingElementContextProperties();
+                aBuildingElement.AddExtendedProperty(aBuildingElementContextProperties);
+
+                BuildingResultsProperties aBuildingResultsProperties = new BuildingResultsProperties();
+                aBuildingElement.AddExtendedProperty(aBuildingResultsProperties);
+
+                ElementProperties aElementProperties = new ElementProperties();
+                aElementProperties.Construction = Query.Construction(wall.WallType, pullSettings);
+                aElementProperties.BuildingElementType = BuildingElementType.Roof;
+                aBuildingElement.AddExtendedProperty(aElementProperties);
 
                 //Assign custom data
                 aBuildingElement = Modify.SetIdentifiers(aBuildingElement, wall) as BuildingElement;
