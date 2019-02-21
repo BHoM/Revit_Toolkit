@@ -27,6 +27,8 @@ using Autodesk.Revit.DB;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Environment.Properties;
+using BH.Engine.Environment;
 
 namespace BH.UI.Revit.Engine
 {
@@ -45,7 +47,7 @@ namespace BH.UI.Revit.Engine
 
             Building aBuilding = pullSettings.FindRefObject<Building>(projectInfo.Id.IntegerValue);
 
-            if(aBuilding == null)
+            if (aBuilding == null)
             {
                 double aElevation = 0;
                 double aLongitude = 0;
@@ -90,7 +92,23 @@ namespace BH.UI.Revit.Engine
                     }
                 }
 
-                aBuilding = BH.Engine.Environment.Create.Building(aElevation, aLatitude, aLongitude, new oM.Geometry.Point());
+                aBuilding = Create.Building(aElevation, aLatitude, aLongitude, new oM.Geometry.Point());
+
+                EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+                aEnvironmentContextProperties.ElementID = projectInfo.Id.IntegerValue.ToString();
+                aEnvironmentContextProperties.Description = projectInfo.OrganizationDescription;
+                aEnvironmentContextProperties.TypeName = projectInfo.Name;
+                aBuilding.AddExtendedProperty(aEnvironmentContextProperties);
+
+                BuildingAnalyticalProperties aBuildingAnalyticalProperties = new BuildingAnalyticalProperties();
+                aBuildingAnalyticalProperties.GMTOffset = aTimeZone;
+                aBuildingAnalyticalProperties.NorthAngle = aProjectAngle;
+                aBuilding.AddExtendedProperty(aEnvironmentContextProperties);
+
+                BuildingContextProperties aBuildingContextProperties = new BuildingContextProperties();
+                aBuildingContextProperties.PlaceName = aPlaceName;
+                aBuildingContextProperties.WeatherStation = aWeatherStationName;
+                aBuilding.AddExtendedProperty(aEnvironmentContextProperties);
 
                 aBuilding = Modify.SetIdentifiers(aBuilding, aDocument.ProjectInformation) as Building;
                 if (pullSettings.CopyCustomData)
@@ -111,7 +129,7 @@ namespace BH.UI.Revit.Engine
             }
 
             List<IBHoMObject> aBHoMObjectList = Query.GetEnergyAnalysisModel(aDocument, pullSettings);
-            
+
             return aBHoMObjectList;
         }
 

@@ -26,6 +26,7 @@ using Autodesk.Revit.DB.Analysis;
 using BH.Engine.Environment;
 using BH.oM.Environment.Elements;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Environment.Properties;
 
 namespace BH.UI.Revit.Engine
 {
@@ -69,6 +70,18 @@ namespace BH.UI.Revit.Engine
             //Create the Space
             aSpace = Create.Space(aName, (spatialElement.Location as LocationPoint).ToBHoM(pullSettings));
 
+            //Set ExtendedProperties
+            EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+            aEnvironmentContextProperties.ElementID = spatialElement.Id.IntegerValue.ToString();
+            aEnvironmentContextProperties.TypeName = "Space";
+            aSpace.AddExtendedProperty(aEnvironmentContextProperties);
+
+            SpaceAnalyticalProperties aSpaceAnalyticalProperties = new SpaceAnalyticalProperties();
+            aSpace.AddExtendedProperty(aEnvironmentContextProperties);
+
+            SpaceContextProperties aSpaceContextProperties = new SpaceContextProperties();
+            aSpace.AddExtendedProperty(aSpaceContextProperties);
+
             //Set custom data
             aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
             if (pullSettings.CopyCustomData)
@@ -102,6 +115,18 @@ namespace BH.UI.Revit.Engine
 
             //Create the Space
             aSpace = Create.Space(aName, (spatialElement.Location as LocationPoint).ToBHoM(pullSettings));
+
+            //Set ExtendedProperties
+            EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+            aEnvironmentContextProperties.ElementID = spatialElement.Id.IntegerValue.ToString();
+            aEnvironmentContextProperties.TypeName = "Space";
+            aSpace.AddExtendedProperty(aEnvironmentContextProperties);
+
+            SpaceAnalyticalProperties aSpaceAnalyticalProperties = new SpaceAnalyticalProperties();
+            aSpace.AddExtendedProperty(aEnvironmentContextProperties);
+
+            SpaceContextProperties aSpaceContextProperties = new SpaceContextProperties();
+            aSpace.AddExtendedProperty(aSpaceContextProperties);
 
             //Set custom data
             aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
@@ -147,6 +172,18 @@ namespace BH.UI.Revit.Engine
             }
 
             aSpace = Create.Space(aName, aPoint);
+
+            //Set ExtendedProperties
+            EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+            aEnvironmentContextProperties.ElementID = aSpatialElement.Id.IntegerValue.ToString();
+            aEnvironmentContextProperties.TypeName = "Space";
+            aSpace.AddExtendedProperty(aEnvironmentContextProperties);
+
+            SpaceAnalyticalProperties aSpaceAnalyticalProperties = new SpaceAnalyticalProperties();
+            aSpace.AddExtendedProperty(aEnvironmentContextProperties);
+
+            SpaceContextProperties aSpaceContextProperties = new SpaceContextProperties();
+            aSpace.AddExtendedProperty(aSpaceContextProperties);
 
             //Set custom data
             aSpace = Modify.SetIdentifiers(aSpace, aSpatialElement) as Space;

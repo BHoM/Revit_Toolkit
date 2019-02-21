@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using Autodesk.Revit.DB;
@@ -29,7 +30,7 @@ using Autodesk.Revit.DB.Analysis;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Adapters.Revit.Settings;
-using System.Linq;
+using BH.oM.Environment.Properties;
 
 namespace BH.UI.Revit.Engine
 {
@@ -142,24 +143,8 @@ namespace BH.UI.Revit.Engine
                         {
                             BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(aKeyValuePair.Value, pullSettings);
 
-                            if (aBuildingElement_Opening != null)
-                                aBHoMObjectList_Hosted.Add(aBuildingElement_Opening);
-                        }
-
-                        //------------ Cutting openings ----------------
-                        if (aBHoMObjectList_Hosted != null && aBHoMObjectList_Hosted.Count > 0)
-                        {
-                            foreach (BuildingElement aBuildingElement_Hosted in aBHoMObjectList_Hosted.FindAll(x => x is BuildingElement))
-                            {
-                                oM.Environment.Elements.Opening aBuildingElementOpening = BH.Engine.Environment.Create.Opening(aBuildingElement_Hosted.PanelCurve);
-                                aBuildingElementOpening.Name = Query.EnergyAnalysisElementName(aBuildingElement_Hosted.Name);
-
-                                if (pullSettings.CopyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(BH.Engine.Adapters.Revit.Convert.ElementId))
-                                    aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, BH.Engine.Adapters.Revit.Convert.ElementId, aBuildingElement_Hosted.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId]) as BH.oM.Environment.Elements.Opening;
-
-                                aBuildingElement.Openings.Add(aBuildingElementOpening);
-                            }
-
+                            oM.Environment.Elements.Opening aOpening = aEnergyAnalysisOpening.ToBHoMOpening(pullSettings);
+                            aBuildingElement.Openings.Add(aOpening);
                         }
                     }
                     catch (Exception aException)
@@ -180,26 +165,10 @@ namespace BH.UI.Revit.Engine
                         foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aEnergyAnalysisSurface.GetAnalyticalOpenings())
                         {
                             BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(aEnergyAnalysisSurface, pullSettings);
-                            if (aBuildingElement_Opening != null)
-                                aBHoMObjectList_Hosted.Add(aBuildingElement_Opening);
+
+                            oM.Environment.Elements.Opening aOpening = aEnergyAnalysisOpening.ToBHoMOpening(pullSettings);
+                            aBuildingElement.Openings.Add(aOpening);
                         }
-
-                        //------------ Cutting openings ----------------
-                        if (aBHoMObjectList_Hosted != null && aBHoMObjectList_Hosted.Count > 0)
-                        {
-                            foreach (BuildingElement aBuildingElement_Hosted in aBHoMObjectList_Hosted.FindAll(x => x is BuildingElement))
-                            {
-                                BH.oM.Environment.Elements.Opening aBuildingElementOpening = BH.Engine.Environment.Create.Opening(aBuildingElement_Hosted.PanelCurve);
-                                aBuildingElementOpening.Name = Query.EnergyAnalysisElementName(aBuildingElement_Hosted.Name);
-
-                                if (pullSettings.CopyCustomData && aBuildingElement_Hosted.CustomData.ContainsKey(BH.Engine.Adapters.Revit.Convert.ElementId))
-                                    aBuildingElementOpening = Modify.SetCustomData(aBuildingElementOpening, BH.Engine.Adapters.Revit.Convert.ElementId, aBuildingElement_Hosted.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId]) as BH.oM.Environment.Elements.Opening;
-
-                                aBuildingElement.Openings.Add(aBuildingElementOpening);
-                            }
-
-                        }
-                        //-------------------------------------------
                     }
                     catch (Exception aException)
                     {
