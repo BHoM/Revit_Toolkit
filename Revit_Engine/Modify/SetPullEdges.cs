@@ -51,6 +51,16 @@ namespace BH.Engine.Adapters.Revit
             return aFilterQuery;
         }
 
+        [Deprecated("2.2")]
+        [Description("Sets Pull Edges option for FilterQuery.")]
+        [Input("filterQuery", "FilterQuery")]
+        [Input("pullEdges", "Set to true if include geometry edges of Revit Element in CustomData of BHoMObject")]
+        [Output("FilterQuery")]
+        public static FilterQuery SetPullEdges(this FilterQuery filterQuery, bool pullEdges)
+        {
+            return SetPullEdges(filterQuery, pullEdges, false);
+        }
+
         /***************************************************/
     }
 }
