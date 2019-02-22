@@ -117,6 +117,7 @@
     <Compile Include="Query\AdjacentSpaceId.cs" />
     <Compile Include="Query\Height.cs" />
     <Compile Include="Query\Plane.cs" />
+    <Compile Include="Query\IncludeNonVisibleObjects.cs" />
     <Compile Include="Query\SpaceId.cs" />
     <Compile Include="Query\PullEdges.cs" />
     <Compile Include="Query\Shell.cs" />

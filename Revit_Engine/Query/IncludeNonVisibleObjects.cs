@@ -20,35 +20,50 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System.Collections.Generic;
 using System.ComponentModel;
 
 using BH.oM.DataManipulation.Queries;
 using BH.oM.Reflection.Attributes;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Sets Pull Edges option for FilterQuery.")]
+        [Description("Returns true if FilterQuery should include non visible objects when pulling edges")]
         [Input("filterQuery", "FilterQuery")]
-        [Input("pullEdges", "Set to true if include geometry edges of Revit Element in CustomData of BHoMObject")]
-        [Input("includeNonVisibleObjects", "Set to true if include non visible objects of Revit Element in geometry")]
-        [Output("FilterQuery")]
-        public static FilterQuery SetPullEdges(this FilterQuery filterQuery, bool pullEdges = true, bool includeNonVisibleObjects = false)
+        [Output("IncludeNonVisibleObjects")]
+        public static bool IncludeNonVisibleObjects(this FilterQuery filterQuery)
         {
             if (filterQuery == null)
-                return null;
+                return false;
 
-            FilterQuery aFilterQuery = Query.Duplicate(filterQuery);
+            if (filterQuery.Equalities.ContainsKey(Convert.FilterQuery.IncludeNonVisibleObjects))
+            {
+                object aObject = filterQuery.Equalities[Convert.FilterQuery.IncludeNonVisibleObjects];
+                if (aObject is bool)
+                    return (bool)aObject;
+            }
 
-            aFilterQuery.Equalities[Convert.FilterQuery.PullEdges] = pullEdges;
-            aFilterQuery.Equalities[Convert.FilterQuery.IncludeNonVisibleObjects] = includeNonVisibleObjects;
+            return false;
+        }
 
-            return aFilterQuery;
+        /***************************************************/
+
+        [Description("Returns true if at least one FilterQuery on list should include non visible objects when pulling edges")]
+        [Input("filterQueries", "FilterQueries")]
+        [Output("IncludeNonVisibleObjects")]
+        public static bool IncludeNonVisibleObjects(this IEnumerable<FilterQuery> filterQueries)
+        {
+            if (filterQueries == null)
+                return false;
+
+            return filterQueries.ToList().Any(x => x.IncludeNonVisibleObjects());
         }
 
         /***************************************************/

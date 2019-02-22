@@ -173,7 +173,7 @@ namespace BH.UI.Revit.Adapter
                         Options aOptions = new Options();
                         aOptions.ComputeReferences = false;
                         aOptions.DetailLevel = ViewDetailLevel.Fine;
-                        aOptions.IncludeNonVisibleObjects = false;
+                        aOptions.IncludeNonVisibleObjects = BH.Engine.Adapters.Revit.Query.IncludeNonVisibleObjects(aFilterQueries);
 
                         foreach(IBHoMObject aIBHoMObject in aIBHoMObjects)
                         {

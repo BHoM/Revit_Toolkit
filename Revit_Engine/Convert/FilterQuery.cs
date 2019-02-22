@@ -40,6 +40,7 @@ namespace BH.Engine.Adapters.Revit
             public const string FamilyTypeName = "FamilyTypeName";
             public const string SelectionSetName = "SelectionSetName";
             public const string PullEdges = "PullEdges";
+            public const string IncludeNonVisibleObjects = "IncludeNonVisibleObjects";
         }
     }
 }
