@@ -31,7 +31,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Element element, bool convertUnits = true)
+        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Element element, bool convertUnits = true, string namePrefix = null)
         {
             if (bHoMObject == null || element == null)
                 return bHoMObject;
@@ -39,7 +39,7 @@ namespace BH.UI.Revit.Engine
             IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
 
             foreach (Parameter aParameter in element.ParametersMap)
-                aBHoMObject = SetCustomData(aBHoMObject, aParameter, convertUnits);
+                aBHoMObject = SetCustomData(aBHoMObject, aParameter, convertUnits, namePrefix);
 
             return aBHoMObject;
         }
@@ -60,8 +60,8 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-        
-        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, bool convertUnits = true)
+
+        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, bool convertUnits = true, string namePrefix = null)
         {
             if (bHoMObject == null || parameter == null)
                 return bHoMObject;
@@ -92,20 +92,20 @@ namespace BH.UI.Revit.Engine
                     break;
                 case StorageType.None:
                     aValue = parameter.AsValueString();
-                    break;  
+                    break;
             }
 
             string aName = parameter.Definition.Name;
-            if (aBHoMObject.CustomData.ContainsKey(aName))
-                aBHoMObject.CustomData[aName] = aValue;
-            else
-                aBHoMObject.CustomData.Add(parameter.Definition.Name, aValue);
+            if (!string.IsNullOrEmpty(namePrefix))
+                aName = namePrefix + aName;
+
+            aBHoMObject.CustomData[aName] = aValue;
 
             return aBHoMObject;
         }
 
         /***************************************************/
-        
+
         public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, string customDataName, object value)
         {
             if (bHoMObject == null || string.IsNullOrEmpty(customDataName))
@@ -122,5 +122,7 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+
     }
 }
