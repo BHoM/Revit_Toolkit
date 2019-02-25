@@ -27,6 +27,7 @@ using BH.Engine.Environment;
 using BH.oM.Environment.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Environment.Properties;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -44,9 +45,7 @@ namespace BH.UI.Revit.Engine
             aSpatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
             aSpatialElementBoundaryOptions.StoreFreeBoundaryFaces = false;
 
-            SpatialElementGeometryCalculator aSpatialElementGeometryCalculator = new SpatialElementGeometryCalculator(spatialElement.Document, aSpatialElementBoundaryOptions);
-
-            return ToBHoMSpace(spatialElement, aSpatialElementGeometryCalculator, pullSettings) as Space;
+            return ToBHoMSpace(spatialElement, aSpatialElementBoundaryOptions, pullSettings);
         }
 
         /***************************************************/
@@ -56,40 +55,9 @@ namespace BH.UI.Revit.Engine
             if (spatialElement == null || spatialElementBoundaryOptions == null)
                 return new Space();
 
-            pullSettings = pullSettings.DefaultIfNull();
+            SpatialElementGeometryCalculator aSpatialElementGeometryCalculator = new SpatialElementGeometryCalculator(spatialElement.Document, spatialElementBoundaryOptions);
 
-            Space aSpace = pullSettings.FindRefObject<Space>(spatialElement.Id.IntegerValue);
-            if (aSpace != null)
-                return aSpace;
-
-            string aName = null;
-            Parameter aParameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
-            if (aParameter != null)
-                aName = aParameter.AsString();
-
-            //Create the Space
-            aSpace = Create.Space(aName, (spatialElement.Location as LocationPoint).ToBHoM(pullSettings));
-
-            //Set ExtendedProperties
-            EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
-            aEnvironmentContextProperties.ElementID = spatialElement.Id.IntegerValue.ToString();
-            aEnvironmentContextProperties.TypeName = "Space";
-            aSpace.AddExtendedProperty(aEnvironmentContextProperties);
-
-            SpaceAnalyticalProperties aSpaceAnalyticalProperties = new SpaceAnalyticalProperties();
-            aSpace.AddExtendedProperty(aEnvironmentContextProperties);
-
-            SpaceContextProperties aSpaceContextProperties = new SpaceContextProperties();
-            aSpace.AddExtendedProperty(aSpaceContextProperties);
-
-            //Set custom data
-            aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
-            if (pullSettings.CopyCustomData)
-                aSpace = Modify.SetCustomData(aSpace, spatialElement, pullSettings.ConvertUnits) as Space;
-
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSpace);
-
-            return aSpace;
+            return ToBHoMSpace(spatialElement, aSpatialElementGeometryCalculator, pullSettings);
         }
 
         /***************************************************/
@@ -99,9 +67,6 @@ namespace BH.UI.Revit.Engine
             if (spatialElement == null || spatialElementGeometryCalculator == null)
                 return new Space();
 
-            if (!SpatialElementGeometryCalculator.CanCalculateGeometry(spatialElement))
-                return new Space();
-
             pullSettings = pullSettings.DefaultIfNull();
 
             Space aSpace = pullSettings.FindRefObject<Space>(spatialElement.Id.IntegerValue);
@@ -119,13 +84,14 @@ namespace BH.UI.Revit.Engine
             //Set ExtendedProperties
             EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
             aEnvironmentContextProperties.ElementID = spatialElement.Id.IntegerValue.ToString();
-            aEnvironmentContextProperties.TypeName = "Space";
+            aEnvironmentContextProperties.TypeName = spatialElement.Name;
             aSpace.AddExtendedProperty(aEnvironmentContextProperties);
 
             SpaceAnalyticalProperties aSpaceAnalyticalProperties = new SpaceAnalyticalProperties();
             aSpace.AddExtendedProperty(aEnvironmentContextProperties);
 
             SpaceContextProperties aSpaceContextProperties = new SpaceContextProperties();
+            //TODO: Implement ConnectedElements
             aSpace.AddExtendedProperty(aSpaceContextProperties);
 
             //Set custom data
@@ -136,6 +102,19 @@ namespace BH.UI.Revit.Engine
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSpace);
 
             return aSpace;
+
+            //if (!SpatialElementGeometryCalculator.CanCalculateGeometry(spatialElement))
+            //{
+            //    //SpatialElementGeometryResults aSpatialElementGeometryResults = spatialElementGeometryCalculator.CalculateSpatialElementGeometry(spatialElement);
+            //    //foreach(SpatialElementBoundarySubface aSpatialElementBoundarySubface in  aSpatialElementGeometryResults.GetBoundaryFaceInfo())
+            //    //{
+            //    //    aSpatialElementBoundarySubface.
+            //    //}
+            //}
+            //else
+            //{
+
+            //}
         }
 
         /***************************************************/
@@ -176,13 +155,17 @@ namespace BH.UI.Revit.Engine
             //Set ExtendedProperties
             EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
             aEnvironmentContextProperties.ElementID = aSpatialElement.Id.IntegerValue.ToString();
-            aEnvironmentContextProperties.TypeName = "Space";
+            aEnvironmentContextProperties.TypeName = aSpatialElement.Name;
             aSpace.AddExtendedProperty(aEnvironmentContextProperties);
 
             SpaceAnalyticalProperties aSpaceAnalyticalProperties = new SpaceAnalyticalProperties();
             aSpace.AddExtendedProperty(aEnvironmentContextProperties);
 
             SpaceContextProperties aSpaceContextProperties = new SpaceContextProperties();
+            List<string> aConnectedElements = new List<string>();
+            foreach (EnergyAnalysisSurface aEnergyAnalysisSurface in energyAnalysisSpace.GetAnalyticalSurfaces())
+                aConnectedElements.Add(aEnergyAnalysisSurface.CADObjectUniqueId);
+            aSpaceContextProperties.ConnectedElements = aConnectedElements;
             aSpace.AddExtendedProperty(aSpaceContextProperties);
 
             //Set custom data

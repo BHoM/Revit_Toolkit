@@ -94,6 +94,7 @@ namespace BH.UI.Revit.Engine
 
                 aBuilding = Create.Building(aElevation, aLatitude, aLongitude, new oM.Geometry.Point());
 
+                //Set ExtendedProperties
                 EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
                 aEnvironmentContextProperties.ElementID = projectInfo.Id.IntegerValue.ToString();
                 aEnvironmentContextProperties.Description = projectInfo.OrganizationDescription;

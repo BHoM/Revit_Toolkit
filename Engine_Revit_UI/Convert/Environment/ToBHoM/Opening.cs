@@ -77,11 +77,11 @@ namespace BH.UI.Revit.Engine
 
                 ICurve aCurve = energyAnalysisOpening.GetPolyloop().ToBHoM(pullSettings);
                 aResult = Create.Opening(aCurve);
-                aResult.Name = Query.EnergyAnalysisElementName(aElement);
+                aResult.Name = Query.FamilyTypeFullName(aElement);
 
                 EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
                 aEnvironmentContextProperties.ElementID = aElement.Id.IntegerValue.ToString();
-                aEnvironmentContextProperties.TypeName = Query.EnergyAnalysisElementName(aElement);
+                aEnvironmentContextProperties.TypeName = Query.FamilyTypeFullName(aElement);
                 aResult.AddExtendedProperty(aEnvironmentContextProperties);
 
                 ElementProperties aElementProperties = new ElementProperties();

@@ -174,10 +174,41 @@ namespace BH.UI.Revit.Engine
             aBuildingElement.AddExtendedProperty(aBuildingElementAnalyticalProperties);
 
             BuildingElementContextProperties aBuildingElementContextProperties = new BuildingElementContextProperties();
-            aBuildingElement.AddExtendedProperty(aBuildingElementContextProperties);
 
-            BuildingResultsProperties aBuildingResultsProperties = new BuildingResultsProperties();
-            aBuildingElement.AddExtendedProperty(aBuildingResultsProperties);
+            List<string> aConnectedSpaces = new List<string>();
+            EnergyAnalysisSpace aEnergyAnalysisSpace = null;
+            aEnergyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
+            if (aEnergyAnalysisSpace != null)
+            {
+                SpatialElement aSpatialElement = Query.Element(aEnergyAnalysisSpace.Document, aEnergyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
+                if (aSpatialElement != null)
+                    aConnectedSpaces.Add(aSpatialElement.Name);
+            }
+
+            aEnergyAnalysisSpace = energyAnalysisSurface.GetAdjacentAnalyticalSpace();
+            if (aEnergyAnalysisSpace != null)
+            {
+                SpatialElement aSpatialElement = Query.Element(aEnergyAnalysisSpace.Document, aEnergyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
+                if (aSpatialElement != null)
+                {
+                    aConnectedSpaces.Add(aSpatialElement.Name);
+
+                    if(aSpatialElement is Autodesk.Revit.DB.Mechanical.Space)
+                    {
+                        Autodesk.Revit.DB.Mechanical.Space aSpace = (Autodesk.Revit.DB.Mechanical.Space)aSpatialElement;
+
+                        BuildingResultsProperties aBuildingResultsProperties = new BuildingResultsProperties();
+                        aBuildingResultsProperties.PeakCooling = UnitUtils.ConvertFromInternalUnits(aSpace.DesignCoolingLoad, DisplayUnitType.DUT_WATTS);
+                        aBuildingResultsProperties.PeakHeating = UnitUtils.ConvertFromInternalUnits(aSpace.DesignHeatingLoad, DisplayUnitType.DUT_WATTS);
+                        aBuildingElement.AddExtendedProperty(aBuildingResultsProperties);
+                    }
+                }
+            }
+
+            aBuildingElementContextProperties.ConnectedSpaces = aConnectedSpaces;
+
+            //aBuildingElementContextProperties.ConnectedSpaces
+            aBuildingElement.AddExtendedProperty(aBuildingElementContextProperties);
 
             ElementProperties aElementProperties = new ElementProperties();
             BuildingElementType? aBuildingElementType = Query.BuildingElementType(aElement.Category);
@@ -185,6 +216,7 @@ namespace BH.UI.Revit.Engine
                 aElementProperties.BuildingElementType = aBuildingElementType.Value;
             else
                 aElementProperties.BuildingElementType = BuildingElementType.Undefined;
+            aElementProperties.Construction = Query.Construction(aElementType as dynamic, pullSettings);
             aBuildingElement.AddExtendedProperty(aElementProperties);
 
             //Set some custom data properties
@@ -215,82 +247,104 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisOpening energyAnalysisOpening, EnergyAnalysisSurface energyAnalysisSurface = null, PullSettings pullSettings = null)
-        {
-            pullSettings = pullSettings.DefaultIfNull();
+        //internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisOpening energyAnalysisOpening, EnergyAnalysisSurface energyAnalysisSurface = null, PullSettings pullSettings = null)
+        //{
+        //    pullSettings = pullSettings.DefaultIfNull();
 
-            BuildingElement aBuildingElement = pullSettings.FindRefObject<BuildingElement>(energyAnalysisOpening.Id.IntegerValue);
-            if (aBuildingElement != null)
-                return aBuildingElement;
+        //    BuildingElement aBuildingElement = pullSettings.FindRefObject<BuildingElement>(energyAnalysisOpening.Id.IntegerValue);
+        //    if (aBuildingElement != null)
+        //        return aBuildingElement;
 
-            //Get the geometry Curve
-            ICurve aCurve = null;
-            if (energyAnalysisOpening != null)
-                aCurve = energyAnalysisOpening.GetPolyloop().ToBHoM(pullSettings);
+        //    //Get the geometry Curve
+        //    ICurve aCurve = null;
+        //    if (energyAnalysisOpening != null)
+        //        aCurve = energyAnalysisOpening.GetPolyloop().ToBHoM(pullSettings);
 
-            //Get the name and element type
-            Element aElement = Query.Element(energyAnalysisOpening.Document, energyAnalysisOpening.CADObjectUniqueId, energyAnalysisOpening.CADLinkUniqueId);
-            ElementType aElementType = null;
-            if (aElement != null)
-            {
-                aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
-                BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
-                aBuildingElementProperties.Construction = Query.Construction(energyAnalysisOpening, pullSettings);
-                aBuildingElement = Create.BuildingElement(Query.FamilyTypeFullName(aElement), aCurve, aBuildingElementProperties);
-                aBuildingElement.ElementID = aElement.Id.IntegerValue.ToString();
-            }
+        //    //Get the name and element type
+        //    Element aElement = Query.Element(energyAnalysisOpening.Document, energyAnalysisOpening.CADObjectUniqueId, energyAnalysisOpening.CADLinkUniqueId);
+        //    ElementType aElementType = null;
+        //    if (aElement != null)
+        //    {
+        //        aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
+        //        BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
+        //        aBuildingElementProperties.Construction = Query.Construction(energyAnalysisOpening, pullSettings);
+        //        aBuildingElement = Create.BuildingElement(Query.FamilyTypeFullName(aElement), aCurve, aBuildingElementProperties);
+        //        aBuildingElement.ElementID = aElement.Id.IntegerValue.ToString();
+        //    }
 
-            //Set ExtendedProperties
-            EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
-            aEnvironmentContextProperties.ElementID = aElement.Id.IntegerValue.ToString();
-            aEnvironmentContextProperties.TypeName = Query.FamilyTypeFullName(aElement);
-            aBuildingElement.ExtendedProperties.Add(aEnvironmentContextProperties);
+        //    //Set ExtendedProperties
+        //    EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+        //    aEnvironmentContextProperties.ElementID = aElement.Id.IntegerValue.ToString();
+        //    aEnvironmentContextProperties.TypeName = Query.FamilyTypeFullName(aElement);
+        //    aBuildingElement.ExtendedProperties.Add(aEnvironmentContextProperties);
 
-            BuildingElementAnalyticalProperties aBuildingElementAnalyticalProperties = new BuildingElementAnalyticalProperties();
-            aBuildingElement.AddExtendedProperty(aBuildingElementAnalyticalProperties);
+        //    BuildingElementAnalyticalProperties aBuildingElementAnalyticalProperties = new BuildingElementAnalyticalProperties();
+        //    aBuildingElement.AddExtendedProperty(aBuildingElementAnalyticalProperties);
 
-            BuildingElementContextProperties aBuildingElementContextProperties = new BuildingElementContextProperties();
-            aBuildingElement.AddExtendedProperty(aBuildingElementContextProperties);
+        //    BuildingElementContextProperties aBuildingElementContextProperties = new BuildingElementContextProperties();
+        //    if(energyAnalysisSurface != null)
+        //    {
+        //        List<string> aConnectedSpaces = new List<string>();
+        //        EnergyAnalysisSpace aEnergyAnalysisSpace = null;
+        //        aEnergyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
+        //        if (aEnergyAnalysisSpace != null)
+        //        {
+        //            SpatialElement aSpatialElement = Query.Element(aEnergyAnalysisSpace.Document, aEnergyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
+        //            if (aSpatialElement != null)
+        //                aConnectedSpaces.Add(aSpatialElement.Name);
+        //        }
 
-            BuildingResultsProperties aBuildingResultsProperties = new BuildingResultsProperties();
-            aBuildingElement.AddExtendedProperty(aBuildingResultsProperties);
+        //        aEnergyAnalysisSpace = energyAnalysisSurface.GetAdjacentAnalyticalSpace();
+        //        if (aEnergyAnalysisSpace != null)
+        //        {
+        //            SpatialElement aSpatialElement = Query.Element(aEnergyAnalysisSpace.Document, aEnergyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
+        //            if (aSpatialElement != null)
+        //                aConnectedSpaces.Add(aSpatialElement.Name);
+        //        }
 
-            ElementProperties aElementProperties = new ElementProperties();
-            aElementProperties.Construction = Query.Construction(energyAnalysisOpening, pullSettings);
-            BuildingElementType? aBuildingElementType = Query.BuildingElementType(aElement.Category);
-            if (aBuildingElementType.HasValue)
-                aElementProperties.BuildingElementType = aBuildingElementType.Value;
-            else
-                aElementProperties.BuildingElementType = BuildingElementType.Undefined;
-            aBuildingElement.AddExtendedProperty(aElementProperties);
+        //        aBuildingElementContextProperties.ConnectedSpaces = aConnectedSpaces;
+        //    }
+        //    aBuildingElement.AddExtendedProperty(aBuildingElementContextProperties);
 
-            //Set custom data on BuildingElement
-            aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
-            if (pullSettings.CopyCustomData)
-            {
-                aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement, pullSettings.ConvertUnits) as BuildingElement;
+        //    BuildingResultsProperties aBuildingResultsProperties = new BuildingResultsProperties();
+        //    aBuildingElement.AddExtendedProperty(aBuildingResultsProperties);
 
-                double aHeight = energyAnalysisOpening.Height;
-                double aWidth = energyAnalysisOpening.Width;
-                if (pullSettings.ConvertUnits)
-                {
-                    aHeight = UnitUtils.ConvertFromInternalUnits(aHeight, DisplayUnitType.DUT_METERS);
-                    aWidth = UnitUtils.ConvertFromInternalUnits(aWidth, DisplayUnitType.DUT_METERS);
-                }
-                aBuildingElement = Modify.SetCustomData(aBuildingElement, "Height", aHeight) as BuildingElement;
-                aBuildingElement = Modify.SetCustomData(aBuildingElement, "Width", aWidth) as BuildingElement;
-                aBuildingElement = Modify.SetCustomData(aBuildingElement, "Opening Type", energyAnalysisOpening.OpeningType.ToString()) as BuildingElement;
-                aBuildingElement = Modify.SetCustomData(aBuildingElement, "Opening Name", energyAnalysisOpening.OpeningName) as BuildingElement;
-                aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElement;
-                aBuildingElement = Modify.AddSpaceId(aBuildingElement, energyAnalysisSurface);
-                aBuildingElement = Modify.AddAdjacentSpaceId(aBuildingElement, energyAnalysisSurface);
+        //    ElementProperties aElementProperties = new ElementProperties();
+        //    aElementProperties.Construction = Query.Construction(energyAnalysisOpening, pullSettings);
+        //    BuildingElementType? aBuildingElementType = Query.BuildingElementType(aElement.Category);
+        //    if (aBuildingElementType.HasValue)
+        //        aElementProperties.BuildingElementType = aBuildingElementType.Value;
+        //    else
+        //        aElementProperties.BuildingElementType = BuildingElementType.Undefined;
+        //    aBuildingElement.AddExtendedProperty(aElementProperties);
 
-            }
+        //    //Set custom data on BuildingElement
+        //    aBuildingElement = Modify.SetIdentifiers(aBuildingElement, aElement) as BuildingElement;
+        //    if (pullSettings.CopyCustomData)
+        //    {
+        //        aBuildingElement = Modify.SetCustomData(aBuildingElement, aElement, pullSettings.ConvertUnits) as BuildingElement;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
+        //        double aHeight = energyAnalysisOpening.Height;
+        //        double aWidth = energyAnalysisOpening.Width;
+        //        if (pullSettings.ConvertUnits)
+        //        {
+        //            aHeight = UnitUtils.ConvertFromInternalUnits(aHeight, DisplayUnitType.DUT_METERS);
+        //            aWidth = UnitUtils.ConvertFromInternalUnits(aWidth, DisplayUnitType.DUT_METERS);
+        //        }
+        //        aBuildingElement = Modify.SetCustomData(aBuildingElement, "Height", aHeight) as BuildingElement;
+        //        aBuildingElement = Modify.SetCustomData(aBuildingElement, "Width", aWidth) as BuildingElement;
+        //        aBuildingElement = Modify.SetCustomData(aBuildingElement, "Opening Type", energyAnalysisOpening.OpeningType.ToString()) as BuildingElement;
+        //        aBuildingElement = Modify.SetCustomData(aBuildingElement, "Opening Name", energyAnalysisOpening.OpeningName) as BuildingElement;
+        //        aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElement;
+        //        aBuildingElement = Modify.AddSpaceId(aBuildingElement, energyAnalysisSurface);
+        //        aBuildingElement = Modify.AddAdjacentSpaceId(aBuildingElement, energyAnalysisSurface);
 
-            return aBuildingElement;
-        }
+        //    }
+
+        //    pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
+
+        //    return aBuildingElement;
+        //}
 
         /***************************************************/
 
