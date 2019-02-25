@@ -238,6 +238,9 @@ namespace BH.UI.Revit.Engine
                 aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as BuildingElement;
                 aBuildingElement = Modify.AddSpaceId(aBuildingElement, energyAnalysisSurface);
                 aBuildingElement = Modify.AddAdjacentSpaceId(aBuildingElement, energyAnalysisSurface);
+
+                if (aElementType != null)
+                    aBuildingElement = Modify.SetCustomData(aBuildingElement, aElementType, pullSettings.ConvertUnits, "Type ") as BuildingElement;
             }
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
