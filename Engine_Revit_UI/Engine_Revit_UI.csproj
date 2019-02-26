@@ -221,6 +221,7 @@
     <Compile Include="Modify\SetTags.cs" />
     <Compile Include="Modify\AppendRefObjects.cs" />
     <Compile Include="Query\BoundingBox.cs" />
+    <Compile Include="Query\GetName.cs" />
     <Compile Include="Query\LowLevel.cs" />
     <Compile Include="Query\HighLevel.cs" />
     <Compile Include="Query\TopFacesPolyCurves.cs" />

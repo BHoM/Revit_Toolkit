@@ -183,7 +183,7 @@ namespace BH.UI.Revit.Engine
             if (aEnergyAnalysisSpace != null)
             {
                 SpatialElement aSpatialElement = Query.Element(aEnergyAnalysisSpace.Document, aEnergyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
-                aConnectedSpaces.Add(GetName(aSpatialElement));
+                aConnectedSpaces.Add(Query.Name(aSpatialElement));
             }
 
             aEnergyAnalysisSpace = energyAnalysisSurface.GetAdjacentAnalyticalSpace();
@@ -192,7 +192,7 @@ namespace BH.UI.Revit.Engine
                 SpatialElement aSpatialElement = Query.Element(aEnergyAnalysisSpace.Document, aEnergyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
                 if (aSpatialElement != null)
                 {
-                    aConnectedSpaces.Add(GetName(aSpatialElement));
+                    aConnectedSpaces.Add(Query.Name(aSpatialElement));
 
                     if (aSpatialElement is Autodesk.Revit.DB.Mechanical.Space)
                     {
@@ -598,31 +598,7 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        private static string GetName(SpatialElement spatialElement)
-        {
-            if (spatialElement == null)
-                return null;
-
-            string aName = null;
-            string aNumber = spatialElement.Number;
-            Parameter aParameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
-            if (aParameter != null)
-                aName = aParameter.AsString();
-
-            string aResult = null;
-            if (!string.IsNullOrEmpty(aName))
-                aResult = aName;
-
-            if(!string.IsNullOrEmpty(aNumber))
-            {
-                if (string.IsNullOrEmpty(aResult))
-                    aResult = aNumber;
-                else
-                    aResult = string.Format("{0} {1}", aNumber, aResult);
-            }
-
-            return aResult;
-        }
+        
 
         /***************************************************/
     }

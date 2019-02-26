@@ -132,7 +132,7 @@ namespace BH.UI.Revit.Engine
 
             SpatialElement aSpatialElement = Query.Element(energyAnalysisSpace.Document, energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
 
-            string aName = GetName(aSpatialElement);
+            string aName = Query.Name(aSpatialElement);
             oM.Geometry.Point aPoint = null;
 
             if (aSpatialElement != null)
