@@ -84,6 +84,7 @@ namespace BH.UI.Revit.Engine
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
 
+            aBuildingElement = aBuildingElement.UpdateBuildingElementTypeByCustomData();
             return aBuildingElement;
         }
 
@@ -135,6 +136,7 @@ namespace BH.UI.Revit.Engine
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
 
+            aBuildingElement = aBuildingElement.UpdateBuildingElementTypeByCustomData();
             return aBuildingElement;
         }
 
@@ -245,6 +247,7 @@ namespace BH.UI.Revit.Engine
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
 
+            aBuildingElement = aBuildingElement.UpdateBuildingElementTypeByCustomData();
             return aBuildingElement;
         }
 
@@ -405,8 +408,9 @@ namespace BH.UI.Revit.Engine
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuildingElement);
 
                 aBuildingElements.Add(aBuildingElement);
-            }       
+            }
 
+            aBuildingElements = aBuildingElements.UpdateBuildingElementTypeByCustomData();
             return aBuildingElements;
         }
 
@@ -467,6 +471,7 @@ namespace BH.UI.Revit.Engine
                 aBuildingElements.Add(aBuildingElement);
             }
 
+            aBuildingElements = aBuildingElements.UpdateBuildingElementTypeByCustomData();
             return aBuildingElements;
         }
 
@@ -527,6 +532,7 @@ namespace BH.UI.Revit.Engine
                 aBuildingElements.Add(aBuildingElement);
             }
 
+            aBuildingElements = aBuildingElements.UpdateBuildingElementTypeByCustomData();
             return aBuildingElements;
         }
 
@@ -585,6 +591,7 @@ namespace BH.UI.Revit.Engine
                 aBuildingElements.Add(aBuildingElement);
             }
 
+            aBuildingElements = aBuildingElements.UpdateBuildingElementTypeByCustomData();
             return aBuildingElements;
         }
 
