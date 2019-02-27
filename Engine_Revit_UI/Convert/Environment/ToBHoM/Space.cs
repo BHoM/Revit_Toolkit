@@ -84,7 +84,7 @@ namespace BH.UI.Revit.Engine
             //Set ExtendedProperties
             EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
             aEnvironmentContextProperties.ElementID = spatialElement.Id.IntegerValue.ToString();
-            aEnvironmentContextProperties.TypeName = spatialElement.Name;
+            aEnvironmentContextProperties.TypeName = Query.Name(spatialElement);
             aSpace.AddExtendedProperty(aEnvironmentContextProperties);
 
             SpaceAnalyticalProperties aSpaceAnalyticalProperties = new SpaceAnalyticalProperties();
@@ -155,7 +155,7 @@ namespace BH.UI.Revit.Engine
             //Set ExtendedProperties
             EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
             aEnvironmentContextProperties.ElementID = aSpatialElement.Id.IntegerValue.ToString();
-            aEnvironmentContextProperties.TypeName = aSpatialElement.Name;
+            aEnvironmentContextProperties.TypeName = Query.Name(aSpatialElement);
             aSpace.AddExtendedProperty(aEnvironmentContextProperties);
 
             SpaceAnalyticalProperties aSpaceAnalyticalProperties = new SpaceAnalyticalProperties();
