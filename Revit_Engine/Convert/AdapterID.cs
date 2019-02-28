@@ -36,6 +36,7 @@ namespace BH.Engine.Adapters.Revit
         public const string FamilyName = "Revit_familyName";
         public const string FamilyTypeName = "Revit_familyTypeName";
         public const string CategoryName = "Revit_categoryName";
+        public const string ViewName = "Revit_viewName";
         public const string Edges = "Revit_edges";
 
         /***************************************************/
