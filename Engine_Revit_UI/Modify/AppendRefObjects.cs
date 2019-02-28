@@ -43,35 +43,19 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null)
                 return refObjects;
 
-            Dictionary<int, List<IBHoMObject>> aRefObjects = null;
-            if (refObjects != null)
-                aRefObjects = new Dictionary<int, List<IBHoMObject>>(refObjects);
-            else
-                aRefObjects = new Dictionary<int, List<IBHoMObject>>();
-
             int aElementId = BH.Engine.Adapters.Revit.Query.ElementId(bHoMObject);
 
-            List<IBHoMObject> aBHoMObjectList = null;
-            if (!aRefObjects.TryGetValue(aElementId, out aBHoMObjectList))
-            {
-                aBHoMObjectList = new List<IBHoMObject>();
-                aRefObjects.Add(aElementId, aBHoMObjectList);
-            }
-
-            if (aBHoMObjectList != null)
-                aBHoMObjectList.Add(bHoMObject);
-
-            return aRefObjects;
+            return AppendRefObjects(refObjects, bHoMObject, aElementId);
         }
 
         /***************************************************/
 
-        public static Dictionary<int, List<IBHoMObject>> AppendRefObjects(this Dictionary<int, List<IBHoMObject>> refObjects, IEnumerable<IBHoMObject> bHoMObjects)
+        public static Dictionary<int, List<IBHoMObject>> AppendRefObjects(this Dictionary<int, List<IBHoMObject>> refObjects, IBHoMObject bHoMObject, int elementId)
         {
             if (refObjects == null)
                 return null;
 
-            if (bHoMObjects == null || bHoMObjects.Count() == 0)
+            if (bHoMObject == null)
                 return refObjects;
 
             Dictionary<int, List<IBHoMObject>> aRefObjects = null;
@@ -80,20 +64,15 @@ namespace BH.UI.Revit.Engine
             else
                 aRefObjects = new Dictionary<int, List<IBHoMObject>>();
 
-            foreach(IBHoMObject aIBHoMObject in bHoMObjects)
+            List<IBHoMObject> aBHoMObjectList = null;
+            if (!aRefObjects.TryGetValue(elementId, out aBHoMObjectList))
             {
-                int aElementId = BH.Engine.Adapters.Revit.Query.ElementId(aIBHoMObject);
-
-                List<IBHoMObject> aBHoMObjectList = null;
-                if (!aRefObjects.TryGetValue(aElementId, out aBHoMObjectList))
-                {
-                    aBHoMObjectList = new List<IBHoMObject>();
-                    aRefObjects.Add(aElementId, aBHoMObjectList);
-                }
-
-                if (aBHoMObjectList != null)
-                    aBHoMObjectList.Add(aIBHoMObject);
+                aBHoMObjectList = new List<IBHoMObject>();
+                aRefObjects.Add(elementId, aBHoMObjectList);
             }
+
+            if (aBHoMObjectList != null)
+                aBHoMObjectList.Add(bHoMObject);
 
             return aRefObjects;
         }

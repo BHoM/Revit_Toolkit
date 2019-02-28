@@ -71,7 +71,7 @@ namespace BH.UI.Revit.Engine
             }
             else
             {
-                oM.Environment.Elements.Opening aResult = pullSettings.FindRefObject<oM.Environment.Elements.Opening>(aElement.Id.IntegerValue);
+                oM.Environment.Elements.Opening aResult = pullSettings.FindRefObject<oM.Environment.Elements.Opening>(energyAnalysisOpening.Id.IntegerValue);
                 if (aResult != null)
                     return aResult;
 
@@ -97,7 +97,7 @@ namespace BH.UI.Revit.Engine
                 if (pullSettings.CopyCustomData)
                     aResult = Modify.SetCustomData(aResult, aElement, pullSettings.ConvertUnits) as oM.Environment.Elements.Opening;
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult);
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult, energyAnalysisOpening.Id.IntegerValue);
 
                 return aResult;
             }
