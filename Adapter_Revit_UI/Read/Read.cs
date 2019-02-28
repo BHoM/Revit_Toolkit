@@ -203,7 +203,7 @@ namespace BH.UI.Revit.Adapter
 
         private static IEnumerable<IBHoMObject> Read(Element element, RevitSettings revitSettings, PullSettings pullSettings = null)
         {
-            if (element == null)
+            if (element == null || !element.IsValidObject)
                 return new List<IBHoMObject>();
 
             object aObject = null;
@@ -211,20 +211,17 @@ namespace BH.UI.Revit.Adapter
 
             List<IBHoMObject> aResult = new List<IBHoMObject>();
 
-            if(pullSettings.Discipline != Discipline.Undefined)
+            IEnumerable<Type> aTypes = Query.BHoMTypes(element);
+            if (aTypes != null && aTypes.Count() > 0)
             {
-                IEnumerable<Type> aTypes = Query.BHoMTypes(element);
-                if (aTypes != null && aTypes.Count() > 0)
+                try
                 {
-                    try
-                    {
-                        aObject = Engine.Convert.ToBHoM(element as dynamic, pullSettings);
-                    }
-                    catch (Exception aException)
-                    {
-                        BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted becasue of missing ToBHoM method. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, aException.Message));
-                        aConverted = false;
-                    }
+                    aObject = Engine.Convert.ToBHoM(element as dynamic, pullSettings);
+                }
+                catch (Exception aException)
+                {
+                    BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted becasue of missing ToBHoM method. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, aException.Message));
+                    aConverted = false;
                 }
             }
 
@@ -234,7 +231,7 @@ namespace BH.UI.Revit.Adapter
                 {
                     IBHoMObject aIBHoMObject = null;
 
-                    if (element.Location != null)
+                    if (element.Location is LocationPoint || element.Location is LocationCurve)
                     {
                         IGeometry aIGeometry = null;
                         try
@@ -269,8 +266,12 @@ namespace BH.UI.Revit.Adapter
                     if (aIBHoMObject == null)
                         aIBHoMObject = new BHoMObject();
 
+
                     if (aIBHoMObject != null)
                     {
+                        if (!(aIBHoMObject is DraftingObject) && element.ViewSpecific)
+                            aIBHoMObject = aIBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.ViewName, element.Document.GetElement(element.OwnerViewId).Name);
+
                         aIBHoMObject.Name = element.Name;
                         aIBHoMObject = Modify.SetIdentifiers(aIBHoMObject, element);
                         aIBHoMObject = Modify.SetCustomData(aIBHoMObject, element, true);
@@ -291,7 +292,7 @@ namespace BH.UI.Revit.Adapter
                 if (aObject is IBHoMObject)
                     aResult.Add((IBHoMObject)aObject);
                 else if (aObject is IEnumerable<IBHoMObject>)
-                    aResult.AddRange((IEnumerable<IBHoMObject>)aObject);  
+                    aResult.AddRange((IEnumerable<IBHoMObject>)aObject);
             }
 
             //Assign Tags
@@ -301,7 +302,7 @@ namespace BH.UI.Revit.Adapter
 
             if (aResult != null && !string.IsNullOrEmpty(aTagsParameterName))
             {
-                for(int i=0; i < aResult.Count; i++)
+                for (int i = 0; i < aResult.Count; i++)
                 {
                     IBHoMObject aIBHoMObject = Modify.SetTags(aResult[i], element, aTagsParameterName);
                     if (aIBHoMObject != null)
