@@ -37,12 +37,13 @@ namespace BH.UI.Revit.Engine
             if (curve == null)
                 return null;
 
-            double aMinElevation = BH.Engine.Geometry.Query.Bounds(curve as dynamic).Min.Z;
+            double aMinElevation = MinElevation(curve);//BH.Engine.Geometry.Query.Bounds(curve as dynamic).Min.Z;
             if (convertUnits)
                 aMinElevation = UnitUtils.ConvertToInternalUnits(aMinElevation, DisplayUnitType.DUT_METERS);
 
             return BottomLevel(aMinElevation, document, convertUnits);
         }
+
 
         /***************************************************/
 
@@ -75,6 +76,19 @@ namespace BH.UI.Revit.Engine
                     return aLevelList[i - 1];
 
             return null;
+        }
+
+        /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
+
+        static private double MinElevation(oM.Geometry.ICurve curve)
+        {
+            //TODO: Method to be removed as zoon as a proper Bounds method is implemented for NurbsCurve
+            if (curve is oM.Geometry.NurbsCurve)
+                return BH.Engine.Geometry.Query.Bounds(((oM.Geometry.NurbsCurve)curve).ControlPoints).Min.Z;
+
+            return BH.Engine.Geometry.Query.Bounds(curve as dynamic).Min.Z;
         }
 
         /***************************************************/
