@@ -46,7 +46,7 @@ namespace BH.UI.Revit.Engine
             if (aFramingElement != null)
                 return aFramingElement;
 
-            oM.Geometry.Line barCurve = null;
+            oM.Geometry.ICurve locationCurve = null;
             bool nonlinear = false;
             ConstantFramingElementProperty property = null;
             StructuralUsage1D usage = StructuralUsage1D.Undefined;
@@ -68,7 +68,7 @@ namespace BH.UI.Revit.Engine
 
                 if (baseLevelParam == null || !baseLevelParam.HasValue || topLevelParam == null || !topLevelParam.HasValue || baseOffsetParam == null || !baseOffsetParam.HasValue || topOffsetParam == null || !topOffsetParam.HasValue)
                 {
-                    barCurve = null;
+                    locationCurve = null;
                 }
                 else
                 {
@@ -78,7 +78,7 @@ namespace BH.UI.Revit.Engine
                     double topOffset = topOffsetParam.AsDouble();
                     XYZ baseNode = new XYZ(loc.X, loc.Y, baseLevel + baseOffset);
                     XYZ topNode = new XYZ(loc.X, loc.Y, topLevel + topOffset);
-                    barCurve = new oM.Geometry.Line { Start = baseNode.ToBHoM(pullSettings), End = topNode.ToBHoM(pullSettings) };
+                    locationCurve = new oM.Geometry.Line { Start = baseNode.ToBHoM(pullSettings), End = topNode.ToBHoM(pullSettings) };
                 }
 
                 int multiplier = familyInstance.FacingOrientation.DotProduct(new XYZ(0, 1, 0)) > 0 ? 1 : -1;
@@ -86,8 +86,8 @@ namespace BH.UI.Revit.Engine
             }
             else if (location is LocationCurve)
             {
-                barCurve = (location as LocationCurve).Curve.ToBHoM(pullSettings) as oM.Geometry.Line;
-                if (barCurve == null)
+                locationCurve = (location as LocationCurve).Curve.ToBHoM(pullSettings);
+                if (locationCurve == null)
                 {
                     nonlinear = true;
                     familyInstance.NonlinearBarWarning();
@@ -95,12 +95,13 @@ namespace BH.UI.Revit.Engine
                 else if (structuralType != StructuralType.Column)
                 {
                     double ZOffset = familyInstance.LookupParameterDouble("z Offset Value", pullSettings.ConvertUnits);
-                    barCurve = BHG.Modify.Translate(barCurve, new oM.Geometry.Vector { X = 0, Y = 0, Z = ZOffset });
+                    if (ZOffset != 0 && !double.IsNaN(ZOffset))
+                        locationCurve = BHG.Modify.Translate(locationCurve as dynamic, new oM.Geometry.Vector { X = 0, Y = 0, Z = ZOffset });
                 }
                 rotation = -familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, false);
             }
 
-            if (!nonlinear && barCurve == null) familyInstance.BarCurveNotFoundWarning();
+            if (!nonlinear && locationCurve == null) familyInstance.BarCurveNotFoundWarning();
             ISectionProperty aSectionProperty = familyInstance.ToBHoMSectionProperty(pullSettings) as ISectionProperty;
 
             switch (structuralType)
@@ -122,7 +123,15 @@ namespace BH.UI.Revit.Engine
             if (familyInstance.Name != null)
                 name = familyInstance.Name;
 
-            aFramingElement = BHS.Create.FramingElement(barCurve, property, usage, name);
+            //TODO: Implement BHS.Create.FramingElement method
+            aFramingElement = new FramingElement()
+            {
+                Name = name,
+                LocationCurve = locationCurve,
+                Property = property,
+                StructuralUsage = usage
+            };
+
             aFramingElement = Modify.SetIdentifiers(aFramingElement, familyInstance) as FramingElement;
             if (pullSettings.CopyCustomData)
                 aFramingElement = Modify.SetCustomData(aFramingElement, familyInstance, pullSettings.ConvertUnits) as FramingElement;

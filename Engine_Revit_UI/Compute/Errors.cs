@@ -22,11 +22,6 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Structure.Elements;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace BH.UI.Revit.Engine
 {
@@ -42,6 +37,31 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        internal static void FamilyPlacementTypeMismatchError(this IBHoMObject iBHoMObject, Family family)
+        {
+            string aMessage = "Family Placement Type conflict. Family Instance could not be created.";
+
+            if (iBHoMObject != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, iBHoMObject.BHoM_Guid);
+
+            if (family != null)
+                aMessage = string.Format("{0} Element Id : {1}", aMessage, family.Id.IntegerValue);
+
+            BH.Engine.Reflection.Compute.RecordError(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void FamilySymbolNotFoundError(this IBHoMObject iBHoMObject)
+        {
+            string aMessage = "Family symbol has not been found for given BHoM Object.";
+
+            if (iBHoMObject != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, iBHoMObject.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordError(aMessage);
+        }
 
     }
 }
