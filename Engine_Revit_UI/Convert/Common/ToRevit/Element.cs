@@ -105,6 +105,8 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
 
         private static Element ToRevitElement(this DraftingObject draftingObject, Document document, PushSettings pushSettings = null)
         {
@@ -205,6 +207,8 @@ namespace BH.UI.Revit.Engine
             return aDocument.Create.NewFamilyInstance(aCurve, familySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
         }
 
+        /***************************************************/
+
         private static Element ToRevitElement_OneLevelBased(this GenericObject genericObject, FamilySymbol familySymbol, PushSettings pushSettings = null)
         {
             if (familySymbol == null || genericObject == null)
@@ -227,6 +231,8 @@ namespace BH.UI.Revit.Engine
             XYZ aXYZ = ToRevitXYZ(aPoint, pushSettings);
             return aDocument.Create.NewFamilyInstance(aXYZ, familySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
         }
+
+        /***************************************************/
 
         private static Element ToRevitElement_CurveDrivenStructural(this GenericObject genericObject, FamilySymbol familySymbol, PushSettings pushSettings = null)
         {
@@ -267,6 +273,8 @@ namespace BH.UI.Revit.Engine
             return aDocument.Create.NewFamilyInstance(aCurve, familySymbol, aLevel, aStructuralType);
         }
 
+        /***************************************************/
+
         private static Element ToRevitElement_TwoLevelsBased(this GenericObject genericObject, FamilySymbol familySymbol, PushSettings pushSettings = null)
         {
             if (familySymbol == null || genericObject == null)
@@ -306,6 +314,8 @@ namespace BH.UI.Revit.Engine
             return aDocument.Create.NewFamilyInstance(aXYZ, familySymbol, aLevel, aStructuralType);
         }
 
+        /***************************************************/
+
         private static Element ToRevitElement_Wall(this GenericObject genericObject, WallType wallType, PushSettings pushSettings = null)
         {
             if (wallType == null || genericObject == null)
@@ -328,5 +338,7 @@ namespace BH.UI.Revit.Engine
             Curve aCurve = ToRevitCurve(Curve, pushSettings);
             return Wall.Create(aDocument, aCurve, aLevel.Id, false);
         }
+
+        /***************************************************/
     }
 }
