@@ -48,22 +48,30 @@ namespace BH.UI.Revit.Engine
 
             ElementType aElementType = genericObject.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
             if (aElementType == null)
+            {
+                Compute.ElementTypeNotFoundWarning(genericObject);
                 return null;
-
+            }
 
             if (aElementType is FamilySymbol)
             {
                 FamilySymbol aFamilySymbol = (FamilySymbol)aElementType;
-                Family aFamily = aFamilySymbol.Family;
+                FamilyPlacementType aFamilyPlacementType = aFamilySymbol.Family.FamilyPlacementType;
 
                 IGeometry aIGeometry = genericObject.Location;
 
-                switch (aFamily.FamilyPlacementType)
+                if(aFamilyPlacementType == FamilyPlacementType.Invalid || 
+                    aFamilyPlacementType == FamilyPlacementType.Adaptive ||
+                    (aIGeometry is oM.Geometry.Point && (aFamilyPlacementType == FamilyPlacementType.CurveBased || aFamilyPlacementType == FamilyPlacementType.CurveBasedDetail || aFamilyPlacementType == FamilyPlacementType.CurveDrivenStructural || aFamilyPlacementType == FamilyPlacementType.TwoLevelsBased)) || 
+                    (aIGeometry is ICurve && (aFamilyPlacementType == FamilyPlacementType.OneLevelBased || aFamilyPlacementType == FamilyPlacementType.OneLevelBasedHosted)))
+                {
+                    Compute.InvalidFamilyPlacementTypeWarning(genericObject, aElementType);
+                    return null;
+                }
+
+                switch (aFamilyPlacementType)
                 {
                     //TODO: Implement rest of the cases
-
-                    case FamilyPlacementType.ViewBased:
-                        break;
                     case FamilyPlacementType.CurveBased:
                         if (aIGeometry is ICurve)
                         {
@@ -76,7 +84,7 @@ namespace BH.UI.Revit.Engine
                         }
                         else
                         {
-                            Compute.InvalidLocationTypeWarning(genericObject, aElementType);
+                            Compute.InvalidFamilyPlacementTypeWarning(genericObject, aElementType);
                         }
                         break;
                     case FamilyPlacementType.OneLevelBased:
@@ -87,10 +95,11 @@ namespace BH.UI.Revit.Engine
                         }
                         else
                         {
-                            Compute.InvalidLocationTypeWarning(genericObject, aElementType);
+                            Compute.InvalidFamilyPlacementTypeWarning(genericObject, aElementType);
                         }
                         break;
                     case FamilyPlacementType.CurveDrivenStructural:
+                    case FamilyPlacementType.TwoLevelsBased:
                         if (aIGeometry is ICurve)
                         {
                             Level aLevel = ((ICurve)aIGeometry).BottomLevel(document, pushSettings.ConvertUnits);
@@ -118,9 +127,12 @@ namespace BH.UI.Revit.Engine
                         }
                         else
                         {
-                            Compute.InvalidLocationTypeWarning(genericObject, aElementType);
+                            Compute.InvalidFamilyPlacementTypeWarning(genericObject, aElementType);
                         }
                         break;
+                    default:
+                        Compute.FamilyPlacementTypeNotSupportedWarning(genericObject, aElementType);
+                        return null;
                 }
             }
             else if (aElementType is WallType)
@@ -137,7 +149,7 @@ namespace BH.UI.Revit.Engine
                 }
                 else
                 {
-                    Compute.InvalidLocationTypeWarning(genericObject, aElementType);
+                    Compute.InvalidFamilyPlacementTypeWarning(genericObject, aElementType);
                 }
             }
 
