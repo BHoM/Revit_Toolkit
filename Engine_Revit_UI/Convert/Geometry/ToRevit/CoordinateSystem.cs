@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.oM.Geometry.CoordinateSystem;
 using BH.oM.Adapters.Revit.Settings;
+using BH.Engine.Geometry;
 
 namespace BH.UI.Revit.Engine
 {
@@ -37,8 +38,8 @@ namespace BH.UI.Revit.Engine
             pushSettings = pushSettings.DefaultIfNull();
 
             XYZ origin = coordinateSystem.Origin.ToRevit(pushSettings);
-            XYZ X = coordinateSystem.X.ToRevit(pushSettings);
-            XYZ Y = coordinateSystem.Y.ToRevit(pushSettings);
+            XYZ X = coordinateSystem.X.ToRevit(pushSettings).Normalize();
+            XYZ Y = coordinateSystem.Y.ToRevit(pushSettings).Normalize();
             return Plane.CreateByOriginAndBasis(origin, X, Y);
         }
 

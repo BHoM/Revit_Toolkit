@@ -23,6 +23,8 @@
 using Autodesk.Revit.DB;
 using BH.oM.Geometry;
 using BH.oM.Adapters.Revit.Settings;
+using BH.Engine.Geometry;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -53,7 +55,11 @@ namespace BH.UI.Revit.Engine
             if (curve is NurbsCurve)
             {
                 NurbsCurve aNurbCurve = curve as NurbsCurve;
-                return NurbSpline.Create(HermiteSpline.Create(aNurbCurve.ControlPoints.Cast<oM.Geometry.Point>().ToList().ConvertAll(x => ToRevit(x, pushSettings)), false));
+                List<double> knots = aNurbCurve.Knots.ToList();
+                knots.Insert(0, knots[0]);
+                knots.Add(knots[knots.Count - 1]);
+                return NurbSpline.CreateCurve(aNurbCurve.Degree(), knots, aNurbCurve.ControlPoints.Select(x => x.ToRevit(pushSettings)).ToList(), aNurbCurve.Weights);
+                //return NurbSpline.Create(HermiteSpline.Create(aNurbCurve.ControlPoints.Cast<oM.Geometry.Point>().ToList().ConvertAll(x => ToRevit(x, pushSettings)), false));
             }
 
             if (curve is oM.Geometry.Ellipse)
