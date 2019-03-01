@@ -298,9 +298,9 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void InvalidLocationTypeWarning(this IBHoMObject iBHoMObject, ElementType elementType)
+        internal static void InvalidFamilyPlacementTypeWarning(this IBHoMObject iBHoMObject, ElementType elementType)
         {
-            string aMessage = "BHoM Object location does not match with the required Location of family";
+            string aMessage = "BHoM Object location does not match with the required placement type of Revit family";
 
             if (iBHoMObject != null)
                 aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, iBHoMObject.BHoM_Guid);
@@ -309,6 +309,33 @@ namespace BH.UI.Revit.Engine
                 aMessage = string.Format("{0} Element Id : {1}", aMessage, elementType.Id.IntegerValue);
 
             BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void FamilyPlacementTypeNotSupportedWarning(this IBHoMObject iBHoMObject, ElementType elementType)
+        {
+            string aMessage = "lacement type of Revit family is not supported.";
+
+            if (iBHoMObject != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, iBHoMObject.BHoM_Guid);
+
+            if (elementType != null)
+                aMessage = string.Format("{0} Element Id : {1}", aMessage, elementType.Id.IntegerValue);
+
+            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void ElementTypeNotFoundWarning(this IBHoMObject iBHoMObject)
+        {
+            string aMessage = "Element type has not been found for given BHoM Object.";
+
+            if (iBHoMObject != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, iBHoMObject.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordError(aMessage);
         }
 
         /***************************************************/
