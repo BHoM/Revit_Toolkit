@@ -94,9 +94,16 @@ namespace BH.UI.Revit.Engine
 
                 if (aFamilySymbol == null)
                 {
-                    BH.Engine.Reflection.Compute.RecordError(string.Format("Family symbol has not been found for given BHoM framing property. BHoM Guid: {0}", framingElement.BHoM_Guid));
+                    Compute.FamilySymbolNotFoundError(framingElement);
                     return null;
                 }
+            }
+
+            FamilyPlacementType aFamilyPlacementType = aFamilySymbol.Family.FamilyPlacementType;
+            if (aFamilyPlacementType != FamilyPlacementType.CurveBased && aFamilyPlacementType != FamilyPlacementType.CurveBasedDetail && aFamilyPlacementType != FamilyPlacementType.CurveDrivenStructural)
+            {
+                Compute.FamilyPlacementTypeMismatchError(framingElement, aFamilySymbol.Family);
+                return null;
             }
 
             aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Column);
@@ -177,9 +184,16 @@ namespace BH.UI.Revit.Engine
 
                 if (aFamilySymbol == null)
                 {
-                    BH.Engine.Reflection.Compute.RecordError(string.Format("Family symbol has not been found for given BHoM framing property. BHoM Guid: {0}", framingElement.BHoM_Guid));
+                    Compute.FamilySymbolNotFoundError(framingElement);
                     return null;
                 }
+            }
+
+            FamilyPlacementType aFamilyPlacementType = aFamilySymbol.Family.FamilyPlacementType;
+            if (aFamilyPlacementType != FamilyPlacementType.CurveBased && aFamilyPlacementType != FamilyPlacementType.CurveBasedDetail && aFamilyPlacementType != FamilyPlacementType.CurveDrivenStructural)
+            {
+                Compute.FamilyPlacementTypeMismatchError(framingElement, aFamilySymbol.Family);
+                return null;
             }
 
             switch (framingElement.StructuralUsage)
