@@ -59,6 +59,22 @@ namespace BH.UI.Revit.Engine
                 }
                 return BH.Engine.Geometry.Create.Arc(ToBHoM(plane, pullSettings), radius, startAngle, endAngle);
             }
+            if (curve is NurbSpline)
+            {
+                NurbSpline nurbs = curve as NurbSpline;
+
+                List<double> knots = nurbs.Knots.Cast<double>().ToList();
+                knots.RemoveAt(knots.Count - 1);
+                knots.RemoveAt(0);
+
+                return new BH.oM.Geometry.NurbsCurve
+                {
+                    ControlPoints = nurbs.CtrlPoints.Select(x => x.ToBHoM(pullSettings)).ToList(),
+                    Knots = knots,
+                    Weights = nurbs.Weights.Cast<double>().ToList()
+
+                };
+            }
             
             return null;
         }
