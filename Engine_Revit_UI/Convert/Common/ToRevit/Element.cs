@@ -122,7 +122,8 @@ namespace BH.UI.Revit.Engine
 
             pushSettings = pushSettings.DefaultIfNull();
 
-            List<View> aViewList = new FilteredElementCollector(document).OfClass(typeof(ViewDrafting)).Cast<View>().ToList();
+            List<View> aViewList = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().ToList();
+            aViewList.RemoveAll(x => x.IsTemplate || x is ViewSchedule || x is View3D || x is ViewSheet);
             if(aViewList == null || aViewList.Count == 0)
                 return null;
 
