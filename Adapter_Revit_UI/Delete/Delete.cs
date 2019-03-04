@@ -98,9 +98,10 @@ namespace BH.UI.Revit.Adapter
 
         /***************************************************/
         
-        public static bool Delete(BuildingElementProperties buildingElementProperties, Document document, bool deleteByName)
+        public static bool Delete(ElementProperties buildingElementProperties, Document document, bool deleteByName)
         {
-            if (document == null)
+            throw new System.NotImplementedException("The method to delete a BHoM Element Properties from Revit has not been fixed yet. Check Issue #247 for more info");
+            /*if (document == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because Revit Document is null.");
                 return false;
@@ -122,14 +123,15 @@ namespace BH.UI.Revit.Adapter
                     aResult = DeleteByUniqueId(buildingElementProperties, document);
                 aTransaction.Commit();
             }
-            return aResult;
+            return aResult;*/
         }
 
         /***************************************************/
         
-        public static bool Delete(IEnumerable<BuildingElementProperties> buildingElementProperties, Document document, bool deleteByName)
+        public static bool Delete(IEnumerable<ElementProperties> buildingElementProperties, Document document, bool deleteByName)
         {
-            if (document == null)
+            throw new System.NotImplementedException("The method to delete a BHoM Element Properties from Revit has not been fixed yet. Check Issue #247 for more info");
+            /*if (document == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because Revit Document is null.");
                 return false;
@@ -164,7 +166,7 @@ namespace BH.UI.Revit.Adapter
                     
                 aTransaction.Commit();
             }
-            return aResult;
+            return aResult;*/
         }
 
 
