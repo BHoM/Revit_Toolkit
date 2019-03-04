@@ -147,11 +147,13 @@ namespace BH.Engine.Adapters.Revit
             if (points == null || string.IsNullOrEmpty(familyTypeName) || points.Count() < 3)
                 return null;
 
-            BuildingElementProperties aBuildingElementProperties = Environment.Create.BuildingElementProperties(familyTypeName, buildingElementType);
-            aBuildingElementProperties = Modify.SetFamilyTypeName(aBuildingElementProperties, familyTypeName);
+            ElementProperties aBuildingElementProperties = Environment.Create.BuildingElementProperties(buildingElementType);
+            EnvironmentContextProperties envContextProperties = new EnvironmentContextProperties();
+            envContextProperties.TypeName = familyTypeName;
 
             BuildingElement aBuildingElement = BuildingElement(points, familyTypeName);
-            aBuildingElement.BuildingElementProperties = aBuildingElementProperties;
+            aBuildingElement.ExtendedProperties.Add(aBuildingElementProperties);
+            aBuildingElement.ExtendedProperties.Add(envContextProperties);
 
             return aBuildingElement;
         }
