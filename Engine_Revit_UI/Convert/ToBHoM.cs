@@ -194,8 +194,8 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
-                case Discipline.Environmental:
-                    return wallType.ToBHoMBuildingElementProperties(pullSettings); 
+                //case Discipline.Environmental:
+                    //return wallType.ToBHoMBuildingElementProperties(pullSettings); 
                 case Discipline.Structural:
                     return wallType.ToBHoMSurfaceProperty(pullSettings) as IBHoMObject;
             }
@@ -214,8 +214,8 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
-                case Discipline.Environmental:
-                    return floorType.ToBHoMBuildingElementProperties(pullSettings);
+                //case Discipline.Environmental:
+                    //return floorType.ToBHoMBuildingElementProperties(pullSettings);
                 case Discipline.Structural:
                     return floorType.ToBHoMSurfaceProperty(pullSettings) as IBHoMObject;
             }
@@ -234,8 +234,8 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
-                case Discipline.Environmental:
-                    return ceilingType.ToBHoMBuildingElementProperties(pullSettings);
+                //case Discipline.Environmental:
+                    //return ceilingType.ToBHoMBuildingElementProperties(pullSettings);
             }
 
             ceilingType.NotConvertedWarning();
@@ -252,8 +252,8 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
-                case Discipline.Environmental:
-                    return roofType.ToBHoMBuildingElementProperties(pullSettings);
+                //case Discipline.Environmental:
+                    //return roofType.ToBHoMBuildingElementProperties(pullSettings);
             }
 
             roofType.NotConvertedWarning();
@@ -270,8 +270,8 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
-                case Discipline.Environmental:
-                    return familySymbol.ToBHoMBuildingElementProperties(pullSettings);
+                //case Discipline.Environmental:
+                    //return familySymbol.ToBHoMBuildingElementProperties(pullSettings);
                 case Discipline.Structural:
                     return familySymbol.ToBHoMProfile(pullSettings);
             }
@@ -330,8 +330,8 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
-                case Discipline.Environmental:
-                    return elementType.ToBHoMBuildingElementProperties(pullSettings);
+                //case Discipline.Environmental:
+                    //return elementType.ToBHoMBuildingElementProperties(pullSettings);
             }
 
             elementType.NotConvertedWarning();
