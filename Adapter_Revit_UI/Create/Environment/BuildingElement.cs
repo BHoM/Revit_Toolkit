@@ -37,7 +37,8 @@ namespace BH.UI.Revit.Adapter
 
         private static Element Create(BuildingElement buildingElement, Document document, PushSettings pushSettings = null)
         {
-            if (buildingElement == null)
+            throw new System.NotImplementedException("The method to create a Revit Element from a BHoM Building Element has not been fixed yet. Check Issue #247 for more info");
+            /*if (buildingElement == null)
             {
                 NullObjectCreateError(typeof(BuildingElement));
                 return null;
@@ -61,10 +62,10 @@ namespace BH.UI.Revit.Adapter
             /*if (buildingElement.Level != null)
                 Create(buildingElement.Level, pushSettings);*/
 
-            if (pushSettings.Replace)
+            /*if (pushSettings.Replace)
                 Delete(buildingElement, document);
 
-            return buildingElement.ToRevit(document, pushSettings);
+            return buildingElement.ToRevit(document, pushSettings);*/
         }
 
         /***************************************************/

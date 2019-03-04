@@ -39,7 +39,7 @@ namespace BH.UI.Revit.Engine
 
         internal static ElementType ToRevitElementType(this ElementProperties buildingElementProperties, Document document, PushSettings pushSettings = null)
         {
-            throw new System.NotImplementedException("The method to convert a BHoM Building Element into a Revit Element has not been fixed yet. Check Issue #247 for more info");
+            throw new System.NotImplementedException("The method to convert a BHoM Building Element Type into a Revit Element Type has not been fixed yet. Check Issue #247 for more info");
             /*if (buildingElementProperties == null || document == null)
                 return null;
 
