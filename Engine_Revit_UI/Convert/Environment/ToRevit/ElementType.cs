@@ -37,9 +37,10 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static ElementType ToRevitElementType(this BuildingElementProperties buildingElementProperties, Document document, PushSettings pushSettings = null)
+        internal static ElementType ToRevitElementType(this ElementProperties buildingElementProperties, Document document, PushSettings pushSettings = null)
         {
-            if (buildingElementProperties == null || document == null)
+            throw new System.NotImplementedException("The method to convert a BHoM Building Element into a Revit Element has not been fixed yet. Check Issue #247 for more info");
+            /*if (buildingElementProperties == null || document == null)
                 return null;
 
             ElementType aElementType = pushSettings.FindRefObject<ElementType>(document, buildingElementProperties.BHoM_Guid);
@@ -69,7 +70,7 @@ namespace BH.UI.Revit.Engine
 
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(buildingElementProperties, aElementType);
 
-            return aElementType;
+            return aElementType;*/
         }
 
         /***************************************************/

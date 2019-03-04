@@ -121,7 +121,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this BuildingElementProperties buildingElementProperties, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this ElementProperties buildingElementProperties, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 

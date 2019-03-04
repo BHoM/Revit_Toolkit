@@ -81,34 +81,34 @@ namespace BH.UI.Revit.Engine
                 {
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Windows:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Doors:
-                        aResult.Add(typeof(BuildingElementProperties));
+                        aResult.Add(typeof(ElementProperties));
                         return aResult;
                 }
             }
 
             if (element is CeilingType)
             {
-                aResult.Add(typeof(BuildingElementProperties));
+                aResult.Add(typeof(ElementProperties));
                 return aResult;
             }
 
             if (element is WallType)
             {
-                aResult.Add(typeof(BuildingElementProperties));
+                aResult.Add(typeof(ElementProperties));
                 aResult.Add(typeof(ISurfaceProperty));
                 return aResult;
             }
 
             if (element is FloorType)
             {
-                aResult.Add(typeof(BuildingElementProperties));
+                aResult.Add(typeof(ElementProperties));
                 aResult.Add(typeof(ISurfaceProperty));
                 return aResult;
             }
 
             if (element is RoofType)
             {
-                aResult.Add(typeof(BuildingElementProperties));
+                aResult.Add(typeof(ElementProperties));
                 aResult.Add(typeof(ISurfaceProperty));
                 return aResult;
             }
