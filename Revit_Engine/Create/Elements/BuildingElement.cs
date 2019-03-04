@@ -29,6 +29,8 @@ using BH.oM.Environment.Properties;
 using System.Collections.Generic;
 using System.Linq;
 
+using BH.Engine.Environment;
+
 namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
@@ -60,12 +62,17 @@ namespace BH.Engine.Adapters.Revit
 
             PolyCurve aPolyCurve = Geometry.Create.PolyCurve(new ICurve[] { curve, Geometry.Create.Line(aPoint_Min_1, aPoint_Max_1) , aCurve, Geometry.Create.Line(aPoint_Max_2, aPoint_Min_2) });
 
-            BuildingElementProperties aBuildingElementProperties = Environment.Create.BuildingElementProperties(familyTypeName, BuildingElementType.Wall);
-            aBuildingElementProperties = Modify.SetFamilyTypeName(aBuildingElementProperties, familyTypeName);
+            ElementProperties aBuildingElementProperties = Environment.Create.ElementProperties(BuildingElementType.Wall);
+
+            EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+            aEnvironmentContextProperties.TypeName = familyTypeName;
 
             BuildingElement aBuildingElement = Environment.Create.BuildingElement(aBuildingElementProperties, aPolyCurve);
             aBuildingElement.Name = familyTypeName;
             aBuildingElement.CustomData.Add(Convert.CategoryName, "Walls");
+
+            aBuildingElement.AddExtendedProperty(aEnvironmentContextProperties);
+            aBuildingElement.AddExtendedProperty(aBuildingElementProperties);
 
             return aBuildingElement;
         }
@@ -81,7 +88,7 @@ namespace BH.Engine.Adapters.Revit
             if (polyCurve == null || string.IsNullOrEmpty(familyTypeName))
                 return null;
 
-            BuildingElement aBuildingElement = Environment.Create.BuildingElement(Environment.Create.BuildingElementProperties(familyTypeName), polyCurve);
+            BuildingElement aBuildingElement = Environment.Create.BuildingElement(polyCurve);
             aBuildingElement.Name = familyTypeName;
 
             return aBuildingElement;
@@ -99,11 +106,16 @@ namespace BH.Engine.Adapters.Revit
             if (polyCurve == null || string.IsNullOrEmpty(familyTypeName))
                 return null;
 
-            BuildingElementProperties aBuildingElementProperties = Environment.Create.BuildingElementProperties(familyTypeName, buildingElementType);
-            aBuildingElementProperties = Modify.SetFamilyTypeName(aBuildingElementProperties, familyTypeName);
+            ElementProperties aBuildingElementProperties = Environment.Create.ElementProperties(buildingElementType);
+
+            EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
+            aEnvironmentContextProperties.TypeName = familyTypeName;
 
             BuildingElement aBuildingElement = Environment.Create.BuildingElement(aBuildingElementProperties, polyCurve);
             aBuildingElement.Name = familyTypeName;
+
+            aBuildingElement.AddExtendedProperty(aEnvironmentContextProperties);
+            aBuildingElement.AddExtendedProperty(aBuildingElementProperties);
 
             return aBuildingElement;
         }
@@ -147,7 +159,7 @@ namespace BH.Engine.Adapters.Revit
             if (points == null || string.IsNullOrEmpty(familyTypeName) || points.Count() < 3)
                 return null;
 
-            ElementProperties aBuildingElementProperties = Environment.Create.BuildingElementProperties(buildingElementType);
+            ElementProperties aBuildingElementProperties = Environment.Create.ElementProperties(buildingElementType);
             EnvironmentContextProperties envContextProperties = new EnvironmentContextProperties();
             envContextProperties.TypeName = familyTypeName;
 

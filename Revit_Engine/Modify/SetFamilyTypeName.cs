@@ -42,17 +42,15 @@ namespace BH.Engine.Adapters.Revit
         [Input("buildingElementProperties", "Building Element Properties")]
         [Input("familyName", "Revit Family Name")]
         [Output("BuildingElementProperties")]
-        public static BuildingElementProperties SetFamilyName(this BuildingElementProperties buildingElementProperties, string familyName)
+        public static EnvironmentContextProperties SetFamilyName(this EnvironmentContextProperties environmentContextProperties, string familyName)
         {
-            if (buildingElementProperties == null)
+            if (environmentContextProperties == null)
                 return null;
 
-            BuildingElementProperties aBuildingElementProperties = buildingElementProperties.GetShallowClone() as BuildingElementProperties;
-
-            if (aBuildingElementProperties.CustomData.ContainsKey(Convert.FamilyName))
-                aBuildingElementProperties.CustomData[Convert.FamilyName] = familyName;
-            else
-                aBuildingElementProperties.CustomData.Add(Convert.FamilyName, familyName);
+            EnvironmentContextProperties aBuildingElementProperties = new EnvironmentContextProperties();
+            aBuildingElementProperties.Description = environmentContextProperties.Description;
+            aBuildingElementProperties.ElementID = environmentContextProperties.ElementID;
+            aBuildingElementProperties.TypeName = familyName;
 
             return aBuildingElementProperties;
         }
