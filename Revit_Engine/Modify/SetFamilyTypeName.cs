@@ -38,10 +38,10 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Sets Family name for Builiding Element Properties")]
-        [Input("buildingElementProperties", "Building Element Properties")]
+        [Description("Sets Family name for Environment Context Properties")]
+        [Input("environmentElementProperties", "Environment Context Properties")]
         [Input("familyName", "Revit Family Name")]
-        [Output("BuildingElementProperties")]
+        [Output("EnvironmentContextProperties")]
         public static EnvironmentContextProperties SetFamilyName(this EnvironmentContextProperties environmentContextProperties, string familyName)
         {
             if (environmentContextProperties == null)
