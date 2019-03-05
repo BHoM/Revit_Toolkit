@@ -49,7 +49,7 @@ namespace BH.UI.Revit.Engine
 
             ElementType aElementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
 
-            ElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
+            ElementProperties aBuildingElementProperties = aElementType.ToBHoMElementProperties(pullSettings);
 
             aBuildingElement = Create.BuildingElement(aBuildingElementProperties, crv);
             aBuildingElement.Name = Query.FamilyTypeFullName(element);
@@ -98,7 +98,7 @@ namespace BH.UI.Revit.Engine
             if (aBuildingElement != null)
                 return aBuildingElement;
 
-            ElementProperties aBuildingElementProperties = familyInstance.Symbol.ToBHoMBuildingElementProperties(pullSettings);
+            ElementProperties aBuildingElementProperties = familyInstance.Symbol.ToBHoMElementProperties(pullSettings);
 
             PolyCurve aPolyCurve = Query.PolyCurve(familyInstance, pullSettings);
 
@@ -159,7 +159,7 @@ namespace BH.UI.Revit.Engine
             if (aElement != null)
             {
                 aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
-                ElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
+                ElementProperties aBuildingElementProperties = aElementType.ToBHoMElementProperties(pullSettings);
                 aBuildingElement = Create.BuildingElement(Query.FamilyTypeFullName(aElement), aCurve, aBuildingElementProperties);
             }
 
@@ -268,7 +268,7 @@ namespace BH.UI.Revit.Engine
         //    if (aElement != null)
         //    {
         //        aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
-        //        BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMBuildingElementProperties(pullSettings);
+        //        BuildingElementProperties aBuildingElementProperties = aElementType.ToBHoMElementProperties(pullSettings);
         //        aBuildingElementProperties.Construction = Query.Construction(energyAnalysisOpening, pullSettings);
         //        aBuildingElement = Create.BuildingElement(Query.FamilyTypeFullName(aElement), aCurve, aBuildingElementProperties);
         //        aBuildingElement.ElementID = aElement.Id.IntegerValue.ToString();
@@ -365,7 +365,7 @@ namespace BH.UI.Revit.Engine
             aBuildingElements = new List<BuildingElement>();
 
             CeilingType aCeilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
-            ElementProperties aBuildingElementProperties = aCeilingType.ToBHoMBuildingElementProperties(pullSettings);
+            ElementProperties aBuildingElementProperties = aCeilingType.ToBHoMElementProperties(pullSettings);
             aBuildingElementProperties.Construction = Query.Construction(aCeilingType, pullSettings);
 
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
@@ -425,7 +425,7 @@ namespace BH.UI.Revit.Engine
 
             aBuildingElements = new List<BuildingElement>();
 
-            ElementProperties aBuildingElementProperties = floor.FloorType.ToBHoMBuildingElementProperties(pullSettings);
+            ElementProperties aBuildingElementProperties = floor.FloorType.ToBHoMElementProperties(pullSettings);
             aBuildingElementProperties.Construction = Query.Construction(floor.FloorType);
 
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
@@ -485,7 +485,7 @@ namespace BH.UI.Revit.Engine
 
             aBuildingElements = new List<BuildingElement>();
 
-            ElementProperties aBuildingElementProperties = roofBase.RoofType.ToBHoMBuildingElementProperties(pullSettings);
+            ElementProperties aBuildingElementProperties = roofBase.RoofType.ToBHoMElementProperties(pullSettings);
             aBuildingElementProperties.Construction = Query.Construction(roofBase.RoofType, pullSettings);
 
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
@@ -541,7 +541,7 @@ namespace BH.UI.Revit.Engine
 
             aBuildingElements = new List<BuildingElement>();
 
-            ElementProperties aBuildingElementProperties = wall.WallType.ToBHoMBuildingElementProperties(pullSettings);
+            ElementProperties aBuildingElementProperties = wall.WallType.ToBHoMElementProperties(pullSettings);
             aBuildingElementProperties.Construction = Query.Construction(wall.WallType, pullSettings);
 
             List<PolyCurve> aPolyCurveList = Query.Profiles(wall, pullSettings);

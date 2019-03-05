@@ -35,7 +35,7 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static ElementProperties ToBHoMBuildingElementProperties(this ElementType elementType, PullSettings pullSettings = null)
+        internal static ElementProperties ToBHoMElementProperties(this ElementType elementType, PullSettings pullSettings = null)
         {
             //TODO: dynamic does not work. ToBHoM for WallType not recognized
             //aBuildingElementProperties = (elementType as dynamic).ToBHoM(discipline, copyCustomData, convertUnits) as BuildingElementProperties;
@@ -43,15 +43,15 @@ namespace BH.UI.Revit.Engine
             ElementProperties aBuildingElementProperties = null;
 
             if (elementType is WallType)
-                aBuildingElementProperties = (elementType as WallType).ToBHoMBuildingElementProperties(pullSettings);
+                aBuildingElementProperties = (elementType as WallType).ToBHoMElementProperties(pullSettings);
             else if (elementType is FloorType)
-                aBuildingElementProperties = (elementType as FloorType).ToBHoMBuildingElementProperties(pullSettings);
+                aBuildingElementProperties = (elementType as FloorType).ToBHoMElementProperties(pullSettings);
             else if (elementType is CeilingType)
-                aBuildingElementProperties = (elementType as CeilingType).ToBHoMBuildingElementProperties(pullSettings);
+                aBuildingElementProperties = (elementType as CeilingType).ToBHoMElementProperties(pullSettings);
             else if (elementType is RoofType)
-                aBuildingElementProperties = (elementType as RoofType).ToBHoMBuildingElementProperties(pullSettings);
+                aBuildingElementProperties = (elementType as RoofType).ToBHoMElementProperties(pullSettings);
             else if (elementType is FamilySymbol)
-                aBuildingElementProperties = (elementType as FamilySymbol).ToBHoMBuildingElementProperties(pullSettings);
+                aBuildingElementProperties = (elementType as FamilySymbol).ToBHoMElementProperties(pullSettings);
 
             if (aBuildingElementProperties == null)
                 aBuildingElementProperties = new ElementProperties();
@@ -61,7 +61,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static ElementProperties ToBHoMBuildingElementProperties(this WallType wallType, PullSettings pullSettings = null)
+        internal static ElementProperties ToBHoMElementProperties(this WallType wallType, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -70,7 +70,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static ElementProperties ToBHoMBuildingElementProperties(this FloorType floorType, PullSettings pullSettings = null)
+        internal static ElementProperties ToBHoMElementProperties(this FloorType floorType, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -79,7 +79,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static ElementProperties ToBHoMBuildingElementProperties(this CeilingType ceilingType, PullSettings pullSettings = null)
+        internal static ElementProperties ToBHoMElementProperties(this CeilingType ceilingType, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -88,7 +88,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static ElementProperties ToBHoMBuildingElementProperties(this RoofType roofType, PullSettings pullSettings = null)
+        internal static ElementProperties ToBHoMElementProperties(this RoofType roofType, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -97,7 +97,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static ElementProperties ToBHoMBuildingElementProperties(this FamilySymbol familySymbol, PullSettings pullSettings = null)
+        internal static ElementProperties ToBHoMElementProperties(this FamilySymbol familySymbol, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
