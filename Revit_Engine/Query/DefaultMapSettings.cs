@@ -49,6 +49,28 @@ namespace BH.Engine.Adapters.Revit
             aTypeMap = aTypeMap.AddMap("IsGround", "SAM_BuildingElementGround");
             aTypeMapList.Add(aTypeMap);
 
+            aTypeMap = Create.TypeMap(typeof(EnvironmentContextProperties));
+            aTypeMap = aTypeMap.AddMap("Description", "SAM_BuildingElementDescription");
+            aTypeMapList.Add(aTypeMap);
+
+            aTypeMap = Create.TypeMap(typeof(BuildingElementAnalyticalProperties));
+            aTypeMap = aTypeMap.AddMap("UValue", "SAM_UValue");
+            aTypeMap = aTypeMap.AddMap("GValue", "SAM_gValue");
+            aTypeMap = aTypeMap.AddMap("LTValue", "SAM_LtValue");
+            aTypeMapList.Add(aTypeMap);
+
+            aTypeMap = Create.TypeMap(typeof(BuildingAnalyticalProperties));
+            aTypeMap = aTypeMap.AddMap("NorthAngle", "SAM_NorthAngle");
+            aTypeMapList.Add(aTypeMap);
+
+            aTypeMap = Create.TypeMap(typeof(SpaceContextProperties));
+            aTypeMap = aTypeMap.AddMap("IsExternal", "SAM_ExternalZone");
+            aTypeMapList.Add(aTypeMap);
+
+            aTypeMap = Create.TypeMap(typeof(ElementProperties));
+            aTypeMap = aTypeMap.AddMap("BuildingElementType", "SAM_BuildingElementType");
+            aTypeMapList.Add(aTypeMap);
+
             aTypeMap = Create.TypeMap(typeof(CircleProfile));
             aTypeMap = aTypeMap.AddMap("Diameter", new string[] { "BHE_Diameter", "Diameter", "d", "D", "OD" });
             aTypeMap = aTypeMap.AddMap("Radius", new string[] { "BHE_Radius", "Radius", "r", "R" });
