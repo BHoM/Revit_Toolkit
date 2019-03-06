@@ -19,62 +19,68 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
+
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Collections.Generic;
 
 using Autodesk.Revit.DB;
 
+using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Query
+    public static partial class Modify
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Parameter LookupParameter(this Element element, IEnumerable<string> parameterNames)
+        public static IObject UpdateValues(this IObject iObject, PullSettings pullSettings, Element Element)
         {
-            foreach (string s in parameterNames)
-            {
-                Parameter p= element.LookupParameter(s);
-                if (p != null && p.HasValue) return p;
-            }
-            return null;
-        }
-
-        /***************************************************/
-
-        public static Parameter LookupParameter(this Element element, MapSettings mapSettings, Type type, string name, bool hasValue = true)
-        {
-            if (element == null || mapSettings == null || type == null)
+            if (iObject == null)
                 return null;
 
-            IEnumerable<string> aNames = BH.Engine.Adapters.Revit.Query.Names(mapSettings, type, name);
-            if (aNames == null || aNames.Count() == 0)
-                return null;
+            if (pullSettings == null || pullSettings.MapSettings == null)
+                return iObject;
 
-            Parameter aResult = null;
-            foreach (string aName in aNames)
+            Type aType = iObject.GetType();
+
+            IEnumerable<PropertyInfo> aPropertyInfos = BH.Engine.Adapters.Revit.Query.MapPropertyInfos(aType);
+            if (aPropertyInfos == null || aPropertyInfos.Count() == 0)
+                return iObject;
+
+            MapSettings aMapSettings = pullSettings.MapSettings;
+
+            foreach (PropertyInfo aPropertyInfo in aPropertyInfos)
             {
-                Parameter aParameter = element.LookupParameter(aName);
+                Parameter aParameter = Element.LookupParameter(aMapSettings, aType, aPropertyInfo.Name, false);
                 if (aParameter == null)
                     continue;
 
-                if (!hasValue && !aParameter.HasValue)
-                    continue;
+                Type aType_PropertyInfo = aPropertyInfo.PropertyType;
 
-                if(aResult == null)
-                    aResult = aParameter;
-
-                if (aParameter.HasValue)
-                    return aParameter;
+                if (aType_PropertyInfo == typeof(string))
+                    aPropertyInfo.SetValue(iObject, aParameter.AsString());
+                else if (aType_PropertyInfo == typeof(double))
+                    aPropertyInfo.SetValue(iObject, aParameter.AsDouble());
+                else if (aType_PropertyInfo == typeof(int) || aType_PropertyInfo == typeof(short) || aType_PropertyInfo == typeof(long))
+                {
+                    if (aParameter.StorageType == StorageType.ElementId)
+                        aPropertyInfo.SetValue(iObject, aParameter.AsElementId());
+                    else
+                        aPropertyInfo.SetValue(iObject, aParameter.AsInteger());
+                }
+                else if (aType_PropertyInfo == typeof(bool))
+                    aPropertyInfo.SetValue(iObject, aParameter.AsInteger() == 1);
             }
 
-            return aResult;
+            return iObject;
         }
 
         /***************************************************/

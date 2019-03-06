@@ -76,6 +76,8 @@
     <Compile Include="Settings\FamilyLoadSettings.cs" />
     <Compile Include="Settings\ConnectionSettings.cs" />
     <Compile Include="Settings\GeneralSettings.cs" />
+    <Compile Include="Generic\TypeMap.cs" />
+    <Compile Include="Settings\MapSettings.cs" />
     <Compile Include="Settings\UpdatePropertySettings.cs" />
     <Compile Include="Settings\PullSettings.cs" />
     <Compile Include="Settings\RevitSettings.cs" />

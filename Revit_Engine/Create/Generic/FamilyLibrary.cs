@@ -20,9 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System.ComponentModel;
+
+using System;
+
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
+
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -36,9 +41,15 @@ namespace BH.Engine.Adapters.Revit
         [Input("directory", "Directory from where famlies will be loaded if not exists in model")]
         [Input("topDirectoryOnly", "Search through top dilectory folder and skip subfolders")]
         [Output("FamilyLibrary")]
-        public static FamilyLibrary FamilyLibrary(string directory, bool topDirectoryOnly = false)
+        public static TypeMap TypeMap(Type type)
         {
-            return new FamilyLibrary().Append(directory, topDirectoryOnly);
+            if (type == null)
+                return null;
+
+            return new TypeMap()
+            {
+                Type = type
+            };
         }
 
         /***************************************************/

@@ -64,6 +64,7 @@ namespace BH.UI.Revit.Engine
             aBuildingElement.ExtendedProperties.Add(aBuildingElementAnalyticalProperties);
 
             BuildingElementContextProperties aBuildingElementContextProperties = new BuildingElementContextProperties();
+            aBuildingElementContextProperties.UpdateValues(pullSettings, aElementType);
             aBuildingElement.ExtendedProperties.Add(aBuildingElementContextProperties);
 
             BuildingResultsProperties aBuildingResultsProperties = new BuildingResultsProperties();
@@ -563,6 +564,7 @@ namespace BH.UI.Revit.Engine
                 aBuildingElement.AddExtendedProperty(aBuildingElementAnalyticalProperties);
 
                 BuildingElementContextProperties aBuildingElementContextProperties = new BuildingElementContextProperties();
+                aBuildingElementContextProperties.UpdateValues(pullSettings, wall.WallType);
                 aBuildingElement.AddExtendedProperty(aBuildingElementContextProperties);
 
                 BuildingResultsProperties aBuildingResultsProperties = new BuildingResultsProperties();

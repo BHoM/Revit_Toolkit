@@ -20,28 +20,33 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
-using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Settings
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
+
+namespace BH.Engine.Adapters.Revit
 {
-    public class PushSettings : BHoMObject
+    public static partial class Modify
     {
         /***************************************************/
-        /**** Public Properties                         ****/
+        /**** Public Methods                            ****/
         /***************************************************/
 
-        public bool CopyCustomData { get; set; } = true;
-        public bool ConvertUnits { get; set; } = true;
-        public bool Replace { get; set; } = true;
-        public FamilyLoadSettings FamilyLoadSettings { get; set; } = null;
-        public MapSettings MapSettings { get; set; } = null;
-        public Dictionary<Guid, List<int>> RefObjects = null;
+        [Description("Sets MapSettings for RevitSettings.")]
+        [Input("revitSettings", "RevitSettings")]
+        [Input("mapSettings", "MapSettings")]
+        [Output("RevitSettings")]
+        public static RevitSettings SetMapSettings(this RevitSettings revitSettings, MapSettings mapSettings)
+        {
+            if (revitSettings == null || mapSettings == null)
+                return revitSettings;
 
-        /***************************************************/
+            RevitSettings aRevitSettings = revitSettings.GetShallowClone() as RevitSettings;
+            aRevitSettings.MapSettings = mapSettings;
 
-        public static PushSettings Default = new PushSettings();
+            return aRevitSettings;
+        }
 
         /***************************************************/
     }

@@ -43,6 +43,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             RevitSettings aRevitSettings = revitSettings.GetShallowClone() as RevitSettings;
+            aRevitSettings.GeneralSettings = aRevitSettings.GeneralSettings.GetShallowClone() as GeneralSettings;
             aRevitSettings.GeneralSettings.Replace = replace;
 
             return aRevitSettings;
