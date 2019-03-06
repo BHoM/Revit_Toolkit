@@ -42,7 +42,7 @@ namespace BH.Engine.Adapters.Revit
             TypeMap aTypeMap = Create.TypeMap(typeof(BuildingElementContextProperties));
             aTypeMap.AddMap("IsAir", "SAM_BuildingElementAir");
             aTypeMap.AddMap("Colour", "SAM_BuildingElementColour");
-            //aTypeMap.AddMap("IsGround", "SAM_BuildingElementGround");
+            aTypeMap.AddMap("IsGround", "SAM_BuildingElementGround");
             aTypeMapList.Add(aTypeMap);
 
 

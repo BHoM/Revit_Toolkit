@@ -54,11 +54,13 @@ namespace BH.UI.Revit.Engine
                 EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
                 aEnvironmentContextProperties.ElementID = energyAnalysisOpening.Id.IntegerValue.ToString();
                 aEnvironmentContextProperties.TypeName = energyAnalysisOpening.OpeningName;
+                aEnvironmentContextProperties = aEnvironmentContextProperties.UpdateValues(pullSettings, energyAnalysisOpening) as EnvironmentContextProperties;
                 aResult.AddExtendedProperty(aEnvironmentContextProperties);
 
                 ElementProperties aElementProperties = new ElementProperties();
                 aElementProperties.Construction = Query.Construction(energyAnalysisOpening, pullSettings);
                 aElementProperties.BuildingElementType = BuildingElementType.Undefined;
+                aElementProperties = aElementProperties.UpdateValues(pullSettings, energyAnalysisOpening) as ElementProperties;
                 aResult.AddExtendedProperty(aElementProperties);
 
                 aResult = Modify.SetIdentifiers(aResult, energyAnalysisOpening) as oM.Environment.Elements.Opening;
@@ -66,7 +68,7 @@ namespace BH.UI.Revit.Engine
                     aResult = Modify.SetCustomData(aResult, energyAnalysisOpening, pullSettings.ConvertUnits) as oM.Environment.Elements.Opening;
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult);
-
+                aResult = aResult.UpdateValues(pullSettings, energyAnalysisOpening) as oM.Environment.Elements.Opening;
                 return aResult;
             }
             else
@@ -75,6 +77,8 @@ namespace BH.UI.Revit.Engine
                 if (aResult != null)
                     return aResult;
 
+                ElementType aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
+
                 ICurve aCurve = energyAnalysisOpening.GetPolyloop().ToBHoM(pullSettings);
                 aResult = Create.Opening(aCurve);
                 aResult.Name = Query.FamilyTypeFullName(aElement);
@@ -82,6 +86,8 @@ namespace BH.UI.Revit.Engine
                 EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
                 aEnvironmentContextProperties.ElementID = aElement.Id.IntegerValue.ToString();
                 aEnvironmentContextProperties.TypeName = Query.FamilyTypeFullName(aElement);
+                aEnvironmentContextProperties = aEnvironmentContextProperties.UpdateValues(pullSettings, aElement) as EnvironmentContextProperties;
+                aEnvironmentContextProperties = aEnvironmentContextProperties.UpdateValues(pullSettings, aElementType) as EnvironmentContextProperties;
                 aResult.AddExtendedProperty(aEnvironmentContextProperties);
 
                 ElementProperties aElementProperties = new ElementProperties();
@@ -91,6 +97,8 @@ namespace BH.UI.Revit.Engine
                     aElementProperties.BuildingElementType = aBuildingElementType.Value;
                 else
                     aElementProperties.BuildingElementType = BuildingElementType.Undefined;
+                aElementProperties = aElementProperties.UpdateValues(pullSettings, aElement) as ElementProperties;
+                aElementProperties = aElementProperties.UpdateValues(pullSettings, aElementType) as ElementProperties;
                 aResult.AddExtendedProperty(aElementProperties);
 
                 aResult = Modify.SetIdentifiers(aResult, aElement) as oM.Environment.Elements.Opening;
@@ -98,7 +106,8 @@ namespace BH.UI.Revit.Engine
                     aResult = Modify.SetCustomData(aResult, aElement, pullSettings.ConvertUnits) as oM.Environment.Elements.Opening;
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult, energyAnalysisOpening.Id.IntegerValue);
-
+                aResult = aResult.UpdateValues(pullSettings, aElement) as oM.Environment.Elements.Opening;
+                aResult = aResult.UpdateValues(pullSettings, aElementType) as oM.Environment.Elements.Opening;
                 return aResult;
             }
         }
