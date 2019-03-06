@@ -85,12 +85,15 @@ namespace BH.UI.Revit.Engine
             EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
             aEnvironmentContextProperties.ElementID = spatialElement.Id.IntegerValue.ToString();
             aEnvironmentContextProperties.TypeName = Query.Name(spatialElement);
+            aEnvironmentContextProperties = aEnvironmentContextProperties.UpdateValues(pullSettings, spatialElement) as EnvironmentContextProperties;
             aSpace.AddExtendedProperty(aEnvironmentContextProperties);
 
             SpaceAnalyticalProperties aSpaceAnalyticalProperties = new SpaceAnalyticalProperties();
+            aSpaceAnalyticalProperties = aSpaceAnalyticalProperties.UpdateValues(pullSettings, spatialElement) as SpaceAnalyticalProperties;
             aSpace.AddExtendedProperty(aEnvironmentContextProperties);
 
             SpaceContextProperties aSpaceContextProperties = new SpaceContextProperties();
+            aSpaceContextProperties = aSpaceContextProperties.UpdateValues(pullSettings, spatialElement) as SpaceContextProperties;
             //TODO: Implement ConnectedElements
             aSpace.AddExtendedProperty(aSpaceContextProperties);
 
@@ -100,7 +103,7 @@ namespace BH.UI.Revit.Engine
                 aSpace = Modify.SetCustomData(aSpace, spatialElement, pullSettings.ConvertUnits) as Space;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSpace);
-
+            aSpace = aSpace.UpdateValues(pullSettings, spatialElement) as Space;
             return aSpace;
 
             //if (!SpatialElementGeometryCalculator.CanCalculateGeometry(spatialElement))
@@ -156,9 +159,13 @@ namespace BH.UI.Revit.Engine
             EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
             aEnvironmentContextProperties.ElementID = aSpatialElement.Id.IntegerValue.ToString();
             aEnvironmentContextProperties.TypeName = Query.Name(aSpatialElement);
+            aEnvironmentContextProperties = aEnvironmentContextProperties.UpdateValues(pullSettings, energyAnalysisSpace) as EnvironmentContextProperties;
+            aEnvironmentContextProperties = aEnvironmentContextProperties.UpdateValues(pullSettings, aSpatialElement) as EnvironmentContextProperties;
             aSpace.AddExtendedProperty(aEnvironmentContextProperties);
 
             SpaceAnalyticalProperties aSpaceAnalyticalProperties = new SpaceAnalyticalProperties();
+            aSpaceAnalyticalProperties = aSpaceAnalyticalProperties.UpdateValues(pullSettings, energyAnalysisSpace) as SpaceAnalyticalProperties;
+            aSpaceAnalyticalProperties = aSpaceAnalyticalProperties.UpdateValues(pullSettings, aSpatialElement) as SpaceAnalyticalProperties;
             aSpace.AddExtendedProperty(aEnvironmentContextProperties);
 
             SpaceContextProperties aSpaceContextProperties = new SpaceContextProperties();
@@ -166,6 +173,8 @@ namespace BH.UI.Revit.Engine
             foreach (EnergyAnalysisSurface aEnergyAnalysisSurface in energyAnalysisSpace.GetAnalyticalSurfaces())
                 aConnectedElements.Add(aEnergyAnalysisSurface.CADObjectUniqueId);
             aSpaceContextProperties.ConnectedElements = aConnectedElements;
+            aSpaceContextProperties = aSpaceContextProperties.UpdateValues(pullSettings, energyAnalysisSpace) as SpaceContextProperties;
+            aSpaceContextProperties = aSpaceContextProperties.UpdateValues(pullSettings, aSpatialElement) as SpaceContextProperties;
             aSpace.AddExtendedProperty(aSpaceContextProperties);
 
             //Set custom data
@@ -189,7 +198,8 @@ namespace BH.UI.Revit.Engine
                 aSpace.Number = aSpace.CustomData["Number"].ToString();
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSpace);
-
+            aSpace = aSpace.UpdateValues(pullSettings, energyAnalysisSpace) as Space;
+            aSpace = aSpace.UpdateValues(pullSettings, aSpatialElement) as Space;
             return aSpace;
         }
 

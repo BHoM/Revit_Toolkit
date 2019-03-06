@@ -49,11 +49,16 @@ namespace BH.UI.Revit.Engine
             if (aResult == null || aResult.Count == 0)
                 return aResult;
 
+            ElementType aElementType = element.Document.GetElement(element.GetTypeId()) as ElementType; 
+
             for(int i=0; i < aResult.Count; i++)
             {
                 aResult[i] = Modify.SetIdentifiers(aResult[i], element) as oM.Environment.Elements.Panel;
                 if (pullSettings.CopyCustomData)
                     aResult[i] = Modify.SetCustomData(aResult[i], element, pullSettings.ConvertUnits) as oM.Environment.Elements.Panel;
+
+                aResult[i] = aResult[i].UpdateValues(pullSettings, element) as oM.Environment.Elements.Panel;
+                aResult[i] = aResult[i].UpdateValues(pullSettings, aElementType) as oM.Environment.Elements.Panel;
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult[i]);
             }
@@ -80,6 +85,9 @@ namespace BH.UI.Revit.Engine
                 aResult[i] = Modify.SetIdentifiers(aResult[i], roofBase) as oM.Environment.Elements.Panel;
                 if (pullSettings.CopyCustomData)
                     aResult[i] = Modify.SetCustomData(aResult[i], roofBase, pullSettings.ConvertUnits) as oM.Environment.Elements.Panel;
+
+                aResult[i] = aResult[i].UpdateValues(pullSettings, roofBase) as oM.Environment.Elements.Panel;
+                aResult[i] = aResult[i].UpdateValues(pullSettings, roofBase.RoofType) as oM.Environment.Elements.Panel;
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult[i]);
             }
@@ -109,6 +117,9 @@ namespace BH.UI.Revit.Engine
             aPanel = Modify.SetIdentifiers(aPanel, familyInstance) as oM.Environment.Elements.Panel;
             if (pullSettings.CopyCustomData)
                 aPanel = Modify.SetCustomData(aPanel, familyInstance, pullSettings.ConvertUnits) as oM.Environment.Elements.Panel;
+
+            aPanel = aPanel.UpdateValues(pullSettings, familyInstance) as oM.Environment.Elements.Panel;
+            aPanel = aPanel.UpdateValues(pullSettings, familyInstance.Symbol) as oM.Environment.Elements.Panel;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
 

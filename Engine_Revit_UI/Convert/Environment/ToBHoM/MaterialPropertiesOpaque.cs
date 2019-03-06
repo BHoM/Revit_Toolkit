@@ -49,6 +49,8 @@ namespace BH.UI.Revit.Engine
 
             Update(aResult, material, pullSettings);
 
+            aResult = aResult.UpdateValues(pullSettings, material) as MaterialPropertiesOpaque;
+
             //Set custom data
             aResult = Modify.SetIdentifiers(aResult, material) as MaterialPropertiesOpaque;
             if (pullSettings.CopyCustomData)
@@ -57,8 +59,6 @@ namespace BH.UI.Revit.Engine
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult);
             return aResult;
         }
-
-        /***************************************************/
 
         /***************************************************/
         /****             Private methods               ****/

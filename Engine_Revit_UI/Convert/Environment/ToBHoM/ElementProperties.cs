@@ -65,7 +65,9 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            return Create.ElementProperties(BuildingElementType.Wall, Query.Construction(wallType, pullSettings));
+            ElementProperties aElementProperties = Create.ElementProperties(BuildingElementType.Wall, Query.Construction(wallType, pullSettings));
+            aElementProperties = aElementProperties.UpdateValues(pullSettings, wallType) as ElementProperties;
+            return aElementProperties;
         }
 
         /***************************************************/
@@ -74,7 +76,9 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            return Create.ElementProperties(BuildingElementType.Floor, Query.Construction(floorType, pullSettings));
+            ElementProperties aElementProperties = Create.ElementProperties(BuildingElementType.Floor, Query.Construction(floorType, pullSettings));
+            aElementProperties = aElementProperties.UpdateValues(pullSettings, floorType) as ElementProperties;
+            return aElementProperties;
         }
 
         /***************************************************/
@@ -83,7 +87,9 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            return Create.ElementProperties(BuildingElementType.Ceiling, Query.Construction(ceilingType, pullSettings));
+            ElementProperties aElementProperties = Create.ElementProperties(BuildingElementType.Ceiling, Query.Construction(ceilingType, pullSettings));
+            aElementProperties = aElementProperties.UpdateValues(pullSettings, ceilingType) as ElementProperties;
+            return aElementProperties;
         }
 
         /***************************************************/
@@ -92,7 +98,9 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            return Create.ElementProperties(BuildingElementType.Roof, Query.Construction(roofType, pullSettings));
+            ElementProperties aElementProperties = Create.ElementProperties(BuildingElementType.Roof, Query.Construction(roofType, pullSettings));
+            aElementProperties = aElementProperties.UpdateValues(pullSettings, roofType) as ElementProperties;
+            return aElementProperties;
         }
 
         /***************************************************/
@@ -105,7 +113,9 @@ namespace BH.UI.Revit.Engine
             if (!aBuildingElementType.HasValue)
                 aBuildingElementType = BuildingElementType.Undefined;
 
-            return Create.ElementProperties(aBuildingElementType.Value);
+            ElementProperties aElementProperties = Create.ElementProperties(aBuildingElementType.Value);
+            aElementProperties = aElementProperties.UpdateValues(pullSettings, familySymbol) as ElementProperties;
+            return aElementProperties;
         }
 
         /***************************************************/

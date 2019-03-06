@@ -46,7 +46,7 @@ namespace BH.UI.Revit.Engine
             if (iObject == null)
                 return null;
 
-            if (pullSettings == null || pullSettings.MapSettings == null)
+            if (pullSettings == null || pullSettings.MapSettings == null || Element == null)
                 return iObject;
 
             Type aType = iObject.GetType();
