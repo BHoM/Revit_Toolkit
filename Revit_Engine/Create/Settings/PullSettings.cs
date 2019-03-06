@@ -59,12 +59,14 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates Pull Settings class which contols pull behaviour of Adapter")]
         [Input("discipline", "Default disciplne for pull method")]
+        [Input("mapSettings", "Mapping settings to be applied")]
         [Output("PullSettings")]
-        public static PullSettings PullSettings(Discipline discipline)
+        public static PullSettings PullSettings(Discipline discipline, MapSettings mapSettings)
         {
             PullSettings aPullSettings = new PullSettings()
             {
                 Discipline = discipline,
+                MapSettings = mapSettings,
                 RefObjects = new Dictionary<int, List<IBHoMObject>>(),
             };
 

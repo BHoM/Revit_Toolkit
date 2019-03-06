@@ -20,28 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
-using System;
 using System.Collections.Generic;
+
+using BH.oM.Base;
+using BH.oM.Adapters.Revit.Elements;
 
 namespace BH.oM.Adapters.Revit.Settings
 {
-    public class PushSettings : BHoMObject
+    public class MapSettings : BHoMObject
     {
         /***************************************************/
-        /**** Public Properties                         ****/
+        /**** Public Properties                        ****/
         /***************************************************/
 
-        public bool CopyCustomData { get; set; } = true;
-        public bool ConvertUnits { get; set; } = true;
-        public bool Replace { get; set; } = true;
-        public FamilyLoadSettings FamilyLoadSettings { get; set; } = null;
-        public MapSettings MapSettings { get; set; } = null;
-        public Dictionary<Guid, List<int>> RefObjects = null;
-
-        /***************************************************/
-
-        public static PushSettings Default = new PushSettings();
+        public List<TypeMap> TypeMaps { get; set; } = new List<TypeMap>();
 
         /***************************************************/
     }

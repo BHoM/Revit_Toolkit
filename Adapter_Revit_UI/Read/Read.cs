@@ -143,7 +143,11 @@ namespace BH.UI.Revit.Adapter
 
             RevitSettings aRevitSettings = RevitSettings;
 
-            List<ElementId> aElementIdList = new List<ElementId>();
+            MapSettings aMapSettings = RevitSettings.MapSettings;
+            if (aMapSettings.TypeMaps == null || aMapSettings.TypeMaps.Count == 0)
+                aMapSettings = BH.Engine.Adapters.Revit.Query.DefaultMapSettings();
+
+            List <ElementId> aElementIdList = new List<ElementId>();
             foreach (KeyValuePair<ElementId, List<FilterQuery>> aKeyValuePair in aFilterQueryDictionary)
             {
                 Element aElement = aDocument.GetElement(aKeyValuePair.Key);
@@ -159,7 +163,7 @@ namespace BH.UI.Revit.Adapter
                 PullSettings aPullSettings = null;
                 if (!aDictionary_PullSettings.TryGetValue(aDiscipline, out aPullSettings))
                 {
-                    aPullSettings = BH.Engine.Adapters.Revit.Create.PullSettings(aDiscipline);
+                    aPullSettings = BH.Engine.Adapters.Revit.Create.PullSettings(aDiscipline, aMapSettings);
                     aDictionary_PullSettings.Add(aDiscipline, aPullSettings);
                 }
 

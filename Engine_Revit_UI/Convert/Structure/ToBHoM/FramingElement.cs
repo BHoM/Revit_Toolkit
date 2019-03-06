@@ -94,11 +94,11 @@ namespace BH.UI.Revit.Engine
                 }
                 else if (structuralType != StructuralType.Column)
                 {
-                    double ZOffset = familyInstance.LookupParameterDouble("z Offset Value", pullSettings.ConvertUnits);
+                    double ZOffset = familyInstance.LookupDouble("z Offset Value", pullSettings.ConvertUnits);
                     if (ZOffset != 0 && !double.IsNaN(ZOffset))
                         locationCurve = BHG.Modify.Translate(locationCurve as dynamic, new oM.Geometry.Vector { X = 0, Y = 0, Z = ZOffset });
                 }
-                rotation = -familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, false);
+                rotation = -familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, false);
             }
 
             if (!nonlinear && locationCurve == null) familyInstance.BarCurveNotFoundWarning();

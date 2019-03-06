@@ -20,28 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
-using System;
-using System.Collections.Generic;
+using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Settings
+namespace BH.Engine.Adapters.Revit
 {
-    public class PushSettings : BHoMObject
+    public static partial class Create
     {
         /***************************************************/
-        /**** Public Properties                         ****/
+        /**** Public Methods                            ****/
         /***************************************************/
 
-        public bool CopyCustomData { get; set; } = true;
-        public bool ConvertUnits { get; set; } = true;
-        public bool Replace { get; set; } = true;
-        public FamilyLoadSettings FamilyLoadSettings { get; set; } = null;
-        public MapSettings MapSettings { get; set; } = null;
-        public Dictionary<Guid, List<int>> RefObjects = null;
-
-        /***************************************************/
-
-        public static PushSettings Default = new PushSettings();
+        [Description("Creates Family Library Class which holds information about families can be loaded to model.")]
+        [Input("directory", "Directory from where famlies will be loaded if not exists in model")]
+        [Input("topDirectoryOnly", "Search through top dilectory folder and skip subfolders")]
+        [Output("FamilyLibrary")]
+        public static FamilyLibrary FamilyLibrary(string directory, bool topDirectoryOnly = false)
+        {
+            return new FamilyLibrary().Append(directory, topDirectoryOnly);
+        }
 
         /***************************************************/
     }

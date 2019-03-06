@@ -20,28 +20,41 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 
-namespace BH.oM.Adapters.Revit.Settings
+
+namespace BH.Engine.Adapters.Revit
 {
-    public class PushSettings : BHoMObject
+    public static partial class Query
     {
         /***************************************************/
-        /**** Public Properties                         ****/
+        /**** Public Methods                            ****/
         /***************************************************/
 
-        public bool CopyCustomData { get; set; } = true;
-        public bool ConvertUnits { get; set; } = true;
-        public bool Replace { get; set; } = true;
-        public FamilyLoadSettings FamilyLoadSettings { get; set; } = null;
-        public MapSettings MapSettings { get; set; } = null;
-        public Dictionary<Guid, List<int>> RefObjects = null;
+        static public IEnumerable<PropertyInfo> MapPropertyInfos(this Type type)
+        {
+            if (type == null)
+                return null;
 
-        /***************************************************/
+            PropertyInfo[] aPropertyInfos = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            if (aPropertyInfos == null || aPropertyInfos.Length == 0)
+                return aPropertyInfos;
 
-        public static PushSettings Default = new PushSettings();
+            List<PropertyInfo> aResult = new List<PropertyInfo>();
+            foreach(PropertyInfo aPropertyInfo in aPropertyInfos)
+            {
+                if (aPropertyInfo.GetSetMethod() == null)
+                    continue;
+
+                Type aType = aPropertyInfo.PropertyType;
+                if (aType == typeof(double) || aType == typeof(int) || aType == typeof(string) || aType == typeof(long) || aType == typeof(bool) || aType == typeof(short))
+                    aResult.Add(aPropertyInfo);
+            }
+
+            return aResult;
+        }
 
         /***************************************************/
     }

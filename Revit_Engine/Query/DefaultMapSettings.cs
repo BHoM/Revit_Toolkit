@@ -20,28 +20,35 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
-using System;
 using System.Collections.Generic;
 
-namespace BH.oM.Adapters.Revit.Settings
+using BH.oM.Environment.Properties;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Adapters.Revit.Elements;
+
+
+namespace BH.Engine.Adapters.Revit
 {
-    public class PushSettings : BHoMObject
+    public static partial class Query
     {
         /***************************************************/
-        /**** Public Properties                         ****/
+        /**** Public Methods                            ****/
         /***************************************************/
 
-        public bool CopyCustomData { get; set; } = true;
-        public bool ConvertUnits { get; set; } = true;
-        public bool Replace { get; set; } = true;
-        public FamilyLoadSettings FamilyLoadSettings { get; set; } = null;
-        public MapSettings MapSettings { get; set; } = null;
-        public Dictionary<Guid, List<int>> RefObjects = null;
+        public static MapSettings DefaultMapSettings()
+        {
+            List<TypeMap> aTypeMapList = new List<TypeMap>();
 
-        /***************************************************/
+            TypeMap aTypeMap = Create.TypeMap(typeof(BuildingElementContextProperties));
+            aTypeMap.AddMap("IsAir", "SAM_BuildingElementAir");
+            aTypeMap.AddMap("Colour", "SAM_BuildingElementColour");
+            //aTypeMap.AddMap("IsGround", "SAM_BuildingElementGround");
+            aTypeMapList.Add(aTypeMap);
 
-        public static PushSettings Default = new PushSettings();
+
+            return Create.MapSettings(aTypeMapList);
+
+        }
 
         /***************************************************/
     }

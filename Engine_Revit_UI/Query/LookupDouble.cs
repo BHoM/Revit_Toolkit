@@ -20,28 +20,61 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
-using System;
 using System.Collections.Generic;
 
-namespace BH.oM.Adapters.Revit.Settings
+using Autodesk.Revit.DB;
+
+
+namespace BH.UI.Revit.Engine
 {
-    public class PushSettings : BHoMObject
+    public static partial class Query
     {
         /***************************************************/
-        /**** Public Properties                         ****/
+        /**** Public Methods                            ****/
         /***************************************************/
 
-        public bool CopyCustomData { get; set; } = true;
-        public bool ConvertUnits { get; set; } = true;
-        public bool Replace { get; set; } = true;
-        public FamilyLoadSettings FamilyLoadSettings { get; set; } = null;
-        public MapSettings MapSettings { get; set; } = null;
-        public Dictionary<Guid, List<int>> RefObjects = null;
+        public static double LookupDouble(this Element element, string parameterName, bool convertUnits = true)
+        {
+            double value = double.NaN;
+            Parameter p = element.LookupParameter(parameterName);
+            if (p != null && p.HasValue)
+            {
+                value = p.AsDouble();
+                if (convertUnits)
+                    value = Convert.ToSI(value, p.Definition.UnitType);
+            }
+            return value;
+        }
 
         /***************************************************/
 
-        public static PushSettings Default = new PushSettings();
+        public static double LookupDouble(this Element element, BuiltInParameter builtInParameter, bool convertUnits = true)
+        {
+            double value = double.NaN;
+            Parameter p = element.get_Parameter(builtInParameter);
+            if (p != null && p.HasValue)
+            {
+                value = p.AsDouble();
+                if (convertUnits)
+                    value = Convert.ToSI(value, p.Definition.UnitType);
+            }
+            return value;
+        }
+
+        /***************************************************/
+
+        public static double LookupDouble(this Element element, IEnumerable<string> parameterNames, bool convertUnits = true)
+        {
+            double value = double.NaN;
+            Parameter p = element.LookupParameter(parameterNames);
+            if (p != null)
+            {
+                value = p.AsDouble();
+                if (convertUnits)
+                    value = Convert.ToSI(value, p.Definition.UnitType);
+            }
+            return value;
+        }
 
         /***************************************************/
     }
