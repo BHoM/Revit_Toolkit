@@ -32,7 +32,10 @@ namespace BH.UI.Revit.Engine
 
         public static double ToSI(this double Value, UnitType UnitType)
         {
-            switch(UnitType)
+            if (double.IsNaN(Value) || Value == double.MaxValue || Value == double.MinValue || double.IsNegativeInfinity(Value) || double.IsPositiveInfinity(Value))
+                return Value;
+
+            switch (UnitType)
             {
                 case UnitType.UT_Length:
                 case UnitType.UT_Bar_Diameter:

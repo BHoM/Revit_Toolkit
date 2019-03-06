@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using BH.oM.Environment.Properties;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Elements;
-
+using BH.oM.Structure.Properties.Section.ShapeProfiles;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,17 +34,99 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-
+  
         public static MapSettings DefaultMapSettings()
         {
+            //TODO: To be moved to DataSets??
+
             List<TypeMap> aTypeMapList = new List<TypeMap>();
 
-            TypeMap aTypeMap = Create.TypeMap(typeof(BuildingElementContextProperties));
-            aTypeMap.AddMap("IsAir", "SAM_BuildingElementAir");
-            aTypeMap.AddMap("Colour", "SAM_BuildingElementColour");
-            aTypeMap.AddMap("IsGround", "SAM_BuildingElementGround");
+            TypeMap aTypeMap = null;
+
+            aTypeMap = Create.TypeMap(typeof(BuildingElementContextProperties));
+            aTypeMap = aTypeMap.AddMap("IsAir", "SAM_BuildingElementAir");
+            aTypeMap = aTypeMap.AddMap("Colour", "SAM_BuildingElementColour");
+            aTypeMap = aTypeMap.AddMap("IsGround", "SAM_BuildingElementGround");
             aTypeMapList.Add(aTypeMap);
 
+            aTypeMap = Create.TypeMap(typeof(CircleProfile));
+            aTypeMap = aTypeMap.AddMap("Diameter", new string[] { "BHE_Diameter", "Diameter", "d", "D", "OD" });
+            aTypeMap = aTypeMap.AddMap("Radius", new string[] { "BHE_Radius", "Radius", "r", "R" });
+            aTypeMapList.Add(aTypeMap);
+
+            aTypeMap = Create.TypeMap(typeof(TubeProfile));
+            aTypeMap = aTypeMap.AddMap("Diameter", new string[] { "BHE_Diameter", "Diameter", "d", "D", "OD" });
+            aTypeMap = aTypeMap.AddMap("Thickness", new string[] { "Wall Nominal Thickness", "Wall Thickness", "t", "T" });
+            aTypeMapList.Add(aTypeMap);
+
+            aTypeMap = Create.TypeMap(typeof(FabricatedISectionProfile));
+            aTypeMap = aTypeMap.AddMap("Height", new string[] { "BHE_Height", "BHE_Depth", "Height", "Depth", "d", "h", "D", "H", "Ht", "b" });
+            aTypeMap = aTypeMap.AddMap("TopFlangeWidth", new string[] { "Top Flange Width", "bt", "bf_t", "bft", "b1", "b", "B", "Bt" });
+            aTypeMap = aTypeMap.AddMap("BotFlangeWidth", new string[] { "Bottom Flange Width", "bb", "bf_b", "bfb", "b2", "b", "B", "Bb" });
+            aTypeMap = aTypeMap.AddMap("WebThickness", new string[] { "Web Thickness", "Stem Width", "tw", "t", "T" });
+            aTypeMap = aTypeMap.AddMap("TopFlangeThickness", new string[] { "Top Flange Thickness", "tft", "tf_t", "tf", "T", "t" });
+            aTypeMap = aTypeMap.AddMap("BotFlangeThickness", new string[] { "Bottom Flange Thickness", "tfb", "tf_b", "tf", "T", "t" });
+            aTypeMap = aTypeMap.AddMap("WeldSize", new string[] { "k", "Weld Size" });
+            aTypeMapList.Add(aTypeMap);
+
+            aTypeMap = Create.TypeMap(typeof(RectangleProfile));
+            aTypeMap = aTypeMap.AddMap("Height", new string[] { "BHE_Height", "BHE_Depth", "Height", "Depth", "d", "h", "D", "H", "Ht", "b" });
+            aTypeMap = aTypeMap.AddMap("Width", new string[] { "b", "BHE_Width", "Width", "w", "B", "W", "bf", "D" });
+            aTypeMap = aTypeMap.AddMap("CornerRadius", new string[] { "Corner Radius", "r", "r1" });
+            aTypeMapList.Add(aTypeMap);
+
+            aTypeMap = Create.TypeMap(typeof(AngleProfile));
+            aTypeMap = aTypeMap.AddMap("Height", new string[] { "BHE_Height", "BHE_Depth", "Height", "Depth", "d", "h", "D", "H", "Ht", "b" });
+            aTypeMap = aTypeMap.AddMap("Width", new string[] { "b", "BHE_Width", "Width", "w", "B", "W", "bf", "D" });
+            aTypeMap = aTypeMap.AddMap("WebThickness", new string[] { "Web Thickness", "Stem Width", "tw", "t", "T" });
+            aTypeMap = aTypeMap.AddMap("FlangeThickness", new string[] { "Flange Thickness", "Slab Depth", "tf", "T", "t" });
+            aTypeMap = aTypeMap.AddMap("RootRadius", new string[] { "Web Fillet", "Root Radius", "r", "r1", "tr", "kr", "R1", "R", "t" });
+            aTypeMap = aTypeMap.AddMap("ToeRadius", new string[] { "Flange Fillet", "Toe Radius", "r2", "R2", "t" });
+            aTypeMapList.Add(aTypeMap);
+
+            aTypeMap = Create.TypeMap(typeof(BoxProfile));
+            aTypeMap = aTypeMap.AddMap("Height", new string[] { "BHE_Height", "BHE_Depth", "Height", "Depth", "d", "h", "D", "H", "Ht", "b" });
+            aTypeMap = aTypeMap.AddMap("Width", new string[] { "b", "BHE_Width", "Width", "w", "B", "W", "bf", "D" });
+            aTypeMap = aTypeMap.AddMap("Thickness", new string[] { "Wall Nominal Thickness", "Wall Thickness", "t", "T" });
+            aTypeMap = aTypeMap.AddMap("OuterRadius", new string[] { "Outer Fillet", "Outer Radius", "r2", "R2", "ro", "tr" });
+            aTypeMap = aTypeMap.AddMap("InnerRadius", new string[] { "Inner Fillet", "Inner Radius", "r1", "R1", "ri", "t" });
+            aTypeMapList.Add(aTypeMap);
+
+            aTypeMap = Create.TypeMap(typeof(ChannelProfile));
+            aTypeMap = aTypeMap.AddMap("Height", new string[] { "BHE_Height", "BHE_Depth", "Height", "Depth", "d", "h", "D", "H", "Ht", "b" });
+            aTypeMap = aTypeMap.AddMap("FlangeWidth", new string[] { "b", "BHE_Width", "Width", "w", "B", "W", "bf", "D" });
+            aTypeMap = aTypeMap.AddMap("WebThickness", new string[] { "Web Thickness", "Stem Width", "tw", "t", "T" });
+            aTypeMap = aTypeMap.AddMap("FlangeThickness", new string[] { "Flange Thickness", "Slab Depth", "tf", "T", "t" });
+            aTypeMap = aTypeMap.AddMap("RootRadius", new string[] { "Web Fillet", "Root Radius", "r", "r1", "tr", "kr", "R1", "R", "t" });
+            aTypeMap = aTypeMap.AddMap("ToeRadius", new string[] { "Flange Fillet", "Toe Radius", "r2", "R2", "t" });
+            aTypeMapList.Add(aTypeMap);
+
+            aTypeMap = Create.TypeMap(typeof(ISectionProfile));
+            aTypeMap = aTypeMap.AddMap("Height", new string[] { "BHE_Height", "BHE_Depth", "Height", "Depth", "d", "h", "D", "H", "Ht", "b" });
+            aTypeMap = aTypeMap.AddMap("Width", new string[] { "b", "BHE_Width", "Width", "w", "B", "W", "bf", "D" });
+            aTypeMap = aTypeMap.AddMap("WebThickness", new string[] { "Web Thickness", "Stem Width", "tw", "t", "T" });
+            aTypeMap = aTypeMap.AddMap("FlangeThickness", new string[] { "Flange Thickness", "Slab Depth", "tf", "T", "t" });
+            aTypeMap = aTypeMap.AddMap("RootRadius", new string[] { "Web Fillet", "Root Radius", "r", "r1", "tr", "kr", "R1", "R", "t" });
+            aTypeMap = aTypeMap.AddMap("ToeRadius", new string[] { "Flange Fillet", "Toe Radius", "r2", "R2", "t" });
+            aTypeMapList.Add(aTypeMap);
+
+            aTypeMap = Create.TypeMap(typeof(TSectionProfile));
+            aTypeMap = aTypeMap.AddMap("Height", new string[] { "BHE_Height", "BHE_Depth", "Height", "Depth", "d", "h", "D", "H", "Ht", "b" });
+            aTypeMap = aTypeMap.AddMap("Width", new string[] { "b", "BHE_Width", "Width", "w", "B", "W", "bf", "D" });
+            aTypeMap = aTypeMap.AddMap("WebThickness", new string[] { "Web Thickness", "Stem Width", "tw", "t", "T" });
+            aTypeMap = aTypeMap.AddMap("FlangeThickness", new string[] { "Flange Thickness", "Slab Depth", "tf", "T", "t" });
+            aTypeMap = aTypeMap.AddMap("RootRadius", new string[] { "Web Fillet", "Root Radius", "r", "r1", "tr", "kr", "R1", "R", "t" });
+            aTypeMap = aTypeMap.AddMap("ToeRadius", new string[] { "Flange Fillet", "Toe Radius", "r2", "R2", "t" });
+            aTypeMapList.Add(aTypeMap);
+
+            aTypeMap = Create.TypeMap(typeof(ZSectionProfile));
+            aTypeMap = aTypeMap.AddMap("Height", new string[] { "BHE_Height", "BHE_Depth", "Height", "Depth", "d", "h", "D", "H", "Ht", "b" });
+            aTypeMap = aTypeMap.AddMap("FlangeWidth", new string[] { "b", "BHE_Width", "Width", "w", "B", "W", "bf", "D" });
+            aTypeMap = aTypeMap.AddMap("WebThickness", new string[] { "Web Thickness", "Stem Width", "tw", "t", "T" });
+            aTypeMap = aTypeMap.AddMap("FlangeThickness", new string[] { "Flange Thickness", "Slab Depth", "tf", "T", "t" });
+            aTypeMap = aTypeMap.AddMap("RootRadius", new string[] { "Web Fillet", "Root Radius", "r", "r1", "tr", "kr", "R1", "R", "t" });
+            aTypeMap = aTypeMap.AddMap("ToeRadius", new string[] { "Flange Fillet", "Toe Radius", "r2", "R2", "t" });
+            aTypeMapList.Add(aTypeMap);
 
             return Create.MapSettings(aTypeMapList);
 
