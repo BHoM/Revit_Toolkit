@@ -46,10 +46,25 @@ namespace BH.Engine.Adapters.Revit
         [Output("TypeMap")]
         public static TypeMap AddMap(this TypeMap typeMap, string sourceName, string destinationName)
         {
+            if (string.IsNullOrWhiteSpace(destinationName))
+                return typeMap;
+
+            return AddMap(typeMap, sourceName, new string[] { destinationName });
+        }
+
+        /***************************************************/
+
+        [Description("Links Revit parameter with BHoM parameter for given TypeMap.")]
+        [Input("typeMap", "TypeMap")]
+        [Input("sourceName", "BHoM parameter name of type")]
+        [Input("destinationName", "Revit parameter name to be mapped")]
+        [Output("TypeMap")]
+        public static TypeMap AddMap(this TypeMap typeMap, string sourceName, IEnumerable<string> destinationNames)
+        {
             if (typeMap == null)
                 return null;
 
-            if (string.IsNullOrWhiteSpace(sourceName) || string.IsNullOrWhiteSpace(destinationName))
+            if (string.IsNullOrWhiteSpace(sourceName) || destinationNames == null || destinationNames.Count() == 0)
                 return typeMap;
 
             Type aType = typeMap.Type;
@@ -62,19 +77,23 @@ namespace BH.Engine.Adapters.Revit
             if (aPropertyInfos == null || aPropertyInfos.Count() == 0)
                 return typeMap;
 
-            foreach(PropertyInfo aPropertyInfo in aPropertyInfos)
-                if(aPropertyInfo.Name == sourceName)
+            foreach (PropertyInfo aPropertyInfo in aPropertyInfos)
+                if (aPropertyInfo.Name == sourceName)
                 {
                     if (aTypeMap.Map == null)
                         aTypeMap.Map = new Dictionary<string, HashSet<string>>();
 
                     HashSet<string> aHashSet = null;
-                    if(!aTypeMap.Map.TryGetValue(sourceName, out aHashSet))
+                    if (!aTypeMap.Map.TryGetValue(sourceName, out aHashSet))
                     {
                         aHashSet = new HashSet<string>();
                         aTypeMap.Map[sourceName] = aHashSet;
                     }
-                    aHashSet.Add(destinationName);
+
+                    foreach (string aDestinationName in destinationNames)
+                        if (!string.IsNullOrWhiteSpace(aDestinationName))
+                            aHashSet.Add(aDestinationName);
+
                     return aTypeMap;
                 }
 

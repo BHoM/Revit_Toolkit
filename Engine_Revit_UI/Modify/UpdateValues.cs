@@ -28,8 +28,6 @@ using System.Collections.Generic;
 using Autodesk.Revit.DB;
 
 using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 
 
@@ -66,9 +64,18 @@ namespace BH.UI.Revit.Engine
                 Type aType_PropertyInfo = aPropertyInfo.PropertyType;
 
                 if (aType_PropertyInfo == typeof(string))
+                {
                     aPropertyInfo.SetValue(iObject, aParameter.AsString());
+                }
                 else if (aType_PropertyInfo == typeof(double))
-                    aPropertyInfo.SetValue(iObject, aParameter.AsDouble());
+                {
+                    double aValue = aParameter.AsDouble();
+                    if (pullSettings.ConvertUnits)
+                        aValue = aValue.ToSI(aParameter.Definition.UnitType);
+
+                    aPropertyInfo.SetValue(iObject, aValue);
+                }
+                    
                 else if (aType_PropertyInfo == typeof(int) || aType_PropertyInfo == typeof(short) || aType_PropertyInfo == typeof(long))
                 {
                     if (aParameter.StorageType == StorageType.ElementId)
@@ -77,7 +84,10 @@ namespace BH.UI.Revit.Engine
                         aPropertyInfo.SetValue(iObject, aParameter.AsInteger());
                 }
                 else if (aType_PropertyInfo == typeof(bool))
+                {
                     aPropertyInfo.SetValue(iObject, aParameter.AsInteger() == 1);
+                }
+                    
             }
 
             return iObject;
