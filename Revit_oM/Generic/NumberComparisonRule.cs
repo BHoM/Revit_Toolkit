@@ -20,38 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.ComponentModel;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Adapters.Revit.Enums;
 
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Settings;
-
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Generic
 {
-    public static partial class Query
+    public class NumberComparisonRule : IComparisonRule
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /**** Public Properties                        ****/
         /***************************************************/
 
-        [Description("Returns TypeMap for given type")]
-        [Input("mapSettings", "MapSettings")]
-        [Input("type", "Type")]
-        [Output("TypeMap")]
-        public static TypeMap TypeMap(this MapSettings mapSettings, Type type)
-        {
-            if (mapSettings == null)
-                return null;
-
-            if (type == null && mapSettings.TypeMaps == null)
-                return null;
-
-            return mapSettings.TypeMaps.Find(x => type.Equals(x.Type));
-        }
+        public int RoundDecimals { get; set; } = -1;
+        public NumberComparisonType NumberComparisonType { get; set; } = NumberComparisonType.Equal;
 
         /***************************************************/
     }
 }
-

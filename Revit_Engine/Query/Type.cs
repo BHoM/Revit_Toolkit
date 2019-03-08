@@ -23,10 +23,9 @@
 using System;
 using System.ComponentModel;
 
-using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Settings;
-
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Adapters.Revit.Generic;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -36,22 +35,26 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns TypeMap for given type")]
-        [Input("mapSettings", "MapSettings")]
-        [Input("type", "Type")]
-        [Output("TypeMap")]
-        public static TypeMap TypeMap(this MapSettings mapSettings, Type type)
+        [Description("Gets matching type of variable with comparison rule.")]
+        [Input("ComparisonRule", "Comparison Rule")]
+        [Output("Type")]
+        static public Type Type(IComparisonRule comparisonRule)
         {
-            if (mapSettings == null)
+            if(comparisonRule == null)
                 return null;
 
-            if (type == null && mapSettings.TypeMaps == null)
-                return null;
+            if (comparisonRule is TextComparisonRule)
+                return typeof(string);
 
-            return mapSettings.TypeMaps.Find(x => type.Equals(x.Type));
+            if (comparisonRule is NumberComparisonRule)
+                return typeof(double);
+
+            if (comparisonRule is ParameterExistsComparisonRule)
+                return typeof(string);
+
+            return null;
         }
 
         /***************************************************/
     }
 }
-

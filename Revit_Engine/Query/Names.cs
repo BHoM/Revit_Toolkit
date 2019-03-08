@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Generic;
 
 namespace BH.Engine.Adapters.Revit
 {

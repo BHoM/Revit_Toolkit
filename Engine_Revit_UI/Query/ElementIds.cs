@@ -20,15 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System;
+using System.Linq;
+using System.Reflection;
 using System.Collections.Generic;
 
 using Autodesk.Revit.DB;
-using System;
-using System.Reflection;
-using BH.oM.DataManipulation.Queries;
-using System.Linq;
-using BH.oM.Base;
 using Autodesk.Revit.UI;
+
+using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.DataManipulation.Queries;
+
 
 namespace BH.UI.Revit.Engine
 {
@@ -321,35 +326,33 @@ namespace BH.UI.Revit.Engine
             if (uIDocument == null || filterQuery == null)
                 return null;
 
-            List<ElementId> aResult = new List<ElementId>();
+            HashSet<ElementId> aResult = new HashSet<ElementId>();
             Document aDocument = uIDocument.Document;
 
             IEnumerable<ElementId> aElementIds = null;
 
-            oM.Adapters.Revit.Enums.QueryType aQueryType = BH.Engine.Adapters.Revit.Query.QueryType(filterQuery);
+            QueryType aQueryType = BH.Engine.Adapters.Revit.Query.QueryType(filterQuery);
 
             //Type
-            if (aQueryType == oM.Adapters.Revit.Enums.QueryType.Undefined && filterQuery.Type != null)
+            if (aQueryType == QueryType.Undefined && filterQuery.Type != null)
             {
                 aElementIds = ElementIds(uIDocument.Document, filterQuery.Type);
                 if (aElementIds != null)
                 {
                     foreach (ElementId aElementId in aElementIds)
-                        if (!aResult.Contains(aElementId))
-                            aResult.Add(aElementId);
+                        aResult.Add(aElementId);
                 }
             }
 
             //Workset
             string aWorksetName = BH.Engine.Adapters.Revit.Query.WorksetName(filterQuery);
-            bool aActiveWorkset = aQueryType == oM.Adapters.Revit.Enums.QueryType.ActiveWorkset;
-            bool aOpenWorksets = aQueryType == oM.Adapters.Revit.Enums.QueryType.OpenWorksets;
+            bool aActiveWorkset = aQueryType == QueryType.ActiveWorkset;
+            bool aOpenWorksets = aQueryType == QueryType.OpenWorksets;
             aElementIds = ElementIds(aDocument, aActiveWorkset, aOpenWorksets, aWorksetName);
             if (aElementIds != null)
             {
                 foreach (ElementId aElementId in aElementIds)
-                    if (!aResult.Contains(aElementId))
-                        aResult.Add(aElementId);
+                    aResult.Add(aElementId);
             }
 
             //Category
@@ -360,7 +363,6 @@ namespace BH.UI.Revit.Engine
                 if (aElementIds != null)
                 {
                     foreach (ElementId aElementId in aElementIds)
-                        if (!aResult.Contains(aElementId))
                             aResult.Add(aElementId);
                 }
             }
@@ -371,7 +373,6 @@ namespace BH.UI.Revit.Engine
                 ICollection<ElementId> aElementIdCollection = uIDocument.Selection.GetElementIds();
                 if (aElementIdCollection != null)
                     foreach (ElementId aElementId in aElementIdCollection)
-                        if (!aResult.Contains(aElementId))
                             aResult.Add(aElementId);
             }
 
@@ -383,7 +384,7 @@ namespace BH.UI.Revit.Engine
                 {
                     ElementId aElementId = new ElementId(aId);
                     Element aElement = aDocument.GetElement(aElementId);
-                    if (aElement != null && !aResult.Contains(aElementId))
+                    if (aElement != null)
                         aResult.Add(aElementId);
                 }
             }
@@ -395,13 +396,13 @@ namespace BH.UI.Revit.Engine
                 foreach (string aUniqueId in aUniqueIds)
                 {
                     Element aElement = aDocument.GetElement(aUniqueId);
-                    if (aElement != null && !aResult.Contains(aElement.Id))
+                    if (aElement != null)
                         aResult.Add(aElement.Id);
                 }
             }
 
             //ViewTemplate
-            if (aQueryType == oM.Adapters.Revit.Enums.QueryType.ViewTemplate)
+            if (aQueryType == QueryType.ViewTemplate)
             {
                 List<View> aViewList = new FilteredElementCollector(aDocument).OfClass(typeof(View)).Cast<View>().ToList();
                 if (aViewList != null)
@@ -420,11 +421,38 @@ namespace BH.UI.Revit.Engine
                         }
 
                         foreach (View aView in aViewList)
-                            if (aView != null && !aResult.Contains(aView.Id))
                                 aResult.Add(aView.Id);
                     }
                 }
+            }
 
+            //View
+            if (aQueryType == QueryType.View)
+            {
+                List<View> aViewList_All = new FilteredElementCollector(aDocument).OfClass(typeof(View)).Cast<View>().ToList();
+                if (aViewList_All != null)
+                {
+                    List<View> aViewList = aViewList_All.FindAll(x => !x.IsTemplate);
+                    if (aViewList.Count > 0)
+                    {
+                        RevitViewType? aRevitViewType = filterQuery.RevitViewType();
+                        if(aRevitViewType != null && aRevitViewType.HasValue)
+                        {
+                            ViewType aViewType = Query.ViewType(aRevitViewType.Value);
+                            aViewList.RemoveAll(x => x.ViewType != aViewType);
+                        }
+
+                        string aViewTemplateName = filterQuery.ViewTemplateName();
+                        if(!string.IsNullOrWhiteSpace(aViewTemplateName))
+                        {
+                            View aView = aViewList_All.Find(x => x.IsTemplate && x.Name == aViewTemplateName);
+                            if(aView != null)
+                                aViewList.RemoveAll(x => x.ViewTemplateId != aView.Id);
+                        }
+                    }
+                    if (aViewList != null && aViewList.Count > 0)
+                        aViewList.ForEach(x => aResult.Add(x.Id));
+                }
             }
 
             //TypeName
@@ -435,29 +463,56 @@ namespace BH.UI.Revit.Engine
                 if (aElementIds != null)
                 {
                     foreach (ElementId aElementId in aElementIds)
-                        if (!aResult.Contains(aElementId))
                             aResult.Add(aElementId);
                 }
             }
 
             //FamilyName and FamilySymbolName
-            if (aQueryType == oM.Adapters.Revit.Enums.QueryType.Family)
+            if (aQueryType == QueryType.Family)
             {
                 aElementIds = ElementIds(aDocument, BH.Engine.Adapters.Revit.Query.FamilyName(filterQuery), BH.Engine.Adapters.Revit.Query.FamilyTypeName(filterQuery), true);
-                if(aElementIds != null && aElementIds.Count() > 0)
-                    foreach(ElementId aElementId in aElementIds)
-                        if(!aResult.Contains(aElementId))
+                if (aElementIds != null && aElementIds.Count() > 0)
+                    foreach (ElementId aElementId in aElementIds)
                             aResult.Add(aElementId);
             }
 
             //SelectionSet
-            if (aQueryType == oM.Adapters.Revit.Enums.QueryType.SelectionSet)
+            if (aQueryType == QueryType.SelectionSet)
             {
                 aElementIds = ElementIds(aDocument, BH.Engine.Adapters.Revit.Query.SelectionSetName(filterQuery), true);
                 if (aElementIds != null && aElementIds.Count() > 0)
                     foreach (ElementId aElementId in aElementIds)
-                        if (!aResult.Contains(aElementId))
                             aResult.Add(aElementId);
+            }
+
+            //Parameter
+            if (aQueryType == QueryType.Parameter)
+            {
+                FilterQuery aFilterQuery = filterQuery.RelatedFilterQuery();
+                if (aFilterQuery != null)
+                {
+                    string aParameterName = BH.Engine.Adapters.Revit.Query.ParameterName(filterQuery);
+                    if (!string.IsNullOrWhiteSpace(aParameterName))
+                    {
+                        IComparisonRule aComparisonRule = BH.Engine.Adapters.Revit.Query.ComparisonRule(filterQuery);
+                        if (aComparisonRule != null)
+                        {
+                            object aValue = BH.Engine.Adapters.Revit.Query.Value(filterQuery);
+
+                            Dictionary<ElementId, List<FilterQuery>> aDictionary = aFilterQuery.FilterQueryDictionary(uIDocument);
+                            if (aDictionary != null && aDictionary.Count > 0)
+                            {
+                                foreach (ElementId aElementId in aDictionary.Keys)
+                                {
+                                    Element aElement = aDocument.GetElement(aElementId);
+                                    if (Query.IsValid(aElement, aParameterName, aComparisonRule, aValue, true))
+                                        aResult.Add(aElementId);
+                                }
+
+                            }
+                        }
+                    }
+                }
             }
 
             return aResult;

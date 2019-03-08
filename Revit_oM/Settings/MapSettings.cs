@@ -23,7 +23,7 @@
 using System.Collections.Generic;
 
 using BH.oM.Base;
-using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Generic;
 
 namespace BH.oM.Adapters.Revit.Settings
 {
