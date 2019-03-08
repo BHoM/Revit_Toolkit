@@ -20,38 +20,31 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
 using System.ComponentModel;
 
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Settings;
-
+using BH.oM.Adapters.Revit.Enums;
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Create
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns TypeMap for given type")]
-        [Input("mapSettings", "MapSettings")]
-        [Input("type", "Type")]
-        [Output("TypeMap")]
-        public static TypeMap TypeMap(this MapSettings mapSettings, Type type)
+        [Description("Creates TextComparisonRule.")]
+        [Input("textComparisonType", "TextComparisonType")]
+        [Output("TextComparisonRule")]
+        public static TextComparisonRule TextComparisonRule(TextComparisonType textComparisonType)
         {
-            if (mapSettings == null)
-                return null;
-
-            if (type == null && mapSettings.TypeMaps == null)
-                return null;
-
-            return mapSettings.TypeMaps.Find(x => type.Equals(x.Type));
+            return new TextComparisonRule()
+            {
+                TextComparisonType = textComparisonType
+            };
         }
 
         /***************************************************/
     }
 }
-

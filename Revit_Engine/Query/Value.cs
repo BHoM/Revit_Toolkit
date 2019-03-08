@@ -20,13 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
 using System.ComponentModel;
 
-using BH.oM.Adapters.Revit.Generic;
+using BH.oM.DataManipulation.Queries;
 using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Settings;
-
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -36,19 +33,18 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns TypeMap for given type")]
-        [Input("mapSettings", "MapSettings")]
-        [Input("type", "Type")]
-        [Output("TypeMap")]
-        public static TypeMap TypeMap(this MapSettings mapSettings, Type type)
+        [Description("Returns Value for given FilterQuery")]
+        [Input("filterQuery", "FilterQuery")]
+        [Output("QueryType")]
+        public static object Value(this FilterQuery filterQuery)
         {
-            if (mapSettings == null)
+            if (filterQuery == null)
                 return null;
 
-            if (type == null && mapSettings.TypeMaps == null)
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.Value))
                 return null;
 
-            return mapSettings.TypeMaps.Find(x => type.Equals(x.Type));
+            return filterQuery.Equalities[Convert.FilterQuery.Value];
         }
 
         /***************************************************/

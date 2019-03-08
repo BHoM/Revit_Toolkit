@@ -25,7 +25,7 @@ using System.Collections.Generic;
 
 using BH.oM.Base;
 
-namespace BH.oM.Adapters.Revit.Elements
+namespace BH.oM.Adapters.Revit.Generic
 {
     public class TypeMap : BHoMObject
     {

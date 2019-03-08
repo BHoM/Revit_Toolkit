@@ -41,10 +41,33 @@ namespace BH.Engine.Adapters.Revit
         [Output("GeneralSettings")]
         public static GeneralSettings GeneralSettings(Discipline defaultDiscipline = Discipline.Undefined, bool replace = true, string tagsParameterName = "BHE_Tags", bool suppressFailureMessages = false)
         {
+            GeneralSettings aGeneralSettings = new GeneralSettings()
+            {
+                DefaultDiscipline = defaultDiscipline,
+                TagsParameterName = tagsParameterName,
+                SuppressFailureMessages = suppressFailureMessages
+            };
+
+            if (!replace)
+                aGeneralSettings.AdapterMode = AdapterMode.Update;
+
+            return aGeneralSettings;
+        }
+
+        /***************************************************/
+
+        [Description("Creates General Settings class which contols general behaviour of Adapter")]
+        [Input("defaultDiscipline", "Default disciplne for pull method")]
+        [Input("replace", "Replace existing elements in the model for push method. Update parameters (CustomData) only if set to false.")]
+        [Input("tagsParameterName", "Name of the parameter which stores Tags assigned to BHoM object")]
+        [Input("suppressFailureMessages", "Revit will suppress pop up messages")]
+        [Output("GeneralSettings")]
+        public static GeneralSettings GeneralSettings(Discipline defaultDiscipline = Discipline.Undefined, AdapterMode adapterMode = AdapterMode.Replace, string tagsParameterName = "BHE_Tags", bool suppressFailureMessages = false)
+        {
             return new GeneralSettings()
             {
                 DefaultDiscipline = defaultDiscipline,
-                Replace = replace,
+                AdapterMode = adapterMode,
                 TagsParameterName = tagsParameterName,
                 SuppressFailureMessages = suppressFailureMessages
             };

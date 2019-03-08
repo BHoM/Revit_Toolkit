@@ -222,6 +222,8 @@
     <Compile Include="Modify\AppendRefObjects.cs" />
     <Compile Include="Modify\UpdateValues.cs" />
     <Compile Include="Query\BoundingBox.cs" />
+    <Compile Include="Query\IsValid.cs" />
+    <Compile Include="Query\ViewType.cs" />
     <Compile Include="Query\LookupDouble.cs" />
     <Compile Include="Query\Name.cs" />
     <Compile Include="Query\LowLevel.cs" />

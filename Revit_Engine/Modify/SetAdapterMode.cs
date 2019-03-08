@@ -20,38 +20,36 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
 using System.ComponentModel;
 
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Settings;
-
+using BH.oM.Reflection.Attributes;
+using BH.oM.Adapters.Revit.Enums;
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Modify
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns TypeMap for given type")]
-        [Input("mapSettings", "MapSettings")]
-        [Input("type", "Type")]
-        [Output("TypeMap")]
-        public static TypeMap TypeMap(this MapSettings mapSettings, Type type)
+        [Description("Sets Replace property for GeneralSettings stored in RevitSettings.")]
+        [Input("revitSettings", "RevitSettings")]
+        [Input("replace", "Replace existing elements in the model for push method. Update parameters (CustomData) only if set to false.")]
+        [Output("RevitSettings")]
+        public static RevitSettings SetAdapterMode(this RevitSettings revitSettings, AdapterMode adapterMode)
         {
-            if (mapSettings == null)
+            if (revitSettings == null || revitSettings.GeneralSettings == null)
                 return null;
 
-            if (type == null && mapSettings.TypeMaps == null)
-                return null;
+            RevitSettings aRevitSettings = revitSettings.GetShallowClone() as RevitSettings;
+            aRevitSettings.GeneralSettings = aRevitSettings.GeneralSettings.GetShallowClone() as GeneralSettings;
+            aRevitSettings.GeneralSettings.AdapterMode = adapterMode;
 
-            return mapSettings.TypeMaps.Find(x => type.Equals(x.Type));
+            return aRevitSettings;
         }
 
         /***************************************************/
     }
 }
-

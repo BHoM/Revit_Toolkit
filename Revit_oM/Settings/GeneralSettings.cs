@@ -20,8 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-
 using BH.oM.Base;
+using BH.oM.Adapters.Revit.Enums;
 
 namespace BH.oM.Adapters.Revit.Settings
 {
@@ -31,8 +31,8 @@ namespace BH.oM.Adapters.Revit.Settings
         /**** Public Properties                        ****/
         /***************************************************/
 
-        public Enums.Discipline DefaultDiscipline { get; set; } = Enums.Discipline.Undefined;
-        public bool Replace { get; set; } = true;
+        public Discipline DefaultDiscipline { get; set; } = Discipline.Undefined;
+        public AdapterMode AdapterMode { get; set; } = AdapterMode.Replace;
         public string TagsParameterName { get; set; } = "BHE_Tags";
         public bool SuppressFailureMessages { get; set; } = false;
 

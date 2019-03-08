@@ -46,8 +46,11 @@ namespace BH.UI.Revit.Adapter
 
             pushSettings = pushSettings.DefaultIfNull();
 
-            if (pushSettings.Replace)
+            if (pushSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Replace || pushSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
                 Delete(level, document);
+
+            if (pushSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
+                return null;
 
             List<Element> aElementList = new FilteredElementCollector(document).OfClass(typeof(Level)).ToList();
             if (aElementList == null || aElementList.Count < 1)

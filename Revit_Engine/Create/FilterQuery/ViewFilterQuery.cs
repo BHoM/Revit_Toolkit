@@ -20,38 +20,39 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
 using System.ComponentModel;
 
-using BH.oM.Adapters.Revit.Generic;
+using BH.oM.DataManipulation.Queries;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Settings;
-
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Create
     {
-        /***************************************************/
-        /**** Public Methods                            ****/
-        /***************************************************/
-
-        [Description("Returns TypeMap for given type")]
-        [Input("mapSettings", "MapSettings")]
-        [Input("type", "Type")]
-        [Output("TypeMap")]
-        public static TypeMap TypeMap(this MapSettings mapSettings, Type type)
+        [Description("Creates FilterQuery which filters specified views")]
+        [Input("revitViewType", "Revit View Type")]
+        [Output("FilterQuery")]
+        public static FilterQuery ViewFilterQuery(RevitViewType revitViewType)
         {
-            if (mapSettings == null)
-                return null;
-
-            if (type == null && mapSettings.TypeMaps == null)
-                return null;
-
-            return mapSettings.TypeMaps.Find(x => type.Equals(x.Type));
+            FilterQuery aFilterQuery = new FilterQuery();
+            aFilterQuery.Type = typeof(BHoMObject);
+            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.View;
+            aFilterQuery.Equalities[Convert.FilterQuery.RevitViewType] = revitViewType;
+            return aFilterQuery;
         }
 
-        /***************************************************/
+        [Description("Creates FilterQuery which filters specified views")]
+        [Input("viewTemplateName", "Revit View Template Name applied to the views to be pulled")]
+        [Output("FilterQuery")]
+        public static FilterQuery ViewFilterQuery(string viewTemplateName)
+        {
+            FilterQuery aFilterQuery = new FilterQuery();
+            aFilterQuery.Type = typeof(BHoMObject);
+            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.View;
+            aFilterQuery.Equalities[Convert.FilterQuery.ViewTemplateName] = viewTemplateName;
+            return aFilterQuery;
+        }
     }
 }
-

@@ -41,6 +41,11 @@ namespace BH.Engine.Adapters.Revit
             public const string SelectionSetName = "SelectionSetName";
             public const string PullEdges = "PullEdges";
             public const string IncludeNonVisibleObjects = "IncludeNonVisibleObjects";
+            public const string RevitViewType = "RevitViewType";
+            public const string ParameterName = "ParameterName";
+            public const string Value = "Value";
+            public const string ComparisonRule = "ComparisonRule";
+            public const string RelatedFilterQuery = "RelatedFilterQuery";
         }
     }
 }

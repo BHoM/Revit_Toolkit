@@ -20,15 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.ComponentModel;
+using Autodesk.Revit.DB;
 
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Settings;
-
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.UI.Revit.Engine
 {
     public static partial class Query
     {
@@ -36,22 +30,11 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns TypeMap for given type")]
-        [Input("mapSettings", "MapSettings")]
-        [Input("type", "Type")]
-        [Output("TypeMap")]
-        public static TypeMap TypeMap(this MapSettings mapSettings, Type type)
+        public static ViewType ViewType(this oM.Adapters.Revit.Enums.RevitViewType revitViewType)
         {
-            if (mapSettings == null)
-                return null;
-
-            if (type == null && mapSettings.TypeMaps == null)
-                return null;
-
-            return mapSettings.TypeMaps.Find(x => type.Equals(x.Type));
+            return (ViewType)(revitViewType);
         }
 
         /***************************************************/
     }
 }
-

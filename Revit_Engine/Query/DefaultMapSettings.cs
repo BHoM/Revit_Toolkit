@@ -24,7 +24,7 @@ using System.Collections.Generic;
 
 using BH.oM.Environment.Properties;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Structure.Properties.Section.ShapeProfiles;
 
 namespace BH.Engine.Adapters.Revit
@@ -44,8 +44,8 @@ namespace BH.Engine.Adapters.Revit
             TypeMap aTypeMap = null;
 
             aTypeMap = Create.TypeMap(typeof(BuildingElementContextProperties));
-            aTypeMap = aTypeMap.AddMap("IsAir", "SAM_BuildingElementAir");
-            aTypeMap = aTypeMap.AddMap("Colour", "SAM_BuildingElementColour");
+            aTypeMap = aTypeMap.AddMap("IsAir", new string[] { "IsAir", "BHE_IsAir", "SAM_BuildingElementAir" });
+            aTypeMap = aTypeMap.AddMap("Colour", new string[] { "Colour", "BHE_Colour", "SAM_BuildingElementColour" });
             aTypeMap = aTypeMap.AddMap("IsGround", "SAM_BuildingElementGround");
             aTypeMapList.Add(aTypeMap);
 

@@ -93,7 +93,7 @@ namespace BH.UI.Revit.Adapter
 
             PushSettings aPushSettings = new PushSettings()
             {
-                Replace = revitSettings.GeneralSettings.Replace,
+                AdapterMode = revitSettings.GeneralSettings.AdapterMode,
                 ConvertUnits = true,
                 CopyCustomData = true,
                 FamilyLoadSettings = revitSettings.FamilyLoadSettings
@@ -131,17 +131,23 @@ namespace BH.UI.Revit.Adapter
                             aElement = document.GetElement(new ElementId(aId));
                     }
 
-                    if (revitSettings.GeneralSettings.Replace && aElement != null)
+                    if(aElement != null)
                     {
-                        if (aElement.Pinned)
+                        if (revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Replace || revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
                         {
-                            DeletePinnedElementError(aElement);
-                            continue;
-                        }
+                            if (aElement.Pinned)
+                            {
+                                DeletePinnedElementError(aElement);
+                                continue;
+                            }
 
-                        document.Delete(aElement.Id);
-                        aElement = null;
+                            document.Delete(aElement.Id);
+                            aElement = null;
+                        }
                     }
+
+                    if (revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
+                        continue;
 
                     if (aElement == null)
                     {
