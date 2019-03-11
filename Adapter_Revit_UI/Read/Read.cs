@@ -34,6 +34,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Elements;
 using BH.UI.Revit.Engine;
 using BH.oM.DataManipulation.Queries;
+using BH.oM.Adapters.Revit.Properties;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -249,27 +250,26 @@ namespace BH.UI.Revit.Adapter
 
                         if (aIGeometry != null)
                         {
-                            if (element.ViewSpecific)
+                            ElementType aElementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
+                            if(aElementType != null)
                             {
-                                aIBHoMObject = new DraftingObject()
+                                ObjectProperties aObjectProperties = Engine.Convert.ToBHoM(aElementType, pullSettings) as ObjectProperties;
+                                if(aObjectProperties != null)
                                 {
-                                    ViewName = element.Document.GetElement(element.OwnerViewId).Name,
-                                    Location = aIGeometry
-                                };
-                            }
-                            else
-                            {
-                                aIBHoMObject = new GenericObject()
-                                {
-                                    Location = aIGeometry
-                                };
+                                    if (element.ViewSpecific)
+                                        aIBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingObject(aObjectProperties, element.Document.GetElement(element.OwnerViewId).Name, aIGeometry as dynamic);
+                                    else
+                                        aIBHoMObject = BH.Engine.Adapters.Revit.Create.GenericObject(aObjectProperties, aIGeometry as dynamic);
+                                }
                             }
                         }
                     }
 
-                    if (aIBHoMObject == null)
-                        aIBHoMObject = new BHoMObject();
+                    if (aIBHoMObject == null && element is ElementType)
+                        aIBHoMObject = Engine.Convert.ToBHoM((ElementType)element, pullSettings);
 
+                    if(aIBHoMObject == null)
+                        aIBHoMObject = new BHoMObject();
 
                     if (aIBHoMObject != null)
                     {

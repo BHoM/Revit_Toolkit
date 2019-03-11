@@ -25,6 +25,7 @@ using System.ComponentModel;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
+using BH.oM.Adapters.Revit.Properties;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -40,17 +41,33 @@ namespace BH.Engine.Adapters.Revit
         [Input("location", "Location of DraftingObject on View")]
         [Input("viewName", "View assigned to DraftingObject")]
         [Output("DraftingObject")]
-        public static DraftingObject DraftingObject(string familyName, string familyTypeName, Point location, string viewName)
+        public static DraftingObject DraftingObject(string familyName, string familyTypeName, string viewName, Point location)
         {
+            if (string.IsNullOrWhiteSpace(familyName) || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(viewName) || location == null)
+                return null;
+
+            return DraftingObject(Create.ObjectProperties(familyName, familyTypeName), viewName, location);
+        }
+
+        /***************************************************/
+
+        [Description("Creates DraftingObject by given Family Name, Type Name, Location and View Name. Drafting Object defines all view specific 2D elements")]
+        [Input("objectProperties", "ObjectProperties")]
+        [Input("location", "Location of DraftingObject on View")]
+        [Input("viewName", "View assigned to DraftingObject")]
+        [Output("DraftingObject")]
+        public static DraftingObject DraftingObject(ObjectProperties objectProperties, string viewName, Point location)
+        {
+            if (objectProperties == null || string.IsNullOrWhiteSpace(viewName) || location == null)
+                return null;
+
             DraftingObject aDraftingObject = new DraftingObject()
             {
-                Name = familyTypeName,
+                ObjectProperties = objectProperties,
+                Name = objectProperties.Name,
                 ViewName = viewName,
                 Location = location
             };
-
-            aDraftingObject.CustomData.Add(Convert.FamilyName, familyName);
-            aDraftingObject.CustomData.Add(Convert.FamilyTypeName, familyTypeName);
 
             return aDraftingObject;
         }

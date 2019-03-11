@@ -20,23 +20,38 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Properties;
-using BH.oM.Base;
-using BH.oM.Geometry;
+using BH.oM.Adapters.Revit.Settings;
 
-namespace BH.oM.Adapters.Revit.Elements
+namespace BH.UI.Revit.Engine
 {
-    public class GenericObject : BHoMObject
+    public static partial class Convert
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
-        public ObjectProperties ObjectProperties = new ObjectProperties();
+        internal static oM.Adapters.Revit.Properties.ObjectProperties ToBHoMObjectProperties(this Autodesk.Revit.DB.ElementType elementType, PullSettings pullSettings = null)
+        {
+            pullSettings = pullSettings.DefaultIfNull();
 
-        public IGeometry Location { get; set; } = new Point();
+            oM.Adapters.Revit.Properties.ObjectProperties aObjectProperties = pullSettings.FindRefObject<oM.Adapters.Revit.Properties.ObjectProperties>(elementType.Id.IntegerValue);
+            if (aObjectProperties != null)
+                return aObjectProperties;
+
+            aObjectProperties = BH.Engine.Adapters.Revit.Create.ObjectProperties(elementType.FamilyName, elementType.Name);
+
+            aObjectProperties = Modify.SetIdentifiers(aObjectProperties, elementType) as oM.Adapters.Revit.Properties.ObjectProperties;
+            if (pullSettings.CopyCustomData)
+                aObjectProperties = Modify.SetCustomData(aObjectProperties, elementType, pullSettings.ConvertUnits) as oM.Adapters.Revit.Properties.ObjectProperties;
+
+            aObjectProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = elementType.FamilyName;
+            aObjectProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = elementType.Name;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aObjectProperties);
+
+            return aObjectProperties;
+        }
 
         /***************************************************/
     }
 }
-

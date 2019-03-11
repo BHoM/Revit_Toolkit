@@ -42,11 +42,17 @@ namespace BH.UI.Revit.Engine
             if (aElement != null)
                 return aElement;
 
+            if(genericObject.ObjectProperties == null)
+            {
+                Compute.ElementTypeNotFoundWarning(genericObject);
+                return null;
+            }
+
             pushSettings.DefaultIfNull();
 
-            BuiltInCategory aBuiltInCategory = genericObject.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
+            BuiltInCategory aBuiltInCategory = genericObject.ObjectProperties.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
 
-            ElementType aElementType = genericObject.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
+            ElementType aElementType = genericObject.ObjectProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
             if (aElementType == null)
             {
                 Compute.ElementTypeNotFoundWarning(genericObject);
@@ -120,6 +126,12 @@ namespace BH.UI.Revit.Engine
             if (aElement != null)
                 return aElement;
 
+            if (draftingObject.ObjectProperties == null)
+            {
+                Compute.NullObjectPropertiesWarining(draftingObject);
+                return null;
+            }
+
             pushSettings = pushSettings.DefaultIfNull();
 
             List<View> aViewList = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().ToList();
@@ -141,9 +153,9 @@ namespace BH.UI.Revit.Engine
             if (aView == null)
                 return null;
 
-            BuiltInCategory aBuiltInCategory = draftingObject.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
+            BuiltInCategory aBuiltInCategory = draftingObject.ObjectProperties.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
 
-            ElementType aElementType = draftingObject.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
+            ElementType aElementType = draftingObject.ObjectProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
 
             if (aElementType != null)
             {

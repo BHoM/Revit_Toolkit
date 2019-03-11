@@ -20,21 +20,37 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Properties;
-using BH.oM.Base;
-using BH.oM.Geometry;
+using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Elements
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
+using BH.oM.Adapters.Revit.Properties;
+
+namespace BH.Engine.Adapters.Revit
 {
-    public class GenericObject : BHoMObject
+    public static partial class Create
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /**** Public Methods                            ****/
         /***************************************************/
 
-        public ObjectProperties ObjectProperties = new ObjectProperties();
+        [Description("Creates ObjectProperties")]
+        [Input("familyName", "Revit Family Name")]
+        [Input("familyTypeName", "Revit Family Type Name")]
+        [Output("ObjectProperties")]
+        public static ObjectProperties ObjectProperties(string familyName, string familyTypeName)
+        {
+            ObjectProperties aObjectProperties = new ObjectProperties()
+            {
+                Name = Query.FamilyTypeFullName(familyName, familyTypeName),
+            };
 
-        public IGeometry Location { get; set; } = new Point();
+            aObjectProperties.CustomData.Add(Convert.FamilyName, familyName);
+            aObjectProperties.CustomData.Add(Convert.FamilyTypeName, familyTypeName);
+
+            return aObjectProperties;
+        }
 
         /***************************************************/
     }
