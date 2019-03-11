@@ -130,8 +130,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Create\Create.cs" />
-    <Compile Include="Create\Architecture\Level.cs" />
-    <Compile Include="Create\Environment\BuildingElement.cs" />
     <Compile Include="Delete\Delete.cs" />
     <Compile Include="Execute\Execute.cs" />
     <Compile Include="Push\Push.cs" />
@@ -163,9 +161,7 @@
       <Name>Revit_oM</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Create\Structure\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

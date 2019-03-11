@@ -155,11 +155,6 @@ namespace BH.UI.Revit.Adapter
 
                         if (aType != typeof(BHoMObject))
                         {
-                            //if (aBHoMObject is oM.Architecture.Elements.Level || aBHoMObject is BuildingElement || aBHoMObject is BuildingElementProperties)
-                            //    aElement = Create(aBHoMObject as dynamic, document, aPushSettings);
-                            //else
-                            //    aElement = BH.UI.Cobra.Engine.Convert.ToRevit(aBHoMObject as dynamic, document, aPushSettings);
-
                             aElement = BH.UI.Revit.Engine.Convert.ToRevit(aBHoMObject as dynamic, document, aPushSettings);
 
                             SetIdentifiers(aBHoMObject, aElement);
