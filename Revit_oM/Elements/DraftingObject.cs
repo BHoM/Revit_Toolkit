@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Base;
 using BH.oM.Geometry;
 
@@ -31,9 +32,11 @@ namespace BH.oM.Adapters.Revit.Elements
         /**** Public Properties                        ****/
         /***************************************************/
 
-        public IGeometry Location { get; set; } = null;
+        public ObjectProperties ObjectProperties = new ObjectProperties();
 
-        public string ViewName { get; set; } = null;
+        public IGeometry Location { get; set; } = new Point();
+
+        public string ViewName { get; set; } = string.Empty;
 
         /***************************************************/
     }

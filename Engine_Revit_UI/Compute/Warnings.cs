@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
 using System;
@@ -354,5 +355,32 @@ namespace BH.UI.Revit.Engine
 
             BH.Engine.Reflection.Compute.RecordError(aMessage);
         }
+
+        /***************************************************/
+
+        internal static void NullObjectPropertiesWarining(this GenericObject genericObject)
+        {
+            string aMessage = "Generic Object has no object properties.";
+
+            if (genericObject != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, genericObject.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordError(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void NullObjectPropertiesWarining(this DraftingObject draftingObject)
+        {
+            string aMessage = "Drafting Object has no object properties.";
+
+            if (draftingObject != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, draftingObject.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordError(aMessage);
+        }
+
+        /***************************************************/
+
     }
 }

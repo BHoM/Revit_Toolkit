@@ -331,7 +331,9 @@ namespace BH.UI.Revit.Engine
             switch (pullSettings.Discipline)
             {
                 //case Discipline.Environmental:
-                    //return elementType.ToBHoMElementProperties(pullSettings);
+                //return elementType.ToBHoMElementProperties(pullSettings);
+                default:
+                    return elementType.ToBHoMObjectProperties(pullSettings);
             }
 
             elementType.NotConvertedWarning();

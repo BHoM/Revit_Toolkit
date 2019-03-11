@@ -25,6 +25,7 @@ using System.ComponentModel;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
+using BH.oM.Adapters.Revit.Properties;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -39,18 +40,12 @@ namespace BH.Engine.Adapters.Revit
         [Input("familyName", "Revit Family Name")]
         [Input("familyTypeName", "Revit Family Type Name")]
         [Output("GenericObject")]
-        public static GenericObject GenericObject(Point point, string familyName, string familyTypeName)
+        public static GenericObject GenericObject(string familyName, string familyTypeName, Point point)
         {
-            GenericObject aGenericObject = new GenericObject()
-            {
-                Name = familyTypeName,
-                Location = point
-            };
+            if (point == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
+                return null;
 
-            aGenericObject.CustomData.Add(Convert.FamilyName, familyName);
-            aGenericObject.CustomData.Add(Convert.FamilyTypeName, familyTypeName);
-
-            return aGenericObject;
+            return GenericObject(Create.ObjectProperties(familyName, familyTypeName), point);
         }
 
         /***************************************************/
@@ -60,16 +55,52 @@ namespace BH.Engine.Adapters.Revit
         [Input("familyName", "Revit Family Name")]
         [Input("familyTypeName", "Revit Family Type Name")]
         [Output("GenericObject")]
-        public static GenericObject GenericObject(ICurve curve, string familyName, string familyTypeName)
+        public static GenericObject GenericObject(string familyName, string familyTypeName, ICurve curve)
         {
+            if (curve == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
+                return null;
+
+            return GenericObject(Create.ObjectProperties(familyName, familyTypeName), curve);
+        }
+
+        /***************************************************/
+
+        [Description("Creates GenericObject by given Point, Family Name and Family Type Name. GenericObject represents generic 3D elements which have not been defined in BHoM structure")]
+        [Input("point", "Location Point of Object in 3D space")]
+        [Input("objectProperties", "ObjectProperties")]
+        [Output("GenericObject")]
+        public static GenericObject GenericObject(ObjectProperties objectProperties, Point point)
+        {
+            if (objectProperties == null || point == null)
+                return null;
+
             GenericObject aGenericObject = new GenericObject()
             {
-                Name = familyTypeName,
-                Location = curve
+                ObjectProperties = objectProperties,
+                Name = objectProperties.Name,
+                Location = point
             };
 
-            aGenericObject.CustomData.Add(Convert.FamilyName, familyName);
-            aGenericObject.CustomData.Add(Convert.FamilyTypeName, familyTypeName);
+            return aGenericObject;
+        }
+
+        /***************************************************/
+
+        [Description("Creates GenericObject by given Point, Family Name and Family Type Name. GenericObject represents generic 3D elements which have not been defined in BHoM structure")]
+        [Input("curve", "Location Curve of Object in 3D space")]
+        [Input("objectProperties", "ObjectProperties")]
+        [Output("GenericObject")]
+        public static GenericObject GenericObject(ObjectProperties objectProperties, ICurve curve)
+        {
+            if (objectProperties == null || curve == null)
+                return null;
+
+            GenericObject aGenericObject = new GenericObject()
+            {
+                ObjectProperties = objectProperties,
+                Name = objectProperties.Name,
+                Location = curve
+            };
 
             return aGenericObject;
         }

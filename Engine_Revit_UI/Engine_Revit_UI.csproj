@@ -160,6 +160,7 @@
   <ItemGroup>
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\ToRevit\Grid.cs" />
+    <Compile Include="Convert\Common\ToBHoM\ObjectProperties.cs" />
     <Compile Include="Convert\Environment\ToBHoM\MaterialPropertiesOpaque.cs" />
     <Compile Include="Convert\Environment\ToBHoM\Opening.cs" />
     <Compile Include="Convert\Environment\ToRevit\CompoundStructure.cs" />
