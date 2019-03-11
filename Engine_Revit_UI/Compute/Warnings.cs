@@ -339,5 +339,20 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        internal static void ViewTemplateNotExistsWarning(this oM.Adapters.Revit.Elements.ViewPlan viewPlan)
+        {
+            string aMessage = "View Template has not been found for given BHoM ViewPlan.";
+
+            if (viewPlan != null)
+            {
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, viewPlan.BHoM_Guid);
+
+                if(viewPlan.CustomData.ContainsKey(BH.Engine.Adapters.Revit.Convert.ViewTemplate))
+                    aMessage = string.Format("{0} View Template Name: {1}", aMessage, viewPlan.CustomData[BH.Engine.Adapters.Revit.Convert.ViewTemplate]);
+            }
+
+            BH.Engine.Reflection.Compute.RecordError(aMessage);
+        }
     }
 }

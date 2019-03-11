@@ -36,12 +36,12 @@ namespace BH.UI.Revit.Engine
         /**** Internal Methods                          ****/
         /***************************************************/
 
-        internal static ViewPlan ToRevitViewPlan(this oM.Adapters.Revit.Elements.ViewPlan floorPlan, Document document, PushSettings pushSettings = null)
+        internal static ViewPlan ToRevitViewPlan(this oM.Adapters.Revit.Elements.ViewPlan viewPlan, Document document, PushSettings pushSettings = null)
         {
-            if (floorPlan == null || string.IsNullOrEmpty(floorPlan.LevelName) || string.IsNullOrEmpty(floorPlan.Name))
+            if (viewPlan == null || string.IsNullOrEmpty(viewPlan.LevelName) || string.IsNullOrEmpty(viewPlan.Name))
                 return null;
 
-            ViewPlan aViewPlan = pushSettings.FindRefObject<ViewPlan>(document, floorPlan.BHoM_Guid);
+            ViewPlan aViewPlan = pushSettings.FindRefObject<ViewPlan>(document, viewPlan.BHoM_Guid);
             if (aViewPlan != null)
                 return aViewPlan;
 
@@ -53,7 +53,7 @@ namespace BH.UI.Revit.Engine
             if (aLevelList == null || aLevelList.Count < 1)
                 return null;
 
-            Level aLevel = aLevelList.Find(x => x.Name == floorPlan.LevelName);
+            Level aLevel = aLevelList.Find(x => x.Name == viewPlan.LevelName);
             if (aLevel == null)
                 return null;
 
@@ -63,7 +63,7 @@ namespace BH.UI.Revit.Engine
 
             IEnumerable<ElementType> aViewFamilyTypes = new FilteredElementCollector(document).OfClass(typeof(ViewFamilyType)).Cast<ElementType>();
 
-            ElementType aElementType = floorPlan.ElementType(aViewFamilyTypes, false);
+            ElementType aElementType = viewPlan.ElementType(aViewFamilyTypes, false);
             if (aElementType == null)
                 return null;
 
@@ -80,12 +80,26 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             aViewPlan = ViewPlan.Create(document, aElementId_ViewFamilyType, aElementId_Level);
-            aViewPlan.ViewName = floorPlan.Name;
+            aViewPlan.ViewName = viewPlan.Name;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aViewPlan, floorPlan, null, pushSettings.ConvertUnits);
+                Modify.SetParameters(aViewPlan, viewPlan, null, pushSettings.ConvertUnits);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(floorPlan, aViewPlan);
+            object aValue = null;
+            if(viewPlan.CustomData.TryGetValue(BH.Engine.Adapters.Revit.Convert.ViewTemplate, out aValue))
+            {
+                if(aValue is string)
+                {
+                    List<ViewPlan> aViewPlanList = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).Cast<ViewPlan>().ToList();
+                    ViewPlan aViewPlan_Template = aViewPlanList.Find(x => x.IsTemplate && aValue.Equals(x.Name));
+                    if (aViewPlan_Template == null)
+                        Compute.ViewTemplateNotExistsWarning(viewPlan);
+                    else
+                        aViewPlan.ViewTemplateId = aViewPlan_Template.Id;
+                }
+            }
+
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(viewPlan, aViewPlan);
 
             return aViewPlan;
         }

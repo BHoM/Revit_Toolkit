@@ -85,11 +85,11 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Adapters.Revit.Elements.ViewPlan floorPlan, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Adapters.Revit.Elements.ViewPlan viewPlan, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitViewPlan(floorPlan, document, pushSettings);
+            return ToRevitViewPlan(viewPlan, document, pushSettings);
         }
 
         /***************************************************/

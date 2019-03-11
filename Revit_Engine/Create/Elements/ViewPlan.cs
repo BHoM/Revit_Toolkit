@@ -77,5 +77,30 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
+
+        [Description("Creates ViewPlan object by given name and Level Name.")]
+        [Input("name", "View plan Name")]
+        [Input("levelName", "Level Name")]
+        [Input("viewTemplateName", "View Template Name")]
+        [Output("ViewPlan")]
+        public static ViewPlan ViewPlan(string name, string levelName, string viewTemplateName)
+        {
+            ViewPlan aViewPlan = new ViewPlan()
+            {
+                Name = name,
+                LevelName = levelName,
+                IsTemplate = false
+            };
+
+            aViewPlan.CustomData.Add("View Name", name);
+
+            aViewPlan.CustomData.Add(Convert.CategoryName, "Views");
+            aViewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
+            aViewPlan.CustomData.Add(Convert.ViewTemplate, viewTemplateName);
+
+            return aViewPlan;
+        }
+
+        /***************************************************/
     }
 }
