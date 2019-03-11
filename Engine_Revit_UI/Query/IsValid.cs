@@ -73,7 +73,10 @@ namespace BH.UI.Revit.Engine
             object aValue = null;
             if (aType == typeof(string))
             {
-                aValue = parameter.AsValueString();
+                if (parameter.StorageType == StorageType.String)
+                    aValue = parameter.AsString();
+                else
+                    aValue = parameter.AsValueString();
             }
             else if (aType == typeof(double))
             {
