@@ -20,7 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
+
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Geometry;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -30,26 +34,37 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static oM.Adapters.Revit.Properties.InstanceProperties ToBHoMObjectProperties(this Autodesk.Revit.DB.ElementType elementType, PullSettings pullSettings = null)
+        internal static List<oM.Architecture.Elements.Floor> ToBHoMFloors(this Floor floor, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Adapters.Revit.Properties.InstanceProperties aObjectProperties = pullSettings.FindRefObject<oM.Adapters.Revit.Properties.InstanceProperties>(elementType.Id.IntegerValue);
-            if (aObjectProperties != null)
-                return aObjectProperties;
+            List<oM.Architecture.Elements.Floor> aFloors = pullSettings.FindRefObjects<oM.Architecture.Elements.Floor>(floor.Id.IntegerValue);
+            if (aFloors != null && aFloors.Count > 0)
+                return aFloors;
 
-            aObjectProperties = BH.Engine.Adapters.Revit.Create.InstanceProperties(elementType.FamilyName, elementType.Name);
+            oM.Common.Properties.Object2DProperties aObject2DProperties = ToBHoMObject2DProperties(floor.FloorType, pullSettings);
 
-            aObjectProperties = Modify.SetIdentifiers(aObjectProperties, elementType) as oM.Adapters.Revit.Properties.InstanceProperties;
-            if (pullSettings.CopyCustomData)
-                aObjectProperties = Modify.SetCustomData(aObjectProperties, elementType, pullSettings.ConvertUnits) as oM.Adapters.Revit.Properties.InstanceProperties;
+            List<PolyCurve> aPolyCurveList = Query.Profiles(floor, pullSettings);
 
-            aObjectProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = elementType.FamilyName;
-            aObjectProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = elementType.Name;
+            List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
+            foreach(PolyCurve aPolyCurve in aPolyCurveList_Outer)
+            {
+                oM.Architecture.Elements.Floor aFloor = BH.Engine.Adapters.Revit.Create.Floor(aObject2DProperties, aPolyCurve);
+                if (aFloor == null)
+                    continue;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aObjectProperties);
+                aFloors.Add(aFloor);
 
-            return aObjectProperties;
+                aFloor = Modify.SetIdentifiers(aFloor, floor) as oM.Architecture.Elements.Floor;
+                if (pullSettings.CopyCustomData)
+                    aFloor = Modify.SetCustomData(aFloor, floor, pullSettings.ConvertUnits) as oM.Architecture.Elements.Floor;
+
+                aFloor = aFloor.UpdateValues(pullSettings, floor) as oM.Architecture.Elements.Floor;
+
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aFloor);
+            }
+
+            return aFloors;
         }
 
         /***************************************************/

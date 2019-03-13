@@ -20,41 +20,38 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Query
+    public static partial class Convert
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
-        static public oM.Common.Properties.CompoundLayer CompoundLayer(this CompoundStructureLayer compoundStructureLayer, Document Document, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
+        internal static oM.Adapters.Revit.Properties.InstanceProperties ToBHoMInstanceProperties(this Autodesk.Revit.DB.ElementType elementType, PullSettings pullSettings = null)
         {
-            if (compoundStructureLayer == null)
-                return null;
+            pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Common.Materials.Material aMaterial = Convert.ToBHoMMaterial(compoundStructureLayer, Document, builtInCategory, pullSettings);
-            if (aMaterial == null)
-                return null;
+            oM.Adapters.Revit.Properties.InstanceProperties aInstanceProperties = pullSettings.FindRefObject<oM.Adapters.Revit.Properties.InstanceProperties>(elementType.Id.IntegerValue);
+            if (aInstanceProperties != null)
+                return aInstanceProperties;
 
-            double aThickness = compoundStructureLayer.Width;
-            if (pullSettings.ConvertUnits)
-                aThickness = UnitUtils.ConvertFromInternalUnits(aThickness, DisplayUnitType.DUT_METERS);
+            aInstanceProperties = BH.Engine.Adapters.Revit.Create.InstanceProperties(elementType.FamilyName, elementType.Name);
 
-            oM.Common.Properties.CompoundLayer aCompoundLayer = new oM.Common.Properties.CompoundLayer()
-            {
-                Material = aMaterial,
-                Thickness = aThickness
-            };
+            aInstanceProperties = Modify.SetIdentifiers(aInstanceProperties, elementType) as oM.Adapters.Revit.Properties.InstanceProperties;
+            if (pullSettings.CopyCustomData)
+                aInstanceProperties = Modify.SetCustomData(aInstanceProperties, elementType, pullSettings.ConvertUnits) as oM.Adapters.Revit.Properties.InstanceProperties;
 
-            return aCompoundLayer;
+            aInstanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = elementType.FamilyName;
+            aInstanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = elementType.Name;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aInstanceProperties);
+
+            return aInstanceProperties;
         }
 
         /***************************************************/
-
     }
 }
