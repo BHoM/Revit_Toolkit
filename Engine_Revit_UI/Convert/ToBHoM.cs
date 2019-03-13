@@ -122,6 +122,11 @@ namespace BH.UI.Revit.Engine
                         return new List<IBHoMObject>();
                 case Discipline.Structural:
                     return wall.ToBHoMPanelPlanar(pullSettings).ConvertAll(p => p as IBHoMObject);
+                case Discipline.Architecture:
+                    if (wall.StackedWallOwnerId == null || wall.StackedWallOwnerId == ElementId.InvalidElementId)
+                        return wall.ToBHoMWalls(pullSettings).ConvertAll(x => x as IBHoMObject);
+                    else
+                        return new List<IBHoMObject>();
             }
 
             wall.NotConvertedWarning();
