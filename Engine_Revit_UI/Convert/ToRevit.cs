@@ -59,20 +59,20 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this GenericObject genericObject, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this ModelInstance modelInstance, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitElement(genericObject, document, pushSettings);
+            return ToRevitElement(modelInstance, document, pushSettings);
         }
 
         /***************************************************/
 
-        public static Element ToRevit(this DraftingObject draftingObject, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this DraftingInstance draftingInstance, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitElement(draftingObject, document, pushSettings);
+            return ToRevitElement(draftingInstance, document, pushSettings);
         }
 
         /***************************************************/

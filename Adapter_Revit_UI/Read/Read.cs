@@ -253,13 +253,13 @@ namespace BH.UI.Revit.Adapter
                             ElementType aElementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
                             if(aElementType != null)
                             {
-                                ObjectProperties aObjectProperties = Engine.Convert.ToBHoM(aElementType, pullSettings) as ObjectProperties;
+                                InstanceProperties aObjectProperties = Engine.Convert.ToBHoM(aElementType, pullSettings) as InstanceProperties;
                                 if(aObjectProperties != null)
                                 {
                                     if (element.ViewSpecific)
-                                        aIBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingObject(aObjectProperties, element.Document.GetElement(element.OwnerViewId).Name, aIGeometry as dynamic);
+                                        aIBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingInstance(aObjectProperties, element.Document.GetElement(element.OwnerViewId).Name, aIGeometry as dynamic);
                                     else
-                                        aIBHoMObject = BH.Engine.Adapters.Revit.Create.GenericObject(aObjectProperties, aIGeometry as dynamic);
+                                        aIBHoMObject = BH.Engine.Adapters.Revit.Create.ModelInstance(aObjectProperties, aIGeometry as dynamic);
                                 }
                             }
                         }
@@ -273,7 +273,7 @@ namespace BH.UI.Revit.Adapter
 
                     if (aIBHoMObject != null)
                     {
-                        if (!(aIBHoMObject is DraftingObject) && element.ViewSpecific)
+                        if (!(aIBHoMObject is DraftingInstance) && element.ViewSpecific)
                             aIBHoMObject = aIBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.ViewName, element.Document.GetElement(element.OwnerViewId).Name);
 
                         aIBHoMObject.Name = element.Name;

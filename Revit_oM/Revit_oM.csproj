@@ -65,17 +65,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Elements\DraftingObject.cs" />
+    <Compile Include="Elements\DraftingInstance.cs" />
     <Compile Include="Elements\ViewPlan.cs" />
-    <Compile Include="Elements\GenericObject.cs" />
+    <Compile Include="Elements\ModelInstance.cs" />
     <Compile Include="Elements\Viewport.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Generic\FamilyLibrary.cs" />
     <Compile Include="Generic\ParameterExistsComparisonRule.cs" />
     <Compile Include="Generic\TextComparisonRule.cs" />
     <Compile Include="Generic\NumberComparisonRule.cs" />
+    <Compile Include="Interface\IView.cs" />
+    <Compile Include="Interface\IInstance.cs" />
     <Compile Include="Interface\IComparisonRule.cs" />
-    <Compile Include="Properties\ObjectProperties.cs" />
+    <Compile Include="Properties\InstanceProperties.cs" />
     <Compile Include="_Properties\AssemblyInfo.cs" />
     <Compile Include="Generic\RevitFilePreview.cs" />
     <Compile Include="Settings\FamilyLoadSettings.cs" />

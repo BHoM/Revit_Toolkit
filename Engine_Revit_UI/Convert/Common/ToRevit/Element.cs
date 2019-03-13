@@ -36,26 +36,26 @@ namespace BH.UI.Revit.Engine
         /**** Internal Methods                          ****/
         /***************************************************/
 
-        internal static Element ToRevitElement(this GenericObject genericObject, Document document, PushSettings pushSettings = null)
+        internal static Element ToRevitElement(this ModelInstance modelInstance, Document document, PushSettings pushSettings = null)
         {
-            Element aElement = pushSettings.FindRefObject<Element>(document, genericObject.BHoM_Guid);
+            Element aElement = pushSettings.FindRefObject<Element>(document, modelInstance.BHoM_Guid);
             if (aElement != null)
                 return aElement;
 
-            if(genericObject.ObjectProperties == null)
+            if(modelInstance.InstanceProperties == null)
             {
-                Compute.ElementTypeNotFoundWarning(genericObject);
+                Compute.ElementTypeNotFoundWarning(modelInstance);
                 return null;
             }
 
             pushSettings.DefaultIfNull();
 
-            BuiltInCategory aBuiltInCategory = genericObject.ObjectProperties.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
+            BuiltInCategory aBuiltInCategory = modelInstance.InstanceProperties.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
 
-            ElementType aElementType = genericObject.ObjectProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
+            ElementType aElementType = modelInstance.InstanceProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
             if (aElementType == null)
             {
-                Compute.ElementTypeNotFoundWarning(genericObject);
+                Compute.ElementTypeNotFoundWarning(modelInstance);
                 return null;
             }
 
@@ -64,14 +64,14 @@ namespace BH.UI.Revit.Engine
                 FamilySymbol aFamilySymbol = (FamilySymbol)aElementType;
                 FamilyPlacementType aFamilyPlacementType = aFamilySymbol.Family.FamilyPlacementType;
 
-                IGeometry aIGeometry = genericObject.Location;
+                IGeometry aIGeometry = modelInstance.Location;
 
                 if(aFamilyPlacementType == FamilyPlacementType.Invalid || 
                     aFamilyPlacementType == FamilyPlacementType.Adaptive ||
                     (aIGeometry is oM.Geometry.Point && (aFamilyPlacementType == FamilyPlacementType.CurveBased || aFamilyPlacementType == FamilyPlacementType.CurveBasedDetail || aFamilyPlacementType == FamilyPlacementType.CurveDrivenStructural)) || 
                     (aIGeometry is ICurve && (aFamilyPlacementType == FamilyPlacementType.OneLevelBased || aFamilyPlacementType == FamilyPlacementType.OneLevelBasedHosted || aFamilyPlacementType == FamilyPlacementType.TwoLevelsBased)))
                 {
-                    Compute.InvalidFamilyPlacementTypeWarning(genericObject, aElementType);
+                    Compute.InvalidFamilyPlacementTypeWarning(modelInstance, aElementType);
                     return null;
                 }
 
@@ -79,33 +79,33 @@ namespace BH.UI.Revit.Engine
                 {
                     //TODO: Implement rest of the cases
                     case FamilyPlacementType.CurveBased:
-                        aElement = ToRevitElement_CurveBased(genericObject, aFamilySymbol, pushSettings);
+                        aElement = ToRevitElement_CurveBased(modelInstance, aFamilySymbol, pushSettings);
                         break;
                     case FamilyPlacementType.OneLevelBased:
-                        aElement = ToRevitElement_OneLevelBased(genericObject, aFamilySymbol, pushSettings);
+                        aElement = ToRevitElement_OneLevelBased(modelInstance, aFamilySymbol, pushSettings);
                         break;
                     case FamilyPlacementType.CurveDrivenStructural:
-                        aElement = ToRevitElement_CurveDrivenStructural(genericObject, aFamilySymbol, pushSettings);
+                        aElement = ToRevitElement_CurveDrivenStructural(modelInstance, aFamilySymbol, pushSettings);
                         break;
                     case FamilyPlacementType.TwoLevelsBased:
-                        aElement = ToRevitElement_TwoLevelsBased(genericObject, aFamilySymbol, pushSettings);
+                        aElement = ToRevitElement_TwoLevelsBased(modelInstance, aFamilySymbol, pushSettings);
                         break;
                     default:
-                        Compute.FamilyPlacementTypeNotSupportedWarning(genericObject, aElementType);
+                        Compute.FamilyPlacementTypeNotSupportedWarning(modelInstance, aElementType);
                         return null;
                 }
             }
             else if (aElementType is WallType)
-                aElement = ToRevitElement_Wall(genericObject, (WallType)aElementType, pushSettings);
+                aElement = ToRevitElement_Wall(modelInstance, (WallType)aElementType, pushSettings);
 
-            aElement.CheckIfNullPush(genericObject);
+            aElement.CheckIfNullPush(modelInstance);
             if (aElement == null)
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aElement, genericObject, null, pushSettings.ConvertUnits);
+                Modify.SetParameters(aElement, modelInstance, null, pushSettings.ConvertUnits);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(genericObject, aElement);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(modelInstance, aElement);
 
             return aElement;
         }
@@ -114,21 +114,21 @@ namespace BH.UI.Revit.Engine
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private static Element ToRevitElement(this DraftingObject draftingObject, Document document, PushSettings pushSettings = null)
+        private static Element ToRevitElement(this DraftingInstance draftingInstance, Document document, PushSettings pushSettings = null)
         {
-            if (draftingObject == null || string.IsNullOrEmpty(draftingObject.ViewName) || document == null)
+            if (draftingInstance == null || string.IsNullOrEmpty(draftingInstance.ViewName) || document == null)
                 return null;
 
-            if (string.IsNullOrWhiteSpace(draftingObject.ViewName))
+            if (string.IsNullOrWhiteSpace(draftingInstance.ViewName))
                 return null;
 
-            Element aElement = pushSettings.FindRefObject<Element>(document, draftingObject.BHoM_Guid);
+            Element aElement = pushSettings.FindRefObject<Element>(document, draftingInstance.BHoM_Guid);
             if (aElement != null)
                 return aElement;
 
-            if (draftingObject.ObjectProperties == null)
+            if (draftingInstance.InstanceProperties == null)
             {
-                Compute.NullObjectPropertiesWarining(draftingObject);
+                Compute.NullObjectPropertiesWarining(draftingInstance);
                 return null;
             }
 
@@ -139,11 +139,11 @@ namespace BH.UI.Revit.Engine
             if(aViewList == null || aViewList.Count == 0)
                 return null;
 
-            View aView = aViewList.Find(x => x.Name == draftingObject.ViewName);
+            View aView = aViewList.Find(x => x.Name == draftingInstance.ViewName);
             if (aView == null)
             {
                 aViewList = new FilteredElementCollector(document).OfClass(typeof(ViewSheet)).Cast<View>().ToList();
-                string aTitle = draftingObject.ViewName;
+                string aTitle = draftingInstance.ViewName;
                 if (!aTitle.StartsWith("Sheet: "))
                     aTitle = string.Format("Sheet: {0}", aTitle);
 
@@ -153,9 +153,9 @@ namespace BH.UI.Revit.Engine
             if (aView == null)
                 return null;
 
-            BuiltInCategory aBuiltInCategory = draftingObject.ObjectProperties.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
+            BuiltInCategory aBuiltInCategory = draftingInstance.InstanceProperties.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
 
-            ElementType aElementType = draftingObject.ObjectProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
+            ElementType aElementType = draftingInstance.InstanceProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
 
             if (aElementType != null)
             {
@@ -164,7 +164,7 @@ namespace BH.UI.Revit.Engine
                     FamilySymbol aFamilySymbol = (FamilySymbol)aElementType;
                     Family aFamily = aFamilySymbol.Family;
 
-                    IGeometry aIGeometry = draftingObject.Location;
+                    IGeometry aIGeometry = draftingInstance.Location;
 
                     switch (aFamily.FamilyPlacementType)
                     {
@@ -183,34 +183,34 @@ namespace BH.UI.Revit.Engine
                 }
             }
 
-            aElement.CheckIfNullPush(draftingObject);
+            aElement.CheckIfNullPush(draftingInstance);
             if (aElement == null)
                 return null;
 
             if (aElement != null && pushSettings.CopyCustomData)
-                Modify.SetParameters(aElement, draftingObject, null, pushSettings.ConvertUnits);
+                Modify.SetParameters(aElement, draftingInstance, null, pushSettings.ConvertUnits);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(draftingObject, aElement);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(draftingInstance, aElement);
 
             return aElement;
         }
 
         /***************************************************/
 
-        private static Element ToRevitElement_CurveBased(this GenericObject genericObject, FamilySymbol familySymbol, PushSettings pushSettings = null)
+        private static Element ToRevitElement_CurveBased(this ModelInstance modelInstance, FamilySymbol familySymbol, PushSettings pushSettings = null)
         {
-            if (familySymbol == null || genericObject == null)
+            if (familySymbol == null || modelInstance == null)
                 return null;
 
-            if (!(genericObject.Location is ICurve))
+            if (!(modelInstance.Location is ICurve))
             {
-                Compute.InvalidFamilyPlacementTypeWarning(genericObject, familySymbol);
+                Compute.InvalidFamilyPlacementTypeWarning(modelInstance, familySymbol);
                 return null;
             }
 
             Document aDocument = familySymbol.Document;
 
-            ICurve Curve = (ICurve)genericObject.Location;
+            ICurve Curve = (ICurve)modelInstance.Location;
 
             Level aLevel = Curve.BottomLevel(familySymbol.Document, pushSettings.ConvertUnits);
             if (aLevel == null)
@@ -222,20 +222,20 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static Element ToRevitElement_OneLevelBased(this GenericObject genericObject, FamilySymbol familySymbol, PushSettings pushSettings = null)
+        private static Element ToRevitElement_OneLevelBased(this ModelInstance modelInstance, FamilySymbol familySymbol, PushSettings pushSettings = null)
         {
-            if (familySymbol == null || genericObject == null)
+            if (familySymbol == null || modelInstance == null)
                 return null;
 
-            if (!(genericObject.Location is oM.Geometry.Point))
+            if (!(modelInstance.Location is oM.Geometry.Point))
             {
-                Compute.InvalidFamilyPlacementTypeWarning(genericObject, familySymbol);
+                Compute.InvalidFamilyPlacementTypeWarning(modelInstance, familySymbol);
                 return null;
             }
 
             Document aDocument = familySymbol.Document;
 
-            oM.Geometry.Point aPoint = (oM.Geometry.Point)genericObject.Location;
+            oM.Geometry.Point aPoint = (oM.Geometry.Point)modelInstance.Location;
 
             Level aLevel = aPoint.BottomLevel(aDocument, pushSettings.ConvertUnits);
             if (aLevel == null)
@@ -247,14 +247,14 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static Element ToRevitElement_CurveDrivenStructural(this GenericObject genericObject, FamilySymbol familySymbol, PushSettings pushSettings = null)
+        private static Element ToRevitElement_CurveDrivenStructural(this ModelInstance modelInstance, FamilySymbol familySymbol, PushSettings pushSettings = null)
         {
-            if (familySymbol == null || genericObject == null)
+            if (familySymbol == null || modelInstance == null)
                 return null;
 
-            if (!(genericObject.Location is ICurve))
+            if (!(modelInstance.Location is ICurve))
             {
-                Compute.InvalidFamilyPlacementTypeWarning(genericObject, familySymbol);
+                Compute.InvalidFamilyPlacementTypeWarning(modelInstance, familySymbol);
                 return null;
             }
 
@@ -276,7 +276,7 @@ namespace BH.UI.Revit.Engine
 
             Document aDocument = familySymbol.Document;
 
-            ICurve Curve = (ICurve)genericObject.Location;
+            ICurve Curve = (ICurve)modelInstance.Location;
 
             Level aLevel = Curve.BottomLevel(aDocument, pushSettings.ConvertUnits);
             if (aLevel == null)
@@ -288,14 +288,14 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static Element ToRevitElement_TwoLevelsBased(this GenericObject genericObject, FamilySymbol familySymbol, PushSettings pushSettings = null)
+        private static Element ToRevitElement_TwoLevelsBased(this ModelInstance modelInstance, FamilySymbol familySymbol, PushSettings pushSettings = null)
         {
-            if (familySymbol == null || genericObject == null)
+            if (familySymbol == null || modelInstance == null)
                 return null;
 
-            if (!(genericObject.Location is oM.Geometry.Point))
+            if (!(modelInstance.Location is oM.Geometry.Point))
             {
-                Compute.InvalidFamilyPlacementTypeWarning(genericObject, familySymbol);
+                Compute.InvalidFamilyPlacementTypeWarning(modelInstance, familySymbol);
                 return null;
             }
 
@@ -317,7 +317,7 @@ namespace BH.UI.Revit.Engine
 
             Document aDocument = familySymbol.Document;
 
-            oM.Geometry.Point aPoint = (oM.Geometry.Point)genericObject.Location;
+            oM.Geometry.Point aPoint = (oM.Geometry.Point)modelInstance.Location;
 
             Level aLevel = aPoint.BottomLevel(aDocument, pushSettings.ConvertUnits);
             if (aLevel == null)
@@ -329,20 +329,20 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static Element ToRevitElement_Wall(this GenericObject genericObject, WallType wallType, PushSettings pushSettings = null)
+        private static Element ToRevitElement_Wall(this ModelInstance modelInstance, WallType wallType, PushSettings pushSettings = null)
         {
-            if (wallType == null || genericObject == null)
+            if (wallType == null || modelInstance == null)
                 return null;
 
-            if (!(genericObject.Location is ICurve))
+            if (!(modelInstance.Location is ICurve))
             {
-                Compute.InvalidFamilyPlacementTypeWarning(genericObject, wallType);
+                Compute.InvalidFamilyPlacementTypeWarning(modelInstance, wallType);
                 return null;
             }
 
             Document aDocument = wallType.Document;
 
-            ICurve Curve = (ICurve)genericObject.Location;
+            ICurve Curve = (ICurve)modelInstance.Location;
 
             Level aLevel = Curve.BottomLevel(wallType.Document, pushSettings.ConvertUnits);
             if (aLevel == null)
