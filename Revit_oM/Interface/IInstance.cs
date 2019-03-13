@@ -24,22 +24,18 @@ using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Base;
 using BH.oM.Geometry;
 
-namespace BH.oM.Adapters.Revit.Elements
+namespace BH.oM.Adapters.Revit.Interface
 {
-    public class DraftingObject : BHoMObject
+    public interface IInstance : IBHoMObject
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /**** Public Properties                         ****/
         /***************************************************/
 
-        public ObjectProperties ObjectProperties = new ObjectProperties();
+        InstanceProperties InstanceProperties { get; set; }
 
-        public IGeometry Location { get; set; } = new Point();
-
-        public string ViewName { get; set; } = string.Empty;
+        IGeometry Location { get; set; }
 
         /***************************************************/
     }
 }
-
-

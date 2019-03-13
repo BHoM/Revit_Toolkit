@@ -358,24 +358,24 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void NullObjectPropertiesWarining(this GenericObject genericObject)
+        internal static void NullObjectPropertiesWarining(this ModelInstance modelInstance)
         {
             string aMessage = "Generic Object has no object properties.";
 
-            if (genericObject != null)
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, genericObject.BHoM_Guid);
+            if (modelInstance != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, modelInstance.BHoM_Guid);
 
             BH.Engine.Reflection.Compute.RecordError(aMessage);
         }
 
         /***************************************************/
 
-        internal static void NullObjectPropertiesWarining(this DraftingObject draftingObject)
+        internal static void NullObjectPropertiesWarining(this DraftingInstance draftingInstance)
         {
             string aMessage = "Drafting Object has no object properties.";
 
-            if (draftingObject != null)
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, draftingObject.BHoM_Guid);
+            if (draftingInstance != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, draftingInstance.BHoM_Guid);
 
             BH.Engine.Reflection.Compute.RecordError(aMessage);
         }

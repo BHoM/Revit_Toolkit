@@ -35,41 +35,41 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Creates DraftingObject by given Family Name, Type Name, Location and View Name. Drafting Object defines all view specific 2D elements")]
+        [Description("Creates DraftingInstance by given Family Name, Type Name, Location and View Name. Drafting Instance defines all view specific 2D elements")]
         [Input("familyName", "Revit Family Name")]
         [Input("familyTypeName", "Revit Family Type Name")]
         [Input("location", "Location of DraftingObject on View")]
-        [Input("viewName", "View assigned to DraftingObject")]
-        [Output("DraftingObject")]
-        public static DraftingObject DraftingObject(string familyName, string familyTypeName, string viewName, Point location)
+        [Input("viewName", "View assigned to DraftingInstance")]
+        [Output("DraftingInstance")]
+        public static DraftingInstance DraftingInstance(string familyName, string familyTypeName, string viewName, Point location)
         {
             if (string.IsNullOrWhiteSpace(familyName) || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(viewName) || location == null)
                 return null;
 
-            return DraftingObject(Create.ObjectProperties(familyName, familyTypeName), viewName, location);
+            return DraftingInstance(Create.InstanceProperties(familyName, familyTypeName), viewName, location);
         }
 
         /***************************************************/
 
-        [Description("Creates DraftingObject by given Family Name, Type Name, Location and View Name. Drafting Object defines all view specific 2D elements")]
+        [Description("Creates DraftingInstance by given Family Name, Type Name, Location and View Name. Drafting Instance defines all view specific 2D elements")]
         [Input("objectProperties", "ObjectProperties")]
         [Input("location", "Location of DraftingObject on View")]
-        [Input("viewName", "View assigned to DraftingObject")]
-        [Output("DraftingObject")]
-        public static DraftingObject DraftingObject(ObjectProperties objectProperties, string viewName, Point location)
+        [Input("viewName", "View assigned to DraftingInstance")]
+        [Output("DraftingInstance")]
+        public static DraftingInstance DraftingInstance(InstanceProperties instanceProperties, string viewName, Point location)
         {
-            if (objectProperties == null || string.IsNullOrWhiteSpace(viewName) || location == null)
+            if (instanceProperties == null || string.IsNullOrWhiteSpace(viewName) || location == null)
                 return null;
 
-            DraftingObject aDraftingObject = new DraftingObject()
+            DraftingInstance aDraftingInstance = new DraftingInstance()
             {
-                ObjectProperties = objectProperties,
-                Name = objectProperties.Name,
+                InstanceProperties = instanceProperties,
+                Name = instanceProperties.Name,
                 ViewName = viewName,
                 Location = location
             };
 
-            return aDraftingObject;
+            return aDraftingInstance;
         }
 
         /***************************************************/

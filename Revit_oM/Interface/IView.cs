@@ -20,17 +20,21 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Base;
 
-namespace BH.oM.Adapters.Revit.Properties
+namespace BH.oM.Adapters.Revit.Interface
 {
-    public class ObjectProperties : BHoMObject
+    public interface IView : IBHoMObject
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /**** Public Properties                         ****/
         /***************************************************/
+
+        InstanceProperties InstanceProperties { get; set; }
+
+        bool IsTemplate { get; set; }
 
         /***************************************************/
     }
 }
-

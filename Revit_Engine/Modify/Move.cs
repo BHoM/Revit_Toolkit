@@ -37,20 +37,20 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Moves GenericObject by given vector.")]
-        [Input("genericObject", "GenericObject to be moved")]
+        [Description("Moves ModelInstance by given vector.")]
+        [Input("modelInstance", "ModelInstance to be moved")]
         [Input("vector", "Vector")]
-        [Output("GenericObject")]
-        public static GenericObject Move(this GenericObject genericObject, Vector vector)
+        [Output("ModelInstance")]
+        public static ModelInstance Move(this ModelInstance modelInstance, Vector vector)
         {
-            if (genericObject == null)
+            if (modelInstance == null)
                 return null;
 
-            GenericObject aGenericObject = genericObject.GetShallowClone() as GenericObject;
+            ModelInstance aModelInstance = modelInstance.GetShallowClone() as ModelInstance;
 
-            aGenericObject.Location = Geometry.Modify.Translate(aGenericObject.Location as dynamic, vector);
+            aModelInstance.Location = Geometry.Modify.Translate(aModelInstance.Location as dynamic, vector);
             
-            return aGenericObject;
+            return aModelInstance;
         }
 
         /***************************************************/
