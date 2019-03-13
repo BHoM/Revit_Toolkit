@@ -106,7 +106,7 @@ namespace BH.UI.Revit.Engine
                 return aResult;
             }
 
-            if (type == typeof(DraftingObject))
+            if (type == typeof(DraftingInstance))
             {
                 aResult.Add(typeof(FamilyInstance));
                 return aResult;

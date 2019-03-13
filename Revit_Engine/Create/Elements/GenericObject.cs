@@ -35,74 +35,74 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Creates GenericObject by given Point, Family Name and Family Type Name. GenericObject represents generic 3D elements which have not been defined in BHoM structure")]
+        [Description("Creates ModelInstance by given Point, Family Name and Family Type Name. ModelInstance represents generic 3D elements which have not been defined in BHoM structure")]
         [Input("point", "Location Point of Object in 3D space")]
         [Input("familyName", "Revit Family Name")]
         [Input("familyTypeName", "Revit Family Type Name")]
-        [Output("GenericObject")]
-        public static GenericObject GenericObject(string familyName, string familyTypeName, Point point)
+        [Output("ModelInstance")]
+        public static ModelInstance ModelInstance(string familyName, string familyTypeName, Point point)
         {
             if (point == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
                 return null;
 
-            return GenericObject(Create.ObjectProperties(familyName, familyTypeName), point);
+            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), point);
         }
 
         /***************************************************/
 
-        [Description("Creates GenericObject by given Point, Family Name and Family Type Name. GenericObject represents generic 3D elements which have not been defined in BHoM structure")]
+        [Description("Creates ModelInstance by given Point, Family Name and Family Type Name. ModelInstance represents generic 3D elements which have not been defined in BHoM structure")]
         [Input("curve", "Location Curve of Object in 3D space")]
         [Input("familyName", "Revit Family Name")]
         [Input("familyTypeName", "Revit Family Type Name")]
-        [Output("GenericObject")]
-        public static GenericObject GenericObject(string familyName, string familyTypeName, ICurve curve)
+        [Output("ModelInstance")]
+        public static ModelInstance ModelInstance(string familyName, string familyTypeName, ICurve curve)
         {
             if (curve == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
                 return null;
 
-            return GenericObject(Create.ObjectProperties(familyName, familyTypeName), curve);
+            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), curve);
         }
 
         /***************************************************/
 
-        [Description("Creates GenericObject by given Point, Family Name and Family Type Name. GenericObject represents generic 3D elements which have not been defined in BHoM structure")]
+        [Description("Creates ModelInstance by given Point, Family Name and Family Type Name. ModelInstance represents generic 3D elements which have not been defined in BHoM structure")]
         [Input("point", "Location Point of Object in 3D space")]
         [Input("objectProperties", "ObjectProperties")]
-        [Output("GenericObject")]
-        public static GenericObject GenericObject(ObjectProperties objectProperties, Point point)
+        [Output("ModelInstance")]
+        public static ModelInstance ModelInstance(InstanceProperties objectProperties, Point point)
         {
             if (objectProperties == null || point == null)
                 return null;
 
-            GenericObject aGenericObject = new GenericObject()
+            ModelInstance aModelInstance = new ModelInstance()
             {
-                ObjectProperties = objectProperties,
+                InstanceProperties = objectProperties,
                 Name = objectProperties.Name,
                 Location = point
             };
 
-            return aGenericObject;
+            return aModelInstance;
         }
 
         /***************************************************/
 
-        [Description("Creates GenericObject by given Point, Family Name and Family Type Name. GenericObject represents generic 3D elements which have not been defined in BHoM structure")]
+        [Description("Creates ModelInstance by given Point, Family Name and Family Type Name. ModelInstance represents generic 3D elements which have not been defined in BHoM structure")]
         [Input("curve", "Location Curve of Object in 3D space")]
         [Input("objectProperties", "ObjectProperties")]
-        [Output("GenericObject")]
-        public static GenericObject GenericObject(ObjectProperties objectProperties, ICurve curve)
+        [Output("ModelInstance")]
+        public static ModelInstance ModelInstance(InstanceProperties objectProperties, ICurve curve)
         {
             if (objectProperties == null || curve == null)
                 return null;
 
-            GenericObject aGenericObject = new GenericObject()
+            ModelInstance aModelInstance = new ModelInstance()
             {
-                ObjectProperties = objectProperties,
+                InstanceProperties = objectProperties,
                 Name = objectProperties.Name,
                 Location = curve
             };
 
-            return aGenericObject;
+            return aModelInstance;
         }
 
         /***************************************************/

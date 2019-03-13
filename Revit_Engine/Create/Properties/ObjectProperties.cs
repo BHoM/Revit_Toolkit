@@ -35,21 +35,21 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Creates ObjectProperties")]
+        [Description("Creates InstanceProperties")]
         [Input("familyName", "Revit Family Name")]
         [Input("familyTypeName", "Revit Family Type Name")]
-        [Output("ObjectProperties")]
-        public static ObjectProperties ObjectProperties(string familyName, string familyTypeName)
+        [Output("InstanceProperties")]
+        public static InstanceProperties InstanceProperties(string familyName, string familyTypeName)
         {
-            ObjectProperties aObjectProperties = new ObjectProperties()
+            InstanceProperties aInstanceProperties = new InstanceProperties()
             {
                 Name = Query.FamilyTypeFullName(familyName, familyTypeName),
             };
 
-            aObjectProperties.CustomData.Add(Convert.FamilyName, familyName);
-            aObjectProperties.CustomData.Add(Convert.FamilyTypeName, familyTypeName);
+            aInstanceProperties.CustomData.Add(Convert.FamilyName, familyName);
+            aInstanceProperties.CustomData.Add(Convert.FamilyTypeName, familyTypeName);
 
-            return aObjectProperties;
+            return aInstanceProperties;
         }
 
         /***************************************************/

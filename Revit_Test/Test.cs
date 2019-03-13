@@ -87,13 +87,13 @@ namespace Revit_Test
 
             List<IBHoMObject> aIBHoMObjectList = aRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
 
-            List<GenericObject> aGenericObjectList = aIBHoMObjectList.ConvertAll(x => x as GenericObject);
-            aGenericObjectList.RemoveAll(x => x == null);
+            List<ModelInstance> aModelInstanceList = aIBHoMObjectList.ConvertAll(x => x as ModelInstance);
+            aModelInstanceList.RemoveAll(x => x == null);
 
-            for(int i=0; i < aGenericObjectList.Count; i++)
-                aGenericObjectList[i] = aGenericObjectList[i].Move(BH.Engine.Geometry.Create.Vector(100, 0, 0));
+            for(int i=0; i < aModelInstanceList.Count; i++)
+                aModelInstanceList[i] = aModelInstanceList[i].Move(BH.Engine.Geometry.Create.Vector(100, 0, 0));
 
-            aRevitAdapter.Push(aGenericObjectList);
+            aRevitAdapter.Push(aModelInstanceList);
 
             return Result.Succeeded;
         }
@@ -183,8 +183,8 @@ namespace Revit_Test
 
 
             //aIBHoMObjectList.Add(Create.DraftingObject("BHE_GenericAnnotations_PipeAccessories_BibTap", "Bib Tap", BH.Engine.Geometry.Create.Point(0, 0, 0), "Drafting View"));
-            //aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 10, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU New Type"));
-            //aIBHoMObjectList.Add(Create.GenericObject(BH.Engine.Geometry.Create.Point(0, 20, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU"));
+            //aIBHoMObjectList.Add(Create.ModelInstance(BH.Engine.Geometry.Create.Point(0, 10, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU New Type"));
+            //aIBHoMObjectList.Add(Create.ModelInstance(BH.Engine.Geometry.Create.Point(0, 20, 0), "BHE_MechanicalEquipment_AHUPlant_AHUSideBySide_New", "AHU"));
             aIBHoMObjectList.Add(aSheet);
             //aIBHoMObjectList.Add(aFloorPlan);
 

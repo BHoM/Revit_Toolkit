@@ -125,12 +125,12 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Location Move(this Location location, GenericObject genericObject, PushSettings pullSettings = null)
+        public static Location Move(this Location location, ModelInstance modelInstance, PushSettings pullSettings = null)
         {
-            if (location == null || genericObject == null)
+            if (location == null || modelInstance == null)
                 return null;
 
-            return Move(location, genericObject.Location, pullSettings);
+            return Move(location, modelInstance.Location, pullSettings);
         }
 
         /***************************************************/

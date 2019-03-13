@@ -20,19 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using BH.oM.Base;
 using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Adapters.Revit.Properties;
+using BH.oM.Base;
+using BH.oM.Geometry;
 
 namespace BH.oM.Adapters.Revit.Elements
 {
-    public class ViewPlan : BHoMObject, IView
+    public class DraftingInstance : BHoMObject, IInstance 
     {
         /***************************************************/
         /**** Public Properties                        ****/
@@ -40,9 +35,9 @@ namespace BH.oM.Adapters.Revit.Elements
 
         public InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
 
-        public string LevelName { get; set; } = string.Empty;
+        public IGeometry Location { get; set; } = new Point();
 
-        public bool IsTemplate { get; set; } = false;
+        public string ViewName { get; set; } = string.Empty;
 
         /***************************************************/
     }

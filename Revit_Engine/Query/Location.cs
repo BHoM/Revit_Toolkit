@@ -34,15 +34,15 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns Location (Point or Curve) of given GenericObject.")]
-        [Input("genericObject", "GenericObject")]
+        [Description("Returns Location (Point or Curve) of given ModelInstance.")]
+        [Input("modelInstance", "ModelInstance")]
         [Output("Location")]
-        public static IGeometry Location(this GenericObject genericObject)
+        public static IGeometry Location(this ModelInstance modelInstance)
         {
-            if (genericObject == null)
+            if (modelInstance == null)
                 return null;
 
-            return genericObject.Location;
+            return modelInstance.Location;
         }
 
         /***************************************************/
