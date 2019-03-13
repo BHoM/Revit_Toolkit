@@ -24,7 +24,6 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
 using BH.oM.Common.Materials;
 
 namespace BH.UI.Revit.Engine
@@ -81,6 +80,75 @@ namespace BH.UI.Revit.Engine
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aMaterial);
 
+
+            return aMaterial;
+        }
+
+        /***************************************************/
+
+        static public oM.Common.Materials.Material ToBHoMMaterial(this CompoundStructureLayer compoundStructureLayer, Document document, BuiltInCategory builtInCategory = BuiltInCategory.INVALID, PullSettings pullSettings = null)
+        {
+            if (compoundStructureLayer == null)
+                return null;
+
+            pullSettings = pullSettings.DefaultIfNull();
+
+            oM.Common.Materials.Material aMaterial = pullSettings.FindRefObject<oM.Common.Materials.Material>(compoundStructureLayer.MaterialId.IntegerValue);
+            if (aMaterial != null)
+                return aMaterial;
+
+            ElementId aElementId = compoundStructureLayer.MaterialId;
+            Autodesk.Revit.DB.Material aMaterial_Revit = null;
+            if (aElementId != null && aElementId != ElementId.InvalidElementId)
+                aMaterial_Revit = document.GetElement(aElementId) as Autodesk.Revit.DB.Material;
+
+            if (aMaterial_Revit == null && builtInCategory != BuiltInCategory.INVALID)
+            {
+                Category aCategory = document.Settings.Categories.get_Item(builtInCategory);
+                if (aCategory != null)
+                    aMaterial_Revit = aCategory.Material;
+            }
+
+            if (aMaterial_Revit != null)
+            {
+                aMaterial = pullSettings.FindRefObject<oM.Common.Materials.Material>(aMaterial_Revit.Id.IntegerValue);
+                if (aMaterial != null)
+                    return aMaterial;
+            }
+            else
+            {
+                Compute.MaterialNotFoundWarning(aMaterial);
+                return aMaterial;
+            }
+
+            switch (aMaterial_Revit.MaterialClass)
+            {
+                case "Aluminium":
+                    aMaterial.Type = MaterialType.Aluminium;
+                    break;
+                case "Concrete":
+                    aMaterial.Type = MaterialType.Concrete;
+                    break;
+                case "Steel":
+                    aMaterial.Type = MaterialType.Steel;
+                    break;
+                case "Metal":
+                    aMaterial.Type = MaterialType.Steel;
+                    break;
+                case "Wood":
+                    aMaterial.Type = MaterialType.Timber;
+                    break;
+            }
+
+            aMaterial.Name = aMaterial_Revit.Name;
+
+            aMaterial = Modify.SetIdentifiers(aMaterial, aMaterial_Revit) as oM.Common.Materials.Material;
+            if (pullSettings.CopyCustomData)
+                aMaterial = Modify.SetCustomData(aMaterial, aMaterial_Revit, pullSettings.ConvertUnits) as oM.Common.Materials.Material;
+
+            aMaterial = aMaterial.UpdateValues(pullSettings, aMaterial_Revit) as oM.Common.Materials.Material;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aMaterial);
 
             return aMaterial;
         }
