@@ -20,41 +20,44 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
+using System.ComponentModel;
 
-using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Architecture.Elements;
+using BH.oM.Reflection.Attributes;
+using BH.oM.Common.Properties;
+using BH.oM.Geometry;
 
-namespace BH.UI.Revit.Engine
+namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Create
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public oM.Common.Properties.CompoundLayer CompoundLayer(this CompoundStructureLayer compoundStructureLayer, Document Document, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
+        [Description("Creates Floor object.")]
+        [Input("object2DProperties", "Object2DProperties")]
+        [Input("externalBoundary", "External Boundary of Floor")]
+        [Output("Floor")]
+        public static Floor Floor(Object2DProperties object2DProperties, ICurve externalBoundary)
         {
-            if (compoundStructureLayer == null)
+            if (object2DProperties == null || externalBoundary == null)
                 return null;
 
-            oM.Common.Materials.Material aMaterial = Convert.ToBHoMMaterial(compoundStructureLayer, Document, builtInCategory, pullSettings);
-            if (aMaterial == null)
+            PlanarSurface aPlanarSurface = Geometry.Create.PlanarSurface(externalBoundary);
+            if (aPlanarSurface == null)
                 return null;
 
-            double aThickness = compoundStructureLayer.Width;
-            if (pullSettings.ConvertUnits)
-                aThickness = UnitUtils.ConvertFromInternalUnits(aThickness, DisplayUnitType.DUT_METERS);
-
-            oM.Common.Properties.CompoundLayer aCompoundLayer = new oM.Common.Properties.CompoundLayer()
+            Floor aFloor = new Floor()
             {
-                Material = aMaterial,
-                Thickness = aThickness
+                Properties = object2DProperties,
+                Surface = aPlanarSurface
             };
 
-            return aCompoundLayer;
+            return aFloor;
         }
 
         /***************************************************/
-
     }
 }
+

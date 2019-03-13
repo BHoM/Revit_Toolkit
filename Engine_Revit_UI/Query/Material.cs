@@ -20,14 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
 
-using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Environment.Properties;
 using BH.oM.Environment.Interface;
 
 namespace BH.UI.Revit.Engine
@@ -38,7 +33,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public oM.Environment.Materials.Material Material_Environment(this CompoundStructureLayer compoundStructureLayer, Document document, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
+        static public oM.Environment.Materials.Material Material(this CompoundStructureLayer compoundStructureLayer, Document document, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
         {
             if (compoundStructureLayer == null)
                 return null;
@@ -100,55 +95,5 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-
-        static public oM.Common.Materials.Material Material(this CompoundStructureLayer compoundStructureLayer, Document document, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
-        {
-            if (compoundStructureLayer == null)
-                return null;
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            oM.Common.Materials.Material aMaterial = new oM.Common.Materials.Material();
-
-            ElementId aElementId = compoundStructureLayer.MaterialId;
-            Material aMaterial_Revit = null;
-            if (aElementId != null && aElementId != Autodesk.Revit.DB.ElementId.InvalidElementId)
-                aMaterial_Revit = document.GetElement(aElementId) as Material;
-
-            if (aMaterial_Revit == null && builtInCategory != Autodesk.Revit.DB.BuiltInCategory.INVALID)
-            {
-                Category aCategory = document.Settings.Categories.get_Item(builtInCategory);
-                if (aCategory != null)
-                    aMaterial_Revit = aCategory.Material;
-            }
-
-            if (aMaterial_Revit == null)
-            {
-                Compute.MaterialNotFoundWarning(aMaterial);
-                return aMaterial;
-            }
-
-            switch (aMaterial_Revit.MaterialClass)
-            {
-                case "Aluminium":
-                    aMaterial.Type = oM.Common.Materials.MaterialType.Aluminium;
-                    break;
-                case "Concrete":
-                    aMaterial.Type = oM.Common.Materials.MaterialType.Concrete;
-                    break;
-                case "Steel":
-                    aMaterial.Type = oM.Common.Materials.MaterialType.Steel;
-                    break;
-                case "Metal":
-                    aMaterial.Type = oM.Common.Materials.MaterialType.Steel;
-                    break;
-                case "Wood":
-                    aMaterial.Type = oM.Common.Materials.MaterialType.Timber;
-                    break;
-            }
-
-            aMaterial.Name = aMaterial_Revit.Name;
-            return aMaterial;
-        }
     }
 }
