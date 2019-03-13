@@ -146,6 +146,13 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        internal static void MaterialNotFoundWarning(this oM.Common.Materials.Material material)
+        {
+            BH.Engine.Reflection.Compute.RecordWarning(string.Format("A Revit equivalent to the BHoM material has not been found. BHoM Guid: {0}", material.BHoM_Guid));
+        }
+
+        /***************************************************/
+
         internal static void CompositePanelWarning(this HostObjAttributes hostObjAttributes)
         {
             BH.Engine.Reflection.Compute.RecordWarning(string.Format("Composite panels are currently not supported in BHoM. A zero thickness panel is created. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));

@@ -20,26 +20,41 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Adapters.Revit.Properties;
+using Autodesk.Revit.DB;
 
-namespace BH.oM.Adapters.Revit.Elements
+using BH.oM.Adapters.Revit.Settings;
+
+namespace BH.UI.Revit.Engine
 {
-    public class ViewPlan : BHoMObject, IView
+    public static partial class Query
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /**** Public Methods                            ****/
         /***************************************************/
 
-        public InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
+        static public oM.Common.Properties.CompoundLayer CompoundLayer(this CompoundStructureLayer compoundStructureLayer, Document Document, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
+        {
+            if (compoundStructureLayer == null)
+                return null;
 
-        public string LevelName { get; set; } = string.Empty;
+            oM.Common.Materials.Material aMaterial = Query.Material(compoundStructureLayer, Document, builtInCategory, pullSettings);
+            if (aMaterial == null)
+                return null;
 
-        public bool IsTemplate { get; set; } = false;
+            double aThickness = compoundStructureLayer.Width;
+            if (pullSettings.ConvertUnits)
+                aThickness = UnitUtils.ConvertFromInternalUnits(aThickness, DisplayUnitType.DUT_METERS);
+
+            oM.Common.Properties.CompoundLayer aCompoundLayer = new oM.Common.Properties.CompoundLayer()
+            {
+                Material = aMaterial,
+                Thickness = aThickness
+            };
+
+            return aCompoundLayer;
+        }
 
         /***************************************************/
+
     }
 }
-
-
