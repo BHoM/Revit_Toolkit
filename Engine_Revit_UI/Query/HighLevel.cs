@@ -20,14 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using Autodesk.Revit.DB;
-
-using BH.oM.Base;
-using BH.oM.Adapters.Revit.Settings;
-using System;
+using BH.oM.Common.Interface;
 
 namespace BH.UI.Revit.Engine
 {
@@ -37,7 +35,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public Level HighLevel(this Document document, double Elevation, bool convertUnits = true)
+        static public Level HighLevel(this Document document, double elevation, bool convertUnits = true)
         {
             List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
             if (aLevelList == null || aLevelList.Count == 0)
@@ -49,7 +47,7 @@ namespace BH.UI.Revit.Engine
             if (convertUnits)
                 aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
 
-            if (Math.Abs(Elevation - aElevation) < oM.Geometry.Tolerance.MacroDistance)
+            if (Math.Abs(elevation - aElevation) < oM.Geometry.Tolerance.MacroDistance)
                 return aLevelList.First();
 
             for (int i = 1; i < aLevelList.Count; i++)
@@ -59,12 +57,30 @@ namespace BH.UI.Revit.Engine
                     aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
 
                 //if (Elevation) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
-                if (Math.Round(Elevation, 3, MidpointRounding.AwayFromZero) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
+                if (Math.Round(elevation, 3, MidpointRounding.AwayFromZero) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
                     return aLevelList[i];
             }
 
 
             return aLevelList.Last();
+        }
+
+        /***************************************************/
+
+        static public Level HighLevel(this Document document, oM.Geometry.ICurve curve, bool convertUnits = true)
+        {
+            double aElevation = HighElevation(curve);
+
+            return HighLevel(document, aElevation, convertUnits);
+        }
+
+        /***************************************************/
+
+        static public Level HighLevel(this Document document, IObject2D object2D, bool convertUnits = true)
+        {
+            double aElevation = HighElevation(object2D);
+
+            return HighLevel(document, aElevation, convertUnits);
         }
 
         /***************************************************/
