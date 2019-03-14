@@ -230,14 +230,5 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static CompoundStructure ToRevit(this IEnumerable<BH.oM.Environment.Elements.Construction> constructionLayers, Document document, PushSettings pushSettings = null)
-        {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitCompoundStructure(constructionLayers, document, pushSettings);
-        }
-
-        /***************************************************/
-
     }
 }

@@ -119,7 +119,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static BuiltInCategory BuiltInCategory(this IBHoMObject bHoMObject, Document document, FamilyLibrary familyLibrary = null)
+        public static BuiltInCategory BuiltInCategory(this IBHoMObject bHoMObject, Document document, FamilyLibrary familyLibrary)
         {
             BuiltInCategory aBuiltInCategory = bHoMObject.BuiltInCategory(document);
             if (aBuiltInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
@@ -153,7 +153,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static BuiltInCategory BuiltInCategory(this IBHoMObject bHoMObject, Document document, FamilyLoadSettings familyLoadSettings = null)
+        public static BuiltInCategory BuiltInCategory(this IBHoMObject bHoMObject, Document document, FamilyLoadSettings familyLoadSettings)
         {
             if (bHoMObject == null || document == null)
                 return Autodesk.Revit.DB.BuiltInCategory.INVALID;

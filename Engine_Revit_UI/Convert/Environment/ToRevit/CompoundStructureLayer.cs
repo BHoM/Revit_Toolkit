@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Revit.Engine
@@ -31,22 +32,10 @@ namespace BH.UI.Revit.Engine
         /**** Internal Methods                          ****/
         /***************************************************/
 
-        internal static CompoundStructureLayer ToRevitCompoundStructureLayer(this BH.oM.Environment.Elements.Construction constructionLayer, Document document, PushSettings pushSettings = null)
+        internal static CompoundStructureLayer ToRevitCompoundStructureLayer(this oM.Environment.Elements.Construction constructionLayer, Document document, PushSettings pushSettings = null)
         {
-            MaterialFunctionAssignment aMaterialFunctionAssignment = GetMaterialFunctionAssignment(constructionLayer);
-
-            return new CompoundStructureLayer(UnitUtils.ConvertToInternalUnits(constructionLayer.Thickness, DisplayUnitType.DUT_METERS), aMaterialFunctionAssignment, (constructionLayer.Materials.Count > 0 ? constructionLayer.Materials[0].ToRevitMaterial(document, pushSettings).Id : null));
+            Compute.AnalyticalObjectConversionWarining(constructionLayer, typeof(oM.Common.Properties.CompoundLayer));
+            return null;
         }
-
-        /***************************************************/
-        /**** Private Methods                           ****/
-        /***************************************************/
-
-        private static MaterialFunctionAssignment GetMaterialFunctionAssignment(BH.oM.Environment.Elements.Construction constructionLayer)
-        {
-            return MaterialFunctionAssignment.Structure;
-        }
-
-        /***************************************************/
     }
 }

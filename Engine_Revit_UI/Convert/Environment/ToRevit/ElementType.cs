@@ -20,14 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
 
 using BH.oM.Environment.Properties;
 using BH.oM.Adapters.Revit.Settings;
-using System;
 
 namespace BH.UI.Revit.Engine
 {
@@ -37,40 +33,10 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static ElementType ToRevitElementType(this ElementProperties buildingElementProperties, Document document, PushSettings pushSettings = null)
+        internal static ElementType ToRevitElementType(this ElementProperties elementProperties, Document document, PushSettings pushSettings = null)
         {
-            throw new System.NotImplementedException("The method to convert a BHoM Building Element Type into a Revit Element Type has not been fixed yet. Check Issue #247 for more info");
-            /*if (buildingElementProperties == null || document == null)
-                return null;
-
-            ElementType aElementType = pushSettings.FindRefObject<ElementType>(document, buildingElementProperties.BHoM_Guid);
-            if (aElementType != null)
-                return aElementType;
-
-            pushSettings.DefaultIfNull();
-
-            List<BuiltInCategory> aBuiltInCategoryList = null;
-            BuiltInCategory aBuiltInCategory = buildingElementProperties.BuildingElementType.BuiltInCategory();
-            if (aBuiltInCategory == BuiltInCategory.INVALID)
-                aBuiltInCategoryList = Enum.GetValues(typeof(oM.Environment.Elements.BuildingElementType)).Cast<oM.Environment.Elements.BuildingElementType>().ToList().ConvertAll(x => Query.BuiltInCategory(x));
-            else
-                aBuiltInCategoryList = new List<BuiltInCategory>() { aBuiltInCategory };
-
-            if (aBuiltInCategoryList == null || aBuiltInCategoryList.Count == 0)
-                return null;
-
-            aElementType = buildingElementProperties.ElementType(document, aBuiltInCategoryList, pushSettings.FamilyLoadSettings, true);
-
-            aElementType.CheckIfNullPush(buildingElementProperties);
-            if (aElementType == null)
-                return null;
-
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aElementType, buildingElementProperties, null, pushSettings.ConvertUnits);
-
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(buildingElementProperties, aElementType);
-
-            return aElementType;*/
+            Compute.AnalyticalObjectConversionWarining(elementProperties, typeof(oM.Common.Properties.Object2DProperties));
+            return null;
         }
 
         /***************************************************/

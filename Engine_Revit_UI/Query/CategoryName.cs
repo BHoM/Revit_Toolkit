@@ -20,11 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using BH.oM.Base;
-using BH.oM.Environment.Elements;
 using System.Collections.Generic;
 using System.Linq;
+
+using Autodesk.Revit.DB;
+
 
 namespace BH.UI.Revit.Engine
 {
