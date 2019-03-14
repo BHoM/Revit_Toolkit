@@ -51,7 +51,7 @@ namespace BH.UI.Revit.Engine
             if (aDiscipline != null && aDiscipline.HasValue)
                 return aDiscipline.Value;
 
-            return oM.Adapters.Revit.Enums.Discipline.Structural;
+            return oM.Adapters.Revit.Enums.Discipline.Undefined;
         }
 
         /***************************************************/
@@ -59,7 +59,7 @@ namespace BH.UI.Revit.Engine
         static public Discipline Discipline(this IEnumerable<FilterQuery> filterQueries, RevitSettings revitSettings)
         {
             if (filterQueries == null || filterQueries.Count() == 0)
-                return oM.Adapters.Revit.Enums.Discipline.Structural;
+                return oM.Adapters.Revit.Enums.Discipline.Undefined;
 
             Discipline? aDiscipline = null;
 
@@ -81,7 +81,7 @@ namespace BH.UI.Revit.Engine
             if (aDiscipline != null && aDiscipline.HasValue)
                 return aDiscipline.Value;
 
-            return oM.Adapters.Revit.Enums.Discipline.Structural;
+            return oM.Adapters.Revit.Enums.Discipline.Undefined;
         }
 
         /***************************************************/

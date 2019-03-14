@@ -20,14 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
 
 using BH.oM.Environment.Fragments;
 using BH.oM.Adapters.Revit.Settings;
-using System;
 
 namespace BH.UI.Revit.Engine
 {
@@ -72,6 +68,14 @@ namespace BH.UI.Revit.Engine
 
             return aElementType;
         }*/
+
+       /* internal static ElementType ToRevitElementType(this ElementProperties elementProperties, Document document, PushSettings pushSettings = null)
+        {
+            Compute.AnalyticalObjectConversionWarining(elementProperties, typeof(oM.Common.Properties.Object2DProperties));
+            return null;
+        }*/
+        //Commented out as ElementProperties no longer exist - we need to figure out how to handle these converts
+
 
         /***************************************************/
     }

@@ -34,6 +34,7 @@ using BH.oM.Environment.Elements;
 using System.Collections.Generic;
 using BH.oM.Environment.Fragments;
 using BH.oM.Structure.Elements;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -223,11 +224,11 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static CompoundStructure ToRevit(this IEnumerable<BHC.Construction> constructionLayers, Document document, PushSettings pushSettings = null)
+        public static CompoundStructureLayer ToRevit(this IEnumerable<BHC.Construction> constructionLayers, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitCompoundStructure(constructionLayers, document, pushSettings);
+            return ToRevitCompoundStructureLayer(constructionLayers.ElementAt(0), document, pushSettings);
         }
 
         /***************************************************/
