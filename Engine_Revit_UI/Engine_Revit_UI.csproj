@@ -174,6 +174,8 @@
     <Compile Include="Convert\Architecture\ToBHoM\Level.cs" />
     <Compile Include="Convert\Revit\ToBHoM\Object2DProperties.cs" />
     <Compile Include="Convert\Environment\ToBHoM\SolidMaterial.cs" />
+    <Compile Include="Convert\Architecture\ToRevit\RoofBase.cs" />
+    <Compile Include="Convert\Architecture\ToRevit\Floor.cs" />
     <Compile Include="Convert\Architecture\ToRevit\Wall.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Floor.cs" />
     <Compile Include="Convert\Architecture\ToRevit\Grid.cs" />
