@@ -19,12 +19,8 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-using Autodesk.Revit.DB;
-
+using BH.oM.Geometry;
 using BH.oM.Common.Interface;
 
 namespace BH.UI.Revit.Engine
@@ -35,44 +31,21 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public Level LowLevel(this Document document, double elevation, bool convertUnits = true)
+        static public double HighElevation(ICurve curve)
         {
-            List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
-            if (aLevelList == null || aLevelList.Count == 0)
-                return null;
-
-            aLevelList.Sort((x, y) => y.Elevation.CompareTo(x.Elevation));
-
-            double aElevation = elevation;
-            if (convertUnits)
-                aElevation = UnitUtils.ConvertToInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
-
-            if (Math.Abs(aElevation - aLevelList.First().Elevation) < oM.Geometry.Tolerance.MacroDistance)
-                return aLevelList.First();
-
-            for (int i = 1; i < aLevelList.Count; i++)
-                if (Math.Round(aElevation, 3, MidpointRounding.AwayFromZero) >= Math.Round(aLevelList[i].Elevation, 3, MidpointRounding.AwayFromZero))
-                    return aLevelList[i];
-
-            return aLevelList.Last();
+            return BH.Engine.Geometry.Query.Bounds(curve as dynamic).Max.Z;
         }
 
         /***************************************************/
 
-        static public Level LowLevel(this Document document, oM.Geometry.ICurve curve, bool convertUnits = true)
+        static public double HighElevation(this IObject2D object2D)
         {
-            double aElevation = LowElevation(curve);
+            if (object2D == null || object2D.Surface == null)
+                return double.NaN;
 
-            return LowLevel(document, aElevation, convertUnits);
-        }
+            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.Bounds(object2D.Surface as dynamic);
 
-        /***************************************************/
-
-        static public Level LowLevel(this Document document, IObject2D object2D, bool convertUnits = true)
-        {
-            double aElevation = LowElevation(object2D);
-
-            return LowLevel(document, aElevation, convertUnits);
+            return aBoundingBox.Max.Z;
         }
 
         /***************************************************/
