@@ -20,6 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System.Collections.Generic;
+
 using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
@@ -28,7 +30,6 @@ using BH.oM.Environment.Interface;
 using BH.oM.Geometry;
 using BH.oM.Geometry.CoordinateSystem;
 using BH.oM.Environment.Elements;
-using System.Collections.Generic;
 using BH.oM.Environment.Properties;
 using BH.oM.Structure.Elements;
 
@@ -54,6 +55,33 @@ namespace BH.UI.Revit.Engine
             pushSettings = pushSettings.DefaultIfNull();
 
             return ToRevitLevel(level, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this oM.Architecture.Elements.Wall wall, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitWall(wall, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this oM.Architecture.Elements.Floor floor, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitFloor(floor, document, pushSettings);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this oM.Architecture.Elements.Roof roof, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitRoofBase(roof, document, pushSettings);
         }
 
         /***************************************************/
