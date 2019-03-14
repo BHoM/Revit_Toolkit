@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Revit.Engine
@@ -30,22 +31,24 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static oM.Adapters.Revit.Properties.InstanceProperties ToBHoMInstanceProperties(this Autodesk.Revit.DB.ElementType elementType, PullSettings pullSettings = null)
+        internal static InstanceProperties ToBHoMInstanceProperties(this Autodesk.Revit.DB.ElementType elementType, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Adapters.Revit.Properties.InstanceProperties aInstanceProperties = pullSettings.FindRefObject<oM.Adapters.Revit.Properties.InstanceProperties>(elementType.Id.IntegerValue);
+            InstanceProperties aInstanceProperties = pullSettings.FindRefObject<InstanceProperties>(elementType.Id.IntegerValue);
             if (aInstanceProperties != null)
                 return aInstanceProperties;
 
             aInstanceProperties = BH.Engine.Adapters.Revit.Create.InstanceProperties(elementType.FamilyName, elementType.Name);
 
-            aInstanceProperties = Modify.SetIdentifiers(aInstanceProperties, elementType) as oM.Adapters.Revit.Properties.InstanceProperties;
+            aInstanceProperties = Modify.SetIdentifiers(aInstanceProperties, elementType) as InstanceProperties;
             if (pullSettings.CopyCustomData)
-                aInstanceProperties = Modify.SetCustomData(aInstanceProperties, elementType, pullSettings.ConvertUnits) as oM.Adapters.Revit.Properties.InstanceProperties;
+                aInstanceProperties = Modify.SetCustomData(aInstanceProperties, elementType, pullSettings.ConvertUnits) as InstanceProperties;
 
             aInstanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = elementType.FamilyName;
             aInstanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = elementType.Name;
+
+            aInstanceProperties = aInstanceProperties.UpdateValues(pullSettings, elementType) as InstanceProperties;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aInstanceProperties);
 

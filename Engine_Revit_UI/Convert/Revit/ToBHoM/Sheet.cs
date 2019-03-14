@@ -43,11 +43,17 @@ namespace BH.UI.Revit.Engine
 
             aSheet = BH.Engine.Adapters.Revit.Create.Sheet(viewSheet.Name, viewSheet.SheetNumber);
 
+            ElementType aElementType = viewSheet.Document.GetElement(viewSheet.GetTypeId()) as ElementType;
+            if (aElementType != null)
+                aSheet.InstanceProperties = ToBHoMInstanceProperties(aElementType, pullSettings);
+
             aSheet.Name = viewSheet.Name;
 
             aSheet = Modify.SetIdentifiers(aSheet, viewSheet) as Sheet;
             if (pullSettings.CopyCustomData)
                 aSheet = Modify.SetCustomData(aSheet, viewSheet, pullSettings.ConvertUnits) as Sheet;
+
+            aSheet = aSheet.UpdateValues(pullSettings, viewSheet) as Sheet;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSheet);
 

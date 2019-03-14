@@ -193,7 +193,7 @@
     <Compile Include="Convert\Architecture\ToBHoM\Grid.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Wall.cs" />
     <Compile Include="Convert\Architecture\ToRevit\Level.cs" />
-    <Compile Include="Convert\Revit\ToBHoM\FloorPlan.cs" />
+    <Compile Include="Convert\Revit\ToBHoM\ViewPlan.cs" />
     <Compile Include="Convert\Revit\ToBHoM\Material.cs" />
     <Compile Include="Convert\Revit\ToBHoM\Viewport.cs" />
     <Compile Include="Convert\Revit\ToBHoM\Sheet.cs" />
