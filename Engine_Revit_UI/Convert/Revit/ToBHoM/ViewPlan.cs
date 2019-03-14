@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Revit.Engine
@@ -30,7 +31,7 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static oM.Adapters.Revit.Elements.ViewPlan ToBHoMViewPlan(this Autodesk.Revit.DB.ViewPlan viewPlan, PullSettings pullSettings = null)
+        internal static oM.Adapters.Revit.Elements.ViewPlan ToBHoMViewPlan(this ViewPlan viewPlan, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -43,10 +44,16 @@ namespace BH.UI.Revit.Engine
             else
                 aViewPlan = BH.Engine.Adapters.Revit.Create.ViewPlan(viewPlan.Name);
 
+            ElementType aElementType = viewPlan.Document.GetElement(viewPlan.GetTypeId()) as ElementType;
+            if(aElementType != null)
+                aViewPlan.InstanceProperties = ToBHoMInstanceProperties(aElementType, pullSettings);
+
             aViewPlan.Name = viewPlan.Name;
             aViewPlan = Modify.SetIdentifiers(aViewPlan, viewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
             if (pullSettings.CopyCustomData)
                 aViewPlan = Modify.SetCustomData(aViewPlan, viewPlan, true) as oM.Adapters.Revit.Elements.ViewPlan;
+
+            aViewPlan = aViewPlan.UpdateValues(pullSettings, viewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aViewPlan);
 
