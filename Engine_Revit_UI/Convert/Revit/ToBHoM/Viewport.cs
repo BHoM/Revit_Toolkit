@@ -46,11 +46,17 @@ namespace BH.UI.Revit.Engine
 
             aViewport = BH.Engine.Adapters.Revit.Create.Viewport(aSheetNumber, aViewName, aLocation);
 
+            ElementType aElementType = viewport.Document.GetElement(viewport.GetTypeId()) as ElementType;
+            if (aElementType != null)
+                aViewport.InstanceProperties = ToBHoMInstanceProperties(aElementType, pullSettings);
+
             aViewport.Name = viewport.Name;
 
             aViewport = Modify.SetIdentifiers(aViewport, viewport) as oM.Adapters.Revit.Elements.Viewport;
             if (pullSettings.CopyCustomData)
                 aViewport = Modify.SetCustomData(aViewport, viewport, pullSettings.ConvertUnits) as oM.Adapters.Revit.Elements.Viewport;
+
+            aViewport = aViewport.UpdateValues(pullSettings, viewport) as oM.Adapters.Revit.Elements.Viewport;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aViewport);
 
