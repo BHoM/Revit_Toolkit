@@ -23,9 +23,9 @@
 using System.Collections.Generic;
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Analysis;
 
 using BH.oM.Adapters.Revit.Settings;
-using Autodesk.Revit.DB.Analysis;
 using BH.oM.Environment.Properties;
 
 namespace BH.UI.Revit.Engine

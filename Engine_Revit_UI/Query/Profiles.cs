@@ -127,29 +127,33 @@ namespace BH.UI.Revit.Engine
                             aMax = UnitUtils.ConvertFromInternalUnits(aMax, DisplayUnitType.DUT_METERS);
 
                         aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aMax), BH.Engine.Geometry.Create.Vector(0, 0, 1));
-                        ICurve aCurve_Max = BH.Engine.Geometry.Modify.Project(aCurve as dynamic, aPlane);
-
+                        ICurve aCurve_Max = BH.Engine.Geometry.Modify.IProject(aCurve, aPlane);
 
                         double aMin = aBoundingBoxXYZ.Min.Z;
                         if (pullSettings != null && pullSettings.ConvertUnits)
                             aMin = UnitUtils.ConvertFromInternalUnits(aMin, DisplayUnitType.DUT_METERS);
 
                         aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aMin), BH.Engine.Geometry.Create.Vector(0, 0, 1));
-                        ICurve aCurve_Min = BH.Engine.Geometry.Modify.Project(aCurve as dynamic, aPlane);
+                        ICurve aCurve_Min = BH.Engine.Geometry.Modify.IProject(aCurve, aPlane);
 
                         oM.Geometry.Point aPoint_1;
                         oM.Geometry.Point aPoint_2;
+                        oM.Geometry.Point aPoint_3;
 
-                        aPoint_1 = BH.Engine.Geometry.Query.StartPoint(aCurve_Min as dynamic);
-                        aPoint_2 = BH.Engine.Geometry.Query.StartPoint(aCurve_Max as dynamic);
+                        aPoint_1 = BH.Engine.Geometry.Query.IEndPoint(aCurve_Min);
+                        aPoint_2 = BH.Engine.Geometry.Query.IStartPoint(aCurve_Max);
+                        aPoint_3 = BH.Engine.Geometry.Query.IEndPoint(aCurve_Max);
+                        if (BH.Engine.Geometry.Query.Distance(aPoint_1, aPoint_3) < BH.Engine.Geometry.Query.Distance(aPoint_1, aPoint_2))
+                        {
+                            oM.Geometry.Point aPoint_Temp = aPoint_2;
+
+                            aCurve_Max = BH.Engine.Geometry.Modify.IFlip(aCurve_Max);
+                            aPoint_2 = aPoint_3;
+                            aPoint_3 = aPoint_Temp;
+                        }                            
 
                         oM.Geometry.Line aLine_1 = BH.Engine.Geometry.Create.Line(aPoint_1, aPoint_2);
-
-                        aPoint_1 = BH.Engine.Geometry.Query.EndPoint(aCurve_Max as dynamic);
-                        aPoint_2 = BH.Engine.Geometry.Query.EndPoint(aCurve_Min as dynamic);
-
-                        oM.Geometry.Line aLine_2 = BH.Engine.Geometry.Create.Line(aPoint_1, aPoint_2);
-
+                        oM.Geometry.Line aLine_2 = BH.Engine.Geometry.Create.Line(aPoint_3, BH.Engine.Geometry.Query.IStartPoint(aCurve_Min));
 
                         aPolyCurveList = new List<PolyCurve>();
                         aPolyCurveList.Add(BH.Engine.Geometry.Create.PolyCurve(new ICurve[] { aCurve_Min, aLine_1, aCurve_Max, aLine_2 }));

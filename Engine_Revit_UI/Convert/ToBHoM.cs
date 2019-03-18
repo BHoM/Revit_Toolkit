@@ -185,6 +185,8 @@ namespace BH.UI.Revit.Engine
             {
                 case Discipline.Environmental:
                     return roofBase.ToBHoMBuildingElements(pullSettings).ConvertAll(x => x as IBHoMObject);
+                case Discipline.Architecture:
+                    return roofBase.ToBHoMRoofs(pullSettings).ConvertAll(x => x as IBHoMObject);
             }
 
             roofBase.NotConvertedWarning();

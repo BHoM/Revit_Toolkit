@@ -23,7 +23,8 @@
 using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Common.Properties;
+using BH.oM.Geometry;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -33,37 +34,41 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static Object2DProperties ToBHoMObject2DProperties(this WallType wallType, PullSettings pullSettings = null)
-        {
-            return ToBHoMObject2DProperties((HostObjAttributes)wallType);
-        }
-
-        /***************************************************/
-
-        internal static Object2DProperties ToBHoMObject2DProperties(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null)
+        internal static List<oM.Architecture.Elements.Roof> ToBHoMRoofs(this RoofBase roofBase, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            Object2DProperties aObject2DProperties = pullSettings.FindRefObject<Object2DProperties>(hostObjAttributes.Id.IntegerValue);
-            if (aObject2DProperties != null)
-                return aObject2DProperties;
+            List<oM.Architecture.Elements.Roof> aRoofs = pullSettings.FindRefObjects<oM.Architecture.Elements.Roof>(roofBase.Id.IntegerValue);
+            if (aRoofs != null && aRoofs.Count > 0)
+                return aRoofs;
 
-            aObject2DProperties = new Object2DProperties()
+            oM.Common.Properties.Object2DProperties aObject2DProperties = ToBHoMObject2DProperties(roofBase.RoofType, pullSettings);
+
+            List<PolyCurve> aPolyCurveList = Query.Profiles(roofBase, pullSettings);
+
+            List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
+            aRoofs = new List<oM.Architecture.Elements.Roof>();
+
+            foreach (PolyCurve aPolyCurve in aPolyCurveList_Outer)
             {
-                CompoundLayers = Query.CompoundLayers(hostObjAttributes, pullSettings)
-            };
+                oM.Architecture.Elements.Roof aRoof = BH.Engine.Adapters.Revit.Create.Roof(aObject2DProperties, aPolyCurve);
+                if (aRoof == null)
+                    continue;
 
-            aObject2DProperties.Name = Query.FamilyTypeFullName(hostObjAttributes);
+                aRoof = Modify.SetIdentifiers(aRoof, roofBase) as oM.Architecture.Elements.Roof;
+                if (pullSettings.CopyCustomData)
+                    aRoof = Modify.SetCustomData(aRoof, roofBase, pullSettings.ConvertUnits) as oM.Architecture.Elements.Roof;
 
-            aObject2DProperties = Modify.SetIdentifiers(aObject2DProperties, hostObjAttributes) as Object2DProperties;
-            if (pullSettings.CopyCustomData)
-                aObject2DProperties = Modify.SetCustomData(aObject2DProperties, hostObjAttributes, pullSettings.ConvertUnits) as Object2DProperties;
+                aRoof = aRoof.UpdateValues(pullSettings, roofBase) as oM.Architecture.Elements.Roof;
 
-            aObject2DProperties = aObject2DProperties.UpdateValues(pullSettings, hostObjAttributes) as Object2DProperties;
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aRoof);
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aObject2DProperties);
+                aRoofs.Add(aRoof);
+            }
 
-            return aObject2DProperties;
+            return aRoofs;
         }
+
+        /***************************************************/
     }
 }
