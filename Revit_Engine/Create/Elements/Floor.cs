@@ -37,14 +37,14 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates Floor object.")]
         [Input("object2DProperties", "Object2DProperties")]
-        [Input("externalBoundary", "External Boundary of Floor")]
+        [Input("edges", "External edges of Floor")]
         [Output("Floor")]
-        public static Floor Floor(Object2DProperties object2DProperties, ICurve externalBoundary)
+        public static Floor Floor(Object2DProperties object2DProperties, ICurve edges)
         {
-            if (object2DProperties == null || externalBoundary == null)
+            if (object2DProperties == null || edges == null)
                 return null;
 
-            PlanarSurface aPlanarSurface = Geometry.Create.PlanarSurface(externalBoundary);
+            PlanarSurface aPlanarSurface = Geometry.Create.PlanarSurface(edges);
             if (aPlanarSurface == null)
                 return null;
 

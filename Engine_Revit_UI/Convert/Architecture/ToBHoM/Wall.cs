@@ -47,13 +47,15 @@ namespace BH.UI.Revit.Engine
             List<PolyCurve> aPolyCurveList = Query.Profiles(wall, pullSettings);
 
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
+            aWalls = new List<oM.Architecture.Elements.Wall>();
+
             foreach(PolyCurve aPolyCurve in aPolyCurveList_Outer)
             {
                 oM.Architecture.Elements.Wall aWall = BH.Engine.Adapters.Revit.Create.Wall(aObject2DProperties, aPolyCurve);
                 if (aWall == null)
                     continue;
 
-                aWalls.Add(aWall);
+                aWall.Name = Query.FamilyTypeFullName(wall);
 
                 aWall = Modify.SetIdentifiers(aWall, wall) as oM.Architecture.Elements.Wall;
                 if (pullSettings.CopyCustomData)
@@ -62,6 +64,8 @@ namespace BH.UI.Revit.Engine
                 aWall = aWall.UpdateValues(pullSettings, wall) as oM.Architecture.Elements.Wall;
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aWall);
+
+                aWalls.Add(aWall);
             }
 
             return aWalls;

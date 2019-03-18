@@ -171,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compute\Errors.cs" />
+    <Compile Include="Convert\Architecture\ToBHoM\Roof.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Level.cs" />
     <Compile Include="Convert\Revit\ToBHoM\Object2DProperties.cs" />
     <Compile Include="Convert\Environment\ToBHoM\SolidMaterial.cs" />

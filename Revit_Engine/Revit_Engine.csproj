@@ -98,6 +98,7 @@
     <Compile Include="Create\Elements\Panel.cs" />
     <Compile Include="Create\Elements\BHoMObject.cs" />
     <Compile Include="Create\Elements\DraftingInstance.cs" />
+    <Compile Include="Create\Elements\Roof.cs" />
     <Compile Include="Create\Elements\Floor.cs" />
     <Compile Include="Create\Elements\Wall.cs" />
     <Compile Include="Create\Elements\ViewPlan.cs" />
