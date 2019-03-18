@@ -35,45 +35,11 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Creates Wall object.")]
+        [Description("Creates Roof object.")]
         [Input("object2DProperties", "Object2DProperties")]
-        [Input("locationCurve", "Location curve of the wall (bottom edge)")]
-        [Input("height", "Wall height")]
-        [Output("Wall")]
-        public static Wall Wall(Object2DProperties object2DProperties, ICurve locationCurve, double height)
-        {
-            if (object2DProperties == null || locationCurve == null || height <= 0)
-                return null;
-
-            if (Geometry.Query.IIsClosed(locationCurve))
-                return null;
-
-            Point aPoint_1 = Geometry.Query.IStartPoint(locationCurve);
-            Point aPoint_2 = Geometry.Query.IEndPoint(locationCurve);
-
-            ICurve aICurve = Geometry.Modify.ITranslate(locationCurve, Geometry.Create.Vector(0, 0, height));
-
-            Line aLine_1 = Geometry.Create.Line(Geometry.Query.IEndPoint(locationCurve), Geometry.Query.IStartPoint(aICurve));
-            Line aLine_2 = Geometry.Create.Line(Geometry.Query.IEndPoint(aICurve), Geometry.Query.IStartPoint(locationCurve));
-
-            PolyCurve aPolyCurve = Geometry.Create.PolyCurve(new ICurve[] { locationCurve, aLine_1, aICurve, aLine_2 });
-
-            Wall aWall = new Wall()
-            {
-                Properties = object2DProperties,
-                Surface = Geometry.Create.PlanarSurface(aPolyCurve)
-            };
-
-            return aWall;
-        }
-
-        /***************************************************/
-
-        [Description("Creates Wall object.")]
-        [Input("object2DProperties", "Object2DProperties")]
-        [Input("edges", "Edges of Wall (profile)")]
-        [Output("Wall")]
-        public static Wall Wall(Object2DProperties object2DProperties, ICurve edges)
+        [Input("edges", "External edges of Roof")]
+        [Output("Roof")]
+        public static Roof Roof(Object2DProperties object2DProperties, ICurve edges)
         {
             if (object2DProperties == null || edges == null)
                 return null;
@@ -82,13 +48,13 @@ namespace BH.Engine.Adapters.Revit
             if (aPlanarSurface == null)
                 return null;
 
-            Wall aWall = new Wall()
+            Roof aRoof = new Roof()
             {
                 Properties = object2DProperties,
                 Surface = aPlanarSurface
             };
 
-            return aWall;
+            return aRoof;
         }
 
         /***************************************************/

@@ -20,15 +20,18 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System;
+using System.Collections.Generic;
+
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure.StructuralSections;
+
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Fragments;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Properties.Section.ShapeProfiles;
 using BH.oM.Structure.Properties.Surface;
-using System;
-using System.Collections.Generic;
+using BH.oM.Adapters.Revit.Elements;
 
 namespace BH.UI.Revit.Engine
 {
@@ -44,6 +47,16 @@ namespace BH.UI.Revit.Engine
 
             if (element is FamilyInstance)
             {
+                switch(element.Category.CategoryType)
+                {
+                    case CategoryType.Model:
+                        aResult.Add(typeof(ModelInstance));
+                        break;
+                    case CategoryType.Annotation:
+                        aResult.Add(typeof(DraftingInstance));
+                        break;
+                }
+                
                 //Structural framing
                 switch ((BuiltInCategory)element.Category.Id.IntegerValue)
                 {
@@ -87,24 +100,40 @@ namespace BH.UI.Revit.Engine
 
             if (element is CeilingType)
             {
+                aResult.Add(typeof(BH.oM.Common.Properties.Object2DProperties));
                 return aResult;
             }
 
             if (element is WallType)
             {
                 aResult.Add(typeof(ISurfaceProperty));
+                aResult.Add(typeof(oM.Common.Properties.Object2DProperties));
+                return aResult;
+            }
+
+            if(element is Material)
+            {
+                aResult.Add(typeof(oM.Common.Materials.Material));
                 return aResult;
             }
 
             if (element is FloorType)
             {
                 aResult.Add(typeof(ISurfaceProperty));
+                aResult.Add(typeof(oM.Common.Properties.Object2DProperties));
                 return aResult;
             }
 
             if (element is RoofType)
             {
                 aResult.Add(typeof(ISurfaceProperty));
+                aResult.Add(typeof(oM.Common.Properties.Object2DProperties));
+                return aResult;
+            }
+
+            if(element is ElementType)
+            {
+                aResult.Add(typeof(oM.Adapters.Revit.Properties.InstanceProperties));
                 return aResult;
             }
 
@@ -121,6 +150,7 @@ namespace BH.UI.Revit.Engine
             {
                 aResult.Add(typeof(oM.Environment.Elements.Panel));
                 aResult.Add(typeof(PanelPlanar));
+                aResult.Add(typeof(oM.Architecture.Elements.Wall));
                 return aResult;
             }
 
@@ -134,6 +164,7 @@ namespace BH.UI.Revit.Engine
             if (BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(element.GetType(), typeof(RoofBase)))
             {
                 aResult.Add(typeof(oM.Environment.Elements.Panel));
+                aResult.Add(typeof(oM.Architecture.Elements.Roof));
                 return aResult;
             }
 
@@ -141,6 +172,7 @@ namespace BH.UI.Revit.Engine
             {
                 aResult.Add(typeof(oM.Environment.Elements.Panel));
                 aResult.Add(typeof(PanelPlanar));
+                aResult.Add(typeof(oM.Architecture.Elements.Floor));
                 return aResult;
             }
 
@@ -158,17 +190,17 @@ namespace BH.UI.Revit.Engine
 
             if(element is ViewSheet)
             {
-                aResult.Add(typeof(oM.Adapters.Revit.Elements.Sheet));
+                aResult.Add(typeof(Sheet));
                 return aResult;
             }
 
-            if (element is Viewport)
+            if (element is Autodesk.Revit.DB.Viewport)
             {
                 aResult.Add(typeof(oM.Adapters.Revit.Elements.Viewport));
                 return aResult;
             }
 
-            if (element is ViewPlan)
+            if (element is Autodesk.Revit.DB.ViewPlan)
             {
                 aResult.Add(typeof(oM.Adapters.Revit.Elements.ViewPlan));
                 return aResult;

@@ -23,6 +23,7 @@
 using System.Collections.Generic;
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Analysis;
 
 using BH.oM.Adapters.Revit.Settings;
 using Autodesk.Revit.DB.Analysis;

@@ -121,6 +121,7 @@ namespace BH.UI.Revit.Engine
                 return aMaterial;
             }
 
+            aMaterial = BH.Engine.Common.Create.Material(aMaterial_Revit.Name);
             switch (aMaterial_Revit.MaterialClass)
             {
                 case "Aluminium":
@@ -139,8 +140,6 @@ namespace BH.UI.Revit.Engine
                     aMaterial.Type = MaterialType.Timber;
                     break;
             }
-
-            aMaterial.Name = aMaterial_Revit.Name;
 
             aMaterial = Modify.SetIdentifiers(aMaterial, aMaterial_Revit) as oM.Common.Materials.Material;
             if (pullSettings.CopyCustomData)

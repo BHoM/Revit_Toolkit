@@ -47,13 +47,13 @@ namespace BH.UI.Revit.Engine
             List<PolyCurve> aPolyCurveList = Query.Profiles(floor, pullSettings);
 
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
-            foreach(PolyCurve aPolyCurve in aPolyCurveList_Outer)
+            aFloors = new List<oM.Architecture.Elements.Floor>();
+
+            foreach (PolyCurve aPolyCurve in aPolyCurveList_Outer)
             {
                 oM.Architecture.Elements.Floor aFloor = BH.Engine.Adapters.Revit.Create.Floor(aObject2DProperties, aPolyCurve);
                 if (aFloor == null)
                     continue;
-
-                aFloors.Add(aFloor);
 
                 aFloor = Modify.SetIdentifiers(aFloor, floor) as oM.Architecture.Elements.Floor;
                 if (pullSettings.CopyCustomData)
@@ -62,6 +62,8 @@ namespace BH.UI.Revit.Engine
                 aFloor = aFloor.UpdateValues(pullSettings, floor) as oM.Architecture.Elements.Floor;
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aFloor);
+
+                aFloors.Add(aFloor);
             }
 
             return aFloors;
