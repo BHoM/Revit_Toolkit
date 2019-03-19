@@ -22,8 +22,6 @@
 
 using System.ComponentModel;
 
-using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Properties;
 
