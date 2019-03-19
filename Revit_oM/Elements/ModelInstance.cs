@@ -33,7 +33,7 @@ namespace BH.oM.Adapters.Revit.Elements
         /**** Public Properties                        ****/
         /***************************************************/
 
-        public InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
+        public InstanceProperties Properties { get; set; } = new InstanceProperties();
 
         public IGeometry Location { get; set; } = new Point();
 

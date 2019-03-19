@@ -52,19 +52,19 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates DraftingInstance by given Family Name, Type Name, Location and View Name. Drafting Instance defines all view specific 2D elements")]
-        [Input("objectProperties", "ObjectProperties")]
+        [Input("properties", "InstanceProperties of Instance")]
         [Input("location", "Location of DraftingObject on View")]
         [Input("viewName", "View assigned to DraftingInstance")]
         [Output("DraftingInstance")]
-        public static DraftingInstance DraftingInstance(InstanceProperties instanceProperties, string viewName, Point location)
+        public static DraftingInstance DraftingInstance(InstanceProperties properties, string viewName, Point location)
         {
-            if (instanceProperties == null || string.IsNullOrWhiteSpace(viewName) || location == null)
+            if (properties == null || string.IsNullOrWhiteSpace(viewName) || location == null)
                 return null;
 
             DraftingInstance aDraftingInstance = new DraftingInstance()
             {
-                InstanceProperties = instanceProperties,
-                Name = instanceProperties.Name,
+                Properties = properties,
+                Name = properties.Name,
                 ViewName = viewName,
                 Location = location
             };

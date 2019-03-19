@@ -32,7 +32,7 @@ namespace BH.oM.Adapters.Revit.Interface
         /**** Public Properties                         ****/
         /***************************************************/
 
-        InstanceProperties InstanceProperties { get; set; }
+        InstanceProperties Properties { get; set; }
 
         IGeometry Location { get; set; }
 
