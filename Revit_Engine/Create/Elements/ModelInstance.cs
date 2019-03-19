@@ -67,17 +67,17 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates ModelInstance by given Point, Family Name and Family Type Name. ModelInstance represents generic 3D elements which have not been defined in BHoM structure")]
         [Input("point", "Location Point of Object in 3D space")]
-        [Input("objectProperties", "ObjectProperties")]
+        [Input("properties", "InstanceProperties of Instance")]
         [Output("ModelInstance")]
-        public static ModelInstance ModelInstance(InstanceProperties objectProperties, Point point)
+        public static ModelInstance ModelInstance(InstanceProperties properties, Point point)
         {
-            if (objectProperties == null || point == null)
+            if (properties == null || point == null)
                 return null;
 
             ModelInstance aModelInstance = new ModelInstance()
             {
-                InstanceProperties = objectProperties,
-                Name = objectProperties.Name,
+                Properties = properties,
+                Name = properties.Name,
                 Location = point
             };
 
@@ -88,17 +88,17 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates ModelInstance by given Point, Family Name and Family Type Name. ModelInstance represents generic 3D elements which have not been defined in BHoM structure")]
         [Input("curve", "Location Curve of Object in 3D space")]
-        [Input("objectProperties", "ObjectProperties")]
+        [Input("properties", "InstanceProperties of Instance")]
         [Output("ModelInstance")]
-        public static ModelInstance ModelInstance(InstanceProperties objectProperties, ICurve curve)
+        public static ModelInstance ModelInstance(InstanceProperties properties, ICurve curve)
         {
-            if (objectProperties == null || curve == null)
+            if (properties == null || curve == null)
                 return null;
 
             ModelInstance aModelInstance = new ModelInstance()
             {
-                InstanceProperties = objectProperties,
-                Name = objectProperties.Name,
+                Properties = properties,
+                Name = properties.Name,
                 Location = curve
             };
 
