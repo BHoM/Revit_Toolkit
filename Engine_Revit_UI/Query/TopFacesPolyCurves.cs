@@ -48,6 +48,8 @@ namespace BH.UI.Revit.Engine
             foreach (Reference aReference in aReferences)
             {
                 Autodesk.Revit.DB.Face aFace = hostObject.GetGeometryObjectFromReference(aReference) as Autodesk.Revit.DB.Face;
+                if (aFace == null)
+                    continue;
 
                 List<PolyCurve> aPolyCurveList_Temp = null;
 
