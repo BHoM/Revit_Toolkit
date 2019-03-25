@@ -40,10 +40,15 @@ namespace BH.UI.Revit.Engine
 
             foreach (KeyValuePair<string, object> aKeyValuePair in bHoMObject.CustomData)
             {
-                Parameter aParameter = element.LookupParameter(aKeyValuePair.Key);
+                IList<Parameter> aParameters = element.GetParameters(aKeyValuePair.Key);
+                if (aParameters == null || aParameters.Count == 0)
+                    continue;
 
-                if (aParameter != null && !aParameter.IsReadOnly)
+                foreach(Parameter aParameter in aParameters)
                 {
+                    if (aParameter == null && aParameter.IsReadOnly)
+                        continue;
+
                     if (builtInParametersIgnore != null && aParameter.Id.IntegerValue < 0 && builtInParametersIgnore.Contains((BuiltInParameter)aParameter.Id.IntegerValue))
                         continue;
 
