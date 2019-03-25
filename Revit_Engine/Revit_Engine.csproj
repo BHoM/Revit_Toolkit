@@ -52,6 +52,9 @@
     <Reference Include="BHoM">
       <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
     </Reference>
+    <Reference Include="BHoM_Adapter">
+      <HintPath>..\..\BHoM_Adapter\Build\BHoM_Adapter.dll</HintPath>
+    </Reference>
     <Reference Include="Common_oM, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
@@ -206,6 +209,10 @@
     <Compile Include="Query\SelectionSetName.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
+      <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
+      <Name>Revit_Adapter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
       <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
       <Name>Revit_oM</Name>

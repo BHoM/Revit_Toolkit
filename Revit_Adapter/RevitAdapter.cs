@@ -212,6 +212,14 @@ namespace BH.Adapter.Revit
             return returnValue;
         }
 
+        public bool IsValid()
+        {
+            if (m_linkIn == null || m_linkOut == null)
+                return false;
+
+            return true;
+        }
+
 
         /***************************************************/
         /**** Private  Fields                           ****/
