@@ -26,6 +26,7 @@ using System.ComponentModel;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Adapters.Revit.Generic;
+using BH.Adapter.Revit;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -163,6 +164,19 @@ namespace BH.Engine.Adapters.Revit
             }
 
             return false;
+        }
+
+        /***************************************************/
+
+        [Description("Checks if RevitAdapter is valid.")]
+        [Input("revitAdapter", "Revit Adapter")]
+        [Output("IsValid")]
+        static public bool IsValid(this RevitAdapter revitAdapter)
+        {
+            if (revitAdapter == null)
+                return false;
+
+            return revitAdapter.IsValid();
         }
 
         /***************************************************/
