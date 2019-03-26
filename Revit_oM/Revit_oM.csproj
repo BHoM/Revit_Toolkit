@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Elements\DraftingInstance.cs" />
+    <Compile Include="Elements\Family.cs" />
     <Compile Include="Elements\ViewPlan.cs" />
     <Compile Include="Elements\ModelInstance.cs" />
     <Compile Include="Elements\Viewport.cs" />

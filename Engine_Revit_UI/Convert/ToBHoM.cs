@@ -504,5 +504,23 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        public static IBHoMObject ToBHoM(this Family family, PullSettings pullSettings = null)
+        {
+            family.CheckIfNullPull();
+
+            pullSettings = pullSettings.DefaultIfNull();
+
+            switch (pullSettings.Discipline)
+            {
+                default:
+                    return ToBHoMFamily(family, pullSettings);
+            }
+
+            family.NotConvertedWarning();
+            return null;
+        }
+
+        /***************************************************/
     }
 }
