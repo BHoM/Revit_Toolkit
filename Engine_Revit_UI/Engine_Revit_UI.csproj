@@ -188,6 +188,7 @@
     <Compile Include="Convert\Geometry\ToBHoM\ICurveList.cs" />
     <Compile Include="Convert\Geometry\ToRevit\CurveList.cs" />
     <Compile Include="Convert\Geometry\ToRevit\CurveArray.cs" />
+    <Compile Include="Convert\Revit\ToBHoM\Family.cs" />
     <Compile Include="Modify\AddAdjacentSpaceId.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Grid.cs" />

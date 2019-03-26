@@ -53,17 +53,30 @@ namespace BH.UI.Revit.Engine
 
             Parameter aParameter = null;
 
-            aParameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
-            if (aParameter != null)
-                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyName, aParameter.AsValueString());
+            if (element is Family)
+            {
+                Family aFamily = (Family)element;
 
-            aParameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
-            if (aParameter != null)
-                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyTypeName, aParameter.AsValueString());
+                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyName, aFamily.Name);
 
-            aParameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
-            if (aParameter != null)
-                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.CategoryName, aParameter.AsValueString());
+                if (aFamily.FamilyCategory != null)
+                    aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.CategoryName, aFamily.FamilyCategory.Name);
+            }
+            else
+            {
+                aParameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
+                if (aParameter != null)
+                    aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyName, aParameter.AsValueString());
+
+                aParameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
+                if (aParameter != null)
+                    aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyTypeName, aParameter.AsValueString());
+
+                aParameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
+                if (aParameter != null)
+                    aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.CategoryName, aParameter.AsValueString());
+            }
+
 
             return aBHoMObject;
         }

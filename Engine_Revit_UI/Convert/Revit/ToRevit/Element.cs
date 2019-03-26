@@ -162,7 +162,7 @@ namespace BH.UI.Revit.Engine
                 if (aElementType is FamilySymbol)
                 {
                     FamilySymbol aFamilySymbol = (FamilySymbol)aElementType;
-                    Family aFamily = aFamilySymbol.Family;
+                    Autodesk.Revit.DB.Family aFamily = aFamilySymbol.Family;
 
                     IGeometry aIGeometry = draftingInstance.Location;
 

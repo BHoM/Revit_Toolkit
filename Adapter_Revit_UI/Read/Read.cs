@@ -267,8 +267,10 @@ namespace BH.UI.Revit.Adapter
 
                     if (aIBHoMObject == null && element is ElementType)
                         aIBHoMObject = Engine.Convert.ToBHoM((ElementType)element, pullSettings);
+                    if(aIBHoMObject == null && element is Autodesk.Revit.DB.Family)
+                        aIBHoMObject = Engine.Convert.ToBHoM((Autodesk.Revit.DB.Family)element, pullSettings);
 
-                    if(aIBHoMObject == null)
+                    if (aIBHoMObject == null)
                         aIBHoMObject = new BHoMObject();
 
                     if (aIBHoMObject != null)
