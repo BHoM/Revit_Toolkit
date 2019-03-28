@@ -21,9 +21,10 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 
+using Autodesk.Revit.UI;
 using Autodesk.Revit.DB;
 
 using BH.UI.Revit.Engine;
@@ -31,7 +32,8 @@ using BH.UI.Revit.Engine;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.Revit.Settings;
-using Autodesk.Revit.UI;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Adapters.Revit.Properties;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -176,6 +178,9 @@ namespace BH.UI.Revit.Adapter
                             }
 
                         }
+
+                        if(aBHoMObject is IView || aBHoMObject is oM.Adapters.Revit.Elements.Family || aBHoMObject is InstanceProperties)
+                            aElement.Name = aBHoMObject.Name;
                     }
 
                     //Assign Tags

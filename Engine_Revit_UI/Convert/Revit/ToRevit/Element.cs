@@ -20,13 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System.Linq;
+using System.Collections.Generic;
+
 using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {

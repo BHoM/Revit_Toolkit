@@ -220,14 +220,22 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static CompoundStructureLayer ToRevit(this BH.oM.Environment.Elements.Construction constructionLayer, Document document, PushSettings pushSettings = null)
+        public static Autodesk.Revit.DB.Family ToRevit(this oM.Adapters.Revit.Elements.Family family, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitCompoundStructureLayer(constructionLayer, document, pushSettings);
+            return ToRevitFamily(family, document, pushSettings);
         }
 
         /***************************************************/
 
+        public static ElementType ToRevit(this oM.Adapters.Revit.Properties.InstanceProperties instanceProperties, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitElementType(instanceProperties, document, pushSettings);
+        }
+
+        /***************************************************/
     }
 }
