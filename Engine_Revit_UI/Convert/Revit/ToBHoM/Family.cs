@@ -37,7 +37,7 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static oM.Adapters.Revit.Elements.Family ToBHoMFamily(this Autodesk.Revit.DB.Family family, PullSettings pullSettings = null)
+        internal static oM.Adapters.Revit.Elements.Family ToBHoMFamily(this Family family, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

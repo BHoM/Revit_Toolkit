@@ -117,6 +117,35 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static BuiltInCategory BuiltInCategory(this oM.Adapters.Revit.Elements.Family family, Document document)
+        {
+            if (family == null || document == null)
+                return Autodesk.Revit.DB.BuiltInCategory.INVALID;
+
+            BuiltInCategory aBuiltInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID;
+            string aCategoryName = BH.Engine.Adapters.Revit.Query.CategoryName(family);
+            if (!string.IsNullOrEmpty(aCategoryName))
+                aBuiltInCategory = BuiltInCategory(document, aCategoryName);
+
+            if (aBuiltInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
+            {
+                string aFamilyName = BH.Engine.Adapters.Revit.Query.FamilyName(family);
+                if (string.IsNullOrEmpty(aFamilyName))
+                    return Autodesk.Revit.DB.BuiltInCategory.INVALID;
+
+                List<Family> aFamilyList = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>().ToList();
+                Family aFamily = aFamilyList.Find(x => x.Name == aFamilyName);
+
+                if (aFamily != null && aFamily.FamilyCategory != null)
+                    aBuiltInCategory = (BuiltInCategory)aFamily.FamilyCategory.Id.IntegerValue;
+
+            }
+
+            return aBuiltInCategory;
+        }
+
+        /***************************************************/
+
         public static BuiltInCategory BuiltInCategory(this Document document, string categoryName)
         {
             if (document == null || string.IsNullOrEmpty(categoryName)|| document.Settings == null || document.Settings.Categories == null)
@@ -134,7 +163,15 @@ namespace BH.UI.Revit.Engine
 
         public static BuiltInCategory BuiltInCategory(this IBHoMObject bHoMObject, Document document, FamilyLibrary familyLibrary)
         {
-            BuiltInCategory aBuiltInCategory = bHoMObject.BuiltInCategory(document);
+            if (bHoMObject == null || document == null)
+                return Autodesk.Revit.DB.BuiltInCategory.INVALID;
+
+            BuiltInCategory aBuiltInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID;
+            if(bHoMObject is oM.Adapters.Revit.Elements.Family)
+                aBuiltInCategory = ((oM.Adapters.Revit.Elements.Family)bHoMObject).BuiltInCategory(document);
+            else
+                aBuiltInCategory = bHoMObject.BuiltInCategory(document);
+
             if (aBuiltInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
             {
                 string aFamilyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject);
