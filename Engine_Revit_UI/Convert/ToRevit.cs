@@ -33,7 +33,6 @@ using BH.oM.Environment.Elements;
 using System.Collections.Generic;
 using BH.oM.Environment.Fragments;
 using BH.oM.Structure.Elements;
-using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -214,6 +213,15 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static Autodesk.Revit.DB.Family ToRevit(this oM.Adapters.Revit.Elements.Family family, Document document, PushSettings pushSettings = null)
+        {
+            pushSettings = pushSettings.DefaultIfNull();
+
+            return ToRevitFamily(family, document, pushSettings);
+        }
+
+        /***************************************************/
+
         public static CompoundStructureLayer ToRevit(this BHC.Construction constructionLayer, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
@@ -223,14 +231,13 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static CompoundStructureLayer ToRevit(this IEnumerable<BHC.Construction> constructionLayers, Document document, PushSettings pushSettings = null)
+        public static ElementType ToRevit(this oM.Adapters.Revit.Properties.InstanceProperties instanceProperties, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitCompoundStructureLayer(constructionLayers.ElementAt(0), document, pushSettings);
+            return ToRevitElementType(instanceProperties, document, pushSettings);
         }
 
         /***************************************************/
-
     }
 }
