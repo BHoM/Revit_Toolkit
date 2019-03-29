@@ -38,9 +38,9 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns the outer PolyCurves from list")]
+        [Description("Returns the outer PolyCurves from list. QUICK CHECK (BOUNDING BOX)")]
         [Input("polyCurves", "PolyCurves")]
-        [Output("PolyCurve")]
+        [Output("PolyCurves")]
         public static List<PolyCurve> OuterPolyCurves(this IEnumerable<PolyCurve> polyCurves)
         {
             if (polyCurves == null || polyCurves.Count() == 0)

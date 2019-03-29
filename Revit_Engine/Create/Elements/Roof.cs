@@ -20,12 +20,15 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System.Linq;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 using BH.oM.Architecture.Elements;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Common.Properties;
 using BH.oM.Geometry;
+
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -39,12 +42,16 @@ namespace BH.Engine.Adapters.Revit
         [Input("object2DProperties", "Object2DProperties")]
         [Input("edges", "External edges of Roof")]
         [Output("Roof")]
-        public static Roof Roof(Object2DProperties object2DProperties, ICurve edges)
+        public static Roof Roof(Object2DProperties object2DProperties, ICurve edges, IEnumerable<ICurve> internalEdges = null)
         {
             if (object2DProperties == null || edges == null)
                 return null;
 
-            PlanarSurface aPlanarSurface = Geometry.Create.PlanarSurface(edges);
+            List<ICurve> aInternalCurveList = null;
+            if (internalEdges != null && internalEdges.Count() > 0)
+                aInternalCurveList = internalEdges.ToList().ConvertAll(x => x as ICurve);
+
+            PlanarSurface aPlanarSurface = Geometry.Create.PlanarSurface(edges, aInternalCurveList);
             if (aPlanarSurface == null)
                 return null;
 
