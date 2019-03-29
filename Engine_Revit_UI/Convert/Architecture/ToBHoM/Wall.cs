@@ -51,7 +51,9 @@ namespace BH.UI.Revit.Engine
 
             foreach(PolyCurve aPolyCurve in aPolyCurveList_Outer)
             {
-                oM.Architecture.Elements.Wall aWall = BH.Engine.Adapters.Revit.Create.Wall(aObject2DProperties, aPolyCurve);
+                List<PolyCurve> aPolyCurveList_Inner = BH.Engine.Adapters.Revit.Query.InnerPolyCurves(aPolyCurve, aPolyCurveList);
+
+                oM.Architecture.Elements.Wall aWall = BH.Engine.Adapters.Revit.Create.Wall(aObject2DProperties, aPolyCurve, aPolyCurveList_Inner);
                 if (aWall == null)
                     continue;
 
