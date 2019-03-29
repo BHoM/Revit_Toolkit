@@ -57,9 +57,9 @@ namespace BH.Engine.Adapters.Revit
                 {
                     BoundingBox aBoundingBox_2 = aTupleList[j].Item1;
 
-                    if (Geometry.Query.IsContaining(aBoundingBox_1, aBoundingBox_2))
+                    if (Geometry.Query.IsContaining(aBoundingBox_2, aBoundingBox_1))
                         aTupleList[j].Item2.Add(i);
-                    else if (Geometry.Query.IsContaining(aBoundingBox_2, aBoundingBox_1))
+                    else if (Geometry.Query.IsContaining(aBoundingBox_1, aBoundingBox_2))
                         aTupleList[i].Item2.Add(j);
                 }
             }
