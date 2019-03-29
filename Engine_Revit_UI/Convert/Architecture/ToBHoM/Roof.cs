@@ -51,7 +51,9 @@ namespace BH.UI.Revit.Engine
 
             foreach (PolyCurve aPolyCurve in aPolyCurveList_Outer)
             {
-                oM.Architecture.Elements.Roof aRoof = BH.Engine.Adapters.Revit.Create.Roof(aObject2DProperties, aPolyCurve);
+                List<PolyCurve> aPolyCurveList_Inner = BH.Engine.Adapters.Revit.Query.InnerPolyCurves(aPolyCurve, aPolyCurveList);
+
+                oM.Architecture.Elements.Roof aRoof = BH.Engine.Adapters.Revit.Create.Roof(aObject2DProperties, aPolyCurve, aPolyCurveList_Inner);
                 if (aRoof == null)
                     continue;
 

@@ -26,6 +26,7 @@ using BH.oM.Architecture.Elements;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Common.Properties;
 using BH.oM.Geometry;
+using System.Collections.Generic;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -73,7 +74,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("object2DProperties", "Object2DProperties")]
         [Input("edges", "Edges of Wall (profile)")]
         [Output("Wall")]
-        public static Wall Wall(Object2DProperties object2DProperties, ICurve edges)
+        public static Wall Wall(Object2DProperties object2DProperties, ICurve edges, IEnumerable<ICurve> internalEdges = null)
         {
             if (object2DProperties == null || edges == null)
                 return null;

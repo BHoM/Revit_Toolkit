@@ -21,50 +21,52 @@
  */
 
 using System.ComponentModel;
-using System.Collections.Generic;
 
-using BH.oM.Architecture.Elements;
-using BH.oM.Reflection.Attributes;
-using BH.oM.Common.Properties;
 using BH.oM.Geometry;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Reflection.Attributes;
+using BH.oM.Environment.Elements;
+using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Create
+    public static partial class Query
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Creates Floor object.")]
-        [Input("object2DProperties", "Object2DProperties")]
-        [Input("edges", "External edges of Floor")]
-        [Output("Floor")]
-        public static Floor Floor(Object2DProperties object2DProperties, ICurve edges, IEnumerable<ICurve> internalEdges = null)
+        [Description("Returns the inner PolyCurves from list. QUICK CHECK (BOUNDING BOX)")]
+        [Input("polyCurve", "PolyCurve")]
+        [Input("polyCurves", "PolyCurves")]
+        [Output("PolyCurves")]
+        public static List<PolyCurve> InnerPolyCurves(this PolyCurve polyCurve, IEnumerable<PolyCurve> polyCurves)
         {
-            if (object2DProperties == null || edges == null)
+            if (polyCurves == null || polyCurves.Count() == 0 || polyCurve == null)
                 return null;
 
-            List<ICurve> aInternalCurveList = null;
-            if(internalEdges != null && internalEdges.Count() > 0)
-                aInternalCurveList = internalEdges.ToList().ConvertAll(x => x as ICurve);
+            BoundingBox aBoundingBox_Main = Geometry.Query.Bounds(polyCurve);
 
-            PlanarSurface aPlanarSurface = Geometry.Create.PlanarSurface(edges, aInternalCurveList);
-            if (aPlanarSurface == null)
-                return null;
-
-            Floor aFloor = new Floor()
+            List<PolyCurve> aResult = new List<PolyCurve>();
+            foreach (PolyCurve aPolyCurve in polyCurves)
             {
-                Properties = object2DProperties,
-                Surface = aPlanarSurface
-            };
+                BoundingBox aBoundingBox = Geometry.Query.Bounds(aPolyCurve);
 
-            return aFloor;
+                if (aBoundingBox.Min.Equals(aBoundingBox.Min) && aBoundingBox.Max.Equals(aBoundingBox_Main.Max))
+                    continue;
+
+                if (!Geometry.Query.IsContaining(aBoundingBox_Main, aBoundingBox))
+                    continue;
+
+                aResult.Add(aPolyCurve);
+            }
+
+            return aResult;
         }
 
         /***************************************************/
-
     }
 }
 
