@@ -20,12 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
 using System.ComponentModel;
 
-using BH.oM.Base;
 using BH.oM.DataManipulation.Queries;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Enums;
