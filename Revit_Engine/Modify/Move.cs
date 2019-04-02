@@ -20,13 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using BH.oM.Adapters.Revit;
-using System.IO;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Geometry;
 using System.ComponentModel;
+
+using BH.oM.Geometry;
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit

@@ -21,14 +21,12 @@
  */
 
 using System.ComponentModel;
+using System.Collections.Generic;
 
 using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Properties;
-using System.Collections.Generic;
-using System.Linq;
-
 using BH.Engine.Environment;
 
 namespace BH.Engine.Adapters.Revit
