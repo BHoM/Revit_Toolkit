@@ -28,6 +28,7 @@ using BH.oM.Reflection.Attributes;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Properties;
 using BH.Engine.Environment;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
