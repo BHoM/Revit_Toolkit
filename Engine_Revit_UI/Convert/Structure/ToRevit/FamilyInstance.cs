@@ -100,7 +100,7 @@ namespace BH.UI.Revit.Engine
             }
 
             FamilyPlacementType aFamilyPlacementType = aFamilySymbol.Family.FamilyPlacementType;
-            if (aFamilyPlacementType != FamilyPlacementType.CurveBased && aFamilyPlacementType != FamilyPlacementType.CurveBasedDetail && aFamilyPlacementType != FamilyPlacementType.CurveDrivenStructural)
+            if (aFamilyPlacementType != FamilyPlacementType.CurveBased && aFamilyPlacementType != FamilyPlacementType.CurveBasedDetail && aFamilyPlacementType != FamilyPlacementType.CurveDrivenStructural && aFamilyPlacementType != FamilyPlacementType.TwoLevelsBased)
             {
                 Compute.InvalidFamilyPlacementTypeWarning(framingElement, aFamilySymbol);
                 return null;
@@ -190,7 +190,7 @@ namespace BH.UI.Revit.Engine
             }
 
             FamilyPlacementType aFamilyPlacementType = aFamilySymbol.Family.FamilyPlacementType;
-            if (aFamilyPlacementType != FamilyPlacementType.CurveBased && aFamilyPlacementType != FamilyPlacementType.CurveBasedDetail && aFamilyPlacementType != FamilyPlacementType.CurveDrivenStructural)
+            if (aFamilyPlacementType != FamilyPlacementType.CurveBased && aFamilyPlacementType != FamilyPlacementType.CurveBasedDetail && aFamilyPlacementType != FamilyPlacementType.CurveDrivenStructural && aFamilyPlacementType != FamilyPlacementType.TwoLevelsBased)
             {
                 Compute.InvalidFamilyPlacementTypeWarning(framingElement, aFamilySymbol);
                 return null;
