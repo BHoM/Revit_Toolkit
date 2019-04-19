@@ -69,7 +69,7 @@ namespace BH.UI.Revit.Engine
                 {
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Windows:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Doors:
-                        aResult.Add(typeof(BuildingElement));
+                        aResult.Add(typeof(oM.Environment.Elements.Panel));
                         return aResult;
                 }
             }
@@ -81,34 +81,29 @@ namespace BH.UI.Revit.Engine
                 {
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Windows:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Doors:
-                        aResult.Add(typeof(ElementProperties));
                         return aResult;
                 }
             }
 
             if (element is CeilingType)
             {
-                aResult.Add(typeof(ElementProperties));
                 return aResult;
             }
 
             if (element is WallType)
             {
-                aResult.Add(typeof(ElementProperties));
                 aResult.Add(typeof(ISurfaceProperty));
                 return aResult;
             }
 
             if (element is FloorType)
             {
-                aResult.Add(typeof(ElementProperties));
                 aResult.Add(typeof(ISurfaceProperty));
                 return aResult;
             }
 
             if (element is RoofType)
             {
-                aResult.Add(typeof(ElementProperties));
                 aResult.Add(typeof(ISurfaceProperty));
                 return aResult;
             }
@@ -124,27 +119,27 @@ namespace BH.UI.Revit.Engine
 
             if (element is Wall)
             {
-                aResult.Add(typeof(BuildingElement));
+                aResult.Add(typeof(oM.Environment.Elements.Panel));
                 aResult.Add(typeof(PanelPlanar));
                 return aResult;
             }
 
             if (element is Ceiling)
             {
-                aResult.Add(typeof(BuildingElement));
+                aResult.Add(typeof(oM.Environment.Elements.Panel));
                 return aResult;
             }
 
 
             if (BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(element.GetType(), typeof(RoofBase)))
             {
-                aResult.Add(typeof(BuildingElement));
+                aResult.Add(typeof(oM.Environment.Elements.Panel));
                 return aResult;
             }
 
             if (element is Floor)
             {
-                aResult.Add(typeof(BuildingElement));
+                aResult.Add(typeof(oM.Environment.Elements.Panel));
                 aResult.Add(typeof(PanelPlanar));
                 return aResult;
             }

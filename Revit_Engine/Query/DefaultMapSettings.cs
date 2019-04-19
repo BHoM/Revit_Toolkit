@@ -43,33 +43,33 @@ namespace BH.Engine.Adapters.Revit
 
             TypeMap aTypeMap = null;
 
-            aTypeMap = Create.TypeMap(typeof(BuildingElementContextProperties));
+            aTypeMap = Create.TypeMap(typeof(PanelContextFragment));
             aTypeMap = aTypeMap.AddMap("IsAir", new string[] { "IsAir", "BHE_IsAir", "SAM_BuildingElementAir" });
             aTypeMap = aTypeMap.AddMap("Colour", new string[] { "Colour", "BHE_Colour", "SAM_BuildingElementColour" });
             aTypeMap = aTypeMap.AddMap("IsGround", "SAM_BuildingElementGround");
             aTypeMapList.Add(aTypeMap);
 
-            aTypeMap = Create.TypeMap(typeof(EnvironmentContextProperties));
+            aTypeMap = Create.TypeMap(typeof(OriginContextFragment));
             aTypeMap = aTypeMap.AddMap("Description", "SAM_BuildingElementDescription");
             aTypeMapList.Add(aTypeMap);
 
-            aTypeMap = Create.TypeMap(typeof(BuildingElementAnalyticalProperties));
+            aTypeMap = Create.TypeMap(typeof(PanelAnalyticalFragment));
             aTypeMap = aTypeMap.AddMap("UValue", "SAM_UValue");
             aTypeMap = aTypeMap.AddMap("GValue", "SAM_gValue");
             aTypeMap = aTypeMap.AddMap("LTValue", "SAM_LtValue");
             aTypeMapList.Add(aTypeMap);
 
-            aTypeMap = Create.TypeMap(typeof(BuildingAnalyticalProperties));
+            aTypeMap = Create.TypeMap(typeof(BuildingAnalyticalFragment));
             aTypeMap = aTypeMap.AddMap("NorthAngle", "SAM_NorthAngle");
             aTypeMapList.Add(aTypeMap);
 
-            aTypeMap = Create.TypeMap(typeof(SpaceContextProperties));
+            aTypeMap = Create.TypeMap(typeof(SpaceContextFragment));
             aTypeMap = aTypeMap.AddMap("IsExternal", "SAM_ExternalZone");
             aTypeMapList.Add(aTypeMap);
 
-            aTypeMap = Create.TypeMap(typeof(ElementProperties));
+            /*aTypeMap = Create.TypeMap(typeof(ElementProperties));
             aTypeMap = aTypeMap.AddMap("BuildingElementType", "SAM_BuildingElementType");
-            aTypeMapList.Add(aTypeMap);
+            aTypeMapList.Add(aTypeMap);*/
 
             aTypeMap = Create.TypeMap(typeof(CircleProfile));
             aTypeMap = aTypeMap.AddMap("Diameter", new string[] { "BHE_Diameter", "Diameter", "d", "D", "OD" });

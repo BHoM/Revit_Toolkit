@@ -36,7 +36,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public List<BuildingElement> HostedBuildingElements(HostObject hostObject, Face face, PullSettings pullSettings = null)
+        static public List<oM.Environment.Elements.Panel> HostedBuildingElements(HostObject hostObject, Face face, PullSettings pullSettings = null)
         {
             if (hostObject == null)
                 return null;
@@ -47,7 +47,7 @@ namespace BH.UI.Revit.Engine
 
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BuildingElement> aBuildingElmementList = new List<BuildingElement>();
+            List<oM.Environment.Elements.Panel> aPanelList = new List<oM.Environment.Elements.Panel>();
             foreach (ElementId aElementId in aElementIdList)
             {
                 Element aElement_Hosted = hostObject.Document.GetElement(aElementId);
@@ -89,13 +89,12 @@ namespace BH.UI.Revit.Engine
                     aPointList.Add(aXYZ_V.ToBHoM(pullSettings));
                     aPointList.Add(aXYZ_Max.ToBHoM(pullSettings));
 
-                    BuildingElement aBuildingElement = Convert.ToBHoMBuildingElement(aElement_Hosted, BH.Engine.Geometry.Create.Polyline(aPointList), pullSettings);
-                    if (aBuildingElement != null)
-                        aBuildingElmementList.Add(aBuildingElement);
-
+                    oM.Environment.Elements.Panel aPanel = Convert.ToBHoMEnvironmentPanel(aElement_Hosted, BH.Engine.Geometry.Create.Polyline(aPointList), pullSettings);
+                    if (aPanel != null)
+                        aPanelList.Add(aPanel);
                 }
             }
-            return aBuildingElmementList;
+            return aPanelList;
         }
 
         /***************************************************/

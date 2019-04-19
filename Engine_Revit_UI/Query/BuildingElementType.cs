@@ -30,25 +30,16 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
-        public static BuildingElementType? BuildingElementType(this BuiltInCategory builtInCategory)
+        public static oM.Environment.Elements.OpeningType? OpeningType(this BuiltInCategory builtInCategory)
         {
             switch (builtInCategory)
             {
-                case Autodesk.Revit.DB.BuiltInCategory.OST_Ceilings:
-                    return oM.Environment.Elements.BuildingElementType.Ceiling;
-                case Autodesk.Revit.DB.BuiltInCategory.OST_Floors:
-                    return oM.Environment.Elements.BuildingElementType.Floor;
-                case Autodesk.Revit.DB.BuiltInCategory.OST_Roofs:
-                    return oM.Environment.Elements.BuildingElementType.Roof;
-                case Autodesk.Revit.DB.BuiltInCategory.OST_Walls:
-                    return oM.Environment.Elements.BuildingElementType.Wall;
                 case Autodesk.Revit.DB.BuiltInCategory.OST_Windows:
-                    return oM.Environment.Elements.BuildingElementType.Window;
+                    return oM.Environment.Elements.OpeningType.Window;
                 case Autodesk.Revit.DB.BuiltInCategory.OST_Doors:
-                    return oM.Environment.Elements.BuildingElementType.Door;
+                    return oM.Environment.Elements.OpeningType.Door;
                 case Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels:
-                    return oM.Environment.Elements.BuildingElementType.Window;
+                    return oM.Environment.Elements.OpeningType.Window;
             }
 
             return null;
@@ -56,12 +47,41 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static BuildingElementType? BuildingElementType(this Category Category)
+        public static oM.Environment.Elements.OpeningType? OpeningType(this Category Category)
         {
             if (Category == null)
                 return null;
 
-            return BuildingElementType((BuiltInCategory)Category.Id.IntegerValue);
+            return OpeningType((BuiltInCategory)Category.Id.IntegerValue);
+        }
+
+        /***************************************************/
+
+        public static oM.Environment.Elements.PanelType? PanelType(this BuiltInCategory builtInCategory)
+        {
+            switch (builtInCategory)
+            {
+                case Autodesk.Revit.DB.BuiltInCategory.OST_Ceilings:
+                    return oM.Environment.Elements.PanelType.Ceiling;
+                case Autodesk.Revit.DB.BuiltInCategory.OST_Floors:
+                    return oM.Environment.Elements.PanelType.Floor;
+                case Autodesk.Revit.DB.BuiltInCategory.OST_Roofs:
+                    return oM.Environment.Elements.PanelType.Roof;
+                case Autodesk.Revit.DB.BuiltInCategory.OST_Walls:
+                    return oM.Environment.Elements.PanelType.Wall;
+            }
+
+            return null;
+        }
+
+        /***************************************************/
+
+        public static oM.Environment.Elements.PanelType? PanelType(this Category Category)
+        {
+            if (Category == null)
+                return null;
+
+            return PanelType((BuiltInCategory)Category.Id.IntegerValue);
         }
 
         /***************************************************/

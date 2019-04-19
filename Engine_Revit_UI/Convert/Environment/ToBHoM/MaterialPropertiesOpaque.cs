@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Environment.Properties;
+using BH.oM.Environment.Materials;
 
 namespace BH.UI.Revit.Engine
 {
@@ -33,15 +33,15 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static MaterialPropertiesOpaque ToBHoMMaterialPropertiesOpaque(this Material material, PullSettings pullSettings = null)
+        internal static SolidMaterial ToBHoMMaterialPropertiesOpaque(this Material material, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            MaterialPropertiesOpaque aResult = pullSettings.FindRefObject<MaterialPropertiesOpaque>(material.Id.IntegerValue);
+            SolidMaterial aResult = pullSettings.FindRefObject<SolidMaterial>(material.Id.IntegerValue);
             if (aResult != null)
                 return aResult;
 
-            aResult = new MaterialPropertiesOpaque();
+            aResult = new SolidMaterial();
             aResult.Name = material.Name;
             Parameter aParameter = material.get_Parameter(BuiltInParameter.ALL_MODEL_DESCRIPTION);
             if (aParameter != null)
@@ -49,12 +49,12 @@ namespace BH.UI.Revit.Engine
 
             Update(aResult, material, pullSettings);
 
-            aResult = aResult.UpdateValues(pullSettings, material) as MaterialPropertiesOpaque;
+            aResult = aResult.UpdateValues(pullSettings, material) as SolidMaterial;
 
             //Set custom data
-            aResult = Modify.SetIdentifiers(aResult, material) as MaterialPropertiesOpaque;
+            aResult = Modify.SetIdentifiers(aResult, material) as SolidMaterial;
             if (pullSettings.CopyCustomData)
-                aResult = Modify.SetCustomData(aResult, material, pullSettings.ConvertUnits) as MaterialPropertiesOpaque;
+                aResult = Modify.SetCustomData(aResult, material, pullSettings.ConvertUnits) as SolidMaterial;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult);
             return aResult;
@@ -64,7 +64,7 @@ namespace BH.UI.Revit.Engine
         /****             Private methods               ****/
         /***************************************************/
 
-        private static void Update(this MaterialPropertiesOpaque materialPropertiesOpaque, Material material, PullSettings pullSettings = null)
+        private static void Update(this SolidMaterial materialPropertiesOpaque, Material material, PullSettings pullSettings = null)
         {
             if (material == null)
             {
@@ -87,23 +87,27 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static void Update(this MaterialPropertiesOpaque materialPropertiesOpaque, StructuralAsset structuralAsset, PullSettings pullSettings = null)
+        private static void Update(this SolidMaterial materialPropertiesOpaque, StructuralAsset structuralAsset, PullSettings pullSettings = null)
         {
 
         }
 
         /***************************************************/
 
-        private static void Update(this MaterialPropertiesOpaque materialPropertiesOpaque, ThermalAsset thermalAsset, PullSettings pullSettings = null)
+        private static void Update(this SolidMaterial materialPropertiesOpaque, ThermalAsset thermalAsset, PullSettings pullSettings = null)
         {
-            materialPropertiesOpaque.Density = thermalAsset.Density;
-            if (pullSettings.ConvertUnits)
-                materialPropertiesOpaque.Density = UnitUtils.ConvertFromInternalUnits(materialPropertiesOpaque.Density, DisplayUnitType.DUT_KILOGRAMS_PER_CUBIC_METER);
-
             materialPropertiesOpaque.Conductivity = thermalAsset.ThermalConductivity;
             materialPropertiesOpaque.SpecificHeat = thermalAsset.SpecificHeat;
         }
 
         /***************************************************/
+
+        private static void Update(this oM.Physical.Properties.Material material, ThermalAsset thermalAsset, PullSettings pullSettings = null)
+        {
+            //This isn't called anywhere at this time - but makes the toolkit compile. This will need to be called when the Revit Toolkit updates to use the Physical materials rather than discipline ones
+            material.Density = thermalAsset.Density;
+            if (pullSettings != null && pullSettings.ConvertUnits)
+                material.Density = UnitUtils.ConvertFromInternalUnits(material.Density, DisplayUnitType.DUT_KILOGRAMS_PER_CUBIC_METER);
+        }
     }
 }

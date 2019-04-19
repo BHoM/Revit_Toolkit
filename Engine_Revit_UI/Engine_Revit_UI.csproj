@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BH.UI.Revit.Engine</RootNamespace>
-    <AssemblyName>Engine_Revit_UI</AssemblyName>
+    <AssemblyName>cd</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -36,7 +36,7 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\Build\</OutputPath>
     <DefineConstants>TRACE;DEBUG;REVIT2018</DefineConstants>
-    <DocumentationFile>..\Build\Engine_Revit_UI.xml</DocumentationFile>
+    <DocumentationFile>..\Build\cd.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -47,7 +47,7 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\Build\</OutputPath>
     <DefineConstants>TRACE;DEBUG;REVIT2019</DefineConstants>
-    <DocumentationFile>..\Build\Engine_Revit_UI.xml</DocumentationFile>
+    <DocumentationFile>..\Build\cd.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -55,6 +55,10 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Analytical_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM\Build\Analytical_oM.dll</HintPath>
+    </Reference>
     <Reference Include="Architecture_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Architecture_Engine.dll</HintPath>
       <Private>False</Private>
@@ -99,6 +103,14 @@
     <Reference Include="Library_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Library_Engine.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Physical_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM_Engine\Build\Physical_Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Physical_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM\Build\Physical_oM.dll</HintPath>
     </Reference>
     <Reference Include="Reflection_Engine">
       <SpecificVersion>False</SpecificVersion>
@@ -184,9 +196,7 @@
     <Compile Include="Convert\Common\ToRevit\Viewport.cs" />
     <Compile Include="Convert\Common\ToRevit\ViewSheet.cs" />
     <Compile Include="Convert\Environment\ToBHoM\Building.cs" />
-    <Compile Include="Convert\Environment\ToBHoM\BuildingElement.cs" />
     <Compile Include="Convert\Environment\ToBHoM\Panel.cs" />
-    <Compile Include="Convert\Environment\ToBHoM\ElementProperties.cs" />
     <Compile Include="Convert\Environment\ToBHoM\Space.cs" />
     <Compile Include="Convert\Environment\ToRevit\CompoundStructureLayer.cs" />
     <Compile Include="Convert\Environment\ToRevit\Element.cs" />
@@ -224,6 +234,7 @@
     <Compile Include="Modify\UpdateValues.cs" />
     <Compile Include="Query\BoundingBox.cs" />
     <Compile Include="Query\IsValid.cs" />
+    <Compile Include="Query\UpdatePanelTypeByCustomData.cs" />
     <Compile Include="Query\ViewType.cs" />
     <Compile Include="Query\LookupDouble.cs" />
     <Compile Include="Query\Name.cs" />

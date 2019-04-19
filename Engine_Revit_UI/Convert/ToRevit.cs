@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Environment.Interface;
+using BHP = BH.oM.Physical.Properties;
 using BH.oM.Geometry;
 using BH.oM.Geometry.CoordinateSystem;
 using BH.oM.Environment.Elements;
@@ -76,7 +76,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this IMaterial material, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this BHP.Material material, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
@@ -112,20 +112,11 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this BuildingElement buildingElement, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Environment.Elements.Panel buildingElement, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
             return ToRevitElement(buildingElement, document, pushSettings);
-        }
-
-        /***************************************************/
-
-        public static Element ToRevit(this ElementProperties buildingElementProperties, Document document, PushSettings pushSettings = null)
-        {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitElementType(buildingElementProperties, document, pushSettings);
         }
 
         /***************************************************/
@@ -193,7 +184,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static CompoundStructureLayer ToRevit(this BH.oM.Environment.Elements.Construction constructionLayer, Document document, PushSettings pushSettings = null)
+        public static CompoundStructureLayer ToRevit(this BHP.Construction.Construction constructionLayer, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
@@ -202,7 +193,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static CompoundStructure ToRevit(this IEnumerable<BH.oM.Environment.Elements.Construction> constructionLayers, Document document, PushSettings pushSettings = null)
+        public static CompoundStructure ToRevit(this IEnumerable<BHP.Construction.Construction> constructionLayers, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 

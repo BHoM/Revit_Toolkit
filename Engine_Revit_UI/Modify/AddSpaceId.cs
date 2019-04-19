@@ -33,28 +33,28 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public static BuildingElement AddSpaceId(this BuildingElement buildingElement, EnergyAnalysisSurface energyAnalysisSurface)
+        public static oM.Environment.Elements.Panel AddSpaceId(this oM.Environment.Elements.Panel buildingElement, EnergyAnalysisSurface energyAnalysisSurface)
         {
             if (buildingElement == null)
                 return null;
 
-            BuildingElement aBuildingElement = buildingElement.GetShallowClone() as BuildingElement;
-            aBuildingElement.CustomData.Add(BH.Engine.Adapters.Revit.Convert.SpaceId, -1);
+            oM.Environment.Elements.Panel aPanel = buildingElement.GetShallowClone() as oM.Environment.Elements.Panel;
+            aPanel.CustomData.Add(BH.Engine.Adapters.Revit.Convert.SpaceId, -1);
 
             if (energyAnalysisSurface == null)
-                return aBuildingElement;
+                return aPanel;
 
             EnergyAnalysisSpace aEnergyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
             if (aEnergyAnalysisSpace == null)
-                return aBuildingElement;
+                return aPanel;
 
             SpatialElement aSpatialElement = Query.Element(aEnergyAnalysisSpace.Document, aEnergyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
             if (aSpatialElement == null)
-                return aBuildingElement;
+                return aPanel;
 
-            aBuildingElement.CustomData[BH.Engine.Adapters.Revit.Convert.SpaceId] = aSpatialElement.Id.IntegerValue;
+            aPanel.CustomData[BH.Engine.Adapters.Revit.Convert.SpaceId] = aSpatialElement.Id.IntegerValue;
 
-            return aBuildingElement;
+            return aPanel;
         }
 
         /***************************************************/

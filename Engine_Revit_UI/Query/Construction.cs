@@ -26,7 +26,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
 using Autodesk.Revit.DB.Analysis;
-using BH.oM.Environment.Properties;
+using BH.oM.Environment.Materials;
 
 namespace BH.UI.Revit.Engine
 {
@@ -36,12 +36,12 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public oM.Environment.Elements.Construction Construction(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null)
+        static public oM.Physical.Properties.Construction.Construction Construction(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null)
         {
             if (hostObjAttributes == null)
                 return null;
 
-            oM.Environment.Elements.Construction aConstruction = null;
+            oM.Physical.Properties.Construction.Construction aConstruction = null;
 
             CompoundStructure aCompoundStructure = hostObjAttributes.GetCompoundStructure();
             if (aCompoundStructure != null)
@@ -53,10 +53,10 @@ namespace BH.UI.Revit.Engine
 
                     pullSettings = pullSettings.DefaultIfNull();
 
-                    aConstruction = new oM.Environment.Elements.Construction();
+                    aConstruction = new oM.Physical.Properties.Construction.Construction();
                     aConstruction.Name = hostObjAttributes.EnergyAnalysisElementName();
                     foreach (CompoundStructureLayer aCompoundStructureLayer in aCompoundStructureLayers)
-                        aConstruction.Materials.Add(Query.Material(aCompoundStructureLayer, hostObjAttributes.Document, aBuiltInCategory, pullSettings));
+                        aConstruction.Layers.Add(Query.Material(aCompoundStructureLayer, hostObjAttributes.Document, aBuiltInCategory, pullSettings));
                 }
 
             }
@@ -69,7 +69,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public oM.Environment.Elements.Construction Construction(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
+        static public oM.Physical.Properties.Construction.Construction Construction(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
         {
             if (energyAnalysisOpening == null)
                 return null;
@@ -83,7 +83,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public oM.Environment.Elements.Construction Construction(string constructionName, string materialName)
+        static public oM.Physical.Properties.Construction.Construction Construction(string constructionName, string materialName)
         {
             if (string.IsNullOrEmpty(constructionName) || string.IsNullOrEmpty(materialName))
                 return null;
@@ -94,15 +94,20 @@ namespace BH.UI.Revit.Engine
             else
                 aMaterialName = "Default Material";
 
-            MaterialPropertiesTransparent aMaterialPropertiesTransparent = new MaterialPropertiesTransparent();
+            SolidMaterial aMaterialPropertiesTransparent = new SolidMaterial();
             aMaterialPropertiesTransparent.Name = aMaterialName;
+            aMaterialPropertiesTransparent.Transparency = 1; //This is what defines a solid material to be transparent - the percentage (0-1) of transparency in the material
 
-            oM.Environment.Materials.Material aMaterial = new oM.Environment.Materials.Material();
-            aMaterial.MaterialProperties = aMaterialPropertiesTransparent;
+            oM.Physical.Properties.Material aMaterial = new oM.Physical.Properties.Material();
+            aMaterial.Properties.Add(aMaterialPropertiesTransparent);
 
-            oM.Environment.Elements.Construction aConstruction = new oM.Environment.Elements.Construction();
+            oM.Physical.Properties.Construction.Construction aConstruction = new oM.Physical.Properties.Construction.Construction();
             aConstruction.Name = constructionName;
-            aConstruction.Materials.Add(aMaterial);
+
+            oM.Physical.Properties.Construction.Layer aLayer = new oM.Physical.Properties.Construction.Layer();
+            aLayer.Material = aMaterial;
+
+            aConstruction.Layers.Add(aLayer);
 
             return aConstruction;
         }

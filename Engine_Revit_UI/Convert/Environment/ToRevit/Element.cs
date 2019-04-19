@@ -38,7 +38,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static Element ToRevitElement(this BuildingElement buildingElement, Document document, PushSettings pushSettings = null)
+        internal static Element ToRevitElement(this oM.Environment.Elements.Panel buildingElement, Document document, PushSettings pushSettings = null)
         {
             throw new System.NotImplementedException("The method to convert a BHoM Building Element into a Revit Element has not been fixed yet. Check Issue #247 for more info");
             /*if (buildingElement == null || buildingElement.BuildingElementProperties == null || document == null)

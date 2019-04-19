@@ -27,8 +27,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Environment.Properties;
-using BH.oM.Environment.Interface;
+using BH.oM.Environment.Materials;
 
 namespace BH.UI.Revit.Engine
 {
@@ -38,20 +37,21 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public oM.Environment.Materials.Material Material(this CompoundStructureLayer compoundStructureLayer, Document document, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
+        static public oM.Physical.Properties.Construction.Layer Material(this CompoundStructureLayer compoundStructureLayer, Document document, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
         {
             if (compoundStructureLayer == null)
                 return null;
 
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Environment.Materials.Material aMaterial = new oM.Environment.Materials.Material();
+            oM.Physical.Properties.Construction.Layer aLayer = new oM.Physical.Properties.Construction.Layer();
+            oM.Physical.Properties.Material aMaterial = new oM.Physical.Properties.Material();
 
             double aThickness = compoundStructureLayer.Width;
             if (pullSettings.ConvertUnits)
                 aThickness = UnitUtils.ConvertFromInternalUnits(aThickness, DisplayUnitType.DUT_METERS);
 
-            aMaterial.Thickness = aThickness;
+            aLayer.Thickness = aThickness;
 
             ElementId aElementId = compoundStructureLayer.MaterialId;
             Material aMaterial_Revit = null;
@@ -68,10 +68,10 @@ namespace BH.UI.Revit.Engine
             if (aMaterial_Revit == null)
             {
                 Compute.MaterialNotFoundWarning(aMaterial);
-                return aMaterial;
+                return aLayer;
             } 
 
-            switch(aMaterial_Revit.MaterialClass)
+            /*switch(aMaterial_Revit.MaterialClass)
             {
                 case "Aluminium":
                     aMaterial.MaterialType = oM.Environment.Elements.MaterialType.Opaque;
@@ -88,15 +88,16 @@ namespace BH.UI.Revit.Engine
                 case "Wood":
                     aMaterial.MaterialType = oM.Environment.Elements.MaterialType.Opaque;
                     break;
-            }
+            }*/
 
             aMaterial.Name = aMaterial_Revit.Name;
 
-            IMaterialProperties aMaterialProperties = Convert.ToBHoM(aMaterial_Revit, pullSettings) as IMaterialProperties;
+            IEnvironmentMaterial aMaterialProperties = Convert.ToBHoM(aMaterial_Revit, pullSettings) as IEnvironmentMaterial;
 
-            aMaterial.MaterialProperties = aMaterialProperties;
+            aMaterial.Properties.Add(aMaterialProperties);
 
-            return aMaterial;
+            aLayer.Material = aMaterial;
+            return aLayer;
         }
 
         /***************************************************/

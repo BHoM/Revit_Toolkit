@@ -32,27 +32,35 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public static Type RevitType(BuildingElementType buildingElementType)
+        public static Type RevitType(oM.Environment.Elements.PanelType panelType)
         {
-            switch (buildingElementType)
+            switch (panelType)
             {
-                case oM.Environment.Elements.BuildingElementType.Ceiling:
+                case oM.Environment.Elements.PanelType.Ceiling:
                     return typeof(CeilingType);
-                case oM.Environment.Elements.BuildingElementType.Floor:
+                case oM.Environment.Elements.PanelType.Floor:
                     return typeof(FloorType);
-                case oM.Environment.Elements.BuildingElementType.Roof:
+                case oM.Environment.Elements.PanelType.Roof:
                     return typeof(RoofType);
-                case oM.Environment.Elements.BuildingElementType.Wall:
+                case oM.Environment.Elements.PanelType.Wall:
                     return typeof(WallType);
-                case oM.Environment.Elements.BuildingElementType.Door:
-                    return typeof(FamilyInstance);
-                case oM.Environment.Elements.BuildingElementType.Window:
-                    return typeof(FamilyInstance);
             }
 
             return null;
         }
 
         /***************************************************/
+
+        public static Type RevitType(oM.Environment.Elements.OpeningType openingType)
+        {
+            switch(openingType)
+            {
+                case oM.Environment.Elements.OpeningType.Door:
+                case oM.Environment.Elements.OpeningType.Window:
+                    return typeof(FamilyInstance);
+            }
+
+            return null;
+        }
     }
 }

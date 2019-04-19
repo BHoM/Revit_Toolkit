@@ -34,24 +34,24 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Cheks whatever Building Element is shade element. Works only for Building Elements pulled from analytical model and adjacency have been assigned.")]
-        [Input("buildingElement", "BuildingElement pulled from Revit analytical model")]
+        [Input("environmentPanel", "BuildingElement pulled from Revit analytical model")]
         [Output("IsShade")]
-        public static bool IsShade(this BuildingElement buildingElement)
+        public static bool IsShade(this Panel environmentPanel)
         {
-            if (buildingElement == null)
+            if (environmentPanel == null)
                 return false;
 
-            if (buildingElement.CustomData == null)
+            if (environmentPanel.CustomData == null)
                 return false;
 
-            if (!buildingElement.CustomData.ContainsKey(Convert.SpaceId))
+            if (!environmentPanel.CustomData.ContainsKey(Convert.SpaceId))
                 return false;
 
-            if (!buildingElement.CustomData.ContainsKey(Convert.AdjacentSpaceId))
+            if (!environmentPanel.CustomData.ContainsKey(Convert.AdjacentSpaceId))
                 return false;
 
-            int aSpaceId = buildingElement.SpaceId();
-            int aAdjacentSpaceId = buildingElement.AdjacentSpaceId();
+            int aSpaceId = environmentPanel.SpaceId();
+            int aAdjacentSpaceId = environmentPanel.AdjacentSpaceId();
 
             return aSpaceId == -1 && aAdjacentSpaceId == -1;
         }

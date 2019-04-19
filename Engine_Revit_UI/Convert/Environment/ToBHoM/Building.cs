@@ -92,24 +92,24 @@ namespace BH.UI.Revit.Engine
                     }
                 }
 
-                aBuilding = Create.Building(aElevation, aLatitude, aLongitude, new oM.Geometry.Point());
+                aBuilding = Create.Building(elevation: aElevation, latitude: aLatitude, longitude: aLongitude);
 
                 //Set ExtendedProperties
-                EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
-                aEnvironmentContextProperties.ElementID = projectInfo.Id.IntegerValue.ToString();
-                aEnvironmentContextProperties.Description = projectInfo.OrganizationDescription;
-                aEnvironmentContextProperties.TypeName = projectInfo.Name;
-                aBuilding.AddExtendedProperty(aEnvironmentContextProperties);
+                OriginContextFragment aOriginContextFragment = new OriginContextFragment();
+                aOriginContextFragment.ElementID = projectInfo.Id.IntegerValue.ToString();
+                aOriginContextFragment.Description = projectInfo.OrganizationDescription;
+                aOriginContextFragment.TypeName = projectInfo.Name;
+                aBuilding.AddFragment(aOriginContextFragment);
 
-                BuildingAnalyticalProperties aBuildingAnalyticalProperties = new BuildingAnalyticalProperties();
-                aBuildingAnalyticalProperties.GMTOffset = aTimeZone;
-                aBuildingAnalyticalProperties.NorthAngle = aProjectAngle;
-                aBuilding.AddExtendedProperty(aEnvironmentContextProperties);
+                BuildingAnalyticalFragment aBuildingAnalyticalFragment = new BuildingAnalyticalFragment();
+                aBuildingAnalyticalFragment.GMTOffset = aTimeZone;
+                aBuildingAnalyticalFragment.NorthAngle = aProjectAngle;
+                aBuilding.AddFragment(aOriginContextFragment);
 
-                BuildingContextProperties aBuildingContextProperties = new BuildingContextProperties();
-                aBuildingContextProperties.PlaceName = aPlaceName;
-                aBuildingContextProperties.WeatherStation = aWeatherStationName;
-                aBuilding.AddExtendedProperty(aEnvironmentContextProperties);
+                BuildingContextFragment aBuildingContextFragment = new BuildingContextFragment();
+                aBuildingContextFragment.PlaceName = aPlaceName;
+                aBuildingContextFragment.WeatherStation = aWeatherStationName;
+                aBuilding.AddFragment(aOriginContextFragment);
 
                 aBuilding = Modify.SetIdentifiers(aBuilding, aDocument.ProjectInformation) as Building;
                 if (pullSettings.CopyCustomData)
