@@ -98,7 +98,7 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Structural:
                     return familyInstance.ToBHoMFramingElement(pullSettings);
                 case Discipline.Environmental:
-                    return familyInstance.ToBHoMBuildingElement(pullSettings);
+                    return familyInstance.ToBHoMEnvironmentPanel(pullSettings);
             }
 
             familyInstance.NotConvertedWarning();
@@ -117,7 +117,7 @@ namespace BH.UI.Revit.Engine
             {
                 case Discipline.Environmental:
                     if (wall.StackedWallOwnerId == null || wall.StackedWallOwnerId == ElementId.InvalidElementId)
-                        return wall.ToBHoMBuildingElements(pullSettings).ConvertAll(x => x as IBHoMObject);
+                        return wall.ToBHoMEnvironmentPanels(pullSettings).ConvertAll(x => x as IBHoMObject);
                     else
                         return new List<IBHoMObject>();
                 case Discipline.Structural:
@@ -139,7 +139,7 @@ namespace BH.UI.Revit.Engine
             switch (pullSettings.Discipline)
             {
                 case Discipline.Environmental:
-                    return ceiling.ToBHoMBuildingElements(pullSettings).ConvertAll(x => x as IBHoMObject);
+                    return ceiling.ToBHoMEnvironmentPanels(pullSettings).ConvertAll(x => x as IBHoMObject);
             }
 
             ceiling.NotConvertedWarning();
@@ -157,7 +157,7 @@ namespace BH.UI.Revit.Engine
             switch(pullSettings.Discipline)
             {
                 case Discipline.Environmental:
-                    return floor.ToBHoMBuildingElements(pullSettings).ConvertAll(x => x as IBHoMObject);
+                    return floor.ToBHoMEnvironmentPanels(pullSettings).ConvertAll(x => x as IBHoMObject);
                 case Discipline.Structural:
                     return floor.ToBHoMPanelPlanar(pullSettings).ConvertAll(p => p as IBHoMObject);
             }
@@ -177,7 +177,7 @@ namespace BH.UI.Revit.Engine
             switch (pullSettings.Discipline)
             {
                 case Discipline.Environmental:
-                    return roofBase.ToBHoMBuildingElements(pullSettings).ConvertAll(x => x as IBHoMObject);
+                    return roofBase.ToBHoMEnvironmentPanels(pullSettings).ConvertAll(x => x as IBHoMObject);
             }
 
             roofBase.NotConvertedWarning();
@@ -387,7 +387,7 @@ namespace BH.UI.Revit.Engine
             switch (pullSettings.Discipline)
             {
                 case Discipline.Environmental:
-                    return energyAnalysisSurface.ToBHoMBuildingElement(pullSettings);
+                    return energyAnalysisSurface.ToBHoMEnvironmentPanel(pullSettings);
             }
 
             energyAnalysisSurface.NotConvertedWarning();
@@ -405,7 +405,7 @@ namespace BH.UI.Revit.Engine
             switch (pullSettings.Discipline)
             {
                 case Discipline.Environmental:
-                    return energyAnalysisOpening.ToBHoMBuildingElement(null, pullSettings);
+                    return energyAnalysisOpening.ToBHoMEnvironmentPanel(null, pullSettings);
             }
 
             energyAnalysisOpening.NotConvertedWarning();

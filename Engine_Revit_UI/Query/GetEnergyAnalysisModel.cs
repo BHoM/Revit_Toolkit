@@ -136,7 +136,7 @@ namespace BH.UI.Revit.Engine
                 {
                     try
                     {
-                        BuildingElement aBuildingElement = aKeyValuePair.Value.ToBHoMBuildingElement(pullSettings);
+                        oM.Environment.Elements.Panel aPanel = aKeyValuePair.Value.ToBHoMEnvironmentPanel(pullSettings);
 
                         List<IBHoMObject> aBHoMObjectList_Hosted = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aKeyValuePair.Value.GetAnalyticalOpenings())
@@ -144,7 +144,7 @@ namespace BH.UI.Revit.Engine
                             //BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(aKeyValuePair.Value, pullSettings);
 
                             oM.Environment.Elements.Opening aOpening = aEnergyAnalysisOpening.ToBHoMOpening(pullSettings);
-                            aBuildingElement.Openings.Add(aOpening);
+                            aPanel.Openings.Add(aOpening);
                         }
                     }
                     catch (Exception aException)
@@ -159,7 +159,7 @@ namespace BH.UI.Revit.Engine
                 {
                     try
                     {
-                        BuildingElement aBuildingElement = aEnergyAnalysisSurface.ToBHoMBuildingElement(pullSettings);
+                        oM.Environment.Elements.Panel aBuildingElement = aEnergyAnalysisSurface.ToBHoMEnvironmentPanel(pullSettings);
 
                         List<IBHoMObject> aBHoMObjectList_Hosted = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aEnergyAnalysisSurface.GetAnalyticalOpenings())

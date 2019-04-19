@@ -74,7 +74,7 @@ namespace BH.UI.Revit.Engine
 
             foreach (PolyCurve aPolyCurve in aPolyCurveList)
             {
-                oM.Environment.Elements.Panel aPanel = Create.Panel(aPolyCurve);
+                oM.Environment.Elements.Panel aPanel = Create.Panel(externalEdges: aPolyCurve.ToEdges());
                 aResult.Add(aPanel);
             }
 

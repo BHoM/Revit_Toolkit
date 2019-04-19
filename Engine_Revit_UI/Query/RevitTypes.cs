@@ -47,7 +47,7 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             List<System.Type> aResult = new List<System.Type>();
-            if (type == typeof(BuildingElement))
+            if (type == typeof(oM.Environment.Elements.Panel))
             {
                 aResult.Add(typeof(Floor));
                 aResult.Add(typeof(Wall));

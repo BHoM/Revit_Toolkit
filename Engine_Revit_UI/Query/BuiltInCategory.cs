@@ -39,23 +39,36 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static BuiltInCategory BuiltInCategory(this BuildingElementType buildingElementType)
+        public static BuiltInCategory BuiltInCategory(this oM.Environment.Elements.PanelType panelType)
         {
-            switch (buildingElementType)
+            switch (panelType)
             {
-                case (oM.Environment.Elements.BuildingElementType.Ceiling):
+                case (oM.Environment.Elements.PanelType.Ceiling):
                     return Autodesk.Revit.DB.BuiltInCategory.OST_Ceilings;
-                case (oM.Environment.Elements.BuildingElementType.Door):
-                    return Autodesk.Revit.DB.BuiltInCategory.OST_Doors;
-                case (oM.Environment.Elements.BuildingElementType.Floor):
+                case (oM.Environment.Elements.PanelType.Floor):
                     return Autodesk.Revit.DB.BuiltInCategory.OST_Floors;
-                case (oM.Environment.Elements.BuildingElementType.Roof):
+                case (oM.Environment.Elements.PanelType.Roof):
                     return Autodesk.Revit.DB.BuiltInCategory.OST_Roofs;
-                case (oM.Environment.Elements.BuildingElementType.Wall):
+                case (oM.Environment.Elements.PanelType.Wall):
                     return Autodesk.Revit.DB.BuiltInCategory.OST_Walls;
-                case (oM.Environment.Elements.BuildingElementType.Window):
+                case (oM.Environment.Elements.PanelType.Undefined):
+                    return Autodesk.Revit.DB.BuiltInCategory.INVALID;
+                default:
+                    return Autodesk.Revit.DB.BuiltInCategory.INVALID;
+            }
+        }
+
+        /***************************************************/
+
+        public static BuiltInCategory BuiltInCategory(this oM.Environment.Elements.OpeningType openingType)
+        {
+            switch (openingType)
+            {
+                case (oM.Environment.Elements.OpeningType.Door):
+                    return Autodesk.Revit.DB.BuiltInCategory.OST_Doors;
+                case (oM.Environment.Elements.OpeningType.Window):
                     return Autodesk.Revit.DB.BuiltInCategory.OST_Windows;
-                case (oM.Environment.Elements.BuildingElementType.Undefined):
+                case (oM.Environment.Elements.OpeningType.Undefined):
                     return Autodesk.Revit.DB.BuiltInCategory.INVALID;
                 default:
                     return Autodesk.Revit.DB.BuiltInCategory.INVALID;

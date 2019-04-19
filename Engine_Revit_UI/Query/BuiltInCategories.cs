@@ -61,7 +61,7 @@ namespace BH.UI.Revit.Engine
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener);
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther);
             }
-            if (type == typeof(BuildingElement))
+            if (type == typeof(oM.Environment.Elements.Panel))
             {
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Doors);
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Windows);

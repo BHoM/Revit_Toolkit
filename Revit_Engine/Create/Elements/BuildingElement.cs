@@ -43,8 +43,8 @@ namespace BH.Engine.Adapters.Revit
         [Input("curve", "Bottom curve describing shape of wall BuilidngElement")]
         [Input("height", "Height of wall BuilidngElement")]
         [Input("familyTypeName", "Revit Family Type Name for wall BuilidngElement")]
-        [Output("BuildingElement")]
-        public static BuildingElement BuildingElement(ICurve curve, double height, string familyTypeName)
+        [Output("Environment Panel")]
+        public static Panel BuildingElement(ICurve curve, double height, string familyTypeName)
         {
             if (curve == null || string.IsNullOrEmpty(familyTypeName) || height <= 0)
                 return null;
@@ -62,28 +62,26 @@ namespace BH.Engine.Adapters.Revit
 
             PolyCurve aPolyCurve = Geometry.Create.PolyCurve(new ICurve[] { curve, Geometry.Create.Line(aPoint_Min_1, aPoint_Max_1) , aCurve, Geometry.Create.Line(aPoint_Max_2, aPoint_Min_2) });
 
-            ElementProperties aBuildingElementProperties = Environment.Create.ElementProperties(BuildingElementType.Wall);
+            OriginContextFragment aOriginContextProperties = new OriginContextFragment();
+            aOriginContextProperties.Origin = Convert.AdapterId;
+            aOriginContextProperties.TypeName = familyTypeName;
 
-            EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
-            aEnvironmentContextProperties.TypeName = familyTypeName;
+            Panel aPanel = Environment.Create.Panel(type: PanelType.Wall, externalEdges: aPolyCurve.ToEdges());
+            aPanel.Name = familyTypeName;
+            aPanel.CustomData.Add(Convert.CategoryName, "Walls");
 
-            BuildingElement aBuildingElement = Environment.Create.BuildingElement(aBuildingElementProperties, aPolyCurve);
-            aBuildingElement.Name = familyTypeName;
-            aBuildingElement.CustomData.Add(Convert.CategoryName, "Walls");
+            aPanel.AddFragment(aOriginContextProperties);
 
-            aBuildingElement.AddExtendedProperty(aEnvironmentContextProperties);
-            aBuildingElement.AddExtendedProperty(aBuildingElementProperties);
-
-            return aBuildingElement;
+            return aPanel;
         }
 
         /***************************************************/
 
-        [Description("Creates BuildingElement by given PolyCurve and Revit Family Type Name")]
+        /*[Description("Creates BuildingElement by given PolyCurve and Revit Family Type Name")]
         [Input("polyCurve", "Polycurve describing profile of BuilidngElement")]
         [Input("familyTypeName", "Revit Family Type Name for wall BuilidngElement")]
         [Output("BuildingElement")]
-        public static BuildingElement BuildingElement(PolyCurve polyCurve, string familyTypeName)
+        public static Panel Panel(PolyCurve polyCurve, string familyTypeName)
         {
             if (polyCurve == null || string.IsNullOrEmpty(familyTypeName))
                 return null;
@@ -92,41 +90,38 @@ namespace BH.Engine.Adapters.Revit
             aBuildingElement.Name = familyTypeName;
 
             return aBuildingElement;
-        }
+        }*/
 
         /***************************************************/
 
-        [Description("Creates BuildingElement by given PolyCurve, BuildingElementType and Revit Family Type Name")]
+        /*[Description("Creates BuildingElement by given PolyCurve, BuildingElementType and Revit Family Type Name")]
         [Input("polyCurve", "Polycurve describing profile of BuilidngElement")]
         [Input("buildingElementType", "BuilidngElementType")]
         [Input("familyTypeName", "Revit Family Type Name for wall BuilidngElement")]
-        [Output("BuildingElement")]
-        public static BuildingElement BuildingElement(PolyCurve polyCurve, BuildingElementType buildingElementType, string familyTypeName)
+        [Output("Environment Panel")]
+        public static Panel BuildingElement(PolyCurve polyCurve, PanelType buildingElementType, string familyTypeName)
         {
             if (polyCurve == null || string.IsNullOrEmpty(familyTypeName))
                 return null;
 
-            ElementProperties aBuildingElementProperties = Environment.Create.ElementProperties(buildingElementType);
+            OriginContextFragment aOriginContextFragment = new OriginContextFragment();
+            aOriginContextFragment.TypeName = familyTypeName;
 
-            EnvironmentContextProperties aEnvironmentContextProperties = new EnvironmentContextProperties();
-            aEnvironmentContextProperties.TypeName = familyTypeName;
-
-            BuildingElement aBuildingElement = Environment.Create.BuildingElement(aBuildingElementProperties, polyCurve);
+            Panel aBuildingElement = Environment.Create.Panel(type: buildingElementType, externalEdges: polyCurve.ToEdges());
             aBuildingElement.Name = familyTypeName;
 
-            aBuildingElement.AddExtendedProperty(aEnvironmentContextProperties);
-            aBuildingElement.AddExtendedProperty(aBuildingElementProperties);
+            aBuildingElement.AddFragment(aOriginContextFragment);
 
             return aBuildingElement;
-        }
+        }*/
 
         /***************************************************/
 
-        [Description("Creates BuildingElement by given profile points and Revit Family Type Name")]
+        [Description("Creates Environment Panel by given profile points and Revit Family Type Name")]
         [Input("points", "points describing profile of BuilidngElement")]
         [Input("familyTypeName", "Revit Family Type Name for wall BuilidngElement")]
-        [Output("BuildingElement")]
-        public static BuildingElement BuildingElement(IEnumerable<Point> points, string familyTypeName)
+        [Output("Environment Panel")]
+        public static Panel Panel(IEnumerable<Point> points, string familyTypeName)
         {
             if (points == null || string.IsNullOrEmpty(familyTypeName) || points.Count() < 3)
                 return null;
@@ -144,7 +139,7 @@ namespace BH.Engine.Adapters.Revit
             }
                 
 
-            return BuildingElement(aPolyCurve, familyTypeName);
+            return Environment.Create.Panel(externalEdges: aPolyCurve.ToEdges(), name: familyTypeName);
         }
 
         /***************************************************/
@@ -153,21 +148,20 @@ namespace BH.Engine.Adapters.Revit
         [Input("points", "points describing profile of BuilidngElement")]
         [Input("buildingElementType", "BuilidngElementType")]
         [Input("familyTypeName", "Revit Family Type Name for wall BuilidngElement")]
-        [Output("BuildingElement")]
-        public static BuildingElement BuildingElement(IEnumerable<Point> points, BuildingElementType buildingElementType, string familyTypeName)
+        [Output("Environment Panel")]
+        public static Panel BuildingElement(IEnumerable<Point> points, PanelType panelType, string familyTypeName)
         {
             if (points == null || string.IsNullOrEmpty(familyTypeName) || points.Count() < 3)
                 return null;
 
-            ElementProperties aBuildingElementProperties = Environment.Create.ElementProperties(buildingElementType);
-            EnvironmentContextProperties envContextProperties = new EnvironmentContextProperties();
+            OriginContextFragment envContextProperties = new OriginContextFragment();
             envContextProperties.TypeName = familyTypeName;
 
-            BuildingElement aBuildingElement = BuildingElement(points, familyTypeName);
-            aBuildingElement.ExtendedProperties.Add(aBuildingElementProperties);
-            aBuildingElement.ExtendedProperties.Add(envContextProperties);
+            Panel aEnvironmentPanel = Panel(points, familyTypeName);
+            aEnvironmentPanel.Type = panelType;
+            aEnvironmentPanel.FragmentProperties.Add(envContextProperties);
 
-            return aBuildingElement;
+            return aEnvironmentPanel;
         }
 
         /***************************************************/

@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Environment.Interface;
+using BHP = BH.oM.Physical.Properties;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Revit.Engine
@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
         /**** Internal Methods                          ****/
         /***************************************************/
 
-        internal static Material ToRevitMaterial(this IMaterial material, Document document, PushSettings pushSettings = null)
+        internal static Material ToRevitMaterial(this BHP.Material material, Document document, PushSettings pushSettings = null)
         {
             Material aMaterial = pushSettings.FindRefObject<Material>(document, material.BHoM_Guid);
             if (aMaterial != null)
