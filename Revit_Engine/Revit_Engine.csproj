@@ -84,7 +84,7 @@
   <ItemGroup>
     <Compile Include="Convert\AdapterID.cs" />
     <Compile Include="Convert\FilterQuery.cs" />
-    <Compile Include="Create\Elements\BuildingElement.cs" />
+    <Compile Include="Create\Elements\Panel.cs" />
     <Compile Include="Create\Elements\BHoMObject.cs" />
     <Compile Include="Create\Elements\DraftingObject.cs" />
     <Compile Include="Create\Elements\ViewPlan.cs" />

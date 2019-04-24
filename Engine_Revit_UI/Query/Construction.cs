@@ -56,7 +56,7 @@ namespace BH.UI.Revit.Engine
                     aConstruction = new oM.Physical.Properties.Construction.Construction();
                     aConstruction.Name = hostObjAttributes.EnergyAnalysisElementName();
                     foreach (CompoundStructureLayer aCompoundStructureLayer in aCompoundStructureLayers)
-                        aConstruction.Layers.Add(Query.Material(aCompoundStructureLayer, hostObjAttributes.Document, aBuiltInCategory, pullSettings));
+                        aConstruction.Layers.Add(Query.Layer(aCompoundStructureLayer, hostObjAttributes.Document, aBuiltInCategory, pullSettings));
                 }
 
             }

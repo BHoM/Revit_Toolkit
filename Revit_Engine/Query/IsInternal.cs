@@ -34,8 +34,8 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Cheks whatever Building Element is internal element. Works only for Building Elements pulled from analytical model and adjacency have been assigned.")]
-        [Input("environmentPanel", "BuildingElement pulled from Revit analytical model")]
+        [Description("Cheks whatever Environment Panel is internal element. Works only for Environment Panels pulled from analytical model and adjacency have been assigned.")]
+        [Input("environmentPanel", "Environment Panel pulled from Revit analytical model")]
         [Output("IsInternal")]
         public static bool IsInternal(this Panel environmentPanel)
         {

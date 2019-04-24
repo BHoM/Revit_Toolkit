@@ -33,12 +33,12 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        public static oM.Environment.Elements.Panel AddAdjacentSpaceId(this oM.Environment.Elements.Panel buildingElement, EnergyAnalysisSurface energyAnalysisSurface)
+        public static oM.Environment.Elements.Panel AddAdjacentSpaceId(this oM.Environment.Elements.Panel panel, EnergyAnalysisSurface energyAnalysisSurface)
         {
-            if (buildingElement == null)
+            if (panel == null)
                 return null;
 
-            oM.Environment.Elements.Panel aPanel = buildingElement.GetShallowClone() as oM.Environment.Elements.Panel;
+            oM.Environment.Elements.Panel aPanel = panel.GetShallowClone() as oM.Environment.Elements.Panel;
             aPanel.CustomData.Add(BH.Engine.Adapters.Revit.Convert.AdjacentSpaceId, -1);
 
             if (energyAnalysisSurface == null)

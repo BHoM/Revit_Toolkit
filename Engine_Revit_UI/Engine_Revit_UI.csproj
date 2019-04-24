@@ -173,7 +173,7 @@
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\ToRevit\Grid.cs" />
     <Compile Include="Convert\Common\ToBHoM\ObjectProperties.cs" />
-    <Compile Include="Convert\Environment\ToBHoM\MaterialPropertiesOpaque.cs" />
+    <Compile Include="Convert\Environment\ToBHoM\SolidMaterial.cs" />
     <Compile Include="Convert\Environment\ToBHoM\Opening.cs" />
     <Compile Include="Convert\Environment\ToRevit\CompoundStructure.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\PolyCurveList.cs" />
@@ -234,6 +234,7 @@
     <Compile Include="Modify\UpdateValues.cs" />
     <Compile Include="Query\BoundingBox.cs" />
     <Compile Include="Query\IsValid.cs" />
+    <Compile Include="Query\OpeningType.cs" />
     <Compile Include="Query\UpdatePanelTypeByCustomData.cs" />
     <Compile Include="Query\ViewType.cs" />
     <Compile Include="Query\LookupDouble.cs" />
@@ -242,7 +243,7 @@
     <Compile Include="Query\HighLevel.cs" />
     <Compile Include="Query\TopFacesPolyCurves.cs" />
     <Compile Include="Query\EnergyAnalysisElementName.cs" />
-    <Compile Include="Query\Material.cs" />
+    <Compile Include="Query\Layer.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
     <Compile Include="Query\FindRefObjects.cs" />
     <Compile Include="Query\FindRefObject.cs" />
@@ -267,7 +268,7 @@
     <Compile Include="Modify\SetParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\BottomLevel.cs" />
-    <Compile Include="Query\BuildingElementType.cs" />
+    <Compile Include="Query\PanelType.cs" />
     <Compile Include="Query\BuiltInCategories.cs" />
     <Compile Include="Query\BuiltInCategory.cs" />
     <Compile Include="Query\CategoryName.cs" />

@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static SolidMaterial ToBHoMMaterialPropertiesOpaque(this Material material, PullSettings pullSettings = null)
+        internal static SolidMaterial ToBHoMSolidMaterial(this Material material, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -64,40 +64,40 @@ namespace BH.UI.Revit.Engine
         /****             Private methods               ****/
         /***************************************************/
 
-        private static void Update(this SolidMaterial materialPropertiesOpaque, Material material, PullSettings pullSettings = null)
+        private static void Update(this SolidMaterial solidMaterial, Material material, PullSettings pullSettings = null)
         {
             if (material == null)
             {
-                Compute.NullRevitElementWarning(materialPropertiesOpaque);
+                Compute.NullRevitElementWarning(solidMaterial);
                 return;
             }
 
             ElementId aElementId = material.ThermalAssetId;
             if (aElementId == null || aElementId == ElementId.InvalidElementId)
             {
-                Compute.NullThermalAssetWarning(materialPropertiesOpaque);
+                Compute.NullThermalAssetWarning(solidMaterial);
                 return;
             }
 
             Document aDocument = material.Document;
 
             PropertySetElement aPropertySetElement = aDocument.GetElement(aElementId) as PropertySetElement;
-            materialPropertiesOpaque.Update(aPropertySetElement.GetThermalAsset(), pullSettings);
+            solidMaterial.Update(aPropertySetElement.GetThermalAsset(), pullSettings);
         }
 
         /***************************************************/
 
-        private static void Update(this SolidMaterial materialPropertiesOpaque, StructuralAsset structuralAsset, PullSettings pullSettings = null)
+        private static void Update(this SolidMaterial solidMaterial, StructuralAsset structuralAsset, PullSettings pullSettings = null)
         {
 
         }
 
         /***************************************************/
 
-        private static void Update(this SolidMaterial materialPropertiesOpaque, ThermalAsset thermalAsset, PullSettings pullSettings = null)
+        private static void Update(this SolidMaterial solidMaterial, ThermalAsset thermalAsset, PullSettings pullSettings = null)
         {
-            materialPropertiesOpaque.Conductivity = thermalAsset.ThermalConductivity;
-            materialPropertiesOpaque.SpecificHeat = thermalAsset.SpecificHeat;
+            solidMaterial.Conductivity = thermalAsset.ThermalConductivity;
+            solidMaterial.SpecificHeat = thermalAsset.SpecificHeat;
         }
 
         /***************************************************/

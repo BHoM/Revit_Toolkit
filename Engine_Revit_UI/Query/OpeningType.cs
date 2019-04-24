@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -20,42 +20,39 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
-using BH.oM.Reflection.Attributes;
+using Autodesk.Revit.DB;
 using BH.oM.Environment.Elements;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.UI.Revit.Engine
 {
     public static partial class Query
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-
-        [Description("Cheks whatever environment panel is shade element. Works only for Environment Panels pulled from analytical model and adjacency have been assigned.")]
-        [Input("environmentPanel", "Environment Panel pulled from Revit analytical model")]
-        [Output("IsShade")]
-        public static bool IsShade(this Panel environmentPanel)
+        public static oM.Environment.Elements.OpeningType? OpeningType(this BuiltInCategory builtInCategory)
         {
-            if (environmentPanel == null)
-                return false;
+            switch (builtInCategory)
+            {
+                case Autodesk.Revit.DB.BuiltInCategory.OST_Windows:
+                    return oM.Environment.Elements.OpeningType.Window;
+                case Autodesk.Revit.DB.BuiltInCategory.OST_Doors:
+                    return oM.Environment.Elements.OpeningType.Door;
+                case Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels:
+                    return oM.Environment.Elements.OpeningType.Window;
+            }
 
-            if (environmentPanel.CustomData == null)
-                return false;
-
-            if (!environmentPanel.CustomData.ContainsKey(Convert.SpaceId))
-                return false;
-
-            if (!environmentPanel.CustomData.ContainsKey(Convert.AdjacentSpaceId))
-                return false;
-
-            int aSpaceId = environmentPanel.SpaceId();
-            int aAdjacentSpaceId = environmentPanel.AdjacentSpaceId();
-
-            return aSpaceId == -1 && aAdjacentSpaceId == -1;
+            return null;
         }
 
         /***************************************************/
+
+        public static oM.Environment.Elements.OpeningType? OpeningType(this Category Category)
+        {
+            if (Category == null)
+                return null;
+
+            return OpeningType((BuiltInCategory)Category.Id.IntegerValue);
+        }
     }
 }

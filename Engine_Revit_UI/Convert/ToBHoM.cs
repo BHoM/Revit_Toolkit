@@ -477,7 +477,7 @@ namespace BH.UI.Revit.Engine
             switch (pullSettings.Discipline)
             {
                 case Discipline.Environmental:
-                    return ToBHoMMaterialPropertiesOpaque(material, pullSettings);
+                    return ToBHoMSolidMaterial(material, pullSettings);
                 default:
                     return ToBHoMMaterial(material, pullSettings);
             }
