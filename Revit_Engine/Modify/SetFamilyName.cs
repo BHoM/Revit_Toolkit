@@ -34,17 +34,17 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Sets Family Type name for Environment Context Properties")]
-        [Input("OriginContextFragment", "Environment Context Properties")]
+        [Input("originContextFragment", "Origin Context Properties")]
         [Input("familyTypeName", "Revit Family Type Name")]
         [Output("OriginContextFragment")]
-        public static OriginContextFragment SetFamilyTypeName(this OriginContextFragment OriginContextFragment, string familyTypeName)
+        public static OriginContextFragment SetFamilyTypeName(this OriginContextFragment originContextFragment, string familyTypeName)
         {
-            if (OriginContextFragment == null)
+            if (originContextFragment == null)
                 return null;
 
             OriginContextFragment aBuildingElementProperties = new OriginContextFragment();
-            aBuildingElementProperties.Description = OriginContextFragment.Description;
-            aBuildingElementProperties.ElementID = OriginContextFragment.ElementID;
+            aBuildingElementProperties.Description = originContextFragment.Description;
+            aBuildingElementProperties.ElementID = originContextFragment.ElementID;
             aBuildingElementProperties.TypeName = familyTypeName;
 
             return aBuildingElementProperties;

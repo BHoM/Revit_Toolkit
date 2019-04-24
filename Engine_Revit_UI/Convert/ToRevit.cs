@@ -112,11 +112,11 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Environment.Elements.Panel buildingElement, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Environment.Elements.Panel panel, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitElement(buildingElement, document, pushSettings);
+            return ToRevitElement(panel, document, pushSettings);
         }
 
         /***************************************************/

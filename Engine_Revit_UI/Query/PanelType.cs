@@ -30,32 +30,6 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        public static oM.Environment.Elements.OpeningType? OpeningType(this BuiltInCategory builtInCategory)
-        {
-            switch (builtInCategory)
-            {
-                case Autodesk.Revit.DB.BuiltInCategory.OST_Windows:
-                    return oM.Environment.Elements.OpeningType.Window;
-                case Autodesk.Revit.DB.BuiltInCategory.OST_Doors:
-                    return oM.Environment.Elements.OpeningType.Door;
-                case Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels:
-                    return oM.Environment.Elements.OpeningType.Window;
-            }
-
-            return null;
-        }
-
-        /***************************************************/
-
-        public static oM.Environment.Elements.OpeningType? OpeningType(this Category Category)
-        {
-            if (Category == null)
-                return null;
-
-            return OpeningType((BuiltInCategory)Category.Id.IntegerValue);
-        }
-
-        /***************************************************/
 
         public static oM.Environment.Elements.PanelType? PanelType(this BuiltInCategory builtInCategory)
         {

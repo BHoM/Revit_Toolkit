@@ -39,12 +39,12 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Creates wall BuildingElement by given curve, height and Revit Family Type Name")]
-        [Input("curve", "Bottom curve describing shape of wall BuilidngElement")]
-        [Input("height", "Height of wall BuilidngElement")]
-        [Input("familyTypeName", "Revit Family Type Name for wall BuilidngElement")]
+        [Description("Creates wall Environment Panel by given curve, height and Revit Family Type Name")]
+        [Input("curve", "Bottom curve describing shape of wall Environment Panel")]
+        [Input("height", "Height of wall Environment Panel")]
+        [Input("familyTypeName", "Revit Family Type Name for wall Environment Panel")]
         [Output("Environment Panel")]
-        public static Panel BuildingElement(ICurve curve, double height, string familyTypeName)
+        public static Panel Panel(ICurve curve, double height, string familyTypeName)
         {
             if (curve == null || string.IsNullOrEmpty(familyTypeName) || height <= 0)
                 return null;
@@ -78,8 +78,8 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         /*[Description("Creates BuildingElement by given PolyCurve and Revit Family Type Name")]
-        [Input("polyCurve", "Polycurve describing profile of BuilidngElement")]
-        [Input("familyTypeName", "Revit Family Type Name for wall BuilidngElement")]
+        [Input("polyCurve", "Polycurve describing profile of Environment Panel")]
+        [Input("familyTypeName", "Revit Family Type Name for wall Environment Panel")]
         [Output("BuildingElement")]
         public static Panel Panel(PolyCurve polyCurve, string familyTypeName)
         {
@@ -95,11 +95,11 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         /*[Description("Creates BuildingElement by given PolyCurve, BuildingElementType and Revit Family Type Name")]
-        [Input("polyCurve", "Polycurve describing profile of BuilidngElement")]
-        [Input("buildingElementType", "BuilidngElementType")]
-        [Input("familyTypeName", "Revit Family Type Name for wall BuilidngElement")]
+        [Input("polyCurve", "Polycurve describing profile of Environment Panel")]
+        [Input("buildingElementType", "Environment PanelType")]
+        [Input("familyTypeName", "Revit Family Type Name for wall Environment Panel")]
         [Output("Environment Panel")]
-        public static Panel BuildingElement(PolyCurve polyCurve, PanelType buildingElementType, string familyTypeName)
+        public static Panel Panel(PolyCurve polyCurve, PanelType buildingElementType, string familyTypeName)
         {
             if (polyCurve == null || string.IsNullOrEmpty(familyTypeName))
                 return null;
@@ -118,8 +118,8 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates Environment Panel by given profile points and Revit Family Type Name")]
-        [Input("points", "points describing profile of BuilidngElement")]
-        [Input("familyTypeName", "Revit Family Type Name for wall BuilidngElement")]
+        [Input("points", "points describing profile of Environment Panel")]
+        [Input("familyTypeName", "Revit Family Type Name for wall Environment Panel")]
         [Output("Environment Panel")]
         public static Panel Panel(IEnumerable<Point> points, string familyTypeName)
         {
@@ -145,9 +145,9 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates BuildingElement by given profile points, BuildingElementType and Revit Family Type Name")]
-        [Input("points", "points describing profile of BuilidngElement")]
-        [Input("buildingElementType", "BuilidngElementType")]
-        [Input("familyTypeName", "Revit Family Type Name for wall BuilidngElement")]
+        [Input("points", "points describing profile of Environment Panel")]
+        [Input("buildingElementType", "Environment PanelType")]
+        [Input("familyTypeName", "Revit Family Type Name for wall Environment Panel")]
         [Output("Environment Panel")]
         public static Panel BuildingElement(IEnumerable<Point> points, PanelType panelType, string familyTypeName)
         {
