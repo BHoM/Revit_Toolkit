@@ -24,12 +24,13 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Elements;
-using BHP = BH.oM.Physical.Properties;
+using BHP = BH.oM.Physical.Materials;
+using BHC = BH.oM.Physical.Constructions;
 using BH.oM.Geometry;
 using BH.oM.Geometry.CoordinateSystem;
 using BH.oM.Environment.Elements;
 using System.Collections.Generic;
-using BH.oM.Environment.Properties;
+using BH.oM.Environment.Fragments;
 using BH.oM.Structure.Elements;
 
 namespace BH.UI.Revit.Engine
@@ -184,7 +185,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static CompoundStructureLayer ToRevit(this BHP.Construction.Construction constructionLayer, Document document, PushSettings pushSettings = null)
+        public static CompoundStructureLayer ToRevit(this BHC.Construction constructionLayer, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
@@ -193,7 +194,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static CompoundStructure ToRevit(this IEnumerable<BHP.Construction.Construction> constructionLayers, Document document, PushSettings pushSettings = null)
+        public static CompoundStructure ToRevit(this IEnumerable<BHC.Construction> constructionLayers, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 

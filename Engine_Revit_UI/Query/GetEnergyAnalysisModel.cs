@@ -30,7 +30,7 @@ using Autodesk.Revit.DB.Analysis;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Environment.Properties;
+using BH.oM.Environment.Fragments;
 
 namespace BH.UI.Revit.Engine
 {

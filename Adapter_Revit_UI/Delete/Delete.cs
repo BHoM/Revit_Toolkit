@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
-using BH.oM.Environment.Properties;
+using BH.oM.Environment.Fragments;
 using BH.UI.Revit.Engine;
 using System;
 using System.Collections.Generic;

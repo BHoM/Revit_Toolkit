@@ -26,7 +26,7 @@ using Autodesk.Revit.DB.Analysis;
 using BH.Engine.Environment;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
-using BH.oM.Environment.Properties;
+using BH.oM.Environment.Fragments;
 using BH.oM.Environment.Elements;
 
 namespace BH.UI.Revit.Engine

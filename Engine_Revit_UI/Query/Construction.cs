@@ -26,7 +26,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
 using Autodesk.Revit.DB.Analysis;
-using BH.oM.Environment.Materials;
+using BH.oM.Environment.MaterialFragments;
 
 namespace BH.UI.Revit.Engine
 {
@@ -36,12 +36,12 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public oM.Physical.Properties.Construction.Construction Construction(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null)
+        static public oM.Physical.Constructions.Construction Construction(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null)
         {
             if (hostObjAttributes == null)
                 return null;
 
-            oM.Physical.Properties.Construction.Construction aConstruction = null;
+            oM.Physical.Constructions.Construction aConstruction = null;
 
             CompoundStructure aCompoundStructure = hostObjAttributes.GetCompoundStructure();
             if (aCompoundStructure != null)
@@ -53,7 +53,7 @@ namespace BH.UI.Revit.Engine
 
                     pullSettings = pullSettings.DefaultIfNull();
 
-                    aConstruction = new oM.Physical.Properties.Construction.Construction();
+                    aConstruction = new oM.Physical.Constructions.Construction();
                     aConstruction.Name = hostObjAttributes.EnergyAnalysisElementName();
                     foreach (CompoundStructureLayer aCompoundStructureLayer in aCompoundStructureLayers)
                         aConstruction.Layers.Add(Query.Layer(aCompoundStructureLayer, hostObjAttributes.Document, aBuiltInCategory, pullSettings));
@@ -69,7 +69,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public oM.Physical.Properties.Construction.Construction Construction(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
+        static public oM.Physical.Constructions.Construction Construction(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
         {
             if (energyAnalysisOpening == null)
                 return null;
@@ -83,7 +83,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public oM.Physical.Properties.Construction.Construction Construction(string constructionName, string materialName)
+        static public oM.Physical.Constructions.Construction Construction(string constructionName, string materialName)
         {
             if (string.IsNullOrEmpty(constructionName) || string.IsNullOrEmpty(materialName))
                 return null;
@@ -98,13 +98,13 @@ namespace BH.UI.Revit.Engine
             aMaterialPropertiesTransparent.Name = aMaterialName;
             aMaterialPropertiesTransparent.Transparency = 1; //This is what defines a solid material to be transparent - the percentage (0-1) of transparency in the material
 
-            oM.Physical.Properties.Material aMaterial = new oM.Physical.Properties.Material();
+            oM.Physical.Materials.Material aMaterial = new oM.Physical.Materials.Material();
             aMaterial.Properties.Add(aMaterialPropertiesTransparent);
 
-            oM.Physical.Properties.Construction.Construction aConstruction = new oM.Physical.Properties.Construction.Construction();
+            oM.Physical.Constructions.Construction aConstruction = new oM.Physical.Constructions.Construction();
             aConstruction.Name = constructionName;
 
-            oM.Physical.Properties.Construction.Layer aLayer = new oM.Physical.Properties.Construction.Layer();
+            oM.Physical.Constructions.Layer aLayer = new oM.Physical.Constructions.Layer();
             aLayer.Material = aMaterial;
 
             aConstruction.Layers.Add(aLayer);

@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure.StructuralSections;
 using BH.oM.Environment.Elements;
-using BH.oM.Environment.Properties;
+using BH.oM.Environment.Fragments;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Properties.Section.ShapeProfiles;
 using BH.oM.Structure.Properties.Surface;

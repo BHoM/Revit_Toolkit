@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Environment.Materials;
+using BH.oM.Environment.MaterialFragments;
 
 namespace BH.UI.Revit.Engine
 {
@@ -102,7 +102,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static void Update(this oM.Physical.Properties.Material material, ThermalAsset thermalAsset, PullSettings pullSettings = null)
+        private static void Update(this oM.Physical.Materials.Material material, ThermalAsset thermalAsset, PullSettings pullSettings = null)
         {
             //This isn't called anywhere at this time - but makes the toolkit compile. This will need to be called when the Revit Toolkit updates to use the Physical materials rather than discipline ones
             material.Density = thermalAsset.Density;

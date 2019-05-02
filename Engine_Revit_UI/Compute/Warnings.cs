@@ -139,7 +139,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void MaterialNotFoundWarning(this oM.Physical.Properties.Material material)
+        internal static void MaterialNotFoundWarning(this oM.Physical.Materials.Material material)
         {
             BH.Engine.Reflection.Compute.RecordWarning(string.Format("A Revit equivalent to the BHoM material has not been found. BHoM Guid: {0}", material.BHoM_Guid));
         }
@@ -239,7 +239,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void NullThermalAssetWarning(this oM.Environment.Materials.IEnvironmentMaterial IMaterialProperties)
+        internal static void NullThermalAssetWarning(this oM.Environment.MaterialFragments.IEnvironmentMaterial IMaterialProperties)
         {
             string aMessage = "Could not find Revit Thermal Asset for BHoM Object.";
 

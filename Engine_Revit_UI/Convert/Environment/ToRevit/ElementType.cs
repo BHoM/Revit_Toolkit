@@ -25,7 +25,7 @@ using System.Linq;
 
 using Autodesk.Revit.DB;
 
-using BH.oM.Environment.Properties;
+using BH.oM.Environment.Fragments;
 using BH.oM.Adapters.Revit.Settings;
 using System;
 
