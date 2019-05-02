@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
         /**** Internal Methods                          ****/
         /***************************************************/
 
-        internal static CompoundStructureLayer ToRevitCompoundStructureLayer(this BH.oM.Physical.Properties.Construction.Construction constructionLayer, Document document, PushSettings pushSettings = null)
+        internal static CompoundStructureLayer ToRevitCompoundStructureLayer(this BH.oM.Physical.Constructions.Construction constructionLayer, Document document, PushSettings pushSettings = null)
         {
             MaterialFunctionAssignment aMaterialFunctionAssignment = GetMaterialFunctionAssignment(constructionLayer);
 
@@ -43,7 +43,7 @@ namespace BH.UI.Revit.Engine
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private static MaterialFunctionAssignment GetMaterialFunctionAssignment(BH.oM.Physical.Properties.Construction.Construction constructionLayer)
+        private static MaterialFunctionAssignment GetMaterialFunctionAssignment(BH.oM.Physical.Constructions.Construction constructionLayer)
         {
             return MaterialFunctionAssignment.Structure;
         }

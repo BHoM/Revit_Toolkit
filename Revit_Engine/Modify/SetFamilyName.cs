@@ -23,7 +23,7 @@
 using System.ComponentModel;
 
 using BH.oM.Reflection.Attributes;
-using BH.oM.Environment.Properties;
+using BH.oM.Environment.Fragments;
 
 namespace BH.Engine.Adapters.Revit
 {

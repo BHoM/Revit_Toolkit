@@ -27,7 +27,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Environment.Materials;
+using BH.oM.Environment.MaterialFragments;
 
 namespace BH.UI.Revit.Engine
 {
@@ -37,15 +37,15 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public oM.Physical.Properties.Construction.Layer Layer(this CompoundStructureLayer compoundStructureLayer, Document document, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
+        static public oM.Physical.Constructions.Layer Layer(this CompoundStructureLayer compoundStructureLayer, Document document, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
         {
             if (compoundStructureLayer == null)
                 return null;
 
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Physical.Properties.Construction.Layer aLayer = new oM.Physical.Properties.Construction.Layer();
-            oM.Physical.Properties.Material aMaterial = new oM.Physical.Properties.Material();
+            oM.Physical.Constructions.Layer aLayer = new oM.Physical.Constructions.Layer();
+            oM.Physical.Materials.Material aMaterial = new oM.Physical.Materials.Material();
 
             double aThickness = compoundStructureLayer.Width;
             if (pullSettings.ConvertUnits)

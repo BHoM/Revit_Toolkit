@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BHP = BH.oM.Physical.Properties;
+using BHP = BH.oM.Physical.Materials;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Revit.Engine

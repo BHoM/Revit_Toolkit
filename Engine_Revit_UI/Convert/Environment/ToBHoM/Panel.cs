@@ -27,7 +27,7 @@ using Autodesk.Revit.DB.Analysis;
 
 using BH.Engine.Environment;
 using BH.oM.Environment.Elements;
-using BH.oM.Environment.Properties;
+using BH.oM.Environment.Fragments;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 
@@ -381,7 +381,7 @@ namespace BH.UI.Revit.Engine
             aPanels = new List<oM.Environment.Elements.Panel>();
 
             CeilingType aCeilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
-            BH.oM.Physical.Properties.Construction.Construction aRevitConstruction = Query.Construction(aCeilingType, pullSettings);
+            BH.oM.Physical.Constructions.Construction aRevitConstruction = Query.Construction(aCeilingType, pullSettings);
 
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
             foreach (ICurve aCurve in aPolyCurveList_Outer)
@@ -447,7 +447,7 @@ namespace BH.UI.Revit.Engine
 
             aPanels = new List<oM.Environment.Elements.Panel>();
 
-            BH.oM.Physical.Properties.Construction.Construction aRevitConstruction = Query.Construction(floor.FloorType, pullSettings);
+            BH.oM.Physical.Constructions.Construction aRevitConstruction = Query.Construction(floor.FloorType, pullSettings);
 
             FloorType aFloorType = floor.Document.GetElement(floor.GetTypeId()) as FloorType;
 
@@ -516,7 +516,7 @@ namespace BH.UI.Revit.Engine
 
             aPanels = new List<oM.Environment.Elements.Panel>();
 
-            BH.oM.Physical.Properties.Construction.Construction aRevitConstruction = Query.Construction(roofBase.RoofType, pullSettings);
+            BH.oM.Physical.Constructions.Construction aRevitConstruction = Query.Construction(roofBase.RoofType, pullSettings);
 
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
             foreach (ICurve aCurve in aPolyCurveList_Outer)
@@ -579,7 +579,7 @@ namespace BH.UI.Revit.Engine
 
             aPanels = new List<oM.Environment.Elements.Panel>();
 
-            BH.oM.Physical.Properties.Construction.Construction aRevitConstruction = Query.Construction(wall.WallType, pullSettings);
+            BH.oM.Physical.Constructions.Construction aRevitConstruction = Query.Construction(wall.WallType, pullSettings);
 
             List<PolyCurve> aPolyCurveList = Query.Profiles(wall, pullSettings);
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
