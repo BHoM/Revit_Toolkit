@@ -32,7 +32,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using BH.Engine.Environment;
-using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
