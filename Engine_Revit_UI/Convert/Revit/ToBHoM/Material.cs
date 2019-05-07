@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static oM.Common.Materials.Material ToBHoMMaterial(this Autodesk.Revit.DB.Material material, PullSettings pullSettings = null)
+        internal static oM.Physical.Materials.Material ToBHoMMaterial(this Autodesk.Revit.DB.Material material, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -44,7 +44,7 @@ namespace BH.UI.Revit.Engine
                 return null;
             }
 
-            oM.Common.Materials.Material aMaterial = pullSettings.FindRefObject<oM.Common.Materials.Material>(material.Id.IntegerValue);
+            oM.Physical.Materials.Material aMaterial = pullSettings.FindRefObject<oM.Physical.Materials.Material>(material.Id.IntegerValue);
             if (aMaterial != null)
                 return aMaterial;
 
@@ -59,6 +59,7 @@ namespace BH.UI.Revit.Engine
 
             if (aMaterial == null)
             {
+
                 MaterialType? aMaterialType = Query.MaterialType(material.MaterialClass);
                 if (aMaterialType != null && aMaterialType.HasValue)
                     aMaterial = BH.Engine.Common.Create.Material(material.Name, aMaterialType.Value, 0, 0, 0, 0);

@@ -29,7 +29,7 @@ using Autodesk.Revit.DB.Structure;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Geometry.ShapeProfiles;
-using BHS = BH.Engine.Structure;
+using BH.Engine.Structure;
 using BH.oM.Common.Materials;
 
 namespace BH.UI.Revit.Engine
@@ -48,7 +48,7 @@ namespace BH.UI.Revit.Engine
             if (aSectionProperty != null)
                 return aSectionProperty;
 
-            oM.Common.Materials.Material aMaterial = pullSettings.FindRefObject<oM.Common.Materials.Material>(familyInstance.StructuralMaterialId.IntegerValue);
+            oM.Physical.Materials.Material aMaterial = pullSettings.FindRefObject<oM.Physical.Materials.Material>(familyInstance.StructuralMaterialId.IntegerValue);
 
             if (aMaterial == null)
             {
@@ -191,7 +191,7 @@ namespace BH.UI.Revit.Engine
                         aSectionProperty = new SteelSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                         aSectionProperty.Name = name;
                     }
-                    else aSectionProperty = BHS.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
+                    else aSectionProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
                 }
             }
 

@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public oM.Common.Materials.Material LibraryMaterial(this StructuralMaterialType structuralMaterialType, string materialGrade)
+        static public oM.Physical.Materials.Material LibraryMaterial(this StructuralMaterialType structuralMaterialType, string materialGrade)
         {
             switch (structuralMaterialType)
             {
@@ -43,7 +43,7 @@ namespace BH.UI.Revit.Engine
                         foreach (IBHoMObject concrete in BH.Engine.Library.Query.Match("MaterialsEurope", "Type", "Concrete"))
                         {
                             if (materialGrade.Contains(concrete.Name))
-                                return concrete as oM.Common.Materials.Material;
+                                return concrete as oM.Physical.Materials.Material;
                         }
                     }
                     break;
@@ -53,7 +53,7 @@ namespace BH.UI.Revit.Engine
                         foreach (IBHoMObject steel in BH.Engine.Library.Query.Match("MaterialsEurope", "Type", "Steel"))
                         {
                             if (materialGrade.Contains(steel.Name))
-                                return steel as oM.Common.Materials.Material;
+                                return steel as oM.Physical.Materials.Material;
                         }
                     }
                     break;

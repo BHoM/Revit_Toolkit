@@ -48,7 +48,7 @@ namespace BH.UI.Revit.Engine
                 return aConstantThickness;
 
             double aThickness = 0;
-            oM.Common.Materials.Material aMaterial = null;
+            oM.Physical.Materials.Material aMaterial = null;
 
             bool composite = false;
             foreach (CompoundStructureLayer csl in wallType.GetCompoundStructure().GetLayers())
@@ -96,7 +96,7 @@ namespace BH.UI.Revit.Engine
                 return aConstantThickness;
 
             double aThickness = 0;
-            oM.Common.Materials.Material aMaterial = null;
+            oM.Physical.Materials.Material aMaterial = null;
 
             bool composite = false;
             foreach (CompoundStructureLayer csl in floorType.GetCompoundStructure().GetLayers())
