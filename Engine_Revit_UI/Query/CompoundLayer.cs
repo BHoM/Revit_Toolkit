@@ -37,7 +37,7 @@ namespace BH.UI.Revit.Engine
             if (compoundStructureLayer == null)
                 return null;
 
-            oM.Common.Materials.Material aMaterial = Convert.ToBHoMMaterial(compoundStructureLayer, Document, builtInCategory, pullSettings);
+            oM.Physical.Materials.Material aMaterial = Convert.ToBHoMMaterial(compoundStructureLayer, Document, builtInCategory, pullSettings);
             if (aMaterial == null)
                 return null;
 
@@ -47,7 +47,7 @@ namespace BH.UI.Revit.Engine
 
             oM.Common.Properties.CompoundLayer aCompoundLayer = new oM.Common.Properties.CompoundLayer()
             {
-                Material = aMaterial,
+                //Material = aMaterial,
                 Thickness = aThickness
             };
 

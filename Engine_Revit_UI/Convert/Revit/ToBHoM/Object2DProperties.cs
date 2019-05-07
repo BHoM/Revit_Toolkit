@@ -50,7 +50,7 @@ namespace BH.UI.Revit.Engine
 
             aObject2DProperties = new Object2DProperties()
             {
-                CompoundLayers = Query.CompoundLayers(hostObjAttributes, pullSettings)
+                CompoundLayers = null//Query.CompoundLayers(hostObjAttributes, pullSettings)
             };
 
             aObject2DProperties.Name = Query.FamilyTypeFullName(hostObjAttributes);
