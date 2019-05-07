@@ -234,7 +234,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void NullStructuralAssetWarning(this oM.Common.Materials.Material material)
+        internal static void NullStructuralAssetWarning(this oM.Physical.Materials.Material material)
         {
             string aMessage = "Could not find Revit Structural Asset for BHoM Object.";
 

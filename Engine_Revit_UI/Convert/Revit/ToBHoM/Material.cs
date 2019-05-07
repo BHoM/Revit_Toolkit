@@ -25,6 +25,8 @@ using Autodesk.Revit.DB.Structure;
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Common.Materials;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -59,25 +61,40 @@ namespace BH.UI.Revit.Engine
 
             if (aMaterial == null)
             {
+                switch (material.MaterialClass)
+                {
+                    case "aluminium":
+                        aMaterial = BH.Engine.Structure.Create.AluminiumMaterial(material.Name);
+                        break;
+                    case "concrete":
+                        aMaterial = BH.Engine.Structure.Create.ConcreteMaterial(material.Name);
+                        break;
+                    case "steel":
+                        aMaterial = BH.Engine.Structure.Create.SteelMaterial(material.Name);
+                        break;
+                    case "metal":
+                        aMaterial = BH.Engine.Structure.Create.SteelMaterial(material.Name);
+                        break;
+                    case "wood":
+                        aMaterial = BH.Engine.Structure.Create.TimberMaterial(material.Name, BH.Engine.Geometry.Create.Vector(), BH.Engine.Geometry.Create.Vector(), BH.Engine.Geometry.Create.Vector(), BH.Engine.Geometry.Create.Vector(), double.MinValue, double.MinValue);
+                        break;
+                }
 
-                MaterialType? aMaterialType = Query.MaterialType(material.MaterialClass);
-                if (aMaterialType != null && aMaterialType.HasValue)
-                    aMaterial = BH.Engine.Common.Create.Material(material.Name, aMaterialType.Value, 0, 0, 0, 0);
-                else
+                if (aMaterial == null)
                     Compute.MaterialTypeNotFoundWarning(material);
             }
 
             if (aMaterial == null)
             {
-                aMaterial = BH.Engine.Common.Create.Material(material.Name, MaterialType.Steel, 0, 0, 0, 0);
+                aMaterial = BH.Engine.Structure.Create.ConcreteMaterial(material.Name);
                 Compute.InvalidDataMaterialWarning(material);
             }
 
             aMaterial.Update(material);
 
-            aMaterial = Modify.SetIdentifiers(aMaterial, material) as oM.Common.Materials.Material;
+            aMaterial = Modify.SetIdentifiers(aMaterial, material) as oM.Physical.Materials.Material;
             if (pullSettings.CopyCustomData)
-                aMaterial = Modify.SetCustomData(aMaterial, material, pullSettings.ConvertUnits) as oM.Common.Materials.Material;
+                aMaterial = Modify.SetCustomData(aMaterial, material, pullSettings.ConvertUnits) as oM.Physical.Materials.Material;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aMaterial);
 
@@ -87,14 +104,14 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public oM.Common.Materials.Material ToBHoMMaterial(this CompoundStructureLayer compoundStructureLayer, Document document, BuiltInCategory builtInCategory = BuiltInCategory.INVALID, PullSettings pullSettings = null)
+        static public oM.Physical.Materials.Material ToBHoMMaterial(this CompoundStructureLayer compoundStructureLayer, Document document, BuiltInCategory builtInCategory = BuiltInCategory.INVALID, PullSettings pullSettings = null)
         {
             if (compoundStructureLayer == null)
                 return null;
 
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Common.Materials.Material aMaterial = pullSettings.FindRefObject<oM.Common.Materials.Material>(compoundStructureLayer.MaterialId.IntegerValue);
+            oM.Physical.Materials.Material aMaterial = pullSettings.FindRefObject<oM.Physical.Materials.Material>(compoundStructureLayer.MaterialId.IntegerValue);
             if (aMaterial != null)
                 return aMaterial;
 
@@ -112,7 +129,7 @@ namespace BH.UI.Revit.Engine
 
             if (aMaterial_Revit != null)
             {
-                aMaterial = pullSettings.FindRefObject<oM.Common.Materials.Material>(aMaterial_Revit.Id.IntegerValue);
+                aMaterial = pullSettings.FindRefObject<oM.Physical.Materials.Material>(aMaterial_Revit.Id.IntegerValue);
                 if (aMaterial != null)
                     return aMaterial;
             }
@@ -122,31 +139,30 @@ namespace BH.UI.Revit.Engine
                 return aMaterial;
             }
 
-            aMaterial = BH.Engine.Common.Create.Material(aMaterial_Revit.Name);
             switch (aMaterial_Revit.MaterialClass)
             {
                 case "Aluminium":
-                    aMaterial.Type = MaterialType.Aluminium;
+                    aMaterial = BH.Engine.Structure.Create.AluminiumMaterial(aMaterial_Revit.Name);
                     break;
                 case "Concrete":
-                    aMaterial.Type = MaterialType.Concrete;
+                    aMaterial = BH.Engine.Structure.Create.ConcreteMaterial(aMaterial_Revit.Name);
                     break;
                 case "Steel":
-                    aMaterial.Type = MaterialType.Steel;
+                    aMaterial = BH.Engine.Structure.Create.SteelMaterial(aMaterial_Revit.Name);
                     break;
                 case "Metal":
-                    aMaterial.Type = MaterialType.Steel;
+                    aMaterial = BH.Engine.Structure.Create.SteelMaterial(aMaterial_Revit.Name);
                     break;
                 case "Wood":
-                    aMaterial.Type = MaterialType.Timber;
+                    aMaterial = BH.Engine.Structure.Create.TimberMaterial(aMaterial_Revit.Name, BH.Engine.Geometry.Create.Vector(), BH.Engine.Geometry.Create.Vector(), BH.Engine.Geometry.Create.Vector(), BH.Engine.Geometry.Create.Vector(), double.MinValue, double.MinValue);
                     break;
             }
 
-            aMaterial = Modify.SetIdentifiers(aMaterial, aMaterial_Revit) as oM.Common.Materials.Material;
+            aMaterial = Modify.SetIdentifiers(aMaterial, aMaterial_Revit) as oM.Physical.Materials.Material;
             if (pullSettings.CopyCustomData)
-                aMaterial = Modify.SetCustomData(aMaterial, aMaterial_Revit, pullSettings.ConvertUnits) as oM.Common.Materials.Material;
+                aMaterial = Modify.SetCustomData(aMaterial, aMaterial_Revit, pullSettings.ConvertUnits) as oM.Physical.Materials.Material;
 
-            aMaterial = aMaterial.UpdateValues(pullSettings, aMaterial_Revit) as oM.Common.Materials.Material;
+            aMaterial = aMaterial.UpdateValues(pullSettings, aMaterial_Revit) as oM.Physical.Materials.Material;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aMaterial);
 
@@ -157,7 +173,7 @@ namespace BH.UI.Revit.Engine
         /****             Private methods               ****/
         /***************************************************/
 
-        private static void Update(this oM.Common.Materials.Material material_Destination, Autodesk.Revit.DB.Material material_Source)
+        private static void Update(this oM.Physical.Materials.Material material_Destination, Autodesk.Revit.DB.Material material_Source)
         {
             if (material_Source == null)
             {
@@ -181,37 +197,76 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static void Update(this oM.Common.Materials.Material material_Destination, StructuralAsset structuralAsset)
+        private static void Update(this oM.Physical.Materials.Material material_Destination, StructuralAsset structuralAsset)
         {
             material_Destination.Density = UnitUtils.ConvertFromInternalUnits(structuralAsset.Density, DisplayUnitType.DUT_KILOGRAMS_PER_CUBIC_METER);
-            material_Destination.CompressiveYieldStrength = UnitUtils.ConvertFromInternalUnits(structuralAsset.ConcreteCompression, DisplayUnitType.DUT_PASCALS);
 
-            material_Destination.CustomData["Damping Ratio"] = structuralAsset.DampingRatio;
-            material_Destination.CustomData["Lightweight"] = structuralAsset.Lightweight;
 
-            switch (material_Destination.Type)
+            List<oM.Structure.MaterialFragments.IStructuralMaterial> aStructuralMaterialList = material_Destination.Properties.FindAll(x => x is oM.Structure.MaterialFragments.IStructuralMaterial).Cast<oM.Structure.MaterialFragments.IStructuralMaterial>().ToList();
+            if (aStructuralMaterialList != null && aStructuralMaterialList.Count > 0)
             {
-                case MaterialType.Concrete:
-                    material_Destination.CustomData["Concrete Bending Reinforcement"] = structuralAsset.ConcreteBendingReinforcement;
-                    material_Destination.CustomData["Concrete Shear Reinforcement"] = structuralAsset.ConcreteShearReinforcement;
-                    material_Destination.CustomData["Concrete Shear Strength Reduction"] = structuralAsset.ConcreteShearStrengthReduction;
-                    break;
+                double aDampingRatio = structuralAsset.DampingRatio;
+                foreach (oM.Structure.MaterialFragments.IStructuralMaterial aStructuralMaterial in aStructuralMaterialList)
+                    aStructuralMaterial.DampingRatio = aDampingRatio;
             }
+
 
             if (structuralAsset.Behavior != StructuralBehavior.Isotropic)
             {
                 Compute.NonIsotopicStructuralAssetNote(material_Destination);
                 return;
             }
+            else
+            {
+                List<oM.Structure.MaterialFragments.IIsotropic> aIsotropicList = material_Destination.Properties.FindAll(x => x is oM.Structure.MaterialFragments.IIsotropic).Cast<oM.Structure.MaterialFragments.IIsotropic>().ToList();
+                if (aIsotropicList != null && aIsotropicList.Count > 0)
+                {
+                    double aYoungsModulus = UnitUtils.ConvertFromInternalUnits(structuralAsset.YoungModulus.X, DisplayUnitType.DUT_PASCALS);
+                    double aThermalExpansionCoeff = UnitUtils.ConvertFromInternalUnits(structuralAsset.ThermalExpansionCoefficient.X, DisplayUnitType.DUT_INV_CELSIUS);
+                    double aPoissonsRatio = structuralAsset.PoissonRatio.X;
+                    foreach (oM.Structure.MaterialFragments.IIsotropic aIsotropic in aIsotropicList)
+                    {
+                        aIsotropic.YoungsModulus = aYoungsModulus;
+                        aIsotropic.ThermalExpansionCoeff = aThermalExpansionCoeff;
+                        aIsotropic.PoissonsRatio = aPoissonsRatio;
+                    }
+                    aIsotropicList.ForEach(x => x.YoungsModulus = aYoungsModulus);
+                }
+            }
 
-            material_Destination.YoungsModulus = UnitUtils.ConvertFromInternalUnits(structuralAsset.YoungModulus.X, DisplayUnitType.DUT_PASCALS);
-            material_Destination.CoeffThermalExpansion = UnitUtils.ConvertFromInternalUnits(structuralAsset.ThermalExpansionCoefficient.X, DisplayUnitType.DUT_INV_CELSIUS);
-            material_Destination.PoissonsRatio = structuralAsset.PoissonRatio.X;
+            List<oM.Structure.MaterialFragments.Concrete> aConcreteList = material_Destination.Properties.FindAll(x => x is oM.Structure.MaterialFragments.Concrete).Cast<oM.Structure.MaterialFragments.Concrete>().ToList();
+            if (aConcreteList != null && aConcreteList.Count > 0)
+            {
+                double aConcreteBendingReinforcement = structuralAsset.ConcreteBendingReinforcement;
+                double aConcreteShearReinforcement = structuralAsset.ConcreteShearReinforcement;
+                double aConcreteShearStrengthReduction = structuralAsset.ConcreteShearStrengthReduction;
+                foreach (oM.Structure.MaterialFragments.Concrete aConcrete in aConcreteList)
+                {
+                    aConcrete.CustomData["Concrete Bending Reinforcement"] = aConcreteBendingReinforcement;
+                    aConcrete.CustomData["Concrete Shear Reinforcement"] = aConcreteShearReinforcement;
+                    aConcrete.CustomData["Concrete Shear Strength Reduction"] = aConcreteShearStrengthReduction;
+                }
+            }
+
+            List<oM.Structure.MaterialFragments.Timber> aTimberList = material_Destination.Properties.FindAll(x => x is oM.Structure.MaterialFragments.Timber).Cast<oM.Structure.MaterialFragments.Timber>().ToList();
+            if (aTimberList != null && aTimberList.Count > 0)
+            {
+                oM.Geometry.Vector aYoungsModulus = BH.Engine.Geometry.Create.Vector(UnitUtils.ConvertFromInternalUnits(structuralAsset.YoungModulus.X, DisplayUnitType.DUT_PASCALS), UnitUtils.ConvertFromInternalUnits(structuralAsset.YoungModulus.Y, DisplayUnitType.DUT_PASCALS), UnitUtils.ConvertFromInternalUnits(structuralAsset.YoungModulus.Z, DisplayUnitType.DUT_PASCALS));
+                oM.Geometry.Vector aThermalExpansionCoeff = BH.Engine.Geometry.Create.Vector(UnitUtils.ConvertFromInternalUnits(structuralAsset.ThermalExpansionCoefficient.X, DisplayUnitType.DUT_INV_CELSIUS), UnitUtils.ConvertFromInternalUnits(structuralAsset.ThermalExpansionCoefficient.Y, DisplayUnitType.DUT_INV_CELSIUS), UnitUtils.ConvertFromInternalUnits(structuralAsset.ThermalExpansionCoefficient.Z, DisplayUnitType.DUT_INV_CELSIUS));
+                oM.Geometry.Vector aPoissonsRatio = BH.Engine.Geometry.Create.Vector(structuralAsset.PoissonRatio.X, structuralAsset.PoissonRatio.Y, structuralAsset.PoissonRatio.Z);
+                foreach (oM.Structure.MaterialFragments.Timber aTimber in aTimberList)
+                {
+                    aTimber.YoungsModulus = aYoungsModulus;
+                    aTimber.ThermalExpansionCoeff = aThermalExpansionCoeff;
+                    aTimber.PoissonsRatio = aPoissonsRatio;
+                }
+            }
+
         }
 
         /***************************************************/
 
-        private static void Update(this oM.Common.Materials.Material material_Destination, ThermalAsset thermalAsset)
+        private static void Update(this oM.Physical.Materials.Material material_Destination, ThermalAsset thermalAsset)
         {
 
         }

@@ -34,34 +34,34 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public List<oM.Common.Properties.CompoundLayer> CompoundLayers(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null)
-        {
-            if (hostObjAttributes == null)
-                return null;
+        //static public List<oM.Common.Properties.CompoundLayer> CompoundLayers(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null)
+        //{
+        //    if (hostObjAttributes == null)
+        //        return null;
 
-            CompoundStructure aCompoundStructure = hostObjAttributes.GetCompoundStructure();
-            if (aCompoundStructure == null)
-                return null;
+        //    CompoundStructure aCompoundStructure = hostObjAttributes.GetCompoundStructure();
+        //    if (aCompoundStructure == null)
+        //        return null;
 
-            IEnumerable<CompoundStructureLayer> aCompoundStructureLayers = aCompoundStructure.GetLayers();
-            if (aCompoundStructureLayers == null)
-                return null;
+        //    IEnumerable<CompoundStructureLayer> aCompoundStructureLayers = aCompoundStructure.GetLayers();
+        //    if (aCompoundStructureLayers == null)
+        //        return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
+        //    pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Common.Properties.CompoundLayer> aCompoundLayerList = new List<oM.Common.Properties.CompoundLayer>();
+        //    List<oM.Common.Properties.CompoundLayer> aCompoundLayerList = new List<oM.Common.Properties.CompoundLayer>();
 
-            foreach(CompoundStructureLayer aCompoundStructureLayer in aCompoundStructureLayers)
-            {
-                oM.Common.Properties.CompoundLayer aCompoundLayer = Query.CompoundLayer(aCompoundStructureLayer, hostObjAttributes.Document, (BuiltInCategory)hostObjAttributes.Category.Id.IntegerValue, pullSettings);
-                if (aCompoundLayer == null)
-                    continue;
+        //    foreach(CompoundStructureLayer aCompoundStructureLayer in aCompoundStructureLayers)
+        //    {
+        //        oM.Common.Properties.CompoundLayer aCompoundLayer = Query.CompoundLayer(aCompoundStructureLayer, hostObjAttributes.Document, (BuiltInCategory)hostObjAttributes.Category.Id.IntegerValue, pullSettings);
+        //        if (aCompoundLayer == null)
+        //            continue;
 
-                aCompoundLayerList.Add(aCompoundLayer);
-            }
+        //        aCompoundLayerList.Add(aCompoundLayer);
+        //    }
 
-            return aCompoundLayerList;
-        }
+        //    return aCompoundLayerList;
+        //}
 
         /***************************************************/
 

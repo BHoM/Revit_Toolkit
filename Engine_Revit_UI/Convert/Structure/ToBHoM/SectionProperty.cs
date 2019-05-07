@@ -71,11 +71,8 @@ namespace BH.UI.Revit.Engine
                 if (aMaterial == null)
                 {
                     Compute.InvalidDataMaterialWarning(familyInstance);
-                    MaterialType? aMaterialType = Query.MaterialType(familyInstance.StructuralMaterialType);
-                    if (aMaterialType != null && aMaterialType.HasValue)
-                        aMaterial = BH.Engine.Common.Create.Material(null, aMaterialType.Value, 0, 0, 0, 0);
-                    else
-                        Compute.MaterialTypeNotFoundWarning(familyInstance);
+                    Compute.MaterialTypeNotFoundWarning(familyInstance);
+                    aMaterial = Create.ConcreteMaterial(null); 
                 }
             }
 

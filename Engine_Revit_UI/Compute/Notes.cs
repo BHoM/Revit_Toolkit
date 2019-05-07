@@ -62,7 +62,7 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static void NonIsotopicStructuralAssetNote(this oM.Common.Materials.Material material)
+        internal static void NonIsotopicStructuralAssetNote(this oM.Physical.Materials.Material material)
         {
             string aMessage = "Revit Structural Asset is Non-Isotopic.";
 
