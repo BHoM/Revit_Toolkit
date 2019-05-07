@@ -57,7 +57,7 @@ namespace BH.UI.Revit.Engine
                 return aResult;
             }
 
-            if (type == typeof(PanelPlanar))
+            if (type == typeof(oM.Structure.Elements.Panel))
             {
                 aResult.Add(typeof(Floor));
                 aResult.Add(typeof(Wall));

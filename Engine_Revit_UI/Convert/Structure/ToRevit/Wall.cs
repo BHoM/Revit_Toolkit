@@ -38,14 +38,14 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static Wall ToRevitWall(this PanelPlanar panelPlanar, Document document, PushSettings pushSettings = null)
+        internal static Wall ToRevitWall(this oM.Structure.Elements.Panel panel, Document document, PushSettings pushSettings = null)
         {
             //TODO: if no CustomData, set the levels & base+top offsets manually?
 
-            if (panelPlanar == null || document == null)
+            if (panel == null || document == null)
                 return null;
 
-            Wall aWall = pushSettings.FindRefObject<Wall>(document, panelPlanar.BHoM_Guid);
+            Wall aWall = pushSettings.FindRefObject<Wall>(document, panel.BHoM_Guid);
             if (aWall != null)
                 return aWall;
 
@@ -53,12 +53,12 @@ namespace BH.UI.Revit.Engine
 
             object aCustomDataValue = null;
 
-            List<Curve> aCurves = panelPlanar.ExternalEdgeCurves().Select(c => c.ToRevitCurve(pushSettings)).ToList();
-            if (panelPlanar.Openings.Count != 0) panelPlanar.OpeningInPanelWarning();
+            List<Curve> aCurves = panel.ExternalEdgeCurves().Select(c => c.ToRevitCurve(pushSettings)).ToList();
+            if (panel.Openings.Count != 0) panel.OpeningInPanelWarning();
 
             Level aLevel = null;
 
-            aCustomDataValue = panelPlanar.CustomDataValue("Base Constraint");
+            aCustomDataValue = panel.CustomDataValue("Base Constraint");
             if (aCustomDataValue != null && aCustomDataValue is int)
             {
                 ElementId aElementId = new ElementId((int)aCustomDataValue);
@@ -66,24 +66,24 @@ namespace BH.UI.Revit.Engine
             }
 
             if (aLevel == null)
-                aLevel = Query.BottomLevel(panelPlanar.Outline(), document, pushSettings.ConvertUnits);
+                aLevel = Query.BottomLevel(panel.Outline(), document, pushSettings.ConvertUnits);
 
-            WallType aWallType = panelPlanar.Property.ToRevitWallType(document, pushSettings);
+            WallType aWallType = panel.Property.ToRevitWallType(document, pushSettings);
 
             if (aWallType == null)
             {
-                aWallType = Query.ElementType(panelPlanar, document, BuiltInCategory.OST_Walls) as WallType;
+                aWallType = Query.ElementType(panel, document, BuiltInCategory.OST_Walls) as WallType;
 
                 if (aWallType == null)
                 {
-                    BH.Engine.Reflection.Compute.RecordError(string.Format("Wall type has not been found for given BHoM panel property. BHoM Guid: {0}", panelPlanar.BHoM_Guid));
+                    BH.Engine.Reflection.Compute.RecordError(string.Format("Wall type has not been found for given BHoM panel property. BHoM Guid: {0}", panel.BHoM_Guid));
                     return null;
                 }
             }
 
             aWall = Wall.Create(document, aCurves, aWallType.Id, aLevel.Id, true);
 
-            aWall.CheckIfNullPush(panelPlanar);
+            aWall.CheckIfNullPush(panel);
             if (aWall == null)
                 return null;
 
@@ -101,10 +101,10 @@ namespace BH.UI.Revit.Engine
                     //BuiltInParameter.WALL_HEIGHT_TYPE,
                     //BuiltInParameter.WALL_TOP_OFFSET
                 };
-                Modify.SetParameters(aWall, panelPlanar, paramsToIgnore, pushSettings.ConvertUnits);
+                Modify.SetParameters(aWall, panel, paramsToIgnore, pushSettings.ConvertUnits);
             }
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(panelPlanar, aWall);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(panel, aWall);
 
             return aWall;
         }

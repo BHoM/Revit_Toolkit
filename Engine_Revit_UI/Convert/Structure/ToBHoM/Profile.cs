@@ -27,9 +27,10 @@ using System.Collections.Generic;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure.StructuralSections;
 
-using BH.oM.Structure.Properties.Section;
-using BH.oM.Structure.Properties.Section.ShapeProfiles;
+using BH.oM.Structure.SectionProperties;
+using BH.oM.Geometry.ShapeProfiles;
 using BHS = BH.Engine.Structure;
+using BHG = BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Revit.Engine
@@ -66,14 +67,14 @@ namespace BH.UI.Revit.Engine
                 if (!double.IsNaN(diameter))
                 {
                     if (pullSettings.ConvertUnits) diameter = diameter.ToSI(UnitType.UT_Section_Dimension);
-                    aProfile = BHS.Create.CircleProfile(diameter);
+                    aProfile = BHG.Create.CircleProfile(diameter);
                 }
                 else
                 {
                     double radius = familySymbol.LookupDouble(radiusNames, pullSettings.ConvertUnits);
                     if (!double.IsNaN(radius))
                     {
-                        aProfile = BHS.Create.CircleProfile(radius * 2);
+                        aProfile = BHG.Create.CircleProfile(radius * 2);
                     }
                 }
             }
@@ -130,7 +131,7 @@ namespace BH.UI.Revit.Engine
                         weldSize = weldSize.ToSI(UnitType.UT_Section_Dimension);
                     }
 
-                    aProfile = BHS.Create.FabricatedISectionProfile(height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize);
+                    aProfile = BHG.Create.FabricatedISectionProfile(height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize);
                 }
             }
 
@@ -177,7 +178,7 @@ namespace BH.UI.Revit.Engine
                         cornerRadius = cornerRadius.ToSI(UnitType.UT_Section_Dimension);
                     }
 
-                    aProfile = BHS.Create.RectangleProfile(height, width, cornerRadius);
+                    aProfile = BHG.Create.RectangleProfile(height, width, cornerRadius);
                 }
             }
 
@@ -231,7 +232,7 @@ namespace BH.UI.Revit.Engine
                         toeRadius = toeRadius.ToSI(UnitType.UT_Section_Dimension);
                     }
 
-                    aProfile = BHS.Create.AngleProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+                    aProfile = BHG.Create.AngleProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
 
@@ -271,7 +272,7 @@ namespace BH.UI.Revit.Engine
                         innerRadius = innerRadius.ToSI(UnitType.UT_Section_Dimension);
                     }
 
-                    aProfile = BHS.Create.BoxProfile(height, width, thickness, outerRadius, innerRadius);
+                    aProfile = BHG.Create.BoxProfile(height, width, thickness, outerRadius, innerRadius);
                 }
             }
 
@@ -325,7 +326,7 @@ namespace BH.UI.Revit.Engine
                         toeRadius = toeRadius.ToSI(UnitType.UT_Section_Dimension);
                     }
 
-                    aProfile = BHS.Create.ChannelProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
+                    aProfile = BHG.Create.ChannelProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
 
@@ -378,7 +379,7 @@ namespace BH.UI.Revit.Engine
                         toeRadius = toeRadius.ToSI(UnitType.UT_Section_Dimension);
                     }
 
-                    aProfile = BHS.Create.ISectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+                    aProfile = BHG.Create.ISectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
 
@@ -442,7 +443,7 @@ namespace BH.UI.Revit.Engine
                         toeRadius = toeRadius.ToSI(UnitType.UT_Section_Dimension);
                     }
 
-                    aProfile = BHS.Create.TSectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+                    aProfile = BHG.Create.TSectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
 
@@ -485,7 +486,7 @@ namespace BH.UI.Revit.Engine
                         toeRadius = toeRadius.ToSI(UnitType.UT_Section_Dimension);
                     }
 
-                    aProfile = BHS.Create.ZSectionProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
+                    aProfile = BHG.Create.ZSectionProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
 
@@ -519,7 +520,7 @@ namespace BH.UI.Revit.Engine
                         thickness = thickness.ToSI(UnitType.UT_Section_Dimension);
                     }
 
-                    aProfile = BHS.Create.TubeProfile(diameter, thickness);
+                    aProfile = BHG.Create.TubeProfile(diameter, thickness);
                 }
 
                 double radius = familySymbol.LookupDouble(radiusNames, false);
@@ -531,7 +532,7 @@ namespace BH.UI.Revit.Engine
                         thickness = thickness.ToSI(UnitType.UT_Section_Dimension);
                     }
 
-                    aProfile = BHS.Create.TubeProfile(radius * 2, thickness);
+                    aProfile = BHG.Create.TubeProfile(radius * 2, thickness);
                 }
             }
             

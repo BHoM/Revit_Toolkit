@@ -150,16 +150,16 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this PanelPlanar panelPlanar, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Structure.Elements.Panel panel, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitHostObject(panelPlanar, document, pushSettings);
+            return ToRevitHostObject(panel, document, pushSettings);
         }
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Structure.Properties.Surface.ISurfaceProperty surfaceProperty, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Structure.SurfaceProperties.ISurfaceProperty surfaceProperty, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 

@@ -112,7 +112,7 @@ namespace BH.UI.Revit.Engine
             if (aFamilyInstance == null)
                 return null;
 
-            oM.Structure.Properties.Framing.ConstantFramingElementProperty barProperty = framingElement.Property as oM.Structure.Properties.Framing.ConstantFramingElementProperty;
+            oM.Structure.FramingProperties.ConstantFramingElementProperty barProperty = framingElement.Property as oM.Structure.FramingProperties.ConstantFramingElementProperty;
             if (barProperty != null)
             {
                 double orientationAngle = (Math.PI * 0.5 - barProperty.OrientationAngle) % (2 * Math.PI);

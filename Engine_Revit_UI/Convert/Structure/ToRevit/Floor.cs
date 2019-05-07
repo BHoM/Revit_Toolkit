@@ -38,14 +38,14 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static Floor ToRevitFloor(this PanelPlanar panelPlanar, Document document, PushSettings pushSettings = null)
+        internal static Floor ToRevitFloor(this oM.Structure.Elements.Panel panel, Document document, PushSettings pushSettings = null)
         {
             //TODO: if no CustomData, set the level & offset manually?
 
-            if (panelPlanar == null || document == null)
+            if (panel == null || document == null)
                 return null;
 
-            Floor aFloor = pushSettings.FindRefObject<Floor>(document, panelPlanar.BHoM_Guid);
+            Floor aFloor = pushSettings.FindRefObject<Floor>(document, panel.BHoM_Guid);
             if (aFloor != null)
                 return aFloor;
 
@@ -54,15 +54,15 @@ namespace BH.UI.Revit.Engine
             object aCustomDataValue = null;
 
             CurveArray aCurves = new CurveArray();
-            foreach (Curve c in panelPlanar.ExternalEdgeCurves().Select(c => c.ToRevitCurve(pushSettings)))
+            foreach (Curve c in panel.ExternalEdgeCurves().Select(c => c.ToRevitCurve(pushSettings)))
             {
                 aCurves.Append(c);
             }
-            if (panelPlanar.Openings.Count != 0) panelPlanar.OpeningInPanelWarning();
+            if (panel.Openings.Count != 0) panel.OpeningInPanelWarning();
 
             Level aLevel = null;
 
-            aCustomDataValue = panelPlanar.CustomDataValue("Level");
+            aCustomDataValue = panel.CustomDataValue("Level");
             if (aCustomDataValue != null && aCustomDataValue is int)
             {
                 ElementId aElementId = new ElementId((int)aCustomDataValue);
@@ -70,17 +70,17 @@ namespace BH.UI.Revit.Engine
             }
 
             if (aLevel == null)
-                aLevel = Query.BottomLevel(panelPlanar.Outline(), document, pushSettings.ConvertUnits);
+                aLevel = Query.BottomLevel(panel.Outline(), document, pushSettings.ConvertUnits);
 
-            FloorType aFloorType = panelPlanar.Property.ToRevitFloorType(document, pushSettings);
+            FloorType aFloorType = panel.Property.ToRevitFloorType(document, pushSettings);
 
             if (aFloorType == null)
             {
-                aFloorType = Query.ElementType(panelPlanar, document, BuiltInCategory.OST_Floors) as FloorType;
+                aFloorType = Query.ElementType(panel, document, BuiltInCategory.OST_Floors) as FloorType;
 
                 if (aFloorType == null)
                 {
-                    BH.Engine.Reflection.Compute.RecordError(string.Format("Floor type has not been found for given BHoM panel property. BHoM Guid: {0}", panelPlanar.BHoM_Guid));
+                    BH.Engine.Reflection.Compute.RecordError(string.Format("Floor type has not been found for given BHoM panel property. BHoM Guid: {0}", panel.BHoM_Guid));
                     return null;
                 }
             }
@@ -90,7 +90,7 @@ namespace BH.UI.Revit.Engine
             else
                 aFloor = document.Create.NewFloor(aCurves, aFloorType, aLevel, true);
 
-            aFloor.CheckIfNullPush(panelPlanar);
+            aFloor.CheckIfNullPush(panel);
             if (aFloorType == null)
                 return null;
 
@@ -103,10 +103,10 @@ namespace BH.UI.Revit.Engine
                         BuiltInParameter.ALL_MODEL_IMAGE,
                         BuiltInParameter.ELEM_TYPE_PARAM
                 };
-                Modify.SetParameters(aFloor, panelPlanar, paramsToIgnore, pushSettings.ConvertUnits);
+                Modify.SetParameters(aFloor, panel, paramsToIgnore, pushSettings.ConvertUnits);
             }
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(panelPlanar, aFloor);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(panel, aFloor);
 
             return aFloor;
         }
