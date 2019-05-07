@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using BH.oM.Environment.Fragments;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Structure.Properties.Section.ShapeProfiles;
+using BH.oM.Geometry.ShapeProfiles;
 
 namespace BH.Engine.Adapters.Revit
 {

@@ -29,8 +29,8 @@ using Autodesk.Revit.DB.Structure.StructuralSections;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Fragments;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties.Section.ShapeProfiles;
-using BH.oM.Structure.Properties.Surface;
+using BH.oM.Geometry.ShapeProfiles;
+using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Adapters.Revit.Elements;
 
 namespace BH.UI.Revit.Engine
@@ -149,7 +149,7 @@ namespace BH.UI.Revit.Engine
             if (element is Wall)
             {
                 aResult.Add(typeof(oM.Environment.Elements.Panel));
-                aResult.Add(typeof(PanelPlanar));
+                aResult.Add(typeof(oM.Structure.Elements.Panel));
                 aResult.Add(typeof(oM.Architecture.Elements.Wall));
                 return aResult;
             }
@@ -171,7 +171,7 @@ namespace BH.UI.Revit.Engine
             if (element is Floor)
             {
                 aResult.Add(typeof(oM.Environment.Elements.Panel));
-                aResult.Add(typeof(PanelPlanar));
+                aResult.Add(typeof(oM.Structure.Elements.Panel));
                 aResult.Add(typeof(oM.Architecture.Elements.Floor));
                 return aResult;
             }

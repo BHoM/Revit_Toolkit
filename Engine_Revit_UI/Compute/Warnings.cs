@@ -160,9 +160,9 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void OpeningInPanelWarning(this PanelPlanar panelPlanar)
+        internal static void OpeningInPanelWarning(this oM.Structure.Elements.Panel panel)
         {
-            BH.Engine.Reflection.Compute.RecordWarning(string.Format("In current implementation of BHoM the panels are pushed without openings. {0} openings are skipped for the panel with BHoM_Guid: {1}", panelPlanar.Openings.Count, panelPlanar.BHoM_Guid));
+            BH.Engine.Reflection.Compute.RecordWarning(string.Format("In current implementation of BHoM the panels are pushed without openings. {0} openings are skipped for the panel with BHoM_Guid: {1}", panel.Openings.Count, panel.BHoM_Guid));
         }
 
         /***************************************************/

@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static WallType ToRevitWallType(this oM.Structure.Properties.Surface.ISurfaceProperty surfaceProperty, Document document, PushSettings pushSettings = null)
+        internal static WallType ToRevitWallType(this oM.Structure.SurfaceProperties.ISurfaceProperty surfaceProperty, Document document, PushSettings pushSettings = null)
         {
             if (surfaceProperty == null || document == null)
                 return null;

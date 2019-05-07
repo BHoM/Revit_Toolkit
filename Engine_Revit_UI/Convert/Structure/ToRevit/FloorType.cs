@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static FloorType ToRevitFloorType(this oM.Structure.Properties.Surface.ISurfaceProperty surfaceProperty, Document document, PushSettings pushSettings = null)
+        public static FloorType ToRevitFloorType(this oM.Structure.SurfaceProperties.ISurfaceProperty surfaceProperty, Document document, PushSettings pushSettings = null)
         {
             if (surfaceProperty == null || document == null)
                 return null;

@@ -25,8 +25,8 @@ using Autodesk.Revit.DB.Structure;
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties.Section;
-using BH.oM.Structure.Properties.Framing;
+using BH.oM.Structure.SectionProperties;
+using BH.oM.Structure.FramingProperties;
 using BHG = BH.Engine.Geometry;
 using BHS = BH.Engine.Structure;
 
