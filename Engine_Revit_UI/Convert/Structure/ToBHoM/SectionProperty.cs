@@ -163,25 +163,25 @@ namespace BH.UI.Revit.Engine
                         aSectionProperty = new SteelSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                         aSectionProperty.Name = name;
                     }
-                    else aSectionProperty = BHS.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
+                    else aSectionProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
                 }
-                else if (aMaterial.Type == oM.Common.Materials.MaterialType.Concrete)
+                else if (aMaterial.MaterialType() == oM.Structure.MaterialFragments.MaterialType.Concrete)
                 {
                     if (emptyProfile)
                     {
                         aSectionProperty = new ConcreteSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                         aSectionProperty.Name = name;
                     }
-                    else aSectionProperty = BHS.Create.ConcreteSectionFromProfile(aSectionDimensions, aMaterial, name);
+                    else aSectionProperty = BH.Engine.Structure.Create.ConcreteSectionFromProfile(aSectionDimensions, aMaterial, name);
                 }
-                else if (aMaterial.Type == oM.Common.Materials.MaterialType.Steel)
+                else if (aMaterial.MaterialType() == oM.Structure.MaterialFragments.MaterialType.Steel)
                 {
                     if (emptyProfile)
                     {
                         aSectionProperty = new SteelSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                         aSectionProperty.Name = name;
                     }
-                    else aSectionProperty = BHS.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
+                    else aSectionProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
                 }
                 else
                 {
