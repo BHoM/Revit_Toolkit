@@ -99,6 +99,11 @@ namespace BH.UI.Revit.Engine
                 if (pullSettings.CopyCustomData)
                     aResult = Modify.SetCustomData(aResult, aElement, pullSettings.ConvertUnits) as oM.Environment.Elements.Opening;
 
+                if (aElementType != null)
+                    aResult = Modify.SetCustomData(aResult, aElementType, pullSettings.ConvertUnits, "Type ") as oM.Environment.Elements.Opening;
+
+
+
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult, energyAnalysisOpening.Id.IntegerValue);
                 aResult = aResult.UpdateValues(pullSettings, aElement) as oM.Environment.Elements.Opening;
                 aResult = aResult.UpdateValues(pullSettings, aElementType) as oM.Environment.Elements.Opening;
