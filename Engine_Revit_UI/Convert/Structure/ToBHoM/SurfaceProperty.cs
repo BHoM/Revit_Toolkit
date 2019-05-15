@@ -27,7 +27,9 @@ using System.Linq;
 
 using BH.oM.Base;
 using BH.oM.Structure.SurfaceProperties;
+using BH.oM.Structure.MaterialFragments;
 using BH.oM.Adapters.Revit.Settings;
+using BH.Engine.Structure;
 
 namespace BH.UI.Revit.Engine
 {
@@ -72,7 +74,18 @@ namespace BH.UI.Revit.Engine
             if (composite) wallType.CompositePanelWarning();
             else if (aThickness == 0) BH.Engine.Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", wallType.Id.IntegerValue));
 
-            ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structure.SurfaceProperties.PanelType.Wall, Thickness = aThickness, Material = aMaterial, Name = wallType.Name };
+            //Get out the structural material fragment. If no present settign to concrete for now
+            IMaterialFragment strucMaterialFragment;
+            if (aMaterial.IsValidStructural())
+                strucMaterialFragment = aMaterial.StructuralMaterialFragment();
+            else
+            {
+                strucMaterialFragment = new Concrete() { Name = aMaterial.Name };
+                aMaterial.MaterialNotStructuralWarning();
+            }
+
+
+            ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structure.SurfaceProperties.PanelType.Wall, Thickness = aThickness, Material = strucMaterialFragment, Name = wallType.Name };
 
             aProperty2D = Modify.SetIdentifiers(aProperty2D, wallType) as ConstantThickness;
             if (pullSettings.CopyCustomData)
@@ -120,7 +133,18 @@ namespace BH.UI.Revit.Engine
             if (composite) floorType.CompositePanelWarning();
             else if (aThickness == 0) BH.Engine.Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", floorType.Id.IntegerValue));
 
-            ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structure.SurfaceProperties.PanelType.Slab, Thickness = aThickness, Material = aMaterial, Name = floorType.Name };
+            //Get out the structural material fragment. If no present settign to concrete for now
+            IMaterialFragment strucMaterialFragment;
+            if (aMaterial.IsValidStructural())
+                strucMaterialFragment = aMaterial.StructuralMaterialFragment();
+            else
+            {
+                strucMaterialFragment = new Concrete() { Name = aMaterial.Name };
+                aMaterial.MaterialNotStructuralWarning();
+            }
+
+
+            ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structure.SurfaceProperties.PanelType.Slab, Thickness = aThickness, Material = strucMaterialFragment, Name = floorType.Name };
 
             aProperty2D = Modify.SetIdentifiers(aProperty2D, floorType) as ConstantThickness;
             if (pullSettings.CopyCustomData)

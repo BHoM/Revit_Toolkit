@@ -113,24 +113,10 @@ namespace BH.UI.Revit.Engine
                 return aMaterial;
             }
 
-            switch (aMaterial_Revit.MaterialClass)
-            {
-                case "Aluminium":
-                    aMaterial = BH.Engine.Structure.Create.AluminiumMaterial(aMaterial_Revit.Name);
-                    break;
-                case "Concrete":
-                    aMaterial = BH.Engine.Structure.Create.ConcreteMaterial(aMaterial_Revit.Name);
-                    break;
-                case "Steel":
-                    aMaterial = BH.Engine.Structure.Create.SteelMaterial(aMaterial_Revit.Name);
-                    break;
-                case "Metal":
-                    aMaterial = BH.Engine.Structure.Create.SteelMaterial(aMaterial_Revit.Name);
-                    break;
-                case "Wood":
-                    aMaterial = BH.Engine.Structure.Create.TimberMaterial(aMaterial_Revit.Name, BH.Engine.Geometry.Create.Vector(), BH.Engine.Geometry.Create.Vector(), BH.Engine.Geometry.Create.Vector(), BH.Engine.Geometry.Create.Vector(), double.MinValue, double.MinValue);
-                    break;
-            }
+            if (aMaterial == null)
+                aMaterial = new oM.Physical.Materials.Material() { Name = aMaterial_Revit.Name };
+
+            aMaterial = aMaterial.Update(aMaterial_Revit);
 
             aMaterial = Modify.SetIdentifiers(aMaterial, aMaterial_Revit) as oM.Physical.Materials.Material;
             if (pullSettings.CopyCustomData)
@@ -159,6 +145,7 @@ namespace BH.UI.Revit.Engine
             if (aElementId == null || aElementId == ElementId.InvalidElementId)
             {
                 Compute.NullStructuralAssetWarning(material_Destination);
+                material_Destination.SetEmptyStructurallMaterial(material_Source.MaterialClass);
                 return material_Destination;
             }
 
@@ -180,34 +167,68 @@ namespace BH.UI.Revit.Engine
             oM.Geometry.Vector poissonsRatio = BH.Engine.Geometry.Create.Vector(structuralAsset.PoissonRatio.X, structuralAsset.PoissonRatio.Y, structuralAsset.PoissonRatio.Z);
             oM.Geometry.Vector shearModulus = BH.Engine.Geometry.Create.Vector(UnitUtils.ConvertFromInternalUnits(structuralAsset.ShearModulus.X, DisplayUnitType.DUT_PASCALS), UnitUtils.ConvertFromInternalUnits(structuralAsset.ShearModulus.Y, DisplayUnitType.DUT_PASCALS), UnitUtils.ConvertFromInternalUnits(structuralAsset.ShearModulus.Z, DisplayUnitType.DUT_PASCALS));
 
+            oM.Structure.MaterialFragments.IMaterialFragment materialFragment = null;
 
             switch (materialClass.ToLower())
             {
                 case "aluminium":
-                    material_Destination = material_Destination.SetAluminium(material_Destination.Name, youngsModulus.X, poissonsRatio.X, thermalExpansionCoeff.X, density, dampingRatio);
+                    materialFragment = BH.Engine.Structure.Create.Aluminium(material_Destination.Name, youngsModulus.X, poissonsRatio.X, thermalExpansionCoeff.X, density, dampingRatio);
                     break;
                 case "concrete":
                     double cubeStrength = 0;
                     double cylinderStrength = 0;
-                    material_Destination = material_Destination.SetConcrete(material_Destination.Name, youngsModulus.X, poissonsRatio.X, thermalExpansionCoeff.X, density, dampingRatio, cubeStrength, cylinderStrength);
-                    material_Destination.CustomData["Concrete Bending Reinforcement"] = structuralAsset.ConcreteBendingReinforcement;
-                    material_Destination.CustomData["Concrete Shear Reinforcement"] = structuralAsset.ConcreteShearReinforcement;
-                    material_Destination.CustomData["Concrete Shear Strength Reduction"] = structuralAsset.ConcreteShearStrengthReduction;
+                    materialFragment = BH.Engine.Structure.Create.Concrete(material_Destination.Name, youngsModulus.X, poissonsRatio.X, thermalExpansionCoeff.X, density, dampingRatio, cubeStrength, cylinderStrength);
+                    materialFragment.CustomData["Concrete Bending Reinforcement"] = structuralAsset.ConcreteBendingReinforcement;
+                    materialFragment.CustomData["Concrete Shear Reinforcement"] = structuralAsset.ConcreteShearReinforcement;
+                    materialFragment.CustomData["Concrete Shear Strength Reduction"] = structuralAsset.ConcreteShearStrengthReduction;
                     break;
                 case "steel":
                 case "metal":
                     double yieldStress = UnitUtils.ConvertFromInternalUnits(structuralAsset.MinimumYieldStress, DisplayUnitType.DUT_PASCALS);
                     double ultimateStress = UnitUtils.ConvertFromInternalUnits(structuralAsset.MinimumTensileStrength, DisplayUnitType.DUT_PASCALS);
-                    material_Destination = material_Destination.SetSteel(material_Destination.Name, youngsModulus.X, poissonsRatio.X, thermalExpansionCoeff.X, density, dampingRatio, yieldStress, ultimateStress);
+                    materialFragment = BH.Engine.Structure.Create.Steel(material_Destination.Name, youngsModulus.X, poissonsRatio.X, thermalExpansionCoeff.X, density, dampingRatio, yieldStress, ultimateStress);
                     break;
                 case "wood":
-                    material_Destination = material_Destination.SetTimber(material_Destination.Name, youngsModulus, poissonsRatio, shearModulus, thermalExpansionCoeff, density, dampingRatio);
+                    materialFragment = BH.Engine.Structure.Create.Timber(material_Destination.Name, youngsModulus, poissonsRatio, shearModulus, thermalExpansionCoeff, density, dampingRatio);
                     break;
             }
+
+            if (materialFragment != null)
+                material_Destination = material_Destination.SetStructuralFragment(materialFragment);
 
             return material_Destination;
             
 
+        }
+
+        /***************************************************/
+
+        private static oM.Physical.Materials.Material SetEmptyStructurallMaterial(this oM.Physical.Materials.Material material_Destination, string materialClass)
+        {
+            oM.Structure.MaterialFragments.IMaterialFragment materialFragment = null;
+
+            switch (materialClass.ToLower())
+            {
+                case "aluminium":
+                    materialFragment = new oM.Structure.MaterialFragments.Aluminium() { Name = material_Destination.Name };
+                    break;
+                case "concrete":
+                    materialFragment = new oM.Structure.MaterialFragments.Concrete() { Name = material_Destination.Name };
+                    break;
+                case "steel":
+                case "metal":
+                    materialFragment = new oM.Structure.MaterialFragments.Steel() { Name = material_Destination.Name };
+                    break;
+                case "wood":
+                case "timber":
+                    materialFragment = new oM.Structure.MaterialFragments.Timber() { Name = material_Destination.Name };
+                    break;
+            }
+
+            if (materialFragment != null)
+                material_Destination = material_Destination.SetStructuralFragment(materialFragment);
+
+            return material_Destination;
         }
 
         /***************************************************/

@@ -146,6 +146,13 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        internal static void MaterialNotStructuralWarning(this oM.Physical.Materials.Material material)
+        {
+            BH.Engine.Reflection.Compute.RecordWarning(string.Format("The material does not contain any structural properties. BHoM Guid: {0}", material.BHoM_Guid));
+        }
+
+        /***************************************************/
+
         internal static void MaterialNotFoundWarning(this oM.Common.Materials.Material material)
         {
             BH.Engine.Reflection.Compute.RecordWarning(string.Format("A Revit equivalent to the BHoM material has not been found. BHoM Guid: {0}", material.BHoM_Guid));
