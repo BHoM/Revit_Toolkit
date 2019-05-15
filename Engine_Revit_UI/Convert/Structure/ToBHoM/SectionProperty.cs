@@ -30,7 +30,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Geometry.ShapeProfiles;
 using BH.Engine.Structure;
-using BH.oM.Common.Materials;
+using BH.oM.Structure.MaterialFragments;
 
 namespace BH.UI.Revit.Engine
 {
@@ -72,17 +72,28 @@ namespace BH.UI.Revit.Engine
                 {
                     Compute.InvalidDataMaterialWarning(familyInstance);
                     Compute.MaterialTypeNotFoundWarning(familyInstance);
-                    aMaterial = Create.ConcreteMaterial(null); 
+                    aMaterial = new oM.Physical.Materials.Material();
                 }
             }
 
             string symbolName = familyInstance.Symbol.Name;
             aSectionProperty = BH.Engine.Library.Query.Match("SectionProperties", symbolName) as ISectionProperty;
 
+            //Get out the structural material fragment. If no present settign to steel for now
+            IMaterialFragment strucMaterialFragment;
+            if (aMaterial.IsValidStructural())
+                strucMaterialFragment = aMaterial.StructuralMaterialFragment();
+            else
+            {
+                strucMaterialFragment = new Steel() { Name = aMaterial.Name };
+                aMaterial.MaterialNotStructuralWarning();
+            }
+
             if (aSectionProperty != null)
             {
                 aSectionProperty = aSectionProperty.GetShallowClone() as ISectionProperty;
-                aSectionProperty.Material = aMaterial;
+
+                aSectionProperty.Material = strucMaterialFragment;
                 aSectionProperty.Name = symbolName;
             }
             else
@@ -152,7 +163,7 @@ namespace BH.UI.Revit.Engine
                 if (emptyProfile) familyInstance.Symbol.ConvertProfileFailedWarning();
 
                 //TODO: shouldn't we have AluminiumSection and TimberSection at least?
-                if (aMaterial == null)
+                if (strucMaterialFragment == null)
                 {
                     familyInstance.UnknownMaterialWarning();
                     if (emptyProfile)
@@ -160,25 +171,25 @@ namespace BH.UI.Revit.Engine
                         aSectionProperty = new SteelSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                         aSectionProperty.Name = name;
                     }
-                    else aSectionProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
+                    else aSectionProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(aSectionDimensions, strucMaterialFragment as Steel, name);
                 }
-                else if (aMaterial.MaterialType() == oM.Structure.MaterialFragments.MaterialType.Concrete)
+                else if (strucMaterialFragment is Concrete)
                 {
                     if (emptyProfile)
                     {
                         aSectionProperty = new ConcreteSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                         aSectionProperty.Name = name;
                     }
-                    else aSectionProperty = BH.Engine.Structure.Create.ConcreteSectionFromProfile(aSectionDimensions, aMaterial, name);
+                    else aSectionProperty = BH.Engine.Structure.Create.ConcreteSectionFromProfile(aSectionDimensions, strucMaterialFragment as Concrete, name);
                 }
-                else if (aMaterial.MaterialType() == oM.Structure.MaterialFragments.MaterialType.Steel)
+                else if (strucMaterialFragment is Steel)
                 {
                     if (emptyProfile)
                     {
                         aSectionProperty = new SteelSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                         aSectionProperty.Name = name;
                     }
-                    else aSectionProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
+                    else aSectionProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(aSectionDimensions, strucMaterialFragment as Steel, name);
                 }
                 else
                 {
@@ -188,7 +199,11 @@ namespace BH.UI.Revit.Engine
                         aSectionProperty = new SteelSection(aSectionDimensions, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                         aSectionProperty.Name = name;
                     }
-                    else aSectionProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(aSectionDimensions, aMaterial, name);
+                    else
+                    {
+                        aSectionProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(aSectionDimensions, null, name);
+                        aSectionProperty.Material = strucMaterialFragment;
+                    } 
                 }
             }
 
