@@ -180,7 +180,7 @@ namespace BH.UI.Revit.Engine
 
             if (aFamilySymbol == null)
             {
-                aFamilySymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralColumns, pushSettings.FamilyLoadSettings) as FamilySymbol;
+                aFamilySymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralFraming, pushSettings.FamilyLoadSettings) as FamilySymbol;
 
                 if (aFamilySymbol == null)
                 {
