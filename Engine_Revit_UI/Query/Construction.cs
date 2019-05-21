@@ -97,7 +97,6 @@ namespace BH.UI.Revit.Engine
 
             SolidMaterial aMaterialPropertiesTransparent = new SolidMaterial();
             aMaterialPropertiesTransparent.Name = aMaterialName;
-            aMaterialPropertiesTransparent.Transparency = 1; //This is what defines a solid material to be transparent - the percentage (0-1) of transparency in the material
 
             oM.Physical.Materials.Material aMaterial = new oM.Physical.Materials.Material();
             aMaterial.Properties.Add(aMaterialPropertiesTransparent);
