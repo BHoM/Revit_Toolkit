@@ -98,16 +98,9 @@ namespace BH.UI.Revit.Engine
         {
             solidMaterial.Conductivity = thermalAsset.ThermalConductivity;
             solidMaterial.SpecificHeat = thermalAsset.SpecificHeat;
-        }
-
-        /***************************************************/
-
-        private static void Update(this oM.Physical.Materials.Material material, ThermalAsset thermalAsset, PullSettings pullSettings = null)
-        {
-            //This isn't called anywhere at this time - but makes the toolkit compile. This will need to be called when the Revit Toolkit updates to use the Physical materials rather than discipline ones
-            material.Density = thermalAsset.Density;
+            solidMaterial.Density = thermalAsset.Density;
             if (pullSettings != null && pullSettings.ConvertUnits)
-                material.Density = UnitUtils.ConvertFromInternalUnits(material.Density, DisplayUnitType.DUT_KILOGRAMS_PER_CUBIC_METER);
+                solidMaterial.Density = UnitUtils.ConvertFromInternalUnits(solidMaterial.Density, DisplayUnitType.DUT_KILOGRAMS_PER_CUBIC_METER);
         }
     }
 }
