@@ -271,7 +271,14 @@ namespace BH.UI.Revit.Engine
             }
 
             if (aType == null)
-                return null;
+            {
+                foreach(TypeInfo aTypeInfo in aAssembly.DefinedTypes)
+                    if(aTypeInfo.Name == typeName)
+                    {
+                        aType = aTypeInfo.AsType();
+                        break;
+                    }
+            }
 
 
             return new FilteredElementCollector(document).OfClass(aType).ToElementIds();

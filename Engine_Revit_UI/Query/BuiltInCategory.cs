@@ -156,6 +156,12 @@ namespace BH.UI.Revit.Engine
                 if (aCategory.Name == categoryName)
                     return (BuiltInCategory)aCategory.Id.IntegerValue;
 
+            switch(categoryName)
+            {
+                case "Space Type Settings":
+                    return Autodesk.Revit.DB.BuiltInCategory.OST_HVAC_Load_Space_Types;
+            }
+
             return Autodesk.Revit.DB.BuiltInCategory.INVALID;
         }
 
