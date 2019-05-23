@@ -42,7 +42,7 @@ namespace BH.Engine.Adapters.Revit
             if (string.IsNullOrWhiteSpace(familyName) || string.IsNullOrWhiteSpace(familyTypeName))
                 return null;
 
-            return string.Format("{0} : {1}", familyName, familyTypeName);
+            return string.Format("{0}: {1}", familyName, familyTypeName);
         }
 
         /***************************************************/
