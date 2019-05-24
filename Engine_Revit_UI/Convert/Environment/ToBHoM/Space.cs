@@ -73,31 +73,31 @@ namespace BH.UI.Revit.Engine
             if (aSpace != null)
                 return aSpace;
 
-            string aName = null;
+            string aSpaceName = null;
             Parameter aParameter;
 
             aParameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NUMBER);
             if (aParameter != null)
-                aName = aParameter.AsString();
+                aSpaceName = aParameter.AsString();
 
             aParameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
             if (aParameter != null)
             {
-                if (aName == null)
-                    aName = aParameter.AsString();
+                if (aSpaceName == null)
+                    aSpaceName = aParameter.AsString();
                 else
                 {
-                    string aNumber = aParameter.AsString();
-                    if (!string.IsNullOrEmpty(aNumber))
-                        aName = string.Format("{0} {1}", aName, aNumber);
+                    string aValue = aParameter.AsString();
+                    if (!string.IsNullOrEmpty(aValue))
+                        aSpaceName = string.Format("{0} {1}", aSpaceName, aValue);
                 }
             }
 
-            if (!string.IsNullOrEmpty(aName))
-                aName = aName.Trim();
+            if (!string.IsNullOrEmpty(aSpaceName))
+                aSpaceName = aSpaceName.Trim();
 
             //Create the Space
-            aSpace = Create.Space(aName);
+            aSpace = Create.Space(aSpaceName);
 
             //Set ExtendedProperties
             OriginContextFragment aOriginContextFragment = new OriginContextFragment();
