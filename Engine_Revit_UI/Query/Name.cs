@@ -33,6 +33,7 @@ namespace BH.UI.Revit.Engine
 
             string aName = null;
             string aNumber = spatialElement.Number;
+
             Parameter aParameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
             if (aParameter != null)
                 aName = aParameter.AsString();
