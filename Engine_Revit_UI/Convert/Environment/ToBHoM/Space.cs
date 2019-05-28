@@ -179,9 +179,6 @@ namespace BH.UI.Revit.Engine
                 aSpace = Modify.SetCustomData(aSpace, "Analytical Volume", aAnalyticalVolume) as Space;
             }
 
-            if (aSpace.CustomData.ContainsKey("Number"))
-                aSpace.Name += aSpace.CustomData["Number"].ToString();
-
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSpace);
             aSpace = aSpace.UpdateValues(pullSettings, energyAnalysisSpace) as Space;
             aSpace = aSpace.UpdateValues(pullSettings, aSpatialElement) as Space;
