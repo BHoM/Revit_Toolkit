@@ -73,31 +73,10 @@ namespace BH.UI.Revit.Engine
             if (aSpace != null)
                 return aSpace;
 
-            string aSpaceName = null;
-            Parameter aParameter;
-
-            aParameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NUMBER);
-            if (aParameter != null)
-                aSpaceName = aParameter.AsString();
-
-            aParameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
-            if (aParameter != null)
-            {
-                if (aSpaceName == null)
-                    aSpaceName = aParameter.AsString();
-                else
-                {
-                    string aValue = aParameter.AsString();
-                    if (!string.IsNullOrEmpty(aValue))
-                        aSpaceName = string.Format("{0} {1}", aSpaceName, aValue);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(aSpaceName))
-                aSpaceName = aSpaceName.Trim();
+            string aName = Query.Name(spatialElement);
 
             //Create the Space
-            aSpace = Create.Space(aSpaceName);
+            aSpace = Create.Space(aName);
 
             //Set ExtendedProperties
             OriginContextFragment aOriginContextFragment = new OriginContextFragment();
@@ -154,24 +133,12 @@ namespace BH.UI.Revit.Engine
             SpatialElement aSpatialElement = Query.Element(energyAnalysisSpace.Document, energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
 
             string aName = Query.Name(aSpatialElement);
+            aSpace = Create.Space(aName);
+
             oM.Geometry.Point aPoint = null;
 
-            if (aSpatialElement != null)
-            {
-                Parameter aParameter = aSpatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
-                if (aParameter != null)
-                {
-                    string aName_Temp = aParameter.AsString();
-                    if(!string.IsNullOrWhiteSpace(aName_Temp))
-                        aName = aName_Temp;
-                }
-
-                if (aSpatialElement.Location != null)
-                    aPoint = (aSpatialElement.Location as LocationPoint).ToBHoM(pullSettings);
-
-            }
-
-            aSpace = Create.Space(aName);
+            if (aSpatialElement != null && aSpatialElement.Location != null)
+                aPoint = (aSpatialElement.Location as LocationPoint).ToBHoM(pullSettings);
 
             //Set ExtendedProperties
             OriginContextFragment aOriginContextFragment = new OriginContextFragment();
