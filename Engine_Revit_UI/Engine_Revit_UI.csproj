@@ -246,8 +246,10 @@
     <Compile Include="Query\BoundingBox.cs" />
     <Compile Include="Query\CompoundLayer.cs" />
     <Compile Include="Query\CompoundLayers.cs" />
+    <Compile Include="Query\FamilySymbols.cs" />
     <Compile Include="Query\HighElevation.cs" />
     <Compile Include="Query\IsValid.cs" />
+    <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\OpeningType.cs" />
     <Compile Include="Query\UpdatePanelTypeByCustomData.cs" />
     <Compile Include="Query\LowElevation.cs" />

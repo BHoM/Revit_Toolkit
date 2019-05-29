@@ -48,50 +48,51 @@ namespace BH.Engine.Adapters.Revit
         {
             XDocument aXDocument = null;
 
-            if (!File.Exists(path))
-                return null;
-
-            StorageInfo aStorageInfo = (StorageInfo)InvokeStorageRootMethod(null, "Open", path, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-            if (aStorageInfo != null)
+            if (File.Exists(path))
             {
-                StreamInfo[] aStreamInfoArray = aStorageInfo.GetStreams();
-                List<string> aNames = aStreamInfoArray.ToList().ConvertAll(x => x.Name);
-                foreach (StreamInfo aStreamInfo in aStreamInfoArray)
-                {
-                    if (aStreamInfo.Name.Equals("PartAtom"))
-                    {
-                        byte[] aBytes = ParseStreamInfo(aStreamInfo);
-                        try
-                        {
-                            aXDocument = XDocument.Parse(Encoding.UTF8.GetString(aBytes));
-                        }
-                        catch
-                        {
-                            aXDocument = null;
-                        }
+                StorageInfo aStorageInfo = (StorageInfo)InvokeStorageRootMethod(null, "Open", path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-                        if(aXDocument == null)
+                if (aStorageInfo != null)
+                {
+                    StreamInfo[] aStreamInfoArray = aStorageInfo.GetStreams();
+                    List<string> aNames = aStreamInfoArray.ToList().ConvertAll(x => x.Name);
+                    foreach (StreamInfo aStreamInfo in aStreamInfoArray)
+                    {
+                        if (aStreamInfo.Name.Equals("PartAtom"))
                         {
+                            byte[] aBytes = ParseStreamInfo(aStreamInfo);
                             try
                             {
-                                aXDocument = XDocument.Parse(Encoding.Default.GetString(aBytes));
+                                aXDocument = XDocument.Parse(Encoding.UTF8.GetString(aBytes));
                             }
                             catch
                             {
                                 aXDocument = null;
                             }
-                        }
-                        
-                        break;
-                    }
-                }
 
-                CloseStorageInfo(aStorageInfo);
+                            if (aXDocument == null)
+                            {
+                                try
+                                {
+                                    aXDocument = XDocument.Parse(Encoding.Default.GetString(aBytes));
+                                }
+                                catch
+                                {
+                                    aXDocument = null;
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+
+                    CloseStorageInfo(aStorageInfo);
+                }
             }
 
             RevitFilePreview aRevitFilePreview = new RevitFilePreview()
             {
+                Path = path,
                 XDocument = aXDocument
             };
 

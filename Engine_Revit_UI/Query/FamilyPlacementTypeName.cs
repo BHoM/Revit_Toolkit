@@ -20,42 +20,22 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Linq;
-using System.Collections.Generic;
-
-using BH.oM.Adapters.Revit.Generic;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
-
 using Autodesk.Revit.DB;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-
-        public static Family LoadFamily(this FamilyLoadSettings FamilyLoadSettings, Document document, string categoryName, string familyName)
+        
+        static public string FamilyPlacementTypeName(this Family family)
         {
-            if (FamilyLoadSettings == null || FamilyLoadSettings.FamilyLibrary == null || document == null)
+            if (family == null)
                 return null;
 
-            FamilyLibrary aFamilyLibrary = FamilyLoadSettings.FamilyLibrary;
-
-            IEnumerable<string> aPaths = BH.Engine.Adapters.Revit.Query.Paths(aFamilyLibrary, categoryName, familyName, null);
-            if (aPaths == null || aPaths.Count() == 0)
-                return null;
-
-            string aPath = aPaths.First();
-
-            Family aFamily= null;
-
-            if (document.LoadFamily(aPath, new FamilyLoadOptions(FamilyLoadSettings), out aFamily))
-                return aFamily;
-
-            return null;
+            return family.FamilyPlacementType.ToString();
         }
 
         /***************************************************/

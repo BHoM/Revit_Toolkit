@@ -20,42 +20,45 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Linq;
-using System.Collections.Generic;
+using System.ComponentModel;
 
-using BH.oM.Adapters.Revit.Generic;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.DataManipulation.Queries;
+using BH.oM.Reflection.Attributes;
+using BH.oM.Adapters.Revit.Elements;
 
-using Autodesk.Revit.DB;
-
-namespace BH.UI.Revit.Engine
+namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Family LoadFamily(this FamilyLoadSettings FamilyLoadSettings, Document document, string categoryName, string familyName)
+        static public string FamilyPlacementTypeName(this oM.Adapters.Revit.Generic.RevitFilePreview revitFilePreview)
         {
-            if (FamilyLoadSettings == null || FamilyLoadSettings.FamilyLibrary == null || document == null)
+            if (revitFilePreview == null || revitFilePreview.CustomData == null)
                 return null;
 
-            FamilyLibrary aFamilyLibrary = FamilyLoadSettings.FamilyLibrary;
-
-            IEnumerable<string> aPaths = BH.Engine.Adapters.Revit.Query.Paths(aFamilyLibrary, categoryName, familyName, null);
-            if (aPaths == null || aPaths.Count() == 0)
+            object aValue = null;
+            if (!revitFilePreview.CustomData.TryGetValue(Convert.FamilyPlacementTypeName, out aValue))
                 return null;
 
-            string aPath = aPaths.First();
+            return aValue as string;
+        }
 
-            Family aFamily= null;
+        /***************************************************/
 
-            if (document.LoadFamily(aPath, new FamilyLoadOptions(FamilyLoadSettings), out aFamily))
-                return aFamily;
+        static public string FamilyPlacementTypeName(this Family family)
+        {
+            if (family == null || family.CustomData == null)
+                return null;
 
-            return null;
+            object aValue = null;
+            if (!family.CustomData.TryGetValue(Convert.FamilyPlacementTypeName, out aValue))
+                return null;
+
+            return aValue as string;
         }
 
         /***************************************************/

@@ -118,6 +118,12 @@ namespace BH.UI.Revit.Engine
                 return aResult;
             }
 
+            if (type == typeof(oM.Adapters.Revit.Generic.RevitFilePreview))
+            {
+                aResult.Add(typeof(Autodesk.Revit.DB.Family));
+                return aResult;
+            }
+
             return null;
         }
 

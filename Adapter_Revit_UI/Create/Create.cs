@@ -118,81 +118,116 @@ namespace BH.UI.Revit.Adapter
                     continue;
                 }
 
+                Element aElement = null;
+
                 try
                 {
-                    Element aElement = null;
-
-                    string aUniqueId = BH.Engine.Adapters.Revit.Query.UniqueId(aBHoMObject);
-                    if (!string.IsNullOrEmpty(aUniqueId))
-                        aElement = document.GetElement(aUniqueId);
-
-                    if (aElement == null)
+                    if (aBHoMObject is oM.Adapters.Revit.Generic.RevitFilePreview)
                     {
-                        int aId = BH.Engine.Adapters.Revit.Query.ElementId(aBHoMObject);
-                        if (aId != -1)
-                            aElement = document.GetElement(new ElementId(aId));
-                    }
+                        oM.Adapters.Revit.Generic.RevitFilePreview aRevitFilePreview = (oM.Adapters.Revit.Generic.RevitFilePreview)aBHoMObject;
 
-                    if(aElement != null)
-                    {
-                        if (revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Replace || revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
+                        Family aFamily = null;
+
+                        if(revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
                         {
-                            if (aElement.Pinned)
+                            IEnumerable<FamilySymbol> aFamilySymbols = Query.FamilySymbols(aRevitFilePreview, document);
+                            if (aFamilySymbols != null)
                             {
-                                DeletePinnedElementError(aElement);
-                                continue;
+                                if (aFamilySymbols.Count() > 0)
+                                    aFamily = aFamilySymbols.First().Family;
+
+                                foreach (FamilySymbol aFamilySymbol in aFamilySymbols)
+                                    document.Delete(aFamilySymbol.Id);
                             }
 
-                            document.Delete(aElement.Id);
-                            aElement = null;
+                            SetIdentifiers(aBHoMObject, aFamily);
+
+                            IEnumerable<ElementId> aElementIds = aFamily.GetFamilySymbolIds();
+                            if (aElementIds == null || aElementIds.Count() == 0)
+                                document.Delete(aFamily.Id);
                         }
-                    }
-
-                    if (revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
-                        continue;
-
-                    if (aElement == null)
-                    {
-                        Type aType = aBHoMObject.GetType();
-
-                        if (aType != typeof(BHoMObject))
+                        else
                         {
-                            aElement = BH.UI.Revit.Engine.Convert.ToRevit(aBHoMObject as dynamic, document, aPushSettings);
-
-                            SetIdentifiers(aBHoMObject, aElement);
+                            FamilyLoadOptions aFamilyLoadOptions = new FamilyLoadOptions(revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Update);
+                            if (document.LoadFamily(aRevitFilePreview.Path, out aFamily))
+                            {
+                                SetIdentifiers(aBHoMObject, aFamily);
+                                aElement = aFamily;
+                            }
                         }
-
                     }
                     else
                     {
-                        aElement = Modify.SetParameters(aElement, aBHoMObject);
-                        if (aElement != null && aElement.Location != null)
+                        string aUniqueId = BH.Engine.Adapters.Revit.Query.UniqueId(aBHoMObject);
+                        if (!string.IsNullOrEmpty(aUniqueId))
+                            aElement = document.GetElement(aUniqueId);
+
+                        if (aElement == null)
                         {
-                            try
+                            int aId = BH.Engine.Adapters.Revit.Query.ElementId(aBHoMObject);
+                            if (aId != -1)
+                                aElement = document.GetElement(new ElementId(aId));
+                        }
+
+                        if (aElement != null)
+                        {
+                            if (revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Replace || revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
                             {
-                                Location aLocation = Modify.Move(aElement.Location, aBHoMObject as dynamic, aPushSettings);
+                                if (aElement.Pinned)
+                                {
+                                    DeletePinnedElementError(aElement);
+                                    continue;
+                                }
+
+                                document.Delete(aElement.Id);
+                                aElement = null;
                             }
-                            catch (Exception aException)
+                        }
+
+                        if (revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
+                            continue;
+
+                        if (aElement == null)
+                        {
+                            Type aType = aBHoMObject.GetType();
+
+                            if (aType != typeof(BHoMObject))
                             {
-                                ObjectNotMovedWarning(aBHoMObject);
+                                aElement = BH.UI.Revit.Engine.Convert.ToRevit(aBHoMObject as dynamic, document, aPushSettings);
+                                SetIdentifiers(aBHoMObject, aElement);
                             }
 
                         }
+                        else
+                        {
+                            aElement = Modify.SetParameters(aElement, aBHoMObject);
+                            if (aElement != null && aElement.Location != null)
+                            {
+                                try
+                                {
+                                    Location aLocation = Modify.Move(aElement.Location, aBHoMObject as dynamic, aPushSettings);
+                                }
+                                catch (Exception aException)
+                                {
+                                    ObjectNotMovedWarning(aBHoMObject);
+                                }
 
-                        if(aBHoMObject is IView || aBHoMObject is oM.Adapters.Revit.Elements.Family || aBHoMObject is InstanceProperties)
-                            aElement.Name = aBHoMObject.Name;
-                    }
+                            }
 
-                    //Assign Tags
-                    if (aElement != null && !string.IsNullOrEmpty(aTagsParameterName))
-                    {
-                        Modify.SetTags(aElement, aBHoMObject, aTagsParameterName);
+                            if (aBHoMObject is IView || aBHoMObject is oM.Adapters.Revit.Elements.Family || aBHoMObject is InstanceProperties)
+                                aElement.Name = aBHoMObject.Name;
+                        }
                     }
                 }
                 catch (Exception aException)
                 {
                     ObjectNotCreatedCreateError(aBHoMObject);
+                    aElement = null;
                 }
+
+                //Assign Tags
+                if (aElement != null && !string.IsNullOrEmpty(aTagsParameterName))
+                    Modify.SetTags(aElement, aBHoMObject, aTagsParameterName);
             }
 
             if (UIContralledApplication != null)
@@ -260,28 +295,55 @@ namespace BH.UI.Revit.Adapter
             SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.ElementId, element.Id.IntegerValue);
             SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.AdapterId, element.UniqueId);
 
-            int aWorksetId = WorksetId.InvalidWorksetId.IntegerValue;
-            if (element.Document != null && element.Document.IsWorkshared)
+            if (element is Family)
             {
-                WorksetId aWorksetId_Revit = element.WorksetId;
-                if (aWorksetId_Revit != null)
-                    aWorksetId = aWorksetId_Revit.IntegerValue;
+                Family aFamily = (Family)element;
+
+                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName, Query.FamilyPlacementTypeName(aFamily));
+                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyName, aFamily.Name);
+                if (aFamily.FamilyCategory != null)
+                    SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.CategoryName, aFamily.FamilyCategory.Name);
             }
-            SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.WorksetId, aWorksetId);
+            else
+            {
+                int aWorksetId = WorksetId.InvalidWorksetId.IntegerValue;
+                if (element.Document != null && element.Document.IsWorkshared)
+                {
+                    WorksetId aWorksetId_Revit = element.WorksetId;
+                    if (aWorksetId_Revit != null)
+                        aWorksetId = aWorksetId_Revit.IntegerValue;
+                }
+                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.WorksetId, aWorksetId);
 
-            Parameter aParameter = null;
+                Parameter aParameter = null;
 
-            aParameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
-            if (aParameter != null)
-                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyName, aParameter.AsValueString());
+                aParameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
+                if (aParameter != null)
+                {
+                    string aValue = aParameter.AsValueString();
+                    if (string.IsNullOrEmpty(aValue))
+                        SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyName, aValue);
+                }
 
-            aParameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
-            if (aParameter != null)
-                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyTypeName, aParameter.AsValueString());
 
-            aParameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
-            if (aParameter != null)
-                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.CategoryName, aParameter.AsValueString());
+                aParameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
+                if (aParameter != null)
+                {
+                    string aValue = aParameter.AsValueString();
+                    if (string.IsNullOrEmpty(aValue))
+                        SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyTypeName, aValue);
+                }
+
+
+                aParameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
+                if (aParameter != null)
+                {
+                    string aValue = aParameter.AsValueString();
+                    if (string.IsNullOrEmpty(aValue))
+                        SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.CategoryName, aValue);
+                }
+            }
+
         }
 
         /***************************************************/
@@ -291,10 +353,49 @@ namespace BH.UI.Revit.Adapter
             if (bHoMObject == null || string.IsNullOrEmpty(customDataName))
                 return;
 
-            if (bHoMObject.CustomData.ContainsKey(customDataName))
-                bHoMObject.CustomData[customDataName] = value;
-            else
-                bHoMObject.CustomData.Add(customDataName, value);
+            bHoMObject.CustomData[customDataName] = value;
+        }
+
+        /***************************************************/
+        /**** Private Classes                           ****/
+        /***************************************************/
+
+        private class FamilyLoadOptions : IFamilyLoadOptions
+        {
+            private bool pUpdate;
+
+            public FamilyLoadOptions(bool update)
+            {
+                pUpdate = update;
+            }
+
+            public bool OnFamilyFound(bool familyInUse, out bool overwriteParameterValues)
+            {
+                if (pUpdate)
+                {
+                    overwriteParameterValues = false;
+                    return false;
+
+                }
+
+                overwriteParameterValues = true;
+                return true;
+            }
+
+            public bool OnSharedFamilyFound(Family sharedFamily, bool familyInUse, out FamilySource source, out bool overwriteParameterValues)
+            {
+                if (pUpdate)
+                {
+                    overwriteParameterValues = false;
+                    source = FamilySource.Project;
+                    return false;
+
+                }
+
+                overwriteParameterValues = true;
+                source = FamilySource.Family;
+                return true;
+            }
         }
 
         /***************************************************/

@@ -31,6 +31,7 @@ namespace BH.oM.Adapters.Revit.Generic
         /**** Public Properties                        ****/
         /***************************************************/
 
+        public string Path { get; set; } = null;
         public XDocument XDocument { get; set; } = null;
 
         /***************************************************/

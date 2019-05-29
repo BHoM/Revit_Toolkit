@@ -44,11 +44,11 @@ namespace BH.UI.Revit.Engine
 
             FamilyLibrary aFamilyLibrary = FamilyLoadSettings.FamilyLibrary;
 
-            List<string> aPathList = BH.Engine.Adapters.Revit.Query.Paths(aFamilyLibrary, categoryName, familyName, familyTypeName);
-            if (aPathList == null || aPathList.Count == 0)
+            IEnumerable<string> aPaths = BH.Engine.Adapters.Revit.Query.Paths(aFamilyLibrary, categoryName, familyName, familyTypeName);
+            if (aPaths == null || aPaths.Count() == 0)
                 return null;
 
-            string aPath = aPathList.First();
+            string aPath = aPaths.First();
 
             string aTypeName = familyTypeName;
             if (string.IsNullOrEmpty(aTypeName))
