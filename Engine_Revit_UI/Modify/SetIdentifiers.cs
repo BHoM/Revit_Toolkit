@@ -61,6 +61,8 @@ namespace BH.UI.Revit.Engine
 
                 if (aFamily.FamilyCategory != null)
                     aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.CategoryName, aFamily.FamilyCategory.Name);
+
+                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName, Query.FamilyPlacementTypeName(aFamily));
             }
             else
             {

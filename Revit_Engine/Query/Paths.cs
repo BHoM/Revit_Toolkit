@@ -38,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Returns all Paths in FamilyLibrary of given Category, Family and Family Type")]
         [Input("familyLibrary", "FamilyLibrary")]
         [Output("Paths")]
-        public static List<string> Paths(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null, string typeName = null)
+        public static IEnumerable<string> Paths(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null, string typeName = null)
         {
             if (familyLibrary == null || familyLibrary.Dictionary == null || familyLibrary.Dictionary.Keys.Count == 0)
                 return null;
@@ -86,7 +86,7 @@ namespace BH.Engine.Adapters.Revit
                 }
             }
 
-            return aPathList;
+            return aPathList.Distinct();
         }
 
         /***************************************************/

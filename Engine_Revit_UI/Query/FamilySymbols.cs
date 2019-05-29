@@ -20,42 +20,59 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Linq;
 using System.Collections.Generic;
-
-using BH.oM.Adapters.Revit.Generic;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
+using System.Linq;
 
 using Autodesk.Revit.DB;
 
+
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-
-        public static Family LoadFamily(this FamilyLoadSettings FamilyLoadSettings, Document document, string categoryName, string familyName)
+        
+        public static IEnumerable<FamilySymbol> FamilySymbols(this oM.Adapters.Revit.Generic.RevitFilePreview revitFilePreview, Document document)
         {
-            if (FamilyLoadSettings == null || FamilyLoadSettings.FamilyLibrary == null || document == null)
+            if (document == null || revitFilePreview == null)
                 return null;
 
-            FamilyLibrary aFamilyLibrary = FamilyLoadSettings.FamilyLibrary;
-
-            IEnumerable<string> aPaths = BH.Engine.Adapters.Revit.Query.Paths(aFamilyLibrary, categoryName, familyName, null);
-            if (aPaths == null || aPaths.Count() == 0)
+            IEnumerable<Family> aFamilies = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>();
+            if (aFamilies == null)
                 return null;
 
-            string aPath = aPaths.First();
+            string aCategoryName = BH.Engine.Adapters.Revit.Query.CategoryName(revitFilePreview);
 
-            Family aFamily= null;
+            string aName = System.IO.Path.GetFileNameWithoutExtension(revitFilePreview.Path);
+            if (string.IsNullOrEmpty(aName))
+                return null;
 
-            if (document.LoadFamily(aPath, new FamilyLoadOptions(FamilyLoadSettings), out aFamily))
-                return aFamily;
+            foreach (Family aFamily in aFamilies)
+            {
+                if (aFamily.IsInPlace || !aFamily.IsUserCreated || aFamily.FamilyCategory == null)
+                    continue;
+
+                if (!string.IsNullOrEmpty(aCategoryName) && !aFamily.FamilyCategory.Name.Equals(aCategoryName))
+                    continue;
+
+                if(aFamily.Name == aName)
+                {
+                    IEnumerable<ElementId> aElementIds = aFamily.GetFamilySymbolIds();
+                    if (aElementIds == null)
+                        return null;
+
+                    List<FamilySymbol> aResult = new List<FamilySymbol>();
+                    foreach (ElementId aElementId in aElementIds)
+                        aResult.Add(document.GetElement(aElementId) as FamilySymbol);
+
+                    return aResult;
+                }
+            }
 
             return null;
+
         }
 
         /***************************************************/

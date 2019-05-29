@@ -21,41 +21,45 @@
  */
 
 using System.Linq;
+using System.ComponentModel;
 using System.Collections.Generic;
 
 using BH.oM.Adapters.Revit.Generic;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 
-using Autodesk.Revit.DB;
 
-namespace BH.UI.Revit.Engine
+namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Family LoadFamily(this FamilyLoadSettings FamilyLoadSettings, Document document, string categoryName, string familyName)
+        [Description("Returns all RevitFilePreviews for FamilyLibrary of given Category, Family and Family Type Name")]
+        [Input("familyLibrary", "FamilyLibrary")]
+        [Input("categoryName", "Family Category Name")]
+        [Input("familyName", "Family Name")]
+        [Input("familyTypeName", "FamilyTypeName")]
+        [Output("RevitFilePreviews")]
+        public static List<RevitFilePreview> RevitFilePreviews(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null, string familyTypeName = null)
         {
-            if (FamilyLoadSettings == null || FamilyLoadSettings.FamilyLibrary == null || document == null)
+            if (familyLibrary == null || familyLibrary.Dictionary == null || familyLibrary.Dictionary.Keys.Count == 0)
                 return null;
 
-            FamilyLibrary aFamilyLibrary = FamilyLoadSettings.FamilyLibrary;
-
-            IEnumerable<string> aPaths = BH.Engine.Adapters.Revit.Query.Paths(aFamilyLibrary, categoryName, familyName, null);
-            if (aPaths == null || aPaths.Count() == 0)
+            IEnumerable<string> aPaths = familyLibrary.Paths(categoryName, familyName, familyTypeName);
+            if (aPaths == null)
                 return null;
 
-            string aPath = aPaths.First();
+            List<RevitFilePreview> aResult = new List<RevitFilePreview>();
+            if (aPaths.Count() == 0)
+                return aResult;
 
-            Family aFamily= null;
+            foreach (string aPath in aPaths)
+                aResult.Add(Create.RevitFilePreview(aPath));
 
-            if (document.LoadFamily(aPath, new FamilyLoadOptions(FamilyLoadSettings), out aFamily))
-                return aFamily;
 
-            return null;
+            return aResult;
         }
 
         /***************************************************/

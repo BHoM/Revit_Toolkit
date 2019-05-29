@@ -88,5 +88,18 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
+
+        [Description("Gets Revit Family name from Family Type Full Name in format [Family Name] : [Family Type Name].")]
+        [Input("RevitFilePreview", "RevitFilePreview")]
+        [Output("FamilyName")]
+        public static string FamilyName(this oM.Adapters.Revit.Generic.RevitFilePreview revitFilePreview)
+        {
+            if (revitFilePreview == null || string.IsNullOrWhiteSpace(revitFilePreview.Path))
+                return null;
+
+            return System.IO.Path.GetFileNameWithoutExtension(revitFilePreview.Path);
+        }
+
+        /***************************************************/
     }
 }
