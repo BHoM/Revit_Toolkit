@@ -58,7 +58,7 @@ namespace BH.UI.Revit.Engine
                         
                 }
 
-                result = wallCurves.IJoin().ConvertAll(c => c as ICurve);
+                result = BH.Engine.Geometry.Compute.IJoin(wallCurves).ConvertAll(c => c as ICurve);
             }
 
             else
@@ -91,7 +91,7 @@ namespace BH.UI.Revit.Engine
                                         }
                                     }
 
-                                    result.AddRange(aPolyCurve.Curves.IJoin().Select(c => c.Translate(toWallLine)));
+                                    result.AddRange(BH.Engine.Geometry.Compute.IJoin(aPolyCurve.Curves).Select(c => c.Translate(toWallLine)));
                                 }
                                 break;                          //TODO: is this OK?
                             }
@@ -133,7 +133,7 @@ namespace BH.UI.Revit.Engine
                     }
                 }
 
-                result = floorCurves.IJoin().ConvertAll(c => c as oM.Geometry.ICurve);
+                result = BH.Engine.Geometry.Compute.IJoin(floorCurves).ConvertAll(c => c as oM.Geometry.ICurve);
             }
 
             else
@@ -164,7 +164,7 @@ namespace BH.UI.Revit.Engine
                                         }
                                     }
 
-                                    result.AddRange(aPolyCurve.Curves.IJoin().Select(c => c.Translate(toFloorLine)));
+                                    result.AddRange(BH.Engine.Geometry.Compute.IJoin(aPolyCurve.Curves).Select(c => c.Translate(toFloorLine)));
                                 }
                                 break;                          //TODO: is this OK?
                             }

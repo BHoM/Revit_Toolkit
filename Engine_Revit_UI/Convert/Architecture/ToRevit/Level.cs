@@ -50,7 +50,11 @@ namespace BH.UI.Revit.Engine
 
             if(aLevel == null)
             {
-                aLevel = Level.Create(document, level.Elevation);
+                double aElevation = level.Elevation;
+                if(pushSettings.ConvertUnits)
+                    aElevation = Convert.FromSI(aElevation, UnitType.UT_Length);
+
+                aLevel = Level.Create(document, aElevation);
                 aLevel.Name = level.Name;
             }
 
