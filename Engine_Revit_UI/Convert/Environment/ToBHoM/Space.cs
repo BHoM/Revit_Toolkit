@@ -73,10 +73,7 @@ namespace BH.UI.Revit.Engine
             if (aSpace != null)
                 return aSpace;
 
-            string aName = null;
-            Parameter aParameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
-            if (aParameter != null)
-                aName = aParameter.AsString();
+            string aName = Query.Name(spatialElement);
 
             //Create the Space
             aSpace = Create.Space(aName);
@@ -136,24 +133,12 @@ namespace BH.UI.Revit.Engine
             SpatialElement aSpatialElement = Query.Element(energyAnalysisSpace.Document, energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
 
             string aName = Query.Name(aSpatialElement);
+            aSpace = Create.Space(aName);
+
             oM.Geometry.Point aPoint = null;
 
-            if (aSpatialElement != null)
-            {
-                Parameter aParameter = aSpatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
-                if (aParameter != null)
-                {
-                    string aName_Temp = aParameter.AsString();
-                    if(!string.IsNullOrWhiteSpace(aName_Temp))
-                        aName = aName_Temp;
-                }
-
-                if (aSpatialElement.Location != null)
-                    aPoint = (aSpatialElement.Location as LocationPoint).ToBHoM(pullSettings);
-
-            }
-
-            aSpace = Create.Space(aName);
+            if (aSpatialElement != null && aSpatialElement.Location != null)
+                aPoint = (aSpatialElement.Location as LocationPoint).ToBHoM(pullSettings);
 
             //Set ExtendedProperties
             OriginContextFragment aOriginContextFragment = new OriginContextFragment();
@@ -193,9 +178,6 @@ namespace BH.UI.Revit.Engine
                 aSpace = Modify.SetCustomData(aSpace, "Inner Volume", aInnerVolume) as Space;
                 aSpace = Modify.SetCustomData(aSpace, "Analytical Volume", aAnalyticalVolume) as Space;
             }
-
-            if (aSpace.CustomData.ContainsKey("Number"))
-                aSpace.Name += aSpace.CustomData["Number"].ToString();
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSpace);
             aSpace = aSpace.UpdateValues(pullSettings, energyAnalysisSpace) as Space;
