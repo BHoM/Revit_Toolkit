@@ -321,7 +321,7 @@ namespace BH.UI.Revit.Adapter
                 if (aParameter != null)
                 {
                     string aValue = aParameter.AsValueString();
-                    if (string.IsNullOrEmpty(aValue))
+                    if (!string.IsNullOrEmpty(aValue))
                         SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyName, aValue);
                 }
 
@@ -330,7 +330,7 @@ namespace BH.UI.Revit.Adapter
                 if (aParameter != null)
                 {
                     string aValue = aParameter.AsValueString();
-                    if (string.IsNullOrEmpty(aValue))
+                    if (!string.IsNullOrEmpty(aValue))
                         SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyTypeName, aValue);
                 }
 
@@ -339,7 +339,7 @@ namespace BH.UI.Revit.Adapter
                 if (aParameter != null)
                 {
                     string aValue = aParameter.AsValueString();
-                    if (string.IsNullOrEmpty(aValue))
+                    if (!string.IsNullOrEmpty(aValue))
                         SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.CategoryName, aValue);
                 }
             }
