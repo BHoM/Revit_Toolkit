@@ -321,7 +321,10 @@
     <Compile Include="Query\WorksetIds.cs" />
     <Compile Include="Query\WorksetNames.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Convert\Physical\ToBHoM\" />
+    <Folder Include="Convert\Physical\ToRevit\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
       <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
