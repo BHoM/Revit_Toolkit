@@ -34,32 +34,31 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        //internal static FamilyInstance ToRevitFamilyInstance(this IFramingElement framingElement, Document document, PushSettings pushSettings = null)
-        //{
-        //    //if (framingElement == null || document == null)
-        //    //    return null;
+        internal static FamilyInstance ToRevitFamilyInstance(this IFramingElement framingElement, Document document, PushSettings pushSettings = null)
+        {
+            if (framingElement == null || document == null)
+                return null;
 
-        //    //if (framingElement is Column)
-        //    //{
+            if (framingElement is Column)
+            {
+                return ToRevitFamilyInstance_Column(framingElement, document, pushSettings);
+            }
+            else if (framingElement is Beam || framingElement is Bracing || framingElement is Cable)
+            {
+                return ToRevitFamilyInstance_Framing(framingElement, document, pushSettings);
+            }
+            else if (framingElement is Pile)
+            {
+                BH.Engine.Reflection.Compute.RecordError(string.Format("Push of pile foundations is not supported in current version of BHoM. BHoM element Guid: {0}", framingElement.BHoM_Guid));
+                return null;
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordError(string.Format("Push of {0} is not supported in current version of BHoM. BHoM element Guid: {1}",framingElement.GetType(), framingElement.BHoM_Guid));
+                return null;
+            }
 
-        //    //}
-
-        //    //switch (framingElement.StructuralUsage)
-        //    //{
-        //    //    case StructuralUsage1D.Column:
-        //    //        return framingElement.ToRevitFamilyInstance_Column(document, pushSettings);
-        //    //    case StructuralUsage1D.Beam:
-        //    //    case StructuralUsage1D.Brace:
-        //    //    case StructuralUsage1D.Cable:
-        //    //        return framingElement.ToRevitFamilyInstance_Framing(document, pushSettings);
-        //    //    case StructuralUsage1D.Pile:
-        //    //        BH.Engine.Reflection.Compute.RecordError(string.Format("Push of pile foundations is not supported in current version of BHoM. BHoM element Guid: {0}", framingElement.BHoM_Guid));
-        //    //        return null;
-        //    //    default:
-        //    //        BH.Engine.Reflection.Compute.RecordWarning(string.Format("Structural usage type is not set. An attempt to create a structural framing element is being made. BHoM element Guid: {0}", framingElement.BHoM_Guid));
-        //    //        return framingElement.ToRevitFamilyInstance_Framing(document, pushSettings);
-        //    //}
-        //}
+        }
 
         /***************************************************/
         /****              Private methods              ****/
@@ -155,90 +154,82 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        //private static FamilyInstance ToRevitFamilyInstance_Framing(this FramingElement framingElement, Document document, PushSettings pushSettings = null)
-        //{
-        //    if (framingElement == null || document == null)
-        //        return null;
+        private static FamilyInstance ToRevitFamilyInstance_Framing(this IFramingElement framingElement, Document document, PushSettings pushSettings = null)
+        {
+            if (framingElement == null || document == null)
+                return null;
 
-        //    FamilyInstance aFamilyInstance = pushSettings.FindRefObject<FamilyInstance>(document, framingElement.BHoM_Guid);
-        //    if (aFamilyInstance != null)
-        //        return aFamilyInstance;
+            FamilyInstance aFamilyInstance = pushSettings.FindRefObject<FamilyInstance>(document, framingElement.BHoM_Guid);
+            if (aFamilyInstance != null)
+                return aFamilyInstance;
 
-        //    pushSettings.DefaultIfNull();
+            pushSettings.DefaultIfNull();
 
-        //    object aCustomDataValue = null;
+            object aCustomDataValue = null;
 
-        //    Curve aCurve = framingElement.LocationCurve.ToRevitCurve(pushSettings);
-        //    Level aLevel = null;
+            Curve aCurve = framingElement.Location.ToRevitCurve(pushSettings);
+            Level aLevel = null;
 
-        //    aCustomDataValue = framingElement.CustomDataValue("Reference Level");
-        //    if (aCustomDataValue != null && aCustomDataValue is int)
-        //    {
-        //        ElementId aElementId = new ElementId((int)aCustomDataValue);
-        //        aLevel = document.GetElement(aElementId) as Level;
-        //    }
+            aCustomDataValue = framingElement.CustomDataValue("Reference Level");
+            if (aCustomDataValue != null && aCustomDataValue is int)
+            {
+                ElementId aElementId = new ElementId((int)aCustomDataValue);
+                aLevel = document.GetElement(aElementId) as Level;
+            }
 
-        //    if (aLevel == null)
-        //        aLevel = Query.BottomLevel(framingElement.LocationCurve, document, pushSettings.ConvertUnits);
+            if (aLevel == null)
+                aLevel = Query.BottomLevel(framingElement.Location, document, pushSettings.ConvertUnits);
 
-        //    FamilySymbol aFamilySymbol = framingElement.Property.ToRevitFamilySymbol_Framing(document, pushSettings);
+            FamilySymbol aFamilySymbol = framingElement.Property.ToRevitFamilySymbol_Framing(document, pushSettings);
 
-        //    if (aFamilySymbol == null)
-        //    {
-        //        aFamilySymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralFraming, pushSettings.FamilyLoadSettings) as FamilySymbol;
+            if (aFamilySymbol == null)
+            {
+                aFamilySymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralFraming, pushSettings.FamilyLoadSettings) as FamilySymbol;
 
-        //        if (aFamilySymbol == null)
-        //        {
-        //            Compute.ElementTypeNotFoundWarning(framingElement);
-        //            return null;
-        //        }
-        //    }
+                if (aFamilySymbol == null)
+                {
+                    Compute.ElementTypeNotFoundWarning(framingElement);
+                    return null;
+                }
+            }
 
-        //    FamilyPlacementType aFamilyPlacementType = aFamilySymbol.Family.FamilyPlacementType;
-        //    if (aFamilyPlacementType != FamilyPlacementType.CurveBased && aFamilyPlacementType != FamilyPlacementType.CurveBasedDetail && aFamilyPlacementType != FamilyPlacementType.CurveDrivenStructural && aFamilyPlacementType != FamilyPlacementType.TwoLevelsBased)
-        //    {
-        //        Compute.InvalidFamilyPlacementTypeWarning(framingElement, aFamilySymbol);
-        //        return null;
-        //    }
+            FamilyPlacementType aFamilyPlacementType = aFamilySymbol.Family.FamilyPlacementType;
+            if (aFamilyPlacementType != FamilyPlacementType.CurveBased && aFamilyPlacementType != FamilyPlacementType.CurveBasedDetail && aFamilyPlacementType != FamilyPlacementType.CurveDrivenStructural && aFamilyPlacementType != FamilyPlacementType.TwoLevelsBased)
+            {
+                Compute.InvalidFamilyPlacementTypeWarning(framingElement, aFamilySymbol);
+                return null;
+            }
 
-        //    switch (framingElement.StructuralUsage)
-        //    {
-        //        case StructuralUsage1D.Beam:
-        //            aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Beam);
-        //            break;
-        //        case StructuralUsage1D.Brace:
-        //            aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Brace);
-        //            break;
-        //        case StructuralUsage1D.Cable:
-        //            aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Brace);
-        //            break;
-        //        default:
-        //            aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.UnknownFraming);
-        //            break;
-        //    }
+            if (framingElement is Beam)
+                aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Beam);
+            else if (framingElement is Bracing || framingElement is Cable)
+                aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Brace);
+            else
+                aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.UnknownFraming);
 
-        //    aFamilyInstance.CheckIfNullPush(framingElement);
-        //    if (aFamilyInstance == null)
-        //        return null;
 
-        //    if (pushSettings.CopyCustomData)
-        //    {
-        //        BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
-        //        {
-        //            BuiltInParameter.STRUCTURAL_BEAM_END0_ELEVATION,
-        //            BuiltInParameter.STRUCTURAL_BEAM_END1_ELEVATION,
-        //            BuiltInParameter.ELEM_FAMILY_PARAM,
-        //            BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
-        //            BuiltInParameter.ALL_MODEL_IMAGE,
-        //            BuiltInParameter.ELEM_TYPE_PARAM
-        //        };
-        //        Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
-        //    }
+            aFamilyInstance.CheckIfNullPush(framingElement);
+            if (aFamilyInstance == null)
+                return null;
 
-        //    pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElement, aFamilyInstance);
+            if (pushSettings.CopyCustomData)
+            {
+                BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
+                {
+                    BuiltInParameter.STRUCTURAL_BEAM_END0_ELEVATION,
+                    BuiltInParameter.STRUCTURAL_BEAM_END1_ELEVATION,
+                    BuiltInParameter.ELEM_FAMILY_PARAM,
+                    BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
+                    BuiltInParameter.ALL_MODEL_IMAGE,
+                    BuiltInParameter.ELEM_TYPE_PARAM
+                };
+                Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
+            }
 
-        //    return aFamilyInstance;
-        //}
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElement, aFamilyInstance);
+
+            return aFamilyInstance;
+        }
 
         /***************************************************/
     }
