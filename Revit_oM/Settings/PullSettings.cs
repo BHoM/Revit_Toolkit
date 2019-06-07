@@ -32,7 +32,7 @@ namespace BH.oM.Adapters.Revit.Settings
         /**** Public Properties                        ****/
         /***************************************************/
 
-        public Enums.Discipline Discipline { get; set; } = Enums.Discipline.Structural;
+        public Enums.Discipline Discipline { get; set; } = Enums.Discipline.Physical;
         public bool CopyCustomData { get; set; } = true;
         public bool ConvertUnits { get; set; } = true;
         public MapSettings MapSettings { get; set; } = null;

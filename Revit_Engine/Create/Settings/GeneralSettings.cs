@@ -41,7 +41,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("tagsParameterName", "Name of the parameter which stores Tags assigned to BHoM object")]
         [Input("suppressFailureMessages", "Revit will suppress pop up messages")]
         [Output("GeneralSettings")]
-        public static GeneralSettings GeneralSettings(Discipline defaultDiscipline = Discipline.Undefined, bool replace = true, string tagsParameterName = "BHE_Tags", bool suppressFailureMessages = false)
+        public static GeneralSettings GeneralSettings(Discipline defaultDiscipline = Discipline.Physical, bool replace = true, string tagsParameterName = "BHE_Tags", bool suppressFailureMessages = false)
         {
             GeneralSettings aGeneralSettings = new GeneralSettings()
             {
@@ -64,7 +64,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("tagsParameterName", "Name of the parameter which stores Tags assigned to BHoM object")]
         [Input("suppressFailureMessages", "Revit will suppress pop up messages")]
         [Output("GeneralSettings")]
-        public static GeneralSettings GeneralSettings(Discipline defaultDiscipline = Discipline.Undefined, AdapterMode adapterMode = AdapterMode.Replace, string tagsParameterName = "BHE_Tags", bool suppressFailureMessages = false)
+        public static GeneralSettings GeneralSettings(Discipline defaultDiscipline = Discipline.Physical, AdapterMode adapterMode = AdapterMode.Replace, string tagsParameterName = "BHE_Tags", bool suppressFailureMessages = false)
         {
             return new GeneralSettings()
             {
