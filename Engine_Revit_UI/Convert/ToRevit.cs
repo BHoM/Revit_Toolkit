@@ -168,7 +168,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this FramingElement framingElement, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this BH.oM.Physical.Elements.IFramingElement framingElement, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
