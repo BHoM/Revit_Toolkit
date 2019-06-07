@@ -31,7 +31,7 @@ namespace BH.oM.Adapters.Revit.Settings
         /**** Public Properties                        ****/
         /***************************************************/
 
-        public Discipline DefaultDiscipline { get; set; } = Discipline.Undefined;
+        public Discipline DefaultDiscipline { get; set; } = Discipline.Physical;
         public AdapterMode AdapterMode { get; set; } = AdapterMode.Replace;
         public string TagsParameterName { get; set; } = "BHE_Tags";
         public bool SuppressFailureMessages { get; set; } = false;

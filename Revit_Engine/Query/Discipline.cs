@@ -54,6 +54,9 @@ namespace BH.Engine.Adapters.Revit
             if (type.Namespace.StartsWith("BH.oM.Architecture"))
                 return oM.Adapters.Revit.Enums.Discipline.Architecture;
 
+            if (type.Namespace.StartsWith("BH.oM.Physical"))
+                return oM.Adapters.Revit.Enums.Discipline.Physical;
+
             return null;
         }
 
