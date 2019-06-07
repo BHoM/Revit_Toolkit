@@ -80,7 +80,7 @@ namespace BH.UI.Revit.Engine
             IEnumerable<BuiltInCategory> aBuiltInCategories = null;
             if (BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(type, typeof(Element)))
                 aTypes = new List<Type>() { type };
-            else if (BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(type, typeof(BHoMObject)))
+            else if (typeof(IBHoMObject).IsAssignableFrom(type))//BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(type, typeof(IBHoMObject)))
             {
                 aTypes = RevitTypes(type);
                 aBuiltInCategories = BuiltInCategories(type);

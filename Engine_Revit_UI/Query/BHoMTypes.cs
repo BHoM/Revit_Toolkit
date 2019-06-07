@@ -28,7 +28,6 @@ using Autodesk.Revit.DB.Structure.StructuralSections;
 
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Fragments;
-using BH.oM.Structure.Elements;
 using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Adapters.Revit.Elements;
@@ -60,20 +59,28 @@ namespace BH.UI.Revit.Engine
                 //Structural framing
                 switch ((BuiltInCategory)element.Category.Id.IntegerValue)
                 {
-                    case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming:
+
                     //case BuiltInCategory.OST_StructuralFoundation:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Columns:
+                        aResult.Add(typeof(BH.oM.Physical.Elements.IFramingElement));
+                        aResult.Add(typeof(BH.oM.Physical.Elements.Column));
+                        return aResult;
                     case Autodesk.Revit.DB.BuiltInCategory.OST_VerticalBracing:
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_HorizontalBracing:
+                        aResult.Add(typeof(BH.oM.Physical.Elements.IFramingElement));
+                        aResult.Add(typeof(BH.oM.Physical.Elements.Bracing));
+                        return aResult;
+                    case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Truss:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralTruss:
-                    case Autodesk.Revit.DB.BuiltInCategory.OST_HorizontalBracing:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Purlin:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Joist:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Girder:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther:
-                        aResult.Add(typeof(FramingElement));
+                        aResult.Add(typeof(BH.oM.Physical.Elements.IFramingElement));
+                        aResult.Add(typeof(BH.oM.Physical.Elements.Beam));
                         return aResult;
                 }
 
