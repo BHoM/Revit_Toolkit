@@ -96,6 +96,7 @@ namespace BH.UI.Revit.Engine
             switch (pullSettings.Discipline)
             {
                 case Discipline.Structural:
+                case Discipline.Physical:
                     return familyInstance.ToBHoMFramingElement(pullSettings);
                 case Discipline.Environmental:
                     return familyInstance.ToBHoMEnvironmentPanel(pullSettings);
