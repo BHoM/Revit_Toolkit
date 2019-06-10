@@ -77,6 +77,13 @@ namespace BH.UI.Revit.Engine
 
             object aCustomDataValue = null;
 
+            if (!(framingElement.Location is BH.oM.Geometry.Line))
+            {
+                BH.Engine.Reflection.Compute.RecordError(string.Format("Revit does only support Line based columns. Try pushing your element as a beam instead. Failing for object with BHoMGuid: {0}", framingElement.BHoM_Guid));
+                return null;
+            }
+
+
             Curve aCurve = framingElement.Location.ToRevitCurve(pushSettings);
             Level aLevel = null;
 
@@ -168,6 +175,25 @@ namespace BH.UI.Revit.Engine
             object aCustomDataValue = null;
 
             Curve aCurve = framingElement.Location.ToRevitCurve(pushSettings);
+
+            bool isVertical = false;
+            //Check if curve is planar, and if so, if it is vertical. This is used to determine if the orientation angle needs
+            //To be subtracted by 90 degrees or not.
+            if (!(framingElement.Location is BH.oM.Geometry.Line))
+            {
+                CurveLoop curveLoop = CurveLoop.Create(new Curve[] { aCurve });
+                if (curveLoop.HasPlane())
+                {
+                    Plane curvePlane = curveLoop.GetPlane();
+                    isVertical = Math.Abs(curvePlane.Normal.DotProduct(XYZ.BasisZ)) < BH.oM.Geometry.Tolerance.Angle;
+                }
+                else
+                {
+                    BH.Engine.Reflection.Compute.RecordError(string.Format("Revit framing elements does only support planar curves. Failing for object with BHoMGuid: {0}", framingElement.BHoM_Guid));
+                    return null;
+                }
+            }
+
             Level aLevel = null;
 
             aCustomDataValue = framingElement.CustomDataValue("Reference Level");
@@ -211,6 +237,26 @@ namespace BH.UI.Revit.Engine
             aFamilyInstance.CheckIfNullPush(framingElement);
             if (aFamilyInstance == null)
                 return null;
+
+            oM.Physical.FramingProperties.ConstantFramingProperty barProperty = framingElement.Property as oM.Physical.FramingProperties.ConstantFramingProperty;
+            if (barProperty != null)
+            {
+                double orientationAngle = barProperty.OrientationAngle;
+                if (isVertical)
+                    orientationAngle -= Math.PI / 2;
+
+                orientationAngle = orientationAngle % (2 * Math.PI);
+                Parameter aParameter = aFamilyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+                if (aParameter != null && !aParameter.IsReadOnly)
+                    aParameter.Set(orientationAngle);
+            }
+
+            //Sets the insertion point to the centroid. TODO: add possibility to control this.
+            Parameter zJustification = aFamilyInstance.get_Parameter(BuiltInParameter.Z_JUSTIFICATION);
+            if (zJustification != null && !zJustification.IsReadOnly)
+                zJustification.Set((int)Autodesk.Revit.DB.Structure.ZJustification.Origin); 
+
+
 
             if (pushSettings.CopyCustomData)
             {
