@@ -135,12 +135,12 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Location Move(this Location location, FramingElement framingElement, PushSettings pullSettings = null)
+        public static Location Move(this Location location, BH.oM.Physical.Elements.IFramingElement framingElement, PushSettings pullSettings = null)
         {
             if (location == null || framingElement == null)
                 return null;
 
-            return Move(location, framingElement.LocationCurve, pullSettings);
+            return Move(location, framingElement.Location, pullSettings);
         }
 
         /***************************************************/ 
