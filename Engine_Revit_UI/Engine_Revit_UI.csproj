@@ -227,15 +227,12 @@
     <Compile Include="Convert\Geometry\ToRevit\Curve.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Point.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Vector.cs" />
-    <Compile Include="Convert\Structure\ToBHoM\FramingElement.cs" />
     <Compile Include="Convert\Structure\ToBHoM\PanelPlanar.cs" />
     <Compile Include="Convert\Structure\ToBHoM\Profile.cs" />
     <Compile Include="Convert\Structure\ToBHoM\SurfaceProperty.cs" />
     <Compile Include="Convert\Structure\ToBHoM\SectionProperty.cs" />
     <Compile Include="Convert\Structure\ToRevit\Floor.cs" />
     <Compile Include="Convert\Structure\ToRevit\FloorType.cs" />
-    <Compile Include="Convert\Structure\ToRevit\FamilyInstance.cs" />
-    <Compile Include="Convert\Structure\ToRevit\FamilySymbol.cs" />
     <Compile Include="Convert\Structure\ToRevit\HostObject.cs" />
     <Compile Include="Convert\Structure\ToRevit\Wall.cs" />
     <Compile Include="Convert\Structure\ToRevit\WallType.cs" />
