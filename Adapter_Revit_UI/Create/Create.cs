@@ -114,7 +114,7 @@ namespace BH.UI.Revit.Adapter
 
                 if (aBHoMObject is Bar)
                 {
-                    ConvertBeforePushError(aBHoMObject, typeof(FramingElement));
+                    ConvertBeforePushError(aBHoMObject, typeof(BH.oM.Physical.Elements.IFramingElement));
                     continue;
                 }
 
