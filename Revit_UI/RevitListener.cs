@@ -144,8 +144,7 @@ namespace BH.UI.Revit
 
             //Make sure all BHoM assemblies are loaded
             string versionNumber = uIControlledApplication.ControlledApplication.VersionNumber;
-            string path = Environment.GetEnvironmentVariable("APPDATA") + @"\Autodesk\Revit\Addins\" + versionNumber +  @"\BHoM";
-            BH.Engine.Reflection.Compute.LoadAllAssemblies(path);
+            BH.Engine.Reflection.Compute.LoadAllAssemblies();
 
             //Add button to set socket ports
             AddRibbonItems(uIControlledApplication);

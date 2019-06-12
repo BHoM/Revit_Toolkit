@@ -42,6 +42,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <AssemblyName>Engine_Revit_UI_2018</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2019|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -53,6 +54,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AssemblyName>Engine_Revit_UI_2019</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytical_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
