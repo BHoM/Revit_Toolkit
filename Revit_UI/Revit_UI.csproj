@@ -47,6 +47,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>..\Build\Revit_UI.xml</DocumentationFile>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <AssemblyName>Revit_UI_2018</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2019|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -58,6 +59,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>..\Build\Revit_UI.xml</DocumentationFile>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AssemblyName>Revit_UI_2019</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BHoM">
@@ -151,12 +153,6 @@
     <Compile Include="UpdatePorts.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Files\BHoM.Addin">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Adapter_Revit_UI\Adapter_Revit_UI.csproj">
       <Project>{c2bd93af-8853-4685-8bd4-223055de1cc6}</Project>
       <Name>Adapter_Revit_UI</Name>
@@ -179,22 +175,22 @@
       <DependentUpon>UpdatePortsForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Files\BHoM_2018.Addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Files\BHoM_2019.Addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2018|AnyCPU'">
-    <PostBuildEvent>call "$(TargetDir)UI_PostBuild.exe" ..\..\ "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018\BHoM"
-
-C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018" /Y /I /E</PostBuildEvent>
+    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2018.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018" /Y /I /E</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2019|AnyCPU'">
-    <PostBuildEvent>call "$(TargetDir)UI_PostBuild.exe" ..\..\ "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019\BHoM"
-
-C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019" /Y /I /E</PostBuildEvent>
+    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2019.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019" /Y /I /E</PostBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <PropertyGroup>
+    <PostBuildEvent>call "$(TargetDir)UI_PostBuild.exe" ..\..\ "$(AppData)\BHoM\Assemblies"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
