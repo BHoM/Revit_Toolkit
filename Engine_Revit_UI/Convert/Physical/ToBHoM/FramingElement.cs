@@ -31,6 +31,8 @@ using BH.oM.Geometry.ShapeProfiles;
 using BHG = BH.Engine.Geometry;
 using BHS = BH.Engine.Structure;
 
+using System;
+
 namespace BH.UI.Revit.Engine
 {
     public static partial class Convert
@@ -81,8 +83,8 @@ namespace BH.UI.Revit.Engine
                     locationCurve = new oM.Geometry.Line { Start = baseNode.ToBHoM(pullSettings), End = topNode.ToBHoM(pullSettings) };
                 }
 
-                int multiplier = familyInstance.FacingOrientation.DotProduct(new XYZ(0, 1, 0)) > 0 ? 1 : -1;
-                rotation = familyInstance.FacingOrientation.AngleTo(new XYZ(1, 0, 0)) * multiplier;
+                rotation = - (location as LocationPoint).Rotation;
+
             }
             else if (location is LocationCurve)
             {
@@ -98,7 +100,22 @@ namespace BH.UI.Revit.Engine
                     if (ZOffset != 0 && !double.IsNaN(ZOffset))
                         locationCurve = BHG.Modify.Translate(locationCurve as dynamic, new oM.Geometry.Vector { X = 0, Y = 0, Z = ZOffset });
                 }
-                rotation = -familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, false);
+
+                if (structuralType == StructuralType.Column && locationCurve is BH.oM.Geometry.Line && BHS.Query.IsVertical(locationCurve as BH.oM.Geometry.Line))
+                {
+                    rotation = Math.PI * 0.5 - familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, false);
+                }
+                else
+                {
+                    if (IsVerticalNonLinearCurve((location as LocationCurve).Curve))
+                    {
+                        rotation = Math.PI * 0.5 - familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, false);
+                    }
+                    else
+                        rotation = -familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, false);
+                        
+                }
+
             }
 
             if (!nonlinear && locationCurve == null) familyInstance.BarCurveNotFoundWarning();
@@ -160,6 +177,24 @@ namespace BH.UI.Revit.Engine
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aFramingElement);
 
             return aFramingElement;
+        }
+
+        /***************************************************/
+
+        private static bool IsVerticalNonLinearCurve(Curve revitCurve)
+        {
+            if (!(revitCurve is Line))
+            {
+                CurveLoop curveLoop = CurveLoop.Create(new Curve[] { revitCurve });
+                if (curveLoop.HasPlane())
+                {
+                    Plane curvePlane = curveLoop.GetPlane();
+                    //Orientation angles are handled slightly differently for framing elements that have a curve fits in a plane that contains the z-vector
+                    if (Math.Abs(curvePlane.Normal.DotProduct(XYZ.BasisZ)) < BH.oM.Geometry.Tolerance.Angle)
+                        return true;
+                }
+            }
+            return false;
         }
 
         /***************************************************/
