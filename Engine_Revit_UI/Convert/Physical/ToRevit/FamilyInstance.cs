@@ -128,7 +128,6 @@ namespace BH.UI.Revit.Engine
             oM.Physical.FramingProperties.ConstantFramingProperty barProperty = framingElement.Property as oM.Physical.FramingProperties.ConstantFramingProperty;
             if (barProperty != null)
             {
-                //double orientationAngle = (Math.PI * 0.5 - barProperty.OrientationAngle) % (2 * Math.PI);
                 double orientationAngle = ToRevitOrientationAngleColumn(barProperty.OrientationAngle, framingElement.Location as oM.Geometry.Line);
                 Parameter aParameter = aFamilyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
                 if (aParameter != null && !aParameter.IsReadOnly)
@@ -192,11 +191,11 @@ namespace BH.UI.Revit.Engine
             //For vertical columns orientation angles are following similar rules between Revit and BHoM but flipped 90 degrees
             if (BH.Engine.Structure.Query.IsVertical(centreLine))
             {
-                return (Math.PI * 0.5 - bhomOrientationAngle) % (2 * Math.PI);
+                return CheckOrientationAngleDomain((Math.PI * 0.5 - bhomOrientationAngle));
             }
             else
             {
-                return -bhomOrientationAngle % (2 * Math.PI);
+                return CheckOrientationAngleDomain(-bhomOrientationAngle);
 
             }
         }
@@ -271,7 +270,6 @@ namespace BH.UI.Revit.Engine
             oM.Physical.FramingProperties.ConstantFramingProperty barProperty = framingElement.Property as oM.Physical.FramingProperties.ConstantFramingProperty;
             if (barProperty != null)
             {
-
                 double orientationAngle = ToRevitOrientationAngleBeams(barProperty.OrientationAngle, isVertical, isLinear);
                 Parameter aParameter = aFamilyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
                 if (aParameter != null && !aParameter.IsReadOnly)
@@ -340,7 +338,24 @@ namespace BH.UI.Revit.Engine
 
         private static double ToRevitOrientationAngleBeams(double bhomOrientationAngle, bool isVertical, bool isLinear)
         {
-            return -bhomOrientationAngle % (2 * Math.PI);
+            return CheckOrientationAngleDomain(-bhomOrientationAngle);
+        }
+
+        /***************************************************/
+
+        private static double CheckOrientationAngleDomain(double orientationAngle)
+        {
+            //Fixes orientation angle excedening +- 2 PI
+            orientationAngle = orientationAngle % (2 * Math.PI);
+
+            //The above should be enough, but bue to some tolerance issues going into revit it can sometimes still give errors.
+            //The below is added as an extra saftey check
+            if (orientationAngle - BH.oM.Geometry.Tolerance.Angle < -Math.PI * 2)
+                return orientationAngle + Math.PI * 2;
+            else if (orientationAngle + BH.oM.Geometry.Tolerance.Angle > Math.PI * 2)
+                return orientationAngle - Math.PI * 2;
+
+            return orientationAngle;
         }
 
         /***************************************************/
