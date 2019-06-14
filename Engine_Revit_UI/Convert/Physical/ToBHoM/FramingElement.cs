@@ -83,7 +83,7 @@ namespace BH.UI.Revit.Engine
                     locationCurve = new oM.Geometry.Line { Start = baseNode.ToBHoM(pullSettings), End = topNode.ToBHoM(pullSettings) };
                 }
 
-                rotation = - (location as LocationPoint).Rotation;
+                rotation = Math.PI * 0.5 + (location as LocationPoint).Rotation;
 
             }
             else if (location is LocationCurve)
