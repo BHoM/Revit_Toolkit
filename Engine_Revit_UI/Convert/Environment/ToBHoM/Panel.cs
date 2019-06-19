@@ -58,22 +58,22 @@ namespace BH.UI.Revit.Engine
             aOriginContextFragment.TypeName = Query.FamilyTypeFullName(element);
             aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, element) as OriginContextFragment;
             aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aElementType) as OriginContextFragment;
-            aPanel.FragmentProperties.Add(aOriginContextFragment);
+            aPanel.Fragments.Add(aOriginContextFragment);
 
             PanelAnalyticalFragment aBuildingElementAnalyticalProperties = new PanelAnalyticalFragment();
             aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, element) as PanelAnalyticalFragment;
             aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, aElementType) as PanelAnalyticalFragment;
-            aPanel.FragmentProperties.Add(aBuildingElementAnalyticalProperties);
+            aPanel.Fragments.Add(aBuildingElementAnalyticalProperties);
 
             PanelContextFragment aBuildingElementContextProperties = new PanelContextFragment();
             aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, element) as PanelContextFragment;
             aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, aElementType) as PanelContextFragment;
-            aPanel.FragmentProperties.Add(aBuildingElementContextProperties);
+            aPanel.Fragments.Add(aBuildingElementContextProperties);
 
             BuildingResultFragment aBuildingResultsProperties = new BuildingResultFragment();
             aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, element) as BuildingResultFragment;
             aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, aElementType) as BuildingResultFragment;
-            aPanel.FragmentProperties.Add(aBuildingResultsProperties);
+            aPanel.Fragments.Add(aBuildingResultsProperties);
 
             oM.Environment.Elements.PanelType? aBuildingElementType = Query.PanelType(element.Category);
             if (aBuildingElementType.HasValue)
@@ -115,22 +115,22 @@ namespace BH.UI.Revit.Engine
             aOriginContextFragment.TypeName = Query.FamilyTypeFullName(familyInstance);
             aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, familyInstance.Symbol) as OriginContextFragment;
             aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, familyInstance) as OriginContextFragment;
-            aPanel.FragmentProperties.Add(aOriginContextFragment);
+            aPanel.Fragments.Add(aOriginContextFragment);
 
             PanelAnalyticalFragment aBuildingElementAnalyticalProperties = new PanelAnalyticalFragment();
             aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, familyInstance.Symbol) as PanelAnalyticalFragment;
             aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, familyInstance) as PanelAnalyticalFragment;
-            aPanel.FragmentProperties.Add(aBuildingElementAnalyticalProperties);
+            aPanel.Fragments.Add(aBuildingElementAnalyticalProperties);
 
             PanelContextFragment aBuildingElementContextProperties = new PanelContextFragment();
             aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, familyInstance.Symbol) as PanelContextFragment;
             aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, familyInstance) as PanelContextFragment;
-            aPanel.FragmentProperties.Add(aBuildingElementContextProperties);
+            aPanel.Fragments.Add(aBuildingElementContextProperties);
 
             BuildingResultFragment aBuildingResultsProperties = new BuildingResultFragment();
             aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, familyInstance.Symbol) as BuildingResultFragment;
             aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, familyInstance) as BuildingResultFragment;
-            aPanel.FragmentProperties.Add(aBuildingResultsProperties);
+            aPanel.Fragments.Add(aBuildingResultsProperties);
 
             oM.Environment.Elements.PanelType? aBuildingElementType = Query.PanelType(familyInstance.Category);
             if (aBuildingElementType.HasValue)
