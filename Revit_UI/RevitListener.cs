@@ -143,7 +143,6 @@ namespace BH.UI.Revit
             UIControlledApplication = uIControlledApplication;
 
             //Make sure all BHoM assemblies are loaded
-            string versionNumber = uIControlledApplication.ControlledApplication.VersionNumber;
             BH.Engine.Reflection.Compute.LoadAllAssemblies();
 
             //Add button to set socket ports
