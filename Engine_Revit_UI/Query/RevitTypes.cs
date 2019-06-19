@@ -43,7 +43,7 @@ namespace BH.UI.Revit.Engine
             if (type == null)
                 return null;
 
-            if (!BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(type, typeof(BHoMObject)))
+            if (!typeof(IBHoMObject).IsAssignableFrom(type))//BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(type, typeof(BHoMObject)))
                 return null;
 
             List<System.Type> aResult = new List<System.Type>();
@@ -63,8 +63,11 @@ namespace BH.UI.Revit.Engine
                 aResult.Add(typeof(Wall));
                 return aResult;
             }
-            
-            if (type == typeof(FramingElement))
+
+            if (type == typeof(BH.oM.Physical.Elements.Cable) || type == typeof(BH.oM.Physical.Elements.Pile))
+                return aResult;
+
+            if (typeof(BH.oM.Physical.Elements.IFramingElement).IsAssignableFrom(type))
             {
                 aResult.Add(typeof(FamilyInstance));
                 return aResult;

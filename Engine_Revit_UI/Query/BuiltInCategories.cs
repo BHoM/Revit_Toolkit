@@ -44,7 +44,7 @@ namespace BH.UI.Revit.Engine
 
             List<BuiltInCategory> aBuiltInCategoryList = new List<BuiltInCategory>();
 
-            if (type == typeof(FramingElement))
+            if (type == typeof(BH.oM.Physical.Elements.IFramingElement))
             {
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming);
                 //aBuiltInCategoryList.Add(BuiltInCategory.OST_StructuralFoundation);
@@ -54,6 +54,36 @@ namespace BH.UI.Revit.Engine
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Truss);
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralTruss);
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_HorizontalBracing);
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Purlin);
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Joist);
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Girder);
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener);
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther);
+            }
+            if (type == typeof(BH.oM.Physical.Elements.Column))
+            {
+
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns);
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Columns);
+            }
+            if (type == typeof(BH.oM.Physical.Elements.Bracing))
+            {
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_VerticalBracing);
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_HorizontalBracing);
+            }
+            if (type == typeof(BH.oM.Physical.Elements.Pile))
+            {
+                BH.Engine.Reflection.Compute.RecordError("Pulling of piles explicitly not currently supported. Try pulling IFramingElement");
+            }
+            if (type == typeof(BH.oM.Physical.Elements.Cable))
+            {
+                BH.Engine.Reflection.Compute.RecordError("Pulling of cables explicitly not currently supported. Try pulling IFramingElement");
+            }
+            if (type == typeof(BH.oM.Physical.Elements.Beam))
+            {
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming);
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Truss);
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralTruss);
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Purlin);
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Joist);
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Girder);

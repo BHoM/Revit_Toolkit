@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -23,7 +23,11 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Structure.Elements;
+using BH.oM.Physical.Elements;
+
+using BH.Engine.Structure;
+using BH.Engine.Geometry;
+
 using System;
 
 namespace BH.UI.Revit.Engine
@@ -34,33 +38,37 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static FamilyInstance ToRevitFamilyInstance(this FramingElement framingElement, Document document, PushSettings pushSettings = null)
+        internal static FamilyInstance ToRevitFamilyInstance(this IFramingElement framingElement, Document document, PushSettings pushSettings = null)
         {
             if (framingElement == null || document == null)
                 return null;
 
-            switch (framingElement.StructuralUsage)
+            if (framingElement is Column)
             {
-                case StructuralUsage1D.Column:
-                    return framingElement.ToRevitFamilyInstance_Column(document, pushSettings);
-                case StructuralUsage1D.Beam:
-                case StructuralUsage1D.Brace:
-                case StructuralUsage1D.Cable:
-                    return framingElement.ToRevitFamilyInstance_Framing(document, pushSettings);
-                case StructuralUsage1D.Pile:
-                    BH.Engine.Reflection.Compute.RecordError(string.Format("Push of pile foundations is not supported in current version of BHoM. BHoM element Guid: {0}", framingElement.BHoM_Guid));
-                    return null;
-                default:
-                    BH.Engine.Reflection.Compute.RecordWarning(string.Format("Structural usage type is not set. An attempt to create a structural framing element is being made. BHoM element Guid: {0}", framingElement.BHoM_Guid));
-                    return framingElement.ToRevitFamilyInstance_Framing(document, pushSettings);
+                return ToRevitFamilyInstance_Column(framingElement, document, pushSettings);
             }
+            else if (framingElement is Beam || framingElement is Bracing || framingElement is Cable)
+            {
+                return ToRevitFamilyInstance_Framing(framingElement, document, pushSettings);
+            }
+            else if (framingElement is Pile)
+            {
+                BH.Engine.Reflection.Compute.RecordError(string.Format("Push of pile foundations is not supported in current version of BHoM. BHoM element Guid: {0}", framingElement.BHoM_Guid));
+                return null;
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordError(string.Format("Push of {0} is not supported in current version of BHoM. BHoM element Guid: {1}",framingElement.GetType(), framingElement.BHoM_Guid));
+                return null;
+            }
+
         }
 
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
 
-        private static FamilyInstance ToRevitFamilyInstance_Column(this FramingElement framingElement, Document document, PushSettings pushSettings = null)
+        private static FamilyInstance ToRevitFamilyInstance_Column(this IFramingElement framingElement, Document document, PushSettings pushSettings = null)
         {
             if (framingElement == null || document == null)
                 return null;
@@ -73,7 +81,12 @@ namespace BH.UI.Revit.Engine
 
             object aCustomDataValue = null;
 
-            Curve aCurve = framingElement.LocationCurve.ToRevitCurve(pushSettings);
+            //Check that the curve works for revit
+            if (!CheckLocationCurveColumns(framingElement))
+                return null;
+
+
+            Curve aCurve = framingElement.Location.ToRevitCurve(pushSettings);
             Level aLevel = null;
 
             aCustomDataValue = framingElement.CustomDataValue("Base Level");
@@ -84,7 +97,7 @@ namespace BH.UI.Revit.Engine
             }
 
             if (aLevel == null)
-                aLevel = Query.BottomLevel(framingElement.LocationCurve, document, pushSettings.ConvertUnits);
+                aLevel = Query.BottomLevel(framingElement.Location, document, pushSettings.ConvertUnits);
 
             FamilySymbol aFamilySymbol = framingElement.Property.ToRevitFamilySymbol_Column(document, pushSettings);
 
@@ -112,12 +125,12 @@ namespace BH.UI.Revit.Engine
             if (aFamilyInstance == null)
                 return null;
 
-            oM.Structure.FramingProperties.ConstantFramingElementProperty barProperty = framingElement.Property as oM.Structure.FramingProperties.ConstantFramingElementProperty;
+            oM.Physical.FramingProperties.ConstantFramingProperty barProperty = framingElement.Property as oM.Physical.FramingProperties.ConstantFramingProperty;
             if (barProperty != null)
             {
-                double orientationAngle = (Math.PI * 0.5 - barProperty.OrientationAngle) % (2 * Math.PI);
+                double orientationAngle = ToRevitOrientationAngleColumn(barProperty.OrientationAngle, framingElement.Location as oM.Geometry.Line);
                 Parameter aParameter = aFamilyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
-                if(aParameter != null && !aParameter.IsReadOnly)
+                if (aParameter != null && !aParameter.IsReadOnly)
                     aParameter.Set(orientationAngle);
             }
 
@@ -150,7 +163,46 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static FamilyInstance ToRevitFamilyInstance_Framing(this FramingElement framingElement, Document document, PushSettings pushSettings = null)
+        private static bool CheckLocationCurveColumns(IFramingElement framingElement)
+        {
+
+            if ((framingElement.Location is BH.oM.Geometry.Line))
+            {
+                BH.oM.Geometry.Line line = framingElement.Location as BH.oM.Geometry.Line;
+
+                if (line.Start.Z >= line.End.Z)
+                {
+                    BH.Engine.Reflection.Compute.RecordError(string.Format("Start point of revit columns need to have a lower elevation than the end point. Have a look at flipping your location curves. Failing for object with BHoMGuid: {0}", framingElement.BHoM_Guid));
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordError(string.Format("Revit does only support Line based columns. Try pushing your element as a beam instead. Failing for object with BHoMGuid: {0}", framingElement.BHoM_Guid));
+                return false;
+            }
+        }
+
+        /***************************************************/
+
+        private static double ToRevitOrientationAngleColumn(double bhomOrientationAngle, BH.oM.Geometry.Line centreLine)
+        {
+            //For vertical columns orientation angles are following similar rules between Revit and BHoM but flipped 90 degrees
+            if (BH.Engine.Structure.Query.IsVertical(centreLine))
+            {
+                return CheckOrientationAngleDomain((Math.PI * 0.5 - bhomOrientationAngle));
+            }
+            else
+            {
+                return CheckOrientationAngleDomain(-bhomOrientationAngle);
+
+            }
+        }
+
+        /***************************************************/
+
+        private static FamilyInstance ToRevitFamilyInstance_Framing(this IFramingElement framingElement, Document document, PushSettings pushSettings = null)
         {
             if (framingElement == null || document == null)
                 return null;
@@ -163,7 +215,14 @@ namespace BH.UI.Revit.Engine
 
             object aCustomDataValue = null;
 
-            Curve aCurve = framingElement.LocationCurve.ToRevitCurve(pushSettings);
+            Curve revitCurve = framingElement.Location.ToRevitCurve(pushSettings);
+
+            bool isVertical, isLinear;
+            //Check if curve is planar, and if so, if it is vertical. This is used to determine if the orientation angle needs
+            //To be subtracted by 90 degrees or not.
+            if (!CheckLocationCurveBeams(framingElement, revitCurve, out isVertical, out isLinear))
+                return null;
+
             Level aLevel = null;
 
             aCustomDataValue = framingElement.CustomDataValue("Reference Level");
@@ -174,7 +233,7 @@ namespace BH.UI.Revit.Engine
             }
 
             if (aLevel == null)
-                aLevel = Query.BottomLevel(framingElement.LocationCurve, document, pushSettings.ConvertUnits);
+                aLevel = Query.BottomLevel(framingElement.Location, document, pushSettings.ConvertUnits);
 
             FamilySymbol aFamilySymbol = framingElement.Property.ToRevitFamilySymbol_Framing(document, pushSettings);
 
@@ -196,25 +255,33 @@ namespace BH.UI.Revit.Engine
                 return null;
             }
 
-            switch (framingElement.StructuralUsage)
-            {
-                case StructuralUsage1D.Beam:
-                    aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Beam);
-                    break;
-                case StructuralUsage1D.Brace:
-                    aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Brace);
-                    break;
-                case StructuralUsage1D.Cable:
-                    aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Brace);
-                    break;
-                default:
-                    aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.UnknownFraming);
-                    break;
-            }
+            if (framingElement is Beam)
+                aFamilyInstance = document.Create.NewFamilyInstance(revitCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Beam);
+            else if (framingElement is Bracing || framingElement is Cable)
+                aFamilyInstance = document.Create.NewFamilyInstance(revitCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Brace);
+            else
+                aFamilyInstance = document.Create.NewFamilyInstance(revitCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.UnknownFraming);
+
 
             aFamilyInstance.CheckIfNullPush(framingElement);
             if (aFamilyInstance == null)
                 return null;
+
+            oM.Physical.FramingProperties.ConstantFramingProperty barProperty = framingElement.Property as oM.Physical.FramingProperties.ConstantFramingProperty;
+            if (barProperty != null)
+            {
+                double orientationAngle = ToRevitOrientationAngleBeams(barProperty.OrientationAngle, isVertical, isLinear);
+                Parameter aParameter = aFamilyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+                if (aParameter != null && !aParameter.IsReadOnly)
+                    aParameter.Set(orientationAngle);
+            }
+
+            //Sets the insertion point to the centroid. TODO: add possibility to control this.
+            Parameter zJustification = aFamilyInstance.get_Parameter(BuiltInParameter.Z_JUSTIFICATION);
+            if (zJustification != null && !zJustification.IsReadOnly)
+                zJustification.Set((int)Autodesk.Revit.DB.Structure.ZJustification.Origin); 
+
+
 
             if (pushSettings.CopyCustomData)
             {
@@ -233,6 +300,62 @@ namespace BH.UI.Revit.Engine
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElement, aFamilyInstance);
 
             return aFamilyInstance;
+        }
+
+        /***************************************************/
+
+        private static bool CheckLocationCurveBeams(IFramingElement framingElement, Curve revitCurve, out bool isVertical, out bool isLinear)
+        {
+            isLinear = framingElement.Location is BH.oM.Geometry.Line;
+
+            //Line-based elements are handled slightly differently for orientation angles check used later
+            if (isLinear)
+            {
+                isVertical = BH.Engine.Structure.Query.IsVertical(framingElement.Location as BH.oM.Geometry.Line);
+                return true;
+            }
+            else
+            {
+                //Revit framing elements can only handle planar curves.
+                CurveLoop curveLoop = CurveLoop.Create(new Curve[] { revitCurve });
+                if (curveLoop.HasPlane())
+                {
+                    Plane curvePlane = curveLoop.GetPlane();
+                    //Orientation angles are handled slightly differently for framing elements that have a curve fits in a plane that contains the z-vector
+                    isVertical = Math.Abs(curvePlane.Normal.DotProduct(XYZ.BasisZ)) < BH.oM.Geometry.Tolerance.Angle;
+                    return true;
+                }
+                else
+                {
+                    isVertical = false;
+                    BH.Engine.Reflection.Compute.RecordError(string.Format("Revit framing elements does only support planar curves. Failing for object with BHoMGuid: {0}", framingElement.BHoM_Guid));
+                    return false;
+                }
+            }
+        }
+
+        /***************************************************/
+
+        private static double ToRevitOrientationAngleBeams(double bhomOrientationAngle, bool isVertical, bool isLinear)
+        {
+            return CheckOrientationAngleDomain(-bhomOrientationAngle);
+        }
+
+        /***************************************************/
+
+        private static double CheckOrientationAngleDomain(double orientationAngle)
+        {
+            //Fixes orientation angle excedening +- 2 PI
+            orientationAngle = orientationAngle % (2 * Math.PI);
+
+            //The above should be enough, but bue to some tolerance issues going into revit it can sometimes still give errors.
+            //The below is added as an extra saftey check
+            if (orientationAngle - BH.oM.Geometry.Tolerance.Angle < -Math.PI * 2)
+                return orientationAngle + Math.PI * 2;
+            else if (orientationAngle + BH.oM.Geometry.Tolerance.Angle > Math.PI * 2)
+                return orientationAngle - Math.PI * 2;
+
+            return orientationAngle;
         }
 
         /***************************************************/

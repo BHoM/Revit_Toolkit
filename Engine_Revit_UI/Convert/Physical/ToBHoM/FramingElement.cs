@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -25,10 +25,13 @@ using Autodesk.Revit.DB.Structure;
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.SectionProperties;
-using BH.oM.Structure.FramingProperties;
+using BH.oM.Physical.Elements;
+using BH.oM.Physical.FramingProperties;
+using BH.oM.Geometry.ShapeProfiles;
 using BHG = BH.Engine.Geometry;
 using BHS = BH.Engine.Structure;
+
+using System;
 
 namespace BH.UI.Revit.Engine
 {
@@ -38,18 +41,17 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static FramingElement ToBHoMFramingElement(this FamilyInstance familyInstance, PullSettings pullSettings = null)
+        internal static IFramingElement ToBHoMFramingElement(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            FramingElement aFramingElement = pullSettings.FindRefObject<FramingElement>(familyInstance.Id.IntegerValue);
+            IFramingElement aFramingElement = pullSettings.FindRefObject<IFramingElement>(familyInstance.Id.IntegerValue);
             if (aFramingElement != null)
                 return aFramingElement;
 
             oM.Geometry.ICurve locationCurve = null;
             bool nonlinear = false;
-            ConstantFramingElementProperty property = null;
-            StructuralUsage1D usage = StructuralUsage1D.Undefined;
+            ConstantFramingProperty property = null;
             string name = null;
 
             StructuralType structuralType = familyInstance.StructuralType;
@@ -81,8 +83,8 @@ namespace BH.UI.Revit.Engine
                     locationCurve = new oM.Geometry.Line { Start = baseNode.ToBHoM(pullSettings), End = topNode.ToBHoM(pullSettings) };
                 }
 
-                int multiplier = familyInstance.FacingOrientation.DotProduct(new XYZ(0, 1, 0)) > 0 ? 1 : -1;
-                rotation = familyInstance.FacingOrientation.AngleTo(new XYZ(1, 0, 0)) * multiplier;
+                rotation = Math.PI * 0.5 + (location as LocationPoint).Rotation;
+
             }
             else if (location is LocationCurve)
             {
@@ -98,47 +100,101 @@ namespace BH.UI.Revit.Engine
                     if (ZOffset != 0 && !double.IsNaN(ZOffset))
                         locationCurve = BHG.Modify.Translate(locationCurve as dynamic, new oM.Geometry.Vector { X = 0, Y = 0, Z = ZOffset });
                 }
-                rotation = -familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, false);
+
+                if (structuralType == StructuralType.Column && locationCurve is BH.oM.Geometry.Line && BHS.Query.IsVertical(locationCurve as BH.oM.Geometry.Line))
+                {
+                    rotation = Math.PI * 0.5 - familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, false);
+                }
+                else
+                {
+                    if (IsVerticalNonLinearCurve((location as LocationCurve).Curve))
+                    {
+                        rotation = Math.PI * 0.5 - familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, false);
+                    }
+                    else
+                        rotation = -familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, false);
+                        
+                }
+
             }
 
             if (!nonlinear && locationCurve == null) familyInstance.BarCurveNotFoundWarning();
-            ISectionProperty aSectionProperty = familyInstance.ToBHoMSectionProperty(pullSettings) as ISectionProperty;
 
-            switch (structuralType)
+            IProfile profile = familyInstance.Symbol.ToBHoMProfile(pullSettings);
+
+            BH.oM.Physical.Materials.Material material = pullSettings.FindRefObject<oM.Physical.Materials.Material>(familyInstance.StructuralMaterialId.IntegerValue);
+
+            if (material == null)
             {
-                case StructuralType.Beam:
-                    usage = StructuralUsage1D.Beam;
-                    break;
-                case StructuralType.Brace:
-                    usage = StructuralUsage1D.Brace;
-                    break;
-                case StructuralType.Column:
-                    usage = StructuralUsage1D.Column;
-                    break;
+                ElementId materialId = familyInstance.StructuralMaterialId;
+
+                if (materialId.IntegerValue != -1)
+                {
+                    Autodesk.Revit.DB.Material aMaterial_Revit = familyInstance.Document.GetElement(materialId) as Autodesk.Revit.DB.Material;
+                    if (aMaterial_Revit != null)
+                        material = aMaterial_Revit.ToBHoMMaterial(pullSettings);
+                }
+
+                if (material == null)
+                {
+                    Compute.InvalidDataMaterialWarning(familyInstance);
+                    Compute.MaterialTypeNotFoundWarning(familyInstance);
+                    material = new oM.Physical.Materials.Material();
+                }
             }
 
+
             //TODO: Allow varying orientation angle and varying cross sections (tapers etc) - TBC
-            property = BHS.Create.ConstantFramingElementProperty(aSectionProperty, rotation, aSectionProperty.Name);
-            
+            property = BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, profile.Name);
+
             if (familyInstance.Name != null)
                 name = familyInstance.Name;
 
-            //TODO: Implement BHS.Create.FramingElement method
-            aFramingElement = new FramingElement()
+            switch (structuralType)
             {
-                Name = name,
-                LocationCurve = locationCurve,
-                Property = property,
-                StructuralUsage = usage
-            };
 
-            aFramingElement = Modify.SetIdentifiers(aFramingElement, familyInstance) as FramingElement;
+                case StructuralType.Beam:
+                    aFramingElement = BH.Engine.Physical.Create.Beam(locationCurve, property, name);
+                    break;
+                case StructuralType.Brace:
+                    aFramingElement = BH.Engine.Physical.Create.Bracing(locationCurve, property, name);
+                    break;
+                case StructuralType.Column:
+                    aFramingElement = BH.Engine.Physical.Create.Column(locationCurve, property, name);
+                    break;
+                case StructuralType.NonStructural:
+                case StructuralType.Footing:
+                case StructuralType.UnknownFraming:
+                default:
+                    aFramingElement = BH.Engine.Physical.Create.Beam(locationCurve, property, name);
+                    break;
+            }
+
+            aFramingElement = Modify.SetIdentifiers(aFramingElement, familyInstance) as IFramingElement;
             if (pullSettings.CopyCustomData)
-                aFramingElement = Modify.SetCustomData(aFramingElement, familyInstance, pullSettings.ConvertUnits) as FramingElement;
+                aFramingElement = Modify.SetCustomData(aFramingElement, familyInstance, pullSettings.ConvertUnits) as IFramingElement;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aFramingElement);
 
             return aFramingElement;
+        }
+
+        /***************************************************/
+
+        private static bool IsVerticalNonLinearCurve(Curve revitCurve)
+        {
+            if (!(revitCurve is Line))
+            {
+                CurveLoop curveLoop = CurveLoop.Create(new Curve[] { revitCurve });
+                if (curveLoop.HasPlane())
+                {
+                    Plane curvePlane = curveLoop.GetPlane();
+                    //Orientation angles are handled slightly differently for framing elements that have a curve fits in a plane that contains the z-vector
+                    if (Math.Abs(curvePlane.Normal.DotProduct(XYZ.BasisZ)) < BH.oM.Geometry.Tolerance.Angle)
+                        return true;
+                }
+            }
+            return false;
         }
 
         /***************************************************/

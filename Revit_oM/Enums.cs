@@ -27,7 +27,8 @@ namespace BH.oM.Adapters.Revit.Enums
         Undefined,
         Environmental,
         Structural,
-        Architecture
+        Architecture,
+        Physical
     }
 
     public enum QueryType

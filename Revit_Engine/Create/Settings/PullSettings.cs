@@ -42,7 +42,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("copyCustomData", "Saves Parameters of Revit Element into CustomData of BHoM Object")]
         [Input("convertUnits", "Converts units of parameters to SI")]
         [Output("PullSettings")]
-        public static PullSettings PullSettings(Discipline discipline = Discipline.Environmental, Dictionary<int, List<IBHoMObject>> refObjects = null, bool copyCustomData = true, bool convertUnits = true)
+        public static PullSettings PullSettings(Discipline discipline = Discipline.Physical, Dictionary<int, List<IBHoMObject>> refObjects = null, bool copyCustomData = true, bool convertUnits = true)
         {
             PullSettings aPullSettings = new PullSettings()
             {

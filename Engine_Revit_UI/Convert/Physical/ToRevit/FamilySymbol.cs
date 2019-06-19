@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -28,21 +28,17 @@ namespace BH.UI.Revit.Engine
 {
     public static partial class Convert
     {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
-
 
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
 
-        private static FamilySymbol ToRevitFamilySymbol_Column(this oM.Structure.FramingProperties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
+        private static FamilySymbol ToRevitFamilySymbol_Column(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
         {
             if (framingElementProperty == null || document == null)
                 return null;
 
-            FamilySymbol aFamilySymbol= pushSettings.FindRefObject<FamilySymbol>(document, framingElementProperty.BHoM_Guid);
+            FamilySymbol aFamilySymbol = pushSettings.FindRefObject<FamilySymbol>(document, framingElementProperty.BHoM_Guid);
             if (aFamilySymbol != null)
                 return aFamilySymbol;
 
@@ -64,7 +60,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static FamilySymbol ToRevitFamilySymbol_Framing(this oM.Structure.FramingProperties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
+        private static FamilySymbol ToRevitFamilySymbol_Framing(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
         {
             if (framingElementProperty == null || document == null)
                 return null;
