@@ -161,7 +161,7 @@ namespace BH.Engine.Adapters.Revit
 
             Panel aEnvironmentPanel = Panel(points, familyTypeName);
             aEnvironmentPanel.Type = panelType;
-            aEnvironmentPanel.FragmentProperties.Add(envContextProperties);
+            aEnvironmentPanel.Fragments.Add(envContextProperties);
 
             return aEnvironmentPanel;
         }
