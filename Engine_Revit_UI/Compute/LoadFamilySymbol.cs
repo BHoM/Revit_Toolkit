@@ -31,7 +31,7 @@ using Autodesk.Revit.DB;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Modify
+    public static partial class Compute
     {
         /***************************************************/
         /**** Public Methods                            ****/

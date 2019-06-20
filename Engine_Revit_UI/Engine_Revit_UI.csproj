@@ -198,7 +198,7 @@
     <Compile Include="Convert\Revit\ToRevit\ElementType.cs" />
     <Compile Include="Convert\Revit\ToRevit\Family.cs" />
     <Compile Include="Modify\AddAdjacentSpaceId.cs" />
-    <Compile Include="Modify\LoadFamily.cs" />
+    <Compile Include="Compute\LoadFamily.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Grid.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Wall.cs" />
@@ -280,7 +280,7 @@
     <Compile Include="Query\LogicalOr.cs" />
     <Compile Include="Query\OpenWorksetIds.cs" />
     <Compile Include="Query\LogicalAnd.cs" />
-    <Compile Include="Modify\LoadFamilySymbol.cs" />
+    <Compile Include="Compute\LoadFamilySymbol.cs" />
     <Compile Include="Modify\SetCustomData.cs" />
     <Compile Include="Modify\SetIdentifiers.cs" />
     <Compile Include="Modify\AppendBuiltInCategories.cs" />
