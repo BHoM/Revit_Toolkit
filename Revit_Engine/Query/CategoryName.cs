@@ -43,36 +43,45 @@ namespace BH.Engine.Adapters.Revit
         [Output("CategoryName")]
         public static string CategoryName(this RevitFilePreview revitFilePreview)
         {
-            if (revitFilePreview == null || revitFilePreview.XDocument == null)
+            if (revitFilePreview == null)
                 return null;
 
-            XDocument aXDocument = revitFilePreview.XDocument;
+            return CategoryName(revitFilePreview.XDocument());
+        }
 
-            if (aXDocument != null && aXDocument.Root != null && aXDocument.Root.Attributes() != null)
+        /***************************************************/
+
+        [Description("Gets Revit Category name from XDocument.")]
+        [Input("xDocument", "XDocument from Header of Revit Family File (*.rfa)")]
+        [Output("CategoryName")]
+        public static string CategoryName(this XDocument xDocument)
+        {
+            if (xDocument == null || xDocument.Root == null || xDocument.Root.Attributes() == null)
+                return null;
+
+            List<XAttribute> aAttributeList = xDocument.Root.Attributes().ToList();
+            XAttribute aAttribute = aAttributeList.Find(x => x.Name.LocalName == "xmlns");
+            if (aAttribute != null)
             {
-                List<XAttribute> aAttributeList = aXDocument.Root.Attributes().ToList();
-                XAttribute aAttribute = aAttributeList.Find(x => x.Name.LocalName == "xmlns");
-                if (aAttribute != null)
+                XName aName = XName.Get("category", aAttribute.Value);
+                List<XElement> aXElementList = xDocument.Root.Elements(aName).ToList();
+                if (aXElementList != null)
                 {
-                    XName aName = XName.Get("category", aAttribute.Value);
-                    List<XElement> aXElementList = aXDocument.Root.Elements(aName).ToList();
-                    if (aXElementList != null)
+                    aName = XName.Get("scheme", aAttribute.Value);
+                    foreach (XElement aXElement in aXElementList)
                     {
-                        aName = XName.Get("scheme", aAttribute.Value);
-                        foreach (XElement aXElement in aXElementList)
+                        XElement aXElement_Scheme = aXElement.Element(aName);
+                        if (aXElement_Scheme != null && aXElement_Scheme.Value == "adsk:revit:grouping")
                         {
-                            XElement aXElement_Scheme = aXElement.Element(aName);
-                            if (aXElement_Scheme != null && aXElement_Scheme.Value == "adsk:revit:grouping")
-                            {
-                                aName = XName.Get("term", aAttribute.Value);
-                                XElement aXElement_Term = aXElement.Element(aName);
-                                if (aXElement_Term != null)
-                                    return aXElement_Term.Value;
-                            }
+                            aName = XName.Get("term", aAttribute.Value);
+                            XElement aXElement_Term = aXElement.Element(aName);
+                            if (aXElement_Term != null)
+                                return aXElement_Term.Value;
                         }
                     }
                 }
             }
+
             return null;
         }
 
