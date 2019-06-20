@@ -72,6 +72,12 @@ namespace BH.UI.Revit.Engine
                     return UnitUtils.ConvertFromInternalUnits(Value, DisplayUnitType.DUT_SQUARE_METERS);
                 case UnitType.UT_Volume:
                     return UnitUtils.ConvertFromInternalUnits(Value, DisplayUnitType.DUT_CUBIC_METERS);
+                case UnitType.UT_HVAC_Heating_Load:
+                    return UnitUtils.ConvertFromInternalUnits(Value, DisplayUnitType.DUT_WATTS);
+                case UnitType.UT_HVAC_Cooling_Load:
+                    return UnitUtils.ConvertFromInternalUnits(Value, DisplayUnitType.DUT_WATTS);
+                case UnitType.UT_HVAC_Airflow:
+                    return UnitUtils.ConvertFromInternalUnits(Value, DisplayUnitType.DUT_CUBIC_METERS_PER_SECOND);
                 default:
                     return Value;
             }
