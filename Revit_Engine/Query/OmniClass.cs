@@ -41,34 +41,43 @@ namespace BH.Engine.Adapters.Revit
         [Output("OmniClass")]
         public static string OmniClass(this RevitFilePreview revitFilePreview)
         {
-            if (revitFilePreview == null || revitFilePreview.XDocument == null)
+            if (revitFilePreview == null)
                 return null;
 
-            XDocument aXDocument = revitFilePreview.XDocument;
+            return OmniClass(revitFilePreview.XDocument());
+        }
 
-            if (aXDocument != null && aXDocument.Root != null)
+        /***************************************************/
+
+        [Description("Returns OmniClass assigned to Revit Family (RevitFilePreview)")]
+        [Input("xDocument", "XDocument from Header of Revit Family File (*.rfa)")]
+        [Output("OmniClass")]
+        public static string OmniClass(this XDocument xDocument)
+        {
+            if (xDocument == null || xDocument.Root == null)
+                return null;
+
+            List<XElement> aXElementList = xDocument.Root.Elements().ToList();
+            if (aXElementList != null && aXElementList.Count > 0)
             {
-                List<XElement> aXElementList = aXDocument.Root.Elements().ToList();
-                if (aXElementList != null && aXElementList.Count > 0)
-                {
-                    XName aName = XName.Get("category", "http://www.w3.org/2005/Atom");
-                    aXElementList = aXElementList.FindAll(x => x.Name == aName);
-                    if (aXElementList != null)
-                        foreach (XElement aXElement in aXElementList)
-                        {
-                            List<XElement> aChildXElementList = aXElement.Elements().ToList();
-                            aName = XName.Get("scheme", "http://www.w3.org/2005/Atom");
+                XName aName = XName.Get("category", "http://www.w3.org/2005/Atom");
+                aXElementList = aXElementList.FindAll(x => x.Name == aName);
+                if (aXElementList != null)
+                    foreach (XElement aXElement in aXElementList)
+                    {
+                        List<XElement> aChildXElementList = aXElement.Elements().ToList();
+                        aName = XName.Get("scheme", "http://www.w3.org/2005/Atom");
 
-                            if (aChildXElementList != null && aChildXElementList.Find(x => x.Name == aName && x.Value == "std:oc1") != null)
-                            {
-                                aName = XName.Get("term", "http://www.w3.org/2005/Atom");
-                                XElement aChildXElement = aChildXElementList.Find(x => x.Name == aName);
-                                if (aChildXElement != null)
-                                    return aChildXElement.Value;
-                            }
+                        if (aChildXElementList != null && aChildXElementList.Find(x => x.Name == aName && x.Value == "std:oc1") != null)
+                        {
+                            aName = XName.Get("term", "http://www.w3.org/2005/Atom");
+                            XElement aChildXElement = aChildXElementList.Find(x => x.Name == aName);
+                            if (aChildXElement != null)
+                                return aChildXElement.Value;
                         }
-                }
+                    }
             }
+
             return null;
         }
 

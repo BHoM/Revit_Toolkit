@@ -21,7 +21,6 @@
  */
 
 using BH.oM.Base;
-using System.Xml.Linq;
 
 namespace BH.oM.Adapters.Revit.Generic
 {
@@ -32,7 +31,6 @@ namespace BH.oM.Adapters.Revit.Generic
         /***************************************************/
 
         public string Path { get; set; } = null;
-        public XDocument XDocument { get; set; } = null;
 
         /***************************************************/
     }
