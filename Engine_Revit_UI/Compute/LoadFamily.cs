@@ -24,14 +24,13 @@ using System.Linq;
 using System.Collections.Generic;
 
 using BH.oM.Adapters.Revit.Generic;
-using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 
 using Autodesk.Revit.DB;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Modify
+    public static partial class Compute
     {
         /***************************************************/
         /**** Public Methods                            ****/
