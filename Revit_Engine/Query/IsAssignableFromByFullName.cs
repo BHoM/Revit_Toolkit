@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Checks if one type is assignable from another type by comparing its full name.")]
-        [Input("filterQuery", "FilterQuery")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("IncludeSelected")]
         public static bool IsAssignableFromByFullName(this Type typeToCheck, Type type)
         {

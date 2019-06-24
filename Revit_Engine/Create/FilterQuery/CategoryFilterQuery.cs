@@ -22,7 +22,7 @@
 
 using System.ComponentModel;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
@@ -31,16 +31,16 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterQuery which filters all by given Revit Category Name.")]
+        [Description("Creates FilterRequest which filters all by given Revit Category Name.")]
         [Input("categoryName", "Revit Category Name")]
-        [Output("FilterQuery")]
-        public static FilterQuery CategoryFilterQuery(string categoryName)
+        [Output("FilterRequest")]
+        public static FilterRequest CategoryFilterRequest(string categoryName)
         {
-            FilterQuery aFilterQuery = new FilterQuery();
-            aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.Category;
-            aFilterQuery.Equalities[Convert.FilterQuery.CategoryName] = categoryName;
-            return aFilterQuery;
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.Category;
+            aFilterRequest.Equalities[Convert.FilterRequest.CategoryName] = categoryName;
+            return aFilterRequest;
         }
     }
 }

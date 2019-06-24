@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
 
@@ -32,18 +32,18 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns WorksetName assigned to FilterQuery.")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Returns WorksetName assigned to FilterRequest.")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("WorksetName")]
-        public static string WorksetName(this FilterQuery filterQuery)
+        public static string WorksetName(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.WorksetName))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.WorksetName))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterQuery.WorksetName] as string;
+            return filterQuery.Equalities[Convert.FilterRequest.WorksetName] as string;
         }
 
         /***************************************************/

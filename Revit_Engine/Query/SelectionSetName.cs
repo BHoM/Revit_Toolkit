@@ -22,7 +22,7 @@
 
 using System.ComponentModel;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
@@ -33,18 +33,18 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns Revit SelectionSet Name for given FilterQuery")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Returns Revit SelectionSet Name for given FilterRequest")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("SelectionSetName")]
-        public static string SelectionSetName(this FilterQuery filterQuery)
+        public static string SelectionSetName(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.SelectionSetName))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.SelectionSetName))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterQuery.SelectionSetName] as string;
+            return filterQuery.Equalities[Convert.FilterRequest.SelectionSetName] as string;
         }
 
         /***************************************************/

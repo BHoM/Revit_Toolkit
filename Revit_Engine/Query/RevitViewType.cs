@@ -22,7 +22,7 @@
 
 using System.ComponentModel;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Enums;
 
@@ -34,18 +34,18 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Gets RevitViewType from FilterQuery.")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Gets RevitViewType from FilterRequest.")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("RevitViewType")]
-        public static RevitViewType? RevitViewType(this FilterQuery filterQuery)
+        public static RevitViewType? RevitViewType(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.RevitViewType))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.RevitViewType))
                 return null;
 
-            object aObject = filterQuery.Equalities[Convert.FilterQuery.RevitViewType];
+            object aObject = filterQuery.Equalities[Convert.FilterRequest.RevitViewType];
             if (aObject is RevitViewType)
                 return (RevitViewType)aObject;
             else if (aObject is int)

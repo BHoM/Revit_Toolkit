@@ -23,7 +23,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using System.Linq;
 
@@ -35,17 +35,17 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns true if FilterQuery should include non visible objects when pulling edges")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Returns true if FilterRequest should include non visible objects when pulling edges")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("IncludeNonVisibleObjects")]
-        public static bool IncludeNonVisibleObjects(this FilterQuery filterQuery)
+        public static bool IncludeNonVisibleObjects(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return false;
 
-            if (filterQuery.Equalities.ContainsKey(Convert.FilterQuery.IncludeNonVisibleObjects))
+            if (filterQuery.Equalities.ContainsKey(Convert.FilterRequest.IncludeNonVisibleObjects))
             {
-                object aObject = filterQuery.Equalities[Convert.FilterQuery.IncludeNonVisibleObjects];
+                object aObject = filterQuery.Equalities[Convert.FilterRequest.IncludeNonVisibleObjects];
                 if (aObject is bool)
                     return (bool)aObject;
             }
@@ -55,10 +55,10 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns true if at least one FilterQuery on list should include non visible objects when pulling edges")]
+        [Description("Returns true if at least one FilterRequest on list should include non visible objects when pulling edges")]
         [Input("filterQueries", "FilterQueries")]
         [Output("IncludeNonVisibleObjects")]
-        public static bool IncludeNonVisibleObjects(this IEnumerable<FilterQuery> filterQueries)
+        public static bool IncludeNonVisibleObjects(this IEnumerable<FilterRequest> filterQueries)
         {
             if (filterQueries == null)
                 return false;

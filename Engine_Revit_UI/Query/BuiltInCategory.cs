@@ -28,7 +28,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Revit.Engine
@@ -223,7 +223,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static BuiltInCategory BuiltInCategory(this FilterQuery filterQuery, Document document)
+        public static BuiltInCategory BuiltInCategory(this FilterRequest filterQuery, Document document)
         {
             if (document == null || document.Settings == null || document.Settings.Categories == null || filterQuery == null)
                 return Autodesk.Revit.DB.BuiltInCategory.INVALID;

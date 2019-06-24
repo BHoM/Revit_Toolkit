@@ -27,7 +27,7 @@ using System.ComponentModel;
 
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Generic;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
@@ -100,18 +100,18 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Gets Revit Category name from FilterQuery.")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Gets Revit Category name from FilterRequest.")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("CategoryName")]
-        public static string CategoryName(this FilterQuery filterQuery)
+        public static string CategoryName(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.CategoryName))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.CategoryName))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterQuery.CategoryName] as string;
+            return filterQuery.Equalities[Convert.FilterRequest.CategoryName] as string;
         }
 
         /***************************************************/

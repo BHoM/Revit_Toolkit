@@ -24,7 +24,7 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Convert
     {
-        public static class FilterQuery
+        public static class FilterRequest
         {
             public const string QueryType = "QueryType";
             public const string FilterQueries = "FilterQueries";
@@ -45,7 +45,7 @@ namespace BH.Engine.Adapters.Revit
             public const string ParameterName = "ParameterName";
             public const string Value = "Value";
             public const string ComparisonRule = "ComparisonRule";
-            public const string RelatedFilterQuery = "RelatedFilterQuery";
+            public const string RelatedFilterRequest = "RelatedFilterRequest";
         }
     }
 }

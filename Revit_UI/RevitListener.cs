@@ -30,7 +30,7 @@ using Autodesk.Revit.UI;
 using BH.Adapter.Revit;
 using BH.Adapter.Socket;
 using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Settings;
 using BH.UI.Revit.Adapter;
 
@@ -49,7 +49,7 @@ namespace BH.UI.Revit
 
         /***************************************************/
 
-        public IQuery LatestQuery { get; set; }
+        public IRequest LatestQuery { get; set; }
 
         /***************************************************/
 
@@ -241,12 +241,12 @@ namespace BH.UI.Revit
                     case PackageType.Pull:
                         if (!CheckPackageSize(package)) return;
                         eve = m_pullEvent;
-                        LatestQuery = package.Data[1] as IQuery;
+                        LatestQuery = package.Data[1] as IRequest;
                         break;
                     case PackageType.UpdateProperty:
                         if (!CheckPackageSize(package)) return;
                         eve = m_updatePropertyEvent;
-                        var tuple = package.Data[1] as Tuple<FilterQuery, string, object>;
+                        var tuple = package.Data[1] as Tuple<FilterRequest, string, object>;
                         LatestQuery = tuple.Item1;
                         LatestKeyValuePair = new KeyValuePair<string, object>(tuple.Item2, tuple.Item3);
                         break;

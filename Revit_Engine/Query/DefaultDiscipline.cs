@@ -24,7 +24,7 @@ using System.ComponentModel;
 
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
@@ -48,21 +48,21 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Gets Default Discipline for given FilterQuery.")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Gets Default Discipline for given FilterRequest.")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("Discipline")]
-        public static Discipline? DefaultDiscipline(this FilterQuery filterQuery)
+        public static Discipline? DefaultDiscipline(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.DefaultDiscipline))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.DefaultDiscipline))
                 return null;
 
-            //if(!(filterQuery.Equalities[Convert.FilterQuery.DefaultDiscipline] is Discipline))
+            //if(!(filterQuery.Equalities[Convert.FilterRequest.DefaultDiscipline] is Discipline))
             //    return null;
 
-            return (Discipline)filterQuery.Equalities[Convert.FilterQuery.DefaultDiscipline];
+            return (Discipline)filterQuery.Equalities[Convert.FilterRequest.DefaultDiscipline];
         }
 
         /***************************************************/

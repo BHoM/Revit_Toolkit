@@ -22,7 +22,7 @@
 
 using System.ComponentModel;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
@@ -31,14 +31,14 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterQuery which filters elements from all Open Revit Worksets")]
-        [Output("FilterQuery")]
-        public static FilterQuery OpenWorksetsFilterQuery()
+        [Description("Creates FilterRequest which filters elements from all Open Revit Worksets")]
+        [Output("FilterRequest")]
+        public static FilterRequest OpenWorksetsFilterRequest()
         {
-            FilterQuery aFilterQuery = new FilterQuery();
-            aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.OpenWorksets;
-            return aFilterQuery;
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.OpenWorksets;
+            return aFilterRequest;
         }
     }
 }

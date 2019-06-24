@@ -22,7 +22,7 @@
 
 using System.ComponentModel;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
@@ -31,28 +31,28 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterQuery which filters specified views")]
+        [Description("Creates FilterRequest which filters specified views")]
         [Input("revitViewType", "Revit View Type")]
-        [Output("FilterQuery")]
-        public static FilterQuery ViewFilterQuery(RevitViewType revitViewType)
+        [Output("FilterRequest")]
+        public static FilterRequest ViewFilterRequest(RevitViewType revitViewType)
         {
-            FilterQuery aFilterQuery = new FilterQuery();
-            aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.View;
-            aFilterQuery.Equalities[Convert.FilterQuery.RevitViewType] = revitViewType;
-            return aFilterQuery;
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.View;
+            aFilterRequest.Equalities[Convert.FilterRequest.RevitViewType] = revitViewType;
+            return aFilterRequest;
         }
 
-        [Description("Creates FilterQuery which filters specified views")]
+        [Description("Creates FilterRequest which filters specified views")]
         [Input("viewTemplateName", "Revit View Template Name applied to the views to be pulled")]
-        [Output("FilterQuery")]
-        public static FilterQuery ViewFilterQuery(string viewTemplateName)
+        [Output("FilterRequest")]
+        public static FilterRequest ViewFilterRequest(string viewTemplateName)
         {
-            FilterQuery aFilterQuery = new FilterQuery();
-            aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.View;
-            aFilterQuery.Equalities[Convert.FilterQuery.ViewTemplateName] = viewTemplateName;
-            return aFilterQuery;
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.View;
+            aFilterRequest.Equalities[Convert.FilterRequest.ViewTemplateName] = viewTemplateName;
+            return aFilterRequest;
         }
     }
 }

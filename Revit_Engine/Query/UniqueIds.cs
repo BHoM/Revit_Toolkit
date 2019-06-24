@@ -24,7 +24,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 
 using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
@@ -58,18 +58,18 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns Revit UniqueIds for given filterQuery (Example: SelectionFilterQuery).")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Returns Revit UniqueIds for given filterQuery (Example: SelectionFilterRequest).")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("UniqueIds")]
-        public static IEnumerable<string> UniqueIds(this FilterQuery filterQuery)
+        public static IEnumerable<string> UniqueIds(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.UniqueIds))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.UniqueIds))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterQuery.UniqueIds] as IEnumerable<string>;
+            return filterQuery.Equalities[Convert.FilterRequest.UniqueIds] as IEnumerable<string>;
         }
 
         /***************************************************/

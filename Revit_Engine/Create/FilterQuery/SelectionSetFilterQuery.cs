@@ -22,7 +22,7 @@
 
 using System.ComponentModel;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
@@ -31,16 +31,16 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterQuery which filters all elements by given Revit Selection Set Name.")]
+        [Description("Creates FilterRequest which filters all elements by given Revit Selection Set Name.")]
         [Input("slectionSetName", "Revit Slection Set Name")]
-        [Output("FilterQuery")]
-        public static FilterQuery SelectionSetFilterQuery(string slectionSetName)
+        [Output("FilterRequest")]
+        public static FilterRequest SelectionSetFilterRequest(string slectionSetName)
         {
-            FilterQuery aFilterQuery = new FilterQuery();
-            aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.SelectionSet;
-            aFilterQuery.Equalities[Convert.FilterQuery.SelectionSetName] = slectionSetName;
-            return aFilterQuery;
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.SelectionSet;
+            aFilterRequest.Equalities[Convert.FilterRequest.SelectionSetName] = slectionSetName;
+            return aFilterRequest;
         }
     }
 }

@@ -22,7 +22,7 @@
 
 using System.ComponentModel;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
@@ -31,57 +31,57 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterQuery which filters all elements by given parameter value.")]
+        [Description("Creates FilterRequest which filters all elements by given parameter value.")]
         [Input("filterQuery", "base Filter Query for elements to be queried")]
         [Input("parameterName", "Parameter name to be queried")]
         [Input("textComparisonType", "TextComparisonType")]
         [Input("value", "Parameter Value")]
-        [Output("FilterQuery")]
-        public static FilterQuery ParameterFilterQuery(FilterQuery filterQuery, string parameterName, TextComparisonType textComparisonType, string value)
+        [Output("FilterRequest")]
+        public static FilterRequest ParameterFilterRequest(FilterRequest filterQuery, string parameterName, TextComparisonType textComparisonType, string value)
         {
-            FilterQuery aFilterQuery = new FilterQuery();
-            aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.Parameter;
-            aFilterQuery.Equalities[Convert.FilterQuery.RelatedFilterQuery] = filterQuery;
-            aFilterQuery.Equalities[Convert.FilterQuery.ParameterName] = parameterName;
-            aFilterQuery.Equalities[Convert.FilterQuery.ComparisonRule] = Create.TextComparisonRule(textComparisonType);
-            aFilterQuery.Equalities[Convert.FilterQuery.Value] = value;
-            return aFilterQuery;
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.Parameter;
+            aFilterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterQuery;
+            aFilterRequest.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
+            aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = Create.TextComparisonRule(textComparisonType);
+            aFilterRequest.Equalities[Convert.FilterRequest.Value] = value;
+            return aFilterRequest;
         }
 
-        [Description("Creates FilterQuery which filters all elements by given parameter value.")]
+        [Description("Creates FilterRequest which filters all elements by given parameter value.")]
         [Input("filterQuery", "base Filter Query for elements to be queried")]
         [Input("parameterName", "Parameter name to be queried")]
         [Input("numberComparisonType", "NumberComparisonType")]
         [Input("value", "Parameter Value. If Revit parameter include units then this value shall be expressed in SI Units")]
-        [Output("FilterQuery")]
-        public static FilterQuery ParameterFilterQuery(FilterQuery filterQuery, string parameterName, NumberComparisonType numberComparisonType, double value)
+        [Output("FilterRequest")]
+        public static FilterRequest ParameterFilterRequest(FilterRequest filterQuery, string parameterName, NumberComparisonType numberComparisonType, double value)
         {
-            FilterQuery aFilterQuery = new FilterQuery();
-            aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.Parameter;
-            aFilterQuery.Equalities[Convert.FilterQuery.RelatedFilterQuery] = filterQuery ;
-            aFilterQuery.Equalities[Convert.FilterQuery.ParameterName] = parameterName;
-            aFilterQuery.Equalities[Convert.FilterQuery.ComparisonRule] = Create.NumberComparisonRule(numberComparisonType, 10);
-            aFilterQuery.Equalities[Convert.FilterQuery.Value] = value;
-            return aFilterQuery;
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.Parameter;
+            aFilterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterQuery ;
+            aFilterRequest.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
+            aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = Create.NumberComparisonRule(numberComparisonType, 10);
+            aFilterRequest.Equalities[Convert.FilterRequest.Value] = value;
+            return aFilterRequest;
         }
 
-        [Description("Creates FilterQuery which filters all elements which contains or not contains given parameter.")]
+        [Description("Creates FilterRequest which filters all elements which contains or not contains given parameter.")]
         [Input("filterQuery", "base Filter Query for elements to be queried")]
         [Input("parameterName", "Parameter name to be queried")]
         [Input("textComparisonType", "TextComparisonType")]
         [Input("parameterExists", "Parameter Exists")]
-        [Output("FilterQuery")]
-        public static FilterQuery ParameterFilterQuery(FilterQuery filterQuery, string parameterName, bool parameterExists = true)
+        [Output("FilterRequest")]
+        public static FilterRequest ParameterFilterRequest(FilterRequest filterQuery, string parameterName, bool parameterExists = true)
         {
-            FilterQuery aFilterQuery = new FilterQuery();
-            aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.Parameter;
-            aFilterQuery.Equalities[Convert.FilterQuery.RelatedFilterQuery] = filterQuery;
-            aFilterQuery.Equalities[Convert.FilterQuery.ParameterName] = parameterName;
-            aFilterQuery.Equalities[Convert.FilterQuery.ComparisonRule] = Create.ParameterExistsComparisonRule(!parameterExists);
-            return aFilterQuery;
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.Parameter;
+            aFilterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterQuery;
+            aFilterRequest.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
+            aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = Create.ParameterExistsComparisonRule(!parameterExists);
+            return aFilterRequest;
         }
     }
 }

@@ -22,7 +22,7 @@
 
 using BH.Adapter.Socket;
 using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Debugging;
 using BH.oM.Adapters.Revit.Settings;
 using System;
@@ -114,7 +114,7 @@ namespace BH.Adapter.Revit
 
         /***************************************************/
 
-        public override IEnumerable<object> Pull(IQuery query, Dictionary<string, object> config = null)
+        public override IEnumerable<object> Pull(IRequest query, Dictionary<string, object> config = null)
         {
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)
@@ -132,11 +132,11 @@ namespace BH.Adapter.Revit
 
             config = config == null ? new Dictionary<string, object>() : null;
 
-            if (!(query is FilterQuery))
+            if (!(query is FilterRequest))
                 return new List<object>();
 
             //Send data through the socket link
-            m_linkIn.SendData(new List<object>() { PackageType.Pull, query as FilterQuery, config, RevitSettings });
+            m_linkIn.SendData(new List<object>() { PackageType.Pull, query as FilterRequest, config, RevitSettings });
 
             //Wait until the return message has been recieved
             if (!m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime)))
@@ -158,7 +158,7 @@ namespace BH.Adapter.Revit
 
         /***************************************************/
 
-        public override int Delete(FilterQuery filter, Dictionary<string, object> config = null)
+        public override int Delete(FilterRequest filter, Dictionary<string, object> config = null)
         {
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)
@@ -172,7 +172,7 @@ namespace BH.Adapter.Revit
 
         /***************************************************/
 
-        public override int UpdateProperty(FilterQuery filter, string property, object newValue, Dictionary<string, object> config = null)
+        public override int UpdateProperty(FilterRequest filter, string property, object newValue, Dictionary<string, object> config = null)
         {
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)
@@ -191,7 +191,7 @@ namespace BH.Adapter.Revit
             config = config == null ? new Dictionary<string, object>() : null;
 
             //Send data through the socket link
-            m_linkIn.SendData(new List<object>() { PackageType.UpdateProperty, new Tuple<FilterQuery,string,object>(filter,property, newValue), config, RevitSettings });
+            m_linkIn.SendData(new List<object>() { PackageType.UpdateProperty, new Tuple<FilterRequest,string,object>(filter,property, newValue), config, RevitSettings });
 
             //Wait until the return message has been recieved
             if (!m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime)))

@@ -21,7 +21,7 @@
  */
 
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
 
@@ -33,19 +33,19 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Gets Include Selected property of FilterQuery.")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Gets Include Selected property of FilterRequest.")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("IncludeSelected")]
-        public static bool IncludeSelected(this FilterQuery filterQuery)
+        public static bool IncludeSelected(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return false;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.IncludeSelected))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.IncludeSelected))
                 return false;
 
-            if (filterQuery.Equalities[Convert.FilterQuery.IncludeSelected] is bool)
-                return (bool)filterQuery.Equalities[Convert.FilterQuery.IncludeSelected];
+            if (filterQuery.Equalities[Convert.FilterRequest.IncludeSelected] is bool)
+                return (bool)filterQuery.Equalities[Convert.FilterRequest.IncludeSelected];
             else
                 return false;
         }

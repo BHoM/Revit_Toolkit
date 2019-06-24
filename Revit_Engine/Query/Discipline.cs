@@ -23,7 +23,7 @@
 using System;
 
 using BH.oM.Adapters.Revit.Enums;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
@@ -62,20 +62,20 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Gets Discipline for given FilterQuery.")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Gets Discipline for given FilterRequest.")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("Discipline")]
-        public static Discipline? Discipline(this FilterQuery filterQuery)
+        public static Discipline? Discipline(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return null;
 
             List<Discipline> aDisciplineList = new List<Discipline>();
 
-            IEnumerable<FilterQuery> aFilterQueries = Query.FilterQueries(filterQuery);
+            IEnumerable<FilterRequest> aFilterQueries = Query.FilterQueries(filterQuery);
             if (aFilterQueries != null && aFilterQueries.Count() > 0)
             {
-                foreach (FilterQuery aFilterQuery in aFilterQueries)
+                foreach (FilterRequest aFilterRequest in aFilterQueries)
                 {
                     Discipline? aDiscipline = Discipline(filterQuery);
                     if (aDiscipline != null && aDiscipline.HasValue)
