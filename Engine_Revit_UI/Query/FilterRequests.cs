@@ -35,13 +35,13 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static IEnumerable<FilterRequest> FilterQueries(this Dictionary<ElementId, List<FilterRequest>> filterQueryDictionary, ElementId ElementId)
+        public static IEnumerable<FilterRequest> FilterQueries(this Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary, ElementId ElementId)
         {
-            if (filterQueryDictionary == null)
+            if (filterRequestDictionary == null)
                 return null;
 
             List<FilterRequest> aFilterRequestList = null;
-            if (!filterQueryDictionary.TryGetValue(ElementId, out aFilterRequestList))
+            if (!filterRequestDictionary.TryGetValue(ElementId, out aFilterRequestList))
                 return null;
 
             return aFilterRequestList;
