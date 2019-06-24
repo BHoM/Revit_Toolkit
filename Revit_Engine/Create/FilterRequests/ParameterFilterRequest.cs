@@ -41,7 +41,7 @@ namespace BH.Engine.Adapters.Revit
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.Parameter;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Parameter;
             aFilterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterQuery;
             aFilterRequest.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
             aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = Create.TextComparisonRule(textComparisonType);
@@ -59,7 +59,7 @@ namespace BH.Engine.Adapters.Revit
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.Parameter;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Parameter;
             aFilterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterQuery ;
             aFilterRequest.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
             aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = Create.NumberComparisonRule(numberComparisonType, 10);
@@ -77,7 +77,7 @@ namespace BH.Engine.Adapters.Revit
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.Parameter;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Parameter;
             aFilterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterQuery;
             aFilterRequest.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
             aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = Create.ParameterExistsComparisonRule(!parameterExists);

@@ -49,7 +49,7 @@ namespace BH.UI.Revit
 
         /***************************************************/
 
-        public IRequest LatestQuery { get; set; }
+        public IRequest LatestRequest { get; set; }
 
         /***************************************************/
 
@@ -241,13 +241,13 @@ namespace BH.UI.Revit
                     case PackageType.Pull:
                         if (!CheckPackageSize(package)) return;
                         eve = m_pullEvent;
-                        LatestQuery = package.Data[1] as IRequest;
+                        LatestRequest = package.Data[1] as IRequest;
                         break;
                     case PackageType.UpdateProperty:
                         if (!CheckPackageSize(package)) return;
                         eve = m_updatePropertyEvent;
                         var tuple = package.Data[1] as Tuple<FilterRequest, string, object>;
-                        LatestQuery = tuple.Item1;
+                        LatestRequest = tuple.Item1;
                         LatestKeyValuePair = new KeyValuePair<string, object>(tuple.Item2, tuple.Item3);
                         break;
                     default:

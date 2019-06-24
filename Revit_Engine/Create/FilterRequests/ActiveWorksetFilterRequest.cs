@@ -23,34 +23,22 @@
 using System.ComponentModel;
 
 using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Create
     {
-        /***************************************************/
-        /**** Public Methods                            ****/
-        /***************************************************/
-
-        [Description("Returns Query Type of given FilterRequest")]
-        [Input("filterQuery", "FilterRequest")]
-        [Output("QueryType")]
-        public static oM.Adapters.Revit.Enums.QueryType QueryType(this FilterRequest filterQuery)
+        [Description("Creates FilterRequest which filters all elements on Revit Active workset.")]
+        [Output("FilterRequest")]
+        public static FilterRequest ActiveWorksetFilterRequest()
         {
-            if (filterQuery == null)
-                return oM.Adapters.Revit.Enums.QueryType.Undefined;
-
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.QueryType))
-                return oM.Adapters.Revit.Enums.QueryType.Undefined;
-
-            if (filterQuery.Equalities[Convert.FilterRequest.QueryType] is oM.Adapters.Revit.Enums.QueryType || filterQuery.Equalities[Convert.FilterRequest.QueryType] is int)
-                return (oM.Adapters.Revit.Enums.QueryType)filterQuery.Equalities[Convert.FilterRequest.QueryType];
-
-            return oM.Adapters.Revit.Enums.QueryType.Undefined;
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.ActiveWorkset;
+            return aFilterRequest;
         }
-
-        /***************************************************/
     }
 }
-

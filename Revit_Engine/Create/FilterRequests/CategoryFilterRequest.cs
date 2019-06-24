@@ -21,7 +21,6 @@
  */
 
 using System.ComponentModel;
-using System.Collections.Generic;
 
 using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
@@ -32,38 +31,15 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterRequest which filters selected Revit elements")]
+        [Description("Creates FilterRequest which filters all by given Revit Category Name.")]
+        [Input("categoryName", "Revit Category Name")]
         [Output("FilterRequest")]
-        public static FilterRequest SelectionFilterRequest()
+        public static FilterRequest CategoryFilterRequest(string categoryName)
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.Selection;
-            aFilterRequest.Equalities[Convert.FilterRequest.IncludeSelected] = true;
-            return aFilterRequest;
-        }
-
-        [Description("Creates FilterRequest which filters all elements by given ElementIds.")]
-        [Input("elementIds", "ElementIds of elements to be filtered")]
-        [Output("FilterRequest")]
-        public static FilterRequest SelectionFilterRequest(IEnumerable<int> elementIds)
-        {
-            FilterRequest aFilterRequest = new FilterRequest();
-            aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.Selection;
-            aFilterRequest.Equalities[Convert.FilterRequest.ElementIds] = elementIds;
-            return aFilterRequest;
-        }
-
-        [Description("Creates FilterRequest which filters all elements by given UniqueIds.")]
-        [Input("uniqueIds", "UniqueIds of elements to be filtered")]
-        [Output("FilterRequest")]
-        public static FilterRequest SelectionFilterRequest(IEnumerable<string> uniqueIds)
-        {
-            FilterRequest aFilterRequest = new FilterRequest();
-            aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.Selection;
-            aFilterRequest.Equalities[Convert.FilterRequest.UniqueIds] = uniqueIds;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Category;
+            aFilterRequest.Equalities[Convert.FilterRequest.CategoryName] = categoryName;
             return aFilterRequest;
         }
     }

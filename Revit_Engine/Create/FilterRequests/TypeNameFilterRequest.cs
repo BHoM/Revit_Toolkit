@@ -31,17 +31,15 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterRequest which filters all elements by given Family Name or/and Family sType Name.")]
-        [Input("familyName", "Family Name. Keep default value (null) to seek through all Family Type Names.")]
-        [Input("familyTypeName", "Family Type Name")]
+        [Description("Creates FilterRequest which filters all elements by given Revit Type/Class name.")]
+        [Input("typeName", "Revit Type/Class name")]
         [Output("FilterRequest")]
-        public static FilterRequest FamilyFilterRequest(string familyName = null, string familyTypeName = null)
+        public static FilterRequest TypeNameFilterRequest(string typeName)
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.Family;
-            aFilterRequest.Equalities[Convert.FilterRequest.FamilyName] = familyName;
-            aFilterRequest.Equalities[Convert.FilterRequest.FamilyTypeName] = familyTypeName;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.TypeName;
+            aFilterRequest.Equalities[Convert.FilterRequest.TypeName] = typeName;
             return aFilterRequest;
         }
     }

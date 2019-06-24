@@ -32,27 +32,27 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterRequest which combines other FilterQueries by logical and operator.")]
+        [Description("Creates FilterRequest which combines other FilterQueries by logical or operator.")]
         [Input("filterQueries", "Filter Queries to be combined")]
         [Output("FilterRequest")]
-        public static FilterRequest LogicalAndFilterRequest(IEnumerable<FilterRequest> filterQueries)
+        public static FilterRequest LogicalOrFilterRequest(IEnumerable<FilterRequest> filterQueries)
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.LogicalAnd;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.LogicalOr;
             aFilterRequest.Equalities[Convert.FilterRequest.FilterQueries] = filterQueries;
             return aFilterRequest;
         }
 
-        [Description("Creates FilterRequest which combines two FilterQueries by logical and operator.")]
+        [Description("Creates FilterRequest which combines two FilterQueries by logical or operator.")]
         [Input("filterQuery_1", "First FilterRequest to be combined")]
         [Input("filterQuery_2", "Second FilterRequest to be combined")]
         [Output("FilterRequest")]
-        public static FilterRequest LogicalAndFilterRequest(FilterRequest filterQuery_1, FilterRequest filterQuery_2)
+        public static FilterRequest LogicalOrFilterRequest(FilterRequest filterQuery_1, FilterRequest filterQuery_2)
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.LogicalAnd;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.LogicalOr;
             aFilterRequest.Equalities[Convert.FilterRequest.FilterQueries] = new List<FilterRequest>() { filterQuery_1, filterQuery_2 };
             return aFilterRequest;
         }
