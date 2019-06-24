@@ -38,20 +38,20 @@ namespace BH.Engine.Adapters.Revit
         [Description("Gets child FilterQueries for given FiletrQuery (FilterRequest can be combined by logical operation - LogicalAndSelectionFilter, LogicalOrSelectionFilter).")]
         [Input("filterQuery", "FilterRequest")]
         [Output("FilterQueries")]
-        public static IEnumerable<FilterRequest> FilterQueries(this FilterRequest filterQuery)
+        public static IEnumerable<FilterRequest> FilterRequests(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.FilterQueries))
+            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.FilterQueries))
                 return null;
 
-            if (filterQuery.Equalities[Convert.FilterRequest.FilterQueries] is IEnumerable<FilterRequest>)
-                return (IEnumerable<FilterRequest>)filterQuery.Equalities[Convert.FilterRequest.FilterQueries];
+            if (filterRequest.Equalities[Convert.FilterRequest.FilterQueries] is IEnumerable<FilterRequest>)
+                return (IEnumerable<FilterRequest>)filterRequest.Equalities[Convert.FilterRequest.FilterQueries];
 
-            if (filterQuery.Equalities[Convert.FilterRequest.FilterQueries] is IEnumerable<object>)
+            if (filterRequest.Equalities[Convert.FilterRequest.FilterQueries] is IEnumerable<object>)
             {
-                IEnumerable<object> aObjects = filterQuery.Equalities[Convert.FilterRequest.FilterQueries] as IEnumerable<object>;
+                IEnumerable<object> aObjects = filterRequest.Equalities[Convert.FilterRequest.FilterQueries] as IEnumerable<object>;
                 if (aObjects != null)
                     return aObjects.Cast<FilterRequest>();
             }
