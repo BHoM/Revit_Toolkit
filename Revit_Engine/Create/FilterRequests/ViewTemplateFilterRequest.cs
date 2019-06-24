@@ -21,7 +21,6 @@
  */
 
 using System.ComponentModel;
-using System.Collections.Generic;
 
 using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
@@ -32,28 +31,25 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterRequest which combines other FilterQueries by logical or operator.")]
-        [Input("filterQueries", "Filter Queries to be combined")]
+        [Description("Creates FilterRequest which filters all View Templates in Revit Document.")]
         [Output("FilterRequest")]
-        public static FilterRequest LogicalOrFilterRequest(IEnumerable<FilterRequest> filterQueries)
+        public static FilterRequest ViewTemplateFilterRequest()
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.LogicalOr;
-            aFilterRequest.Equalities[Convert.FilterRequest.FilterQueries] = filterQueries;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.ViewTemplate;
             return aFilterRequest;
         }
 
-        [Description("Creates FilterRequest which combines two FilterQueries by logical or operator.")]
-        [Input("filterQuery_1", "First FilterRequest to be combined")]
-        [Input("filterQuery_2", "Second FilterRequest to be combined")]
+        [Description("Creates FilterRequest which filters View Template by given name.")]
+        [Input("viewTemplateName", "Revit View Template Name")]
         [Output("FilterRequest")]
-        public static FilterRequest LogicalOrFilterRequest(FilterRequest filterQuery_1, FilterRequest filterQuery_2)
+        public static FilterRequest ViewTemplateFilterRequest(string viewTemplateName)
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.LogicalOr;
-            aFilterRequest.Equalities[Convert.FilterRequest.FilterQueries] = new List<FilterRequest>() { filterQuery_1, filterQuery_2 };
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.ViewTemplate;
+            aFilterRequest.Equalities[Convert.FilterRequest.ViewTemplateName] = viewTemplateName;
             return aFilterRequest;
         }
     }

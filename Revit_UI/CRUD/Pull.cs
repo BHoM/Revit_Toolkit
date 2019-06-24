@@ -49,7 +49,7 @@ namespace BH.UI.Revit
                     RevitUIAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
 
                     //Push the data
-                    IEnumerable<object> objs = adapter.Pull(listener.LatestQuery, listener.LatestConfig);
+                    IEnumerable<object> objs = adapter.Pull(listener.LatestRequest, listener.LatestConfig);
 
                     //Clear the previous data
                     listener.LatestConfig = null;

@@ -20,27 +20,32 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
-using BH.oM.Data.Requests;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
-
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Create
+    public static partial class Convert
     {
-        [Description("Creates FilterRequest which filters all elements by given Revit Type/Class name.")]
-        [Input("typeName", "Revit Type/Class name")]
-        [Output("FilterRequest")]
-        public static FilterRequest TypeNameFilterRequest(string typeName)
+        public static class FilterRequest
         {
-            FilterRequest aFilterRequest = new FilterRequest();
-            aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.TypeName;
-            aFilterRequest.Equalities[Convert.FilterRequest.TypeName] = typeName;
-            return aFilterRequest;
+            public const string RequestType = "RequestType";
+            public const string FilterQueries = "FilterQueries";
+            public const string CategoryName = "CategoryName";
+            public const string ElementIds = "ElementIds";
+            public const string UniqueIds = "UniqueIds";
+            public const string WorksetName = "WorksetName";
+            public const string IncludeSelected = "IncludeSelected";
+            public const string DefaultDiscipline = "DefaultDiscipline";
+            public const string ViewTemplateName = "ViewTemplateName";
+            public const string TypeName = "TypeName";
+            public const string FamilyName = "FamilyName";
+            public const string FamilyTypeName = "FamilyTypeName";
+            public const string SelectionSetName = "SelectionSetName";
+            public const string PullEdges = "PullEdges";
+            public const string IncludeNonVisibleObjects = "IncludeNonVisibleObjects";
+            public const string RevitViewType = "RevitViewType";
+            public const string ParameterName = "ParameterName";
+            public const string Value = "Value";
+            public const string ComparisonRule = "ComparisonRule";
+            public const string RelatedFilterRequest = "RelatedFilterRequest";
         }
     }
 }

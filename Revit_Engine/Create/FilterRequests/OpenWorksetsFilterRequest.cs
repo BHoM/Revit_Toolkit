@@ -37,7 +37,7 @@ namespace BH.Engine.Adapters.Revit
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.OpenWorksets;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.OpenWorksets;
             return aFilterRequest;
         }
     }

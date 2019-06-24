@@ -49,7 +49,7 @@ namespace BH.UI.Revit
                     RevitUIAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
 
                     //Push the data
-                    int result = adapter.UpdateProperty(listener.LatestQuery as BH.oM.Data.Requests.FilterRequest, listener.LatestKeyValuePair.Key, listener.LatestKeyValuePair.Value, listener.LatestConfig);
+                    int result = adapter.UpdateProperty(listener.LatestRequest as BH.oM.Data.Requests.FilterRequest, listener.LatestKeyValuePair.Key, listener.LatestKeyValuePair.Value, listener.LatestConfig);
 
                     //Clear the lastest package list
                     listener.LatestKeyValuePair = new KeyValuePair<string, object>();

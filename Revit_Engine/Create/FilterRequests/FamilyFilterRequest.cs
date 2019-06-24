@@ -31,15 +31,17 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterRequest which filters elements by given Workset Name.")]
-        [Input("worksetName", "Revit Workset Name")]
+        [Description("Creates FilterRequest which filters all elements by given Family Name or/and Family sType Name.")]
+        [Input("familyName", "Family Name. Keep default value (null) to seek through all Family Type Names.")]
+        [Input("familyTypeName", "Family Type Name")]
         [Output("FilterRequest")]
-        public static FilterRequest WorksetFilterRequest(string worksetName)
+        public static FilterRequest FamilyFilterRequest(string familyName = null, string familyTypeName = null)
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.Workset;
-            aFilterRequest.Equalities[Convert.FilterRequest.WorksetName] = worksetName;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Family;
+            aFilterRequest.Equalities[Convert.FilterRequest.FamilyName] = familyName;
+            aFilterRequest.Equalities[Convert.FilterRequest.FamilyTypeName] = familyTypeName;
             return aFilterRequest;
         }
     }

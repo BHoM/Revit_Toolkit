@@ -97,7 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Convert\AdapterID.cs" />
-    <Compile Include="Convert\FilterQuery.cs" />
+    <Compile Include="Convert\FilterRequest.cs" />
     <Compile Include="Create\Elements\Panel.cs" />
     <Compile Include="Create\Elements\BHoMObject.cs" />
     <Compile Include="Create\Elements\DraftingInstance.cs" />
@@ -106,14 +106,14 @@
     <Compile Include="Create\Elements\Wall.cs" />
     <Compile Include="Create\Elements\ViewPlan.cs" />
     <Compile Include="Create\Elements\ModelInstance.cs" />
-    <Compile Include="Create\FilterQuery\ActiveWorksetFilterQuery.cs" />
-    <Compile Include="Create\FilterQuery\ParameterFilterQuery.cs" />
-    <Compile Include="Create\FilterQuery\SpaceFilterQuery.cs" />
-    <Compile Include="Create\FilterQuery\FamilyFilterQuery.cs" />
-    <Compile Include="Create\FilterQuery\SelectionSetFilterQuery.cs" />
-    <Compile Include="Create\FilterQuery\TypeNameFilterQuery.cs" />
-    <Compile Include="Create\FilterQuery\ViewFilterQuery.cs" />
-    <Compile Include="Create\FilterQuery\ViewTemplateFilterQuery.cs" />
+    <Compile Include="Create\FilterRequests\ActiveWorksetFilterRequest.cs" />
+    <Compile Include="Create\FilterRequests\ParameterFilterRequest.cs" />
+    <Compile Include="Create\FilterRequests\SpaceFilterRequest.cs" />
+    <Compile Include="Create\FilterRequests\FamilyFilterRequest.cs" />
+    <Compile Include="Create\FilterRequests\SelectionSetFilterRequest.cs" />
+    <Compile Include="Create\FilterRequests\TypeNameFilterRequest.cs" />
+    <Compile Include="Create\FilterRequests\ViewFilterRequest.cs" />
+    <Compile Include="Create\FilterRequests\ViewTemplateFilterRequest.cs" />
     <Compile Include="Create\Generic\ParameterExistsComparisonRule.cs" />
     <Compile Include="Create\Generic\NumberComparisonRule.cs" />
     <Compile Include="Create\Generic\TextComparisonRule.cs" />
@@ -122,17 +122,17 @@
     <Compile Include="Create\Generic\FamilyLibrary.cs" />
     <Compile Include="Create\Generic\TypeMap.cs" />
     <Compile Include="Create\Generic\RevitFilePreview.cs" />
-    <Compile Include="Create\FilterQuery\OpenWorksetsFilterQuery.cs" />
-    <Compile Include="Create\FilterQuery\LogicalOrFilterQuery.cs" />
-    <Compile Include="Create\FilterQuery\LogicalAndFilterQuery.cs" />
-    <Compile Include="Create\FilterQuery\WorksetFilterQuery.cs" />
-    <Compile Include="Create\FilterQuery\CategoryFilterQuery.cs" />
+    <Compile Include="Create\FilterRequests\OpenWorksetsFilterRequest.cs" />
+    <Compile Include="Create\FilterRequests\LogicalOrFilterRequest.cs" />
+    <Compile Include="Create\FilterRequests\LogicalAndFilterRequest.cs" />
+    <Compile Include="Create\FilterRequests\WorksetFilterRequest.cs" />
+    <Compile Include="Create\FilterRequests\CategoryFilterRequest.cs" />
     <Compile Include="Create\Settings\GeneralSettings.cs" />
     <Compile Include="Create\Settings\FamilyLoadSettings.cs" />
     <Compile Include="Create\Settings\ConnectionSettings.cs" />
     <Compile Include="Create\Settings\RevitSettings.cs" />
     <Compile Include="Create\Settings\PullSettings.cs" />
-    <Compile Include="Create\FilterQuery\SelectionFilterQuery.cs" />
+    <Compile Include="Create\FilterRequests\SelectionFilterRequest.cs" />
     <Compile Include="Create\Elements\Viewport.cs" />
     <Compile Include="Create\Elements\Sheet.cs" />
     <Compile Include="Modify\AddTypeMap.cs" />
@@ -149,7 +149,7 @@
     <Compile Include="Query\InnerPolyCurves.cs" />
     <Compile Include="Query\Family.cs" />
     <Compile Include="Query\RevitFilePreviews.cs" />
-    <Compile Include="Query\RelatedFilterQuery.cs" />
+    <Compile Include="Query\RelatedFilterRequest.cs" />
     <Compile Include="Query\Value.cs" />
     <Compile Include="Query\ParameterName.cs" />
     <Compile Include="Query\IsValid.cs" />
@@ -199,7 +199,7 @@
     <Compile Include="Query\IsZero.cs" />
     <Compile Include="Query\Location.cs" />
     <Compile Include="Query\OmniClass.cs" />
-    <Compile Include="Query\QueryType.cs" />
+    <Compile Include="Query\RequestType.cs" />
     <Compile Include="Query\SheetNumber.cs" />
     <Compile Include="Query\IsTemplate.cs" />
     <Compile Include="Query\FilterQueries.cs" />

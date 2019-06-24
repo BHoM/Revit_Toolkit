@@ -21,6 +21,7 @@
  */
 
 using System.ComponentModel;
+using System.Collections.Generic;
 
 using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
@@ -31,27 +32,38 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterRequest which filters specified views")]
-        [Input("revitViewType", "Revit View Type")]
+        [Description("Creates FilterRequest which filters selected Revit elements")]
         [Output("FilterRequest")]
-        public static FilterRequest ViewFilterRequest(RevitViewType revitViewType)
+        public static FilterRequest SelectionFilterRequest()
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.View;
-            aFilterRequest.Equalities[Convert.FilterRequest.RevitViewType] = revitViewType;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Selection;
+            aFilterRequest.Equalities[Convert.FilterRequest.IncludeSelected] = true;
             return aFilterRequest;
         }
 
-        [Description("Creates FilterRequest which filters specified views")]
-        [Input("viewTemplateName", "Revit View Template Name applied to the views to be pulled")]
+        [Description("Creates FilterRequest which filters all elements by given ElementIds.")]
+        [Input("elementIds", "ElementIds of elements to be filtered")]
         [Output("FilterRequest")]
-        public static FilterRequest ViewFilterRequest(string viewTemplateName)
+        public static FilterRequest SelectionFilterRequest(IEnumerable<int> elementIds)
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.View;
-            aFilterRequest.Equalities[Convert.FilterRequest.ViewTemplateName] = viewTemplateName;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Selection;
+            aFilterRequest.Equalities[Convert.FilterRequest.ElementIds] = elementIds;
+            return aFilterRequest;
+        }
+
+        [Description("Creates FilterRequest which filters all elements by given UniqueIds.")]
+        [Input("uniqueIds", "UniqueIds of elements to be filtered")]
+        [Output("FilterRequest")]
+        public static FilterRequest SelectionFilterRequest(IEnumerable<string> uniqueIds)
+        {
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Selection;
+            aFilterRequest.Equalities[Convert.FilterRequest.UniqueIds] = uniqueIds;
             return aFilterRequest;
         }
     }

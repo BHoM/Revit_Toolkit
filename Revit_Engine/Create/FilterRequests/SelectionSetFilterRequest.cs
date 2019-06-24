@@ -31,15 +31,15 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterRequest which filters all by given Revit Category Name.")]
-        [Input("categoryName", "Revit Category Name")]
+        [Description("Creates FilterRequest which filters all elements by given Revit Selection Set Name.")]
+        [Input("slectionSetName", "Revit Slection Set Name")]
         [Output("FilterRequest")]
-        public static FilterRequest CategoryFilterRequest(string categoryName)
+        public static FilterRequest SelectionSetFilterRequest(string slectionSetName)
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.Category;
-            aFilterRequest.Equalities[Convert.FilterRequest.CategoryName] = categoryName;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.SelectionSet;
+            aFilterRequest.Equalities[Convert.FilterRequest.SelectionSetName] = slectionSetName;
             return aFilterRequest;
         }
     }

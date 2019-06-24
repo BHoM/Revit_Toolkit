@@ -47,7 +47,7 @@ namespace BH.UI.Revit.Engine
             IEnumerable<FilterRequest> aFilterQueries = BH.Engine.Adapters.Revit.Query.FilterQueries(filterQuery);
             if (aFilterQueries != null && aFilterQueries.Count() > 0)
             {
-                QueryType aQueryType = BH.Engine.Adapters.Revit.Query.QueryType(filterQuery);
+                RequestType aQueryType = BH.Engine.Adapters.Revit.Query.RequestType(filterQuery);
 
                 Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary = null;
                 foreach (FilterRequest aFilterRequest in aFilterQueries)
@@ -59,7 +59,7 @@ namespace BH.UI.Revit.Engine
                     }
                     else
                     {
-                        if (aQueryType == QueryType.LogicalAnd)
+                        if (aQueryType == RequestType.LogicalAnd)
                             aFilterRequestDictionary = Query.LogicalAnd(aFilterRequestDictionary, aFilterRequestDictionary_Temp);
                         else
                             aFilterRequestDictionary = Query.LogicalOr(aFilterRequestDictionary, aFilterRequestDictionary_Temp);

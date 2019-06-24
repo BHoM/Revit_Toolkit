@@ -31,13 +31,27 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterRequest which filters all elements on Revit Active workset.")]
+        [Description("Creates FilterRequest which filters specified views")]
+        [Input("revitViewType", "Revit View Type")]
         [Output("FilterRequest")]
-        public static FilterRequest ActiveWorksetFilterRequest()
+        public static FilterRequest ViewFilterRequest(RevitViewType revitViewType)
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.ActiveWorkset;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.View;
+            aFilterRequest.Equalities[Convert.FilterRequest.RevitViewType] = revitViewType;
+            return aFilterRequest;
+        }
+
+        [Description("Creates FilterRequest which filters specified views")]
+        [Input("viewTemplateName", "Revit View Template Name applied to the views to be pulled")]
+        [Output("FilterRequest")]
+        public static FilterRequest ViewFilterRequest(string viewTemplateName)
+        {
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.View;
+            aFilterRequest.Equalities[Convert.FilterRequest.ViewTemplateName] = viewTemplateName;
             return aFilterRequest;
         }
     }

@@ -31,25 +31,15 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterRequest which filters all View Templates in Revit Document.")]
+        [Description("Creates FilterRequest which filters elements by given Workset Name.")]
+        [Input("worksetName", "Revit Workset Name")]
         [Output("FilterRequest")]
-        public static FilterRequest ViewTemplateFilterRequest()
+        public static FilterRequest WorksetFilterRequest(string worksetName)
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.ViewTemplate;
-            return aFilterRequest;
-        }
-
-        [Description("Creates FilterRequest which filters View Template by given name.")]
-        [Input("viewTemplateName", "Revit View Template Name")]
-        [Output("FilterRequest")]
-        public static FilterRequest ViewTemplateFilterRequest(string viewTemplateName)
-        {
-            FilterRequest aFilterRequest = new FilterRequest();
-            aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.ViewTemplate;
-            aFilterRequest.Equalities[Convert.FilterRequest.ViewTemplateName] = viewTemplateName;
+            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Workset;
+            aFilterRequest.Equalities[Convert.FilterRequest.WorksetName] = worksetName;
             return aFilterRequest;
         }
     }

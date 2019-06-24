@@ -31,7 +31,7 @@ namespace BH.oM.Adapters.Revit.Enums
         Physical
     }
 
-    public enum QueryType
+    public enum RequestType
     {
         Undefined,
         Selection,

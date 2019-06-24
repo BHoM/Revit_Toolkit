@@ -20,32 +20,37 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System.ComponentModel;
+
+using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
+
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Convert
+    public static partial class Query
     {
-        public static class FilterRequest
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
+
+        [Description("Returns Query Type of given FilterRequest")]
+        [Input("filterQuery", "FilterRequest")]
+        [Output("QueryType")]
+        public static oM.Adapters.Revit.Enums.RequestType RequestType(this FilterRequest filterQuery)
         {
-            public const string QueryType = "QueryType";
-            public const string FilterQueries = "FilterQueries";
-            public const string CategoryName = "CategoryName";
-            public const string ElementIds = "ElementIds";
-            public const string UniqueIds = "UniqueIds";
-            public const string WorksetName = "WorksetName";
-            public const string IncludeSelected = "IncludeSelected";
-            public const string DefaultDiscipline = "DefaultDiscipline";
-            public const string ViewTemplateName = "ViewTemplateName";
-            public const string TypeName = "TypeName";
-            public const string FamilyName = "FamilyName";
-            public const string FamilyTypeName = "FamilyTypeName";
-            public const string SelectionSetName = "SelectionSetName";
-            public const string PullEdges = "PullEdges";
-            public const string IncludeNonVisibleObjects = "IncludeNonVisibleObjects";
-            public const string RevitViewType = "RevitViewType";
-            public const string ParameterName = "ParameterName";
-            public const string Value = "Value";
-            public const string ComparisonRule = "ComparisonRule";
-            public const string RelatedFilterRequest = "RelatedFilterRequest";
+            if (filterQuery == null)
+                return oM.Adapters.Revit.Enums.RequestType.Undefined;
+
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.RequestType))
+                return oM.Adapters.Revit.Enums.RequestType.Undefined;
+
+            if (filterQuery.Equalities[Convert.FilterRequest.RequestType] is oM.Adapters.Revit.Enums.RequestType || filterQuery.Equalities[Convert.FilterRequest.RequestType] is int)
+                return (oM.Adapters.Revit.Enums.RequestType)filterQuery.Equalities[Convert.FilterRequest.RequestType];
+
+            return oM.Adapters.Revit.Enums.RequestType.Undefined;
         }
+
+        /***************************************************/
     }
 }
+
