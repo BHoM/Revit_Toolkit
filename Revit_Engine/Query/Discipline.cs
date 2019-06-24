@@ -72,7 +72,7 @@ namespace BH.Engine.Adapters.Revit
 
             List<Discipline> aDisciplineList = new List<Discipline>();
 
-            IEnumerable<FilterRequest> aFilterQueries = Query.FilterQueries(filterQuery);
+            IEnumerable<FilterRequest> aFilterQueries = Query.FilterRequests(filterQuery);
             if (aFilterQueries != null && aFilterQueries.Count() > 0)
             {
                 foreach (FilterRequest aFilterRequest in aFilterQueries)

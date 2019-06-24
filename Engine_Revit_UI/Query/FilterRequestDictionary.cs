@@ -44,7 +44,7 @@ namespace BH.UI.Revit.Engine
 
             Dictionary<ElementId, List<FilterRequest>> aResult = new Dictionary<ElementId, List<FilterRequest>>();
 
-            IEnumerable<FilterRequest> aFilterQueries = BH.Engine.Adapters.Revit.Query.FilterQueries(filterRequest);
+            IEnumerable<FilterRequest> aFilterQueries = BH.Engine.Adapters.Revit.Query.FilterRequests(filterRequest);
             if (aFilterQueries != null && aFilterQueries.Count() > 0)
             {
                 RequestType aQueryType = BH.Engine.Adapters.Revit.Query.RequestType(filterRequest);
