@@ -114,13 +114,13 @@ namespace BH.Adapter.Revit
 
         /***************************************************/
 
-        public override IEnumerable<object> Pull(IRequest query, Dictionary<string, object> config = null)
+        public override IEnumerable<object> Pull(IRequest request, Dictionary<string, object> config = null)
         {
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)
             {
                 InternalAdapter.RevitSettings = RevitSettings;
-                return InternalAdapter.Pull(query, config);
+                return InternalAdapter.Pull(request, config);
             }  
 
             //Reset the wait event
@@ -132,11 +132,11 @@ namespace BH.Adapter.Revit
 
             config = config == null ? new Dictionary<string, object>() : null;
 
-            if (!(query is FilterRequest))
+            if (!(request is FilterRequest))
                 return new List<object>();
 
             //Send data through the socket link
-            m_linkIn.SendData(new List<object>() { PackageType.Pull, query as FilterRequest, config, RevitSettings });
+            m_linkIn.SendData(new List<object>() { PackageType.Pull, request as FilterRequest, config, RevitSettings });
 
             //Wait until the return message has been recieved
             if (!m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime)))
