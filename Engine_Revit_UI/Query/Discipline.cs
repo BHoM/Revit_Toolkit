@@ -25,7 +25,7 @@ using System.Collections.Generic;
 
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 
 namespace BH.UI.Revit.Engine
 {
@@ -35,7 +35,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public Discipline Discipline(this FilterQuery filterQuery, RevitSettings revitSettings)
+        static public Discipline Discipline(this FilterRequest filterQuery, RevitSettings revitSettings)
         {
             Discipline? aDiscipline = null;
 
@@ -56,23 +56,23 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public Discipline Discipline(this IEnumerable<FilterQuery> filterQueries, RevitSettings revitSettings)
+        static public Discipline Discipline(this IEnumerable<FilterRequest> filterQueries, RevitSettings revitSettings)
         {
             if (filterQueries == null || filterQueries.Count() == 0)
                 return oM.Adapters.Revit.Enums.Discipline.Undefined;
 
             Discipline? aDiscipline = null;
 
-            foreach (FilterQuery aFilterQuery in filterQueries)
+            foreach (FilterRequest aFilterRequest in filterQueries)
             {
-                aDiscipline = BH.Engine.Adapters.Revit.Query.Discipline(aFilterQuery);
+                aDiscipline = BH.Engine.Adapters.Revit.Query.Discipline(aFilterRequest);
                 if (aDiscipline != null && aDiscipline.HasValue)
                     return aDiscipline.Value;
             }
 
-            foreach (FilterQuery aFilterQuery in filterQueries)
+            foreach (FilterRequest aFilterRequest in filterQueries)
             {
-                aDiscipline = BH.Engine.Adapters.Revit.Query.DefaultDiscipline(aFilterQuery);
+                aDiscipline = BH.Engine.Adapters.Revit.Query.DefaultDiscipline(aFilterRequest);
                 if (aDiscipline != null && aDiscipline.HasValue)
                     return aDiscipline.Value;
             }

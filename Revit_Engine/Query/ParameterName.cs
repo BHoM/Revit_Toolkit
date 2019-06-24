@@ -22,7 +22,7 @@
 
 using System.ComponentModel;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Interface;
 
@@ -34,18 +34,18 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns Parameter Name of given FilterQuery")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Returns Parameter Name of given FilterRequest")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("QueryType")]
-        public static string ParameterName(this FilterQuery filterQuery)
+        public static string ParameterName(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.ParameterName))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.ParameterName))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterQuery.ParameterName] as string;
+            return filterQuery.Equalities[Convert.FilterRequest.ParameterName] as string;
         }
 
         /***************************************************/

@@ -22,7 +22,7 @@
 
 using System.ComponentModel;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Environment.Elements;
 using BH.oM.Reflection.Attributes;
 
@@ -30,15 +30,15 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterQuery which filters all spaces in Active Revit Document.")]
+        [Description("Creates FilterRequest which filters all spaces in Active Revit Document.")]
         [Input("pullEdges", "Pull edges (3D represenation) of space")]
-        [Output("FilterQuery")]
-        public static FilterQuery SpaceFilterQuery(bool pullEdges = true)
+        [Output("FilterRequest")]
+        public static FilterRequest SpaceFilterRequest(bool pullEdges = true)
         {
-            FilterQuery aFilterQuery = new FilterQuery();
-            aFilterQuery.Type = typeof(Space);
-            aFilterQuery.Equalities[Convert.FilterQuery.PullEdges] = pullEdges;
-            return aFilterQuery;
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(Space);
+            aFilterRequest.Equalities[Convert.FilterRequest.PullEdges] = pullEdges;
+            return aFilterRequest;
         }
     }
 }

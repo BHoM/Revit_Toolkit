@@ -21,7 +21,7 @@
  */
 
 using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
 
@@ -33,18 +33,18 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Gets Revit Family Type name for given FilterQuery (Example: FamilyFilterQuery).")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Gets Revit Family Type name for given FilterRequest (Example: FamilyFilterRequest).")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("FamilyTypeName")]
-        public static string FamilyTypeName(this FilterQuery filterQuery)
+        public static string FamilyTypeName(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.FamilyTypeName))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.FamilyTypeName))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterQuery.FamilyTypeName] as string;
+            return filterQuery.Equalities[Convert.FilterRequest.FamilyTypeName] as string;
         }
 
         /***************************************************/

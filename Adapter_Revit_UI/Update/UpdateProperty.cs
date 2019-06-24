@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.UI.Revit.Engine;
@@ -41,7 +41,7 @@ namespace BH.UI.Revit.Adapter
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public override int UpdateProperty(FilterQuery filter, string property, object newValue, Dictionary<string, object> config = null)
+        public override int UpdateProperty(FilterRequest filter, string property, object newValue, Dictionary<string, object> config = null)
         {
             if (filter == null || filter.Type == null)
                 return -1;
@@ -62,7 +62,7 @@ namespace BH.UI.Revit.Adapter
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private int UpdateProperty(FilterQuery filter, string property, object newValue)
+        private int UpdateProperty(FilterRequest filter, string property, object newValue)
         {
             if (Document == null)
             {
@@ -82,8 +82,8 @@ namespace BH.UI.Revit.Adapter
                 return -1;
             }
 
-            Dictionary<ElementId, List<FilterQuery>> aFilterQueryDictionary = Query.FilterQueryDictionary(filter, UIDocument);
-            if (aFilterQueryDictionary == null || aFilterQueryDictionary.Count == 0)
+            Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary = Query.FilterRequestDictionary(filter, UIDocument);
+            if (aFilterRequestDictionary == null || aFilterRequestDictionary.Count == 0)
                 return -1;
 
             UpdatePropertySettings aUpdatePropertySettings = new UpdatePropertySettings()
@@ -98,7 +98,7 @@ namespace BH.UI.Revit.Adapter
             UIDocument aUIDocument = UIDocument; 
 
             int aCount = 0;
-            foreach(ElementId aElementId in aFilterQueryDictionary.Keys)
+            foreach(ElementId aElementId in aFilterRequestDictionary.Keys)
             {
                 Element aElement = aDocument.GetElement(aElementId);
                 if (aElement != null)

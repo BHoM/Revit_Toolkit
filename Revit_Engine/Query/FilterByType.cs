@@ -23,7 +23,7 @@
 using System;
 
 using BH.oM.Adapters.Revit.Enums;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;

@@ -32,7 +32,7 @@ using BH.oM.Base;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Interface;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 
 
 namespace BH.UI.Revit.Engine
@@ -328,7 +328,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this FilterQuery filterQuery, UIDocument uIDocument)
+        public static IEnumerable<ElementId> ElementIds(this FilterRequest filterQuery, UIDocument uIDocument)
         {
             if (uIDocument == null || filterQuery == null)
                 return null;
@@ -495,8 +495,8 @@ namespace BH.UI.Revit.Engine
             //Parameter
             if (aQueryType == QueryType.Parameter)
             {
-                FilterQuery aFilterQuery = filterQuery.RelatedFilterQuery();
-                if (aFilterQuery != null)
+                FilterRequest aFilterRequest = filterQuery.RelatedFilterRequest();
+                if (aFilterRequest != null)
                 {
                     string aParameterName = BH.Engine.Adapters.Revit.Query.ParameterName(filterQuery);
                     if (!string.IsNullOrWhiteSpace(aParameterName))
@@ -506,7 +506,7 @@ namespace BH.UI.Revit.Engine
                         {
                             object aValue = BH.Engine.Adapters.Revit.Query.Value(filterQuery);
 
-                            Dictionary<ElementId, List<FilterQuery>> aDictionary = aFilterQuery.FilterQueryDictionary(uIDocument);
+                            Dictionary<ElementId, List<FilterRequest>> aDictionary = aFilterRequest.FilterRequestDictionary(uIDocument);
                             if (aDictionary != null && aDictionary.Count > 0)
                             {
                                 foreach (ElementId aElementId in aDictionary.Keys)

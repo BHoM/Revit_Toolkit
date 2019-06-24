@@ -25,7 +25,7 @@ using System.Collections.Generic;
 
 using Autodesk.Revit.DB;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 
 
 namespace BH.UI.Revit.Engine
@@ -60,19 +60,19 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Dictionary<FilterQuery, List<Element>> Append(this Dictionary<FilterQuery, List<Element>> filterQueryDictionary_ToBeAppended, Dictionary<FilterQuery, List<Element>> filterQueryDictionary)
+        public static Dictionary<FilterRequest, List<Element>> Append(this Dictionary<FilterRequest, List<Element>> filterQueryDictionary_ToBeAppended, Dictionary<FilterRequest, List<Element>> filterQueryDictionary)
         {
             if (filterQueryDictionary_ToBeAppended == null && filterQueryDictionary == null)
                 return null;
 
             if (filterQueryDictionary_ToBeAppended == null)
-                return new Dictionary<FilterQuery, List<Element>>(filterQueryDictionary);
+                return new Dictionary<FilterRequest, List<Element>>(filterQueryDictionary);
 
             if (filterQueryDictionary == null || filterQueryDictionary.Count == 0)
-                return new Dictionary<FilterQuery, List<Element>>(filterQueryDictionary_ToBeAppended);
+                return new Dictionary<FilterRequest, List<Element>>(filterQueryDictionary_ToBeAppended);
 
-            Dictionary<FilterQuery, List<Element>> aResult = new Dictionary<FilterQuery, List<Element>>(filterQueryDictionary_ToBeAppended);
-            foreach (KeyValuePair<FilterQuery, List<Element>> aKeyValuePair in filterQueryDictionary)
+            Dictionary<FilterRequest, List<Element>> aResult = new Dictionary<FilterRequest, List<Element>>(filterQueryDictionary_ToBeAppended);
+            foreach (KeyValuePair<FilterRequest, List<Element>> aKeyValuePair in filterQueryDictionary)
             {
                 if (aKeyValuePair.Value == null)
                     continue;

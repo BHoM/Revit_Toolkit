@@ -23,7 +23,7 @@
 using System.ComponentModel;
 using System.Collections.Generic;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
@@ -32,29 +32,29 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterQuery which combines other FilterQueries by logical and operator.")]
+        [Description("Creates FilterRequest which combines other FilterQueries by logical and operator.")]
         [Input("filterQueries", "Filter Queries to be combined")]
-        [Output("FilterQuery")]
-        public static FilterQuery LogicalAndFilterQuery(IEnumerable<FilterQuery> filterQueries)
+        [Output("FilterRequest")]
+        public static FilterRequest LogicalAndFilterRequest(IEnumerable<FilterRequest> filterQueries)
         {
-            FilterQuery aFilterQuery = new FilterQuery();
-            aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.LogicalAnd;
-            aFilterQuery.Equalities[Convert.FilterQuery.FilterQueries] = filterQueries;
-            return aFilterQuery;
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.LogicalAnd;
+            aFilterRequest.Equalities[Convert.FilterRequest.FilterQueries] = filterQueries;
+            return aFilterRequest;
         }
 
-        [Description("Creates FilterQuery which combines two FilterQueries by logical and operator.")]
-        [Input("filterQuery_1", "First FilterQuery to be combined")]
-        [Input("filterQuery_2", "Second FilterQuery to be combined")]
-        [Output("FilterQuery")]
-        public static FilterQuery LogicalAndFilterQuery(FilterQuery filterQuery_1, FilterQuery filterQuery_2)
+        [Description("Creates FilterRequest which combines two FilterQueries by logical and operator.")]
+        [Input("filterQuery_1", "First FilterRequest to be combined")]
+        [Input("filterQuery_2", "Second FilterRequest to be combined")]
+        [Output("FilterRequest")]
+        public static FilterRequest LogicalAndFilterRequest(FilterRequest filterQuery_1, FilterRequest filterQuery_2)
         {
-            FilterQuery aFilterQuery = new FilterQuery();
-            aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.LogicalAnd;
-            aFilterQuery.Equalities[Convert.FilterQuery.FilterQueries] = new List<FilterQuery>() { filterQuery_1, filterQuery_2 };
-            return aFilterQuery;
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.LogicalAnd;
+            aFilterRequest.Equalities[Convert.FilterRequest.FilterQueries] = new List<FilterRequest>() { filterQuery_1, filterQuery_2 };
+            return aFilterRequest;
         }
     }
 }

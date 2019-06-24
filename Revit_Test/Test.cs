@@ -30,7 +30,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 
 using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
@@ -79,13 +79,13 @@ namespace Revit_Test
         public Result Execute(ExternalCommandData ExternalCommandData, ref string Message, ElementSet Elements)
         {
             RevitAdapter aRevitAdapter = new RevitAdapter(null, true);
-            //FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
-            //FilterQuery aFilterQuery = Create.LogicalOrFilterQuery(new List<FilterQuery>() { Create.LogicalAndFilterQuery(new List<FilterQuery>() { Create.SelectionFilterQuery(typeof(BuildingElement)), Create.CategoryFilterQuery("Walls") }), Create.CategoryFilterQuery("Sheets") });
+            //FilterRequest aFilterRequest = new FilterRequest() { Type = typeof(BuildingElement) };
+            //FilterRequest aFilterRequest = Create.LogicalOrFilterRequest(new List<FilterRequest>() { Create.LogicalAndFilterRequest(new List<FilterRequest>() { Create.SelectionFilterRequest(typeof(BuildingElement)), Create.CategoryFilterRequest("Walls") }), Create.CategoryFilterRequest("Sheets") });
             aRevitAdapter.RevitSettings.GeneralSettings.AdapterMode = AdapterMode.Update;
 
-            FilterQuery aFilterQuery = Create.LogicalAndFilterQuery(Create.CategoryFilterQuery("Mechanical Equipment"), Create.TypeNameFilterQuery("FamilyInstance"));
+            FilterRequest aFilterRequest = Create.LogicalAndFilterRequest(Create.CategoryFilterRequest("Mechanical Equipment"), Create.TypeNameFilterRequest("FamilyInstance"));
 
-            List<IBHoMObject> aIBHoMObjectList = aRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            List<IBHoMObject> aIBHoMObjectList = aRevitAdapter.Pull(aFilterRequest).Cast<IBHoMObject>().ToList();
 
             List<ModelInstance> aModelInstanceList = aIBHoMObjectList.ConvertAll(x => x as ModelInstance);
             aModelInstanceList.RemoveAll(x => x == null);
@@ -103,7 +103,7 @@ namespace Revit_Test
             //Creating Revit Adapter for active Revit Document
             RevitUIAdapter pRevitInternalAdapter = new RevitUIAdapter(null, ExternalCommandData.Application.ActiveUIDocument.Document);
 
-            FilterQuery aFilterQuery = null;
+            FilterRequest aFilterRequest = null;
             List<IBHoMObject> aBHoMObjectList = null;
 
             RevitSettings aRevitSetting = new RevitSettings();
@@ -117,43 +117,43 @@ namespace Revit_Test
 
             //pRevitInternalAdapter.RevitSettings.WorksetSettings.OpenWorksetsOnly = true;
 
-            aFilterQuery = new FilterQuery() { Type = typeof(BHoMObject) };
-            aBHoMObjectList = pRevitInternalAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            aFilterRequest = new FilterRequest() { Type = typeof(BHoMObject) };
+            aBHoMObjectList = pRevitInternalAdapter.Pull(aFilterRequest).Cast<IBHoMObject>().ToList();
 
             //pRevitInternalAdapter.Delete(aBHoMObjectList.Cast<BHoMObject>());
 
-            //pRevitInternalAdapter.UpdateProperty(aFilterQuery, "Structural", true);
+            //pRevitInternalAdapter.UpdateProperty(aFilterRequest, "Structural", true);
 
             //pRevitInternalAdapter.Push(aBHoMObjectList);
 
-            //aFilterQuery = new FilterQuery() { Type = typeof(Space) };
-            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            //aFilterRequest = new FilterRequest() { Type = typeof(Space) };
+            //aBHoMObjectList = pRevitAdapter.Pull(aFilterRequest).Cast<IBHoMObject>().ToList();
 
-            //aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
-            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            //aFilterRequest = new FilterRequest() { Type = typeof(BuildingElement) };
+            //aBHoMObjectList = pRevitAdapter.Pull(aFilterRequest).Cast<IBHoMObject>().ToList();
 
-            //aFilterQuery = new FilterQuery() { Type = typeof(Building) };
-            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            //aFilterRequest = new FilterRequest() { Type = typeof(Building) };
+            //aBHoMObjectList = pRevitAdapter.Pull(aFilterRequest).Cast<IBHoMObject>().ToList();
 
-            //aFilterQuery = new FilterQuery() { Type = typeof(PanelPlanar) };
-            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            //aFilterRequest = new FilterRequest() { Type = typeof(PanelPlanar) };
+            //aBHoMObjectList = pRevitAdapter.Pull(aFilterRequest).Cast<IBHoMObject>().ToList();
 
-            //aFilterQuery = new FilterQuery() { Type = typeof(Bar) };
-            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            //aFilterRequest = new FilterRequest() { Type = typeof(Bar) };
+            //aBHoMObjectList = pRevitAdapter.Pull(aFilterRequest).Cast<IBHoMObject>().ToList();
 
-            //aFilterQuery = new FilterQuery() { Type = typeof(BH.oM.Architecture.Elements.Grid) };
-            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            //aFilterRequest = new FilterRequest() { Type = typeof(BH.oM.Architecture.Elements.Grid) };
+            //aBHoMObjectList = pRevitAdapter.Pull(aFilterRequest).Cast<IBHoMObject>().ToList();
 
-            //aFilterQuery = new FilterQuery() { Type = typeof(Beam) };
-            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            //aFilterRequest = new FilterRequest() { Type = typeof(Beam) };
+            //aBHoMObjectList = pRevitAdapter.Pull(aFilterRequest).Cast<IBHoMObject>().ToList();
 
-            //aFilterQuery = new FilterQuery() { Type = typeof(Storey) };
-            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            //aFilterRequest = new FilterRequest() { Type = typeof(Storey) };
+            //aBHoMObjectList = pRevitAdapter.Pull(aFilterRequest).Cast<IBHoMObject>().ToList();
             //Storey aStorey = aBHoMObjectList.First() as Storey;
             //aStorey = aStorey.Copy("Level 2", aStorey.Elevation + 9.84252);
 
-            //aFilterQuery = new FilterQuery() { Type = typeof(BuildingElement) };
-            //aBHoMObjectList = pRevitAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            //aFilterRequest = new FilterRequest() { Type = typeof(BuildingElement) };
+            //aBHoMObjectList = pRevitAdapter.Pull(aFilterRequest).Cast<IBHoMObject>().ToList();
             //List<IObject> aObjectList = new List<IObject>();
             //foreach (BuildingElement aBuildingElement in aBHoMObjectList)
             //    aObjectList.Add(aBuildingElement.Move(aStorey));
@@ -220,9 +220,9 @@ namespace Revit_Test
 
             List<IBHoMObject> aIBHoMObjectList = new List<IBHoMObject>();
 
-            //FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(Building) };
-            FilterQuery aFilterQuery = new FilterQuery() { Type = typeof(BHoMObject) };
-            aIBHoMObjectList = pRevitInternalAdapter.Pull(aFilterQuery).Cast<IBHoMObject>().ToList();
+            //FilterRequest aFilterRequest = new FilterRequest() { Type = typeof(Building) };
+            FilterRequest aFilterRequest = new FilterRequest() { Type = typeof(BHoMObject) };
+            aIBHoMObjectList = pRevitInternalAdapter.Pull(aFilterRequest).Cast<IBHoMObject>().ToList();
 
             return Result.Succeeded;
         }

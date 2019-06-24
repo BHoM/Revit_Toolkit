@@ -22,7 +22,7 @@
 
 using System.ComponentModel;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
@@ -31,26 +31,26 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterQuery which filters all View Templates in Revit Document.")]
-        [Output("FilterQuery")]
-        public static FilterQuery ViewTemplateFilterQuery()
+        [Description("Creates FilterRequest which filters all View Templates in Revit Document.")]
+        [Output("FilterRequest")]
+        public static FilterRequest ViewTemplateFilterRequest()
         {
-            FilterQuery aFilterQuery = new FilterQuery();
-            aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.ViewTemplate;
-            return aFilterQuery;
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.ViewTemplate;
+            return aFilterRequest;
         }
 
-        [Description("Creates FilterQuery which filters View Template by given name.")]
+        [Description("Creates FilterRequest which filters View Template by given name.")]
         [Input("viewTemplateName", "Revit View Template Name")]
-        [Output("FilterQuery")]
-        public static FilterQuery ViewTemplateFilterQuery(string viewTemplateName)
+        [Output("FilterRequest")]
+        public static FilterRequest ViewTemplateFilterRequest(string viewTemplateName)
         {
-            FilterQuery aFilterQuery = new FilterQuery();
-            aFilterQuery.Type = typeof(BHoMObject);
-            aFilterQuery.Equalities[Convert.FilterQuery.QueryType] = QueryType.ViewTemplate;
-            aFilterQuery.Equalities[Convert.FilterQuery.ViewTemplateName] = viewTemplateName;
-            return aFilterQuery;
+            FilterRequest aFilterRequest = new FilterRequest();
+            aFilterRequest.Type = typeof(BHoMObject);
+            aFilterRequest.Equalities[Convert.FilterRequest.QueryType] = QueryType.ViewTemplate;
+            aFilterRequest.Equalities[Convert.FilterRequest.ViewTemplateName] = viewTemplateName;
+            return aFilterRequest;
         }
     }
 }

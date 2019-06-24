@@ -23,7 +23,7 @@
 using System.ComponentModel;
 using System.Collections.Generic;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
@@ -34,18 +34,18 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Gets integer representation of ElementIds for given FilterQuery (Example: SelectionFilterQuery).")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Gets integer representation of ElementIds for given FilterRequest (Example: SelectionFilterRequest).")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("ElementIds")]
-        public static IEnumerable<int> ElementIds(this FilterQuery filterQuery)
+        public static IEnumerable<int> ElementIds(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.ElementIds))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.ElementIds))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterQuery.ElementIds] as IEnumerable<int>;
+            return filterQuery.Equalities[Convert.FilterRequest.ElementIds] as IEnumerable<int>;
         }
 
         /***************************************************/

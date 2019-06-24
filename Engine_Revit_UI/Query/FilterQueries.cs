@@ -24,7 +24,7 @@ using System.Collections.Generic;
 
 using Autodesk.Revit.DB;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 
 
 namespace BH.UI.Revit.Engine
@@ -35,16 +35,16 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static IEnumerable<FilterQuery> FilterQueries(this Dictionary<ElementId, List<FilterQuery>> filterQueryDictionary, ElementId ElementId)
+        public static IEnumerable<FilterRequest> FilterQueries(this Dictionary<ElementId, List<FilterRequest>> filterQueryDictionary, ElementId ElementId)
         {
             if (filterQueryDictionary == null)
                 return null;
 
-            List<FilterQuery> aFilterQueryList = null;
-            if (!filterQueryDictionary.TryGetValue(ElementId, out aFilterQueryList))
+            List<FilterRequest> aFilterRequestList = null;
+            if (!filterQueryDictionary.TryGetValue(ElementId, out aFilterRequestList))
                 return null;
 
-            return aFilterQueryList;
+            return aFilterRequestList;
         }
 
         /***************************************************/

@@ -21,7 +21,7 @@
  */
 
 using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -53,27 +53,27 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Duplicates FilterQuery.")]
-        [Input("filterQuery", "FilterQuery")]
-        [Output("FilterQuery")]
-        public static FilterQuery Duplicate(this FilterQuery filterQuery)
+        [Description("Duplicates FilterRequest.")]
+        [Input("filterQuery", "FilterRequest")]
+        [Output("FilterRequest")]
+        public static FilterRequest Duplicate(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return null;
 
-            FilterQuery aFilterQuery = new FilterQuery();
+            FilterRequest aFilterRequest = new FilterRequest();
 
             if (filterQuery.Equalities != null)
-                aFilterQuery.Equalities = new Dictionary<string, object>(filterQuery.Equalities);
+                aFilterRequest.Equalities = new Dictionary<string, object>(filterQuery.Equalities);
             else
-                aFilterQuery.Equalities = new Dictionary<string, object>();
+                aFilterRequest.Equalities = new Dictionary<string, object>();
 
-            aFilterQuery.Tag = filterQuery.Tag;
+            aFilterRequest.Tag = filterQuery.Tag;
 
-            aFilterQuery.Type = filterQuery.Type;
+            aFilterRequest.Type = filterQuery.Type;
 
 
-            return aFilterQuery;
+            return aFilterRequest;
         }
 
         /***************************************************/

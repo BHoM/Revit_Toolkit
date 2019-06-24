@@ -22,7 +22,7 @@
 
 using System.ComponentModel;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
@@ -33,18 +33,18 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns View Template Name for given FilterQuery.")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Returns View Template Name for given FilterRequest.")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("ViewTemplateName")]
-        public static string ViewTemplateName(this FilterQuery filterQuery)
+        public static string ViewTemplateName(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.ViewTemplateName))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.ViewTemplateName))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterQuery.ViewTemplateName] as string;
+            return filterQuery.Equalities[Convert.FilterRequest.ViewTemplateName] as string;
         }
 
         /***************************************************/

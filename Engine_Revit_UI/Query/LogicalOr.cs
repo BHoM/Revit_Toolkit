@@ -24,7 +24,7 @@ using System.Collections.Generic;
 
 using Autodesk.Revit.DB;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 
 
 namespace BH.UI.Revit.Engine
@@ -35,45 +35,45 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Dictionary<ElementId, List<FilterQuery>> LogicalOr(this Dictionary<ElementId, List<FilterQuery>> filterQueryDictionary_1, Dictionary<ElementId, List<FilterQuery>> filterQueryDictionary_2)
+        public static Dictionary<ElementId, List<FilterRequest>> LogicalOr(this Dictionary<ElementId, List<FilterRequest>> filterQueryDictionary_1, Dictionary<ElementId, List<FilterRequest>> filterQueryDictionary_2)
         {
             if (filterQueryDictionary_1 == null || filterQueryDictionary_2 == null)
                 return null;
 
             if (filterQueryDictionary_1.Count == 0)
-                return new Dictionary<ElementId, List<FilterQuery>>(filterQueryDictionary_2);
+                return new Dictionary<ElementId, List<FilterRequest>>(filterQueryDictionary_2);
 
             if (filterQueryDictionary_2.Count == 0)
-                return new Dictionary<ElementId, List<FilterQuery>>(filterQueryDictionary_1);
+                return new Dictionary<ElementId, List<FilterRequest>>(filterQueryDictionary_1);
 
 
-            Dictionary<ElementId, List<FilterQuery>> aResult = new Dictionary<ElementId, List<FilterQuery>>();
-            foreach(KeyValuePair<ElementId, List<FilterQuery>> aKeyValuePair in filterQueryDictionary_1)
+            Dictionary<ElementId, List<FilterRequest>> aResult = new Dictionary<ElementId, List<FilterRequest>>();
+            foreach(KeyValuePair<ElementId, List<FilterRequest>> aKeyValuePair in filterQueryDictionary_1)
             {
-                List<FilterQuery> aFilterQueryList = null;
-                if (!aResult.TryGetValue(aKeyValuePair.Key, out aFilterQueryList))
+                List<FilterRequest> aFilterRequestList = null;
+                if (!aResult.TryGetValue(aKeyValuePair.Key, out aFilterRequestList))
                 {
-                    aFilterQueryList = new List<FilterQuery>();
-                    aResult.Add(aKeyValuePair.Key, aFilterQueryList);
+                    aFilterRequestList = new List<FilterRequest>();
+                    aResult.Add(aKeyValuePair.Key, aFilterRequestList);
                 }
 
-                foreach(FilterQuery aFilterQuery in aKeyValuePair.Value)
-                    if (!aFilterQueryList.Contains(aFilterQuery))
-                        aFilterQueryList.Add(aFilterQuery);
+                foreach(FilterRequest aFilterRequest in aKeyValuePair.Value)
+                    if (!aFilterRequestList.Contains(aFilterRequest))
+                        aFilterRequestList.Add(aFilterRequest);
             }
 
-            foreach (KeyValuePair<ElementId, List<FilterQuery>> aKeyValuePair in filterQueryDictionary_2)
+            foreach (KeyValuePair<ElementId, List<FilterRequest>> aKeyValuePair in filterQueryDictionary_2)
             {
-                List<FilterQuery> aFilterQueryList = null;
-                if (!aResult.TryGetValue(aKeyValuePair.Key, out aFilterQueryList))
+                List<FilterRequest> aFilterRequestList = null;
+                if (!aResult.TryGetValue(aKeyValuePair.Key, out aFilterRequestList))
                 {
-                    aFilterQueryList = new List<FilterQuery>();
-                    aResult.Add(aKeyValuePair.Key, aFilterQueryList);
+                    aFilterRequestList = new List<FilterRequest>();
+                    aResult.Add(aKeyValuePair.Key, aFilterRequestList);
                 }
 
-                foreach (FilterQuery aFilterQuery in aKeyValuePair.Value)
-                    if (!aFilterQueryList.Contains(aFilterQuery))
-                        aFilterQueryList.Add(aFilterQuery);
+                foreach (FilterRequest aFilterRequest in aKeyValuePair.Value)
+                    if (!aFilterRequestList.Contains(aFilterRequest))
+                        aFilterRequestList.Add(aFilterRequest);
             }
 
             return aResult;

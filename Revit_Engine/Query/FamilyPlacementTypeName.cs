@@ -23,7 +23,7 @@
 using System.ComponentModel;
 
 using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Elements;
 

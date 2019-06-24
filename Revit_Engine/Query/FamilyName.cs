@@ -23,7 +23,7 @@
 using System.ComponentModel;
 
 using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
@@ -56,18 +56,18 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Gets Revit Family name for given FilterQuery (Example: FamilyFilterQuery).")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Gets Revit Family name for given FilterRequest (Example: FamilyFilterRequest).")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("FamilyName")]
-        public static string FamilyName(this FilterQuery filterQuery)
+        public static string FamilyName(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.FamilyName))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.FamilyName))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterQuery.FamilyName] as string;
+            return filterQuery.Equalities[Convert.FilterRequest.FamilyName] as string;
         }
 
         /***************************************************/

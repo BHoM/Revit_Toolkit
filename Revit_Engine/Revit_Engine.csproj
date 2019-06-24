@@ -59,8 +59,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
     </Reference>
-    <Reference Include="DataManipulation_oM">
-      <HintPath>..\..\BHoM\Build\DataManipulation_oM.dll</HintPath>
+    <Reference Include="Data_oM">
+      <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
     </Reference>
     <Reference Include="Environment_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Environment_Engine.dll</HintPath>

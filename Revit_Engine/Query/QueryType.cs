@@ -22,7 +22,7 @@
 
 using System.ComponentModel;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
@@ -33,19 +33,19 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns Query Type of given FilterQuery")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Returns Query Type of given FilterRequest")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("QueryType")]
-        public static oM.Adapters.Revit.Enums.QueryType QueryType(this FilterQuery filterQuery)
+        public static oM.Adapters.Revit.Enums.QueryType QueryType(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return oM.Adapters.Revit.Enums.QueryType.Undefined;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.QueryType))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.QueryType))
                 return oM.Adapters.Revit.Enums.QueryType.Undefined;
 
-            if (filterQuery.Equalities[Convert.FilterQuery.QueryType] is oM.Adapters.Revit.Enums.QueryType || filterQuery.Equalities[Convert.FilterQuery.QueryType] is int)
-                return (oM.Adapters.Revit.Enums.QueryType)filterQuery.Equalities[Convert.FilterQuery.QueryType];
+            if (filterQuery.Equalities[Convert.FilterRequest.QueryType] is oM.Adapters.Revit.Enums.QueryType || filterQuery.Equalities[Convert.FilterRequest.QueryType] is int)
+                return (oM.Adapters.Revit.Enums.QueryType)filterQuery.Equalities[Convert.FilterRequest.QueryType];
 
             return oM.Adapters.Revit.Enums.QueryType.Undefined;
         }

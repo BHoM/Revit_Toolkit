@@ -27,7 +27,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Environment.Elements;
 using BH.oM.Structure.Elements;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 
 namespace BH.UI.Revit.Engine
 {
@@ -136,15 +136,15 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<BuiltInCategory> BuiltInCategories(IEnumerable<FilterQuery> filterQueries, Document document)
+        public static IEnumerable<BuiltInCategory> BuiltInCategories(IEnumerable<FilterRequest> filterQueries, Document document)
         {
             if (filterQueries == null || document == null)
                 return null;
 
             List<BuiltInCategory> aBuiltInCategories = new List<BuiltInCategory>();
-            foreach (FilterQuery aFilterQuery in filterQueries)
+            foreach (FilterRequest aFilterRequest in filterQueries)
             {
-                BuiltInCategory aBuiltInCategory = Query.BuiltInCategory(aFilterQuery, document);
+                BuiltInCategory aBuiltInCategory = Query.BuiltInCategory(aFilterRequest, document);
                 if (aBuiltInCategory != Autodesk.Revit.DB.BuiltInCategory.INVALID)
                     aBuiltInCategories.Add(aBuiltInCategory);
             }

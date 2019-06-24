@@ -22,7 +22,7 @@
 
 using System.ComponentModel;
 
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Interface;
 
@@ -34,18 +34,18 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns ComparisonRule of given FilterQuery")]
-        [Input("filterQuery", "FilterQuery")]
+        [Description("Returns ComparisonRule of given FilterRequest")]
+        [Input("filterQuery", "FilterRequest")]
         [Output("QueryType")]
-        public static IComparisonRule ComparisonRule(this FilterQuery filterQuery)
+        public static IComparisonRule ComparisonRule(this FilterRequest filterQuery)
         {
             if (filterQuery == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterQuery.ComparisonRule))
+            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.ComparisonRule))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterQuery.ComparisonRule] as IComparisonRule;
+            return filterQuery.Equalities[Convert.FilterRequest.ComparisonRule] as IComparisonRule;
         }
 
         /***************************************************/
