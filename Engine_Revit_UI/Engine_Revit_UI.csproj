@@ -266,7 +266,7 @@
     <Compile Include="Query\FamilyTypeFullName.cs" />
     <Compile Include="Query\FindRefObjects.cs" />
     <Compile Include="Query\FindRefObject.cs" />
-    <Compile Include="Query\FilterQueries.cs" />
+    <Compile Include="Query\FilterRequests.cs" />
     <Compile Include="Query\Construction.cs" />
     <Compile Include="Query\MaterialType.cs" />
     <Compile Include="Query\PolyCurve.cs" />
@@ -293,7 +293,7 @@
     <Compile Include="Query\CategoryName.cs" />
     <Compile Include="Query\ElementType.cs" />
     <Compile Include="Query\Family.cs" />
-    <Compile Include="Query\FilterQueryDictionary.cs" />
+    <Compile Include="Query\FilterRequestDictionary.cs" />
     <Compile Include="Query\PolyCurves.cs" />
     <Compile Include="Query\SelectionBuiltInCategories.cs" />
     <Compile Include="Query\Element.cs" />

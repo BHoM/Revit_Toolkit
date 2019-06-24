@@ -37,17 +37,17 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Dictionary<ElementId, List<FilterRequest>> FilterRequestDictionary(this FilterRequest filterQuery, UIDocument uIDocument)
+        public static Dictionary<ElementId, List<FilterRequest>> FilterRequestDictionary(this FilterRequest filterRequest, UIDocument uIDocument)
         {
-            if (uIDocument == null || filterQuery == null)
+            if (uIDocument == null || filterRequest == null)
                 return null;
 
             Dictionary<ElementId, List<FilterRequest>> aResult = new Dictionary<ElementId, List<FilterRequest>>();
 
-            IEnumerable<FilterRequest> aFilterQueries = BH.Engine.Adapters.Revit.Query.FilterQueries(filterQuery);
+            IEnumerable<FilterRequest> aFilterQueries = BH.Engine.Adapters.Revit.Query.FilterQueries(filterRequest);
             if (aFilterQueries != null && aFilterQueries.Count() > 0)
             {
-                RequestType aQueryType = BH.Engine.Adapters.Revit.Query.RequestType(filterQuery);
+                RequestType aQueryType = BH.Engine.Adapters.Revit.Query.RequestType(filterRequest);
 
                 Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary = null;
                 foreach (FilterRequest aFilterRequest in aFilterQueries)
@@ -69,7 +69,7 @@ namespace BH.UI.Revit.Engine
             }
             else
             {
-                IEnumerable<ElementId> aElementIds = ElementIds(filterQuery, uIDocument);
+                IEnumerable<ElementId> aElementIds = ElementIds(filterRequest, uIDocument);
                 if (aElementIds != null)
                 {
                     foreach(ElementId aElementId in aElementIds)
@@ -80,7 +80,7 @@ namespace BH.UI.Revit.Engine
                             aFilterRequestList = new List<FilterRequest>();
                             aResult.Add(aElementId, aFilterRequestList);
                         }
-                        aFilterRequestList.Add(filterQuery);
+                        aFilterRequestList.Add(filterRequest);
                     }
                 }
             }

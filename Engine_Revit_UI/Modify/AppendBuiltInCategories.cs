@@ -60,19 +60,19 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Dictionary<FilterRequest, List<Element>> Append(this Dictionary<FilterRequest, List<Element>> filterQueryDictionary_ToBeAppended, Dictionary<FilterRequest, List<Element>> filterQueryDictionary)
+        public static Dictionary<FilterRequest, List<Element>> Append(this Dictionary<FilterRequest, List<Element>> filterRequestDictionary_ToBeAppended, Dictionary<FilterRequest, List<Element>> filterRequestDictionary)
         {
-            if (filterQueryDictionary_ToBeAppended == null && filterQueryDictionary == null)
+            if (filterRequestDictionary_ToBeAppended == null && filterRequestDictionary == null)
                 return null;
 
-            if (filterQueryDictionary_ToBeAppended == null)
-                return new Dictionary<FilterRequest, List<Element>>(filterQueryDictionary);
+            if (filterRequestDictionary_ToBeAppended == null)
+                return new Dictionary<FilterRequest, List<Element>>(filterRequestDictionary);
 
-            if (filterQueryDictionary == null || filterQueryDictionary.Count == 0)
-                return new Dictionary<FilterRequest, List<Element>>(filterQueryDictionary_ToBeAppended);
+            if (filterRequestDictionary == null || filterRequestDictionary.Count == 0)
+                return new Dictionary<FilterRequest, List<Element>>(filterRequestDictionary_ToBeAppended);
 
-            Dictionary<FilterRequest, List<Element>> aResult = new Dictionary<FilterRequest, List<Element>>(filterQueryDictionary_ToBeAppended);
-            foreach (KeyValuePair<FilterRequest, List<Element>> aKeyValuePair in filterQueryDictionary)
+            Dictionary<FilterRequest, List<Element>> aResult = new Dictionary<FilterRequest, List<Element>>(filterRequestDictionary_ToBeAppended);
+            foreach (KeyValuePair<FilterRequest, List<Element>> aKeyValuePair in filterRequestDictionary)
             {
                 if (aKeyValuePair.Value == null)
                     continue;
