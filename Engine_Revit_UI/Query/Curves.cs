@@ -51,6 +51,12 @@ namespace BH.UI.Revit.Engine
                     if (aCurveList != null && aCurveList.Count != 0)
                         aResult.AddRange(aCurveList);                        
                 }
+                if(aGeometryObject is Curve)
+                {
+                    oM.Geometry.ICurve aCurve = ((Curve)aGeometryObject).ToBHoM(pullSettings);
+                    if (aCurve != null)
+                        aResult.Add(aCurve);
+                }
                 else if (aGeometryObject is GeometryInstance)
                 {
                     GeometryInstance aGeometryInstance = (GeometryInstance)aGeometryObject;
