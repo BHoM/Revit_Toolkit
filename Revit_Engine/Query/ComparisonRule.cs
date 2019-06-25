@@ -35,17 +35,17 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Returns ComparisonRule of given FilterRequest")]
-        [Input("filterQuery", "FilterRequest")]
-        [Output("QueryType")]
-        public static IComparisonRule ComparisonRule(this FilterRequest filterQuery)
+        [Input("filterRequest", "FilterRequest")]
+        [Output("IComparisonRule")]
+        public static IComparisonRule ComparisonRule(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.ComparisonRule))
+            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.ComparisonRule))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterRequest.ComparisonRule] as IComparisonRule;
+            return filterRequest.Equalities[Convert.FilterRequest.ComparisonRule] as IComparisonRule;
         }
 
         /***************************************************/

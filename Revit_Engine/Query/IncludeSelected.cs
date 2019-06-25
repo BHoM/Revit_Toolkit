@@ -34,18 +34,18 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Gets Include Selected property of FilterRequest.")]
-        [Input("filterQuery", "FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
         [Output("IncludeSelected")]
-        public static bool IncludeSelected(this FilterRequest filterQuery)
+        public static bool IncludeSelected(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return false;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.IncludeSelected))
+            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.IncludeSelected))
                 return false;
 
-            if (filterQuery.Equalities[Convert.FilterRequest.IncludeSelected] is bool)
-                return (bool)filterQuery.Equalities[Convert.FilterRequest.IncludeSelected];
+            if (filterRequest.Equalities[Convert.FilterRequest.IncludeSelected] is bool)
+                return (bool)filterRequest.Equalities[Convert.FilterRequest.IncludeSelected];
             else
                 return false;
         }

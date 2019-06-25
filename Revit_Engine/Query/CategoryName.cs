@@ -110,17 +110,17 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Gets Revit Category name from FilterRequest.")]
-        [Input("filterQuery", "FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
         [Output("CategoryName")]
-        public static string CategoryName(this FilterRequest filterQuery)
+        public static string CategoryName(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.CategoryName))
+            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.CategoryName))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterRequest.CategoryName] as string;
+            return filterRequest.Equalities[Convert.FilterRequest.CategoryName] as string;
         }
 
         /***************************************************/

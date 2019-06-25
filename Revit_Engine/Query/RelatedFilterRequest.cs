@@ -33,18 +33,18 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns Related Filter Query for given FilterRequest")]
-        [Input("filterQuery", "FilterRequest")]
-        [Output("QueryType")]
-        public static FilterRequest RelatedFilterRequest(this FilterRequest filterQuery)
+        [Description("Returns Related Filter Request for given FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
+        [Output("FilterRequest")]
+        public static FilterRequest RelatedFilterRequest(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.RelatedFilterRequest))
+            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.RelatedFilterRequest))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterRequest.RelatedFilterRequest] as FilterRequest;
+            return filterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] as FilterRequest;
         }
 
         /***************************************************/

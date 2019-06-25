@@ -36,23 +36,23 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Dictionary<ElementId, List<FilterRequest>> LogicalAnd(this Dictionary<ElementId, List<FilterRequest>> filterQueryDictionary_1, Dictionary<ElementId, List<FilterRequest>> filterQueryDictionary_2)
+        public static Dictionary<ElementId, List<FilterRequest>> LogicalAnd(this Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary_1, Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary_2)
         {
-            if (filterQueryDictionary_1 == null || filterQueryDictionary_2 == null)
+            if (filterRequestDictionary_1 == null || filterRequestDictionary_2 == null)
                 return null;
 
             Dictionary<ElementId, List<FilterRequest>> aResult = new Dictionary<ElementId, List<FilterRequest>>();
 
-            if (filterQueryDictionary_1.Count() == 0 || filterQueryDictionary_2.Count() == 0)
+            if (filterRequestDictionary_1.Count() == 0 || filterRequestDictionary_2.Count() == 0)
                 return aResult;
 
-            foreach(KeyValuePair<ElementId, List<FilterRequest>> aKeyValuePair in filterQueryDictionary_1)
+            foreach(KeyValuePair<ElementId, List<FilterRequest>> aKeyValuePair in filterRequestDictionary_1)
             {
                 if (aKeyValuePair.Value == null || aKeyValuePair.Value.Count == 0)
                     continue;
 
                 List<FilterRequest> aFilterRequestList = null;
-                if (filterQueryDictionary_2.TryGetValue(aKeyValuePair.Key, out aFilterRequestList))
+                if (filterRequestDictionary_2.TryGetValue(aKeyValuePair.Key, out aFilterRequestList))
                 {
                     if (aFilterRequestList == null || aFilterRequestList.Count == 0)
                         continue;

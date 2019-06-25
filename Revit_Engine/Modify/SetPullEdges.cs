@@ -34,16 +34,16 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Sets Pull Edges option for FilterRequest.")]
-        [Input("filterQuery", "FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
         [Input("pullEdges", "Set to true if include geometry edges of Revit Element in CustomData of BHoMObject")]
         [Input("includeNonVisibleObjects", "Set to true if include non visible objects of Revit Element in geometry")]
         [Output("FilterRequest")]
-        public static FilterRequest SetPullEdges(this FilterRequest filterQuery, bool pullEdges = true, bool includeNonVisibleObjects = false)
+        public static FilterRequest SetPullEdges(this FilterRequest filterRequest, bool pullEdges = true, bool includeNonVisibleObjects = false)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return null;
 
-            FilterRequest aFilterRequest = Query.Duplicate(filterQuery);
+            FilterRequest aFilterRequest = Query.Duplicate(filterRequest);
 
             aFilterRequest.Equalities[Convert.FilterRequest.PullEdges] = pullEdges;
             aFilterRequest.Equalities[Convert.FilterRequest.IncludeNonVisibleObjects] = includeNonVisibleObjects;
@@ -53,12 +53,12 @@ namespace BH.Engine.Adapters.Revit
 
         [Deprecated("2.2")]
         [Description("Sets Pull Edges option for FilterRequest.")]
-        [Input("filterQuery", "FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
         [Input("pullEdges", "Set to true if include geometry edges of Revit Element in CustomData of BHoMObject")]
         [Output("FilterRequest")]
-        public static FilterRequest SetPullEdges(this FilterRequest filterQuery, bool pullEdges)
+        public static FilterRequest SetPullEdges(this FilterRequest filterRequest, bool pullEdges)
         {
-            return SetPullEdges(filterQuery, pullEdges, false);
+            return SetPullEdges(filterRequest, pullEdges, false);
         }
 
         /***************************************************/

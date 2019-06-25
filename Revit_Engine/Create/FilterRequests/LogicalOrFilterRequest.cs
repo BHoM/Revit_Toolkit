@@ -32,28 +32,28 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterRequest which combines other FilterQueries by logical or operator.")]
-        [Input("filterQueries", "Filter Queries to be combined")]
+        [Description("Creates FilterRequest which combines other FilterRequests by logical or operator.")]
+        [Input("filterRequests", "Filter Requests to be combined")]
         [Output("FilterRequest")]
-        public static FilterRequest LogicalOrFilterRequest(IEnumerable<FilterRequest> filterQueries)
+        public static FilterRequest LogicalOrFilterRequest(IEnumerable<FilterRequest> filterRequests)
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
             aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.LogicalOr;
-            aFilterRequest.Equalities[Convert.FilterRequest.FilterQueries] = filterQueries;
+            aFilterRequest.Equalities[Convert.FilterRequest.FilterRequests] = filterRequests;
             return aFilterRequest;
         }
 
-        [Description("Creates FilterRequest which combines two FilterQueries by logical or operator.")]
-        [Input("filterQuery_1", "First FilterRequest to be combined")]
-        [Input("filterQuery_2", "Second FilterRequest to be combined")]
+        [Description("Creates FilterRequest which combines two FilterRequests by logical or operator.")]
+        [Input("filterRequest_1", "First FilterRequest to be combined")]
+        [Input("filterRequest_2", "Second FilterRequest to be combined")]
         [Output("FilterRequest")]
-        public static FilterRequest LogicalOrFilterRequest(FilterRequest filterQuery_1, FilterRequest filterQuery_2)
+        public static FilterRequest LogicalOrFilterRequest(FilterRequest filterRequest_1, FilterRequest filterRequest_2)
         {
             FilterRequest aFilterRequest = new FilterRequest();
             aFilterRequest.Type = typeof(BHoMObject);
             aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.LogicalOr;
-            aFilterRequest.Equalities[Convert.FilterRequest.FilterQueries] = new List<FilterRequest>() { filterQuery_1, filterQuery_2 };
+            aFilterRequest.Equalities[Convert.FilterRequest.FilterRequests] = new List<FilterRequest>() { filterRequest_1, filterRequest_2 };
             return aFilterRequest;
         }
     }

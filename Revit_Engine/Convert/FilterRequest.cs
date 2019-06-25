@@ -27,7 +27,7 @@ namespace BH.Engine.Adapters.Revit
         public static class FilterRequest
         {
             public const string RequestType = "RequestType";
-            public const string FilterQueries = "FilterQueries";
+            public const string FilterRequests = "FilterRequests";
             public const string CategoryName = "CategoryName";
             public const string ElementIds = "ElementIds";
             public const string UniqueIds = "UniqueIds";

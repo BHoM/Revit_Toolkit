@@ -63,32 +63,32 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Gets Discipline for given FilterRequest.")]
-        [Input("filterQuery", "FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
         [Output("Discipline")]
-        public static Discipline? Discipline(this FilterRequest filterQuery)
+        public static Discipline? Discipline(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return null;
 
             List<Discipline> aDisciplineList = new List<Discipline>();
 
-            IEnumerable<FilterRequest> aFilterQueries = Query.FilterRequests(filterQuery);
-            if (aFilterQueries != null && aFilterQueries.Count() > 0)
+            IEnumerable<FilterRequest> aFilterRequests = Query.FilterRequests(filterRequest);
+            if (aFilterRequests != null && aFilterRequests.Count() > 0)
             {
-                foreach (FilterRequest aFilterRequest in aFilterQueries)
+                foreach (FilterRequest aFilterRequest in aFilterRequests)
                 {
-                    Discipline? aDiscipline = Discipline(filterQuery);
+                    Discipline? aDiscipline = Discipline(filterRequest);
                     if (aDiscipline != null && aDiscipline.HasValue)
                         return aDiscipline;
                 }
             }
             else
             {
-                Discipline? aDiscipline = Discipline(filterQuery.Type);
+                Discipline? aDiscipline = Discipline(filterRequest.Type);
                 if (aDiscipline != null && aDiscipline.HasValue)
                     return aDiscipline.Value;
 
-                aDiscipline = DefaultDiscipline(filterQuery);
+                aDiscipline = DefaultDiscipline(filterRequest);
                 if (aDiscipline != null && aDiscipline.HasValue)
                     return aDiscipline.Value;
             }

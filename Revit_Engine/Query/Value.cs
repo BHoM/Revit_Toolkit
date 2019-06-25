@@ -34,17 +34,17 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Returns Value for given FilterRequest")]
-        [Input("filterQuery", "FilterRequest")]
-        [Output("QueryType")]
-        public static object Value(this FilterRequest filterQuery)
+        [Input("filterRequest", "FilterRequest")]
+        [Output("Value")]
+        public static object Value(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.Value))
+            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.Value))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterRequest.Value];
+            return filterRequest.Equalities[Convert.FilterRequest.Value];
         }
 
         /***************************************************/

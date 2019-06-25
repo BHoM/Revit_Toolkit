@@ -35,17 +35,17 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Gets integer representation of ElementIds for given FilterRequest (Example: SelectionFilterRequest).")]
-        [Input("filterQuery", "FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
         [Output("ElementIds")]
-        public static IEnumerable<int> ElementIds(this FilterRequest filterQuery)
+        public static IEnumerable<int> ElementIds(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.ElementIds))
+            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.ElementIds))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterRequest.ElementIds] as IEnumerable<int>;
+            return filterRequest.Equalities[Convert.FilterRequest.ElementIds] as IEnumerable<int>;
         }
 
         /***************************************************/

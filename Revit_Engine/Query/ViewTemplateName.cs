@@ -34,17 +34,17 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Returns View Template Name for given FilterRequest.")]
-        [Input("filterQuery", "FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
         [Output("ViewTemplateName")]
-        public static string ViewTemplateName(this FilterRequest filterQuery)
+        public static string ViewTemplateName(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.ViewTemplateName))
+            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.ViewTemplateName))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterRequest.ViewTemplateName] as string;
+            return filterRequest.Equalities[Convert.FilterRequest.ViewTemplateName] as string;
         }
 
         /***************************************************/

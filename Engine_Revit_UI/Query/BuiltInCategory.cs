@@ -223,12 +223,12 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static BuiltInCategory BuiltInCategory(this FilterRequest filterQuery, Document document)
+        public static BuiltInCategory BuiltInCategory(this FilterRequest filterRequest, Document document)
         {
-            if (document == null || document.Settings == null || document.Settings.Categories == null || filterQuery == null)
+            if (document == null || document.Settings == null || document.Settings.Categories == null || filterRequest == null)
                 return Autodesk.Revit.DB.BuiltInCategory.INVALID;
 
-            string aCategoryName = BH.Engine.Adapters.Revit.Query.CategoryName(filterQuery);
+            string aCategoryName = BH.Engine.Adapters.Revit.Query.CategoryName(filterRequest);
 
             return BuiltInCategory(document, aCategoryName);
         }

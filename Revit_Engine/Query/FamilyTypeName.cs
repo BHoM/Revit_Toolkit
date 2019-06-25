@@ -34,17 +34,17 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Gets Revit Family Type name for given FilterRequest (Example: FamilyFilterRequest).")]
-        [Input("filterQuery", "FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
         [Output("FamilyTypeName")]
-        public static string FamilyTypeName(this FilterRequest filterQuery)
+        public static string FamilyTypeName(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.FamilyTypeName))
+            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.FamilyTypeName))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterRequest.FamilyTypeName] as string;
+            return filterRequest.Equalities[Convert.FilterRequest.FamilyTypeName] as string;
         }
 
         /***************************************************/

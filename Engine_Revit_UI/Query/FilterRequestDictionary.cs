@@ -44,13 +44,13 @@ namespace BH.UI.Revit.Engine
 
             Dictionary<ElementId, List<FilterRequest>> aResult = new Dictionary<ElementId, List<FilterRequest>>();
 
-            IEnumerable<FilterRequest> aFilterQueries = BH.Engine.Adapters.Revit.Query.FilterRequests(filterRequest);
-            if (aFilterQueries != null && aFilterQueries.Count() > 0)
+            IEnumerable<FilterRequest> aFilterRequests = BH.Engine.Adapters.Revit.Query.FilterRequests(filterRequest);
+            if (aFilterRequests != null && aFilterRequests.Count() > 0)
             {
                 RequestType aQueryType = BH.Engine.Adapters.Revit.Query.RequestType(filterRequest);
 
                 Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary = null;
-                foreach (FilterRequest aFilterRequest in aFilterQueries)
+                foreach (FilterRequest aFilterRequest in aFilterRequests)
                 {
                     Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary_Temp = FilterRequestDictionary(aFilterRequest, uIDocument);
                     if (aFilterRequestDictionary == null)
