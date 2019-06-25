@@ -314,7 +314,7 @@ namespace BH.UI.Revit.Engine
                 if (double.IsNaN(rootRadius)) rootRadius = 0;
                 if (double.IsNaN(toeRadius)) toeRadius = 0;
 
-                if (!double.IsNaN(height) && !double.IsNaN(flangeWidth) && double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
+                if (!double.IsNaN(height) && !double.IsNaN(flangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
                 {
                     if (pullSettings.ConvertUnits)
                     {
@@ -556,7 +556,7 @@ namespace BH.UI.Revit.Engine
         private static string[] diameterNames = { "BHE_Diameter", "Diameter", "d", "D", "OD" };
         private static string[] radiusNames = { "BHE_Radius", "Radius", "r", "R" };
         private static string[] heightNames = { "BHE_Height", "BHE_Depth", "Height", "Depth", "d", "h", "D", "H", "Ht", "b" };
-        private static string[] widthNames = { "b", "BHE_Width", "Width", "w", "B", "W", "bf", "D" };
+        private static string[] widthNames = { "BHE_Width", "Width", "b", "B", "bf", "w", "W", "D" };
         private static string[] cornerRadiusNames = { "Corner Radius", "r", "r1" };
         private static string[] topFlangeWidthNames = { "Top Flange Width", "bt", "bf_t", "bft", "b1", "b", "B", "Bt" };
         private static string[] botFlangeWidthNames = { "Bottom Flange Width", "bb", "bf_b", "bfb", "b2", "b", "B", "Bb" };
