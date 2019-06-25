@@ -35,23 +35,23 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Gets child FilterQueries for given FiletrQuery (FilterRequest can be combined by logical operation - LogicalAndSelectionFilter, LogicalOrSelectionFilter).")]
-        [Input("filterQuery", "FilterRequest")]
-        [Output("FilterQueries")]
+        [Description("Gets child FilterRequests for given FiletrRequest (FilterRequest can be combined by logical operation - LogicalAndSelectionFilterRequest, LogicalOrSelectionFilterRequest).")]
+        [Input("filterRequest", "FilterRequest")]
+        [Output("FilterRequests")]
         public static IEnumerable<FilterRequest> FilterRequests(this FilterRequest filterRequest)
         {
             if (filterRequest == null)
                 return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.FilterQueries))
+            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.FilterRequests))
                 return null;
 
-            if (filterRequest.Equalities[Convert.FilterRequest.FilterQueries] is IEnumerable<FilterRequest>)
-                return (IEnumerable<FilterRequest>)filterRequest.Equalities[Convert.FilterRequest.FilterQueries];
+            if (filterRequest.Equalities[Convert.FilterRequest.FilterRequests] is IEnumerable<FilterRequest>)
+                return (IEnumerable<FilterRequest>)filterRequest.Equalities[Convert.FilterRequest.FilterRequests];
 
-            if (filterRequest.Equalities[Convert.FilterRequest.FilterQueries] is IEnumerable<object>)
+            if (filterRequest.Equalities[Convert.FilterRequest.FilterRequests] is IEnumerable<object>)
             {
-                IEnumerable<object> aObjects = filterRequest.Equalities[Convert.FilterRequest.FilterQueries] as IEnumerable<object>;
+                IEnumerable<object> aObjects = filterRequest.Equalities[Convert.FilterRequest.FilterRequests] as IEnumerable<object>;
                 if (aObjects != null)
                     return aObjects.Cast<FilterRequest>();
             }

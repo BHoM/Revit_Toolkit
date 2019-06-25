@@ -36,16 +36,16 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Returns true if FilterRequest should pull edges from Revit Element")]
-        [Input("filterQuery", "FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
         [Output("PullEdges")]
-        public static bool PullEdges(this FilterRequest filterQuery)
+        public static bool PullEdges(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return false;
 
-            if (filterQuery.Equalities.ContainsKey(Convert.FilterRequest.PullEdges))
+            if (filterRequest.Equalities.ContainsKey(Convert.FilterRequest.PullEdges))
             {
-                object aObject = filterQuery.Equalities[Convert.FilterRequest.PullEdges];
+                object aObject = filterRequest.Equalities[Convert.FilterRequest.PullEdges];
                 if (aObject is bool)
                     return (bool)aObject;
             }
@@ -56,14 +56,14 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Returns true if at least one FilterRequest on list should pull edges from Revit Element")]
-        [Input("filterQueries", "FilterQueries")]
+        [Input("filterRequests", "FilterRequests")]
         [Output("PullEdges")]
-        public static bool PullEdges(this IEnumerable<FilterRequest> filterQueries)
+        public static bool PullEdges(this IEnumerable<FilterRequest> filterRequests)
         {
-            if (filterQueries == null)
+            if (filterRequests == null)
                 return false;
 
-            return filterQueries.ToList().Any(x => x.PullEdges());
+            return filterRequests.ToList().Any(x => x.PullEdges());
         }
 
         /***************************************************/

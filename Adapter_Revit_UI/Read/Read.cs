@@ -116,7 +116,7 @@ namespace BH.UI.Revit.Adapter
 
         /***************************************************/
 
-        public override IEnumerable<IBHoMObject> Read(FilterRequest filterQuery)
+        public override IEnumerable<IBHoMObject> Read(FilterRequest filterRequest)
         {
             Document aDocument = Document;
 
@@ -126,7 +126,7 @@ namespace BH.UI.Revit.Adapter
                 return null;
             }
 
-            if (filterQuery == null)
+            if (filterRequest == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided FilterRequest is null.");
                 return null;
@@ -136,7 +136,7 @@ namespace BH.UI.Revit.Adapter
 
             List<IBHoMObject> aResult = new List<IBHoMObject>();
 
-            Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary = Query.FilterRequestDictionary(filterQuery, aUIDocument);
+            Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary = Query.FilterRequestDictionary(filterRequest, aUIDocument);
             if (aFilterRequestDictionary == null)
                 return null;
 
@@ -155,11 +155,11 @@ namespace BH.UI.Revit.Adapter
                 if (aElement == null || aElementIdList.Contains(aElement.Id))
                     continue;
 
-                IEnumerable<FilterRequest> aFilterQueries = Query.FilterQueries(aFilterRequestDictionary, aElement.Id);
-                if (aFilterQueries == null)
+                IEnumerable<FilterRequest> aFilterRequests = Query.FilterRequests(aFilterRequestDictionary, aElement.Id);
+                if (aFilterRequests == null)
                     continue;
 
-                Discipline aDiscipline = Query.Discipline(aFilterQueries, aRevitSettings);
+                Discipline aDiscipline = Query.Discipline(aFilterRequests, aRevitSettings);
 
                 PullSettings aPullSettings = null;
                 if (!aDictionary_PullSettings.TryGetValue(aDiscipline, out aPullSettings))
@@ -173,12 +173,12 @@ namespace BH.UI.Revit.Adapter
                 if (aIBHoMObjects != null && aIBHoMObjects.Count() > 0)
                 { 
                     //Pull Element Edges
-                    if (BH.Engine.Adapters.Revit.Query.PullEdges(aFilterQueries))
+                    if (BH.Engine.Adapters.Revit.Query.PullEdges(aFilterRequests))
                     {
                         Options aOptions = new Options();
                         aOptions.ComputeReferences = false;
                         aOptions.DetailLevel = ViewDetailLevel.Fine;
-                        aOptions.IncludeNonVisibleObjects = BH.Engine.Adapters.Revit.Query.IncludeNonVisibleObjects(aFilterQueries);
+                        aOptions.IncludeNonVisibleObjects = BH.Engine.Adapters.Revit.Query.IncludeNonVisibleObjects(aFilterRequests);
 
                         foreach(IBHoMObject aIBHoMObject in aIBHoMObjects)
                         {

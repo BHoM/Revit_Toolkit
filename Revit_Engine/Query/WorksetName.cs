@@ -33,17 +33,17 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Returns WorksetName assigned to FilterRequest.")]
-        [Input("filterQuery", "FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
         [Output("WorksetName")]
-        public static string WorksetName(this FilterRequest filterQuery)
+        public static string WorksetName(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.WorksetName))
+            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.WorksetName))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterRequest.WorksetName] as string;
+            return filterRequest.Equalities[Convert.FilterRequest.WorksetName] as string;
         }
 
         /***************************************************/

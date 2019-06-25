@@ -36,16 +36,16 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Returns true if FilterRequest should include non visible objects when pulling edges")]
-        [Input("filterQuery", "FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
         [Output("IncludeNonVisibleObjects")]
-        public static bool IncludeNonVisibleObjects(this FilterRequest filterQuery)
+        public static bool IncludeNonVisibleObjects(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return false;
 
-            if (filterQuery.Equalities.ContainsKey(Convert.FilterRequest.IncludeNonVisibleObjects))
+            if (filterRequest.Equalities.ContainsKey(Convert.FilterRequest.IncludeNonVisibleObjects))
             {
-                object aObject = filterQuery.Equalities[Convert.FilterRequest.IncludeNonVisibleObjects];
+                object aObject = filterRequest.Equalities[Convert.FilterRequest.IncludeNonVisibleObjects];
                 if (aObject is bool)
                     return (bool)aObject;
             }
@@ -56,14 +56,14 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Returns true if at least one FilterRequest on list should include non visible objects when pulling edges")]
-        [Input("filterQueries", "FilterQueries")]
+        [Input("filterRequests", "FilterRequest")]
         [Output("IncludeNonVisibleObjects")]
-        public static bool IncludeNonVisibleObjects(this IEnumerable<FilterRequest> filterQueries)
+        public static bool IncludeNonVisibleObjects(this IEnumerable<FilterRequest> filterRequests)
         {
-            if (filterQueries == null)
+            if (filterRequests == null)
                 return false;
 
-            return filterQueries.ToList().Any(x => x.IncludeNonVisibleObjects());
+            return filterRequests.ToList().Any(x => x.IncludeNonVisibleObjects());
         }
 
         /***************************************************/

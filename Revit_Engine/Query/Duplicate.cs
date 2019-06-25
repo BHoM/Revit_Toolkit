@@ -54,23 +54,23 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Duplicates FilterRequest.")]
-        [Input("filterQuery", "FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
         [Output("FilterRequest")]
-        public static FilterRequest Duplicate(this FilterRequest filterQuery)
+        public static FilterRequest Duplicate(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return null;
 
             FilterRequest aFilterRequest = new FilterRequest();
 
-            if (filterQuery.Equalities != null)
-                aFilterRequest.Equalities = new Dictionary<string, object>(filterQuery.Equalities);
+            if (filterRequest.Equalities != null)
+                aFilterRequest.Equalities = new Dictionary<string, object>(filterRequest.Equalities);
             else
                 aFilterRequest.Equalities = new Dictionary<string, object>();
 
-            aFilterRequest.Tag = filterQuery.Tag;
+            aFilterRequest.Tag = filterRequest.Tag;
 
-            aFilterRequest.Type = filterQuery.Type;
+            aFilterRequest.Type = filterRequest.Type;
 
 
             return aFilterRequest;

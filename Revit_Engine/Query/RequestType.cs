@@ -33,19 +33,19 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns Query Type of given FilterRequest")]
-        [Input("filterQuery", "FilterRequest")]
-        [Output("QueryType")]
-        public static oM.Adapters.Revit.Enums.RequestType RequestType(this FilterRequest filterQuery)
+        [Description("Returns Request Type of given FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
+        [Output("RequestType")]
+        public static oM.Adapters.Revit.Enums.RequestType RequestType(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return oM.Adapters.Revit.Enums.RequestType.Undefined;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.RequestType))
+            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.RequestType))
                 return oM.Adapters.Revit.Enums.RequestType.Undefined;
 
-            if (filterQuery.Equalities[Convert.FilterRequest.RequestType] is oM.Adapters.Revit.Enums.RequestType || filterQuery.Equalities[Convert.FilterRequest.RequestType] is int)
-                return (oM.Adapters.Revit.Enums.RequestType)filterQuery.Equalities[Convert.FilterRequest.RequestType];
+            if (filterRequest.Equalities[Convert.FilterRequest.RequestType] is oM.Adapters.Revit.Enums.RequestType || filterRequest.Equalities[Convert.FilterRequest.RequestType] is int)
+                return (oM.Adapters.Revit.Enums.RequestType)filterRequest.Equalities[Convert.FilterRequest.RequestType];
 
             return oM.Adapters.Revit.Enums.RequestType.Undefined;
         }

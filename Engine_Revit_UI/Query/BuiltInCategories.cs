@@ -136,13 +136,13 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<BuiltInCategory> BuiltInCategories(IEnumerable<FilterRequest> filterQueries, Document document)
+        public static IEnumerable<BuiltInCategory> BuiltInCategories(IEnumerable<FilterRequest> filterRequests, Document document)
         {
-            if (filterQueries == null || document == null)
+            if (filterRequests == null || document == null)
                 return null;
 
             List<BuiltInCategory> aBuiltInCategories = new List<BuiltInCategory>();
-            foreach (FilterRequest aFilterRequest in filterQueries)
+            foreach (FilterRequest aFilterRequest in filterRequests)
             {
                 BuiltInCategory aBuiltInCategory = Query.BuiltInCategory(aFilterRequest, document);
                 if (aBuiltInCategory != Autodesk.Revit.DB.BuiltInCategory.INVALID)

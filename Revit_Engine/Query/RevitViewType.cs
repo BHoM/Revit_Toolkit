@@ -35,17 +35,17 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Gets RevitViewType from FilterRequest.")]
-        [Input("filterQuery", "FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
         [Output("RevitViewType")]
-        public static RevitViewType? RevitViewType(this FilterRequest filterQuery)
+        public static RevitViewType? RevitViewType(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.RevitViewType))
+            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.RevitViewType))
                 return null;
 
-            object aObject = filterQuery.Equalities[Convert.FilterRequest.RevitViewType];
+            object aObject = filterRequest.Equalities[Convert.FilterRequest.RevitViewType];
             if (aObject is RevitViewType)
                 return (RevitViewType)aObject;
             else if (aObject is int)

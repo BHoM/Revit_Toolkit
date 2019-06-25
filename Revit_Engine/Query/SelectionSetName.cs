@@ -34,17 +34,17 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Returns Revit SelectionSet Name for given FilterRequest")]
-        [Input("filterQuery", "FilterRequest")]
+        [Input("filterRequest", "FilterRequest")]
         [Output("SelectionSetName")]
-        public static string SelectionSetName(this FilterRequest filterQuery)
+        public static string SelectionSetName(this FilterRequest filterRequest)
         {
-            if (filterQuery == null)
+            if (filterRequest == null)
                 return null;
 
-            if (!filterQuery.Equalities.ContainsKey(Convert.FilterRequest.SelectionSetName))
+            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.SelectionSetName))
                 return null;
 
-            return filterQuery.Equalities[Convert.FilterRequest.SelectionSetName] as string;
+            return filterRequest.Equalities[Convert.FilterRequest.SelectionSetName] as string;
         }
 
         /***************************************************/

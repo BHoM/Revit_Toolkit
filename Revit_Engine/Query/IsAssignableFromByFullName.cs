@@ -20,10 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Reflection.Attributes;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
+
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,8 +34,9 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Checks if one type is assignable from another type by comparing its full name.")]
-        [Input("filterQuery", "FilterRequest")]
-        [Output("IncludeSelected")]
+        [Input("typeToCheck", "Type to be checked")]
+        [Input("type", "Type")]
+        [Output("IsAssignableFromByFullName")]
         public static bool IsAssignableFromByFullName(this Type typeToCheck, Type type)
         {
             if (type == null || typeToCheck == null)
