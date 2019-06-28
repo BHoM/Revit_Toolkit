@@ -78,6 +78,9 @@ namespace BH.UI.Revit.Engine
             //Create the Space
             aSpace = Create.Space(aName);
 
+            if(spatialElement.Location != null && spatialElement.Location is LocationPoint)
+                aSpace.Location = ((LocationPoint)spatialElement.Location).ToBHoM(pullSettings);
+
             //Set ExtendedProperties
             OriginContextFragment aOriginContextFragment = new OriginContextFragment();
             aOriginContextFragment.ElementID = spatialElement.Id.IntegerValue.ToString();
@@ -135,10 +138,8 @@ namespace BH.UI.Revit.Engine
             string aName = Query.Name(aSpatialElement);
             aSpace = Create.Space(aName);
 
-            oM.Geometry.Point aPoint = null;
-
             if (aSpatialElement != null && aSpatialElement.Location != null)
-                aPoint = (aSpatialElement.Location as LocationPoint).ToBHoM(pullSettings);
+                aSpace.Location = (aSpatialElement.Location as LocationPoint).ToBHoM(pullSettings);
 
             //Set ExtendedProperties
             OriginContextFragment aOriginContextFragment = new OriginContextFragment();
