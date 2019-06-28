@@ -52,7 +52,7 @@ namespace BH.Engine.Adapters.Revit
 
             string aPath = revitFilePreview.Path;
 
-            if (string.IsNullOrWhiteSpace(revitFilePreview.Path) || File.Exists(revitFilePreview.Path))
+            if (string.IsNullOrWhiteSpace(revitFilePreview.Path) || !File.Exists(revitFilePreview.Path))
                 return null;
 
             if (File.Exists(revitFilePreview.Path))
