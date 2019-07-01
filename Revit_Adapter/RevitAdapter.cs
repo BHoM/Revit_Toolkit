@@ -30,11 +30,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Adapter.Revit
 {
     public partial class RevitAdapter : BHoMAdapter
-    {
+    {   
         /***************************************************/
         /**** Public Properties                         ****/
         /***************************************************/
@@ -46,7 +48,10 @@ namespace BH.Adapter.Revit
         /***************************************************/
         /**** Constructors                              ****/
         /***************************************************/
-
+        [Description("Adapter to connect to an open Revit project. Make sure to only have ONE Revit file open, or connection will not work as intended.")]
+        [Input("revitSettings", "Connect RevitSettings to control what is being connected")]
+        [Input("active", "Establish connection with Revit by setting to 'True'")]
+        [Output("adapter", "Adapter to Revit")]
         public RevitAdapter(RevitSettings revitSettings = null, bool active = false)
         {
             if (!active)
