@@ -219,6 +219,19 @@ namespace BH.UI.Revit.Engine
                 return aResult;
             }
 
+            if(element is CurveElement)
+            {
+                aResult.Add(typeof(ModelInstance));
+                aResult.Add(typeof(DraftingInstance));
+                return aResult;
+            }
+
+            if(element is GraphicsStyle)
+            {
+                aResult.Add(typeof(oM.Adapters.Revit.Properties.InstanceProperties));
+                return aResult;
+            }
+
             return null; //TODO: shouldn't it be aResult?
         }
 

@@ -20,52 +20,47 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+using System.Linq;
+using System.Collections.Generic;
 
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Properties;
+using Autodesk.Revit.DB;
 
-namespace BH.Engine.Adapters.Revit
+using BH.oM.Adapters.Revit.Elements;
+
+namespace BH.UI.Revit.Engine
 {
-    public static partial class Create
+    public static partial class Query
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Creates InstanceProperties")]
-        [Input("familyName", "Revit Family Name")]
-        [Input("familyTypeName", "Revit Family Type Name")]
-        [Output("InstanceProperties")]
-        public static InstanceProperties InstanceProperties(string familyName, string familyTypeName)
+        internal static View View(this DraftingInstance draftingInstance, Document document)
         {
-            InstanceProperties aInstanceProperties = new InstanceProperties()
-            {
-                Name = Query.FamilyTypeFullName(familyName, familyTypeName),
-            };
+            if (string.IsNullOrWhiteSpace(draftingInstance.ViewName))
+                return null;
 
-            aInstanceProperties.CustomData.Add(Convert.FamilyName, familyName);
-            aInstanceProperties.CustomData.Add(Convert.FamilyTypeName, familyTypeName);
+            List<View> aViewList = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().ToList();
+            aViewList.RemoveAll(x => x.IsTemplate || x is ViewSchedule || x is View3D || x is ViewSheet);
 
-            return aInstanceProperties;
-        }
+            View aView = null;
 
-        /***************************************************/
+            if (aViewList != null && aViewList.Count > 0)
+                aView = aViewList.Find(x => x.Name == draftingInstance.ViewName);
 
-        [Description("Creates InstanceProperties")]
-        [Input("name", "name")]
-        [Output("InstanceProperties")]
-        public static InstanceProperties InstanceProperties(string name)
-        {
-            InstanceProperties aInstanceProperties = new InstanceProperties()
-            {
-                Name = name,
-            };
+            if (aView != null)
+                return aView;
 
-            return aInstanceProperties;
+            aViewList = new FilteredElementCollector(document).OfClass(typeof(ViewSheet)).Cast<View>().ToList();
+            string aTitle = draftingInstance.ViewName;
+            if (!aTitle.StartsWith("Sheet: "))
+                aTitle = string.Format("Sheet: {0}", aTitle);
+
+            aView = aViewList.Find(x => x.Title == aTitle);
+
+            return aView;
         }
 
         /***************************************************/
     }
 }
-

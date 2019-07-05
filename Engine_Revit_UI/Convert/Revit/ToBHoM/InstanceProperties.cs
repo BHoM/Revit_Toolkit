@@ -56,5 +56,31 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        internal static InstanceProperties ToBHoMInstanceProperties(this Autodesk.Revit.DB.GraphicsStyle graphicStyle, PullSettings pullSettings = null)
+        {
+            pullSettings = pullSettings.DefaultIfNull();
+
+            InstanceProperties aInstanceProperties = pullSettings.FindRefObject<InstanceProperties>(graphicStyle.Id.IntegerValue);
+            if (aInstanceProperties != null)
+                return aInstanceProperties;
+
+            aInstanceProperties = BH.Engine.Adapters.Revit.Create.InstanceProperties(null, null);
+            aInstanceProperties.Name = graphicStyle.Name;
+
+            aInstanceProperties = Modify.SetIdentifiers(aInstanceProperties, graphicStyle) as InstanceProperties;
+            if (pullSettings.CopyCustomData)
+                aInstanceProperties = Modify.SetCustomData(aInstanceProperties, graphicStyle, pullSettings.ConvertUnits) as InstanceProperties;
+
+            aInstanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = graphicStyle.GraphicsStyleCategory.Parent.Name;
+
+            aInstanceProperties = aInstanceProperties.UpdateValues(pullSettings, graphicStyle) as InstanceProperties;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aInstanceProperties);
+
+            return aInstanceProperties;
+        }
+
+        /***************************************************/
     }
 }
