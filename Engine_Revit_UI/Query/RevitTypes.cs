@@ -112,6 +112,21 @@ namespace BH.UI.Revit.Engine
             if (type == typeof(DraftingInstance))
             {
                 aResult.Add(typeof(FamilyInstance));
+                aResult.Add(typeof(CurveElement));
+                return aResult;
+            }
+
+            if (type == typeof(ModelInstance))
+            {
+                aResult.Add(typeof(FamilyInstance));
+                aResult.Add(typeof(CurveElement));
+                return aResult;
+            }
+
+            if (type == typeof(oM.Adapters.Revit.Properties.InstanceProperties))
+            {
+                aResult.Add(typeof(ElementType));
+                aResult.Add(typeof(GraphicsStyle));
                 return aResult;
             }
 

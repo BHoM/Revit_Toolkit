@@ -20,52 +20,35 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Settings;
 
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Properties;
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.UI.Revit.Engine
 {
-    public static partial class Create
+    public static partial class Convert
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
-        [Description("Creates InstanceProperties")]
-        [Input("familyName", "Revit Family Name")]
-        [Input("familyTypeName", "Revit Family Type Name")]
-        [Output("InstanceProperties")]
-        public static InstanceProperties InstanceProperties(string familyName, string familyTypeName)
+        internal static oM.Adapters.Revit.Interface.IInstance ToBHoMInstance(this CurveElement curveElement, PullSettings pullSettings = null)
         {
-            InstanceProperties aInstanceProperties = new InstanceProperties()
+            if (curveElement == null)
+                return null;
+
+            pullSettings = pullSettings.DefaultIfNull();
+
+            switch(curveElement.CurveElementType)
             {
-                Name = Query.FamilyTypeFullName(familyName, familyTypeName),
-            };
-
-            aInstanceProperties.CustomData.Add(Convert.FamilyName, familyName);
-            aInstanceProperties.CustomData.Add(Convert.FamilyTypeName, familyTypeName);
-
-            return aInstanceProperties;
-        }
-
-        /***************************************************/
-
-        [Description("Creates InstanceProperties")]
-        [Input("name", "name")]
-        [Output("InstanceProperties")]
-        public static InstanceProperties InstanceProperties(string name)
-        {
-            InstanceProperties aInstanceProperties = new InstanceProperties()
-            {
-                Name = name,
-            };
-
-            return aInstanceProperties;
+                case CurveElementType.DetailCurve:
+                    return ToBHoMDraftingInstance(curveElement, pullSettings);
+                case CurveElementType.ModelCurve:
+                    return ToBHoMModelInstance(curveElement, pullSettings);
+                default:
+                    return null;
+            }
         }
 
         /***************************************************/
     }
 }
-

@@ -360,6 +360,26 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static IBHoMObject ToBHoM(this GraphicsStyle graphicStyle, PullSettings pullSettings = null)
+        {
+            graphicStyle.CheckIfNullPull();
+
+            pullSettings = pullSettings.DefaultIfNull();
+
+            switch (pullSettings.Discipline)
+            {
+                //case Discipline.Environmental:
+                //return elementType.ToBHoMElementProperties(pullSettings);
+                default:
+                    return graphicStyle.ToBHoMInstanceProperties(pullSettings);
+            }
+
+            graphicStyle.NotConvertedWarning();
+            return null;
+        }
+
+        /***************************************************/
+
         public static IBHoMObject ToBHoM(this SpatialElement spatialElement, PullSettings pullSettings = null)
         {
             spatialElement.CheckIfNullPull();
@@ -519,6 +539,26 @@ namespace BH.UI.Revit.Engine
             }
 
             family.NotConvertedWarning();
+            return null;
+        }
+
+        /***************************************************/
+
+        public static IBHoMObject ToBHoM(this CurveElement curveElement, PullSettings pullSettings = null)
+        {
+            curveElement.CheckIfNullPull();
+
+            pullSettings = pullSettings.DefaultIfNull();
+
+            switch (pullSettings.Discipline)
+            {
+                //case Discipline.Environmental:
+                //return elementType.ToBHoMElementProperties(pullSettings);
+                default:
+                    return curveElement.ToBHoMInstance(pullSettings);
+            }
+
+            curveElement.NotConvertedWarning();
             return null;
         }
 

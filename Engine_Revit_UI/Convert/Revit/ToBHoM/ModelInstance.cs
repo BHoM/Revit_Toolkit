@@ -20,52 +20,39 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Settings;
 
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Properties;
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.UI.Revit.Engine
 {
-    public static partial class Create
+    public static partial class Convert
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
-        [Description("Creates InstanceProperties")]
-        [Input("familyName", "Revit Family Name")]
-        [Input("familyTypeName", "Revit Family Type Name")]
-        [Output("InstanceProperties")]
-        public static InstanceProperties InstanceProperties(string familyName, string familyTypeName)
+        internal static oM.Adapters.Revit.Elements.ModelInstance ToBHoMModelInstance(this CurveElement curveElement, PullSettings pullSettings = null)
         {
-            InstanceProperties aInstanceProperties = new InstanceProperties()
-            {
-                Name = Query.FamilyTypeFullName(familyName, familyTypeName),
-            };
+            oM.Adapters.Revit.Elements.ModelInstance aModelInstance = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.ModelInstance>(curveElement.Id.IntegerValue);
+            if (aModelInstance != null)
+                return aModelInstance;
 
-            aInstanceProperties.CustomData.Add(Convert.FamilyName, familyName);
-            aInstanceProperties.CustomData.Add(Convert.FamilyTypeName, familyTypeName);
+            oM.Adapters.Revit.Properties.InstanceProperties aInstanceProperties = ToBHoMInstanceProperties(curveElement.LineStyle as GraphicsStyle, pullSettings) as oM.Adapters.Revit.Properties.InstanceProperties;
 
-            return aInstanceProperties;
-        }
+            aModelInstance = BH.Engine.Adapters.Revit.Create.ModelInstance(aInstanceProperties, curveElement.GeometryCurve.ToBHoM(pullSettings));
 
-        /***************************************************/
+            aModelInstance.Name = curveElement.Name;
+            aModelInstance = Modify.SetIdentifiers(aModelInstance, curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
+            if (pullSettings.CopyCustomData)
+                aModelInstance = Modify.SetCustomData(aModelInstance, curveElement, true) as oM.Adapters.Revit.Elements.ModelInstance;
 
-        [Description("Creates InstanceProperties")]
-        [Input("name", "name")]
-        [Output("InstanceProperties")]
-        public static InstanceProperties InstanceProperties(string name)
-        {
-            InstanceProperties aInstanceProperties = new InstanceProperties()
-            {
-                Name = name,
-            };
+            aModelInstance = aModelInstance.UpdateValues(pullSettings, curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
 
-            return aInstanceProperties;
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aModelInstance);
+
+            return aModelInstance;
         }
 
         /***************************************************/
     }
 }
-
