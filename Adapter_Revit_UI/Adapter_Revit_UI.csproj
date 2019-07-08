@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4F27756C-0F74-46CC-84D3-31B9CF05B5A7}</ProjectGuid>
+    <ProjectGuid>{C2BD93AF-8853-4685-8BD4-223055DE1CC6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BH.UI.Revit.Adapter</RootNamespace>

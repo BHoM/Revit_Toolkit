@@ -34,6 +34,22 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
+        internal static List<Curve> ToRevitCurveList(this oM.Environment.Elements.Panel panel, PushSettings pushSettings = null)
+        {
+            if (panel == null || panel.ExternalEdges == null)
+                return null;
+
+            List<Curve> aResult = new List<Curve>();
+            foreach (oM.Environment.Elements.Edge aEdge in panel.ExternalEdges)
+            {
+                List<Curve> aCurveList = ToRevitCurveList(aEdge.Curve, pushSettings);
+                if (aCurveList != null && aCurveList.Count > 0)
+                    aResult.AddRange(aCurveList);
+            }
+            return aResult;
+        }
+
+
         internal static List<Curve> ToRevitCurveList(this ICurve curve, PushSettings pushSettings = null)
         {
             if (curve == null)
