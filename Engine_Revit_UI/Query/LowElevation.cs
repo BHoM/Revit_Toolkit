@@ -21,6 +21,7 @@
  */
 
 using BH.oM.Common.Interface;
+using BH.oM.Environment.Elements;
 using BH.oM.Geometry;
 
 namespace BH.UI.Revit.Engine
@@ -34,6 +35,24 @@ namespace BH.UI.Revit.Engine
         static public double LowElevation(ICurve curve)
         {
             return BH.Engine.Geometry.Query.Bounds(curve as dynamic).Min.Z;
+        }
+
+        /***************************************************/
+
+        static public double LowElevation(this Panel panel)
+        {
+            if (panel == null || panel.ExternalEdges == null)
+                return double.NaN;
+
+            double aResult = double.NaN;
+            foreach(Edge aEdge in panel.ExternalEdges)
+            {
+                BoundingBox aBoundingBox = BH.Engine.Geometry.Query.Bounds(aEdge.Curve as dynamic);
+                if(aBoundingBox != null && (double.IsNaN(aResult) || aResult < aBoundingBox.Min.Z))
+                        aResult = aBoundingBox.Min.Z;
+            }
+
+            return aResult;
         }
 
         /***************************************************/

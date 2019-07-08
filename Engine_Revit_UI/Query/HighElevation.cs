@@ -22,6 +22,7 @@
 
 using BH.oM.Geometry;
 using BH.oM.Common.Interface;
+using BH.oM.Environment.Elements;
 
 namespace BH.UI.Revit.Engine
 {
@@ -46,6 +47,24 @@ namespace BH.UI.Revit.Engine
             BoundingBox aBoundingBox = BH.Engine.Geometry.Query.Bounds(object2D.Surface as dynamic);
 
             return aBoundingBox.Max.Z;
+        }
+
+        /***************************************************/
+
+        static public double HighElevation(this Panel panel)
+        {
+            if (panel == null || panel.ExternalEdges == null)
+                return double.NaN;
+
+            double aResult = double.NaN;
+            foreach (Edge aEdge in panel.ExternalEdges)
+            {
+                BoundingBox aBoundingBox = BH.Engine.Geometry.Query.Bounds(aEdge.Curve as dynamic);
+                if (aBoundingBox != null && (double.IsNaN(aResult) || aResult > aBoundingBox.Max.Z))
+                    aResult = aBoundingBox.Max.Z;
+            }
+
+            return aResult;
         }
 
         /***************************************************/
