@@ -90,17 +90,12 @@
     <Reference Include="Reflection_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
     </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == 'Debug2019'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2019\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == 'Debug2019'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2019\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="RevitAPI" Condition="'$(Configuration)' == 'Debug2018'">
       <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPI">
+      <HintPath>..\..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
     </Reference>
     <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == 'Debug2018'">
       <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPIUI.dll</HintPath>
@@ -113,6 +108,9 @@
     <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == 'Debug'">
       <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>..\..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPIUI.dll</HintPath>
     </Reference>
     <Reference Include="Structure_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Structure_Engine.dll</HintPath>

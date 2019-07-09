@@ -117,22 +117,18 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
     </Reference>
-    <Reference Include="Reflection_oM, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == 'Debug2019'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2019\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == 'Debug2019'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2019\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)' == 'Debug2019'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2019\RevitAPIIFC.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Reflection_oM">
+      <HintPath>..\..\BHoM\Build\Reflection_oM.dll</HintPath>
     </Reference>
     <Reference Include="RevitAPI" Condition="'$(Configuration)' == 'Debug2018'">
       <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPI">
+      <HintPath>..\..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPIIFC">
+      <HintPath>..\..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPIIFC.dll</HintPath>
     </Reference>
     <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == 'Debug2018'">
       <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPIUI.dll</HintPath>
@@ -153,6 +149,9 @@
     <Reference Include="RevitAPIIFC" Condition="'$(Configuration)' == 'Debug'">
       <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPIIFC.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>..\..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPIUI.dll</HintPath>
     </Reference>
     <Reference Include="Structure_Engine">
       <SpecificVersion>False</SpecificVersion>
