@@ -175,6 +175,7 @@
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Roof.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Level.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\PolyLine.cs" />
     <Compile Include="Convert\Physical\ToBHoM\FramingElement.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilyInstance.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilySymbol.cs" />
