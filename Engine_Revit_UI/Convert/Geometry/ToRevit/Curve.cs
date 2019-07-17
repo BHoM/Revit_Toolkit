@@ -68,6 +68,13 @@ namespace BH.UI.Revit.Engine
                 return Autodesk.Revit.DB.Ellipse.CreateCurve(ToRevit(aEllipse.Centre, pushSettings), aEllipse.Radius1, aEllipse.Radius2, ToRevit(aEllipse.Axis1, pushSettings), ToRevit(aEllipse.Axis2, pushSettings), 0, 1);
             }
 
+            if(curve is Polyline)
+            {
+                Polyline aPolyline = curve as Polyline;
+                if(aPolyline.ControlPoints.Count == 2)
+                    return Autodesk.Revit.DB.Line.CreateBound(ToRevit(aPolyline.ControlPoints[0], pushSettings), ToRevit(aPolyline.ControlPoints[1], pushSettings));
+            }
+
             return null;
         }
 
