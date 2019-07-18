@@ -60,7 +60,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Architecture.Elements.Wall wall, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Physical.Elements.Wall wall, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
@@ -69,7 +69,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Architecture.Elements.Floor floor, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Physical.Elements.Floor floor, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
@@ -78,7 +78,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Architecture.Elements.Roof roof, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Physical.Elements.Roof roof, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 

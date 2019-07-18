@@ -34,12 +34,12 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        internal static Wall ToRevitWall(this oM.Architecture.Elements.Wall wall, Document document, PushSettings pushSettings = null)
+        internal static Wall ToRevitWall(this oM.Physical.Elements.Wall wall, Document document, PushSettings pushSettings = null)
         {
-            if (wall == null || wall.Properties == null || document == null)
+            if (wall == null || wall.Location == null || document == null)
                 return null;
 
-            PlanarSurface aPlanarSurface = wall.Surface as PlanarSurface;
+            PlanarSurface aPlanarSurface = wall.Location as PlanarSurface;
             if (aPlanarSurface == null)
                 return null;
 
@@ -51,8 +51,8 @@ namespace BH.UI.Revit.Engine
 
             WallType aWallType = null;
 
-            if (wall.Properties!= null)
-                aWallType = wall.Properties.ToRevitElementType(document, pushSettings) as WallType;
+            if (wall.Construction!= null)
+                aWallType = wall.Construction.ToRevitHostObjAttributes(document, pushSettings) as WallType;
 
             if (aWallType == null)
             {

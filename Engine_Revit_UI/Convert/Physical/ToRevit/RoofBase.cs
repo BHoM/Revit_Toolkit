@@ -36,12 +36,12 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        internal static RoofBase ToRevitRoofBase(this oM.Architecture.Elements.Roof roof, Document document, PushSettings pushSettings = null)
+        internal static RoofBase ToRevitRoofBase(this oM.Physical.Elements.Roof roof, Document document, PushSettings pushSettings = null)
         {
-            if (roof == null || roof.Properties == null || document == null)
+            if (roof == null || roof.Location == null || document == null)
                 return null;
 
-            PlanarSurface aPlanarSurface = roof.Surface as PlanarSurface;
+            PlanarSurface aPlanarSurface = roof.Location as PlanarSurface;
             if (aPlanarSurface == null)
                 return null;
 
@@ -53,8 +53,8 @@ namespace BH.UI.Revit.Engine
 
             RoofType aRoofType = null;
 
-            if (roof.Properties!= null)
-                aRoofType = roof.Properties.ToRevitElementType(document, pushSettings) as RoofType;
+            if (roof.Construction != null)
+                aRoofType = roof.Construction.ToRevitHostObjAttributes(document, pushSettings) as RoofType;
 
             if (aRoofType == null)
             {

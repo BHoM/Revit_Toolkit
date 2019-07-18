@@ -36,12 +36,12 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        internal static Floor ToRevitFloor(this oM.Architecture.Elements.Floor floor, Document document, PushSettings pushSettings = null)
+        internal static Floor ToRevitFloor(this oM.Physical.Elements.Floor floor, Document document, PushSettings pushSettings = null)
         {
-            if (floor == null || floor.Properties == null || document == null)
+            if (floor == null || floor.Construction == null || document == null)
                 return null;
 
-            PlanarSurface aPlanarSurface = floor.Surface as PlanarSurface;
+            PlanarSurface aPlanarSurface = floor.Location as PlanarSurface;
             if (aPlanarSurface == null)
                 return null;
 
@@ -53,8 +53,8 @@ namespace BH.UI.Revit.Engine
 
             FloorType aFloorType = null;
 
-            if (floor.Properties!= null)
-                aFloorType = floor.Properties.ToRevitElementType(document, pushSettings) as FloorType;
+            if (floor.Construction!= null)
+                aFloorType = ToRevitHostObjAttributes(floor.Construction, document, pushSettings) as FloorType;
 
             if (aFloorType == null)
             {

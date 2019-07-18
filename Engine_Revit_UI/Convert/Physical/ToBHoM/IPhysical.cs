@@ -25,6 +25,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -34,41 +35,51 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static List<oM.Architecture.Elements.Roof> ToBHoMRoofs(this RoofBase roofBase, PullSettings pullSettings = null)
+        internal static List<oM.Physical.IPhysical> ToBHoMIPhysicals(this HostObject hostObject, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Architecture.Elements.Roof> aRoofs = pullSettings.FindRefObjects<oM.Architecture.Elements.Roof>(roofBase.Id.IntegerValue);
-            if (aRoofs != null && aRoofs.Count > 0)
-                return aRoofs;
+            List<oM.Physical.IPhysical> aPhysicalList = pullSettings.FindRefObjects<oM.Physical.IPhysical>(hostObject.Id.IntegerValue);
+            if (aPhysicalList != null && aPhysicalList.Count > 0)
+                return aPhysicalList;
 
-            oM.Common.Properties.Object2DProperties aObject2DProperties = ToBHoMObject2DProperties(roofBase.RoofType, pullSettings);
+            oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes, pullSettings);
 
-            List<PolyCurve> aPolyCurveList = Query.Profiles(roofBase, pullSettings);
+            List<PolyCurve> aPolyCurveList = Query.Profiles(hostObject, pullSettings);
 
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
-            aRoofs = new List<oM.Architecture.Elements.Roof>();
+            aPhysicalList = new List<oM.Physical.IPhysical>();
 
-            foreach (PolyCurve aPolyCurve in aPolyCurveList_Outer)
+            foreach(PolyCurve aPolyCurve in aPolyCurveList_Outer)
             {
                 List<PolyCurve> aPolyCurveList_Inner = BH.Engine.Adapters.Revit.Query.InnerPolyCurves(aPolyCurve, aPolyCurveList);
 
-                oM.Architecture.Elements.Roof aRoof = BH.Engine.Adapters.Revit.Create.Roof(aObject2DProperties, aPolyCurve, aPolyCurveList_Inner);
-                if (aRoof == null)
+                oM.Physical.IPhysical aPhysical = null;
+
+                if (hostObject is Wall)
+                    aPhysical = BH.Engine.Physical.Create.Wall(BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve, aPolyCurveList_Inner.ConvertAll(x => (ICurve)x)), aConstruction);
+                else if(hostObject is Floor)
+                    aPhysical = BH.Engine.Physical.Create.Floor(BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve, aPolyCurveList_Inner.ConvertAll(x => (ICurve)x)), aConstruction);
+                else if (hostObject is RoofBase)
+                    aPhysical = BH.Engine.Physical.Create.Roof(BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve, aPolyCurveList_Inner.ConvertAll(x => (ICurve)x)), aConstruction);
+
+                if (aPhysical == null)
                     continue;
 
-                aRoof = Modify.SetIdentifiers(aRoof, roofBase) as oM.Architecture.Elements.Roof;
+                aPhysical.Name = Query.FamilyTypeFullName(hostObject);
+
+                aPhysical = Modify.SetIdentifiers(aPhysical, hostObject) as oM.Physical.IPhysical;
                 if (pullSettings.CopyCustomData)
-                    aRoof = Modify.SetCustomData(aRoof, roofBase, pullSettings.ConvertUnits) as oM.Architecture.Elements.Roof;
+                    aPhysical = Modify.SetCustomData(aPhysical, hostObject, pullSettings.ConvertUnits) as oM.Physical.IPhysical;
 
-                aRoof = aRoof.UpdateValues(pullSettings, roofBase) as oM.Architecture.Elements.Roof;
+                aPhysical = aPhysical.UpdateValues(pullSettings, hostObject) as oM.Physical.IPhysical;
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aRoof);
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPhysical);
 
-                aRoofs.Add(aRoof);
+                aPhysicalList.Add(aPhysical);
             }
 
-            return aRoofs;
+            return aPhysicalList;
         }
 
         /***************************************************/
