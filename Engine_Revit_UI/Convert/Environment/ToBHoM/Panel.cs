@@ -381,7 +381,7 @@ namespace BH.UI.Revit.Engine
             aPanels = new List<oM.Environment.Elements.Panel>();
 
             CeilingType aCeilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
-            BH.oM.Physical.Constructions.Construction aRevitConstruction = Query.Construction(aCeilingType, pullSettings);
+            BH.oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(aCeilingType, pullSettings);
 
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
             foreach (ICurve aCurve in aPolyCurveList_Outer)
@@ -413,7 +413,7 @@ namespace BH.UI.Revit.Engine
                 aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, ceiling) as BuildingResultFragment;
                 aPanel.AddFragment(aBuildingResultsProperties);
 
-                aPanel.Construction = aRevitConstruction;
+                aPanel.Construction = aConstruction;
                 aPanel.Type = oM.Environment.Elements.PanelType.Ceiling;
 
                 //Assign custom data
@@ -447,7 +447,7 @@ namespace BH.UI.Revit.Engine
 
             aPanels = new List<oM.Environment.Elements.Panel>();
 
-            BH.oM.Physical.Constructions.Construction aRevitConstruction = Query.Construction(floor.FloorType, pullSettings);
+            BH.oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(floor.FloorType, pullSettings);
 
             FloorType aFloorType = floor.Document.GetElement(floor.GetTypeId()) as FloorType;
 
@@ -481,7 +481,7 @@ namespace BH.UI.Revit.Engine
                 aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, floor) as BuildingResultFragment;
                 aPanel.AddFragment(aBuildingResultsProperties);
 
-                aPanel.Construction = aRevitConstruction;
+                aPanel.Construction = aConstruction;
                 aPanel.Type = oM.Environment.Elements.PanelType.Floor;
 
                 //Assign custom data
@@ -516,7 +516,7 @@ namespace BH.UI.Revit.Engine
 
             aPanels = new List<oM.Environment.Elements.Panel>();
 
-            BH.oM.Physical.Constructions.Construction aRevitConstruction = Query.Construction(roofBase.RoofType, pullSettings);
+            BH.oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(roofBase.RoofType, pullSettings);
 
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
             foreach (ICurve aCurve in aPolyCurveList_Outer)
@@ -548,7 +548,7 @@ namespace BH.UI.Revit.Engine
                 aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, roofBase) as BuildingResultFragment;
                 aPanel.AddFragment(aBuildingResultsProperties);
 
-                aPanel.Construction = aRevitConstruction;
+                aPanel.Construction = aConstruction;
                 aPanel.Type = oM.Environment.Elements.PanelType.Roof;
 
                 //Assign custom data
@@ -579,7 +579,7 @@ namespace BH.UI.Revit.Engine
 
             aPanels = new List<oM.Environment.Elements.Panel>();
 
-            BH.oM.Physical.Constructions.Construction aRevitConstruction = Query.Construction(wall.WallType, pullSettings);
+            BH.oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(wall.WallType, pullSettings);
 
             List<PolyCurve> aPolyCurveList = Query.Profiles(wall, pullSettings);
             List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
@@ -613,7 +613,7 @@ namespace BH.UI.Revit.Engine
                 aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, wall) as BuildingResultFragment;
                 aPanel.AddFragment(aBuildingResultsProperties);
 
-                aPanel.Construction = aRevitConstruction;
+                aPanel.Construction = aConstruction;
                 aPanel.Type = oM.Environment.Elements.PanelType.Wall;
 
                 //Assign custom data

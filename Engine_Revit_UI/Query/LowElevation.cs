@@ -68,5 +68,17 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        static public double LowElevation(this oM.Physical.Elements.ISurface surface)
+        {
+            if (surface == null || surface.Location == null)
+                return double.NaN;
+
+            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.Bounds(surface.Location as dynamic);
+
+            return aBoundingBox.Min.Z;
+        }
+
+        /***************************************************/
     }
 }

@@ -68,5 +68,18 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        static public double HighElevation(this oM.Physical.Elements.ISurface surface)
+        {
+            if (surface == null || surface.Location == null || !(surface.Location is PlanarSurface))
+                return double.NaN;
+
+            ISurface aISurface = surface.Location;
+
+            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.Bounds(surface.Location as PlanarSurface);
+            return aBoundingBox.Max.Z;
+        }
+
+        /***************************************************/
     }
 }

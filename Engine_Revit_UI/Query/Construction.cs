@@ -26,7 +26,6 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 
 using BH.oM.Adapters.Revit.Settings;
-using Autodesk.Revit.DB.Analysis;
 using BH.oM.Environment.MaterialFragments;
 
 namespace BH.UI.Revit.Engine
@@ -35,39 +34,6 @@ namespace BH.UI.Revit.Engine
     {
         /***************************************************/
         /**** Public Methods                            ****/
-        /***************************************************/
-
-        static public oM.Physical.Constructions.Construction Construction(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null)
-        {
-            if (hostObjAttributes == null)
-                return null;
-
-            oM.Physical.Constructions.Construction aConstruction = null;
-
-            CompoundStructure aCompoundStructure = hostObjAttributes.GetCompoundStructure();
-            if (aCompoundStructure != null)
-            {
-                IEnumerable<CompoundStructureLayer> aCompoundStructureLayers = aCompoundStructure.GetLayers();
-                if (aCompoundStructureLayers != null)
-                {
-                    BuiltInCategory aBuiltInCategory = (BuiltInCategory)hostObjAttributes.Category.Id.IntegerValue;
-
-                    pullSettings = pullSettings.DefaultIfNull();
-
-                    aConstruction = new oM.Physical.Constructions.Construction();
-                    aConstruction.Name = hostObjAttributes.EnergyAnalysisElementName();
-                    foreach (CompoundStructureLayer aCompoundStructureLayer in aCompoundStructureLayers)
-                        aConstruction.Layers.Add(Query.Layer(aCompoundStructureLayer, hostObjAttributes.Document, aBuiltInCategory, pullSettings));
-                }
-
-            }
-
-            if(aConstruction == null)
-                aConstruction = Construction(hostObjAttributes.EnergyAnalysisElementName(), hostObjAttributes.FamilyName);
-
-            return aConstruction;
-        }
-
         /***************************************************/
 
         static public oM.Physical.Constructions.Construction Construction(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
