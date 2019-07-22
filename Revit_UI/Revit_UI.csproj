@@ -84,28 +84,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM\Build\Reflection_oM.dll</HintPath>
     </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == 'Debug2018'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPI, Version=19.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Revit.RevitApi.x64.2019.0.0\lib\net45\RevitAPI.dll</HintPath>
+    <Reference Include="RevitAPI, Version=18.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Revit.RevitApi.x64.2018.0.0\lib\net45\RevitAPI.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == 'Debug2018'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == 'Debug'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == 'Debug'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI, Version=19.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Revit.RevitApiUI.x64.2019.0.0\lib\net45\RevitAPIUI.dll</HintPath>
+    <Reference Include="RevitAPIUI, Version=18.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Revit.RevitApiUI.x64.2018.0.0\lib\net45\RevitAPIUI.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serialiser_Engine">
