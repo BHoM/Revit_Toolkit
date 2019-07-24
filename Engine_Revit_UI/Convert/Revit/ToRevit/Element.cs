@@ -20,9 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Linq;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Elements;
@@ -133,26 +130,12 @@ namespace BH.UI.Revit.Engine
                 return null;
             }
 
+            View aView = Query.View(draftingInstance, document);
+
+            if (aView == null)
+                return null;
+
             pushSettings = pushSettings.DefaultIfNull();
-
-            List<View> aViewList = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().ToList();
-            aViewList.RemoveAll(x => x.IsTemplate || x is ViewSchedule || x is View3D || x is ViewSheet);
-            if(aViewList == null || aViewList.Count == 0)
-                return null;
-
-            View aView = aViewList.Find(x => x.Name == draftingInstance.ViewName);
-            if (aView == null)
-            {
-                aViewList = new FilteredElementCollector(document).OfClass(typeof(ViewSheet)).Cast<View>().ToList();
-                string aTitle = draftingInstance.ViewName;
-                if (!aTitle.StartsWith("Sheet: "))
-                    aTitle = string.Format("Sheet: {0}", aTitle);
-
-                aView = aViewList.Find(x => x.Title == aTitle);
-            }
-
-            if (aView == null)
-                return null;
 
             BuiltInCategory aBuiltInCategory = draftingInstance.Properties.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
 

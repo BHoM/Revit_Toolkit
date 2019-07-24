@@ -118,40 +118,16 @@
       <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
     </Reference>
     <Reference Include="Reflection_oM, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == 'Debug2019'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2019\RevitAPI.dll</HintPath>
+    <Reference Include="RevitAPI, Version=18.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Revit.RevitApi.x64.2018.0.0\lib\net45\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == 'Debug2019'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2019\RevitAPIUI.dll</HintPath>
+    <Reference Include="RevitAPIIFC">
+      <HintPath>..\libs\RevitAPIIFC.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)' == 'Debug2019'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2019\RevitAPIIFC.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == 'Debug2018'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == 'Debug2018'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)' == 'Debug2018'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPIIFC.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == 'Debug'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == 'Debug'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)' == 'Debug'">
-      <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPIIFC.dll</HintPath>
+    <Reference Include="RevitAPIUI, Version=18.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Revit.RevitApiUI.x64.2018.0.0\lib\net45\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Structure_Engine">
@@ -174,12 +150,15 @@
   <ItemGroup>
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Level.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\PolyLine.cs" />
     <Compile Include="Convert\Physical\ToBHoM\FramingElement.cs" />
     <Compile Include="Convert\Physical\ToBHoM\Construction.cs" />
     <Compile Include="Convert\Physical\ToBHoM\IPhysical.cs" />
     <Compile Include="Convert\Physical\ToRevit\HostObjAttributes.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilyInstance.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilySymbol.cs" />
+    <Compile Include="Convert\Revit\ToBHoM\DraftingInstance.cs" />
+    <Compile Include="Convert\Revit\ToBHoM\ModelInstance.cs" />
     <Compile Include="Convert\Revit\ToBHoM\Object2DProperties.cs" />
     <Compile Include="Convert\Environment\ToBHoM\SolidMaterial.cs" />
     <Compile Include="Convert\Physical\ToRevit\RoofBase.cs" />
@@ -195,8 +174,10 @@
     <Compile Include="Convert\Geometry\ToRevit\CurveList.cs" />
     <Compile Include="Convert\Geometry\ToRevit\CurveArray.cs" />
     <Compile Include="Convert\Revit\ToBHoM\Family.cs" />
+    <Compile Include="Convert\Revit\ToBHoM\IInstance.cs" />
     <Compile Include="Convert\Revit\ToRevit\ElementType.cs" />
     <Compile Include="Convert\Revit\ToRevit\Family.cs" />
+    <Compile Include="Convert\Revit\ToRevit\CurveElement.cs" />
     <Compile Include="Modify\AddAdjacentSpaceId.cs" />
     <Compile Include="Compute\LoadFamily.cs" />
     <Compile Include="Modify\Move.cs" />
@@ -253,6 +234,7 @@
     <Compile Include="Query\IsValid.cs" />
     <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\OpeningType.cs" />
+    <Compile Include="Query\View.cs" />
     <Compile Include="Query\UpdatePanelTypeByCustomData.cs" />
     <Compile Include="Query\LowElevation.cs" />
     <Compile Include="Query\ViewType.cs" />
@@ -323,7 +305,6 @@
     <Compile Include="Query\WorksetIds.cs" />
     <Compile Include="Query\WorksetNames.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
       <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
@@ -337,6 +318,9 @@
       <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
       <Name>Revit_oM</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

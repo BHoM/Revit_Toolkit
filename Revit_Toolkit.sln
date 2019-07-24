@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 14 for Windows Desktop
+# Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter_Revit_UI", "Adapter_Revit_UI\Adapter_Revit_UI.csproj", "{C2BD93AF-8853-4685-8BD4-223055DE1CC6}"
@@ -11,12 +11,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine_Revit_UI", "Engine_Revit_UI\Engine_Revit_UI.csproj", "{4DFAF9C8-9770-4E5A-818D-EB4DAB665145}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Revit_UI", "Revit_UI", "{D694B0BE-1DBE-4B71-83A1-1EF279C0409C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revit_Test", "Revit_Test\Revit_Test.csproj", "{09699A82-1026-432C-A68F-DAD6F4565865}"
-	ProjectSection(ProjectDependencies) = postProject
-		{C2BD93AF-8853-4685-8BD4-223055DE1CC6} = {C2BD93AF-8853-4685-8BD4-223055DE1CC6}
-		{4DFAF9C8-9770-4E5A-818D-EB4DAB665145} = {4DFAF9C8-9770-4E5A-818D-EB4DAB665145}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revit_Adapter", "Revit_Adapter\Revit_Adapter.csproj", "{3EB6D37D-8720-495A-8FEB-E826F0E69AF8}"
 EndProject
@@ -50,14 +44,6 @@ Global
 		{4DFAF9C8-9770-4E5A-818D-EB4DAB665145}.Debug2019|Any CPU.Build.0 = Debug2019|Any CPU
 		{4DFAF9C8-9770-4E5A-818D-EB4DAB665145}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4DFAF9C8-9770-4E5A-818D-EB4DAB665145}.Release|Any CPU.Build.0 = Release|Any CPU
-		{09699A82-1026-432C-A68F-DAD6F4565865}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09699A82-1026-432C-A68F-DAD6F4565865}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09699A82-1026-432C-A68F-DAD6F4565865}.Debug2018|Any CPU.ActiveCfg = Debug2018|Any CPU
-		{09699A82-1026-432C-A68F-DAD6F4565865}.Debug2018|Any CPU.Build.0 = Debug2018|Any CPU
-		{09699A82-1026-432C-A68F-DAD6F4565865}.Debug2019|Any CPU.ActiveCfg = Debug2019|Any CPU
-		{09699A82-1026-432C-A68F-DAD6F4565865}.Debug2019|Any CPU.Build.0 = Debug2019|Any CPU
-		{09699A82-1026-432C-A68F-DAD6F4565865}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09699A82-1026-432C-A68F-DAD6F4565865}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3EB6D37D-8720-495A-8FEB-E826F0E69AF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3EB6D37D-8720-495A-8FEB-E826F0E69AF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EB6D37D-8720-495A-8FEB-E826F0E69AF8}.Debug2018|Any CPU.ActiveCfg = Debug|Any CPU

@@ -51,7 +51,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Creates DraftingInstance by given Family Name, Type Name, Location and View Name. Drafting Instance defines all view specific 2D elements")]
+        [Description("Creates DraftingInstance on specific view by properties and location. Drafting Instance defines all view specific 2D elements")]
         [Input("properties", "InstanceProperties of Instance")]
         [Input("location", "Location of DraftingObject on View")]
         [Input("viewName", "View assigned to DraftingInstance")]
@@ -68,6 +68,83 @@ namespace BH.Engine.Adapters.Revit
                 ViewName = viewName,
                 Location = location
             };
+
+            return aDraftingInstance;
+        }
+
+        /***************************************************/
+
+        [Description("Creates DraftingInstance on specific view by properties and location. Drafting Instance defines all view specific 2D elements")]
+        [Input("properties", "InstanceProperties of Instance")]
+        [Input("location", "Location of DraftingObject on View")]
+        [Input("viewName", "View assigned to DraftingInstance")]
+        [Output("DraftingInstance")]
+        public static DraftingInstance DraftingInstance(InstanceProperties properties, string viewName, ICurve location)
+        {
+            if (properties == null || string.IsNullOrWhiteSpace(viewName) || location == null)
+                return null;
+
+            DraftingInstance aDraftingInstance = new DraftingInstance()
+            {
+                Properties = properties,
+                Name = properties.Name,
+                ViewName = viewName,
+                Location = location
+            };
+
+            return aDraftingInstance;
+        }
+
+        /***************************************************/
+
+        [Description("Creates DraftingInstance. Drafting Instance defines all view specific 2D elements")]
+        [Input("location", "Location of DraftingObject on View")]
+        [Input("viewName", "View assigned to DraftingInstance")]
+        [Output("DraftingInstance")]
+        public static DraftingInstance DraftingInstance(string viewName, ICurve location)
+        {
+            if (string.IsNullOrWhiteSpace(viewName) || location == null)
+                return null;
+
+            InstanceProperties aInstanceProperties = new InstanceProperties();
+            aInstanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
+
+            DraftingInstance aDraftingInstance = new DraftingInstance()
+            {
+                Properties = aInstanceProperties,
+                Name = "Detail Lines",
+                ViewName = viewName,
+                Location = location
+            };
+            aDraftingInstance.CustomData.Add(Convert.CategoryName, "Lines");
+
+            return aDraftingInstance;
+        }
+
+        /***************************************************/
+
+        [Description("Creates DraftingInstance. Drafting Instance defines all view specific 2D elements")]
+        [Input("name", "InstanceProperties name")]
+        [Input("location", "Location of DraftingObject on View")]
+        [Input("viewName", "View assigned to DraftingInstance")]
+        [Output("DraftingInstance")]
+        public static DraftingInstance DraftingInstance(string name, string viewName, ICurve location)
+        {
+            if (string.IsNullOrWhiteSpace(viewName) || location == null)
+                return null;
+
+            InstanceProperties aInstanceProperties = new InstanceProperties();
+            aInstanceProperties.Name = name;
+            aInstanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
+
+            DraftingInstance aDraftingInstance = new DraftingInstance()
+            {
+                Properties = aInstanceProperties,
+                Name = "Detail Lines",
+                ViewName = viewName,
+                Location = location
+            };
+            aDraftingInstance.CustomData.Add(Convert.CategoryName, "Lines");
 
             return aDraftingInstance;
         }

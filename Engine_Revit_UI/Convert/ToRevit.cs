@@ -91,7 +91,13 @@ namespace BH.UI.Revit.Engine
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitElement(modelInstance, document, pushSettings);
+            switch (modelInstance.BuiltInCategory(document))
+            {
+                case BuiltInCategory.OST_Lines:
+                    return ToCurveElement(modelInstance, document, pushSettings);
+                default:
+                    return ToRevitElement(modelInstance, document, pushSettings);
+            }
         }
 
         /***************************************************/
@@ -100,7 +106,13 @@ namespace BH.UI.Revit.Engine
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitElement(draftingInstance, document, pushSettings);
+            switch (draftingInstance.BuiltInCategory(document))
+            {
+                case BuiltInCategory.OST_Lines:
+                    return ToCurveElement(draftingInstance, document, pushSettings);
+                default:
+                    return ToRevitElement(draftingInstance, document, pushSettings);
+            }
         }
 
         /***************************************************/
