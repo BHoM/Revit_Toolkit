@@ -88,8 +88,12 @@ namespace BH.UI.Revit.Engine
                 switch ((BuiltInCategory)element.Category.Id.IntegerValue)
                 {
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Windows:
+                        aResult.Add(typeof(oM.Environment.Elements.Panel));
+                        aResult.Add(typeof(oM.Physical.Elements.Window));
+                        return aResult;
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Doors:
                         aResult.Add(typeof(oM.Environment.Elements.Panel));
+                        aResult.Add(typeof(oM.Physical.Elements.Door));
                         return aResult;
                 }
             }
@@ -158,6 +162,7 @@ namespace BH.UI.Revit.Engine
                 aResult.Add(typeof(oM.Environment.Elements.Panel));
                 aResult.Add(typeof(oM.Structure.Elements.Panel));
                 aResult.Add(typeof(oM.Architecture.Elements.Wall));
+                aResult.Add(typeof(oM.Physical.Elements.Wall));
                 return aResult;
             }
 
@@ -172,6 +177,7 @@ namespace BH.UI.Revit.Engine
             {
                 aResult.Add(typeof(oM.Environment.Elements.Panel));
                 aResult.Add(typeof(oM.Architecture.Elements.Roof));
+                aResult.Add(typeof(oM.Physical.Elements.Roof));
                 return aResult;
             }
 
@@ -180,6 +186,7 @@ namespace BH.UI.Revit.Engine
                 aResult.Add(typeof(oM.Environment.Elements.Panel));
                 aResult.Add(typeof(oM.Structure.Elements.Panel));
                 aResult.Add(typeof(oM.Architecture.Elements.Floor));
+                aResult.Add(typeof(oM.Physical.Elements.Floor));
                 return aResult;
             }
 
