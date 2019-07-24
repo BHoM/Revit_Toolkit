@@ -57,6 +57,38 @@ namespace BH.UI.Revit.Engine
                 return aResult;
             }
 
+            if (type == typeof(oM.Physical.Elements.Wall))
+            {
+                aResult.Add(typeof(Wall));
+                return aResult;
+            }
+
+            if (type == typeof(oM.Physical.Elements.Floor))
+            {
+                aResult.Add(typeof(Floor));
+                return aResult;
+            }
+
+            if (type == typeof(oM.Physical.Elements.Roof))
+            {
+                aResult.Add(typeof(RoofBase));
+                return aResult;
+            }
+
+
+            if (type == typeof(oM.Physical.Elements.Window))
+            {
+                aResult.Add(typeof(FamilyInstance));
+                return aResult;
+            }
+
+
+            if (type == typeof(oM.Physical.Elements.Door))
+            {
+                aResult.Add(typeof(FamilyInstance));
+                return aResult;
+            }
+
             if (type == typeof(oM.Structure.Elements.Panel))
             {
                 aResult.Add(typeof(Floor));

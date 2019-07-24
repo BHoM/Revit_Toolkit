@@ -44,6 +44,26 @@ namespace BH.UI.Revit.Engine
 
             List<BuiltInCategory> aBuiltInCategoryList = new List<BuiltInCategory>();
 
+            if(type == typeof(BH.oM.Physical.Elements.Wall))
+            {
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Walls);
+            }
+            if (type == typeof(BH.oM.Physical.Elements.Floor))
+            {
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Floors);
+            }
+            if (type == typeof(BH.oM.Physical.Elements.Roof))
+            {
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Roofs);
+            }
+            if (type == typeof(BH.oM.Physical.Elements.Window))
+            {
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Windows);
+            }
+            if (type == typeof(BH.oM.Physical.Elements.Door))
+            {
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Doors);
+            }
             if (type == typeof(BH.oM.Physical.Elements.IFramingElement))
             {
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming);
