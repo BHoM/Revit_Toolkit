@@ -97,6 +97,7 @@ namespace BH.UI.Revit.Engine
             {
                 case Discipline.Structural:
                 case Discipline.Physical:
+                    //TODO: Split by Revit Category
                     return familyInstance.ToBHoMFramingElement(pullSettings);
                 case Discipline.Environmental:
                     return familyInstance.ToBHoMEnvironmentPanel(pullSettings);
