@@ -93,12 +93,39 @@ namespace BH.UI.Revit.Engine
         {
             familyInstance.CheckIfNullPull();
 
+            if (familyInstance == null)
+            {
+                familyInstance.NotConvertedWarning();
+                return null;
+            }
+
             switch (pullSettings.Discipline)
             {
                 case Discipline.Structural:
-                case Discipline.Physical:
-                    //TODO: Split by Revit Category
                     return familyInstance.ToBHoMFramingElement(pullSettings);
+                case Discipline.Physical:
+                    switch ((BuiltInCategory)familyInstance.Category.Id.IntegerValue)
+                    {
+                        case BuiltInCategory.OST_Windows:
+                            return familyInstance.ToBHoMWindow(pullSettings);
+                        case BuiltInCategory.OST_Doors:
+                            return familyInstance.ToBHoMDoor(pullSettings);
+                        case BuiltInCategory.OST_StructuralFraming:
+                        case BuiltInCategory.OST_StructuralColumns:
+                        case BuiltInCategory.OST_Columns:
+                        case BuiltInCategory.OST_VerticalBracing:
+                        case BuiltInCategory.OST_Truss:
+                        case BuiltInCategory.OST_StructuralTruss:
+                        case BuiltInCategory.OST_HorizontalBracing:
+                        case BuiltInCategory.OST_Purlin:
+                        case BuiltInCategory.OST_Joist:
+                        case BuiltInCategory.OST_Girder:
+                        case BuiltInCategory.OST_StructuralStiffener:
+                        case BuiltInCategory.OST_StructuralFramingOther:
+                            return familyInstance.ToBHoMFramingElement(pullSettings);
+
+                    }
+                    break;
                 case Discipline.Environmental:
                     return familyInstance.ToBHoMEnvironmentPanel(pullSettings);
             }
