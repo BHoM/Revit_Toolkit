@@ -100,14 +100,37 @@ namespace BH.UI.Revit.Engine
             List<oM.Geometry.Point> aPointList = new List<oM.Geometry.Point>();
             foreach (ICurve aICurve in aCurveList)
             {
-                ICurve aICurve_Temp = BH.Engine.Geometry.Modify.IProject(aICurve, aPlane);
+                ICurve aICurve_Temp = null;
+                try
+                {
+                    aICurve_Temp = BH.Engine.Geometry.Modify.IProject(aICurve, aPlane);
+                }
+                catch (System.Exception aException)
+                {
+                    //TODO: to be fixed in Geometry engine case when normal of arc is diferent to normal of a plane
+                    //aICurve_Temp = BH.Engine.Geometry.Modify.IProject(aICurve, aPlane);
+                }
 
                 if (aBoundingBox == null)
                     aBoundingBox = BH.Engine.Geometry.Query.IBounds(aICurve_Temp);
                 else
                     aBoundingBox += BH.Engine.Geometry.Query.IBounds(aICurve_Temp);
 
-                aPointList.AddRange(aICurve_Temp.IControlPoints());
+
+                //TODO: Issue with projecting to proper type - workaround solution: recognise object and call ControlPoints instead IControlPoints
+                if (aICurve_Temp is oM.Geometry.Arc)
+                {
+                    aPointList.AddRange(((oM.Geometry.Arc)aICurve_Temp).ControlPoints());
+                }
+                else if (aICurve_Temp is Polyline)
+                {
+                    aPointList.AddRange(((Polyline)aICurve_Temp).ControlPoints());
+                }
+                else
+                {
+                    aPointList.AddRange(aICurve_Temp.IControlPoints());
+                }
+
             }
 
             XYZ aHandOrientation = familyInstance.HandOrientation;
