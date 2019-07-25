@@ -229,7 +229,7 @@ namespace BH.UI.Revit.Engine
             else
                 aPanel.Type = oM.Environment.Elements.PanelType.Undefined;
 
-            aPanel.Construction = Query.Construction(aElementType as dynamic, pullSettings);
+            aPanel.Construction = Convert.ToBHoMConstruction(aElementType as dynamic, pullSettings);
 
             //Set some custom data properties
             aPanel = Modify.SetIdentifiers(aPanel, aElement) as oM.Environment.Elements.Panel;
