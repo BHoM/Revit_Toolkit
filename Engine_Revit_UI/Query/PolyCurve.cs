@@ -111,6 +111,9 @@ namespace BH.UI.Revit.Engine
                     //aICurve_Temp = BH.Engine.Geometry.Modify.IProject(aICurve, aPlane);
                 }
 
+                if (aICurve_Temp == null)
+                    continue;
+
                 if (aBoundingBox == null)
                     aBoundingBox = BH.Engine.Geometry.Query.IBounds(aICurve_Temp);
                 else
