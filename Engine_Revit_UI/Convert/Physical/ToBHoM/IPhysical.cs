@@ -56,12 +56,20 @@ namespace BH.UI.Revit.Engine
 
                 oM.Physical.IPhysical aPhysical = null;
 
+                //TODO: Create method in Geometry Engine shall be used however IsClosed method returns false for some of the PolyCurves pulled from Revit
+                //PlanarSurface aPlanarSurface = BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve, aPolyCurveList_Inner.ConvertAll(x => (ICurve)x)
+                PlanarSurface aPlanarSurface = new PlanarSurface()
+                {
+                    ExternalBoundary = aPolyCurve,
+                    InternalBoundaries = aPolyCurveList_Inner.ConvertAll(x => (ICurve)x)
+                };
+
                 if (hostObject is Wall)
-                    aPhysical = BH.Engine.Physical.Create.Wall(BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve, aPolyCurveList_Inner.ConvertAll(x => (ICurve)x)), aConstruction);
+                    aPhysical = BH.Engine.Physical.Create.Wall(aPlanarSurface, aConstruction);
                 else if(hostObject is Floor)
-                    aPhysical = BH.Engine.Physical.Create.Floor(BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve, aPolyCurveList_Inner.ConvertAll(x => (ICurve)x)), aConstruction);
+                    aPhysical = BH.Engine.Physical.Create.Floor(aPlanarSurface, aConstruction);
                 else if (hostObject is RoofBase)
-                    aPhysical = BH.Engine.Physical.Create.Roof(BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve, aPolyCurveList_Inner.ConvertAll(x => (ICurve)x)), aConstruction);
+                    aPhysical = BH.Engine.Physical.Create.Roof(aPlanarSurface, aConstruction);
 
                 if (aPhysical == null)
                     continue;
