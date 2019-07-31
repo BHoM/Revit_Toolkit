@@ -42,6 +42,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("object2DProperties", "Object2DProperties")]
         [Input("edges", "External edges of Floor")]
         [Output("Floor")]
+        [Deprecated("2.3", "Architecture Floor has been replaced by BH.oM.Physical.Elements.Floor as part of migration to combined physical namespace")]
         public static Floor Floor(Object2DProperties object2DProperties, ICurve edges, IEnumerable<ICurve> internalEdges = null)
         {
             if (object2DProperties == null || edges == null)
