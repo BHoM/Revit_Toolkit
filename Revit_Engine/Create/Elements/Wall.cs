@@ -42,6 +42,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("locationCurve", "Location curve of the wall (bottom edge)")]
         [Input("height", "Wall height")]
         [Output("Wall")]
+        [Deprecated("2.3", "Architecture Wall has been replaced by BH.oM.Physical.Elements.Wall as part of migration to combined physical namespace")]
         public static Wall Wall(Object2DProperties object2DProperties, ICurve locationCurve, double height)
         {
             if (object2DProperties == null || locationCurve == null || height <= 0)
@@ -75,6 +76,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("object2DProperties", "Object2DProperties")]
         [Input("edges", "Edges of Wall (profile)")]
         [Output("Wall")]
+        [Deprecated("2.3", "Architecture Wall has been replaced by BH.oM.Physical.Elements.Wall as part of migration to combined physical namespace")]
         public static Wall Wall(Object2DProperties object2DProperties, ICurve edges, IEnumerable<ICurve> internalEdges = null)
         {
             if (object2DProperties == null || edges == null)

@@ -42,6 +42,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("object2DProperties", "Object2DProperties")]
         [Input("edges", "External edges of Roof")]
         [Output("Roof")]
+        [Deprecated("2.3", "Architecture Roof has been replaced by BH.oM.Physical.Elements.Roof as part of migration to combined physical namespace")]
         public static Roof Roof(Object2DProperties object2DProperties, ICurve edges, IEnumerable<ICurve> internalEdges = null)
         {
             if (object2DProperties == null || edges == null)
