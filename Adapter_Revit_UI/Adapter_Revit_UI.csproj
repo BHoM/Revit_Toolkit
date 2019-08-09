@@ -56,6 +56,28 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AssemblyName>Adapter_Revit_UI_2019</AssemblyName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2018|AnyCPU'">
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;REVIT2018</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <AssemblyName>Adapter_Revit_UI_2018</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2019|AnyCPU'">
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;REVIT2019</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AssemblyName>Adapter_Revit_UI_2019</AssemblyName>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytical_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

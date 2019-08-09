@@ -67,6 +67,28 @@
     <StartProgram>C:\Program Files\Autodesk\Revit 2019\Revit.exe</StartProgram>
     <DebugEngines>{351668CC-8477-4fbf-BFE3-5F1006E4DB1F}</DebugEngines>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2018|AnyCPU'">
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;REVIT2018</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <AssemblyName>Revit_UI_2018</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2019|AnyCPU'">
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;REVIT2019</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AssemblyName>Revit_UI_2019</AssemblyName>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BHoM">
       <SpecificVersion>False</SpecificVersion>
@@ -179,6 +201,14 @@
 	call "$(TargetDir)UI_PostBuild.exe" ..\..\ "$(AppData)\BHoM\Assemblies"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2019|AnyCPU'">
+    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2019.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019" /Y /I /E
+	call "$(TargetDir)UI_PostBuild.exe" ..\..\ "$(AppData)\BHoM\Assemblies"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2018|AnyCPU'">
+    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2018.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018" /Y /I /E
+	call "$(TargetDir)UI_PostBuild.exe" ..\..\ "$(AppData)\BHoM\Assemblies"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2019|AnyCPU'">
     <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2019.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019" /Y /I /E
 	call "$(TargetDir)UI_PostBuild.exe" ..\..\ "$(AppData)\BHoM\Assemblies"</PostBuildEvent>
   </PropertyGroup>
