@@ -425,6 +425,8 @@ namespace BH.UI.Revit.Engine
             {
                 case Discipline.Environmental:
                     return spatialElement.ToBHoMSpace(pullSettings);
+                case Discipline.Architecture:
+                    return spatialElement.ToBHoMRoom(pullSettings);
             }
 
             spatialElement.NotConvertedWarning();
