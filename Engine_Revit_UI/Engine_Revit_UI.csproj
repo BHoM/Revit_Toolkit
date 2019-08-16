@@ -172,6 +172,7 @@
   <ItemGroup>
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Level.cs" />
+    <Compile Include="Convert\Architecture\ToBHoM\Room.cs" />
     <Compile Include="Convert\Geometry\ToRevit\PolyLine.cs" />
     <Compile Include="Convert\Physical\ToBHoM\Door.cs" />
     <Compile Include="Convert\Physical\ToBHoM\FramingElement.cs" />
