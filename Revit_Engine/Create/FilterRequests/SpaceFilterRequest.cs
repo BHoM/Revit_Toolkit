@@ -21,12 +21,12 @@
  */
 
 using System.ComponentModel;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Data.Requests;
 using BH.oM.Environment.Elements;
 using BH.oM.Reflection.Attributes;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Engine.Revit
 {
     public static partial class Create
     {

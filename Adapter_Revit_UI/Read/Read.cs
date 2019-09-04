@@ -76,14 +76,14 @@ namespace BH.UI.Revit.Adapter
                 FilterRequest aFilterRequest_ElementIds = null;
 
                 if (aUniqueIdList.Count > 0)
-                    aFilterRequest_UniqueIds = BH.Engine.Adapters.Revit.Create.SelectionFilterRequest(aUniqueIdList);
+                    aFilterRequest_UniqueIds = BH.Engine.Revit.Create.SelectionFilterRequest(aUniqueIdList);
 
                 if (aElementIdList.Count > 0)
-                    aFilterRequest_ElementIds = BH.Engine.Adapters.Revit.Create.SelectionFilterRequest(aElementIdList);
+                    aFilterRequest_ElementIds = BH.Engine.Revit.Create.SelectionFilterRequest(aElementIdList);
 
                 if (aFilterRequest_UniqueIds != null && aFilterRequest_ElementIds != null)
                 {
-                    aFilterRequestList.Add(BH.Engine.Adapters.Revit.Create.LogicalOrFilterRequest(new List<FilterRequest>() { aFilterRequest_ElementIds, aFilterRequest_UniqueIds }));
+                    aFilterRequestList.Add(BH.Engine.Revit.Create.LogicalOrFilterRequest(new List<FilterRequest>() { aFilterRequest_ElementIds, aFilterRequest_UniqueIds }));
                 }
                 else
                 {
@@ -109,7 +109,7 @@ namespace BH.UI.Revit.Adapter
             if (aFilterRequestList.Count == 1)
                 aResult = Read(aFilterRequestList.First());
             else
-                aResult = Read(BH.Engine.Adapters.Revit.Create.LogicalAndFilterRequest(aFilterRequestList));
+                aResult = Read(BH.Engine.Revit.Create.LogicalAndFilterRequest(aFilterRequestList));
 
             return aResult;
         }

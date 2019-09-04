@@ -26,8 +26,9 @@ using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
+using BH.Engine.Adapters.Revit;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Engine.Revit
 {
     public static partial class Create
     {
@@ -44,7 +45,7 @@ namespace BH.Engine.Adapters.Revit
             aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Parameter;
             aFilterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterRequest;
             aFilterRequest.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
-            aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = Create.TextComparisonRule(textComparisonType);
+            aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = BH.Engine.Adapters.Revit.Create.TextComparisonRule(textComparisonType);
             aFilterRequest.Equalities[Convert.FilterRequest.Value] = value;
             return aFilterRequest;
         }
@@ -62,7 +63,7 @@ namespace BH.Engine.Adapters.Revit
             aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Parameter;
             aFilterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterRequest;
             aFilterRequest.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
-            aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = Create.NumberComparisonRule(numberComparisonType, 10);
+            aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = BH.Engine.Adapters.Revit.Create.NumberComparisonRule(numberComparisonType, 10);
             aFilterRequest.Equalities[Convert.FilterRequest.Value] = value;
             return aFilterRequest;
         }
@@ -80,7 +81,7 @@ namespace BH.Engine.Adapters.Revit
             aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Parameter;
             aFilterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterRequest;
             aFilterRequest.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
-            aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = Create.ParameterExistsComparisonRule(!parameterExists);
+            aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = BH.Engine.Adapters.Revit.Create.ParameterExistsComparisonRule(!parameterExists);
             return aFilterRequest;
         }
     }
