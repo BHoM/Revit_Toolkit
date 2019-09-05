@@ -26,7 +26,7 @@ using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Engine.Revit
 {
     public static partial class Query
     {
@@ -44,8 +44,8 @@ namespace BH.Engine.Adapters.Revit
 
             IBHoMObject aBHoMObject = bHoMObject.GetShallowClone();
 
-            aBHoMObject.CustomData.Remove(Convert.ElementId);
-            aBHoMObject.CustomData.Remove(Convert.AdapterId);
+            aBHoMObject.CustomData.Remove(BH.Engine.Adapters.Revit.Convert.ElementId);
+            aBHoMObject.CustomData.Remove(BH.Engine.Adapters.Revit.Convert.AdapterId);
 
 
             return aBHoMObject;
@@ -53,28 +53,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Duplicates FilterRequest.")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("FilterRequest")]
-        public static FilterRequest Duplicate(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return null;
-
-            FilterRequest aFilterRequest = new FilterRequest();
-
-            if (filterRequest.Equalities != null)
-                aFilterRequest.Equalities = new Dictionary<string, object>(filterRequest.Equalities);
-            else
-                aFilterRequest.Equalities = new Dictionary<string, object>();
-
-            aFilterRequest.Tag = filterRequest.Tag;
-
-            aFilterRequest.Type = filterRequest.Type;
-
-
-            return aFilterRequest;
-        }
+     
 
         /***************************************************/
     }

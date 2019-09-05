@@ -25,7 +25,7 @@ using System.ComponentModel;
 using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Engine.Revit
 {
     public static partial class Query
     {
@@ -41,10 +41,10 @@ namespace BH.Engine.Adapters.Revit
             if (filterRequest == null)
                 return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.RelatedFilterRequest))
+            if (!filterRequest.Equalities.ContainsKey(BH.Engine.Adapters.Revit.Convert.FilterRequest.RelatedFilterRequest))
                 return null;
 
-            return filterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] as FilterRequest;
+            return filterRequest.Equalities[BH.Engine.Adapters.Revit.Convert.FilterRequest.RelatedFilterRequest] as FilterRequest;
         }
 
         /***************************************************/

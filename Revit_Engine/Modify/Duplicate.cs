@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -20,36 +20,38 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
-using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Base;
 using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
-using BH.Engine.Revit;
+using System.Collections.Generic;
+using System.ComponentModel;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Engine.Revit
 {
     public static partial class Modify
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-
-        [Description("Sets Default Discipline for FilterRequest.")]
+        [Description("Duplicates FilterRequest.")]
         [Input("filterRequest", "FilterRequest")]
-        [Input("discipline", "Discipline to be set")]
         [Output("FilterRequest")]
-        public static FilterRequest SetDefaultDiscipline(this FilterRequest filterRequest, Discipline discipline)
+        public static FilterRequest Duplicate(this FilterRequest filterRequest)
         {
             if (filterRequest == null)
                 return null;
 
-            FilterRequest aFilterRequest = filterRequest.Duplicate();
+            FilterRequest aFilterRequest = new FilterRequest();
 
-            if (aFilterRequest.Equalities.ContainsKey(Convert.FilterRequest.DefaultDiscipline))
-                aFilterRequest.Equalities[Convert.FilterRequest.DefaultDiscipline] = discipline;
+            if (filterRequest.Equalities != null)
+                aFilterRequest.Equalities = new Dictionary<string, object>(filterRequest.Equalities);
             else
-                aFilterRequest.Equalities.Add(Convert.FilterRequest.DefaultDiscipline, discipline);
+                aFilterRequest.Equalities = new Dictionary<string, object>();
+
+            aFilterRequest.Tag = filterRequest.Tag;
+
+            aFilterRequest.Type = filterRequest.Type;
+
 
             return aFilterRequest;
         }

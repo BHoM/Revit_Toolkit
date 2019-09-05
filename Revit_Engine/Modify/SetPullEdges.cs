@@ -24,6 +24,7 @@ using System.ComponentModel;
 
 using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
+using BH.Engine.Revit;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -43,7 +44,7 @@ namespace BH.Engine.Adapters.Revit
             if (filterRequest == null)
                 return null;
 
-            FilterRequest aFilterRequest = Query.Duplicate(filterRequest);
+            FilterRequest aFilterRequest = filterRequest.Duplicate();
 
             aFilterRequest.Equalities[Convert.FilterRequest.PullEdges] = pullEdges;
             aFilterRequest.Equalities[Convert.FilterRequest.IncludeNonVisibleObjects] = includeNonVisibleObjects;
