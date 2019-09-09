@@ -36,7 +36,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public List<PolyCurve> Profiles(this HostObject hostObject, PullSettings pullSettings = null)
+        public static List<PolyCurve> Profiles(this HostObject hostObject, PullSettings pullSettings = null)
         {
             if (hostObject == null || hostObject.Document == null)
                 return null;
@@ -44,7 +44,7 @@ namespace BH.UI.Revit.Engine
             if (hostObject is Floor)
                 return Profiles_Floor((Floor)hostObject, pullSettings);
 
-            if(hostObject is RoofBase)
+            if (hostObject is RoofBase)
                 return Profiles_RoofBase((RoofBase)hostObject, pullSettings);
 
             Document aDocument = hostObject.Document;
@@ -103,6 +103,33 @@ namespace BH.UI.Revit.Engine
             return aResult;
         }
 
+        public static List<PolyCurve> Profiles(this SpatialElement spatialElement, PullSettings pullSettings = null)
+        {
+            if (spatialElement == null)
+                return null;
+            IList<IList<BoundarySegment>> boundarySegments = spatialElement.GetBoundarySegments(new SpatialElementBoundaryOptions());
+            if (boundarySegments == null)
+                return null;
+
+            List<PolyCurve> aResults = new List<PolyCurve>();
+
+            foreach (IList<BoundarySegment> boundarySegments_List in boundarySegments)
+            {
+                if (boundarySegments_List == null)
+                    continue;
+                List<BH.oM.Geometry.ICurve> aCurveList = new List<ICurve>();
+                foreach (BoundarySegment aboundarySegment in boundarySegments_List)
+                {
+                    aCurveList.Add(Convert.ToBHoM(aboundarySegment.GetCurve(), pullSettings));
+                }
+                aResults.Add(BH.Engine.Geometry.Create.PolyCurve(aCurveList));
+            }
+
+            return aResults;
+        }
+
+        /***************************************************/
+
         /***************************************************/
         /**** Private Methods                           ****/
         /***************************************************/
@@ -150,7 +177,7 @@ namespace BH.UI.Revit.Engine
                             aCurve_Max = BH.Engine.Geometry.Modify.IFlip(aCurve_Max);
                             aPoint_2 = aPoint_3;
                             aPoint_3 = aPoint_Temp;
-                        }                            
+                        }
 
                         oM.Geometry.Line aLine_1 = BH.Engine.Geometry.Create.Line(aPoint_1, aPoint_2);
                         oM.Geometry.Line aLine_2 = BH.Engine.Geometry.Create.Line(aPoint_3, BH.Engine.Geometry.Query.IStartPoint(aCurve_Min));

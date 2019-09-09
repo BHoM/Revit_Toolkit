@@ -123,6 +123,12 @@ namespace BH.UI.Revit.Engine
                 return aResult;
             }
 
+            if (type == typeof(oM.Architecture.Elements.Room))
+            {
+                aResult.Add(typeof(SpatialElement));
+                return aResult;
+            }
+
             if (type == typeof(oM.Architecture.Elements.Grid))
             {
                 aResult.Add(typeof(Grid));
