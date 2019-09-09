@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -21,13 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Analysis;
 
-using BH.Engine.Environment;
-using BH.oM.Architecture.Elements;
+using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Environment.Fragments;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -37,15 +34,29 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static Room ToBHoMRoom(this SpatialElement spatialElement, PullSettings pullSettings = null)
+        internal static BHoMObject ToBHoMRoom(this SpatialElement spatialElement, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BH.oM.Geometry.ICurve> crvs = spatialElement.Curves(new Options());
+            oM.Architecture.Elements.Room aRoom = pullSettings.FindRefObject<oM.Architecture.Elements.Room>(spatialElement.Id.IntegerValue);
+            if (aRoom != null)
+                return aRoom;
 
-            BH.oM.Geometry.PolyCurve pCurve = BH.Engine.Geometry.Create.PolyCurve(crvs);
+            aRoom = new oM.Architecture.Elements.Room()
+            {
+                Perimeter = Query.Profiles(spatialElement, pullSettings).First()
+            };
+            aRoom.Name = spatialElement.Name;
 
-            return new Room { Perimeter = pCurve, };
+            aRoom = Modify.SetIdentifiers(aRoom, spatialElement) as oM.Architecture.Elements.Room;
+            if (pullSettings.CopyCustomData)
+                aRoom = Modify.SetCustomData(aRoom, spatialElement, pullSettings.ConvertUnits) as oM.Architecture.Elements.Room;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aRoom);
+
+            return aRoom;
         }
+
+        /***************************************************/
     }
 }

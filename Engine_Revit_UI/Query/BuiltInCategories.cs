@@ -44,7 +44,17 @@ namespace BH.UI.Revit.Engine
 
             List<BuiltInCategory> aBuiltInCategoryList = new List<BuiltInCategory>();
 
-            if(type == typeof(BH.oM.Physical.Elements.Wall))
+            if (type == typeof(BH.oM.Architecture.Elements.Room))
+            {
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Rooms);
+            }
+
+            if (type == typeof(BH.oM.Environment.Elements.Space))
+            {
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_MEPSpaces);
+            }
+
+            if (type == typeof(BH.oM.Physical.Elements.Wall))
             {
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Walls);
             }

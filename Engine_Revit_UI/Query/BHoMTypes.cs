@@ -239,6 +239,18 @@ namespace BH.UI.Revit.Engine
                 return aResult;
             }
 
+            if (element is Autodesk.Revit.DB.Mechanical.Space)
+            {
+                aResult.Add(typeof(oM.Environment.Elements.Space));
+                return aResult;
+            }
+
+            if (element is Autodesk.Revit.DB.Architecture.Room)
+            {
+                aResult.Add(typeof(oM.Architecture.Elements.Room));
+                return aResult;
+            }
+                        
             return null; //TODO: shouldn't it be aResult?
         }
 
