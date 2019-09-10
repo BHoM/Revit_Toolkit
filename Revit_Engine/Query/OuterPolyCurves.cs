@@ -38,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns the outer PolyCurves from list. QUICK CHECK (BOUNDING BOX)")]
+        [Description("Returns the outer PolyCurves from list. QUICK CHECK (Centroid)")]
         [Input("polyCurves", "PolyCurves")]
         [Output("PolyCurves")]
         public static List<PolyCurve> OuterPolyCurves(this IEnumerable<PolyCurve> polyCurves)
@@ -49,28 +49,33 @@ namespace BH.Engine.Adapters.Revit
             if (polyCurves.Count() == 1)
                 return new List<PolyCurve>() { polyCurves.ElementAt(0) };
 
-            List<Tuple<BoundingBox, List<int>>> aTupleList = polyCurves.ToList().ConvertAll(x => new Tuple<BoundingBox, List<int>>(Geometry.Query.Bounds(x), new List<int>()));
-            for (int i = 0; i < aTupleList.Count; i++)
+            List<PolyCurve> aResult = new List<PolyCurve>();
+
+            List<PolyCurve> aPolyCurveList = polyCurves.ToList();
+            aPolyCurveList.Sort((x, y) => Geometry.Query.Area(x).CompareTo(Geometry.Query.Area(x)));
+
+            while (aPolyCurveList.Count > 0)
             {
-                BoundingBox aBoundingBox_1 = aTupleList[i].Item1;
-                for (int j = i + 1; j < aTupleList.Count; j++)
+                PolyCurve aPolyCurve = aPolyCurveList[0];
+
+                Point aPoint = Geometry.Query.Centroid(aPolyCurve);
+
+                bool aExternal = true;
+
+                for (int i = 1; i < aPolyCurveList.Count; i++)
                 {
-                    BoundingBox aBoundingBox_2 = aTupleList[j].Item1;
-
-                    if (Geometry.Query.IsContaining(aBoundingBox_2, aBoundingBox_1))
-                        aTupleList[j].Item2.Add(i);
-                    else if (Geometry.Query.IsContaining(aBoundingBox_1, aBoundingBox_2))
-                        aTupleList[i].Item2.Add(j);
+                    if (Geometry.Query.IsContaining(aPolyCurveList[i], new List<Point>() { aPoint }))
+                    {
+                        aExternal = false;
+                        break;
+                    }
                 }
-            }
 
-            List<PolyCurve> aPolyCurveList = new List<PolyCurve>();
-            for (int i = 0; i < aTupleList.Count; i++)
-            {
-                if (aTupleList[i].Item2.Count > 0)
-                    aPolyCurveList.Add(polyCurves.ElementAt(i));
-            }
+                if (aExternal)
+                    aResult.Add(aPolyCurve);
 
+                aPolyCurveList.RemoveAt(0);
+            }
 
             return aPolyCurveList;
         }
