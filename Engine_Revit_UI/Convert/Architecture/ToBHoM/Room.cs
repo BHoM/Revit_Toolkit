@@ -48,6 +48,15 @@ namespace BH.UI.Revit.Engine
             };
             aRoom.Name = spatialElement.Name;
 
+            //Set custom data
+            aRoom = Modify.SetIdentifiers(aRoom, spatialElement) as oM.Architecture.Elements.Room;
+            if (pullSettings.CopyCustomData)
+                aRoom = Modify.SetCustomData(aRoom, spatialElement, pullSettings.ConvertUnits) as oM.Architecture.Elements.Room;
+
+            //Set location
+            if (spatialElement.Location != null && spatialElement.Location is LocationPoint)
+                aRoom.Location = ((LocationPoint)spatialElement.Location).ToBHoM(pullSettings);
+
             aRoom = Modify.SetIdentifiers(aRoom, spatialElement) as oM.Architecture.Elements.Room;
             if (pullSettings.CopyCustomData)
                 aRoom = Modify.SetCustomData(aRoom, spatialElement, pullSettings.ConvertUnits) as oM.Architecture.Elements.Room;
