@@ -40,18 +40,18 @@ namespace BH.UI.Revit.Engine
             pullSettings = pullSettings.DefaultIfNull();
 
             SketchPlane aSketchPlane = sketch.SketchPlane;
-            oM.Geometry.CoordinateSystem.Cartesian aCartesian = ToBHoM(aSketchPlane.GetPlane(), pullSettings);
+            //oM.Geometry.CoordinateSystem.Cartesian aCartesian = ToBHoM(aSketchPlane.GetPlane(), pullSettings);
 
             Location aLocation = sketch.Location;
 
-            Vector aVector = BH.Engine.Geometry.Create.Vector(aCartesian.Origin);
+            //Vector aVector = BH.Engine.Geometry.Create.Vector(aCartesian.Origin);
 
             List<PolyCurve> aResult = new List<PolyCurve>();
             foreach (CurveArray aCurveArray in sketch.Profile)
             {
                 PolyCurve aPolyCurve = BH.Engine.Geometry.Create.PolyCurve(ToBHoM(aCurveArray, pullSettings));
 
-                aPolyCurve = BH.Engine.Geometry.Modify.Translate(aPolyCurve, aVector);
+               //aPolyCurve = BH.Engine.Geometry.Modify.Translate(aPolyCurve, -aVector);
 
                 aResult.Add(aPolyCurve);
             }
