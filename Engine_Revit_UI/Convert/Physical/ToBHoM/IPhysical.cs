@@ -24,6 +24,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -47,12 +48,36 @@ namespace BH.UI.Revit.Engine
 
             List<PolyCurve> aPolyCurveList = Query.Profiles(hostObject, pullSettings);
 
-            List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
+            List<PolyCurve> aPolyCurveList_Outer = null;
+            try
+            {
+                aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
+            }
+            catch(Exception aException)
+            {
+                aPolyCurveList_Outer = aPolyCurveList;
+            }
+
+            if (aPolyCurveList_Outer == null)
+                return null;
+            
             aPhysicalList = new List<oM.Physical.IPhysical>();
 
             foreach(PolyCurve aPolyCurve in aPolyCurveList_Outer)
             {
-                List<PolyCurve> aPolyCurveList_Inner = BH.Engine.Adapters.Revit.Query.InnerPolyCurves(aPolyCurve, aPolyCurveList);
+                List<PolyCurve> aPolyCurveList_Inner = null;
+                try
+                {
+                    aPolyCurveList_Inner = BH.Engine.Adapters.Revit.Query.InnerPolyCurves(aPolyCurve, aPolyCurveList);
+                }
+                catch(Exception aException)
+                {
+
+                }
+
+                List<ICurve> aICurveList = new List<ICurve>();
+                if (aPolyCurveList_Inner != null && aPolyCurveList_Inner.Count > 0)
+                    aICurveList = aPolyCurveList_Inner.ConvertAll(x => (ICurve)x);
 
                 oM.Physical.IPhysical aPhysical = null;
 
@@ -61,7 +86,7 @@ namespace BH.UI.Revit.Engine
                 PlanarSurface aPlanarSurface = new PlanarSurface()
                 {
                     ExternalBoundary = aPolyCurve,
-                    InternalBoundaries = aPolyCurveList_Inner.ConvertAll(x => (ICurve)x)
+                    InternalBoundaries = aICurveList
                 };
 
                 if (hostObject is Wall)
