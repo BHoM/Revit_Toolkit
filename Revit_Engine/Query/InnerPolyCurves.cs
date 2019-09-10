@@ -49,6 +49,7 @@ namespace BH.Engine.Adapters.Revit
 
             BoundingBox aBoundingBox_Main = Geometry.Query.Bounds(polyCurve);
 
+
             List<PolyCurve> aResult = new List<PolyCurve>();
             foreach (PolyCurve aPolyCurve in polyCurves)
             {
@@ -58,6 +59,10 @@ namespace BH.Engine.Adapters.Revit
                     continue;
 
                 if (!Geometry.Query.IsContaining(aBoundingBox_Main, aBoundingBox))
+                    continue;
+
+                Point aPoint_Centroid = Geometry.Query.Centroid(aPolyCurve);
+                if (!Geometry.Query.IsContaining(polyCurve, new List<Point>() { aPoint_Centroid }))
                     continue;
 
                 aResult.Add(aPolyCurve);

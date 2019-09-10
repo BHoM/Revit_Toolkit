@@ -75,8 +75,12 @@ namespace BH.UI.Revit.Engine
 
                 };
             }
-            
-            return null;
+
+            IList<XYZ> aXYZs = curve.Tessellate();
+            if (aXYZs == null || aXYZs.Count < 2)
+                return null;
+
+            return BH.Engine.Geometry.Create.Polyline(aXYZs.ToList().ConvertAll(x => ToBHoM(x, pullSettings)));
         }
 
         /***************************************************/

@@ -48,10 +48,14 @@ namespace BH.UI.Revit.Engine
                 List<ICurve> aCurveList = new List<ICurve>();
                 foreach (Curve aCurve in aCurveLoop)
                 {
+                    ICurve aICurve = null;
+
                     if (transform != null)
-                        aCurveList.Add(Convert.ToBHoM(aCurve.CreateTransformed(transform), pullSettings));
+                        aICurve = Convert.ToBHoM(aCurve.CreateTransformed(transform), pullSettings);
                     else
-                        aCurveList.Add(Convert.ToBHoM(aCurve, pullSettings));
+                        aICurve = Convert.ToBHoM(aCurve, pullSettings);
+
+                    aCurveList.Add(aICurve);
                 }
                 aResult.Add(Create.PolyCurve(aCurveList));
             }

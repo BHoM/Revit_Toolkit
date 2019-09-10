@@ -52,16 +52,18 @@ namespace BH.Engine.Adapters.Revit
             List<PolyCurve> aResult = new List<PolyCurve>();
 
             List<PolyCurve> aPolyCurveList = polyCurves.ToList();
+
+           // aPolyCurveList.RemoveAll(x => Geometry.Query.PointInRegion(x) == null || !Geometry.Query.IsClosed(x));
+
             aPolyCurveList.Sort((x, y) => Geometry.Query.Area(x).CompareTo(Geometry.Query.Area(x)));
 
             while (aPolyCurveList.Count > 0)
             {
                 PolyCurve aPolyCurve = aPolyCurveList[0];
 
-                Point aPoint = Geometry.Query.Centroid(aPolyCurve);
-
                 bool aExternal = true;
 
+                Point aPoint = Geometry.Query.PointInRegion(aPolyCurve);
                 for (int i = 1; i < aPolyCurveList.Count; i++)
                 {
                     if (Geometry.Query.IsContaining(aPolyCurveList[i], new List<Point>() { aPoint }))
@@ -77,7 +79,7 @@ namespace BH.Engine.Adapters.Revit
                 aPolyCurveList.RemoveAt(0);
             }
 
-            return aPolyCurveList;
+            return aResult;
         }
 
         /***************************************************/
