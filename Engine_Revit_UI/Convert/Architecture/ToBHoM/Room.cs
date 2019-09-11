@@ -25,6 +25,9 @@ using Autodesk.Revit.DB;
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
 using System.Linq;
+using BH.oM.Environment.Fragments;
+using BH.Engine.Environment;
+using BH.oM.Environment.Elements;
 
 namespace BH.UI.Revit.Engine
 {
@@ -56,6 +59,13 @@ namespace BH.UI.Revit.Engine
             //Set location
             if (spatialElement.Location != null && spatialElement.Location is LocationPoint)
                 aRoom.Location = ((LocationPoint)spatialElement.Location).ToBHoM(pullSettings);
+
+            //Set ExtendedProperties
+            OriginContextFragment aOriginContextFragment = new OriginContextFragment();
+            aOriginContextFragment.ElementID = spatialElement.Id.IntegerValue.ToString();
+            aOriginContextFragment.TypeName = Query.Name(spatialElement);
+            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, spatialElement) as OriginContextFragment;
+            aRoom.Fragments.Add(aOriginContextFragment);
 
             aRoom = Modify.SetIdentifiers(aRoom, spatialElement) as oM.Architecture.Elements.Room;
             if (pullSettings.CopyCustomData)

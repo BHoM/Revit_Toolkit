@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Physical.Elements;
-
+using BH.oM.Environment.Fragments;
 using BH.oM.Geometry;
 
 namespace BH.UI.Revit.Engine
@@ -50,6 +50,15 @@ namespace BH.UI.Revit.Engine
                 Location = aPlanarSurface
 
             };
+
+            ElementType aElementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
+            //Set ExtendedProperties
+            OriginContextFragment aOriginContextFragment = new OriginContextFragment();
+            aOriginContextFragment.ElementID = familyInstance.Id.IntegerValue.ToString();
+            aOriginContextFragment.TypeName = Query.FamilyTypeFullName(familyInstance);
+            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, familyInstance) as OriginContextFragment;
+            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aElementType) as OriginContextFragment;
+            aDoor.Fragments.Add(aOriginContextFragment);
 
             aDoor = Modify.SetIdentifiers(aDoor, familyInstance) as Door;
             if (pullSettings.CopyCustomData)

@@ -26,6 +26,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
+using BH.oM.Environment.Fragments;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -90,7 +91,22 @@ namespace BH.UI.Revit.Engine
                 };
 
                 if (hostObject is Wall)
+                {
                     aPhysical = BH.Engine.Physical.Create.Wall(aPlanarSurface, aConstruction);
+
+                    Wall aWall = (Wall)hostObject;
+                    CurtainGrid aCurtainGrid = aWall.CurtainGrid;
+                    if(aCurtainGrid != null)
+                    {
+                        foreach(ElementId aElementId in aCurtainGrid.GetPanelIds())
+                        {
+                            Panel aPanel = aWall.Document.GetElement(aElementId) as Panel;
+                            if (aPanel == null)
+                                continue;
+                        }
+                    }
+                    
+                }   
                 else if(hostObject is Floor)
                     aPhysical = BH.Engine.Physical.Create.Floor(aPlanarSurface, aConstruction);
                 else if (hostObject is RoofBase)
@@ -100,6 +116,15 @@ namespace BH.UI.Revit.Engine
                     continue;
 
                 aPhysical.Name = Query.FamilyTypeFullName(hostObject);
+
+                ElementType aElementType = hostObject.Document.GetElement(hostObject.GetTypeId()) as ElementType;
+                //Set ExtendedProperties
+                OriginContextFragment aOriginContextFragment = new OriginContextFragment();
+                aOriginContextFragment.ElementID = hostObject.Id.IntegerValue.ToString();
+                aOriginContextFragment.TypeName = Query.FamilyTypeFullName(hostObject);
+                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, hostObject) as OriginContextFragment;
+                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aElementType) as OriginContextFragment;
+                aPhysical.Fragments.Add(aOriginContextFragment);
 
                 aPhysical = Modify.SetIdentifiers(aPhysical, hostObject) as oM.Physical.IPhysical;
                 if (pullSettings.CopyCustomData)

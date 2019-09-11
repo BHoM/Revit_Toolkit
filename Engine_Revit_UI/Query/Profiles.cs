@@ -144,7 +144,7 @@ namespace BH.UI.Revit.Engine
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private static List<PolyCurve> Profiles_Wall(this Wall wall, PullSettings pullSettings = null)
+        public static List<PolyCurve> Profiles_Wall(this Wall wall, PullSettings pullSettings = null)
         {
             List<PolyCurve> aPolyCurveList = null;
 
