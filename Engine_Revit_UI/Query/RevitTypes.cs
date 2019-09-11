@@ -79,6 +79,9 @@ namespace BH.UI.Revit.Engine
             if (type == typeof(oM.Physical.Elements.Window))
             {
                 aResult.Add(typeof(FamilyInstance));
+                //aResult.Add(typeof(Wall));
+                //DO NOT ADD: Autodesk.Revit.DB.Panel -> does not work with FilteredElementCollector
+                //aResult.Add(typeof(Autodesk.Revit.DB.Panel));
                 return aResult;
             }
 

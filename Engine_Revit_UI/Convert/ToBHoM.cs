@@ -89,6 +89,26 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static IBHoMObject ToBHoM(this Panel panel, PullSettings pullSettings = null)
+        {
+            if (panel == null)
+            {
+                panel.NotConvertedWarning();
+                return null;
+            }
+
+            switch (pullSettings.Discipline)
+            {
+                case Discipline.Physical:
+                    return ToBHoMWindow(panel, pullSettings);
+            }
+
+            panel.NotConvertedWarning();
+            return null;
+        }
+
+        /***************************************************/
+
         public static IBHoMObject ToBHoM(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
             familyInstance.CheckIfNullPull();

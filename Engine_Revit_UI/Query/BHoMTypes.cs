@@ -115,6 +115,12 @@ namespace BH.UI.Revit.Engine
                 return aResult;
             }
 
+            if(element is Autodesk.Revit.DB.Panel)
+            {
+                aResult.Add(typeof(oM.Physical.Elements.Window));
+                return aResult;
+            }
+
             if (element is WallType)
             {
                 aResult.Add(typeof(ISurfaceProperty));

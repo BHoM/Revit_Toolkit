@@ -40,7 +40,34 @@ namespace BH.UI.Revit.Engine
             List<oM.Geometry.ICurve> aResult = new List<oM.Geometry.ICurve>();
             foreach (GeometryObject aGeometryObject in geometryElement)
             {
-                if (aGeometryObject is Solid)
+                if (aGeometryObject is GeometryInstance)
+                {
+                    GeometryInstance aGeometryInstance = (GeometryInstance)aGeometryObject;
+
+                    Transform aTransform = aGeometryInstance.Transform;
+                    if (transform != null)
+                        aTransform = aTransform.Multiply(transform.Inverse);
+
+                    GeometryElement aGeometryElement = aGeometryInstance.GetInstanceGeometry(aTransform);
+                    if (aGeometryElement == null)
+                        continue;
+
+                    List<oM.Geometry.ICurve> aCurveList = Curves(aGeometryElement);
+                    if (aCurveList != null && aCurveList.Count != 0)
+                    {
+                        aResult.AddRange(aCurveList);
+                    }
+                    else
+                    {
+                        aGeometryElement = aGeometryInstance.GetSymbolGeometry(aTransform);
+                        aCurveList = Curves(aGeometryElement);
+                        if (aCurveList != null && aCurveList.Count != 0)
+                            aResult.AddRange(aCurveList);
+                    }
+
+                }
+
+                else if (aGeometryObject is Solid)
                 {
                     Solid aSolid = (Solid)aGeometryObject;
                     EdgeArray aEdgeArray = aSolid.Edges;
@@ -51,29 +78,13 @@ namespace BH.UI.Revit.Engine
                     if (aCurveList != null && aCurveList.Count != 0)
                         aResult.AddRange(aCurveList);                        
                 }
-                if(aGeometryObject is Curve)
+                else if(aGeometryObject is Curve)
                 {
                     oM.Geometry.ICurve aCurve = ((Curve)aGeometryObject).ToBHoM(pullSettings);
                     if (aCurve != null)
                         aResult.Add(aCurve);
                 }
-                else if (aGeometryObject is GeometryInstance)
-                {
-                    GeometryInstance aGeometryInstance = (GeometryInstance)aGeometryObject;
 
-                    Transform aTransform = aGeometryInstance.Transform;
-                    if (transform != null)
-                        aTransform = aTransform.Multiply(transform.Inverse);
-
-
-                    GeometryElement aGeometryElement = aGeometryInstance.GetInstanceGeometry(aTransform);
-                    if (aGeometryElement == null)
-                        continue;
-
-                    List<oM.Geometry.ICurve> aCurveList = Curves(aGeometryElement);
-                    if (aCurveList != null && aCurveList.Count != 0)
-                        aResult.AddRange(aCurveList);
-                }
             }
             return aResult;
         }

@@ -54,6 +54,7 @@ namespace BH.UI.Revit.Engine
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_MEPSpaces);
             }
 
+
             if (type == typeof(BH.oM.Physical.Elements.Wall))
             {
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Walls);
@@ -69,6 +70,7 @@ namespace BH.UI.Revit.Engine
             if (type == typeof(BH.oM.Physical.Elements.Window))
             {
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Windows);
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels);
             }
             if (type == typeof(BH.oM.Physical.Elements.Door))
             {
