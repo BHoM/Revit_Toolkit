@@ -85,26 +85,26 @@ namespace BH.UI.Revit.Engine
                     }
                 }
 
-                if (aLevel != null && aResult.Count > 0)
-                {
-                    //double aElevation = aLevel.Elevation;
-                    //if (pullSettings.ConvertUnits)
-                    //    aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+                //if (aLevel != null && aResult.Count > 0)
+                //{
+                //    //double aElevation = aLevel.Elevation;
+                //    //if (pullSettings.ConvertUnits)
+                //    //    aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
 
-                    //Parameter aParameter = hostObject.get_Parameter(BuiltInParameter.WALL_TOP_OFFSET);
-                    //if (aParameter != null)
-                    //{
-                    //    double aOffset = UnitUtils.ConvertFromInternalUnits(aParameter.AsDouble(), DisplayUnitType.DUT_METERS);
-                    //    aElevation = aElevation + aOffset;
-                    //}
+                //    //Parameter aParameter = hostObject.get_Parameter(BuiltInParameter.WALL_TOP_OFFSET);
+                //    //if (aParameter != null)
+                //    //{
+                //    //    double aOffset = UnitUtils.ConvertFromInternalUnits(aParameter.AsDouble(), DisplayUnitType.DUT_METERS);
+                //    //    aElevation = aElevation + aOffset;
+                //    //}
 
-                    //Vector aVector = BH.Engine.Geometry.Create.Vector(0, 0, aElevation);
-                    BoundingBoxXYZ aBoundingBoxXYZ = hostObject.get_BoundingBox(null);
+                //    //Vector aVector = BH.Engine.Geometry.Create.Vector(0, 0, aElevation);
+                //    BoundingBoxXYZ aBoundingBoxXYZ = hostObject.get_BoundingBox(null);
 
-                    //Vector aVector = BH.Engine.Geometry.Create.Vector(0, 0, aBoundingBoxXYZ.Min.Z);
-                    //for (int i = 0; i < aResult.Count; i++)
-                    //    aResult[i] = BH.Engine.Geometry.Modify.Translate(aResult[i], -aVector);
-                }
+                //    //Vector aVector = BH.Engine.Geometry.Create.Vector(0, 0, aBoundingBoxXYZ.Min.Z);
+                //    //for (int i = 0; i < aResult.Count; i++)
+                //    //    aResult[i] = BH.Engine.Geometry.Modify.Translate(aResult[i], -aVector);
+                //}
             }
 
             if (hostObject is Wall && aResult.Count == 0)

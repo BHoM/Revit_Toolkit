@@ -81,15 +81,20 @@ namespace BH.UI.Revit.Engine
             if (aWindow != null)
                 return aWindow;
 
-            ElementId aElementId = panel.FindHostPanel(); ;
-            if (aElementId == null || aElementId == ElementId.InvalidElementId)
-                return null;
+            //ElementId aElementId = panel.FindHostPanel(); ;
+            //if (aElementId == null || aElementId == ElementId.InvalidElementId)
+            //    return null;
 
-            List<PolyCurve> aPolyCurveList = Query.Profiles_Wall(panel.Document.GetElement(aElementId) as dynamic, pullSettings);
-            if (aPolyCurveList == null || aPolyCurveList.Count == 0)
-                return null;
+            //List<PolyCurve> aPolyCurveList = Query.Profiles_Wall(panel.Document.GetElement(aElementId) as dynamic, pullSettings);
+            //if (aPolyCurveList == null || aPolyCurveList.Count == 0)
+            //    return null;
 
-            PlanarSurface aPlanarSurface = BH.Engine.Geometry.Create.PlanarSurface(aPolyCurveList.First());
+            //PlanarSurface aPlanarSurface = BH.Engine.Geometry.Create.PlanarSurface(aPolyCurveList.First());
+
+            List<ICurve> aCurveList = Query.Curves(panel, new Options(), pullSettings);
+
+            PlanarSurface aPlanarSurface = BH.Engine.Geometry.Create.PlanarSurface(Query.PolyCurve(panel, pullSettings));
+            
             aWindow = new Window()
             {
                 Name = Query.FamilyTypeFullName(panel),
