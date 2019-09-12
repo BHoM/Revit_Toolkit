@@ -115,7 +115,13 @@ namespace BH.UI.Revit.Engine
                 return aResult;
             }
 
-            if(element is Autodesk.Revit.DB.Panel)
+            if (element is Ceiling)
+            {
+                aResult.Add(typeof(oM.Architecture.Elements.Ceiling));
+                return aResult;
+            }
+
+            if (element is Autodesk.Revit.DB.Panel)
             {
                 aResult.Add(typeof(oM.Physical.Elements.Window));
                 return aResult;
