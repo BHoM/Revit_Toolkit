@@ -27,6 +27,7 @@ using System.Linq;
 
 using Autodesk.Revit.DB.IFC;
 using BH.oM.Geometry;
+using System;
 
 namespace BH.UI.Revit.Engine
 {
@@ -53,12 +54,20 @@ namespace BH.UI.Revit.Engine
             using (Transaction aTransaction = new Transaction(aDocument, "Temp"))
             {
                 aTransaction.Start();
-                aElementIds = aDocument.Delete(hostObject.Id);
+                try
+                {
+                    aElementIds = aDocument.Delete(hostObject.Id);
+                }
+                catch(Exception aException)
+                {
+                    aElementIds = null;
+                }
+                
                 aTransaction.RollBack();
             }
 
             List<PolyCurve> aResult = new List<PolyCurve>();
-            if (aElementIds != null || aElementIds.Count() > 0)
+            if (aElementIds != null && aElementIds.Count() > 0)
             {
                 Level aLevel = aDocument.GetElement(hostObject.LevelId) as Level;
 

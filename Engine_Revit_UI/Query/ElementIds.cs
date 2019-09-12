@@ -115,12 +115,12 @@ namespace BH.UI.Revit.Engine
             //Special Cases
             if (aElementIds != null && aElementIds.Count() > 0)
             {
-                List<ElementId> aElementIdList = new List<ElementId>();
-
                 //oM.Physical.Elements.Window
                 if (type == typeof(oM.Physical.Elements.Window))
                 {
-                    foreach(ElementId aElementId in aElementIds)
+                    //Revit returns additional "parent" Autodesk.Revit.DB.Panel with no geometry when pulling all panels from model. This part of the code filter them out
+                    List<ElementId> aElementIdList = new List<ElementId>();
+                    foreach (ElementId aElementId in aElementIds)
                     {
                         Panel aPanel = document.GetElement(aElementId) as Panel;
                         if(aPanel != null)
@@ -132,9 +132,8 @@ namespace BH.UI.Revit.Engine
 
                         aElementIdList.Add(aElementId);
                     }
+                    aElementIds = aElementIdList;
                 }
-
-                aElementIds = aElementIdList;
             }
 
 
