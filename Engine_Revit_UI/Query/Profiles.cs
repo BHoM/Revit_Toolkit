@@ -48,6 +48,10 @@ namespace BH.UI.Revit.Engine
             if (hostObject is RoofBase)
                 return Profiles_RoofBase((RoofBase)hostObject, pullSettings);
 
+
+            if (hostObject is Ceiling)
+                return Profiles_Ceiling((Ceiling)hostObject, pullSettings);
+
             Document aDocument = hostObject.Document;
 
             IEnumerable<ElementId> aElementIds = null;
@@ -239,6 +243,13 @@ namespace BH.UI.Revit.Engine
         private static List<PolyCurve> Profiles_RoofBase(this RoofBase roofBase, PullSettings pullSettings = null)
         {
             return TopFacesPolyCurves(roofBase, pullSettings);
+        }
+
+        /***************************************************/
+
+        private static List<PolyCurve> Profiles_Ceiling(this Ceiling ceiling, PullSettings pullSettings = null)
+        {
+            return BottomFacesPolyCurves(ceiling, pullSettings);
         }
 
         /***************************************************/

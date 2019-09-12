@@ -267,6 +267,7 @@
     <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\PlanarSurfaces.cs" />
     <Compile Include="Query\OpeningType.cs" />
+    <Compile Include="Query\TopFacesPolyCurves.cs" />
     <Compile Include="Query\View.cs" />
     <Compile Include="Query\UpdatePanelTypeByCustomData.cs" />
     <Compile Include="Query\LowElevation.cs" />
@@ -275,7 +276,7 @@
     <Compile Include="Query\Name.cs" />
     <Compile Include="Query\LowLevel.cs" />
     <Compile Include="Query\HighLevel.cs" />
-    <Compile Include="Query\TopFacesPolyCurves.cs" />
+    <Compile Include="Query\BottomFacesPolyCurves.cs" />
     <Compile Include="Query\EnergyAnalysisElementName.cs" />
     <Compile Include="Query\Layer.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
