@@ -99,7 +99,10 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
+                case Discipline.Architecture:
+                case Discipline.Environmental:
                 case Discipline.Physical:
+                case Discipline.Structural:
                     return ToBHoMWindow(panel, pullSettings);
             }
 
@@ -124,6 +127,7 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Structural:
                     return familyInstance.ToBHoMFramingElement(pullSettings);
                 case Discipline.Physical:
+                case Discipline.Architecture:
                     switch ((BuiltInCategory)familyInstance.Category.Id.IntegerValue)
                     {
                         case BuiltInCategory.OST_Windows:
@@ -193,8 +197,10 @@ namespace BH.UI.Revit.Engine
             {
                 case Discipline.Environmental:
                     return ceiling.ToBHoMEnvironmentPanels(pullSettings).ConvertAll(x => x as IBHoMObject);
+                case Discipline.Architecture:
                 case Discipline.Physical:
-                    return ceiling.ToBHoMIPhysicals(pullSettings).ConvertAll(x => x as IBHoMObject);
+                case Discipline.Structural:
+                    return ceiling.ToBHoMCeilings(pullSettings).ConvertAll(x => x as IBHoMObject);
             }
 
             ceiling.NotConvertedWarning();
@@ -238,6 +244,7 @@ namespace BH.UI.Revit.Engine
                     return roofBase.ToBHoMEnvironmentPanels(pullSettings).ConvertAll(x => x as IBHoMObject);
                 case Discipline.Architecture:
                 case Discipline.Physical:
+                case Discipline.Structural:
                     return roofBase.ToBHoMIPhysicals(pullSettings).ConvertAll(x => x as IBHoMObject);
             }
 
@@ -261,6 +268,7 @@ namespace BH.UI.Revit.Engine
                     return wallType.ToBHoMSurfaceProperty(pullSettings) as IBHoMObject;
                 case Discipline.Architecture:
                 case Discipline.Physical:
+                case Discipline.Environmental:
                     return wallType.ToBHoMConstruction(pullSettings);
             }
 
@@ -284,6 +292,7 @@ namespace BH.UI.Revit.Engine
                     return floorType.ToBHoMSurfaceProperty(pullSettings);
                 case Discipline.Architecture:
                 case Discipline.Physical:
+                case Discipline.Environmental:
                     return floorType.ToBHoMConstruction(pullSettings);
             }
 
@@ -305,6 +314,8 @@ namespace BH.UI.Revit.Engine
                 //return ceilingType.ToBHoMElementProperties(pullSettings);
                 case Discipline.Architecture:
                 case Discipline.Physical:
+                case Discipline.Environmental:
+                case Discipline.Structural:
                     return ceilingType.ToBHoMConstruction(pullSettings);
             }
 
@@ -326,6 +337,8 @@ namespace BH.UI.Revit.Engine
                 //return roofType.ToBHoMElementProperties(pullSettings);
                 case Discipline.Architecture:
                 case Discipline.Physical:
+                case Discipline.Environmental:
+                case Discipline.Structural:
                     return roofType.ToBHoMConstruction(pullSettings);
             }
 
@@ -366,6 +379,7 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Architecture:
                 case Discipline.Environmental:
                 case Discipline.Structural:
+                case Discipline.Physical:
                     return level.ToBHoMLevel(pullSettings);
             }
 
@@ -386,6 +400,7 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Architecture:
                 case Discipline.Environmental:
                 case Discipline.Structural:
+                case Discipline.Physical:
                     return grid.ToBHoMGrid(pullSettings);
             }
 
@@ -446,6 +461,8 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Environmental:
                     return spatialElement.ToBHoMSpace(pullSettings);
                 case Discipline.Architecture:
+                case Discipline.Physical:
+                case Discipline.Structural:
                     return spatialElement.ToBHoMRoom(pullSettings);
             }
 
@@ -464,6 +481,9 @@ namespace BH.UI.Revit.Engine
             switch (pullSettings.Discipline)
             {
                 case Discipline.Environmental:
+                case Discipline.Architecture:
+                case Discipline.Physical:
+                case Discipline.Structural:
                     return energyAnalysisSpace.ToBHoMSpace(pullSettings);
             }
 
@@ -482,6 +502,9 @@ namespace BH.UI.Revit.Engine
             switch (pullSettings.Discipline)
             {
                 case Discipline.Environmental:
+                case Discipline.Architecture:
+                case Discipline.Physical:
+                case Discipline.Structural:
                     return energyAnalysisSurface.ToBHoMEnvironmentPanel(pullSettings);
             }
 
@@ -500,6 +523,9 @@ namespace BH.UI.Revit.Engine
             switch (pullSettings.Discipline)
             {
                 case Discipline.Environmental:
+                case Discipline.Architecture:
+                case Discipline.Physical:
+                case Discipline.Structural:
                     return energyAnalysisOpening.ToBHoMEnvironmentPanel(null, pullSettings);
             }
 

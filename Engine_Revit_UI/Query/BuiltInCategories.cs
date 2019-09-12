@@ -143,6 +143,10 @@ namespace BH.UI.Revit.Engine
             {
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Views);
             }
+            if (type == typeof(oM.Architecture.Elements.Ceiling))
+            {
+                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Ceilings);
+            }
 
             return aBuiltInCategoryList;
         }

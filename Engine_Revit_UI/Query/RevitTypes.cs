@@ -183,6 +183,12 @@ namespace BH.UI.Revit.Engine
                 return aResult;
             }
 
+            if (type == typeof(oM.Architecture.Elements.Ceiling))
+            {
+                aResult.Add(typeof(Ceiling));
+                return aResult;
+            }
+
             return null;
         }
 
