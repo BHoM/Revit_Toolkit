@@ -48,22 +48,24 @@ namespace BH.UI.Revit.Engine
                     if (transform != null)
                         aTransform = aTransform.Multiply(transform.Inverse);
 
-                    GeometryElement aGeometryElement = aGeometryInstance.GetInstanceGeometry(aTransform);
-                    if (aGeometryElement == null)
-                        continue;
-
-                    List<oM.Geometry.ICurve> aCurveList = Curves(aGeometryElement);
+                    GeometryElement aGeometryElement = aGeometryInstance.GetSymbolGeometry(aTransform);
+                    List<oM.Geometry.ICurve> aCurveList = Curves(aGeometryElement, aTransform, pullSettings);
                     if (aCurveList != null && aCurveList.Count != 0)
-                    {
                         aResult.AddRange(aCurveList);
-                    }
-                    else
-                    {
-                        aGeometryElement = aGeometryInstance.GetSymbolGeometry(aTransform);
-                        aCurveList = Curves(aGeometryElement);
-                        if (aCurveList != null && aCurveList.Count != 0)
-                            aResult.AddRange(aCurveList);
-                    }
+
+
+                    //aGeometryElement = aGeometryInstance.GetInstanceGeometry(aTransform);
+                    //if (aGeometryElement == null)
+                    //    continue;
+
+                    //List<oM.Geometry.ICurve> aCurveList = Curves(aGeometryElement);
+                    //if (aCurveList != null && aCurveList.Count != 0)
+                    //    aResult.AddRange(aCurveList);
+                    //}
+                    //else
+                    //{
+
+                    //}
 
                 }
 
