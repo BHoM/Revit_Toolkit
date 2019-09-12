@@ -20,14 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System;
+using System.Collections.Generic;
+
 using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
-using System;
-using System.Collections.Generic;
 using BH.oM.Environment.Fragments;
-using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -47,48 +47,16 @@ namespace BH.UI.Revit.Engine
 
             oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes, pullSettings);
 
-            List<PolyCurve> aPolyCurveList = Query.Profiles(hostObject, pullSettings);
-
-            List<PolyCurve> aPolyCurveList_Outer = null;
-            try
-            {
-                aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
-            }
-            catch(Exception aException)
-            {
-                aPolyCurveList_Outer = aPolyCurveList;
-            }
-
-            if (aPolyCurveList_Outer == null)
+            IEnumerable<PlanarSurface> aPlanarSurfaces = Query.PlanarSurfaces(hostObject, pullSettings);
+            if (aPlanarSurfaces == null)
                 return null;
-            
+
             aPhysicalList = new List<oM.Physical.IPhysical>();
 
-            foreach(PolyCurve aPolyCurve in aPolyCurveList_Outer)
+            foreach(PlanarSurface aPlanarSurface in aPlanarSurfaces)
             {
-                List<PolyCurve> aPolyCurveList_Inner = null;
-                try
-                {
-                    aPolyCurveList_Inner = BH.Engine.Adapters.Revit.Query.InnerPolyCurves(aPolyCurve, aPolyCurveList);
-                }
-                catch(Exception aException)
-                {
-
-                }
-
-                List<ICurve> aICurveList = new List<ICurve>();
-                if (aPolyCurveList_Inner != null && aPolyCurveList_Inner.Count > 0)
-                    aICurveList = aPolyCurveList_Inner.ConvertAll(x => (ICurve)x);
 
                 oM.Physical.IPhysical aPhysical = null;
-
-                //TODO: Create method in Geometry Engine shall be used however IsClosed method returns false for some of the PolyCurves pulled from Revit
-                //PlanarSurface aPlanarSurface = BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve, aPolyCurveList_Inner.ConvertAll(x => (ICurve)x)
-                PlanarSurface aPlanarSurface = new PlanarSurface()
-                {
-                    ExternalBoundary = aPolyCurve,
-                    InternalBoundaries = aICurveList
-                };
 
                 if (hostObject is Wall)
                 {
@@ -96,18 +64,18 @@ namespace BH.UI.Revit.Engine
 
                     Wall aWall = (Wall)hostObject;
                     CurtainGrid aCurtainGrid = aWall.CurtainGrid;
-                    if(aCurtainGrid != null)
+                    if (aCurtainGrid != null)
                     {
-                        foreach(ElementId aElementId in aCurtainGrid.GetPanelIds())
+                        foreach (ElementId aElementId in aCurtainGrid.GetPanelIds())
                         {
                             Panel aPanel = aWall.Document.GetElement(aElementId) as Panel;
                             if (aPanel == null)
                                 continue;
                         }
                     }
-                    
-                }   
-                else if(hostObject is Floor)
+
+                }
+                else if (hostObject is Floor)
                     aPhysical = BH.Engine.Physical.Create.Floor(aPlanarSurface, aConstruction);
                 else if (hostObject is RoofBase)
                     aPhysical = BH.Engine.Physical.Create.Roof(aPlanarSurface, aConstruction);
