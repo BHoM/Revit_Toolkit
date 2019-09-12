@@ -51,10 +51,10 @@ namespace BH.UI.Revit.Engine
                     List<oM.Geometry.ICurve> aCurveList = null;
                     GeometryElement aGeometryElement = null;
 
-                    aGeometryElement = aGeometryInstance.GetSymbolGeometry(aTransform);
-                    aCurveList = Curves(aGeometryElement, aTransform, pullSettings);
-                    if (aCurveList != null && aCurveList.Count != 0)
-                        aResult.AddRange(aCurveList);
+                    //aGeometryElement = aGeometryInstance.GetSymbolGeometry(aTransform);
+                    //aCurveList = Curves(aGeometryElement, aTransform, pullSettings);
+                    //if (aCurveList != null && aCurveList.Count != 0)
+                    //    aResult.AddRange(aCurveList);
 
                     aGeometryElement = aGeometryInstance.GetInstanceGeometry(aTransform);
                     if (aGeometryElement == null)

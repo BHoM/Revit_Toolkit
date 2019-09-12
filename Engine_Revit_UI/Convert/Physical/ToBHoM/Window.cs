@@ -91,7 +91,7 @@ namespace BH.UI.Revit.Engine
 
             //PlanarSurface aPlanarSurface = BH.Engine.Geometry.Create.PlanarSurface(aPolyCurveList.First());
 
-            List<ICurve> aCurveList = Query.Curves(panel, new Options(), pullSettings);
+            //List<ICurve> aCurveList = Query.Curves(panel, new Options(), pullSettings);
 
             PlanarSurface aPlanarSurface = BH.Engine.Geometry.Create.PlanarSurface(Query.PolyCurve(panel, pullSettings));
             
