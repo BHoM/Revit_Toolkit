@@ -93,23 +93,53 @@ namespace BH.UI.Revit.Engine
             if (aTypes.Count() == 0)
                 return null;
 
+            IEnumerable<ElementId> aElementIds = null;
             if (aTypes.Count() == 1)
             {
                 if (aBuiltInCategories == null || aBuiltInCategories.Count() == 0)
-                    return new FilteredElementCollector(document).OfClass(aTypes.First()).ToElementIds();
+                    aElementIds = new FilteredElementCollector(document).OfClass(aTypes.First()).ToElementIds();
+                else
 
-                return new FilteredElementCollector(document).OfClass(aTypes.First()).WherePasses(new LogicalOrFilter(aBuiltInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
+                aElementIds = new FilteredElementCollector(document).OfClass(aTypes.First()).WherePasses(new LogicalOrFilter(aBuiltInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
             }
             else
             {
                 if ((aBuiltInCategories == null || aBuiltInCategories.Count() == 0) && (aTypes != null && aTypes.Count() > 0))
-                    return new FilteredElementCollector(document).WherePasses(new LogicalOrFilter(aTypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter))).ToElementIds();
-
-                if ((aTypes == null || aTypes.Count() == 0) && (aBuiltInCategories != null && aBuiltInCategories.Count() > 0))
-                    return new FilteredElementCollector(document).WherePasses(new LogicalOrFilter(aBuiltInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
-
-                return new FilteredElementCollector(document).WherePasses(new LogicalAndFilter(new LogicalOrFilter(aTypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter)), new LogicalOrFilter(aBuiltInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)))).ToElementIds();
+                    aElementIds = new FilteredElementCollector(document).WherePasses(new LogicalOrFilter(aTypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter))).ToElementIds();
+                else if ((aTypes == null || aTypes.Count() == 0) && (aBuiltInCategories != null && aBuiltInCategories.Count() > 0))
+                    aElementIds = new FilteredElementCollector(document).WherePasses(new LogicalOrFilter(aBuiltInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
+                else
+                    aElementIds = new FilteredElementCollector(document).WherePasses(new LogicalAndFilter(new LogicalOrFilter(aTypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter)), new LogicalOrFilter(aBuiltInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)))).ToElementIds();
             }
+
+            //Special Cases
+            if (aElementIds != null && aElementIds.Count() > 0)
+            {
+                List<ElementId> aElementIdList = new List<ElementId>();
+
+                //oM.Physical.Elements.Window
+                if (type == typeof(oM.Physical.Elements.Window))
+                {
+                    foreach(ElementId aElementId in aElementIds)
+                    {
+                        Panel aPanel = document.GetElement(aElementId) as Panel;
+                        if(aPanel != null)
+                        {
+                            ElementId aElementId_Host = aPanel.FindHostPanel();
+                            if (aElementId_Host != null && aElementId_Host != Autodesk.Revit.DB.ElementId.InvalidElementId)
+                                continue;
+                        }
+
+                        aElementIdList.Add(aElementId);
+                    }
+                }
+
+                aElementIds = aElementIdList;
+            }
+
+
+
+            return aElementIds;
                 
         }
 
