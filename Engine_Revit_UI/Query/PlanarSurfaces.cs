@@ -22,11 +22,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Autodesk.Revit.DB;
 
-using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 

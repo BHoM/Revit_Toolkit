@@ -34,12 +34,12 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public List<PolyCurve> TopFacesPolyCurves(this HostObject hostObject, PullSettings pullSettings = null)
+        static public List<PolyCurve> BottomFacesPolyCurves(this HostObject hostObject, PullSettings pullSettings = null)
         {
             if (hostObject == null)
                 return null;
 
-            IEnumerable<Reference> aReferences = HostObjectUtils.GetTopFaces(hostObject);
+            IEnumerable<Reference> aReferences = HostObjectUtils.GetBottomFaces(hostObject);
             if (aReferences == null || aReferences.Count() == 0)
                 return null;
 

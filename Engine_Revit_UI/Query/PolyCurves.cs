@@ -65,6 +65,34 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static List<PolyCurve> PolyCurves(this Element element, IEnumerable<Reference> references, PullSettings pullSettings = null)
+        {
+            List<PolyCurve> aPolyCurveList = new List<PolyCurve>();
+
+            foreach (Reference aReference in references)
+            {
+                Autodesk.Revit.DB.Face aFace = element.GetGeometryObjectFromReference(aReference) as Autodesk.Revit.DB.Face;
+                if (aFace == null)
+                    continue;
+
+                List<PolyCurve> aPolyCurveList_Temp = null;
+
+                if (aFace is PlanarFace)
+                    aPolyCurveList_Temp = ((PlanarFace)aFace).PolyCurves(null, pullSettings);
+                else
+                    aPolyCurveList_Temp = aFace.Triangulate().PolyCurves(pullSettings);
+
+                if (aPolyCurveList_Temp == null || aPolyCurveList_Temp.Count == 0)
+                    continue;
+
+                aPolyCurveList.AddRange(aPolyCurveList_Temp);
+            }
+
+            return aPolyCurveList;
+        }
+
+        /***************************************************/
+
         //internal static List<PolyCurve> PolyCurves(this PlanarFace planarFace, PullSettings pullSettings = null)
         //{
         //    if (planarFace == null)
