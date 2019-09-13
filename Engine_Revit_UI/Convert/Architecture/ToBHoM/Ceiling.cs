@@ -56,7 +56,8 @@ namespace BH.UI.Revit.Engine
                 oM.Architecture.Elements.Ceiling aCeiling = new oM.Architecture.Elements.Ceiling()
                 {
                     Name = Query.FamilyTypeFullName(ceiling),
-                    Construction = aConstruction
+                    Construction = aConstruction,
+                    Surface = aPlanarSurface
                 };
 
                 ElementType aElementType = ceiling.Document.GetElement(ceiling.GetTypeId()) as ElementType;
