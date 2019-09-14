@@ -114,7 +114,7 @@ namespace BH.UI.Revit.Engine
                 return aResult;
             }
 
-            if (type == typeof(oM.Architecture.Elements.Level))
+            if (type == typeof(oM.Geometry.SettingOut.Level))
             {
                 aResult.Add(typeof(Level));
                 return aResult;
@@ -132,7 +132,7 @@ namespace BH.UI.Revit.Engine
                 return aResult;
             }
 
-            if (type == typeof(oM.Architecture.Elements.Grid))
+            if (type == typeof(oM.Geometry.SettingOut.Grid))
             {
                 aResult.Add(typeof(Grid));
                 return aResult;

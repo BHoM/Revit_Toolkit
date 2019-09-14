@@ -177,9 +177,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compute\Errors.cs" />
-    <Compile Include="Convert\Architecture\ToBHoM\Grid.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Room.cs" />
-    <Compile Include="Convert\Architecture\ToBHoM\Level.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\Grid.cs" />
+    <Compile Include="Convert\Geometry\ToBHoM\Level.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\Grid.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\Level.cs" />
     <Compile Include="Convert\Geometry\ToRevit\PolyLine.cs" />
     <Compile Include="Convert\Physical\ToBHoM\Door.cs" />
     <Compile Include="Convert\Physical\ToBHoM\FramingElement.cs" />
@@ -196,7 +198,6 @@
     <Compile Include="Convert\Physical\ToRevit\RoofBase.cs" />
     <Compile Include="Convert\Physical\ToRevit\Floor.cs" />
     <Compile Include="Convert\Physical\ToRevit\Wall.cs" />
-    <Compile Include="Convert\Architecture\ToRevit\Grid.cs" />
     <Compile Include="Convert\Common\ToRevit\ElementType.cs" />
     <Compile Include="Convert\Revit\ToBHoM\InstanceProperties.cs" />
     <Compile Include="Convert\Environment\ToBHoM\Opening.cs" />
@@ -214,7 +215,6 @@
     <Compile Include="Compute\LoadFamily.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Ceiling.cs" />
-    <Compile Include="Convert\Architecture\ToRevit\Level.cs" />
     <Compile Include="Convert\Revit\ToBHoM\ViewPlan.cs" />
     <Compile Include="Convert\Revit\ToBHoM\Material.cs" />
     <Compile Include="Convert\Revit\ToBHoM\Viewport.cs" />
@@ -355,6 +355,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Convert\Architecture\ToRevit\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

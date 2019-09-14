@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,35 +20,37 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
 
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
-using System;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Query
+    public static partial class Convert
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****             Internal methods              ****/
         /***************************************************/
-        
-        static public oM.Geometry.SettingOut.Level Level(this Element element, PullSettings pullSettings = null)
+
+        internal static BHoMObject ToBHoMGrid(this Grid grid, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            if (element == null || element.LevelId == null || element.LevelId == Autodesk.Revit.DB.ElementId.InvalidElementId)
-                return null;
+            oM.Geometry.SettingOut.Grid aGrid = pullSettings.FindRefObject<oM.Geometry.SettingOut.Grid>(grid.Id.IntegerValue);
+            if (aGrid != null)
+                return aGrid;
 
-            Level aLevel = element.Document.GetElement(element.LevelId) as Level;
-            if (aLevel == null)
-                return null;
+            aGrid = BH.Engine.Geometry.SettingOut.Create.Grid(grid.Curve.ToBHoM(pullSettings));
+            aGrid.Name = grid.Name;
 
-            return Convert.ToBHoMLevel(aLevel, pullSettings) as oM.Geometry.SettingOut.Level;
+            aGrid = Modify.SetIdentifiers(aGrid, grid) as oM.Geometry.SettingOut.Grid;
+            if (pullSettings.CopyCustomData)
+                aGrid = Modify.SetCustomData(aGrid, grid, pullSettings.ConvertUnits) as oM.Geometry.SettingOut.Grid;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aGrid);
+
+            return aGrid;
         }
 
         /***************************************************/
