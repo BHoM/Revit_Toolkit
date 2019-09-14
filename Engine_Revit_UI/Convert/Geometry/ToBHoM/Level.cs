@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,35 +20,37 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
 
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
-using System;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Query
+    public static partial class Convert
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****             Internal methods              ****/
         /***************************************************/
-        
-        static public oM.Geometry.SettingOut.Level Level(this Element element, PullSettings pullSettings = null)
+
+        internal static BHoMObject ToBHoMLevel(this Level level, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            if (element == null || element.LevelId == null || element.LevelId == Autodesk.Revit.DB.ElementId.InvalidElementId)
-                return null;
+            oM.Geometry.SettingOut.Level aLevel = pullSettings.FindRefObject<oM.Geometry.SettingOut.Level>(level.Id.IntegerValue);
+            if (aLevel != null)
+                return aLevel;
 
-            Level aLevel = element.Document.GetElement(element.LevelId) as Level;
-            if (aLevel == null)
-                return null;
+            aLevel = BH.Engine.Geometry.Create.Level(ToSI(level.ProjectElevation, UnitType.UT_Length));
+            aLevel.Name = level.Name;
 
-            return Convert.ToBHoMLevel(aLevel, pullSettings) as oM.Geometry.SettingOut.Level;
+            aLevel = Modify.SetIdentifiers(aLevel, level) as oM.Geometry.SettingOut.Level;
+            if (pullSettings.CopyCustomData)
+                aLevel = Modify.SetCustomData(aLevel, level, pullSettings.ConvertUnits) as oM.Geometry.SettingOut.Level;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aLevel);
+
+            return aLevel;
         }
 
         /***************************************************/

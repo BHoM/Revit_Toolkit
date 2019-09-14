@@ -210,7 +210,7 @@ namespace BH.UI.Revit.Engine
 
             if (element is Grid)
             {
-                aResult.Add(typeof(oM.Architecture.Elements.Grid));
+                aResult.Add(typeof(oM.Geometry.SettingOut.Grid));
                 return aResult;
             }
 

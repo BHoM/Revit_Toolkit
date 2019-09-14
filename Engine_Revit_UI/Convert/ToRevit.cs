@@ -42,7 +42,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Element ToRevit(this oM.Architecture.Elements.Grid grid, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Geometry.SettingOut.Grid grid, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
@@ -51,7 +51,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Architecture.Elements.Level level, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Geometry.SettingOut.Level level, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 

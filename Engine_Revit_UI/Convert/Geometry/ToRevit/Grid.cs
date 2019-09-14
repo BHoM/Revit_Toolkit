@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -20,35 +20,42 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
-
-using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
-using System;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Query
+    public static partial class Convert
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
-        static public oM.Geometry.SettingOut.Level Level(this Element element, PullSettings pullSettings = null)
+
+        internal static Grid ToRevitGrid(this oM.Geometry.SettingOut.Grid grid, Document document, PushSettings pushSettings = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            Grid aGrid = pushSettings.FindRefObject<Grid>(document, grid.BHoM_Guid);
+            if (aGrid != null)
+                return aGrid;
 
-            if (element == null || element.LevelId == null || element.LevelId == Autodesk.Revit.DB.ElementId.InvalidElementId)
+            pushSettings.DefaultIfNull();
+
+            Curve aCurve = Convert.ToRevitCurve(grid.Curve, pushSettings);
+
+            if (aCurve is Line)
+                aGrid = Grid.Create(document, (Line)aCurve);
+            if (aCurve is Arc)
+                aGrid = Grid.Create(document, (Arc)aCurve);
+
+            aGrid.CheckIfNullPush(grid);
+            if (aGrid == null)
                 return null;
 
-            Level aLevel = element.Document.GetElement(element.LevelId) as Level;
-            if (aLevel == null)
-                return null;
+            if (pushSettings.CopyCustomData)
+                Modify.SetParameters(aGrid, grid, null, pushSettings.ConvertUnits);
 
-            return Convert.ToBHoMLevel(aLevel, pullSettings) as oM.Geometry.SettingOut.Level;
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(grid, aGrid);
+
+            return aGrid;
         }
 
         /***************************************************/
