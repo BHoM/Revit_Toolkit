@@ -74,7 +74,17 @@ namespace BH.UI.Revit.Engine
             if (surface == null || surface.Location == null)
                 return double.NaN;
 
-            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.Bounds(surface.Location as dynamic);
+            return LowElevation(surface.Location);
+        }
+
+        /***************************************************/
+
+        static public double LowElevation(this ISurface surface)
+        {
+            if (surface == null || surface == null)
+                return double.NaN;
+
+            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.Bounds(surface as dynamic);
 
             return aBoundingBox.Min.Z;
         }

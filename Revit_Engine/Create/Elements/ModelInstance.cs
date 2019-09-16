@@ -156,6 +156,32 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
+
+        [Description("Creates ModelInstance from given IBHoMObject. ModelInstance represents generic 3D elements which have not been defined in BHoM structure")]
+        [Input("bHoMObject", "IBHoMObject")]
+        [Output("ModelInstance")]
+        public static ModelInstance ModelInstance(oM.Base.IBHoMObject bHoMObject)
+        {
+            if (bHoMObject == null)
+                return null;
+
+            InstanceProperties aInstanceProperties = new InstanceProperties()
+            {
+                Name = bHoMObject.Name,
+                CustomData = new System.Collections.Generic.Dictionary<string, object>(bHoMObject.CustomData)
+            };
+
+            ModelInstance aModelInstance = new ModelInstance()
+            {
+                Name = bHoMObject.Name,
+                Properties = aInstanceProperties,
+                CustomData = new System.Collections.Generic.Dictionary<string, object>(bHoMObject.CustomData)
+            };
+
+            return aModelInstance;
+        }
+
+        /***************************************************/
     }
 }
 
