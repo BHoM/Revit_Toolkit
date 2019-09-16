@@ -95,7 +95,8 @@ namespace BH.UI.Revit.Engine
             if (pushSettings.ConvertUnits)
                 aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
 
-            oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aLowElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
+            //oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aLowElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
+            oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
 
             ICurve aCurve = BH.Engine.Geometry.Modify.Project(aPlanarSurface.ExternalBoundary as dynamic, aPlane) as ICurve;
 
@@ -112,6 +113,10 @@ namespace BH.UI.Revit.Engine
             aRoofBase = document.Create.NewFootPrintRoof(aCurveArray, aLevel, aRoofType, out aModelCurveArray);
             if (aRoofBase != null)
             {
+                Parameter aParameter = aRoofBase.get_Parameter(BuiltInParameter.ROOF_UPTO_LEVEL_PARAM);
+                if (aParameter != null)
+                    aParameter.Set(ElementId.InvalidElementId);
+
                 List<ICurve> aCurveList = null;
 
                 if (aPlanarSurface.ExternalBoundary is PolyCurve)
@@ -127,7 +132,12 @@ namespace BH.UI.Revit.Engine
                     foreach (ICurve aCurve_Temp in aCurveList)
                     {
                         oM.Geometry.Point aPoint = BH.Engine.Geometry.Query.IStartPoint(aCurve_Temp);
-                        aSlabShapeEditor.DrawPoint(aPoint.ToRevit(pushSettings));
+                        if (System.Math.Abs(aPoint.Z - aPlane.Origin.Z) > Tolerance.MicroDistance)
+                        {
+                            XYZ aXYZ = aPoint.ToRevit(pushSettings);
+                            aSlabShapeEditor.DrawPoint(aXYZ);
+                        }
+                            
                     }
                 }
             }
@@ -137,7 +147,7 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aRoofBase, roof, new BuiltInParameter[] { BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM }, pushSettings.ConvertUnits);
+                Modify.SetParameters(aRoofBase, roof, new BuiltInParameter[] { BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM, BuiltInParameter.ROOF_BASE_LEVEL_PARAM, BuiltInParameter.ROOF_UPTO_LEVEL_PARAM }, pushSettings.ConvertUnits);
 
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(roof, aRoofBase);
 
