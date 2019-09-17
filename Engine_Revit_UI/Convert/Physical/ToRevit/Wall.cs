@@ -124,7 +124,7 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aWall, wall, new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT, BuiltInParameter.WALL_BASE_OFFSET, BuiltInParameter.WALL_HEIGHT_TYPE }, pushSettings.ConvertUnits);
+                Modify.SetParameters(aWall, wall, new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT, BuiltInParameter.WALL_BASE_OFFSET, BuiltInParameter.WALL_HEIGHT_TYPE, BuiltInParameter.WALL_USER_HEIGHT_PARAM }, pushSettings.ConvertUnits);
 
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(wall, aWall);
 
