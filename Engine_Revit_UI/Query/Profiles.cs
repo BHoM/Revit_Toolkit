@@ -66,8 +66,9 @@ namespace BH.UI.Revit.Engine
                 {
                     aElementIds = null;
                 }
-                
-                aTransaction.RollBack();
+
+                FailureHandlingOptions aFailureHandlingOptions = aTransaction.GetFailureHandlingOptions();
+                aTransaction.RollBack(aFailureHandlingOptions.SetClearAfterRollback(true));
             }
 
             List<PolyCurve> aResult = new List<PolyCurve>();
