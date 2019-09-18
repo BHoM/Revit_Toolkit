@@ -31,7 +31,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        internal static Grid ToRevitGrid(this oM.Architecture.Elements.Grid grid, Document document, PushSettings pushSettings = null)
+        internal static Grid ToRevitGrid(this oM.Geometry.SettingOut.Grid grid, Document document, PushSettings pushSettings = null)
         {
             Grid aGrid = pushSettings.FindRefObject<Grid>(document, grid.BHoM_Guid);
             if (aGrid != null)
