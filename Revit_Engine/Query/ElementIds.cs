@@ -25,6 +25,7 @@ using System.Collections.Generic;
 
 using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -45,7 +46,16 @@ namespace BH.Engine.Adapters.Revit
             if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.ElementIds))
                 return null;
 
-            return filterRequest.Equalities[Convert.FilterRequest.ElementIds] as IEnumerable<int>;
+            IEnumerable<int> aResult = filterRequest.Equalities[Convert.FilterRequest.ElementIds] as IEnumerable<int>;
+
+            if (aResult == null && filterRequest.Equalities[Convert.FilterRequest.ElementIds] is IEnumerable<object>)
+            {
+                IEnumerable<object> aObjects = filterRequest.Equalities[Convert.FilterRequest.FilterRequests] as IEnumerable<object>;
+                if (aObjects != null)
+                    return aObjects.ToList().ConvertAll(x => System.Convert.ToInt32(x));
+            }
+
+            return aResult;
         }
 
         /***************************************************/
