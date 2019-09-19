@@ -50,7 +50,7 @@ namespace BH.Engine.Adapters.Revit
 
             if (aResult == null && filterRequest.Equalities[Convert.FilterRequest.ElementIds] is IEnumerable<object>)
             {
-                IEnumerable<object> aObjects = filterRequest.Equalities[Convert.FilterRequest.FilterRequests] as IEnumerable<object>;
+                IEnumerable<object> aObjects = filterRequest.Equalities[Convert.FilterRequest.ElementIds] as IEnumerable<object>;
                 if (aObjects != null)
                     return aObjects.ToList().ConvertAll(x => System.Convert.ToInt32(x));
             }
