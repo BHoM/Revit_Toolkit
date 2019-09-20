@@ -80,48 +80,14 @@ namespace BH.UI.Revit.Engine
 
                 if (materialFragment == null)
                 {
-                    Compute.MaterialNotInLibraryNote(familyInstance);
+                    //Compute.MaterialNotInLibraryNote(familyInstance);
+                    materialFragment = (familyInstance.Document.GetElement(familyInstance.StructuralMaterialId) as Autodesk.Revit.DB.Material).ToBHoMMaterialFragment(pullSettings);
+                }
 
-                    ElementId materialId = familyInstance.StructuralMaterialId;
-                    if (materialId.IntegerValue > 0)
-                    {
-                        Autodesk.Revit.DB.Material revitMaterial = familyInstance.Document.GetElement(materialId) as Autodesk.Revit.DB.Material;
-                        if (revitMaterial != null)
-                            materialFragment = revitMaterial.ToBHoMMaterialFragment(pullSettings);
-                    }
-
-                    if (materialFragment == null)
-                    {
-                        Compute.InvalidDataMaterialWarning(familyInstance);
-                        
-                        string name = String.Format("Unknown {0} Material", familyInstance.StructuralMaterialType);
-
-                        //TODO: separate method UnknownMaterial(StructuralMaterialType)?
-                        switch (familyInstance.StructuralMaterialType)
-                        {
-                            case StructuralMaterialType.Aluminum:
-                                {
-                                    materialFragment = new Aluminium() { Name = name };
-                                    break;
-                                }
-                            case StructuralMaterialType.Concrete:
-                            case StructuralMaterialType.PrecastConcrete:
-                                {
-                                    materialFragment = new Concrete() { Name = name };
-                                    break;
-                                }
-                            case StructuralMaterialType.Wood:
-                                {
-                                    materialFragment = new Timber() { Name = name };
-                                    break;
-                                }
-                            default:
-                                {
-                                    materialFragment = new Steel() { Name = name };
-                                    break;
-                                }
-                        }
-                    }
+                if (materialFragment == null)
+                {
+                    Compute.InvalidDataMaterialWarning(familyInstance);
+                    materialFragment = BHoMEmptyMaterialFragment(familyInstance.StructuralMaterialType, pullSettings);
                 }
             }
 

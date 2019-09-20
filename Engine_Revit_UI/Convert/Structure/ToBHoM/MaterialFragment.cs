@@ -28,6 +28,7 @@ using BH.oM.Common.Materials;
 using BH.Engine.Structure;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using BH.oM.Structure.MaterialFragments;
 
 namespace BH.UI.Revit.Engine
@@ -86,59 +87,30 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        //TODO: to be deprecated!
-        //TODO: Remove this method. The CompundLayerStructure should use the method above, not this one!
-        //public static oM.Physical.Materials.Material ToBHoMMaterial(this CompoundStructureLayer compoundStructureLayer, Document document, BuiltInCategory builtInCategory = BuiltInCategory.INVALID, PullSettings pullSettings = null)
-        //{
-        //    if (compoundStructureLayer == null)
-        //        return null;
-
-        //    pullSettings = pullSettings.DefaultIfNull();
-
-        //    oM.Physical.Materials.Material aMaterial = pullSettings.FindRefObject<oM.Physical.Materials.Material>(compoundStructureLayer.MaterialId.IntegerValue);
-        //    if (aMaterial != null)
-        //        return aMaterial;
-
-        //    ElementId aElementId = compoundStructureLayer.MaterialId;
-        //    Autodesk.Revit.DB.Material aMaterial_Revit = null;
-        //    if (aElementId != null && aElementId != ElementId.InvalidElementId)
-        //        aMaterial_Revit = document.GetElement(aElementId) as Autodesk.Revit.DB.Material;
-
-        //    if (aMaterial_Revit == null && builtInCategory != BuiltInCategory.INVALID)
-        //    {
-        //        Category aCategory = document.Settings.Categories.get_Item(builtInCategory);
-        //        if (aCategory != null)
-        //            aMaterial_Revit = aCategory.Material;
-        //    }
-
-        //    if (aMaterial_Revit != null)
-        //    {
-        //        aMaterial = pullSettings.FindRefObject<oM.Physical.Materials.Material>(aMaterial_Revit.Id.IntegerValue);
-        //        if (aMaterial != null)
-        //            return aMaterial;
-        //    }
-        //    else
-        //    {
-        //        Compute.MaterialNotFoundWarning(aMaterial);
-        //        return aMaterial;
-        //    }
-
-        //    if (aMaterial == null)
-        //        aMaterial = new oM.Physical.Materials.Material() { Name = aMaterial_Revit.Name };
-
-        //    aMaterial = aMaterial.Update(aMaterial_Revit);
-
-        //    aMaterial = Modify.SetIdentifiers(aMaterial, aMaterial_Revit) as oM.Physical.Materials.Material;
-        //    if (pullSettings.CopyCustomData)
-        //        aMaterial = Modify.SetCustomData(aMaterial, aMaterial_Revit, pullSettings.ConvertUnits) as oM.Physical.Materials.Material;
-
-        //    aMaterial = aMaterial.UpdateValues(pullSettings, aMaterial_Revit) as oM.Physical.Materials.Material;
-
-        //    pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aMaterial);
-
-        //    return aMaterial;
-        //}
-
+        internal static oM.Structure.MaterialFragments.IMaterialFragment BHoMEmptyMaterialFragment(this Autodesk.Revit.DB.Structure.StructuralMaterialType structuralMaterialType, PullSettings pullSettings = null)
+        {
+            string name = String.Format("Unknown {0} Material", structuralMaterialType);
+            switch (structuralMaterialType)
+            {
+                case StructuralMaterialType.Aluminum:
+                    {
+                        return new Aluminium() { Name = name };
+                    }
+                case StructuralMaterialType.Concrete:
+                case StructuralMaterialType.PrecastConcrete:
+                    {
+                        return new Concrete() { Name = name };
+                    }
+                case StructuralMaterialType.Wood:
+                    {
+                        return new Timber() { Name = name };
+                    }
+                default:
+                    {
+                        return new Steel() { Name = name };
+                    }
+            }
+        }
 
         /***************************************************/
         /****             Private methods               ****/
