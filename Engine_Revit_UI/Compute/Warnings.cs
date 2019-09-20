@@ -51,7 +51,14 @@ namespace BH.UI.Revit.Engine
 
         internal static void NotConvertedWarning(this StructuralMaterialType structuralMaterialType)
         {
-            BH.Engine.Reflection.Compute.RecordWarning("Structural meterial type " + structuralMaterialType + " could not be converted because conversion method does not exist.");
+            BH.Engine.Reflection.Compute.RecordWarning("Structural material type " + structuralMaterialType + " could not be converted because conversion method does not exist.");
+        }
+
+        /***************************************************/
+
+        internal static void NotConvertedWarning(this FamilySymbol symbol)
+        {
+            BH.Engine.Reflection.Compute.RecordWarning("Framing profile " + symbol.Name + " could not be converted. ElementId: " + symbol.Id.IntegerValue.ToString());
         }
 
         /***************************************************/
@@ -241,9 +248,21 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void NullStructuralAssetWarning(this oM.Physical.Materials.Material material)
+        internal static void NullStructuralAssetWarning(this BH.oM.Structure.MaterialFragments.IMaterialFragment material)
         {
             string aMessage = "Could not find Revit Structural Asset for BHoM Object.";
+
+            if (material != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, material.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void UnknownStructuralAssetWarning(this BH.oM.Structure.MaterialFragments.IMaterialFragment material)
+        {
+            string aMessage = "Revit Structural Asset could not be converted into BHoM material properties.";
 
             if (material != null)
                 aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, material.BHoM_Guid);
@@ -396,7 +415,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void AnalyticalObjectConversionWarining(this IObject iObject, Type Type = null)
+        internal static void AnalyticalObjectConversionWarning(this IObject iObject, Type Type = null)
         {
             string aMessage = "Analytical object cannot be converted to Revit.";
 
@@ -409,6 +428,13 @@ namespace BH.UI.Revit.Engine
                 aMessage = string.Format("{0} Use {1} instead", aMessage, Type.FullName);
 
             BH.Engine.Reflection.Compute.RecordError(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void AnalyticalPullWarning(this Element element)
+        {
+            BH.Engine.Reflection.Compute.RecordWarning(string.Format("Location of element's analytical model has been pulled. Element Id: {0}", element.Id.IntegerValue));
         }
 
         /***************************************************/

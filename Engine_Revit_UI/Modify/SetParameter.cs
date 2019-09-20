@@ -190,5 +190,101 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        internal static bool TrySetParameter(this Element familyInstance, string parameterName, double value)
+        {
+            Parameter parameter = familyInstance.LookupParameter(parameterName);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Double)
+            {
+                parameter.Set(value);
+                return true;
+            }
+
+            return false;
+        }
+
+        internal static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, double value)
+        {
+            Parameter parameter = familyInstance.get_Parameter(builtInParam);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Double)
+            {
+                parameter.Set(value);
+                return true;
+            }
+
+            return false;
+        }
+
+        internal static bool TrySetParameter(this Element familyInstance, string parameterName, int value)
+        {
+            Parameter parameter = familyInstance.LookupParameter(parameterName);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Integer)
+            {
+                parameter.Set(value);
+                return true;
+            }
+
+            return false;
+        }
+
+        internal static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, int value)
+        {
+            Parameter parameter = familyInstance.get_Parameter(builtInParam);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Integer)
+            {
+                parameter.Set(value);
+                return true;
+            }
+
+            return false;
+        }
+
+        internal static bool TrySetParameter(this Element familyInstance, string parameterName, string value)
+        {
+            Parameter parameter = familyInstance.LookupParameter(parameterName);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.String)
+            {
+                parameter.Set(value);
+                return true;
+            }
+
+            return false;
+        }
+
+        internal static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, string value)
+        {
+            Parameter parameter = familyInstance.get_Parameter(builtInParam);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.String)
+            {
+                parameter.Set(value);
+                return true;
+            }
+
+            return false;
+        }
+
+        internal static bool TrySetParameter(this Element familyInstance, string parameterName, ElementId value)
+        {
+            Parameter parameter = familyInstance.LookupParameter(parameterName);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.ElementId)
+            {
+                parameter.Set(value);
+                return true;
+            }
+
+            return false;
+        }
+
+        internal static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, ElementId value)
+        {
+            Parameter parameter = familyInstance.get_Parameter(builtInParam);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.ElementId)
+            {
+                parameter.Set(value);
+                return true;
+            }
+
+            return false;
+        }
     }
 }

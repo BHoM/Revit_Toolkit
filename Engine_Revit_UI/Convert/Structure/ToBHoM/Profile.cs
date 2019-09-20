@@ -50,11 +50,12 @@ namespace BH.UI.Revit.Engine
                 return aProfile;
 
             string familyName = familySymbol.Family.Name;
-            Parameter sectionShapeParam = familySymbol.LookupParameter("Section Shape");
+            Parameter sectionShapeParam = familySymbol.get_Parameter(BuiltInParameter.STRUCTURAL_SECTION_SHAPE);
             StructuralSectionShape sectionShape = sectionShapeParam == null ? sectionShape = StructuralSectionShape.NotDefined : (StructuralSectionShape)sectionShapeParam.AsInteger();
             
             List<Type> aTypes = Query.BHoMTypes(sectionShape).ToList();
-            if (aTypes.Count == 0) aTypes.AddRange(Query.BHoMTypes(familyName));
+            if (aTypes.Count == 0)
+                aTypes.AddRange(Query.BHoMTypes(familyName));
 
             if (aTypes.Contains(typeof(CircleProfile)))
             {
@@ -536,11 +537,13 @@ namespace BH.UI.Revit.Engine
                 }
             }
             
-            if (aProfile == null) aProfile = new FreeFormProfile(new List<oM.Geometry.ICurve>());
+            if (aProfile == null)
+                return null;
 
             aProfile = Modify.SetIdentifiers(aProfile, familySymbol) as IProfile;
             if (pullSettings.CopyCustomData)
                 aProfile = Modify.SetCustomData(aProfile, familySymbol, pullSettings.ConvertUnits) as IProfile;
+
             aProfile.Name = familySymbol.Name;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aProfile);
@@ -548,29 +551,158 @@ namespace BH.UI.Revit.Engine
             return aProfile;
         }
 
+        /***************************************************/
+
+        internal static IProfile BHoMFreeFormProfile(this FamilyInstance familyInstance, PullSettings pullSettings)
+        {
+            pullSettings = pullSettings.DefaultIfNull();
+
+            IProfile profile = pullSettings.FindRefObject<IProfile>(familyInstance.Symbol.Id.IntegerValue);
+            if (profile != null)
+                return profile;
+
+            List<oM.Geometry.ICurve> profileCurves = new List<oM.Geometry.ICurve>();
+
+            // Check if one and only one solid exists to make sure that the column is a single piece
+            Solid solid = null;
+            Options options = new Options();
+            options.IncludeNonVisibleObjects = false;
+            foreach (GeometryObject obj in familyInstance.Symbol.get_Geometry(options))
+            {
+                if (obj is Solid)
+                {
+                    Solid s = obj as Solid;
+                    if (!s.Faces.IsEmpty)
+                    {
+                        if (solid == null)
+                            solid = s;
+                        else
+                        {
+                            BH.Engine.Reflection.Compute.RecordWarning("The element consists of more than one solid. ElementId: " + familyInstance.Id.IntegerValue.ToString());
+                            return null;
+                        }
+                    }
+                }
+            }
+
+            if (solid == null)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("The profile of an element could not be found. ElementId: " + familyInstance.Id.IntegerValue.ToString());
+                return null;
+            }
+
+            //if (familyInstance.HasSweptProfile())
+            //    profileCurves = familyInstance.GetSweptProfile().GetSweptProfile().Curves.ToBHoM(pullSettings);
+            //else
+            //{
+
+            //TODO: direction should be driven based on the relation between GetTotalTransform(), handOrientation and facingOrientation?
+            //TODO: take into account where up where left
+
+            BH.oM.Geometry.Point centroid = solid.ComputeCentroid().ToBHoM(pullSettings);
+
+            XYZ direction;
+            if (familyInstance.Symbol.Family.FamilyPlacementType == FamilyPlacementType.CurveDrivenStructural)
+                direction = XYZ.BasisX;
+            else if (familyInstance.Symbol.Family.FamilyPlacementType == FamilyPlacementType.TwoLevelsBased)
+                direction = XYZ.BasisZ;
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("The profile of an element could not be found. ElementId: " + familyInstance.Id.IntegerValue.ToString());
+                return null;
+            }
+
+            Face face = null;
+            foreach (Face f in solid.Faces)
+            {
+                if (f is PlanarFace && (f as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(direction, 0.001))
+                {
+                    if (face == null)
+                        face = f;
+                    else
+                    {
+                        BH.Engine.Reflection.Compute.RecordWarning("The profile of an element could not be found. ElementId: " + familyInstance.Id.IntegerValue.ToString());
+                        return null;
+                    }
+                }
+            }
+
+            if (face == null)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("The profile of an element could not be found. ElementId: " + familyInstance.Id.IntegerValue.ToString());
+                return null;
+            }
+
+            foreach (EdgeArray curveArray in (face as PlanarFace).EdgeLoops)
+            {
+                foreach (Edge c in curveArray)
+                {
+                    BH.oM.Geometry.ICurve curve = c.AsCurve().ToBHoM(pullSettings);
+                    if (curve == null)
+                    {
+                        BH.Engine.Reflection.Compute.RecordWarning("The profile of an element could not be converted due to curve conversion issues. ElementId: " + familyInstance.Id.IntegerValue.ToString());
+                        return null;
+                    }
+                    profileCurves.Add(curve);
+                }
+            }
+
+            if (profileCurves.Count != 0)
+            {
+                //Checking if the curves are in the horisontal plane, if not rotating them.
+                BH.oM.Geometry.Point dirPt = direction.ToBHoM(pullSettings);
+                BH.oM.Geometry.Vector tan = new oM.Geometry.Vector { X = dirPt.X, Y = dirPt.Y, Z = dirPt.Z };
+
+                double angle = BH.Engine.Geometry.Query.Angle(tan, BH.oM.Geometry.Vector.ZAxis);
+                if (angle > BH.oM.Geometry.Tolerance.Angle)
+                {
+                    BH.oM.Geometry.Vector rotAxis = BH.Engine.Geometry.Query.CrossProduct(tan, BH.oM.Geometry.Vector.ZAxis);
+                    profileCurves = profileCurves.Select(x => BH.Engine.Geometry.Modify.IRotate(x, centroid, rotAxis, angle)).ToList();
+                }
+
+                BH.oM.Geometry.Vector adjustment = BH.Engine.Geometry.Query.DotProduct(centroid - BH.Engine.Geometry.Query.IStartPoint(profileCurves[0]), BH.oM.Geometry.Vector.ZAxis) * BH.oM.Geometry.Vector.ZAxis;
+
+                if (BH.Engine.Geometry.Query.Distance(centroid, oM.Geometry.Point.Origin) > oM.Geometry.Tolerance.Distance)
+                    profileCurves = profileCurves.Select(x => BH.Engine.Geometry.Modify.ITranslate(x, oM.Geometry.Point.Origin - centroid + adjustment)).ToList();
+            }
+
+
+            //}
+
+            profile = new FreeFormProfile(profileCurves);
+
+            profile = Modify.SetIdentifiers(profile, familyInstance.Symbol) as IProfile;
+            if (pullSettings.CopyCustomData)
+                profile = Modify.SetCustomData(profile, familyInstance.Symbol, pullSettings.ConvertUnits) as IProfile;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(profile);
+
+            return profile;
+        }
+
 
         /***************************************************/
         /****              Private helpers              ****/
         /***************************************************/
 
-        private static string[] diameterNames = { "BHE_Diameter", "Diameter", "d", "D", "OD" };
-        private static string[] radiusNames = { "BHE_Radius", "Radius", "r", "R" };
-        private static string[] heightNames = { "BHE_Height", "BHE_Depth", "Height", "Depth", "d", "h", "D", "H", "Ht", "b" };
-        private static string[] widthNames = { "BHE_Width", "Width", "b", "B", "bf", "w", "W", "D" };
-        private static string[] cornerRadiusNames = { "Corner Radius", "r", "r1" };
-        private static string[] topFlangeWidthNames = { "Top Flange Width", "bt", "bf_t", "bft", "b1", "b", "B", "Bt" };
-        private static string[] botFlangeWidthNames = { "Bottom Flange Width", "bb", "bf_b", "bfb", "b2", "b", "B", "Bb" };
-        private static string[] webThicknessNames = { "Web Thickness", "Stem Width", "tw", "t", "T" };
-        private static string[] topFlangeThicknessNames = { "Top Flange Thickness", "tft", "tf_t", "tf", "T", "t" };
-        private static string[] botFlangeThicknessNames = { "Bottom Flange Thickness", "tfb", "tf_b", "tf", "T", "t" };
-        private static string[] flangeThicknessNames = { "Flange Thickness", "Slab Depth", "tf", "T", "t" };
-        private static string[] weldSizeNames1 = { "Weld Size" };                                            // weld size, diagonal
-        private static string[] weldSizeNames2 = { "k" };                                                    // weld size counted from bar's vertical axis
-        private static string[] rootRadiusNames = { "Web Fillet", "Root Radius", "r", "r1", "tr", "kr", "R1", "R", "t" };
-        private static string[] toeRadiusNames = { "Flange Fillet", "Toe Radius", "r2", "R2", "t" };
-        private static string[] innerRadiusNames = { "Inner Fillet", "Inner Radius", "r1", "R1", "ri", "t" };
-        private static string[] outerRadiusNames = { "Outer Fillet", "Outer Radius", "r2", "R2", "ro", "tr" };
-        private static string[] wallThicknessNames = { "Wall Nominal Thickness", "Wall Thickness", "t", "T" };
+        private static readonly string[] diameterNames = { "BHE_Diameter", "Diameter", "d", "D", "OD" };
+        private static readonly string[] radiusNames = { "BHE_Radius", "Radius", "r", "R" };
+        private static readonly string[] heightNames = { "BHE_Height", "BHE_Depth", "Height", "Depth", "d", "h", "D", "H", "Ht", "b" };
+        private static readonly string[] widthNames = { "BHE_Width", "Width", "b", "B", "bf", "w", "W", "D" };
+        private static readonly string[] cornerRadiusNames = { "Corner Radius", "r", "r1" };
+        private static readonly string[] topFlangeWidthNames = { "Top Flange Width", "bt", "bf_t", "bft", "b1", "b", "B", "Bt" };
+        private static readonly string[] botFlangeWidthNames = { "Bottom Flange Width", "bb", "bf_b", "bfb", "b2", "b", "B", "Bb" };
+        private static readonly string[] webThicknessNames = { "Web Thickness", "Stem Width", "tw", "t", "T" };
+        private static readonly string[] topFlangeThicknessNames = { "Top Flange Thickness", "tft", "tf_t", "tf", "T", "t" };
+        private static readonly string[] botFlangeThicknessNames = { "Bottom Flange Thickness", "tfb", "tf_b", "tf", "T", "t" };
+        private static readonly string[] flangeThicknessNames = { "Flange Thickness", "Slab Depth", "tf", "T", "t" };
+        private static readonly string[] weldSizeNames1 = { "Weld Size" };                                            // weld size, diagonal
+        private static readonly string[] weldSizeNames2 = { "k" };                                                    // weld size counted from bar's vertical axis
+        private static readonly string[] rootRadiusNames = { "Web Fillet", "Root Radius", "r", "r1", "tr", "kr", "R1", "R", "t" };
+        private static readonly string[] toeRadiusNames = { "Flange Fillet", "Toe Radius", "r2", "R2", "t" };
+        private static readonly string[] innerRadiusNames = { "Inner Fillet", "Inner Radius", "r1", "R1", "ri", "t" };
+        private static readonly string[] outerRadiusNames = { "Outer Fillet", "Outer Radius", "r2", "R2", "ro", "tr" };
+        private static readonly string[] wallThicknessNames = { "Wall Nominal Thickness", "Wall Thickness", "t", "T" };
 
         /***************************************************/
     }

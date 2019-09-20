@@ -29,17 +29,17 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
+
         static public string MaterialGrade(this Element element)
         {
             if (element == null)
                 return null;
 
-            Parameter aParameter = element.LookupParameter("BHE_Material Grade");
-            if (aParameter == null)
-                return null;
+            string materialGrade = element.LookupString("BHE_Material Grade");
+            if (string.IsNullOrWhiteSpace(materialGrade))
+                materialGrade = element.LookupString("BHE_Material");
 
-            return aParameter.AsString();
+            return materialGrade;
         }
 
         /***************************************************/

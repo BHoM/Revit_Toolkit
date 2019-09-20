@@ -32,7 +32,6 @@ using BH.oM.Geometry.CoordinateSystem;
 using BH.oM.Environment.Elements;
 using System.Collections.Generic;
 using BH.oM.Environment.Fragments;
-using BH.oM.Structure.Elements;
 
 namespace BH.UI.Revit.Engine
 {
@@ -158,24 +157,6 @@ namespace BH.UI.Revit.Engine
             pushSettings = pushSettings.DefaultIfNull();
 
             return ToRevitElement(panel, document, pushSettings);
-        }
-
-        /***************************************************/
-
-        public static Element ToRevit(this oM.Structure.Elements.Panel panel, Document document, PushSettings pushSettings = null)
-        {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitHostObject(panel, document, pushSettings);
-        }
-
-        /***************************************************/
-
-        public static Element ToRevit(this oM.Structure.SurfaceProperties.ISurfaceProperty surfaceProperty, Document document, PushSettings pushSettings = null)
-        {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitFloorType(surfaceProperty, document, pushSettings);
         }
 
         /***************************************************/

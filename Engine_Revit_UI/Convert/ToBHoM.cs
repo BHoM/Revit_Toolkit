@@ -21,6 +21,7 @@
  */
 
 using System.Collections.Generic;
+using System.Linq;
 
 using BH.oM.Base;
 using BH.oM.Geometry;
@@ -112,7 +113,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this FamilyInstance familyInstance, PullSettings pullSettings = null)
+        public static IEnumerable<IBHoMObject> ToBHoM(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
             familyInstance.CheckIfNullPull();
 
@@ -125,15 +126,15 @@ namespace BH.UI.Revit.Engine
             switch (pullSettings.Discipline)
             {
                 case Discipline.Structural:
-                    return familyInstance.ToBHoMFramingElement(pullSettings);
+                    return familyInstance.ToBHoMBar(pullSettings).Cast<IBHoMObject>();
                 case Discipline.Physical:
                 case Discipline.Architecture:
                     switch ((BuiltInCategory)familyInstance.Category.Id.IntegerValue)
                     {
                         case BuiltInCategory.OST_Windows:
-                            return familyInstance.ToBHoMWindow(pullSettings);
+                            return new List<IBHoMObject> { familyInstance.ToBHoMWindow(pullSettings) };
                         case BuiltInCategory.OST_Doors:
-                            return familyInstance.ToBHoMDoor(pullSettings);
+                            return new List<IBHoMObject> { familyInstance.ToBHoMDoor(pullSettings) };
                         case BuiltInCategory.OST_StructuralFraming:
                         case BuiltInCategory.OST_StructuralColumns:
                         case BuiltInCategory.OST_Columns:
@@ -146,12 +147,12 @@ namespace BH.UI.Revit.Engine
                         case BuiltInCategory.OST_Girder:
                         case BuiltInCategory.OST_StructuralStiffener:
                         case BuiltInCategory.OST_StructuralFramingOther:
-                            return familyInstance.ToBHoMFramingElement(pullSettings);
+                            return new List<IBHoMObject> { familyInstance.ToBHoMFramingElement(pullSettings) };
 
                     }
                     break;
                 case Discipline.Environmental:
-                    return familyInstance.ToBHoMEnvironmentPanel(pullSettings);
+                    return new List<IBHoMObject> { familyInstance.ToBHoMEnvironmentPanel(pullSettings) };
             }
 
             familyInstance.NotConvertedWarning();
@@ -173,7 +174,7 @@ namespace BH.UI.Revit.Engine
                         return wall.ToBHoMEnvironmentPanels(pullSettings).ConvertAll(x => x as IBHoMObject);
                     break;
                 case Discipline.Structural:
-                    return wall.ToBHoMPanelPlanar(pullSettings).ConvertAll(p => p as IBHoMObject);
+                    return wall.ToBHoMPanel(pullSettings).ConvertAll(p => p as IBHoMObject);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                     if (wall.StackedWallOwnerId == null || wall.StackedWallOwnerId == ElementId.InvalidElementId)
@@ -599,8 +600,12 @@ namespace BH.UI.Revit.Engine
             {
                 case Discipline.Environmental:
                     return ToBHoMSolidMaterial(material, pullSettings);
-                default:
-                    return ToBHoMMaterial(material, pullSettings);
+                case Discipline.Structural:
+                    return ToBHoMMaterialFragment(material, pullSettings);
+                case Discipline.Physical:
+                    BH.oM.Physical.Materials.Material BHMaterial = material.ToBHoMEmptyMaterial(pullSettings);
+                    BHMaterial.Properties = material.ToBHoMMaterialProperties(pullSettings);
+                    return BHMaterial;
             }
 
             material.NotConvertedWarning();

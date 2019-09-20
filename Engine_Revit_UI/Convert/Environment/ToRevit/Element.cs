@@ -48,7 +48,7 @@ namespace BH.UI.Revit.Engine
                     return ToRevitElement_Wall(panel, document, pushSettings);
             }
 
-            Compute.AnalyticalObjectConversionWarining(panel, typeof(oM.Environment.Elements.Panel));
+            Compute.AnalyticalObjectConversionWarning(panel, typeof(oM.Environment.Elements.Panel));
             return null;
         }
 
