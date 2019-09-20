@@ -45,7 +45,11 @@ namespace BH.UI.Revit.Engine
             if (aPhysicalList != null && aPhysicalList.Count > 0)
                 return aPhysicalList;
 
-            oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes, pullSettings);
+            //TODO: check if the attributes != null
+            HostObjAttributes hostObjAttributes = hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes;
+            oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(hostObjAttributes, pullSettings);
+            string materialGrade = hostObject.MaterialGrade();
+            aConstruction.UpdateMaterialProperties(hostObjAttributes, materialGrade, pullSettings);
 
             IEnumerable<PlanarSurface> aPlanarSurfaces = Query.PlanarSurfaces(hostObject, pullSettings);
             if (aPlanarSurfaces == null)

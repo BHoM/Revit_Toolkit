@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-
+using BHP = BH.oM.Physical.Materials;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Revit.Engine
@@ -29,32 +29,24 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /**** Internal Methods                          ****/
         /***************************************************/
 
-        internal static WallType ToRevitWallType(this oM.Structure.SurfaceProperties.ISurfaceProperty surfaceProperty, Document document, PushSettings pushSettings = null)
+        internal static Material ToRevitMaterial(this BHP.Material material, Document document, PushSettings pushSettings = null)
         {
-            if (surfaceProperty == null || document == null)
-                return null;
-
-            WallType aWallType = pushSettings.FindRefObject<WallType>(document, surfaceProperty.BHoM_Guid);
-            if (aWallType != null)
-                return aWallType;
+            Material aMaterial = pushSettings.FindRefObject<Material>(document, material.BHoM_Guid);
+            if (aMaterial != null)
+                return aMaterial;
 
             pushSettings.DefaultIfNull();
 
-            aWallType = Query.ElementType(surfaceProperty, document, BuiltInCategory.OST_Walls, pushSettings.FamilyLoadSettings) as WallType;
+            aMaterial = document.GetElement(Material.Create(document, material.Name)) as Material;
 
-            aWallType.CheckIfNullPush(surfaceProperty);
-            if (aWallType == null)
-                return null;
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(material, aMaterial);
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aWallType, surfaceProperty, null, pushSettings.ConvertUnits);
-
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(surfaceProperty, aWallType);
-
-            return aWallType;
+            return aMaterial;
         }
+
+        /***************************************************/
     }
 }

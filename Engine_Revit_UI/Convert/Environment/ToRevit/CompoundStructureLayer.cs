@@ -35,7 +35,7 @@ namespace BH.UI.Revit.Engine
 
         internal static CompoundStructureLayer ToRevitCompoundStructureLayer(this oM.Physical.Constructions.Construction constructionLayer, Document document, PushSettings pushSettings = null)
         {
-            Compute.AnalyticalObjectConversionWarining(constructionLayer, typeof(oM.Common.Properties.CompoundLayer));
+            Compute.AnalyticalObjectConversionWarning(constructionLayer, typeof(oM.Common.Properties.CompoundLayer));
             return null;
         }
     }

@@ -51,7 +51,6 @@ namespace BH.UI.Revit.Engine
                 case "concrete":
                     return Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete;
                 case "steel":
-                    return Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel;
                 case "metal":
                     return Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel;
                 case "wood":

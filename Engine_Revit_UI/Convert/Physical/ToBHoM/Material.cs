@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -21,40 +21,45 @@
  */
 
 using Autodesk.Revit.DB;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Environment.MaterialFragments;
+using BH.oM.Physical.Materials;
+using BH.oM.Structure.MaterialFragments;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Query
+    public static partial class Convert
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
-        static public oM.Common.Properties.CompoundLayer CompoundLayer(this CompoundStructureLayer compoundStructureLayer, Document Document, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
+        internal static oM.Physical.Materials.Material ToBHoMEmptyMaterial(this Autodesk.Revit.DB.Material material, PullSettings pullSettings = null)
         {
-            if (compoundStructureLayer == null)
-                return null;
+            if (material == null)
+                return new oM.Physical.Materials.Material { Name = "Unknown Material" };
 
-            oM.Physical.Materials.Material aMaterial = Convert.ToBHoMMaterial(compoundStructureLayer, Document, builtInCategory, pullSettings);
-            if (aMaterial == null)
-                return null;
+            pullSettings = pullSettings.DefaultIfNull();
 
-            double aThickness = compoundStructureLayer.Width;
-            if (pullSettings.ConvertUnits)
-                aThickness = UnitUtils.ConvertFromInternalUnits(aThickness, DisplayUnitType.DUT_METERS);
+            oM.Physical.Materials.Material aMaterial = pullSettings.FindRefObject<oM.Physical.Materials.Material>(material.Id.IntegerValue);
+            if (aMaterial != null)
+                return aMaterial;
 
-            oM.Common.Properties.CompoundLayer aCompoundLayer = new oM.Common.Properties.CompoundLayer()
-            {
-                //Material = aMaterial,
-                Thickness = aThickness
-            };
+            aMaterial = new oM.Physical.Materials.Material { Properties = new System.Collections.Generic.List<IMaterialProperties>(), Name = material.Name };
+            
+            aMaterial = Modify.SetIdentifiers(aMaterial, material) as oM.Physical.Materials.Material;
+            if (pullSettings.CopyCustomData)
+                aMaterial = Modify.SetCustomData(aMaterial, material, pullSettings.ConvertUnits) as oM.Physical.Materials.Material;
 
-            return aCompoundLayer;
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aMaterial);
+
+            return aMaterial;
         }
 
         /***************************************************/
-
     }
 }

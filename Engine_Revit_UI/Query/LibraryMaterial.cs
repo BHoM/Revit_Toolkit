@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB.Structure;
+using BH.oM.Structure.MaterialFragments;
 
 using BH.oM.Base;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -32,29 +34,26 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public oM.Physical.Materials.Material LibraryMaterial(this StructuralMaterialType structuralMaterialType, string materialGrade)
+        static public IMaterialFragment LibraryMaterial(this StructuralMaterialType structuralMaterialType, string materialGrade)
         {
+            if (string.IsNullOrWhiteSpace(materialGrade))
+                return null;
+
             switch (structuralMaterialType)
             {
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.PrecastConcrete:
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete:
-                    if (materialGrade != null)
+                    foreach (IBHoMObject concrete in BH.Engine.Library.Query.Library("Materials").Where(x => x is Concrete))
                     {
-                        foreach (IBHoMObject concrete in BH.Engine.Library.Query.Match("MaterialsEurope", "Type", "Concrete"))
-                        {
-                            if (materialGrade.Contains(concrete.Name))
-                                return concrete as oM.Physical.Materials.Material;
-                        }
+                        if (materialGrade.Contains(concrete.Name))
+                            return concrete as IMaterialFragment;
                     }
                     break;
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
-                    if (materialGrade != null)
+                    foreach (IBHoMObject steel in BH.Engine.Library.Query.Library("Materials").Where(x => x is Steel))
                     {
-                        foreach (IBHoMObject steel in BH.Engine.Library.Query.Match("MaterialsEurope", "Type", "Steel"))
-                        {
-                            if (materialGrade.Contains(steel.Name))
-                                return steel as oM.Physical.Materials.Material;
-                        }
+                        if (materialGrade.Contains(steel.Name))
+                            return steel as IMaterialFragment;
                     }
                     break;
             }

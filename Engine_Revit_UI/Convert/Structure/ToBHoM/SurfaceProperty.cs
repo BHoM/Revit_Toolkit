@@ -67,7 +67,9 @@ namespace BH.UI.Revit.Engine
                     if (pullSettings.ConvertUnits) aThickness = aThickness.ToSI(UnitType.UT_Section_Dimension);
 
                     Material aMaterial_Revit = ElementId.InvalidElementId == csl.MaterialId ? wallType.Category.Material : document.GetElement(csl.MaterialId) as Material;
-                    aMaterial = aMaterial_Revit.ToBHoMMaterial(pullSettings);
+
+                    //TODO: uncomment it!
+                    //aMaterial = aMaterial_Revit.ToBHoMMaterial(pullSettings);
                 }
             }
 
@@ -126,7 +128,9 @@ namespace BH.UI.Revit.Engine
                     if (pullSettings.ConvertUnits) aThickness = aThickness.ToSI(UnitType.UT_Section_Dimension);
 
                     Material aMaterial_Revit = ElementId.InvalidElementId == csl.MaterialId ? floorType.Category.Material : document.GetElement(csl.MaterialId) as Material;
-                    aMaterial = aMaterial_Revit.ToBHoMMaterial(pullSettings);
+
+                    //TODO: uncomment it!
+                    //aMaterial = aMaterial_Revit.ToBHoMMaterial(pullSettings);
                 }
             }
 

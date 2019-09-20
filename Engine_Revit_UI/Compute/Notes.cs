@@ -79,7 +79,19 @@ namespace BH.UI.Revit.Engine
             string aMessage = "Material could not be found in BHoM Libary.";
 
             if (material != null)
-                aMessage = string.Format("{0} Element Id: {1}", aMessage, material.Id.IntegerValue);
+                aMessage = string.Format("{0} Material Id: {1}", aMessage, material.Id.IntegerValue);
+
+            BH.Engine.Reflection.Compute.RecordNote(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void MaterialNotInLibraryNote(this Element element)
+        {
+            string aMessage = "Material could not be found in BHoM Libary.";
+
+            if (element != null)
+                aMessage = string.Format("{0} Element Id: {1}", aMessage, element.Id.IntegerValue);
 
             BH.Engine.Reflection.Compute.RecordNote(aMessage);
         }

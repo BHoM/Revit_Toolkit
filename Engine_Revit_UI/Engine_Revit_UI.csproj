@@ -188,6 +188,7 @@
     <Compile Include="Convert\Physical\ToBHoM\FramingElement.cs" />
     <Compile Include="Convert\Physical\ToBHoM\Construction.cs" />
     <Compile Include="Convert\Physical\ToBHoM\IPhysical.cs" />
+    <Compile Include="Convert\Physical\ToBHoM\Material.cs" />
     <Compile Include="Convert\Physical\ToBHoM\Window.cs" />
     <Compile Include="Convert\Physical\ToRevit\HostObjAttributes.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilyInstance.cs" />
@@ -212,16 +213,17 @@
     <Compile Include="Convert\Revit\ToRevit\ElementType.cs" />
     <Compile Include="Convert\Revit\ToRevit\Family.cs" />
     <Compile Include="Convert\Revit\ToRevit\CurveElement.cs" />
+    <Compile Include="Convert\Structure\ToBHoM\Bar.cs" />
     <Compile Include="Modify\AddAdjacentSpaceId.cs" />
     <Compile Include="Compute\LoadFamily.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Ceiling.cs" />
     <Compile Include="Convert\Revit\ToBHoM\ViewPlan.cs" />
-    <Compile Include="Convert\Revit\ToBHoM\Material.cs" />
+    <Compile Include="Convert\Structure\ToBHoM\MaterialFragment.cs" />
     <Compile Include="Convert\Revit\ToBHoM\Viewport.cs" />
     <Compile Include="Convert\Revit\ToBHoM\Sheet.cs" />
     <Compile Include="Convert\Revit\ToRevit\Element.cs" />
-    <Compile Include="Convert\Revit\ToRevit\Material.cs" />
+    <Compile Include="Convert\Physical\ToRevit\Material.cs" />
     <Compile Include="Convert\Revit\ToRevit\ViewPlan.cs" />
     <Compile Include="Convert\Revit\ToRevit\Viewport.cs" />
     <Compile Include="Convert\Revit\ToRevit\ViewSheet.cs" />
@@ -242,15 +244,9 @@
     <Compile Include="Convert\Geometry\ToRevit\Curve.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Point.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Vector.cs" />
-    <Compile Include="Convert\Structure\ToBHoM\PanelPlanar.cs" />
+    <Compile Include="Convert\Structure\ToBHoM\Panel.cs" />
     <Compile Include="Convert\Structure\ToBHoM\Profile.cs" />
     <Compile Include="Convert\Structure\ToBHoM\SurfaceProperty.cs" />
-    <Compile Include="Convert\Structure\ToBHoM\SectionProperty.cs" />
-    <Compile Include="Convert\Structure\ToRevit\Floor.cs" />
-    <Compile Include="Convert\Structure\ToRevit\FloorType.cs" />
-    <Compile Include="Convert\Structure\ToRevit\HostObject.cs" />
-    <Compile Include="Convert\Structure\ToRevit\Wall.cs" />
-    <Compile Include="Convert\Structure\ToRevit\WallType.cs" />
     <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Convert\ToRevit.cs" />
     <Compile Include="Convert\ToSI.cs" />
@@ -258,11 +254,12 @@
     <Compile Include="Modify\AddSpaceId.cs" />
     <Compile Include="Modify\SetTags.cs" />
     <Compile Include="Modify\AppendRefObjects.cs" />
+    <Compile Include="Modify\UpdateMaterialProperties.cs" />
     <Compile Include="Modify\UpdateValues.cs" />
     <Compile Include="Query\BoundingBox.cs" />
-    <Compile Include="Query\CompoundLayer.cs" />
     <Compile Include="Query\CompoundLayers.cs" />
     <Compile Include="Query\FamilySymbols.cs" />
+    <Compile Include="Query\FramingType.cs" />
     <Compile Include="Query\HighElevation.cs" />
     <Compile Include="Query\IsValid.cs" />
     <Compile Include="Query\FamilyPlacementTypeName.cs" />
@@ -358,7 +355,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Convert\Architecture\ToRevit\" />
+    <Folder Include="Convert\Structure\ToRevit\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

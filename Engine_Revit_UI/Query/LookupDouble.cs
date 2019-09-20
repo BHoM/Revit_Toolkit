@@ -63,6 +63,19 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static int LookupInteger(this Element element, BuiltInParameter builtInParameter)
+        {
+            int value = -1;
+
+            Parameter p = element.get_Parameter(builtInParameter);
+            if (p != null && p.HasValue)
+                value = p.AsInteger();
+
+            return value;
+        }
+
+        /***************************************************/
+
         public static double LookupDouble(this Element element, IEnumerable<string> parameterNames, bool convertUnits = true)
         {
             double value = double.NaN;
@@ -74,6 +87,32 @@ namespace BH.UI.Revit.Engine
                     value = Convert.ToSI(value, p.Definition.UnitType);
             }
             return value;
+        }
+
+        /***************************************************/
+
+        public static string LookupString(this Element element, string parameterName)
+        {
+            Parameter p = element.LookupParameter(parameterName);
+
+            if (p != null && p.HasValue)
+            {
+                switch (p.StorageType)
+                {
+                    case (StorageType.Double):
+                        return UnitUtils.ConvertFromInternalUnits(p.AsDouble(), p.DisplayUnitType).ToString();
+                    case (StorageType.Integer):
+                        return p.AsInteger().ToString();
+                    case (StorageType.String):
+                        return p.AsString();
+                    case (StorageType.ElementId):
+                        return p.AsValueString();
+                    default:
+                        return null;
+                }
+
+            }
+            return null;
         }
 
         /***************************************************/

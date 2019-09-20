@@ -84,9 +84,8 @@ namespace BH.UI.Revit.Engine
             //Check that the curve works for revit
             if (!CheckLocationCurveColumns(framingElement))
                 return null;
-
-
-            Curve aCurve = framingElement.Location.ToRevitCurve(pushSettings);
+            
+            Line columnLine = framingElement.Location.ToRevitCurve(pushSettings) as Line;
             Level aLevel = null;
 
             aCustomDataValue = framingElement.CustomDataValue("Base Level");
@@ -119,7 +118,7 @@ namespace BH.UI.Revit.Engine
                 return null;
             }
 
-            aFamilyInstance = document.Create.NewFamilyInstance(aCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Column);
+            aFamilyInstance = document.Create.NewFamilyInstance(columnLine, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Column);
 
             aFamilyInstance.CheckIfNullPush(framingElement);
             if (aFamilyInstance == null)
@@ -133,6 +132,17 @@ namespace BH.UI.Revit.Engine
                 if (aParameter != null && !aParameter.IsReadOnly)
                     aParameter.Set(orientationAngle);
             }
+            
+            if (1 - Math.Abs(columnLine.Direction.DotProduct(XYZ.BasisZ)) < BH.oM.Geometry.Tolerance.Angle)
+            {
+                document.Regenerate();
+                aFamilyInstance.TrySetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 0);
+
+                aFamilyInstance.TrySetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM, columnLine.Origin.Z - aLevel.Elevation);
+                aFamilyInstance.TrySetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.Origin.Z + columnLine.Length - aLevel.Elevation);
+                document.Regenerate();
+            }
+            
 
             if (pushSettings.CopyCustomData)
             {
@@ -151,7 +161,8 @@ namespace BH.UI.Revit.Engine
                     //BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM,
                     BuiltInParameter.SCHEDULE_TOP_LEVEL_OFFSET_PARAM,
                     BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM,
-                    BuiltInParameter.ELEM_TYPE_PARAM
+                    BuiltInParameter.ELEM_TYPE_PARAM,
+                    BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE //possibly good to avoid overwriting of rotation angle?
                 };
                 Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
             }
@@ -282,7 +293,7 @@ namespace BH.UI.Revit.Engine
                 zJustification.Set((int)Autodesk.Revit.DB.Structure.ZJustification.Origin); 
 
 
-
+            //TODO: RESET JUSTIFICATION!
             if (pushSettings.CopyCustomData)
             {
                 BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
@@ -292,7 +303,8 @@ namespace BH.UI.Revit.Engine
                     BuiltInParameter.ELEM_FAMILY_PARAM,
                     BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
                     BuiltInParameter.ALL_MODEL_IMAGE,
-                    BuiltInParameter.ELEM_TYPE_PARAM
+                    BuiltInParameter.ELEM_TYPE_PARAM,
+                    BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE //possibly good to avoid overwriting of rotation angle?
                 };
                 Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
             }
