@@ -40,11 +40,12 @@ namespace BH.UI.Revit.Engine
 
             pullSettings = pullSettings.DefaultIfNull();
 
-            //SolidMaterial aResult = pullSettings.FindRefObject<SolidMaterial>(material.Id.IntegerValue);
-            //if (aResult != null)
-            //    return aResult;
+            SolidMaterial aResult = pullSettings.FindRefObject<SolidMaterial>(material.Id.IntegerValue);
+            if (aResult != null)
+                return aResult;
+            else
+                aResult = new SolidMaterial();
 
-            SolidMaterial aResult = new SolidMaterial();
             aResult.Name = material.Name;
             Parameter aParameter = material.get_Parameter(BuiltInParameter.ALL_MODEL_DESCRIPTION);
             if (aParameter != null)
@@ -59,7 +60,7 @@ namespace BH.UI.Revit.Engine
             //if (pullSettings.CopyCustomData)
             //    aResult = Modify.SetCustomData(aResult, material, pullSettings.ConvertUnits) as SolidMaterial;
 
-            //pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult);
             return aResult;
         }
 
