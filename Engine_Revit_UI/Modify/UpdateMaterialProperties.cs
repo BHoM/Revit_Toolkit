@@ -38,52 +38,63 @@ namespace BH.UI.Revit.Engine
 {
     public static partial class Modify
     {
-        public static void UpdateMaterialProperties(this BH.oM.Physical.Constructions.Construction construction, HostObjAttributes hostObjectAttributes, string materialGrade, PullSettings pullSettings)
+        internal static BH.oM.Physical.Constructions.Construction UpdateMaterialProperties(this BH.oM.Physical.Constructions.Construction construction, HostObjAttributes hostObjectAttributes, string materialGrade, PullSettings pullSettings)
         {
+            BH.oM.Physical.Constructions.Construction newConstruction = construction.GetShallowClone() as BH.oM.Physical.Constructions.Construction;
+            newConstruction.Layers = new List<Layer>(construction.Layers);
+
             CompoundStructure compoundStructure = hostObjectAttributes.GetCompoundStructure();
             if (compoundStructure == null)
                 {
                     //throw error
-                    return;
+                    return newConstruction;
                 }
 
             List<CompoundStructureLayer> revitLayers = compoundStructure.GetLayers().ToList();
-            if (construction.Layers.Count!= revitLayers.Count)
+            if (newConstruction.Layers.Count!= revitLayers.Count)
             {
                 //throw error
-                return;
+                return newConstruction;
             }
 
             Document doc = hostObjectAttributes.Document;
             for (int i = 0; i < construction.Layers.Count; i++)
             {
-                CompoundStructureLayer revitLayer = revitLayers[i];
-                BH.oM.Physical.Materials.Material material = construction.Layers[i].Material;
+                Layer newLayer = construction.Layers[i].GetShallowClone() as Layer;
 
+                CompoundStructureLayer revitLayer = revitLayers[i];
                 Autodesk.Revit.DB.Material revitMaterial = doc.GetElement(revitLayers[i].MaterialId) as Autodesk.Revit.DB.Material;
-                material.UpdateMaterialProperties(revitMaterial, pullSettings, materialGrade);
+                //BH.oM.Physical.Materials.Material material = construction.Layers[i].Material;
+
+                newLayer.Material = newLayer.Material.UpdateMaterialProperties(revitMaterial, pullSettings, materialGrade);
+                newConstruction.Layers[i] = newLayer;
             }
+
+            return newConstruction;
         }
 
-        public static void UpdateMaterialProperties(this BH.oM.Physical.Materials.Material material, Autodesk.Revit.DB.Material sourceMaterial, PullSettings pullSettings, string materialGrade = null, StructuralMaterialType structuralMaterialType = StructuralMaterialType.Undefined)
+        internal static BH.oM.Physical.Materials.Material UpdateMaterialProperties(this BH.oM.Physical.Materials.Material material, Autodesk.Revit.DB.Material sourceMaterial, PullSettings pullSettings, string materialGrade = null, StructuralMaterialType structuralMaterialType = StructuralMaterialType.Undefined)
         {
-            material.Properties = sourceMaterial.ToBHoMMaterialProperties(pullSettings, materialGrade);
+            BH.oM.Physical.Materials.Material newMaterial = material.GetShallowClone() as BH.oM.Physical.Materials.Material;
+            newMaterial.Properties = sourceMaterial.ToBHoMMaterialProperties(pullSettings, materialGrade);
 
             if (sourceMaterial == null)
             {
                 if (structuralMaterialType == StructuralMaterialType.Undefined)
-                    material.Name = "Unknown Material";
+                    newMaterial.Name = "Unknown Material";
                 else
                 {
-                    material.Name = String.Format("Unknown {0} Material", structuralMaterialType);
+                    newMaterial.Name = String.Format("Unknown {0} Material", structuralMaterialType);
                     material.TryUpdateEmptyMaterialFromLibrary(structuralMaterialType, pullSettings, materialGrade);
                 }
             }
             else
-                material.Name = sourceMaterial.Name;
+                newMaterial.Name = sourceMaterial.Name;
+
+            return newMaterial;
         }
 
-        public static void TryUpdateEmptyMaterialFromLibrary(this BH.oM.Physical.Materials.Material material, StructuralMaterialType structuralMaterialType, PullSettings pullSettings, string materialGrade = null)
+        internal static void TryUpdateEmptyMaterialFromLibrary(this BH.oM.Physical.Materials.Material material, StructuralMaterialType structuralMaterialType, PullSettings pullSettings, string materialGrade = null)
         {
             IMaterialFragment structuralProperty = Query.LibraryMaterial(structuralMaterialType, materialGrade);
             if (structuralProperty != null)
@@ -93,7 +104,7 @@ namespace BH.UI.Revit.Engine
             }
         }
 
-        public static List<IMaterialProperties> ToBHoMMaterialProperties(this Autodesk.Revit.DB.Material material, PullSettings pullSettings, string materialGrade = null)
+        internal static List<IMaterialProperties> ToBHoMMaterialProperties(this Autodesk.Revit.DB.Material material, PullSettings pullSettings, string materialGrade = null)
         {
             List<IMaterialProperties> result = new List<IMaterialProperties>();
             List<Type> types = pullSettings.Discipline.MaterialTypes();

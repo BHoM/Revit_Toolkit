@@ -49,7 +49,7 @@ namespace BH.UI.Revit.Engine
             HostObjAttributes hostObjAttributes = hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes;
             oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(hostObjAttributes, pullSettings);
             string materialGrade = hostObject.MaterialGrade();
-            aConstruction.UpdateMaterialProperties(hostObjAttributes, materialGrade, pullSettings);
+            aConstruction = aConstruction.UpdateMaterialProperties(hostObjAttributes, materialGrade, pullSettings);
 
             IEnumerable<PlanarSurface> aPlanarSurfaces = Query.PlanarSurfaces(hostObject, pullSettings);
             if (aPlanarSurfaces == null)
