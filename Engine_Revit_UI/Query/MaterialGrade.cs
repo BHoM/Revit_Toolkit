@@ -39,6 +39,9 @@ namespace BH.UI.Revit.Engine
             if (string.IsNullOrWhiteSpace(materialGrade))
                 materialGrade = element.LookupString("BHE_Material");
 
+            if (!string.IsNullOrWhiteSpace(materialGrade))
+                materialGrade = materialGrade.Replace(" ", "");
+
             return materialGrade;
         }
 
