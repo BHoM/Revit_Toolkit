@@ -68,28 +68,43 @@ namespace BH.UI.Revit.Engine
 
             if (locationCurve == null)
                 familyInstance.BarCurveNotFoundWarning();
+            
+            string materialGrade = familyInstance.MaterialGrade();
+            IMaterialFragment materialFragment = Query.LibraryMaterial(familyInstance.StructuralMaterialType, materialGrade);
 
-            IMaterialFragment materialFragment = null;
-            BH.oM.Physical.Materials.Material material = pullSettings.FindRefObject<oM.Physical.Materials.Material>(familyInstance.StructuralMaterialId.IntegerValue);
-            if (material != null)
-                materialFragment = material.GetMaterialProperties(oM.Adapters.Revit.Enums.Discipline.Structural).FirstOrDefault() as IMaterialFragment;
-            else
+            if (materialFragment == null)
             {
-                string materialGrade = familyInstance.MaterialGrade();
-                materialFragment = Query.LibraryMaterial(familyInstance.StructuralMaterialType, materialGrade);
-
-                if (materialFragment == null)
-                {
-                    //Compute.MaterialNotInLibraryNote(familyInstance);
-                    materialFragment = (familyInstance.Document.GetElement(familyInstance.StructuralMaterialId) as Autodesk.Revit.DB.Material).ToBHoMMaterialFragment(pullSettings);
-                }
-
-                if (materialFragment == null)
-                {
-                    Compute.InvalidDataMaterialWarning(familyInstance);
-                    materialFragment = BHoMEmptyMaterialFragment(familyInstance.StructuralMaterialType, pullSettings);
-                }
+                //Compute.MaterialNotInLibraryNote(familyInstance);
+                materialFragment = (familyInstance.Document.GetElement(familyInstance.StructuralMaterialId) as Autodesk.Revit.DB.Material).ToBHoMMaterialFragment(pullSettings);
             }
+
+            if (materialFragment == null)
+            {
+                Compute.InvalidDataMaterialWarning(familyInstance);
+                materialFragment = BHoMEmptyMaterialFragment(familyInstance.StructuralMaterialType, pullSettings);
+            }
+
+            //TODO: this probably should be deleted - the Physical material in RefObjects has no properties by definition (it gets updated after being set to RefObjects)
+            //if (materialFragment == null)
+            //{
+            //    BH.oM.Physical.Materials.Material material = pullSettings.FindRefObject<oM.Physical.Materials.Material>(familyInstance.StructuralMaterialId.IntegerValue);
+            //    if (material != null)
+            //        materialFragment = material.GetMaterialProperties(oM.Adapters.Revit.Enums.Discipline.Structural).FirstOrDefault() as IMaterialFragment;
+            //    else
+            //    {
+            //        if (materialFragment == null)
+            //        {
+            //            //Compute.MaterialNotInLibraryNote(familyInstance);
+            //            materialFragment = (familyInstance.Document.GetElement(familyInstance.StructuralMaterialId) as Autodesk.Revit.DB.Material).ToBHoMMaterialFragment(pullSettings);
+            //        }
+
+            //        if (materialFragment == null)
+            //        {
+            //            Compute.InvalidDataMaterialWarning(familyInstance);
+            //            materialFragment = BHoMEmptyMaterialFragment(familyInstance.StructuralMaterialType, pullSettings);
+            //        }
+            //    }
+            //}
 
             string elementName = familyInstance.Name;
             string profileName = familyInstance.Symbol.Name;
