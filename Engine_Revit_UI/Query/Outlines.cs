@@ -38,148 +38,29 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<ICurve> Outlines(this Wall wall, PullSettings pullSettings = null)
+        public static List<ICurve> Outlines(this HostObject hostObject, PullSettings pullSettings = null)
         {
-            List<ICurve> result = new List<ICurve>();
+            AnalyticalModel analyticalModel = hostObject.GetAnalyticalModel();
+            if (analyticalModel == null)
+            {
+                //TODO: appropriate warning or not - physical preferred?
+                return null;
+            }
 
             pullSettings = pullSettings.DefaultIfNull();
-
-            if (wall.GetAnalyticalModel() != null)
+            
+            List<ICurve> wallCurves = analyticalModel.GetCurves(AnalyticalCurveType.RawCurves).ToList().ToBHoM(pullSettings);
+            if (wallCurves.Any(x => x == null))
             {
-                List<ICurve> wallCurves = wall.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList().ToBHoM(pullSettings);
-
-                foreach (ICurve c in wallCurves)
-                {
-                    if (c == null)
-                    {
-                        wall.UnsupportedOutlineCurveWarning();
-                        return null;
-                    }
-                        
-                }
-
-                result = BH.Engine.Geometry.Compute.IJoin(wallCurves).ConvertAll(c => c as ICurve);
+                hostObject.UnsupportedOutlineCurveWarning();
+                return null;
             }
 
-            else
+            List<ICurve> result = BH.Engine.Geometry.Compute.IJoin(wallCurves).ConvertAll(c => c as ICurve);
+            if (result.Any(x => !x.IIsClosed()))
             {
-                CompoundStructure cs = wall.WallType.GetCompoundStructure();
-                double thk = cs.GetWidth();
-
-                LocationCurve aLocationCurve = wall.Location as LocationCurve;
-                XYZ direction = aLocationCurve.Curve.ComputeDerivatives(0.5, true).BasisX.Normalize();
-                XYZ normal = new XYZ(-direction.Y, direction.X, 0);
-                Vector toWallLine = new oM.Geometry.Point() - normal.ToBHoM(pullSettings) * thk * 0.5;
-
-                foreach (GeometryObject obj in wall.get_Geometry(new Options()))
-                {
-                    if (obj is Solid)
-                    {
-                        foreach (PlanarFace face in (obj as Solid).Faces)
-                        {
-                            if (face.FaceNormal.IsAlmostEqualTo(normal))
-                            {
-                                List<ICurve> faceOutlines = new List<ICurve>();
-                                foreach (PolyCurve aPolyCurve in face.EdgeLoops.ToBHoM(pullSettings))
-                                {
-                                    foreach (ICurve aCurve in aPolyCurve.Curves)
-                                    {
-                                        if (aCurve == null)
-                                        {
-                                            wall.UnsupportedOutlineCurveWarning();
-                                            return null;
-                                        }
-                                    }
-
-                                    result.AddRange(BH.Engine.Geometry.Compute.IJoin(aPolyCurve.Curves).Select(c => c.Translate(toWallLine)));
-                                }
-                                break;                          //TODO: is this OK?
-                            }
-                        }
-                    }
-                }
-            }
-
-            foreach(ICurve outline in result)
-            {
-                if (!outline.IIsClosed())
-                {
-                    wall.NonClosedOutlineWarning();
-                    return null;
-                }
-            }
-
-            return result;
-        }
-
-        /***************************************************/
-        
-        public static List<ICurve> Outlines(this Floor floor, PullSettings pullSettings = null)
-        {
-            List<ICurve> result = new List<ICurve>();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            if (floor.GetAnalyticalModel() != null)
-            {
-                List<ICurve> floorCurves = floor.GetAnalyticalModel().GetCurves(AnalyticalCurveType.RawCurves).ToList().ToBHoM(pullSettings);
-                
-                foreach (ICurve c in floorCurves)
-                {
-                    if (c == null)
-                    {
-                        floor.UnsupportedOutlineCurveWarning();
-                        return null;
-                    }
-                }
-
-                result = BH.Engine.Geometry.Compute.IJoin(floorCurves).ConvertAll(c => c as oM.Geometry.ICurve);
-            }
-
-            else
-            {
-                CompoundStructure cs = floor.FloorType.GetCompoundStructure();
-                double thk = cs.GetWidth();
-
-                XYZ normal = new XYZ(0, 0, 1);
-                Vector toFloorLine = new oM.Geometry.Point() - normal.ToBHoM(pullSettings) * thk * 0.5;
-
-                foreach (GeometryObject obj in floor.get_Geometry(new Options()))
-                {
-                    if (obj is Solid)
-                    {
-                        foreach (PlanarFace face in (obj as Solid).Faces)
-                        {
-                            if (face.FaceNormal.IsAlmostEqualTo(normal))
-                            {
-                                List<ICurve> faceOutlines = new List<ICurve>();
-                                foreach (PolyCurve aPolyCurve in face.EdgeLoops.ToBHoM(pullSettings))
-                                {
-                                    foreach (ICurve aCurve in aPolyCurve.Curves)
-                                    {
-                                        if (aCurve == null)
-                                        {
-                                            floor.UnsupportedOutlineCurveWarning();
-                                            return null;
-                                        }
-                                    }
-
-                                    result.AddRange(BH.Engine.Geometry.Compute.IJoin(aPolyCurve.Curves).Select(c => c.Translate(toFloorLine)));
-                                }
-                                break;                          //TODO: is this OK?
-                            }
-                        }
-                    }
-                }
-            }
-
-            foreach (oM.Geometry.ICurve outline in result)
-            {
-                if (!outline.IIsClosed())
-                {
-                    floor.NonClosedOutlineWarning();
-                    return null;
-                }
+                hostObject.NonClosedOutlineWarning();
+                return null;
             }
 
             return result;

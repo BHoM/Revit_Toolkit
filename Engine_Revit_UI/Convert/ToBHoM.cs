@@ -221,7 +221,7 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Environmental:
                     return floor.ToBHoMEnvironmentPanels(pullSettings).ConvertAll(x => x as IBHoMObject);
                 case Discipline.Structural:
-                    return floor.ToBHoMPanelPlanar(pullSettings).ConvertAll(p => p as IBHoMObject);
+                    return floor.ToBHoMPanel(pullSettings).ConvertAll(p => p as IBHoMObject);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                     return floor.ToBHoMIPhysicals(pullSettings).ConvertAll(x => x as IBHoMObject);

@@ -39,59 +39,83 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static ISurfaceProperty ToBHoMSurfaceProperty(this WallType wallType, PullSettings pullSettings = null)
+        internal static ISurfaceProperty ToBHoMSurfaceProperty(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null, string materialGrade = null)
         {
-            Document document = wallType.Document;
+            Document document = hostObjAttributes.Document;
 
             pullSettings = pullSettings.DefaultIfNull();
 
-            ConstantThickness aConstantThickness = pullSettings.FindRefObject<ConstantThickness>(wallType.Id.IntegerValue);
+            ConstantThickness aConstantThickness = pullSettings.FindRefObject<ConstantThickness>(hostObjAttributes.Id.IntegerValue);
             if (aConstantThickness != null)
                 return aConstantThickness;
 
             double aThickness = 0;
-            oM.Physical.Materials.Material aMaterial = null;
+            IMaterialFragment materialFragment = null;
 
             bool composite = false;
-            foreach (CompoundStructureLayer csl in wallType.GetCompoundStructure().GetLayers())
+            foreach (CompoundStructureLayer csl in hostObjAttributes.GetCompoundStructure().GetLayers())
             {
                 if (csl.Function == MaterialFunctionAssignment.Structure)
                 {
+                    Material revitMaterial = document.GetElement(csl.MaterialId) as Material;
+                    if (revitMaterial == null)
+                    {
+                        //TODO: warning about a structural layer skipped and skip
+                    }
+
                     if (aThickness != 0)
                     {
                         composite = true;
                         aThickness = 0;
                         break;
                     }
+
                     aThickness = csl.Width;
-                    if (pullSettings.ConvertUnits) aThickness = aThickness.ToSI(UnitType.UT_Section_Dimension);
+                    if (pullSettings.ConvertUnits)
+                        aThickness = aThickness.ToSI(UnitType.UT_Section_Dimension);
 
-                    Material aMaterial_Revit = ElementId.InvalidElementId == csl.MaterialId ? wallType.Category.Material : document.GetElement(csl.MaterialId) as Material;
+                    Autodesk.Revit.DB.Structure.StructuralMaterialType structuralMaterialType = revitMaterial.MaterialClass.StructuralMaterialType();
+                    materialFragment = Query.LibraryMaterial(structuralMaterialType, materialGrade);
 
-                    //TODO: uncomment it!
-                    //aMaterial = aMaterial_Revit.ToBHoMMaterial(pullSettings);
+                    if (materialFragment == null)
+                    {
+                        //Compute.MaterialNotInLibraryNote(familyInstance);
+                        materialFragment = revitMaterial.ToBHoMMaterialFragment(pullSettings);
+                    }
+
+                    if (materialFragment == null)
+                    {
+                        Compute.InvalidDataMaterialWarning(hostObjAttributes);
+                        materialFragment = BHoMEmptyMaterialFragment(structuralMaterialType, pullSettings);
+                    }
+                }
+                else if (csl.Function == MaterialFunctionAssignment.StructuralDeck)
+                {
+                    //TODO: warning that a composite deck here + action appropriately
+                }
+                else
+                {
+                    //TODO: warning that nonstructural layers exist and are skipped
                 }
             }
 
-            if (composite) wallType.CompositePanelWarning();
-            else if (aThickness == 0) BH.Engine.Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", wallType.Id.IntegerValue));
+            //TODO: Clean it up!
+            if (composite)
+                hostObjAttributes.CompositePanelWarning();
+            else if (aThickness == 0)
+                BH.Engine.Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
 
-            //Get out the structural material fragment. If no present settign to concrete for now
-            IMaterialFragment strucMaterialFragment;
-            if (aMaterial.IsValidStructural())
-                strucMaterialFragment = aMaterial.StructuralMaterialFragment();
-            else
-            {
-                strucMaterialFragment = new Concrete() { Name = aMaterial.Name };
-                aMaterial.MaterialNotStructuralWarning();
-            }
+            oM.Structure.SurfaceProperties.PanelType panelType = oM.Structure.SurfaceProperties.PanelType.Undefined;
+            if (hostObjAttributes is WallType)
+                panelType = oM.Structure.SurfaceProperties.PanelType.Wall;
+            else if (hostObjAttributes is FloorType)
+                panelType = oM.Structure.SurfaceProperties.PanelType.Slab;
 
+            ConstantThickness aProperty2D = new ConstantThickness { PanelType = panelType, Thickness = aThickness, Material = materialFragment, Name = hostObjAttributes.Name };
 
-            ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structure.SurfaceProperties.PanelType.Wall, Thickness = aThickness, Material = strucMaterialFragment, Name = wallType.Name };
-
-            aProperty2D = Modify.SetIdentifiers(aProperty2D, wallType) as ConstantThickness;
+            aProperty2D = Modify.SetIdentifiers(aProperty2D, hostObjAttributes) as ConstantThickness;
             if (pullSettings.CopyCustomData)
-                aProperty2D = Modify.SetCustomData(aProperty2D, wallType, pullSettings.ConvertUnits) as ConstantThickness;
+                aProperty2D = Modify.SetCustomData(aProperty2D, hostObjAttributes, pullSettings.ConvertUnits) as ConstantThickness;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aProperty2D);
 
@@ -100,65 +124,65 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static ISurfaceProperty ToBHoMSurfaceProperty(this FloorType floorType, PullSettings pullSettings = null)
-        {
-            Document document = floorType.Document;
+        //internal static ISurfaceProperty ToBHoMSurfaceProperty(this FloorType floorType, PullSettings pullSettings = null)
+        //{
+        //    Document document = floorType.Document;
 
-            pullSettings = pullSettings.DefaultIfNull();
+        //    pullSettings = pullSettings.DefaultIfNull();
 
-            ConstantThickness aConstantThickness = pullSettings.FindRefObject<ConstantThickness>(floorType.Id.IntegerValue);
-            if (aConstantThickness != null)
-                return aConstantThickness;
+        //    ConstantThickness aConstantThickness = pullSettings.FindRefObject<ConstantThickness>(floorType.Id.IntegerValue);
+        //    if (aConstantThickness != null)
+        //        return aConstantThickness;
 
-            double aThickness = 0;
-            oM.Physical.Materials.Material aMaterial = null;
+        //    double aThickness = 0;
+        //    oM.Physical.Materials.Material aMaterial = null;
 
-            bool composite = false;
-            foreach (CompoundStructureLayer csl in floorType.GetCompoundStructure().GetLayers())
-            {
-                if (csl.Function == MaterialFunctionAssignment.Structure)
-                {
-                    if (aThickness != 0)
-                    {
-                        composite = true;
-                        aThickness = 0;
-                        break;
-                    }
-                    aThickness = csl.Width;
-                    if (pullSettings.ConvertUnits) aThickness = aThickness.ToSI(UnitType.UT_Section_Dimension);
+        //    bool composite = false;
+        //    foreach (CompoundStructureLayer csl in floorType.GetCompoundStructure().GetLayers())
+        //    {
+        //        if (csl.Function == MaterialFunctionAssignment.Structure)
+        //        {
+        //            if (aThickness != 0)
+        //            {
+        //                composite = true;
+        //                aThickness = 0;
+        //                break;
+        //            }
+        //            aThickness = csl.Width;
+        //            if (pullSettings.ConvertUnits) aThickness = aThickness.ToSI(UnitType.UT_Section_Dimension);
 
-                    Material aMaterial_Revit = ElementId.InvalidElementId == csl.MaterialId ? floorType.Category.Material : document.GetElement(csl.MaterialId) as Material;
+        //            Material aMaterial_Revit = ElementId.InvalidElementId == csl.MaterialId ? floorType.Category.Material : document.GetElement(csl.MaterialId) as Material;
 
-                    //TODO: uncomment it!
-                    //aMaterial = aMaterial_Revit.ToBHoMMaterial(pullSettings);
-                }
-            }
+        //            //TODO: uncomment it!
+        //            //aMaterial = aMaterial_Revit.ToBHoMMaterial(pullSettings);
+        //        }
+        //    }
 
-            if (composite) floorType.CompositePanelWarning();
-            else if (aThickness == 0) BH.Engine.Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", floorType.Id.IntegerValue));
+        //    if (composite) floorType.CompositePanelWarning();
+        //    else if (aThickness == 0) BH.Engine.Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", floorType.Id.IntegerValue));
 
-            //Get out the structural material fragment. If no present settign to concrete for now
-            IMaterialFragment strucMaterialFragment;
-            if (aMaterial.IsValidStructural())
-                strucMaterialFragment = aMaterial.StructuralMaterialFragment();
-            else
-            {
-                strucMaterialFragment = new Concrete() { Name = aMaterial.Name };
-                aMaterial.MaterialNotStructuralWarning();
-            }
+        //    //Get out the structural material fragment. If no present settign to concrete for now
+        //    IMaterialFragment strucMaterialFragment;
+        //    if (aMaterial.IsValidStructural())
+        //        strucMaterialFragment = aMaterial.StructuralMaterialFragment();
+        //    else
+        //    {
+        //        strucMaterialFragment = new Concrete() { Name = aMaterial.Name };
+        //        aMaterial.MaterialNotStructuralWarning();
+        //    }
 
 
-            ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structure.SurfaceProperties.PanelType.Slab, Thickness = aThickness, Material = strucMaterialFragment, Name = floorType.Name };
+        //    ConstantThickness aProperty2D = new ConstantThickness { PanelType = oM.Structure.SurfaceProperties.PanelType.Slab, Thickness = aThickness, Material = strucMaterialFragment, Name = floorType.Name };
 
-            aProperty2D = Modify.SetIdentifiers(aProperty2D, floorType) as ConstantThickness;
-            if (pullSettings.CopyCustomData)
-                aProperty2D = Modify.SetCustomData(aProperty2D, floorType, pullSettings.ConvertUnits) as ConstantThickness;
+        //    aProperty2D = Modify.SetIdentifiers(aProperty2D, floorType) as ConstantThickness;
+        //    if (pullSettings.CopyCustomData)
+        //        aProperty2D = Modify.SetCustomData(aProperty2D, floorType, pullSettings.ConvertUnits) as ConstantThickness;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aProperty2D);
+        //    pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aProperty2D);
 
-            return aProperty2D;
-        }
+        //    return aProperty2D;
+        //}
 
-        /***************************************************/
+        ///***************************************************/
     }
 }

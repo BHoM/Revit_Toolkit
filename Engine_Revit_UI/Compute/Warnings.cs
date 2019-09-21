@@ -320,12 +320,12 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void InvalidDataMaterialWarning(this FamilyInstance familyInstance)
+        internal static void InvalidDataMaterialWarning(this Element element)
         {
             string aMessage = "Material could not be correctly converted. Some BHoM Material data may not be valid.";
 
-            if (familyInstance != null)
-                aMessage = string.Format("{0} Element Id: {1}", aMessage, familyInstance.Id.IntegerValue);
+            if (element != null)
+                aMessage = string.Format("{0} Element Id: {1}", aMessage, element.Id.IntegerValue);
 
             BH.Engine.Reflection.Compute.RecordWarning(aMessage);
         }

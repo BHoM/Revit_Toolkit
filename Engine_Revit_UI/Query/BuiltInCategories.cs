@@ -111,7 +111,6 @@ namespace BH.UI.Revit.Engine
             if (type == typeof(BH.oM.Structure.Elements.Panel))
             {
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Floors);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Roofs);
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Walls);
             }
             if (type == typeof(BH.oM.Physical.Elements.Column))
