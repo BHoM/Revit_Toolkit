@@ -131,6 +131,14 @@ namespace BH.UI.Revit.Engine
                 Parameter aParameter = aFamilyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
                 if (aParameter != null && !aParameter.IsReadOnly)
                     aParameter.Set(orientationAngle);
+
+                //TODO: if the material does not get assigned an error should be thrown?
+                if (barProperty.Material != null && barProperty.Material.CustomData.ContainsKey("Revit_elementId"))
+                {
+                    Autodesk.Revit.DB.Material material = document.GetElement(new ElementId((int)barProperty.Material.CustomData["Revit_elementId"])) as Autodesk.Revit.DB.Material;
+                    if (material != null)
+                        aFamilyInstance.StructuralMaterialId = material.Id;
+                }
             }
             
             if (1 - Math.Abs(columnLine.Direction.DotProduct(XYZ.BasisZ)) < BH.oM.Geometry.Tolerance.Angle)
@@ -162,7 +170,8 @@ namespace BH.UI.Revit.Engine
                     BuiltInParameter.SCHEDULE_TOP_LEVEL_OFFSET_PARAM,
                     BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM,
                     BuiltInParameter.ELEM_TYPE_PARAM,
-                    BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE //possibly good to avoid overwriting of rotation angle?
+                    BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, //possibly good to avoid overwriting of rotation angle?
+                    BuiltInParameter.STRUCTURAL_MATERIAL_PARAM
                 };
                 Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
             }
@@ -273,7 +282,6 @@ namespace BH.UI.Revit.Engine
             else
                 aFamilyInstance = document.Create.NewFamilyInstance(revitCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.UnknownFraming);
 
-
             aFamilyInstance.CheckIfNullPush(framingElement);
             if (aFamilyInstance == null)
                 return null;
@@ -285,6 +293,14 @@ namespace BH.UI.Revit.Engine
                 Parameter aParameter = aFamilyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
                 if (aParameter != null && !aParameter.IsReadOnly)
                     aParameter.Set(orientationAngle);
+
+                //TODO: if the material does not get assigned an error should be thrown?
+                if (barProperty.Material != null && barProperty.Material.CustomData.ContainsKey("Revit_elementId"))
+                {
+                    Autodesk.Revit.DB.Material material = document.GetElement(new ElementId((int)barProperty.Material.CustomData["Revit_elementId"])) as Autodesk.Revit.DB.Material;
+                    if (material != null)
+                        aFamilyInstance.StructuralMaterialId = material.Id;
+                }
             }
 
             //Sets the insertion point to the centroid. TODO: add possibility to control this.
@@ -304,7 +320,8 @@ namespace BH.UI.Revit.Engine
                     BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
                     BuiltInParameter.ALL_MODEL_IMAGE,
                     BuiltInParameter.ELEM_TYPE_PARAM,
-                    BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE //possibly good to avoid overwriting of rotation angle?
+                    BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, //possibly good to avoid overwriting of rotation angle?
+                    BuiltInParameter.STRUCTURAL_MATERIAL_PARAM
                 };
                 Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
             }

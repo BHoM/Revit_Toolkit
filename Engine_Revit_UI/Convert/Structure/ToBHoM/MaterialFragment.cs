@@ -43,7 +43,8 @@ namespace BH.UI.Revit.Engine
         {
             if (material == null)
             {
-                Compute.NullObjectWarning();
+                //TODO: add more sensible null!
+                //Compute.NullObjectWarning();
                 return null;
             }
 
