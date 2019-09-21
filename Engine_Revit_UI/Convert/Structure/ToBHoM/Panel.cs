@@ -39,59 +39,46 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static List<oM.Structure.Elements.Panel> ToBHoMPanel(this Wall wall, PullSettings pullSettings = null)
+        internal static List<oM.Structure.Elements.Panel> ToBHoMPanel(this HostObject hostObject, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Structure.Elements.Panel> aResult = pullSettings.FindRefObjects<oM.Structure.Elements.Panel>(wall.Id.IntegerValue);
+            List<oM.Structure.Elements.Panel> aResult = pullSettings.FindRefObjects<oM.Structure.Elements.Panel>(hostObject.Id.IntegerValue);
             if (aResult != null && aResult.Count > 0)
                 return aResult;
 
-            ISurfaceProperty aProperty2D = wall.WallType.ToBHoMSurfaceProperty(pullSettings);
-            
-            List<oM.Geometry.ICurve> outlines = wall.Outlines(pullSettings);
-            aResult = outlines != null ? BHS.Create.Panel(outlines) : new List<oM.Structure.Elements.Panel> { new oM.Structure.Elements.Panel { ExternalEdges = new List<oM.Structure.Elements.Edge>(), Openings = new List<oM.Structure.Elements.Opening>(), Property = aProperty2D } };
+            //TODO: check if the attributes != null
+            HostObjAttributes hostObjAttributes = hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes;
+            string materialGrade = hostObject.MaterialGrade();
+            ISurfaceProperty aProperty2D = hostObjAttributes.ToBHoMSurfaceProperty(pullSettings, materialGrade);
 
-            for (int i = 0; i < aResult.Count; i++)
+            List<oM.Geometry.ICurve> outlines = hostObject.Outlines(pullSettings);
+            if (outlines != null && outlines.Count != 0)
             {
-                oM.Structure.Elements.Panel panel = aResult[i] as oM.Structure.Elements.Panel;
-                panel.Property = aProperty2D;
-
-                panel = Modify.SetIdentifiers(panel, wall) as oM.Structure.Elements.Panel;
-                if (pullSettings.CopyCustomData)
-                    panel = Modify.SetCustomData(panel, wall, pullSettings.ConvertUnits) as oM.Structure.Elements.Panel;
-
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(panel);
-
-                aResult[i] = panel;
+                hostObject.AnalyticalPullWarning();
+                aResult = BHS.Create.Panel(outlines, aProperty2D, hostObject.Name);
+            }
+            else
+            {
+                aResult = new List<oM.Structure.Elements.Panel>();
+                IEnumerable<BH.oM.Geometry.PlanarSurface> aPlanarSurfaces = Query.PlanarSurfaces(hostObject, pullSettings);
+                if (aPlanarSurfaces != null)
+                {
+                    foreach (BH.oM.Geometry.PlanarSurface planarSurface in aPlanarSurfaces)
+                    {
+                        aResult.Add(BHS.Create.Panel(planarSurface.ExternalBoundary, planarSurface.InternalBoundaries, aProperty2D, hostObject.Name));
+                    }
+                }
             }
 
-            return aResult;
-        }
-
-        /***************************************************/
-
-        internal static List<oM.Structure.Elements.Panel> ToBHoMPanelPlanar(this Floor floor, PullSettings pullSettings = null)
-        {
-            pullSettings = pullSettings.DefaultIfNull();
-
-            List<oM.Structure.Elements.Panel> aResult = pullSettings.FindRefObjects<oM.Structure.Elements.Panel>(floor.Id.IntegerValue);
-            if (aResult != null && aResult.Count > 0)
-                return aResult;
-
-            ISurfaceProperty aProperty2D = aProperty2D = floor.FloorType.ToBHoMSurfaceProperty(pullSettings);
-
-            List<oM.Geometry.ICurve> outlines = floor.Outlines(pullSettings);
-            aResult = outlines != null ? BHS.Create.Panel(outlines) : new List<oM.Structure.Elements.Panel> { new oM.Structure.Elements.Panel { ExternalEdges = new List<oM.Structure.Elements.Edge>(), Openings = new List<oM.Structure.Elements.Opening>(), Property = aProperty2D } };
-
             for (int i = 0; i < aResult.Count; i++)
             {
                 oM.Structure.Elements.Panel panel = aResult[i] as oM.Structure.Elements.Panel;
                 panel.Property = aProperty2D;
 
-                panel = Modify.SetIdentifiers(panel, floor) as oM.Structure.Elements.Panel;
+                panel = Modify.SetIdentifiers(panel, hostObject) as oM.Structure.Elements.Panel;
                 if (pullSettings.CopyCustomData)
-                    panel = Modify.SetCustomData(panel, floor, pullSettings.ConvertUnits) as oM.Structure.Elements.Panel;
+                    panel = Modify.SetCustomData(panel, hostObject, pullSettings.ConvertUnits) as oM.Structure.Elements.Panel;
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(panel);
 
