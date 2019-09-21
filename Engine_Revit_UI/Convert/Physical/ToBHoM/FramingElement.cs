@@ -90,8 +90,13 @@ namespace BH.UI.Revit.Engine
                     BH.Engine.Reflection.Compute.RecordError(string.Format("Nonlinear bars with nonuniform justification are currently not supported. Revit offset has been ignored. Element Id: {0}", familyInstance.Id.IntegerValue));
             }
             
-            Autodesk.Revit.DB.Material revitMaterial = familyInstance.Document.GetElement(familyInstance.StructuralMaterialId) as Autodesk.Revit.DB.Material;
-            BH.oM.Physical.Materials.Material material = pullSettings.FindRefObject<oM.Physical.Materials.Material>(familyInstance.StructuralMaterialId.IntegerValue);
+            // Check if an instance or type Structural Material parameter exists.
+            ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
+            if (structuralMaterialId.IntegerValue < 0)
+                structuralMaterialId = familyInstance.Symbol.LookupElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
+
+            Autodesk.Revit.DB.Material revitMaterial = familyInstance.Document.GetElement(structuralMaterialId) as Autodesk.Revit.DB.Material;
+            BH.oM.Physical.Materials.Material material = pullSettings.FindRefObject<oM.Physical.Materials.Material>(structuralMaterialId.IntegerValue);
             
             if (material == null)
                 material = revitMaterial.ToBHoMEmptyMaterial(pullSettings);

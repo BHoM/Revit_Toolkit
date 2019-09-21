@@ -76,6 +76,19 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static ElementId LookupElementId(this Element element, BuiltInParameter builtInParameter)
+        {
+            ElementId value = new ElementId(-1);
+
+            Parameter p = element.get_Parameter(builtInParameter);
+            if (p != null && p.HasValue)
+                value = p.AsElementId();
+
+            return value;
+        }
+
+        /***************************************************/
+
         public static double LookupDouble(this Element element, IEnumerable<string> parameterNames, bool convertUnits = true)
         {
             double value = double.NaN;
