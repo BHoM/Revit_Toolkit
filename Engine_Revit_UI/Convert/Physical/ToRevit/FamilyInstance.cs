@@ -158,19 +158,19 @@ namespace BH.UI.Revit.Engine
                 {
                     //BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM,
                     //BuiltInParameter.FAMILY_BASE_LEVEL_PARAM,
-                    BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM,
-                    BuiltInParameter.SCHEDULE_BASE_LEVEL_OFFSET_PARAM,
-                    BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM,
-                    BuiltInParameter.ELEM_FAMILY_PARAM,
-                    BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
-                    BuiltInParameter.ALL_MODEL_IMAGE,
                     //BuiltInParameter.SCHEDULE_LEVEL_PARAM,
                     //BuiltInParameter.FAMILY_TOP_LEVEL_PARAM,
                     //BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM,
+                    BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM,
+                    BuiltInParameter.SCHEDULE_BASE_LEVEL_OFFSET_PARAM,
                     BuiltInParameter.SCHEDULE_TOP_LEVEL_OFFSET_PARAM,
                     BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM,
+                    BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM,
+                    BuiltInParameter.ELEM_FAMILY_PARAM,
+                    BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
                     BuiltInParameter.ELEM_TYPE_PARAM,
-                    BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, //possibly good to avoid overwriting of rotation angle?
+                    BuiltInParameter.ALL_MODEL_IMAGE,
+                    BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE,
                     BuiltInParameter.STRUCTURAL_MATERIAL_PARAM
                 };
                 Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
@@ -235,8 +235,12 @@ namespace BH.UI.Revit.Engine
 
             object aCustomDataValue = null;
 
-            Curve revitCurve = framingElement.Location.ToRevitCurve(pushSettings);
+            //Update justification based on custom data
+            //BH.oM.Geometry.ICurve adjustedLocation = framingElement.AdjustedLocation();
+            //Curve revitCurve = adjustedLocation.ToRevitCurve(pushSettings);
 
+            //TODO: Replace the line below with line above, remember about updating justification params 
+            Curve revitCurve = framingElement.Location.ToRevitCurve(pushSettings);
             bool isVertical, isLinear;
             //Check if curve is planar, and if so, if it is vertical. This is used to determine if the orientation angle needs
             //To be subtracted by 90 degrees or not.
@@ -303,13 +307,12 @@ namespace BH.UI.Revit.Engine
                 }
             }
 
-            //Sets the insertion point to the centroid. TODO: add possibility to control this.
+            //Sets the insertion point to the centroid. 
+            //TODO: Remove this once FramingElement.AdjustedLocation() query method is added.
             Parameter zJustification = aFamilyInstance.get_Parameter(BuiltInParameter.Z_JUSTIFICATION);
             if (zJustification != null && !zJustification.IsReadOnly)
-                zJustification.Set((int)Autodesk.Revit.DB.Structure.ZJustification.Origin); 
+                zJustification.Set((int)Autodesk.Revit.DB.Structure.ZJustification.Origin);
 
-
-            //TODO: RESET JUSTIFICATION!
             if (pushSettings.CopyCustomData)
             {
                 BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
@@ -318,10 +321,25 @@ namespace BH.UI.Revit.Engine
                     BuiltInParameter.STRUCTURAL_BEAM_END1_ELEVATION,
                     BuiltInParameter.ELEM_FAMILY_PARAM,
                     BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
-                    BuiltInParameter.ALL_MODEL_IMAGE,
                     BuiltInParameter.ELEM_TYPE_PARAM,
-                    BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, //possibly good to avoid overwriting of rotation angle?
-                    BuiltInParameter.STRUCTURAL_MATERIAL_PARAM
+                    BuiltInParameter.ALL_MODEL_IMAGE,
+                    BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE,
+                    BuiltInParameter.STRUCTURAL_MATERIAL_PARAM,
+                    BuiltInParameter.Y_OFFSET_VALUE,
+                    BuiltInParameter.Z_OFFSET_VALUE,
+                    BuiltInParameter.START_Y_OFFSET_VALUE,
+                    BuiltInParameter.END_Y_OFFSET_VALUE,
+                    BuiltInParameter.START_Z_OFFSET_VALUE,
+                    BuiltInParameter.END_Z_OFFSET_VALUE,
+
+                    //TODO: remove the above once FramingElement.AdjustedLocation() query method is added.
+                    BuiltInParameter.YZ_JUSTIFICATION,
+                    BuiltInParameter.Y_JUSTIFICATION,
+                    BuiltInParameter.Z_JUSTIFICATION,
+                    BuiltInParameter.START_Y_JUSTIFICATION,
+                    BuiltInParameter.END_Y_JUSTIFICATION,
+                    BuiltInParameter.START_Z_JUSTIFICATION,
+                    BuiltInParameter.END_Z_JUSTIFICATION
                 };
                 Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
             }

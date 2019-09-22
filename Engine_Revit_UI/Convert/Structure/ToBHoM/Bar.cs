@@ -61,13 +61,43 @@ namespace BH.UI.Revit.Engine
             if (analyticalModel != null)
                 analyticalModel.AnalyticalBarLocation(pullSettings, out locationCurve);
 
-            if (locationCurve == null)
-                familyInstance.FramingElementLocation(pullSettings, out locationCurve, out startOffset, out endOffset);
-            else
+            if (locationCurve != null)
                 familyInstance.AnalyticalPullWarning();
+            else
+            {
+                familyInstance.FramingElementLocation(pullSettings, out locationCurve, out startOffset, out endOffset);
 
-            if (locationCurve == null)
-                familyInstance.BarCurveNotFoundWarning();
+                if (locationCurve == null)
+                    familyInstance.BarCurveNotFoundWarning();
+                else
+                {
+                    //TODO: wrap it into single method both in FramingElement and Bar
+                    //TODO: for nonlinear bars this should be actual offset, not translation?
+                    double startOffsetLength = BH.Engine.Geometry.Query.Length(startOffset);
+                    double endOffsetLength = BH.Engine.Geometry.Query.Length(endOffset);
+                    if (startOffsetLength > BH.oM.Geometry.Tolerance.Distance || endOffsetLength > BH.oM.Geometry.Tolerance.Distance)
+                    {
+                        Transform transform = familyInstance.GetTotalTransform();
+                        if (BH.Engine.Geometry.Query.Distance(startOffset, endOffset) <= BH.oM.Geometry.Tolerance.Distance)
+                        {
+                            BH.oM.Geometry.Vector yOffset = new BH.oM.Geometry.Vector { X = transform.BasisY.X * startOffset.Y, Y = transform.BasisY.Y * startOffset.Y, Z = transform.BasisY.Z * startOffset.Y };
+                            BH.oM.Geometry.Vector zOffset = new BH.oM.Geometry.Vector { X = transform.BasisZ.X * startOffset.Z, Y = transform.BasisZ.Y * startOffset.Z, Z = transform.BasisZ.Z * startOffset.Z };
+                            locationCurve = BHG.Modify.Translate(locationCurve as dynamic, yOffset - zOffset);
+                        }
+                        else if (locationCurve is BH.oM.Geometry.Line)
+                        {
+                            BH.oM.Geometry.Line l = locationCurve as BH.oM.Geometry.Line;
+                            BH.oM.Geometry.Vector yOffsetStart = new BH.oM.Geometry.Vector { X = transform.BasisY.X * startOffset.Y, Y = transform.BasisY.Y * startOffset.Y, Z = transform.BasisY.Z * startOffset.Y };
+                            BH.oM.Geometry.Vector zOffsetStart = new BH.oM.Geometry.Vector { X = transform.BasisZ.X * startOffset.Z, Y = transform.BasisZ.Y * startOffset.Z, Z = transform.BasisZ.Z * startOffset.Z };
+                            BH.oM.Geometry.Vector yOffsetEnd = new BH.oM.Geometry.Vector { X = transform.BasisY.X * endOffset.Y, Y = transform.BasisY.Y * endOffset.Y, Z = transform.BasisY.Z * endOffset.Y };
+                            BH.oM.Geometry.Vector zOffsetEnd = new BH.oM.Geometry.Vector { X = transform.BasisZ.X * endOffset.Z, Y = transform.BasisZ.Y * endOffset.Z, Z = transform.BasisZ.Z * endOffset.Z };
+                            locationCurve = new BH.oM.Geometry.Line { Start = BH.Engine.Geometry.Modify.Translate(l.Start, yOffsetStart - zOffsetStart), End = BH.Engine.Geometry.Modify.Translate(l.End, yOffsetEnd - zOffsetEnd) };
+                        }
+                        else
+                            BH.Engine.Reflection.Compute.RecordError(string.Format("Nonlinear bars with nonuniform justification are currently not supported. Revit offset has been ignored. Element Id: {0}", familyInstance.Id.IntegerValue));
+                    }
+                }
+            }
             
             string materialGrade = familyInstance.MaterialGrade();
             IMaterialFragment materialFragment = Query.LibraryMaterial(familyInstance.StructuralMaterialType, materialGrade);
@@ -150,9 +180,10 @@ namespace BH.UI.Revit.Engine
                 double rotation = familyInstance.FramingElementRotation(pullSettings);
                 foreach (BH.oM.Geometry.Line line in BH.Engine.Geometry.Query.SubParts(BH.Engine.Geometry.Modify.ICollapseToPolyline(locationCurve, Math.PI / 12)))
                 {
-                    Bar bar = BH.Engine.Structure.Create.Bar(line, property, rotation);
-                    bar.Offset = new oM.Structure.Offsets.Offset { Start = startOffset, End = endOffset };
-                    bars.Add(bar);
+                    //Bar bar = BH.Engine.Structure.Create.Bar(line, property, rotation);
+                    //bar.Offset = new oM.Structure.Offsets.Offset { Start = startOffset, End = endOffset };
+                    //bars.Add(bar);
+                    bars.Add(BH.Engine.Structure.Create.Bar(line, property, rotation));
                 }
             }
             else
