@@ -66,6 +66,8 @@ namespace BH.UI.Revit.Engine
             if (locationCurve == null)
                 familyInstance.BarCurveNotFoundWarning();
             
+            //TODO: wrap it into single method both in FramingElement and Bar
+            //TODO: for nonlinear bars this should be actual offset, not translation?
             double startOffsetLength = BH.Engine.Geometry.Query.Length(startOffset);
             double endOffsetLength = BH.Engine.Geometry.Query.Length(endOffset);
             if (startOffsetLength > BH.oM.Geometry.Tolerance.Distance || endOffsetLength > BH.oM.Geometry.Tolerance.Distance)
