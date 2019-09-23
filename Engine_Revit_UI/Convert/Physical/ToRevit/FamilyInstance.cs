@@ -133,9 +133,9 @@ namespace BH.UI.Revit.Engine
                     aParameter.Set(orientationAngle);
 
                 //TODO: if the material does not get assigned an error should be thrown?
-                if (barProperty.Material != null && barProperty.Material.CustomData.ContainsKey("Revit_elementId"))
+                if (barProperty.Material != null)
                 {
-                    Autodesk.Revit.DB.Material material = document.GetElement(new ElementId((int)barProperty.Material.CustomData["Revit_elementId"])) as Autodesk.Revit.DB.Material;
+                    Autodesk.Revit.DB.Material material = document.GetElement(new ElementId(BH.Engine.Adapters.Revit.Query.ElementId(barProperty.Material))) as Autodesk.Revit.DB.Material;
                     if (material != null)
                         aFamilyInstance.StructuralMaterialId = material.Id;
                 }
@@ -299,9 +299,9 @@ namespace BH.UI.Revit.Engine
                     aParameter.Set(orientationAngle);
 
                 //TODO: if the material does not get assigned an error should be thrown?
-                if (barProperty.Material != null && barProperty.Material.CustomData.ContainsKey("Revit_elementId"))
+                if (barProperty.Material != null)
                 {
-                    Autodesk.Revit.DB.Material material = document.GetElement(new ElementId((int)barProperty.Material.CustomData["Revit_elementId"])) as Autodesk.Revit.DB.Material;
+                    Autodesk.Revit.DB.Material material = document.GetElement(new ElementId(BH.Engine.Adapters.Revit.Query.ElementId(barProperty.Material))) as Autodesk.Revit.DB.Material;
                     if (material != null)
                         aFamilyInstance.StructuralMaterialId = material.Id;
                 }
