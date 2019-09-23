@@ -145,6 +145,7 @@
     <Compile Include="Modify\SetMapSettings.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
+    <Compile Include="Query\AdjustedLocation.cs" />
     <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\InnerPolyCurves.cs" />
     <Compile Include="Query\Family.cs" />

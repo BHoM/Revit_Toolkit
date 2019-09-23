@@ -236,11 +236,15 @@ namespace BH.UI.Revit.Engine
             object aCustomDataValue = null;
 
             //Update justification based on custom data
-            //BH.oM.Geometry.ICurve adjustedLocation = framingElement.AdjustedLocation();
-            //Curve revitCurve = adjustedLocation.ToRevitCurve(pushSettings);
+            BH.oM.Geometry.ICurve adjustedLocation = BH.Engine.Adapters.Revit.Query.AdjustedLocation(framingElement);
+            Curve revitCurve = adjustedLocation.ToRevitCurve(pushSettings);
 
             //TODO: Replace the line below with line above, remember about updating justification params 
-            Curve revitCurve = framingElement.Location.ToRevitCurve(pushSettings);
+            //Curve revitCurve = framingElement.Location.ToRevitCurve(pushSettings);
+
+
+
+
             bool isVertical, isLinear;
             //Check if curve is planar, and if so, if it is vertical. This is used to determine if the orientation angle needs
             //To be subtracted by 90 degrees or not.
@@ -333,13 +337,13 @@ namespace BH.UI.Revit.Engine
                     BuiltInParameter.END_Z_OFFSET_VALUE,
 
                     //TODO: remove the above once FramingElement.AdjustedLocation() query method is added.
-                    BuiltInParameter.YZ_JUSTIFICATION,
-                    BuiltInParameter.Y_JUSTIFICATION,
-                    BuiltInParameter.Z_JUSTIFICATION,
-                    BuiltInParameter.START_Y_JUSTIFICATION,
-                    BuiltInParameter.END_Y_JUSTIFICATION,
-                    BuiltInParameter.START_Z_JUSTIFICATION,
-                    BuiltInParameter.END_Z_JUSTIFICATION
+                    //BuiltInParameter.YZ_JUSTIFICATION,
+                    //BuiltInParameter.Y_JUSTIFICATION,
+                    //BuiltInParameter.Z_JUSTIFICATION,
+                    //BuiltInParameter.START_Y_JUSTIFICATION,
+                    //BuiltInParameter.END_Y_JUSTIFICATION,
+                    //BuiltInParameter.START_Z_JUSTIFICATION,
+                    //BuiltInParameter.END_Z_JUSTIFICATION
                 };
                 Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
             }
