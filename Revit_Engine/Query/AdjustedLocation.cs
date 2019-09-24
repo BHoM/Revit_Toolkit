@@ -43,25 +43,24 @@ namespace BH.Engine.Adapters.Revit
         {
             if (framingElement.Location == null || framingElement.Location.ILength() < BH.oM.Geometry.Tolerance.Distance)
             {
-                //BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element has zero length or no curve assigned. BHoM Guid: {0}", framingElement.BHoM_Guid));
+                BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element has zero length or no curve assigned. BHoM Guid: {0}", framingElement.BHoM_Guid));
                 return framingElement.Location;
             }
-
-            //TODO: CROSS SECTION ROTATION NOT FROM HERE, FROM PROPERTY!
-            if (!framingElement.CustomData.ContainsKey("yz Justification") || !framingElement.CustomData.ContainsKey("Cross-Section Rotation"))
+            
+            if (!framingElement.CustomData.ContainsKey("yz Justification"))
                 return framingElement.Location;
 
             Line locationLine = framingElement.Location as Line;
             if (locationLine == null)
             {
-                //BH.Engine.Reflection.Compute.RecordWarning(string.Format("Offset/justification of nonlinear bars is currently not supported. Revit justification and offset has been ignored. BHoM Guid: {0}", framingElement.BHoM_Guid));
+                BH.Engine.Reflection.Compute.RecordWarning(string.Format("Offset/justification of nonlinear bars is currently not supported. Revit justification and offset has been ignored. BHoM Guid: {0}", framingElement.BHoM_Guid));
                 return framingElement.Location;
             }
 
             BH.oM.Physical.FramingProperties.ConstantFramingProperty property = framingElement.Property as BH.oM.Physical.FramingProperties.ConstantFramingProperty;
             if (property == null || property.Profile == null)
             {
-                //BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element does not have a profile. BHoM Guid: {0}", framingElement.BHoM_Guid));
+                BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element does not have a profile. BHoM Guid: {0}", framingElement.BHoM_Guid));
                 return framingElement.Location;
             }
 
@@ -69,7 +68,7 @@ namespace BH.Engine.Adapters.Revit
             PolyCurve profileCurve = outlines.FirstOrDefault();
             if (outlines.Count != 1 || profileCurve == null || !profileCurve.IIsClosed())
             {
-                //BH.Engine.Reflection.Compute.RecordWarning(string.Format("Framing element's profile is not supported or incorrect. BHoM Guid: {0}", framingElement.BHoM_Guid));
+                BH.Engine.Reflection.Compute.RecordWarning(string.Format("Framing element's profile is not supported or incorrect. BHoM Guid: {0}", framingElement.BHoM_Guid));
                 return framingElement.Location;
             }
             
@@ -77,10 +76,9 @@ namespace BH.Engine.Adapters.Revit
             double dY = (bbox.Max.X - bbox.Min.X) * 0.5;
             double dZ = (bbox.Max.Y - bbox.Min.Y) * 0.5;
             Point centre = (bbox.Min + bbox.Max) * 0.5;
-
-            double rotation = (double)framingElement.CustomData["Cross-Section Rotation"];
+            
             Vector xDir = locationLine.Direction();
-            Vector yDir = 1 - Math.Abs(xDir.DotProduct(Vector.ZAxis)) < BH.oM.Geometry.Tolerance.Angle ? Vector.XAxis.CrossProduct(xDir) : Vector.ZAxis.CrossProduct(xDir).Normalise().Rotate(-rotation, xDir);
+            Vector yDir = 1 - Math.Abs(xDir.DotProduct(Vector.ZAxis)) < BH.oM.Geometry.Tolerance.Angle ? Vector.XAxis.CrossProduct(xDir) : Vector.ZAxis.CrossProduct(xDir).Normalise().Rotate(property.OrientationAngle, xDir);
             Vector zDir = yDir.CrossProduct(xDir);
 
             int yzJustification = (int)framingElement.CustomData["yz Justification"];
@@ -88,7 +86,7 @@ namespace BH.Engine.Adapters.Revit
             {
                 if (!framingElement.CustomData.ContainsKey("y Justification") || !framingElement.CustomData.ContainsKey("z Justification"))
                 {
-                    //BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element does not have justification properties. BHoM Guid: {0}", framingElement.BHoM_Guid));
+                    BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element does not have justification properties. BHoM Guid: {0}", framingElement.BHoM_Guid));
                     return framingElement.Location;
                 }
 
@@ -117,7 +115,7 @@ namespace BH.Engine.Adapters.Revit
             {
                 if (!framingElement.CustomData.ContainsKey("Start y Justification") || !framingElement.CustomData.ContainsKey("Start z Justification") || !framingElement.CustomData.ContainsKey("End y Justification") || !framingElement.CustomData.ContainsKey("End z Justification"))
                 {
-                    //BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element does not have justification properties. BHoM Guid: {0}", framingElement.BHoM_Guid));
+                    BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element does not have justification properties. BHoM Guid: {0}", framingElement.BHoM_Guid));
                     return framingElement.Location;
                 }
 
