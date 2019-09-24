@@ -89,7 +89,7 @@ namespace BH.UI.Revit.Engine
                     locationCurve = new BH.oM.Geometry.Line { Start = BH.Engine.Geometry.Modify.Translate(l.Start, yOffsetStart - zOffsetStart), End = BH.Engine.Geometry.Modify.Translate(l.End, yOffsetEnd - zOffsetEnd) };
                 }
                 else
-                    BH.Engine.Reflection.Compute.RecordWarning(string.Format("Offset/justification of nonlinear bars is currently not supported. Revit justification and offset has been ignored. Element Id: {0}", familyInstance.Id.IntegerValue));
+                    BH.Engine.Reflection.Compute.RecordWarning(string.Format("Offset/justification of nonlinear framing is currently not supported. Revit justification and offset has been ignored. Element Id: {0}", familyInstance.Id.IntegerValue));
             }
             
             // Check if an instance or type Structural Material parameter exists.
