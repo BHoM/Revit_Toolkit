@@ -29,6 +29,7 @@ using BH.Engine.Structure;
 using BH.Engine.Geometry;
 
 using System;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -238,7 +239,7 @@ namespace BH.UI.Revit.Engine
             //Update justification based on custom data
             BH.oM.Geometry.ICurve adjustedLocation = BH.Engine.Adapters.Revit.Query.AdjustedLocation(framingElement);
             Curve revitCurve = adjustedLocation.ToRevitCurve(pushSettings);
-            
+
             bool isVertical, isLinear;
             //Check if curve is planar, and if so, if it is vertical. This is used to determine if the orientation angle needs
             //To be subtracted by 90 degrees or not.
@@ -323,15 +324,6 @@ namespace BH.UI.Revit.Engine
                     BuiltInParameter.ALL_MODEL_IMAGE,
                     BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE,
                     BuiltInParameter.STRUCTURAL_MATERIAL_PARAM,
-                    BuiltInParameter.Y_OFFSET_VALUE,
-                    BuiltInParameter.Z_OFFSET_VALUE,
-                    BuiltInParameter.START_Y_OFFSET_VALUE,
-                    BuiltInParameter.END_Y_OFFSET_VALUE,
-                    BuiltInParameter.START_Z_OFFSET_VALUE,
-                    BuiltInParameter.END_Z_OFFSET_VALUE,
-
-                    //TODO: leave this open for the curved elements, same offsets?
-                    //TODO: remove the above once FramingElement.AdjustedLocation() query method is added.
                     //BuiltInParameter.YZ_JUSTIFICATION,
                     //BuiltInParameter.Y_JUSTIFICATION,
                     //BuiltInParameter.Z_JUSTIFICATION,
@@ -340,6 +332,25 @@ namespace BH.UI.Revit.Engine
                     //BuiltInParameter.START_Z_JUSTIFICATION,
                     //BuiltInParameter.END_Z_JUSTIFICATION
                 };
+
+                //TODO: this is a hack, should be removed once the offset/justification  is implemented for curved framing.
+                if (framingElement.Location is BH.oM.Geometry.Line)
+                {
+                    List<BuiltInParameter> paramsToIgnoreList = new List<BuiltInParameter>
+                    {
+                        BuiltInParameter.Y_OFFSET_VALUE,
+                        BuiltInParameter.Z_OFFSET_VALUE,
+                        BuiltInParameter.START_Y_OFFSET_VALUE,
+                        BuiltInParameter.END_Y_OFFSET_VALUE,
+                        BuiltInParameter.START_Z_OFFSET_VALUE,
+                        BuiltInParameter.END_Z_OFFSET_VALUE,
+                    };
+
+                    paramsToIgnoreList.AddRange(paramsToIgnore);
+                    paramsToIgnore = paramsToIgnoreList.ToArray();
+                }
+
+
                 Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
             }
 
