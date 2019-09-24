@@ -78,13 +78,13 @@ namespace BH.UI.Revit.Engine
                     if (startOffsetLength > BH.oM.Geometry.Tolerance.Distance || endOffsetLength > BH.oM.Geometry.Tolerance.Distance)
                     {
                         Transform transform = familyInstance.GetTotalTransform();
-                        if (BH.Engine.Geometry.Query.Distance(startOffset, endOffset) <= BH.oM.Geometry.Tolerance.Distance)
-                        {
-                            BH.oM.Geometry.Vector yOffset = new BH.oM.Geometry.Vector { X = transform.BasisY.X * startOffset.Y, Y = transform.BasisY.Y * startOffset.Y, Z = transform.BasisY.Z * startOffset.Y };
-                            BH.oM.Geometry.Vector zOffset = new BH.oM.Geometry.Vector { X = transform.BasisZ.X * startOffset.Z, Y = transform.BasisZ.Y * startOffset.Z, Z = transform.BasisZ.Z * startOffset.Z };
-                            locationCurve = BHG.Modify.Translate(locationCurve as dynamic, yOffset - zOffset);
-                        }
-                        else if (locationCurve is BH.oM.Geometry.Line)
+                        //if (BH.Engine.Geometry.Query.Distance(startOffset, endOffset) <= BH.oM.Geometry.Tolerance.Distance)
+                        //{
+                        //    BH.oM.Geometry.Vector yOffset = new BH.oM.Geometry.Vector { X = transform.BasisY.X * startOffset.Y, Y = transform.BasisY.Y * startOffset.Y, Z = transform.BasisY.Z * startOffset.Y };
+                        //    BH.oM.Geometry.Vector zOffset = new BH.oM.Geometry.Vector { X = transform.BasisZ.X * startOffset.Z, Y = transform.BasisZ.Y * startOffset.Z, Z = transform.BasisZ.Z * startOffset.Z };
+                        //    locationCurve = BHG.Modify.Translate(locationCurve as dynamic, yOffset - zOffset);
+                        //}
+                        if (locationCurve is BH.oM.Geometry.Line)
                         {
                             BH.oM.Geometry.Line l = locationCurve as BH.oM.Geometry.Line;
                             BH.oM.Geometry.Vector yOffsetStart = new BH.oM.Geometry.Vector { X = transform.BasisY.X * startOffset.Y, Y = transform.BasisY.Y * startOffset.Y, Z = transform.BasisY.Z * startOffset.Y };
@@ -94,7 +94,7 @@ namespace BH.UI.Revit.Engine
                             locationCurve = new BH.oM.Geometry.Line { Start = BH.Engine.Geometry.Modify.Translate(l.Start, yOffsetStart - zOffsetStart), End = BH.Engine.Geometry.Modify.Translate(l.End, yOffsetEnd - zOffsetEnd) };
                         }
                         else
-                            BH.Engine.Reflection.Compute.RecordError(string.Format("Nonlinear bars with nonuniform justification are currently not supported. Revit offset has been ignored. Element Id: {0}", familyInstance.Id.IntegerValue));
+                            BH.Engine.Reflection.Compute.RecordWarning(string.Format("Offset/justification of nonlinear framing is currently not supported. Revit justification and offset has been ignored. Element Id: {0}", familyInstance.Id.IntegerValue));
                     }
                 }
             }
