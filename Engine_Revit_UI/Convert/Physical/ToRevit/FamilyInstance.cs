@@ -151,17 +151,21 @@ namespace BH.UI.Revit.Engine
                 aFamilyInstance.TrySetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.Origin.Z + columnLine.Length - aLevel.Elevation);
                 document.Regenerate();
             }
-            
+
+            aFamilyInstance.TrySetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_PARAM, aLevel.Id);
+            aFamilyInstance.TrySetParameter(BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM, aLevel.Id);
+            aFamilyInstance.TrySetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_PARAM, aLevel.Id);
+            aFamilyInstance.TrySetParameter(BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM, aLevel.Id);
 
             if (pushSettings.CopyCustomData)
             {
                 BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
                 {
-                    //BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM,
-                    //BuiltInParameter.FAMILY_BASE_LEVEL_PARAM,
                     //BuiltInParameter.SCHEDULE_LEVEL_PARAM,
-                    //BuiltInParameter.FAMILY_TOP_LEVEL_PARAM,
-                    //BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM,
+                    BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM,
+                    BuiltInParameter.FAMILY_BASE_LEVEL_PARAM,
+                    BuiltInParameter.FAMILY_TOP_LEVEL_PARAM,
+                    BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM,
                     BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM,
                     BuiltInParameter.SCHEDULE_BASE_LEVEL_OFFSET_PARAM,
                     BuiltInParameter.SCHEDULE_TOP_LEVEL_OFFSET_PARAM,
