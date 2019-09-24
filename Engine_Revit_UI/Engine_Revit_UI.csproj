@@ -187,7 +187,7 @@
     <Compile Include="Convert\Physical\ToBHoM\Door.cs" />
     <Compile Include="Convert\Physical\ToBHoM\FramingElement.cs" />
     <Compile Include="Convert\Physical\ToBHoM\Construction.cs" />
-    <Compile Include="Convert\Physical\ToBHoM\IPhysical.cs" />
+    <Compile Include="Convert\Physical\ToBHoM\ISurface.cs" />
     <Compile Include="Convert\Physical\ToBHoM\Material.cs" />
     <Compile Include="Convert\Physical\ToBHoM\Window.cs" />
     <Compile Include="Convert\Physical\ToRevit\HostObjAttributes.cs" />

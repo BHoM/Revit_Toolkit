@@ -178,7 +178,7 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Architecture:
                 case Discipline.Physical:
                     if (wall.StackedWallOwnerId == null || wall.StackedWallOwnerId == ElementId.InvalidElementId)
-                        return wall.ToBHoMIPhysicals(pullSettings).ConvertAll(x => x as IBHoMObject);
+                        return wall.ToBHoMISurfaces(pullSettings).ConvertAll(x => x as IBHoMObject);
                     break;
             }
 
@@ -224,7 +224,7 @@ namespace BH.UI.Revit.Engine
                     return floor.ToBHoMPanel(pullSettings).ConvertAll(p => p as IBHoMObject);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return floor.ToBHoMIPhysicals(pullSettings).ConvertAll(x => x as IBHoMObject);
+                    return floor.ToBHoMISurfaces(pullSettings).ConvertAll(x => x as IBHoMObject);
             }
 
             floor.NotConvertedWarning();
@@ -246,7 +246,7 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Structural:
-                    return roofBase.ToBHoMIPhysicals(pullSettings).ConvertAll(x => x as IBHoMObject);
+                    return roofBase.ToBHoMISurfaces(pullSettings).ConvertAll(x => x as IBHoMObject);
             }
 
             roofBase.NotConvertedWarning();
