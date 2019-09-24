@@ -85,7 +85,7 @@ namespace BH.UI.Revit.Engine
                 else
                 {
                     newMaterial.Name = String.Format("Unknown {0} Material", structuralMaterialType);
-                    material.TryUpdateEmptyMaterialFromLibrary(structuralMaterialType, pullSettings, materialGrade);
+                    newMaterial.TryUpdateEmptyMaterialFromLibrary(structuralMaterialType, pullSettings, materialGrade);
                 }
             }
             else
