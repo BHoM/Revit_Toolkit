@@ -94,13 +94,37 @@ namespace BH.UI.Revit.Engine
             return newMaterial;
         }
 
-        internal static void TryUpdateEmptyMaterialFromLibrary(this BH.oM.Physical.Materials.Material material, StructuralMaterialType structuralMaterialType, PullSettings pullSettings, string materialGrade = null)
+        internal static bool TryUpdateEmptyMaterialFromLibrary(this BH.oM.Physical.Materials.Material material, StructuralMaterialType structuralMaterialType, PullSettings pullSettings, string materialGrade = null)
         {
             IMaterialFragment structuralProperty = Query.LibraryMaterial(structuralMaterialType, materialGrade);
             if (structuralProperty != null)
             {
                 material.Properties.Add(structuralProperty);
                 material.Name = structuralProperty.Name;
+                return true;
+            }
+            else
+            {
+                switch (structuralMaterialType)
+                {
+                    case StructuralMaterialType.Aluminum:
+                        structuralProperty = new BH.oM.Structure.MaterialFragments.Aluminium();
+                        break;
+                    case StructuralMaterialType.Concrete:
+                    case StructuralMaterialType.PrecastConcrete:
+                        structuralProperty = new BH.oM.Structure.MaterialFragments.Concrete();
+                        break;
+                    case StructuralMaterialType.Wood:
+                        structuralProperty = new BH.oM.Structure.MaterialFragments.Timber();
+                        break;
+                    default:
+                        structuralProperty = new BH.oM.Structure.MaterialFragments.Steel();
+                        break;
+                }
+
+                structuralProperty.Name = String.Format("Unknown {0} Material", structuralMaterialType);
+                material.Properties.Add(structuralProperty);
+                return false;
             }
         }
 
