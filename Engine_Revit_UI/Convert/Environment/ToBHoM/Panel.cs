@@ -105,6 +105,8 @@ namespace BH.UI.Revit.Engine
                 return aPanel;
 
             PolyCurve aPolyCurve = Query.PolyCurve(familyInstance, pullSettings);
+            if (aPolyCurve == null)
+                return null;
 
             aPanel = Create.Panel(externalEdges: aPolyCurve.ToEdges());
             aPanel.Name = Query.FamilyTypeFullName(familyInstance);

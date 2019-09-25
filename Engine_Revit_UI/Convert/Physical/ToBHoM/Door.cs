@@ -43,12 +43,14 @@ namespace BH.UI.Revit.Engine
             if (aDoor != null)
                 return aDoor;
 
-            PlanarSurface aPlanarSurface = BH.Engine.Geometry.Create.PlanarSurface(Query.PolyCurve(familyInstance, pullSettings));
+            PolyCurve aPolyCurve = Query.PolyCurve(familyInstance, pullSettings);
+            if (aPolyCurve == null)
+                return null;
+
             aDoor = new Door()
             {
                 Name = Query.FamilyTypeFullName(familyInstance),
-                Location = aPlanarSurface
-
+                Location = BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve)
             };
 
             ElementType aElementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
