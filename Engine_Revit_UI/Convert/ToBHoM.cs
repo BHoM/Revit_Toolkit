@@ -358,8 +358,9 @@ namespace BH.UI.Revit.Engine
             switch (pullSettings.Discipline)
             {
                 //case Discipline.Environmental:
-                    //return familySymbol.ToBHoMElementProperties(pullSettings);
-                case Discipline.Structural:
+                //return familySymbol.ToBHoMElementProperties(pullSettings);
+                //case Discipline.Structural:
+                default:
                     return familySymbol.ToBHoMProfile(pullSettings);
             }
 
