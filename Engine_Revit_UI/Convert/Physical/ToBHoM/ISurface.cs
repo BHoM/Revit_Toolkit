@@ -61,8 +61,6 @@ namespace BH.UI.Revit.Engine
 
             foreach (PlanarSurface aPlanarSurface in aPlanarSurfaces)
             {
-                //BH.Engine.Geometry.Query.IsPlanar(aPlanarSurface);
-
                 oM.Physical.Elements.ISurface aISurface = null;
 
                 if (hostObject is Wall)
@@ -95,34 +93,41 @@ namespace BH.UI.Revit.Engine
                 if (aISurface == null)
                     continue;
 
-                IEnumerable<ElementId> aElementIds_Hosted = hostObject.FindInserts(false, false, false, false);
-                if(aElementIds_Hosted != null && aElementIds_Hosted.Count() > 0)
+                if(!BH.Engine.Geometry.Query.IIsPlanar(aPlanarSurface.ExternalBoundary))
                 {
-                    List<oM.Physical.Elements.IOpening> aOpeningList = new List<oM.Physical.Elements.IOpening>();
-                    foreach (ElementId aElementId in aElementIds_Hosted)
+                    BH.Engine.Reflection.Compute.RecordWarning("Invalid Geometry of ISurface. External Boundary of ISurface is not planar and Openings cannot be pulled.");
+                }
+                else
+                {
+                    IEnumerable<ElementId> aElementIds_Hosted = hostObject.FindInserts(false, false, false, false);
+                    if (aElementIds_Hosted != null && aElementIds_Hosted.Count() > 0)
                     {
-                        FamilyInstance aFamilyInstance = hostObject.Document.GetElement(aElementId) as FamilyInstance;
-                        if (aFamilyInstance == null)
-                            continue;
-
-                        if (aFamilyInstance.Category == null)
-                            continue;
-
-                        switch((BuiltInCategory)(aFamilyInstance.Category.Id.IntegerValue))
+                        List<oM.Physical.Elements.IOpening> aOpeningList = new List<oM.Physical.Elements.IOpening>();
+                        foreach (ElementId aElementId in aElementIds_Hosted)
                         {
-                            case BuiltInCategory.OST_Windows:
-                                aOpeningList.Add(aFamilyInstance.ToBHoMWindow(pullSettings));
-                                break;
-                            case BuiltInCategory.OST_Doors:
-                                aOpeningList.Add(aFamilyInstance.ToBHoMDoor(pullSettings));
-                                break;
-                        }
-                    }
+                            FamilyInstance aFamilyInstance = hostObject.Document.GetElement(aElementId) as FamilyInstance;
+                            if (aFamilyInstance == null)
+                                continue;
 
-                    if(aOpeningList != null && aOpeningList.Count > 0)
-                    {
-                        aOpeningList.RemoveAll(x => x == null);
-                        aISurface.Openings = aOpeningList; 
+                            if (aFamilyInstance.Category == null)
+                                continue;
+
+                            switch ((BuiltInCategory)(aFamilyInstance.Category.Id.IntegerValue))
+                            {
+                                case BuiltInCategory.OST_Windows:
+                                    aOpeningList.Add(aFamilyInstance.ToBHoMWindow(pullSettings));
+                                    break;
+                                case BuiltInCategory.OST_Doors:
+                                    aOpeningList.Add(aFamilyInstance.ToBHoMDoor(pullSettings));
+                                    break;
+                            }
+                        }
+
+                        if (aOpeningList != null && aOpeningList.Count > 0)
+                        {
+                            aOpeningList.RemoveAll(x => x == null);
+                            aISurface.Openings = aOpeningList;
+                        }
                     }
                 }
 
