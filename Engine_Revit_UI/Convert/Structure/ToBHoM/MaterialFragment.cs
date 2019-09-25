@@ -90,7 +90,12 @@ namespace BH.UI.Revit.Engine
 
         internal static oM.Structure.MaterialFragments.IMaterialFragment BHoMEmptyMaterialFragment(this Autodesk.Revit.DB.Structure.StructuralMaterialType structuralMaterialType, PullSettings pullSettings = null)
         {
-            string name = String.Format("Unknown {0} Material", structuralMaterialType);
+            string name;
+            if (structuralMaterialType == StructuralMaterialType.Undefined)
+                name = "Unknown Material";
+            else
+                name = String.Format("Unknown {0} Material", structuralMaterialType);
+
             switch (structuralMaterialType)
             {
                 case StructuralMaterialType.Aluminum:
