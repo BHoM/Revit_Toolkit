@@ -195,6 +195,12 @@ namespace BH.UI.Revit.Engine
                 return aResult;
             }
 
+            if (type == typeof(oM.Geometry.ShapeProfiles.ISectionProfile))
+            {
+                aResult.Add(typeof(FamilySymbol));
+                return aResult;
+            }
+
             return null;
         }
 
