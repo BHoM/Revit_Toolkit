@@ -33,6 +33,7 @@ using BHS = BH.Engine.Structure;
 using BH.oM.Structure.MaterialFragments;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -112,9 +113,14 @@ namespace BH.UI.Revit.Engine
             IProfile profile = familyInstance.Symbol.ToBHoMProfile(pullSettings);
             if (profile == null)
                 profile = familyInstance.BHoMFreeFormProfile(pullSettings);
-            
+
             if (profile == null)
+            {
                 familyInstance.Symbol.NotConvertedWarning();
+
+                //TODO: this should be removed and null passed finally?
+                profile = new FreeFormProfile(new List<oM.Geometry.ICurve>());
+            }
 
             double rotation = familyInstance.FramingElementRotation(pullSettings);
             ConstantFramingProperty property = BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, profileName);
