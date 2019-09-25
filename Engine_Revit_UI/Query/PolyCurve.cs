@@ -73,7 +73,81 @@ namespace BH.UI.Revit.Engine
                     aPlaneList.Add(aPlane_Temp);
             }
 
+            //TODO: Get geometry from Host
             List<ICurve> aCurveList = Query.Curves(familyInstance, new Options(), pullSettings);
+            if (aCurveList == null || aCurveList.Count == 0)
+            {
+                if (aHostObject == null)
+                    return null;
+
+                List<Solid> aSolidList = aHostObject.Solids(new Options(), pullSettings);
+                if (aSolidList == null || aSolidList.Count == 0)
+                    return null;
+
+                foreach (oM.Geometry.Plane aPlane_Temp in aPlaneList)
+                {
+                    if (aPlane_Temp == null)
+                        continue;
+
+                    Autodesk.Revit.DB.Plane aPlane_Revit = Convert.ToRevitPlane(aPlane_Temp, new PushSettings() { ConvertUnits = true });
+                    if (aPlane_Revit == null)
+                        continue;
+
+                    BoundingBoxXYZ aBoundingBoxXYZ = familyInstance.get_BoundingBox(null);
+
+                    foreach (Solid aSolid in aSolidList)
+                    {
+                        Solid aSolid_Temp = BooleanOperationsUtils.CutWithHalfSpace(aSolid, aPlane_Revit);
+                        if (aSolid_Temp == null || aSolid_Temp.Faces == null || aSolid_Temp.Faces.Size == 0)
+                            continue;
+
+                        List<PlanarFace> aPlanarFaceList = new List<PlanarFace>();
+                        foreach (Autodesk.Revit.DB.Face aFace in aSolid_Temp.Faces)
+                        {
+                            PlanarFace aPlanarFace = aFace as PlanarFace;
+
+                            if (aPlanarFace == null)
+                                continue;
+
+                            if (aPlanarFace.FaceNormal.IsAlmostEqualTo(aPlane_Temp.Normal.ToRevitXYZ(new PushSettings() { ConvertUnits = true }), Tolerance.Distance))
+                                aPlanarFaceList.Add(aPlanarFace);
+                        }
+
+                        if (aPlanarFaceList == null || aPlanarFaceList.Count == 0)
+                            continue;
+
+                        List<ICurve> aCurveList_Temp = new List<ICurve>();
+                        foreach (PlanarFace aPlanarFace in aPlanarFaceList)
+                        {
+                            foreach (EdgeArray aEdgeArray in aPlanarFace.EdgeLoops)
+                            {
+                                foreach (Edge aEdge in aEdgeArray)
+                                {
+                                    Curve aCurve = aEdge.AsCurve();
+                                    if (aCurve == null)
+                                        continue;
+
+                                    if (IsContaining(aBoundingBoxXYZ, aCurve.GetEndPoint(0), true) && IsContaining(aBoundingBoxXYZ, aCurve.GetEndPoint(1), true))
+                                        aCurveList_Temp.Add(aCurve.ToBHoM(pullSettings));
+                                }
+                            }
+                        }
+
+                        if (aCurveList_Temp == null || aCurveList_Temp.Count == 0)
+                            continue;
+
+                        List<PolyCurve> aResult = BH.Engine.Geometry.Modify.IJoin(aCurveList_Temp);
+                        if (aResult == null || aResult.Count == 0)
+                            continue;
+
+                        aResult.RemoveAll(x => x == null);
+                        aResult.Sort((x, y) => y.Length().CompareTo(y.Length()));
+
+                        return aResult.First();
+                    }
+                }
+            }
+
             if (aCurveList == null || aCurveList.Count == 0)
                 return null;
 

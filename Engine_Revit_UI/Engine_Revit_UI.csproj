@@ -183,6 +183,7 @@
     <Compile Include="Convert\Geometry\ToRevit\Grid.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Level.cs" />
     <Compile Include="Convert\Architecture\ToRevit\Ceiling.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\Plane.cs" />
     <Compile Include="Convert\Geometry\ToRevit\PolyLine.cs" />
     <Compile Include="Convert\Physical\ToBHoM\Door.cs" />
     <Compile Include="Convert\Physical\ToBHoM\FramingElement.cs" />
@@ -242,7 +243,7 @@
     <Compile Include="Convert\Geometry\ToBHoM\Vector.cs" />
     <Compile Include="Convert\Geometry\ToRevit\CoordinateSystem.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Curve.cs" />
-    <Compile Include="Convert\Geometry\ToRevit\Point.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\XYZ.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Vector.cs" />
     <Compile Include="Convert\Structure\ToBHoM\Panel.cs" />
     <Compile Include="Convert\Structure\ToBHoM\Profile.cs" />
@@ -258,6 +259,8 @@
     <Compile Include="Modify\UpdateValues.cs" />
     <Compile Include="Query\BoundingBox.cs" />
     <Compile Include="Query\CompoundLayers.cs" />
+    <Compile Include="Query\IsContaining.cs" />
+    <Compile Include="Query\Solids.cs" />
     <Compile Include="Query\FamilySymbols.cs" />
     <Compile Include="Query\FramingType.cs" />
     <Compile Include="Query\HighElevation.cs" />
