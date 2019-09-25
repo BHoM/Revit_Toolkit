@@ -146,7 +146,16 @@ namespace BH.UI.Revit.Engine
                         aResult.RemoveAll(x => x == null);
                         aResult.Sort((x, y) => y.Length().CompareTo(y.Length()));
 
-                        return aResult.First();
+                        PolyCurve aPolyCurve = aResult.First();
+
+                        if(!BH.Engine.Geometry.Query.IsClosed(aPolyCurve) && aPolyCurve != null)
+                        {
+                            List<oM.Geometry.Point> aPoints = aPolyCurve.ControlPoints();
+                            if (aPoints != null && aPoints.Count > 2)
+                                aPolyCurve.Curves.Add(Create.Line(aPoints.Last(), aPoints.First()));
+                        }
+
+                        return aPolyCurve;
                     }
                 }
             }
