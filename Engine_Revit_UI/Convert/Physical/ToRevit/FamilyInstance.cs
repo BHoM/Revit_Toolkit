@@ -138,7 +138,13 @@ namespace BH.UI.Revit.Engine
                 {
                     Autodesk.Revit.DB.Material material = document.GetElement(new ElementId(BH.Engine.Adapters.Revit.Query.ElementId(barProperty.Material))) as Autodesk.Revit.DB.Material;
                     if (material != null)
-                        aFamilyInstance.StructuralMaterialId = material.Id;
+                    {
+                        Parameter param = aFamilyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
+                        if (param != null && param.HasValue && !param.IsReadOnly)
+                            aFamilyInstance.StructuralMaterialId = material.Id;
+                        else
+                            BH.Engine.Reflection.Compute.RecordWarning(string.Format("The BHoM material has been correctly converted, but the property could not be assigned to the Revit element. ElementId: {0}", aFamilyInstance.Id));
+                    }
                 }
             }
             
@@ -306,7 +312,13 @@ namespace BH.UI.Revit.Engine
                 {
                     Autodesk.Revit.DB.Material material = document.GetElement(new ElementId(BH.Engine.Adapters.Revit.Query.ElementId(barProperty.Material))) as Autodesk.Revit.DB.Material;
                     if (material != null)
-                        aFamilyInstance.StructuralMaterialId = material.Id;
+                    {
+                        Parameter param = aFamilyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
+                        if (param != null && param.HasValue && !param.IsReadOnly)
+                            aFamilyInstance.StructuralMaterialId = material.Id;
+                        else
+                            BH.Engine.Reflection.Compute.RecordWarning(string.Format("The BHoM material has been correctly converted, but the property could not be assigned to the Revit element. ElementId: {0}", aFamilyInstance.Id));
+                    }
                 }
             }
 
