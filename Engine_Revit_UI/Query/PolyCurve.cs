@@ -93,6 +93,9 @@ namespace BH.UI.Revit.Engine
                     if (aPlane_Revit == null)
                         continue;
 
+                    XYZ aNormal_Temp = aPlane_Temp.Normal.ToRevitXYZ(new PushSettings() { ConvertUnits = true });
+                    aNormal_Temp = aNormal_Temp.Normalize();
+
                     BoundingBoxXYZ aBoundingBoxXYZ = familyInstance.get_BoundingBox(null);
 
                     foreach (Solid aSolid in aSolidList)
@@ -109,7 +112,7 @@ namespace BH.UI.Revit.Engine
                             if (aPlanarFace == null)
                                 continue;
 
-                            if (aPlanarFace.FaceNormal.IsAlmostEqualTo(aPlane_Temp.Normal.ToRevitXYZ(new PushSettings() { ConvertUnits = true }), Tolerance.Distance))
+                            if (aPlanarFace.FaceNormal.IsAlmostEqualTo(aNormal_Temp, Tolerance.Distance))
                                 aPlanarFaceList.Add(aPlanarFace);
                         }
 
