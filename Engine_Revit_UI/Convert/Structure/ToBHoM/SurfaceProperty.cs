@@ -57,12 +57,6 @@ namespace BH.UI.Revit.Engine
             {
                 if (csl.Function == MaterialFunctionAssignment.Structure)
                 {
-                    Material revitMaterial = document.GetElement(csl.MaterialId) as Material;
-                    if (revitMaterial == null)
-                    {
-                        //TODO: warning about a structural layer skipped and skip
-                    }
-
                     if (aThickness != 0)
                     {
                         composite = true;
@@ -74,20 +68,30 @@ namespace BH.UI.Revit.Engine
                     if (pullSettings.ConvertUnits)
                         aThickness = aThickness.ToSI(UnitType.UT_Section_Dimension);
 
-                    Autodesk.Revit.DB.Structure.StructuralMaterialType structuralMaterialType = revitMaterial.MaterialClass.StructuralMaterialType();
-                    materialFragment = Query.LibraryMaterial(structuralMaterialType, materialGrade);
-
-                    if (materialFragment == null)
+                    Material revitMaterial = document.GetElement(csl.MaterialId) as Material;
+                    if (revitMaterial == null)
                     {
-                        //Compute.MaterialNotInLibraryNote(familyInstance);
-                        materialFragment = revitMaterial.ToBHoMMaterialFragment(pullSettings);
+                        BH.Engine.Reflection.Compute.RecordWarning("There is a structural layer in wall/floor type without material assigned. A default empty material is returned. ElementId: " + hostObjAttributes.Id.IntegerValue.ToString());
+                        materialFragment = BHoMEmptyMaterialFragment(Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined, pullSettings);
+                    }
+                    else
+                    {
+                        Autodesk.Revit.DB.Structure.StructuralMaterialType structuralMaterialType = revitMaterial.MaterialClass.StructuralMaterialType();
+                        materialFragment = Query.LibraryMaterial(structuralMaterialType, materialGrade);
+                        
+                        if (materialFragment == null)
+                        {
+                            //Compute.MaterialNotInLibraryNote(familyInstance);
+                            materialFragment = revitMaterial.ToBHoMMaterialFragment(pullSettings);
+                        }
+
+                        if (materialFragment == null)
+                        {
+                            Compute.InvalidDataMaterialWarning(hostObjAttributes);
+                            materialFragment = BHoMEmptyMaterialFragment(structuralMaterialType, pullSettings);
+                        }
                     }
 
-                    if (materialFragment == null)
-                    {
-                        Compute.InvalidDataMaterialWarning(hostObjAttributes);
-                        materialFragment = BHoMEmptyMaterialFragment(structuralMaterialType, pullSettings);
-                    }
                 }
                 else if (csl.Function == MaterialFunctionAssignment.StructuralDeck)
                 {
