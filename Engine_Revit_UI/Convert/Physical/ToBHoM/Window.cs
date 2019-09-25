@@ -46,11 +46,14 @@ namespace BH.UI.Revit.Engine
             if (aWindow != null)
                 return aWindow;
 
-            PlanarSurface aPlanarSurface = BH.Engine.Geometry.Create.PlanarSurface(Query.PolyCurve(familyInstance, pullSettings));
+            PolyCurve aPolyCurve = Query.PolyCurve(familyInstance, pullSettings);
+            if (aPolyCurve == null)
+                return null;
+
             aWindow = new Window()
             {
                 Name = Query.FamilyTypeFullName(familyInstance),
-                Location = aPlanarSurface
+                Location = BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve)
 
             };
 
@@ -93,12 +96,14 @@ namespace BH.UI.Revit.Engine
 
             //List<ICurve> aCurveList = Query.Curves(panel, new Options(), pullSettings);
 
-            PlanarSurface aPlanarSurface = BH.Engine.Geometry.Create.PlanarSurface(Query.PolyCurve(panel, pullSettings));
+            PolyCurve aPolyCurve = Query.PolyCurve(panel, pullSettings);
+            if (aPolyCurve == null)
+                return null;
             
             aWindow = new Window()
             {
                 Name = Query.FamilyTypeFullName(panel),
-                Location = aPlanarSurface
+                Location = BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve)
 
             };
 

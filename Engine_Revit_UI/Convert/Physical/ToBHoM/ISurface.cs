@@ -61,6 +61,8 @@ namespace BH.UI.Revit.Engine
 
             foreach (PlanarSurface aPlanarSurface in aPlanarSurfaces)
             {
+                //BH.Engine.Geometry.Query.IsPlanar(aPlanarSurface);
+
                 oM.Physical.Elements.ISurface aISurface = null;
 
                 if (hostObject is Wall)
@@ -123,7 +125,6 @@ namespace BH.UI.Revit.Engine
                         aISurface.Openings = aOpeningList; 
                     }
                 }
-
 
                 aISurface.Name = Query.FamilyTypeFullName(hostObject);
 
