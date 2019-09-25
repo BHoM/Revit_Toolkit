@@ -54,9 +54,13 @@ namespace BH.UI.Revit.Engine
 
             Document aDocument = hostObject.Document;
 
+            
+
             IEnumerable<ElementId> aElementIds = null;
             using (Transaction aTransaction = new Transaction(aDocument, "Temp"))
             {
+                FailureHandlingOptions aFailureHandlingOptions = aTransaction.GetFailureHandlingOptions().SetClearAfterRollback(true);
+
                 aTransaction.Start();
                 try
                 {
@@ -67,8 +71,24 @@ namespace BH.UI.Revit.Engine
                     aElementIds = null;
                 }
 
-                FailureHandlingOptions aFailureHandlingOptions = aTransaction.GetFailureHandlingOptions();
-                aTransaction.RollBack(aFailureHandlingOptions.SetClearAfterRollback(true));
+                aTransaction.RollBack(aFailureHandlingOptions);
+
+                aTransaction.Start();
+                try
+                {
+                    IList<ElementId> aElementId_Inserts = hostObject.FindInserts(true, true, true, true);
+                    if (aElementId_Inserts != null && aElementId_Inserts.Count > 0)
+                    {
+                        IEnumerable<ElementId> aElementIds_Temp = aDocument.Delete(aElementId_Inserts);
+                        if (aElementIds_Temp != null && aElementIds_Temp.Count() != 0)
+                            aElementIds = aElementIds.ToList().FindAll(x => !aElementIds_Temp.Contains(x));
+                    }
+                }
+                catch (Exception aException)
+                {
+
+                }
+                aTransaction.RollBack(aFailureHandlingOptions);
             }
 
             List<PolyCurve> aResult = new List<PolyCurve>();
