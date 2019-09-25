@@ -222,12 +222,82 @@ namespace BH.UI.Revit.Engine
             else if (location is LocationCurve)
             {
                 locationCurve = (location as LocationCurve).Curve.ToBHoM(pullSettings);
-                int yzJustification = familyInstance.LookupInteger(BuiltInParameter.YZ_JUSTIFICATION);
+                double startExtension = 0;
+                double endExtension = 0;
 
+                if (familyInstance.IsSlantedColumn)
+                {
+                    if (locationCurve is BH.oM.Geometry.Line)
+                    {
+                        BH.oM.Geometry.Line locationLine = locationCurve as BH.oM.Geometry.Line;
+                        BH.oM.Geometry.Vector direction = BH.Engine.Geometry.Query.Direction(locationLine);
+                        double angle = BH.Engine.Geometry.Query.Angle(direction, BH.oM.Geometry.Vector.ZAxis);
+
+                        int attachedBase = familyInstance.LookupInteger(BuiltInParameter.COLUMN_BASE_ATTACHED_PARAM);
+                        int attachedTop = familyInstance.LookupInteger(BuiltInParameter.COLUMN_TOP_ATTACHED_PARAM);
+
+                        if (attachedBase == 1 || attachedTop == 1)
+                            BH.Engine.Reflection.Compute.RecordWarning(string.Format("A slanted column is attached at base or top, this may cause wrong length on pull to BHoM. Element Id: {0}", familyInstance.Id.IntegerValue));
+
+                        if (attachedBase == 1)
+                            startExtension = -familyInstance.LookupDouble(BuiltInParameter.COLUMN_BASE_ATTACHMENT_OFFSET_PARAM, pullSettings.ConvertUnits);
+                        else
+                        {
+                            double baseExtensionValue = familyInstance.LookupDouble(BuiltInParameter.SLANTED_COLUMN_BASE_EXTENSION, pullSettings.ConvertUnits);
+                            if (!double.IsNaN(baseExtensionValue) && Math.Abs(baseExtensionValue) > BH.oM.Geometry.Tolerance.Distance)
+                            {
+                                int baseCutStyle = familyInstance.LookupInteger(BuiltInParameter.SLANTED_COLUMN_BASE_CUT_STYLE);
+                                switch (baseCutStyle)
+                                {
+                                    case 0:
+                                        startExtension = baseExtensionValue;
+                                        break;
+                                    case 1:
+                                        startExtension = baseExtensionValue / Math.Cos(angle);
+                                        break;
+                                    case 2:
+                                        startExtension = baseExtensionValue / Math.Sin(angle);
+                                        break;
+                                }
+                            }
+                        }
+
+                        if (attachedTop == 1)
+                            endExtension = -familyInstance.LookupDouble(BuiltInParameter.COLUMN_TOP_ATTACHMENT_OFFSET_PARAM, pullSettings.ConvertUnits);
+                        else
+                        {
+                            double topExtensionValue = familyInstance.LookupDouble(BuiltInParameter.SLANTED_COLUMN_TOP_EXTENSION, pullSettings.ConvertUnits);
+                            if (!double.IsNaN(topExtensionValue) && Math.Abs(topExtensionValue) > BH.oM.Geometry.Tolerance.Distance)
+                            {
+                                int topCutStyle = familyInstance.LookupInteger(BuiltInParameter.SLANTED_COLUMN_TOP_CUT_STYLE);
+                                switch (topCutStyle)
+                                {
+                                    case 0:
+                                        endExtension = topExtensionValue;
+                                        break;
+                                    case 1:
+                                        endExtension = topExtensionValue / Math.Cos(angle);
+                                        break;
+                                    case 2:
+                                        endExtension = topExtensionValue / Math.Sin(angle);
+                                        break;
+                                }
+                            }
+                        }
+
+                        locationLine.Start -= direction * startExtension;
+                        locationLine.End += direction * endExtension;
+                        locationCurve = locationLine;
+                    }
+                    else
+                        BH.Engine.Reflection.Compute.RecordWarning(string.Format("A nonlinear slanted column has been detected. Attachment properties are lost. Element Id: {0}", familyInstance.Id.IntegerValue));
+                }
+                
+                int yzJustification = familyInstance.LookupInteger(BuiltInParameter.YZ_JUSTIFICATION);
                 if (yzJustification == 0)
                 {
                     double yOffset = familyInstance.LookupDouble(BuiltInParameter.Y_OFFSET_VALUE, false);
-                    double zOffset = familyInstance.LookupDouble(BuiltInParameter.Z_OFFSET_VALUE, false);
+                    double zOffset = -familyInstance.LookupDouble(BuiltInParameter.Z_OFFSET_VALUE, false);
                     if (double.IsNaN(yOffset))
                         yOffset = 0;
                     if (double.IsNaN(zOffset))
@@ -260,8 +330,8 @@ namespace BH.UI.Revit.Engine
                 {
                     double yOffsetStart = familyInstance.LookupDouble(BuiltInParameter.START_Y_OFFSET_VALUE, false);
                     double yOffsetEnd = familyInstance.LookupDouble(BuiltInParameter.END_Y_OFFSET_VALUE, false);
-                    double zOffsetStart = familyInstance.LookupDouble(BuiltInParameter.START_Z_OFFSET_VALUE, false);
-                    double zOffsetEnd = familyInstance.LookupDouble(BuiltInParameter.END_Z_OFFSET_VALUE, false);
+                    double zOffsetStart = -familyInstance.LookupDouble(BuiltInParameter.START_Z_OFFSET_VALUE, false);
+                    double zOffsetEnd = -familyInstance.LookupDouble(BuiltInParameter.END_Z_OFFSET_VALUE, false);
                     if (double.IsNaN(yOffsetStart))
                         yOffsetStart = 0;
                     if (double.IsNaN(yOffsetEnd))
