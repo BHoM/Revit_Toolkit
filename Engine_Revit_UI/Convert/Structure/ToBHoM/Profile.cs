@@ -591,13 +591,7 @@ namespace BH.UI.Revit.Engine
                 return null;
             }
 
-            //if (familyInstance.HasSweptProfile())
-            //    profileCurves = familyInstance.GetSweptProfile().GetSweptProfile().Curves.ToBHoM(pullSettings);
-            //else
-            //{
-
             //TODO: direction should be driven based on the relation between GetTotalTransform(), handOrientation and facingOrientation?
-            //TODO: take into account where up where left
 
             BH.oM.Geometry.Point centroid = solid.ComputeCentroid().ToBHoM(pullSettings);
 
@@ -649,25 +643,25 @@ namespace BH.UI.Revit.Engine
 
             if (profileCurves.Count != 0)
             {
-                //Checking if the curves are in the horisontal plane, if not rotating them.
-                BH.oM.Geometry.Point dirPt = direction.ToBHoM(pullSettings);
-                BH.oM.Geometry.Vector tan = new oM.Geometry.Vector { X = dirPt.X, Y = dirPt.Y, Z = dirPt.Z };
+                // Checking if the curves are in the horizontal plane, if not rotating them.
+                BH.oM.Geometry.Vector tan = direction.ToBHoMVector(pullSettings);
 
                 double angle = BH.Engine.Geometry.Query.Angle(tan, BH.oM.Geometry.Vector.ZAxis);
+                BH.oM.Geometry.Vector rotAxis = BH.Engine.Geometry.Query.CrossProduct(tan, BH.oM.Geometry.Vector.ZAxis);
                 if (angle > BH.oM.Geometry.Tolerance.Angle)
-                {
-                    BH.oM.Geometry.Vector rotAxis = BH.Engine.Geometry.Query.CrossProduct(tan, BH.oM.Geometry.Vector.ZAxis);
                     profileCurves = profileCurves.Select(x => BH.Engine.Geometry.Modify.IRotate(x, centroid, rotAxis, angle)).ToList();
-                }
 
+                // Adjustment of the origin to global (0,0,0)
                 BH.oM.Geometry.Vector adjustment = BH.Engine.Geometry.Query.DotProduct(centroid - BH.Engine.Geometry.Query.IStartPoint(profileCurves[0]), BH.oM.Geometry.Vector.ZAxis) * BH.oM.Geometry.Vector.ZAxis;
 
                 if (BH.Engine.Geometry.Query.Distance(centroid, oM.Geometry.Point.Origin) > oM.Geometry.Tolerance.Distance)
                     profileCurves = profileCurves.Select(x => BH.Engine.Geometry.Modify.ITranslate(x, oM.Geometry.Point.Origin - centroid + adjustment)).ToList();
+
+                // Rotation of the profile to align its local Z with global Y.
+                angle = BH.Engine.Geometry.Query.Angle(tan, rotAxis);
+                if (angle > BH.oM.Geometry.Tolerance.Angle)
+                    profileCurves = profileCurves.Select(x => BH.Engine.Geometry.Modify.IRotate(x, centroid, BH.oM.Geometry.Vector.ZAxis, angle)).ToList();
             }
-
-
-            //}
 
             profile = new FreeFormProfile(profileCurves);
 
