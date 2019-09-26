@@ -89,7 +89,8 @@ namespace BH.UI.Revit.Engine
                 if (aISurface == null)
                     continue;
 
-                aISurface.Openings = aKeyValuePair.Value;
+                if (aKeyValuePair.Value != null)
+                    aISurface.Openings = aKeyValuePair.Value;
          
                 aISurface.Name = Query.FamilyTypeFullName(hostObject);
 
