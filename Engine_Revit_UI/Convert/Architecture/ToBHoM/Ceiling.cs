@@ -46,12 +46,12 @@ namespace BH.UI.Revit.Engine
 
             oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(ceiling.Document.GetElement(ceiling.GetTypeId()) as HostObjAttributes, pullSettings);
 
-            IEnumerable<PlanarSurface> aPlanarSurfaces = Query.PlanarSurfaces(ceiling, pullSettings);
-            if (aPlanarSurfaces == null)
+            Dictionary<PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> aDictionary = Query.PlanarSurfaceDictionary(ceiling, false, pullSettings);
+            if (aDictionary == null)
                 return null;
 
             aCeilingList = new List<oM.Architecture.Elements.Ceiling>();
-            foreach (PlanarSurface aPlanarSurface in aPlanarSurfaces)
+            foreach (PlanarSurface aPlanarSurface in aDictionary.Keys)
             {
                 oM.Architecture.Elements.Ceiling aCeiling = new oM.Architecture.Elements.Ceiling()
                 {

@@ -61,10 +61,10 @@ namespace BH.UI.Revit.Engine
             else
             {
                 aResult = new List<oM.Structure.Elements.Panel>();
-                IEnumerable<BH.oM.Geometry.PlanarSurface> aPlanarSurfaces = Query.PlanarSurfaces(hostObject, pullSettings);
-                if (aPlanarSurfaces != null)
+                Dictionary<BH.oM.Geometry.PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> aDictionary = Query.PlanarSurfaceDictionary(hostObject, true, pullSettings);
+                if (aDictionary != null)
                 {
-                    foreach (BH.oM.Geometry.PlanarSurface planarSurface in aPlanarSurfaces)
+                    foreach (BH.oM.Geometry.PlanarSurface planarSurface in aDictionary.Keys)
                     {
                         aResult.Add(BHS.Create.Panel(planarSurface.ExternalBoundary, planarSurface.InternalBoundaries, aProperty2D, hostObject.Name));
                     }

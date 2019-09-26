@@ -61,6 +61,8 @@ namespace BH.UI.Revit.Engine
             {
                 FailureHandlingOptions aFailureHandlingOptions = aTransaction.GetFailureHandlingOptions().SetClearAfterRollback(true);
 
+                //IMPORTANT: have to be two separate transactions othewise HostObject become Invalid
+
                 aTransaction.Start();
                 try
                 {
