@@ -108,6 +108,7 @@ namespace BH.UI.Revit.Engine
                     if (aElementIds_Hosted != null && aElementIds_Hosted.Count() > 0)
                     {
                         List<oM.Physical.Elements.IOpening> aOpeningList = new List<oM.Physical.Elements.IOpening>();
+                        List<PolyCurve> aPolyCurveList_Internal = new List<PolyCurve>(); 
                         foreach (ElementId aElementId in aElementIds_Hosted)
                         {
                             FamilyInstance aFamilyInstance = hostObject.Document.GetElement(aElementId) as FamilyInstance;
@@ -126,6 +127,9 @@ namespace BH.UI.Revit.Engine
                                     aOpeningList.Add(aFamilyInstance.ToBHoMDoor(pullSettings));
                                     break;
                                 default:
+                                    PolyCurve aPolyCurve = aFamilyInstance.PolyCurve(hostObject, pullSettings);
+                                    if (aPolyCurve != null)
+                                        aPolyCurveList_Internal.Add(aPolyCurve);
                                     break;
                             }
                         }
@@ -150,6 +154,19 @@ namespace BH.UI.Revit.Engine
                                 }
 
                                 aOpeningList_Temp.Add(aOpening);
+                            }
+                        }
+
+                        if (aPolyCurveList_Internal != null && aPolyCurveList_Internal.Count > 0)
+                        {
+                            aPolyCurveList_Internal.RemoveAll(x => x == null);
+                            foreach (PolyCurve aPolyCurve in aPolyCurveList_Internal)
+                            {
+                                PlanarSurface aPlanarSurface = aPlanarSurfaceList_Planar.Find(x => x.IsContaining(BH.Engine.Geometry.Query.IControlPoints(aPolyCurve)));
+                                if (aPlanarSurface == null)
+                                    continue;
+
+                                aPlanarSurface.InternalBoundaries.Add(aPolyCurve);
                             }
                         }
                     }

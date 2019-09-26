@@ -63,10 +63,6 @@ namespace BH.UI.Revit.Engine
             if (planarSurface_1 == null || planarSurface_2 == null)
                 return false;
 
-            ICurve aICurve_1 = planarSurface_1.ExternalBoundary;
-            if (aICurve_1 == null)
-                return false;
-
             ICurve aICurve_2 = planarSurface_2.ExternalBoundary;
             if (aICurve_2 == null)
                 return false;
@@ -74,17 +70,34 @@ namespace BH.UI.Revit.Engine
             List<oM.Geometry.Point> aPointList = BH.Engine.Geometry.Query.IControlPoints(aICurve_2);
             if (aPointList == null || aPointList.Count == 0)
                 return false;
-            
-            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.IBounds(aICurve_1);
 
-            foreach (oM.Geometry.Point aPoint in aPointList)
+            return IsContaining(planarSurface_1, aPointList);
+        }
+
+        /***************************************************/
+
+        //TODO: Not accurate method may cause issue with opening assigement. To be fixed
+        public static bool IsContaining(this PlanarSurface planarSurface, IEnumerable<oM.Geometry.Point> points)
+        {
+            if(planarSurface == null || points == null)
+                return false;
+
+            ICurve aICurve = planarSurface.ExternalBoundary;
+            if (aICurve == null)
+                return false;
+
+            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.IBounds(aICurve);
+
+            foreach (oM.Geometry.Point aPoint in points)
             {
-                
+
                 if (BH.Engine.Geometry.Query.IIsContaining(aBoundingBox, aPoint))
                     return true;
             }
 
             return false;
         }
+
+        /***************************************************/
     }
 }
