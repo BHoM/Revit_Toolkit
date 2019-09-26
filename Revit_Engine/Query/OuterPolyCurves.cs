@@ -55,7 +55,7 @@ namespace BH.Engine.Adapters.Revit
 
            // aPolyCurveList.RemoveAll(x => Geometry.Query.PointInRegion(x) == null || !Geometry.Query.IsClosed(x));
 
-            aPolyCurveList.Sort((x, y) => Geometry.Query.Area(x).CompareTo(Geometry.Query.Area(x)));
+            aPolyCurveList.Sort((x, y) => Geometry.Query.Area(x).CompareTo(Geometry.Query.Area(y)));
 
             while (aPolyCurveList.Count > 0)
             {
