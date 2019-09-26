@@ -197,15 +197,15 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2018|AnyCPU'">
-    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2018.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018" /Y /I /E</PostBuildEvent>
+    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2018.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018\" /Y /I /E</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2019|AnyCPU'">
-    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2019.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019" /Y /I /E</PostBuildEvent>
+    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2019.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019\" /Y /I /E</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2018|AnyCPU'">
-    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2018.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018" /Y /I /E</PostBuildEvent>
+    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2018.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018\" /Y /I /E</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2019|AnyCPU'">
-    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2019.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019" /Y /I /E</PostBuildEvent>
+    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2019.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019\" /Y /I /E</PostBuildEvent>
   </PropertyGroup>
 </Project>
