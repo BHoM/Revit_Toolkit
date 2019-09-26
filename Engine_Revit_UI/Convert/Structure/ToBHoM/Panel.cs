@@ -66,7 +66,21 @@ namespace BH.UI.Revit.Engine
                 {
                     foreach (BH.oM.Geometry.PlanarSurface planarSurface in aDictionary.Keys)
                     {
-                        aResult.Add(BHS.Create.Panel(planarSurface.ExternalBoundary, planarSurface.InternalBoundaries, aProperty2D, hostObject.Name));
+                        List<BH.oM.Geometry.ICurve> internalBoundaries = new List<oM.Geometry.ICurve>(planarSurface.InternalBoundaries);
+
+                        if (aDictionary[planarSurface] != null)
+                        {
+                            foreach (BH.oM.Physical.Elements.IOpening opening in aDictionary[planarSurface])
+                            {
+                                BH.oM.Geometry.PlanarSurface openingSurface = opening.Location as BH.oM.Geometry.PlanarSurface;
+                                if (openingSurface != null)
+                                    internalBoundaries.Add(openingSurface.ExternalBoundary);
+                                else
+                                    BH.Engine.Reflection.Compute.RecordWarning("A nonplanar opening has been ignored. ElementId: " + Query.ElementId(opening));
+                            }
+                        }
+
+                        aResult.Add(BHS.Create.Panel(planarSurface.ExternalBoundary, internalBoundaries, aProperty2D, hostObject.Name));
                     }
                 }
             }
