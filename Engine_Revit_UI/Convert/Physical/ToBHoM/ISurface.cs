@@ -20,7 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -53,14 +52,16 @@ namespace BH.UI.Revit.Engine
             string materialGrade = hostObject.MaterialGrade();
             aConstruction = aConstruction.UpdateMaterialProperties(hostObjAttributes, materialGrade, pullSettings);
 
-            IEnumerable<PlanarSurface> aPlanarSurfaces = Query.PlanarSurfaces(hostObject, pullSettings);
-            if (aPlanarSurfaces == null)
+            Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> aDictionary = Query.PlanarSurfaceDictionary(hostObject, true, pullSettings);
+            if (aDictionary == null)
                 return null;
 
             aISurfaceList = new List<oM.Physical.Elements.ISurface>();
 
-            foreach (PlanarSurface aPlanarSurface in aPlanarSurfaces)
+            foreach (KeyValuePair<PlanarSurface, List<oM.Physical.Elements.IOpening>> aKeyValuePair in aDictionary)
             {
+                PlanarSurface aPlanarSurface = aKeyValuePair.Key;
+
                 oM.Physical.Elements.ISurface aISurface = null;
 
                 if (hostObject is Wall)
@@ -81,56 +82,15 @@ namespace BH.UI.Revit.Engine
 
                 }
                 else if (hostObject is Floor)
-                {
                     aISurface = BH.Engine.Physical.Create.Floor(aPlanarSurface, aConstruction);
-                } 
                 else if (hostObject is RoofBase)
-                {
-                    aISurface = BH.Engine.Physical.Create.Roof(aPlanarSurface, aConstruction);
-                }
-                    
+                    aISurface = BH.Engine.Physical.Create.Roof(aPlanarSurface, aConstruction);                  
 
                 if (aISurface == null)
                     continue;
 
-                if(!BH.Engine.Geometry.Query.IIsPlanar(aPlanarSurface.ExternalBoundary))
-                {
-                    BH.Engine.Reflection.Compute.RecordWarning("Invalid Geometry of ISurface. External Boundary of ISurface is not planar and Openings cannot be pulled.");
-                }
-                else
-                {
-                    IEnumerable<ElementId> aElementIds_Hosted = hostObject.FindInserts(false, false, false, false);
-                    if (aElementIds_Hosted != null && aElementIds_Hosted.Count() > 0)
-                    {
-                        List<oM.Physical.Elements.IOpening> aOpeningList = new List<oM.Physical.Elements.IOpening>();
-                        foreach (ElementId aElementId in aElementIds_Hosted)
-                        {
-                            FamilyInstance aFamilyInstance = hostObject.Document.GetElement(aElementId) as FamilyInstance;
-                            if (aFamilyInstance == null)
-                                continue;
-
-                            if (aFamilyInstance.Category == null)
-                                continue;
-
-                            switch ((BuiltInCategory)(aFamilyInstance.Category.Id.IntegerValue))
-                            {
-                                case BuiltInCategory.OST_Windows:
-                                    aOpeningList.Add(aFamilyInstance.ToBHoMWindow(pullSettings));
-                                    break;
-                                case BuiltInCategory.OST_Doors:
-                                    aOpeningList.Add(aFamilyInstance.ToBHoMDoor(pullSettings));
-                                    break;
-                            }
-                        }
-
-                        if (aOpeningList != null && aOpeningList.Count > 0)
-                        {
-                            aOpeningList.RemoveAll(x => x == null);
-                            aISurface.Openings = aOpeningList;
-                        }
-                    }
-                }
-
+                aISurface.Openings = aKeyValuePair.Value;
+         
                 aISurface.Name = Query.FamilyTypeFullName(hostObject);
 
                 ElementType aElementType = hostObject.Document.GetElement(hostObject.GetTypeId()) as ElementType;

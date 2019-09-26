@@ -54,6 +54,37 @@ namespace BH.UI.Revit.Engine
                         pt.Z > min.Z + tolerance && pt.Z < max.Z - tolerance);
             }
         }
+
         /***************************************************/
+
+        //TODO: Not accurate method may cause issue with opening assigement. To be fixed
+        public static bool IsContaining(this PlanarSurface planarSurface_1, PlanarSurface planarSurface_2)
+        {
+            if (planarSurface_1 == null || planarSurface_2 == null)
+                return false;
+
+            ICurve aICurve_1 = planarSurface_1.ExternalBoundary;
+            if (aICurve_1 == null)
+                return false;
+
+            ICurve aICurve_2 = planarSurface_2.ExternalBoundary;
+            if (aICurve_2 == null)
+                return false;
+
+            List<oM.Geometry.Point> aPointList = BH.Engine.Geometry.Query.IControlPoints(aICurve_2);
+            if (aPointList == null || aPointList.Count == 0)
+                return false;
+            
+            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.IBounds(aICurve_1);
+
+            foreach (oM.Geometry.Point aPoint in aPointList)
+            {
+                
+                if (BH.Engine.Geometry.Query.IIsContaining(aBoundingBox, aPoint))
+                    return true;
+            }
+
+            return false;
+        }
     }
 }
