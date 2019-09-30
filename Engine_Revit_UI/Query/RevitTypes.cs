@@ -92,6 +92,15 @@ namespace BH.UI.Revit.Engine
                 return aResult;
             }
 
+            if(typeof(oM.Physical.Elements.ISurface).IsAssignableFrom(type))
+            {
+                aResult.Add(typeof(Wall));
+                aResult.Add(typeof(Floor));
+                aResult.Add(typeof(RoofBase));
+                aResult.Add(typeof(FamilyInstance));
+                return aResult;
+            }
+
             if (type == typeof(oM.Structure.Elements.Panel))
             {
                 aResult.Add(typeof(Floor));
