@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static Element ToRevitSpace(this Space space, Document document, PushSettings pushSettings = null)
+        internal static Autodesk.Revit.DB.Mechanical.Space ToRevitSpace(this Space space, Document document, PushSettings pushSettings = null)
         {
             if (space == null)
                 return null;
@@ -51,6 +51,8 @@ namespace BH.UI.Revit.Engine
             aSpace.CheckIfNullPush(space);
             if (aSpace == null)
                 return null;
+
+            aSpace.Name = space.Name;
 
             if (pushSettings.CopyCustomData)
                 Modify.SetParameters(aSpace, space, null, pushSettings.ConvertUnits);
