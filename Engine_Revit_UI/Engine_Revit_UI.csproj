@@ -178,6 +178,7 @@
   <ItemGroup>
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Room.cs" />
+    <Compile Include="Convert\Environment\ToRevit\Space.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\Grid.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\Level.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Grid.cs" />
