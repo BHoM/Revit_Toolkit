@@ -78,9 +78,6 @@ namespace BH.UI.Revit.Engine
             }
             if (type == typeof(BH.oM.Physical.Elements.ISurface))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Doors);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Windows);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels);
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Roofs);
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Floors);
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Walls);
