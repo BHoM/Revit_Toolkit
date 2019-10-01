@@ -46,7 +46,12 @@ namespace BH.UI.Revit.Engine
             if (aLevel == null)
                 return null;
 
-            aSpace = document.Create.NewSpace(aLevel, new UV(space.Location.X, space.Location.Y));
+            UV aUV = new UV(space.Location.X, space.Location.Y);
+
+            if (pushSettings.ConvertUnits)
+                aUV = new UV(UnitUtils.ConvertToInternalUnits(aUV.U, DisplayUnitType.DUT_METERS), UnitUtils.ConvertToInternalUnits(aUV.V, DisplayUnitType.DUT_METERS));
+
+            aSpace = document.Create.NewSpace(aLevel, aUV);
 
             aSpace.CheckIfNullPush(space);
             if (aSpace == null)
