@@ -38,8 +38,8 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             double aMinElevation = MinElevation(curve);//BH.Engine.Geometry.Query.Bounds(curve as dynamic).Min.Z;
-            if (convertUnits)
-                aMinElevation = UnitUtils.ConvertToInternalUnits(aMinElevation, DisplayUnitType.DUT_METERS);
+            //if (convertUnits)
+            //    aMinElevation = UnitUtils.ConvertToInternalUnits(aMinElevation, DisplayUnitType.DUT_METERS);
 
             return BottomLevel(aMinElevation, document, convertUnits);
         }
@@ -65,14 +65,19 @@ namespace BH.UI.Revit.Engine
             List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
             aLevelList.Sort((x, y) => x.Elevation.CompareTo(y.Elevation));
 
-            if (elevation <= aLevelList.First().Elevation)
+            double aElevation = elevation;
+            if (convertUnits)
+                aElevation = UnitUtils.ConvertToInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+
+
+            if (aElevation <= aLevelList.First().Elevation)
                 return aLevelList.First();
 
-            if (elevation >= aLevelList.Last().Elevation)
+            if (aElevation >= aLevelList.Last().Elevation)
                 return aLevelList.Last();
 
             for (int i = 1; i < aLevelList.Count; i++)
-                if (aLevelList[i].Elevation > elevation)
+                if (aLevelList[i].Elevation > aElevation)
                     return aLevelList[i - 1];
 
             return null;
