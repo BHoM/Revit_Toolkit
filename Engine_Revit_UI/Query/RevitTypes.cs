@@ -97,7 +97,6 @@ namespace BH.UI.Revit.Engine
                 aResult.Add(typeof(Wall));
                 aResult.Add(typeof(Floor));
                 aResult.Add(typeof(RoofBase));
-                aResult.Add(typeof(FamilyInstance));
                 return aResult;
             }
 
