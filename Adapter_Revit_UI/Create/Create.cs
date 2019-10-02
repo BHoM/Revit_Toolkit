@@ -205,7 +205,7 @@ namespace BH.UI.Revit.Adapter
                             {
                                 try
                                 {
-                                    Location aLocation = Modify.Move(aElement.Location, aBHoMObject as dynamic, aPushSettings);
+                                    Location aLocation = Modify.Move(aElement, aBHoMObject, aPushSettings);
                                 }
                                 catch (Exception aException)
                                 {
