@@ -152,7 +152,8 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this Space space, Document document, PushSettings pushSettings = null)
+        //dynamic calls needs full namespace on output to method
+        public static Element ToRevit(this BH.oM.Environment.Elements.Space space, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 

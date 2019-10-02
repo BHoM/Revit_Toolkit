@@ -135,6 +135,35 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static Location Move(this Element element, oM.Base.IBHoMObject BHoMObject, PushSettings pullSettings = null)
+        {
+            if (element.Location == null)
+                return null;
+
+            if (BHoMObject is BH.oM.Environment.Elements.Space)
+                return Move(element, (BH.oM.Environment.Elements.Space)BHoMObject, pullSettings);
+
+            return Move(element.Location, BHoMObject as dynamic, pullSettings);
+        }
+
+        public static Location Move(this Element element, BH.oM.Environment.Elements.Space space, PushSettings pullSettings = null)
+        {
+            if (element == null || space == null)
+                return null;
+
+            Level aLevel = Query.BottomLevel(space.Location.Z, element.Document, pullSettings.ConvertUnits);
+            if (aLevel == null)
+                return null;
+
+            oM.Geometry.Point aPoint = BH.Engine.Geometry.Create.Point(space.Location.X, space.Location.Y, aLevel.Elevation);
+
+            //Parameter aParameter = Modify.SetParameter(element.get_Parameter(BuiltInParameter.), aLevel.Id, element.Document, pullSettings.ConvertUnits);
+
+            return Move(element.Location, aPoint, pullSettings);
+        }
+
+        /***************************************************/
+
         public static Location Move(this Location location, BH.oM.Physical.Elements.IFramingElement framingElement, PushSettings pullSettings = null)
         {
             if (location == null || framingElement == null)
