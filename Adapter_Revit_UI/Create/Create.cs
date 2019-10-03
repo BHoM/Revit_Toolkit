@@ -117,6 +117,11 @@ namespace BH.UI.Revit.Adapter
                     ConvertBeforePushError(aBHoMObject, typeof(BH.oM.Physical.Elements.IFramingElement));
                     continue;
                 }
+                else if (aBHoMObject is BH.oM.Structure.Elements.Panel || aBHoMObject is BH.oM.Environment.Elements.Panel)
+                {
+                    ConvertBeforePushError(aBHoMObject, typeof(BH.oM.Physical.Elements.ISurface));
+                    continue;
+                }
 
                 Element aElement = null;
 
