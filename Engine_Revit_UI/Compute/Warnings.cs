@@ -439,5 +439,19 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        internal static void InvalidTwoLevelLocationWarning(this IBHoMObject iBHoMObject, ElementType elementType)
+        {
+            string aMessage = "Location line of the two-level based element is upside-down";
+            if (iBHoMObject != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, iBHoMObject.BHoM_Guid);
+
+            if (elementType != null)
+                aMessage = string.Format("{0} Element Id : {1}", aMessage, elementType.Id.IntegerValue);
+
+            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+        }
+
+        /***************************************************/
+
     }
 }
