@@ -41,7 +41,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("CategoryNames")]
         public static List<string> CategoryNames(this FamilyLibrary familyLibrary, string familyName, string familyTypeName = null)
         {
-            if (familyLibrary == null)
+            if (familyLibrary == null || familyLibrary.Dictionary == null)
                 return null;
 
             List<string> aCategoryNameList = new List<string>();
