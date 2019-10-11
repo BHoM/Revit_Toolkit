@@ -37,7 +37,9 @@ namespace BH.UI.Revit.Engine
             if (curve == null)
                 return null;
 
-            double aMinElevation = MinElevation(curve);//BH.Engine.Geometry.Query.Bounds(curve as dynamic).Min.Z;
+            double aMinElevation = MinElevation(curve);
+
+            //double aMinElevation = BH.Engine.Geometry.Query.Bounds(curve as dynamic).Min.Z;
             //if (convertUnits)
             //    aMinElevation = UnitUtils.ConvertToInternalUnits(aMinElevation, DisplayUnitType.DUT_METERS);
 
@@ -68,7 +70,6 @@ namespace BH.UI.Revit.Engine
             double aElevation = elevation;
             if (convertUnits)
                 aElevation = UnitUtils.ConvertToInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
-
 
             if (aElevation <= aLevelList.First().Elevation)
                 return aLevelList.First();
