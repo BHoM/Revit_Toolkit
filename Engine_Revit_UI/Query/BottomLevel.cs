@@ -59,7 +59,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public Level BottomLevel(this double elevation, Document document, bool convertUnits = true)
+        static public Level BottomLevel(this double elevation, Document document, bool convertUnits = true, double tolerance = oM.Geometry.Tolerance.Distance)
         {
             if (double.IsNaN(elevation) || double.IsNegativeInfinity(elevation) || double.IsPositiveInfinity(elevation))
                 return null;
@@ -77,7 +77,7 @@ namespace BH.UI.Revit.Engine
             if (aElevation >= aLevelList.Last().Elevation)
                 return aLevelList.Last();
 
-            Level aLevel = aLevelList.Find(x => x.Elevation == aElevation);
+            Level aLevel = aLevelList.Find(x => System.Math.Abs(x.Elevation - aElevation) < tolerance);
             if (aLevel != null)
                 return aLevel;
 
