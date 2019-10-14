@@ -77,6 +77,10 @@ namespace BH.UI.Revit.Engine
             if (aElevation >= aLevelList.Last().Elevation)
                 return aLevelList.Last();
 
+            Level aLevel = aLevelList.Find(x => x.Elevation == aElevation);
+            if (aLevel != null)
+                return aLevel;
+
             for (int i = 1; i < aLevelList.Count; i++)
                 if (aLevelList[i].Elevation > aElevation)
                     return aLevelList[i - 1];
