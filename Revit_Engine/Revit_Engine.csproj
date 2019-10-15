@@ -123,6 +123,7 @@
     <Compile Include="Create\Generic\NumberComparisonRule.cs" />
     <Compile Include="Create\Generic\TextComparisonRule.cs" />
     <Compile Include="Create\Properties\InstanceProperties.cs" />
+    <Compile Include="Create\Request\RoomElementRequest.cs" />
     <Compile Include="Create\Settings\MapSettings.cs" />
     <Compile Include="Create\Generic\FamilyLibrary.cs" />
     <Compile Include="Create\Generic\TypeMap.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Modify\SetMapSettings.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
+    <Compile Include="Query\Name.cs" />
     <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\InnerPolyCurves.cs" />
     <Compile Include="Query\Family.cs" />

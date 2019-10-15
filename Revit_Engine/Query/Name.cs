@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -20,25 +20,25 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-
-namespace BH.UI.Revit.Engine
+namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {
-        internal static string Name(SpatialElement spatialElement)
+        public static string Name(string name, string number)
         {
-            if (spatialElement == null)
-                return null;
+            string aResult = null;
+            if (!string.IsNullOrEmpty(name))
+                aResult = name;
 
-            string aName = null;
-            string aNumber = spatialElement.Number;
+            if (!string.IsNullOrEmpty(number))
+            {
+                if (string.IsNullOrEmpty(aResult))
+                    aResult = number;
+                else
+                    aResult = string.Format("{0} {1}", number, aResult);
+            }
 
-            Parameter aParameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
-            if (aParameter != null)
-                aName = aParameter.AsString();
-
-            return BH.Engine.Adapters.Revit.Query.Name(aName, aNumber);
+            return aResult;
         }
     }
 }

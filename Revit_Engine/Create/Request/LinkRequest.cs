@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -20,25 +20,28 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
+using System.ComponentModel;
 
-namespace BH.UI.Revit.Engine
+using BH.oM.Reflection.Attributes;
+using BH.oM.Revit.Requests;
+using BH.oM.Data.Requests;
+
+namespace BH.Engine.Revit
 {
-    public static partial class Query
+    public static partial class Create
     {
-        internal static string Name(SpatialElement spatialElement)
+        [Description("Create Link Request which filers all elements in specific room")]
+        [Input("name", "Revit Link instance name")]
+        [Input("request", "BHoM IRequest")]
+        [Output("LinkRequest")]
+        public static LinkRequest LinkRequest(string name, IRequest request)
         {
-            if (spatialElement == null)
-                return null;
-
-            string aName = null;
-            string aNumber = spatialElement.Number;
-
-            Parameter aParameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
-            if (aParameter != null)
-                aName = aParameter.AsString();
-
-            return BH.Engine.Adapters.Revit.Query.Name(aName, aNumber);
+            LinkRequest aLinkRequest = new LinkRequest()
+            {
+                Id = name,
+                Request = request
+            };
+            return aLinkRequest;
         }
     }
 }

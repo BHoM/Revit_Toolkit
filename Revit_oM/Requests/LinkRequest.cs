@@ -20,25 +20,21 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
+using BH.oM.Data.Requests;
 
-namespace BH.UI.Revit.Engine
+
+namespace BH.oM.Revit.Requests
 {
-    public static partial class Query
+    public class LinkRequest : IRequest
     {
-        internal static string Name(SpatialElement spatialElement)
-        {
-            if (spatialElement == null)
-                return null;
+        /***************************************************/
+        /**** Public Properties                        ****/
+        /***************************************************/
 
-            string aName = null;
-            string aNumber = spatialElement.Number;
+        public object Id { get; set; } = -1;
+        public IRequest Request = new FilterRequest();
 
-            Parameter aParameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
-            if (aParameter != null)
-                aName = aParameter.AsString();
-
-            return BH.Engine.Adapters.Revit.Query.Name(aName, aNumber);
-        }
+        /***************************************************/
     }
 }
+
