@@ -82,8 +82,8 @@ namespace BH.UI.Revit.Adapter
                 return -1;
             }
 
-            Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary = Query.FilterRequestDictionary(filter, UIDocument);
-            if (aFilterRequestDictionary == null || aFilterRequestDictionary.Count == 0)
+            Dictionary<ElementId, List<IRequest>> aRequestDictionary = Query.IRequestDictionary(filter, UIDocument);
+            if (aRequestDictionary == null || aRequestDictionary.Count == 0)
                 return -1;
 
             UpdatePropertySettings aUpdatePropertySettings = new UpdatePropertySettings()
@@ -98,7 +98,7 @@ namespace BH.UI.Revit.Adapter
             UIDocument aUIDocument = UIDocument; 
 
             int aCount = 0;
-            foreach(ElementId aElementId in aFilterRequestDictionary.Keys)
+            foreach(ElementId aElementId in aRequestDictionary.Keys)
             {
                 Element aElement = aDocument.GetElement(aElementId);
                 if (aElement != null)

@@ -30,7 +30,7 @@ namespace BH.Engine.Revit
 {
     public static partial class Create
     {
-        [Description("Create Link Request which filers all elements in specific room")]
+        [Description("Create Link Request which filers all elements in specific Revit Link instance")]
         [Input("name", "Revit Link instance name")]
         [Input("request", "BHoM IRequest")]
         [Output("LinkRequest")]

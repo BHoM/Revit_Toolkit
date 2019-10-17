@@ -20,12 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 
 using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
-using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -35,17 +35,22 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns true if FilterRequest should pull edges from Revit Element")]
-        [Input("filterRequest", "FilterRequest")]
+        [Description("Returns true if IRequest should pull edges from Revit Element")]
+        [Input("request", "IRequest")]
         [Output("PullEdges")]
-        public static bool PullEdges(this FilterRequest filterRequest)
+        public static bool PullEdges(this IRequest request)
         {
-            if (filterRequest == null)
+            if (request == null)
                 return false;
 
-            if (filterRequest.Equalities.ContainsKey(Convert.FilterRequest.PullEdges))
+            if (!(request is FilterRequest))
+                return false;
+
+            FilterRequest aFilterRequest = (FilterRequest)request;
+
+            if (aFilterRequest.Equalities.ContainsKey(Convert.FilterRequest.PullEdges))
             {
-                object aObject = filterRequest.Equalities[Convert.FilterRequest.PullEdges];
+                object aObject = aFilterRequest.Equalities[Convert.FilterRequest.PullEdges];
                 if (aObject is bool)
                     return (bool)aObject;
             }
@@ -55,15 +60,15 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns true if at least one FilterRequest on list should pull edges from Revit Element")]
-        [Input("filterRequests", "FilterRequests")]
+        [Description("Returns true if at least one IRequest on list should pull edges from Revit Element")]
+        [Input("requests", "IRequests")]
         [Output("PullEdges")]
-        public static bool PullEdges(this IEnumerable<FilterRequest> filterRequests)
+        public static bool PullEdges(this IEnumerable<IRequest> requests)
         {
-            if (filterRequests == null)
+            if (requests == null)
                 return false;
 
-            return filterRequests.ToList().Any(x => x.PullEdges());
+            return requests.ToList().Any(x => x.PullEdges());
         }
 
         /***************************************************/

@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using BH.oM.Data.Requests;
 using System.ComponentModel;
 using BH.oM.Reflection.Attributes;
+using BH.oM.Revit.Requests;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -38,22 +39,35 @@ namespace BH.Engine.Adapters.Revit
         [Description("Gets child FilterRequests for given FiletrRequest (FilterRequest can be combined by logical operation - LogicalAndSelectionFilterRequest, LogicalOrSelectionFilterRequest).")]
         [Input("filterRequest", "FilterRequest")]
         [Output("FilterRequests")]
-        public static IEnumerable<FilterRequest> FilterRequests(this FilterRequest filterRequest)
+        public static IEnumerable<IRequest> IRequests(this IRequest request)
         {
-            if (filterRequest == null)
+            if (request == null)
                 return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.FilterRequests))
-                return null;
-
-            if (filterRequest.Equalities[Convert.FilterRequest.FilterRequests] is IEnumerable<FilterRequest>)
-                return (IEnumerable<FilterRequest>)filterRequest.Equalities[Convert.FilterRequest.FilterRequests];
-
-            if (filterRequest.Equalities[Convert.FilterRequest.FilterRequests] is IEnumerable<object>)
+            if (request is LinkRequest)
             {
-                IEnumerable<object> aObjects = filterRequest.Equalities[Convert.FilterRequest.FilterRequests] as IEnumerable<object>;
-                if (aObjects != null)
-                    return aObjects.Cast<FilterRequest>();
+                List<IRequest> aRequestList = new List<IRequest>();
+                LinkRequest aLinkRequest = (LinkRequest)request;
+                if (aLinkRequest.Request != null)
+                    aRequestList.Add(aLinkRequest.Request);
+                return aRequestList;
+            }
+            else if(request is FilterRequest)
+            {
+                FilterRequest aFilterRequest = (FilterRequest)request;
+
+                if (!aFilterRequest.Equalities.ContainsKey(Convert.FilterRequest.FilterRequests))
+                    return null;
+
+                if (aFilterRequest.Equalities[Convert.FilterRequest.FilterRequests] is IEnumerable<FilterRequest>)
+                    return (IEnumerable<FilterRequest>)aFilterRequest.Equalities[Convert.FilterRequest.FilterRequests];
+
+                if (aFilterRequest.Equalities[Convert.FilterRequest.FilterRequests] is IEnumerable<object>)
+                {
+                    IEnumerable<object> aObjects = aFilterRequest.Equalities[Convert.FilterRequest.FilterRequests] as IEnumerable<object>;
+                    if (aObjects != null)
+                        return aObjects.Cast<FilterRequest>();
+                }
             }
 
             return null;

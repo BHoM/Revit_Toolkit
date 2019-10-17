@@ -123,6 +123,7 @@
     <Compile Include="Create\Generic\NumberComparisonRule.cs" />
     <Compile Include="Create\Generic\TextComparisonRule.cs" />
     <Compile Include="Create\Properties\InstanceProperties.cs" />
+    <Compile Include="Create\Request\LinkRequest.cs" />
     <Compile Include="Create\Request\RoomElementRequest.cs" />
     <Compile Include="Create\Settings\MapSettings.cs" />
     <Compile Include="Create\Generic\FamilyLibrary.cs" />

@@ -35,15 +35,20 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public Discipline Discipline(this FilterRequest filterRequest, RevitSettings revitSettings)
+        static public Discipline Discipline(this IRequest request, RevitSettings revitSettings)
         {
             Discipline? aDiscipline = null;
 
-            aDiscipline = BH.Engine.Adapters.Revit.Query.Discipline(filterRequest);
+            if (!(request is FilterRequest))
+                return oM.Adapters.Revit.Enums.Discipline.Undefined;
+
+            FilterRequest aFilterRequest = (FilterRequest)request;
+
+            aDiscipline = BH.Engine.Adapters.Revit.Query.Discipline(aFilterRequest);
             if (aDiscipline != null && aDiscipline.HasValue)
                 return aDiscipline.Value;
 
-            aDiscipline = BH.Engine.Adapters.Revit.Query.DefaultDiscipline(filterRequest);
+            aDiscipline = BH.Engine.Adapters.Revit.Query.DefaultDiscipline(aFilterRequest);
             if (aDiscipline != null && aDiscipline.HasValue)
                 return aDiscipline.Value;
 
@@ -56,23 +61,23 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public Discipline Discipline(this IEnumerable<FilterRequest> filterRequest, RevitSettings revitSettings)
+        static public Discipline Discipline(this IEnumerable<IRequest> request, RevitSettings revitSettings)
         {
-            if (filterRequest == null || filterRequest.Count() == 0)
+            if (request == null || request.Count() == 0)
                 return oM.Adapters.Revit.Enums.Discipline.Undefined;
 
             Discipline? aDiscipline = null;
 
-            foreach (FilterRequest aFilterRequest in filterRequest)
+            foreach (IRequest aRequest in request)
             {
-                aDiscipline = BH.Engine.Adapters.Revit.Query.Discipline(aFilterRequest);
+                aDiscipline = BH.Engine.Adapters.Revit.Query.Discipline(aRequest);
                 if (aDiscipline != null && aDiscipline.HasValue)
                     return aDiscipline.Value;
             }
 
-            foreach (FilterRequest aFilterRequest in filterRequest)
+            foreach (IRequest aRequest in request)
             {
-                aDiscipline = BH.Engine.Adapters.Revit.Query.DefaultDiscipline(aFilterRequest);
+                aDiscipline = BH.Engine.Adapters.Revit.Query.DefaultDiscipline(aRequest);
                 if (aDiscipline != null && aDiscipline.HasValue)
                     return aDiscipline.Value;
             }

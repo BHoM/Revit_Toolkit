@@ -35,17 +35,19 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        [Description("Returns true if FilterRequest should include non visible objects when pulling edges")]
-        [Input("filterRequest", "FilterRequest")]
+        [Description("Returns true if IRequest should include non visible objects when pulling edges")]
+        [Input("request", "IRequest")]
         [Output("IncludeNonVisibleObjects")]
-        public static bool IncludeNonVisibleObjects(this FilterRequest filterRequest)
+        public static bool IncludeNonVisibleObjects(this IRequest request)
         {
-            if (filterRequest == null)
+            if (request == null || !(request is FilterRequest))
                 return false;
 
-            if (filterRequest.Equalities.ContainsKey(Convert.FilterRequest.IncludeNonVisibleObjects))
+            FilterRequest aFilterRequest = (FilterRequest)request;
+
+            if (aFilterRequest.Equalities.ContainsKey(Convert.FilterRequest.IncludeNonVisibleObjects))
             {
-                object aObject = filterRequest.Equalities[Convert.FilterRequest.IncludeNonVisibleObjects];
+                object aObject = aFilterRequest.Equalities[Convert.FilterRequest.IncludeNonVisibleObjects];
                 if (aObject is bool)
                     return (bool)aObject;
             }
@@ -55,15 +57,15 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns true if at least one FilterRequest on list should include non visible objects when pulling edges")]
-        [Input("filterRequests", "FilterRequest")]
+        [Description("Returns true if at least one Request on list should include non visible objects when pulling edges")]
+        [Input("requests", "IRequests")]
         [Output("IncludeNonVisibleObjects")]
-        public static bool IncludeNonVisibleObjects(this IEnumerable<FilterRequest> filterRequests)
+        public static bool IncludeNonVisibleObjects(this IEnumerable<IRequest> requests)
         {
-            if (filterRequests == null)
+            if (requests == null)
                 return false;
 
-            return filterRequests.ToList().Any(x => x.IncludeNonVisibleObjects());
+            return requests.ToList().Any(x => x.IncludeNonVisibleObjects());
         }
 
         /***************************************************/

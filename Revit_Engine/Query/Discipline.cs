@@ -62,33 +62,38 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Gets Discipline for given FilterRequest.")]
-        [Input("filterRequest", "FilterRequest")]
+        [Description("Gets Discipline for given Request.")]
+        [Input("request", "IRequest")]
         [Output("Discipline")]
-        public static Discipline? Discipline(this FilterRequest filterRequest)
+        public static Discipline? Discipline(this IRequest request)
         {
-            if (filterRequest == null)
+            if (request == null)
                 return null;
 
             List<Discipline> aDisciplineList = new List<Discipline>();
 
-            IEnumerable<FilterRequest> aFilterRequests = Query.FilterRequests(filterRequest);
+            IEnumerable<IRequest> aFilterRequests = Query.IRequests(request);
             if (aFilterRequests != null && aFilterRequests.Count() > 0)
             {
                 foreach (FilterRequest aFilterRequest in aFilterRequests)
                 {
-                    Discipline? aDiscipline = Discipline(filterRequest);
+                    Discipline? aDiscipline = Discipline(request);
                     if (aDiscipline != null && aDiscipline.HasValue)
                         return aDiscipline;
                 }
             }
             else
             {
-                Discipline? aDiscipline = Discipline(filterRequest.Type);
-                if (aDiscipline != null && aDiscipline.HasValue)
-                    return aDiscipline.Value;
+                Discipline? aDiscipline = null;
 
-                aDiscipline = DefaultDiscipline(filterRequest);
+                if(request is FilterRequest)
+                {
+                    aDiscipline = Discipline(((FilterRequest)request).Type);
+                    if (aDiscipline != null && aDiscipline.HasValue)
+                        return aDiscipline.Value;
+                }
+
+                aDiscipline = DefaultDiscipline(request);
                 if (aDiscipline != null && aDiscipline.HasValue)
                     return aDiscipline.Value;
             }

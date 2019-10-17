@@ -20,7 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Linq;
 using System.Collections.Generic;
 
 using Autodesk.Revit.DB;
@@ -36,36 +35,18 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Dictionary<ElementId, List<IRequest>> LogicalAnd(this Dictionary<ElementId, List<IRequest>> requestDictionary_1, Dictionary<ElementId, List<IRequest>> requestDictionary_2)
+        public static IEnumerable<IRequest> IRequests(this Dictionary<ElementId, List<IRequest>> requestDictionary, ElementId ElementId)
         {
-            if (requestDictionary_1 == null || requestDictionary_2 == null)
+            if (requestDictionary == null)
                 return null;
 
-            Dictionary<ElementId, List<IRequest>> aResult = new Dictionary<ElementId, List<IRequest>>();
+            List<IRequest> aRequestList = null;
+            if (!requestDictionary.TryGetValue(ElementId, out aRequestList))
+                return null;
 
-            if (requestDictionary_1.Count() == 0 || requestDictionary_2.Count() == 0)
-                return aResult;
-
-            foreach(KeyValuePair<ElementId, List<IRequest>> aKeyValuePair in requestDictionary_1)
-            {
-                if (aKeyValuePair.Value == null || aKeyValuePair.Value.Count == 0)
-                    continue;
-
-                List<IRequest> aRequestList = null;
-                if (requestDictionary_2.TryGetValue(aKeyValuePair.Key, out aRequestList))
-                {
-                    if (aRequestList == null || aRequestList.Count == 0)
-                        continue;
-
-                    List<IRequest> aRequestList_Temp = new List<IRequest>(aKeyValuePair.Value);
-                    aRequestList_Temp.AddRange(aRequestList);
-                    aResult.Add(aKeyValuePair.Key, aRequestList_Temp);
-                }
-            }
-            return aResult;
+            return aRequestList;
         }
 
         /***************************************************/
-
     }
 }

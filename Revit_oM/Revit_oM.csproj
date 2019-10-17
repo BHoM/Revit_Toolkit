@@ -83,6 +83,7 @@
     <Compile Include="Interface\IInstance.cs" />
     <Compile Include="Interface\IComparisonRule.cs" />
     <Compile Include="Properties\InstanceProperties.cs" />
+    <Compile Include="Requests\LinkRequest.cs" />
     <Compile Include="Requests\RoomElementRequest.cs" />
     <Compile Include="_Properties\AssemblyInfo.cs" />
     <Compile Include="Generic\RevitFilePreview.cs" />

@@ -48,18 +48,23 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Gets Default Discipline for given FilterRequest.")]
-        [Input("filterRequest", "FilterRequest")]
+        [Description("Gets Default Discipline for given Request.")]
+        [Input("request", "IRequest")]
         [Output("Discipline")]
-        public static Discipline? DefaultDiscipline(this FilterRequest filterRequest)
+        public static Discipline? DefaultDiscipline(this IRequest request)
         {
-            if (filterRequest == null)
+            if (request == null)
                 return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.DefaultDiscipline))
+            if (!(request is FilterRequest))
                 return null;
 
-            return (Discipline)filterRequest.Equalities[Convert.FilterRequest.DefaultDiscipline];
+            FilterRequest aFilterRequest = (FilterRequest)request;
+
+            if (!aFilterRequest.Equalities.ContainsKey(Convert.FilterRequest.DefaultDiscipline))
+                return null;
+
+            return (Discipline)aFilterRequest.Equalities[Convert.FilterRequest.DefaultDiscipline];
         }
 
         /***************************************************/

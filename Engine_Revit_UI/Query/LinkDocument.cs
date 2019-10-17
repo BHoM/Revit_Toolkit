@@ -20,12 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-
-using BH.oM.Data.Requests;
-
+using Autodesk.Revit.DB.Analysis;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -34,19 +32,49 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-
-        public static IEnumerable<FilterRequest> FilterRequests(this Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary, ElementId ElementId)
+        
+        public static Document LinkDocument(this Document document, object id)
         {
-            if (filterRequestDictionary == null)
+            List<RevitLinkInstance> aRevitLinkInstanceList = new FilteredElementCollector(document).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().ToList();
+            if (aRevitLinkInstanceList == null || aRevitLinkInstanceList.Count == 0)
                 return null;
 
-            List<FilterRequest> aFilterRequestList = null;
-            if (!filterRequestDictionary.TryGetValue(ElementId, out aFilterRequestList))
+            RevitLinkInstance aRevitLinkInstance = null;
+            if (id is string)
+            {
+                string aId = (string)id;
+
+                if (string.IsNullOrWhiteSpace(aId))
+                    return null;
+
+                aRevitLinkInstance = aRevitLinkInstanceList.Find(x => x.Name.Equals(aId));
+                if (aRevitLinkInstance == null)
+                    aRevitLinkInstanceList.Find(x => x.Name.StartsWith(aId));
+            }
+            else if (id is int || id is short)
+            {
+                ElementId aElementId = new ElementId(System.Convert.ToInt32(id));
+                aRevitLinkInstance = aRevitLinkInstanceList.Find(x => x.Id == aElementId);
+            }
+
+            if (aRevitLinkInstance == null)
                 return null;
 
-            return aFilterRequestList;
+            Document aDocument = null;
+
+            try
+            {
+                aDocument = aRevitLinkInstance.GetLinkDocument();
+            }
+            catch
+            {
+
+            }
+
+            return aDocument;
         }
 
         /***************************************************/
+        
     }
 }

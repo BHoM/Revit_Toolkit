@@ -33,7 +33,7 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Data.Requests;
-
+using BH.oM.Revit.Requests;
 
 namespace BH.UI.Revit.Engine
 {
@@ -367,12 +367,14 @@ namespace BH.UI.Revit.Engine
 
             IEnumerable<ElementId> aElementIds = null;
 
-            RequestType aQueryType = BH.Engine.Adapters.Revit.Query.RequestType(filterRequest);
+            FilterRequest aFilterRequest = (FilterRequest)filterRequest;
+
+            RequestType aQueryType = BH.Engine.Adapters.Revit.Query.RequestType(aFilterRequest);
 
             //Type
-            if (aQueryType == RequestType.Undefined && filterRequest.Type != null)
+            if (aQueryType == RequestType.Undefined && aFilterRequest.Type != null)
             {
-                aElementIds = ElementIds(uIDocument.Document, filterRequest.Type);
+                aElementIds = ElementIds(uIDocument.Document, aFilterRequest.Type);
                 if (aElementIds != null)
                 {
                     foreach (ElementId aElementId in aElementIds)
@@ -381,7 +383,7 @@ namespace BH.UI.Revit.Engine
             }
 
             //Workset
-            string aWorksetName = BH.Engine.Adapters.Revit.Query.WorksetName(filterRequest);
+            string aWorksetName = BH.Engine.Adapters.Revit.Query.WorksetName(aFilterRequest);
             bool aActiveWorkset = aQueryType == RequestType.ActiveWorkset;
             bool aOpenWorksets = aQueryType == RequestType.OpenWorksets;
             aElementIds = ElementIds(aDocument, aActiveWorkset, aOpenWorksets, aWorksetName);
@@ -392,7 +394,7 @@ namespace BH.UI.Revit.Engine
             }
 
             //Category
-            string aCategoryName = BH.Engine.Adapters.Revit.Query.CategoryName(filterRequest);
+            string aCategoryName = BH.Engine.Adapters.Revit.Query.CategoryName(aFilterRequest);
             if (!string.IsNullOrEmpty(aCategoryName))
             {
                 aElementIds = ElementIds(aDocument, aCategoryName);
@@ -404,7 +406,7 @@ namespace BH.UI.Revit.Engine
             }
 
             //IncludeSelected
-            if (BH.Engine.Adapters.Revit.Query.IncludeSelected(filterRequest) && uIDocument.Selection != null)
+            if (BH.Engine.Adapters.Revit.Query.IncludeSelected(aFilterRequest) && uIDocument.Selection != null)
             {
                 ICollection<ElementId> aElementIdCollection = uIDocument.Selection.GetElementIds();
                 if (aElementIdCollection != null)
@@ -413,7 +415,7 @@ namespace BH.UI.Revit.Engine
             }
 
             //ElementIds
-            IEnumerable<int> aElementIds_Int = BH.Engine.Adapters.Revit.Query.ElementIds(filterRequest);
+            IEnumerable<int> aElementIds_Int = BH.Engine.Adapters.Revit.Query.ElementIds(aFilterRequest);
             if (aElementIds_Int != null)
             {
                 foreach (int aId in aElementIds_Int)
@@ -426,7 +428,7 @@ namespace BH.UI.Revit.Engine
             }
 
             //UniqueIds
-            IEnumerable<string> aUniqueIds = BH.Engine.Adapters.Revit.Query.UniqueIds(filterRequest);
+            IEnumerable<string> aUniqueIds = BH.Engine.Adapters.Revit.Query.UniqueIds(aFilterRequest);
             if (aUniqueIds != null)
             {
                 foreach (string aUniqueId in aUniqueIds)
@@ -446,7 +448,7 @@ namespace BH.UI.Revit.Engine
                     aViewList.RemoveAll(x => !x.IsTemplate);
                     if (aViewList.Count > 0)
                     {
-                        string aViewTemplateName = BH.Engine.Adapters.Revit.Query.ViewTemplateName(filterRequest);
+                        string aViewTemplateName = BH.Engine.Adapters.Revit.Query.ViewTemplateName(aFilterRequest);
 
                         if (!string.IsNullOrEmpty(aViewTemplateName))
                         {
@@ -471,14 +473,14 @@ namespace BH.UI.Revit.Engine
                     List<View> aViewList = aViewList_All.FindAll(x => !x.IsTemplate);
                     if (aViewList.Count > 0)
                     {
-                        RevitViewType? aRevitViewType = filterRequest.RevitViewType();
+                        RevitViewType? aRevitViewType = aFilterRequest.RevitViewType();
                         if(aRevitViewType != null && aRevitViewType.HasValue)
                         {
                             ViewType aViewType = Query.ViewType(aRevitViewType.Value);
                             aViewList.RemoveAll(x => x.ViewType != aViewType);
                         }
 
-                        string aViewTemplateName = filterRequest.ViewTemplateName();
+                        string aViewTemplateName = aFilterRequest.ViewTemplateName();
                         if(!string.IsNullOrWhiteSpace(aViewTemplateName))
                         {
                             View aView = aViewList_All.Find(x => x.IsTemplate && x.Name == aViewTemplateName);
@@ -492,7 +494,7 @@ namespace BH.UI.Revit.Engine
             }
 
             //TypeName
-            string aTypeName = BH.Engine.Adapters.Revit.Query.TypeName(filterRequest);
+            string aTypeName = BH.Engine.Adapters.Revit.Query.TypeName(aFilterRequest);
             if (!string.IsNullOrEmpty(aTypeName))
             {
                 aElementIds = ElementIds(aDocument, "RevitAPI.dll", aTypeName);
@@ -506,7 +508,7 @@ namespace BH.UI.Revit.Engine
             //FamilyName and FamilySymbolName
             if (aQueryType == RequestType.Family)
             {
-                aElementIds = ElementIds(aDocument, BH.Engine.Adapters.Revit.Query.FamilyName(filterRequest), BH.Engine.Adapters.Revit.Query.FamilyTypeName(filterRequest), true);
+                aElementIds = ElementIds(aDocument, BH.Engine.Adapters.Revit.Query.FamilyName(aFilterRequest), BH.Engine.Adapters.Revit.Query.FamilyTypeName(aFilterRequest), true);
                 if (aElementIds != null && aElementIds.Count() > 0)
                     foreach (ElementId aElementId in aElementIds)
                             aResult.Add(aElementId);
@@ -515,7 +517,7 @@ namespace BH.UI.Revit.Engine
             //SelectionSet
             if (aQueryType == RequestType.SelectionSet)
             {
-                aElementIds = ElementIds(aDocument, BH.Engine.Adapters.Revit.Query.SelectionSetName(filterRequest), true);
+                aElementIds = ElementIds(aDocument, BH.Engine.Adapters.Revit.Query.SelectionSetName(aFilterRequest), true);
                 if (aElementIds != null && aElementIds.Count() > 0)
                     foreach (ElementId aElementId in aElementIds)
                             aResult.Add(aElementId);
@@ -524,18 +526,18 @@ namespace BH.UI.Revit.Engine
             //Parameter
             if (aQueryType == RequestType.Parameter)
             {
-                FilterRequest aFilterRequest = filterRequest.RelatedFilterRequest();
+                FilterRequest aFilterRequest_Related = aFilterRequest.RelatedFilterRequest();
                 if (aFilterRequest != null)
                 {
-                    string aParameterName = BH.Engine.Adapters.Revit.Query.ParameterName(filterRequest);
+                    string aParameterName = BH.Engine.Adapters.Revit.Query.ParameterName(aFilterRequest);
                     if (!string.IsNullOrWhiteSpace(aParameterName))
                     {
-                        IComparisonRule aComparisonRule = BH.Engine.Adapters.Revit.Query.ComparisonRule(filterRequest);
+                        IComparisonRule aComparisonRule = BH.Engine.Adapters.Revit.Query.ComparisonRule(aFilterRequest);
                         if (aComparisonRule != null)
                         {
-                            object aValue = BH.Engine.Adapters.Revit.Query.Value(filterRequest);
+                            object aValue = BH.Engine.Adapters.Revit.Query.Value(aFilterRequest);
 
-                            Dictionary<ElementId, List<FilterRequest>> aDictionary = aFilterRequest.FilterRequestDictionary(uIDocument);
+                            Dictionary<ElementId, List<IRequest>> aDictionary = aFilterRequest_Related.IRequestDictionary(uIDocument);
                             if (aDictionary != null && aDictionary.Count > 0)
                             {
                                 foreach (ElementId aElementId in aDictionary.Keys)
@@ -552,6 +554,55 @@ namespace BH.UI.Revit.Engine
             }
 
             return aResult;
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this RoomElementRequest roomElementRequest, UIDocument uIDocument)
+        {
+            throw new NotImplementedException();
+
+            if (uIDocument == null || roomElementRequest == null)
+                return null;
+
+            if (roomElementRequest.Id == null)
+                return null;
+
+            HashSet<ElementId> aResult = new HashSet<ElementId>();
+            Document aDocument = uIDocument.Document;
+
+            if(roomElementRequest.Id is string)
+            {
+
+            }
+
+
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this LinkRequest linkRequest, UIDocument uIDocument)
+        {
+            if (uIDocument == null || linkRequest == null)
+                return null;
+
+            if (linkRequest.Id == null || linkRequest.Request == null)
+                return null;
+
+            HashSet<ElementId> aResult = new HashSet<ElementId>();
+
+            Document aDocument = LinkDocument(uIDocument.Document, linkRequest.Id);
+
+            if (aDocument == null)
+                return null;
+
+            UIDocument aUIDocument = new UIDocument(aDocument);
+
+            Dictionary<ElementId, List<IRequest>> aIRequestDictionary = IRequestDictionary(linkRequest.Request, aUIDocument);
+            if (aIRequestDictionary == null)
+                return null;
+
+            return aIRequestDictionary.Keys;
         }
 
         /***************************************************/

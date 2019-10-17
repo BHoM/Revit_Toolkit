@@ -35,45 +35,45 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Dictionary<ElementId, List<FilterRequest>> LogicalOr(this Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary_1, Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary_2)
+        public static Dictionary<ElementId, List<IRequest>> LogicalOr(this Dictionary<ElementId, List<IRequest>> requestDictionary_1, Dictionary<ElementId, List<IRequest>> requestDictionary_2)
         {
-            if (filterRequestDictionary_1 == null || filterRequestDictionary_2 == null)
+            if (requestDictionary_1 == null || requestDictionary_2 == null)
                 return null;
 
-            if (filterRequestDictionary_1.Count == 0)
-                return new Dictionary<ElementId, List<FilterRequest>>(filterRequestDictionary_2);
+            if (requestDictionary_1.Count == 0)
+                return new Dictionary<ElementId, List<IRequest>>(requestDictionary_2);
 
-            if (filterRequestDictionary_2.Count == 0)
-                return new Dictionary<ElementId, List<FilterRequest>>(filterRequestDictionary_1);
+            if (requestDictionary_2.Count == 0)
+                return new Dictionary<ElementId, List<IRequest>>(requestDictionary_1);
 
 
-            Dictionary<ElementId, List<FilterRequest>> aResult = new Dictionary<ElementId, List<FilterRequest>>();
-            foreach(KeyValuePair<ElementId, List<FilterRequest>> aKeyValuePair in filterRequestDictionary_1)
+            Dictionary<ElementId, List<IRequest>> aResult = new Dictionary<ElementId, List<IRequest>>();
+            foreach(KeyValuePair<ElementId, List<IRequest>> aKeyValuePair in requestDictionary_1)
             {
-                List<FilterRequest> aFilterRequestList = null;
-                if (!aResult.TryGetValue(aKeyValuePair.Key, out aFilterRequestList))
+                List<IRequest> aRequestList = null;
+                if (!aResult.TryGetValue(aKeyValuePair.Key, out aRequestList))
                 {
-                    aFilterRequestList = new List<FilterRequest>();
-                    aResult.Add(aKeyValuePair.Key, aFilterRequestList);
+                    aRequestList = new List<IRequest>();
+                    aResult.Add(aKeyValuePair.Key, aRequestList);
                 }
 
-                foreach(FilterRequest aFilterRequest in aKeyValuePair.Value)
-                    if (!aFilterRequestList.Contains(aFilterRequest))
-                        aFilterRequestList.Add(aFilterRequest);
+                foreach(IRequest aRequest in aKeyValuePair.Value)
+                    if (!aRequestList.Contains(aRequest))
+                        aRequestList.Add(aRequest);
             }
 
-            foreach (KeyValuePair<ElementId, List<FilterRequest>> aKeyValuePair in filterRequestDictionary_2)
+            foreach (KeyValuePair<ElementId, List<IRequest>> aKeyValuePair in requestDictionary_2)
             {
-                List<FilterRequest> aFilterRequestList = null;
-                if (!aResult.TryGetValue(aKeyValuePair.Key, out aFilterRequestList))
+                List<IRequest> aRequestList = null;
+                if (!aResult.TryGetValue(aKeyValuePair.Key, out aRequestList))
                 {
-                    aFilterRequestList = new List<FilterRequest>();
-                    aResult.Add(aKeyValuePair.Key, aFilterRequestList);
+                    aRequestList = new List<IRequest>();
+                    aResult.Add(aKeyValuePair.Key, aRequestList);
                 }
 
-                foreach (FilterRequest aFilterRequest in aKeyValuePair.Value)
-                    if (!aFilterRequestList.Contains(aFilterRequest))
-                        aFilterRequestList.Add(aFilterRequest);
+                foreach (IRequest aRequest in aKeyValuePair.Value)
+                    if (!aRequestList.Contains(aRequest))
+                        aRequestList.Add(aRequest);
             }
 
             return aResult;
