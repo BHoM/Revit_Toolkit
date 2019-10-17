@@ -36,7 +36,8 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\Build\</OutputPath>
     <DefineConstants>TRACE;DEBUG;REVIT2018</DefineConstants>
-    <DocumentationFile>..\Build\Adapter_Revit_UI.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -48,7 +49,8 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\Build\</OutputPath>
     <DefineConstants>TRACE;DEBUG;REVIT2019</DefineConstants>
-    <DocumentationFile>..\Build\Adapter_Revit_UI.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -80,21 +82,25 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2020|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug2020\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;REVIT2020</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AssemblyName>Adapter_Revit_UI_2020</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2020|AnyCPU'">
-    <OutputPath>bin\Release2020\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;REVIT2020</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AssemblyName>Adapter_Revit_UI_2020</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytical_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

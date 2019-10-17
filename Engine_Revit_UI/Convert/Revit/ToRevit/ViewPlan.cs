@@ -80,7 +80,12 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             aViewPlan = ViewPlan.Create(document, aElementId_ViewFamilyType, aElementId_Level);
+#if REVIT2020
+            aViewPlan.Name = viewPlan.Name;
+#else
             aViewPlan.ViewName = viewPlan.Name;
+#endif
+
 
             if (pushSettings.CopyCustomData)
                 Modify.SetParameters(aViewPlan, viewPlan, null, pushSettings.ConvertUnits);

@@ -45,7 +45,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\Build\Revit_UI.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <AssemblyName>Revit_UI_2018</AssemblyName>
     <StartAction>Program</StartAction>
@@ -60,7 +61,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\Build\Revit_UI.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AssemblyName>Revit_UI_2019</AssemblyName>
     <StartAction>Program</StartAction>
@@ -91,21 +93,28 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2020|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug2020\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;REVIT2020</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Program Files\Autodesk\Revit 2020\Revit.exe</StartProgram>
+    <DebugEngines>{351668CC-8477-4fbf-BFE3-5F1006E4DB1F}</DebugEngines>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AssemblyName>Revit_UI_2020</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2020|AnyCPU'">
-    <OutputPath>bin\Release2020\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;REVIT2020</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AssemblyName>Revit_UI_2020</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BHoM">
