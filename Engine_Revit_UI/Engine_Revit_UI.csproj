@@ -84,6 +84,24 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AssemblyName>Engine_Revit_UI_2019</AssemblyName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2020|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug2020\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2020|AnyCPU'">
+    <OutputPath>bin\Release2020\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytical_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -146,16 +164,40 @@
       <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
     </Reference>
     <Reference Include="Reflection_oM, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="RevitAPI, Version=18.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Revit.RevitApi.x64.2018.0.0\lib\net45\RevitAPI.dll</HintPath>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
+      <HintPath>..\libs\2018\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RevitAPIIFC">
-      <HintPath>..\libs\RevitAPIIFC.dll</HintPath>
+    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
+      <HintPath>..\libs\2018\RevitAPIIFC.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RevitAPIUI, Version=18.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Revit.RevitApiUI.x64.2018.0.0\lib\net45\RevitAPIUI.dll</HintPath>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
+      <HintPath>..\libs\2018\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
+      <HintPath>..\libs\2019\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
+      <HintPath>..\libs\2019\RevitAPIIFC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
+      <HintPath>..\libs\2019\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
+      <HintPath>..\libs\2020\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
+      <HintPath>..\libs\2020\RevitAPIIFC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
+      <HintPath>..\libs\2020\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Structure_Engine">
@@ -354,9 +396,6 @@
       <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
       <Name>Revit_oM</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Convert\Structure\ToRevit\" />
