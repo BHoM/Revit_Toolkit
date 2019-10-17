@@ -147,6 +147,7 @@
     <Compile Include="Create\Create.cs" />
     <Compile Include="Delete\Delete.cs" />
     <Compile Include="Execute\Execute.cs" />
+    <Compile Include="Pull\Push.cs" />
     <Compile Include="Push\Push.cs" />
     <Compile Include="Read\Read.cs" />
     <Compile Include="Types\Comparer.cs" />

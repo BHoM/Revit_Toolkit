@@ -112,10 +112,35 @@ namespace BH.UI.Revit.Adapter
 
         /***************************************************/
 
-        public override IEnumerable<IBHoMObject> Read(FilterRequest filterRequest)
-        {
-            //TODO: Update filterRequest to IRequest -> this has to be carried out in BHoMAdapter first
+        //public override IEnumerable<IBHoMObject> Read(FilterRequest filterRequest)
+        //{
+        //    Document aDocument = Document;
 
+        //    if (aDocument == null)
+        //    {
+        //        BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
+        //        return null;
+        //    }
+
+        //    if (filterRequest == null)
+        //    {
+        //        BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided FilterRequest is null.");
+        //        return null;
+        //    }
+
+        //    Autodesk.Revit.UI.UIDocument aUIDocument = null;
+
+        //    if (aUIDocument == null)
+        //        aUIDocument = UIDocument;
+
+
+        //    return Query.IBHoMObjects(aUIDocument, filterRequest, RevitSettings);
+        //}
+
+        /***************************************************/
+
+        public virtual IEnumerable<IBHoMObject> Read(IRequest request)
+        {
             Document aDocument = Document;
 
             if (aDocument == null)
@@ -124,28 +149,28 @@ namespace BH.UI.Revit.Adapter
                 return null;
             }
 
-            if (filterRequest == null)
+            if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided FilterRequest is null.");
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
                 return null;
             }
 
             Autodesk.Revit.UI.UIDocument aUIDocument = null;
 
-            //TODO: Implemenation for LinkRequest -> this can be un
-            //if (filterRequest is LinkRequest)
-            //{
-            //    LinkRequest aLinkRequest = filterRequest as LinkRequest;
-            //    Document aDocument_Link = Query.LinkDocument(aDocument, aLinkRequest.Id);
-            //    if (aDocument_Link != null)
-            //        aUIDocument = new Autodesk.Revit.UI.UIDocument(aDocument_Link);
-            //}
+            if (request is LinkRequest)
+            {
+                LinkRequest aLinkRequest = request as LinkRequest;
+                Document aDocument_Link = Query.LinkDocument(aDocument, aLinkRequest.Id);
+                if (aDocument_Link != null)
+                    aUIDocument = new Autodesk.Revit.UI.UIDocument(aDocument_Link);
+            }
 
             if (aUIDocument == null)
                 aUIDocument = UIDocument;
 
 
-            return Query.IBHoMObjects(aUIDocument, filterRequest, RevitSettings);
+            return Query.IBHoMObjects(aUIDocument, request, RevitSettings);
         }
+        /***************************************************/
     }
 }
