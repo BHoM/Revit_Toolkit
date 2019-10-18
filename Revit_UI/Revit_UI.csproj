@@ -246,16 +246,13 @@
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2018|AnyCPU'">
+  <PropertyGroup  Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
     <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2018.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018\" /Y /I /E</PostBuildEvent>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2019|AnyCPU'">
+  <PropertyGroup  Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
     <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2019.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019\" /Y /I /E</PostBuildEvent>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2018|AnyCPU'">
-    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2018.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018\" /Y /I /E</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2019|AnyCPU'">
-    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2019.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019\" /Y /I /E</PostBuildEvent>
+  <PropertyGroup  Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
+    <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2020.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2020\" /Y /I /E</PostBuildEvent>
   </PropertyGroup>
 </Project>
