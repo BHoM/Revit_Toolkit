@@ -244,15 +244,18 @@
     <None Include="Files\BHoM_2019.Addin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Files\BHoM_2020.Addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup  Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
     <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2018.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018\" /Y /I /E</PostBuildEvent>
   </PropertyGroup>
-  <PropertyGroup  Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
     <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2019.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019\" /Y /I /E</PostBuildEvent>
   </PropertyGroup>
-  <PropertyGroup  Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
     <PostBuildEvent>C:\Windows\System32\xcopy "$(ProjectDir)Files\BHoM_2020.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2020\" /Y /I /E</PostBuildEvent>
   </PropertyGroup>
 </Project>
