@@ -169,7 +169,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
     </Reference>
-    <Reference Include="Reflection_oM, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
       <HintPath>..\libs\2018\RevitAPI.dll</HintPath>
       <Private>False</Private>
