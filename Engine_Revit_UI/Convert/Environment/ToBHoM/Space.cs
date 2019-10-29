@@ -90,7 +90,7 @@ namespace BH.UI.Revit.Engine
 
             SpaceAnalyticalFragment aSpaceAnalyticalFragment = new SpaceAnalyticalFragment();
             aSpaceAnalyticalFragment = aSpaceAnalyticalFragment.UpdateValues(pullSettings, spatialElement) as SpaceAnalyticalFragment;
-            aSpace.AddFragment(aOriginContextFragment);
+            aSpace.AddFragment(aSpaceAnalyticalFragment);
 
             SpaceContextFragment aSpaceContextFragment = new SpaceContextFragment();
             aSpaceContextFragment = aSpaceContextFragment.UpdateValues(pullSettings, spatialElement) as SpaceContextFragment;
