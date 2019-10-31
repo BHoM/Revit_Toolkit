@@ -132,11 +132,19 @@ namespace BH.UI.Revit.Adapter
                 return null;
             }
 
+            //TODO: this is temporary solution. Any further calls in this method to FilterRequest shall be changed to IRequest
+            FilterRequest aFilterRequest = request as FilterRequest;
+            if (aFilterRequest == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is not FilterRequest.");
+                return null;
+            }
+
             Autodesk.Revit.UI.UIDocument aUIDocument = UIDocument;
 
             List<IBHoMObject> aResult = new List<IBHoMObject>();
 
-            Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary = Query.FilterRequestDictionary(request, aUIDocument);
+            Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary = Query.FilterRequestDictionary(aFilterRequest, aUIDocument);
             if (aFilterRequestDictionary == null)
                 return null;
 
