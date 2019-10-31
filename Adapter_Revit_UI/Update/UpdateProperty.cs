@@ -41,7 +41,7 @@ namespace BH.UI.Revit.Adapter
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public override int UpdateProperty(FilterRequest filter, string property, object newValue, Dictionary<string, object> config = null)
+        public int UpdateProperty(FilterRequest filter, string property, object newValue, Dictionary<string, object> config = null)
         {
             if (filter == null || filter.Type == null)
                 return -1;
