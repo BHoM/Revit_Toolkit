@@ -43,7 +43,7 @@ namespace BH.UI.Revit.Adapter
         /**** Protected Methods                         ****/
         /***************************************************/
 
-        protected override bool Create<T>(IEnumerable<T> objects)
+        protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {
             if (Document == null)
             {

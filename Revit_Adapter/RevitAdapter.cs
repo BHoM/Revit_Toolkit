@@ -163,13 +163,13 @@ namespace BH.Adapter.Revit
 
         /***************************************************/
 
-        protected override int Delete(FilterRequest filter)
+        public override int Delete(FilterRequest filter, Dictionary<string, object> config = null)
         {
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)
             {
                 InternalAdapter.RevitSettings = RevitSettings;
-                return InternalAdapter.Delete(filter);
+                return InternalAdapter.Delete(filter, config);
             }
 
             throw new NotImplementedException();
@@ -289,7 +289,7 @@ namespace BH.Adapter.Revit
         /**** Protected  Methods                        ****/
         /***************************************************/
 
-        protected override bool Create<T>(IEnumerable<T> objects)
+        protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {
             throw new NotImplementedException();
         }
