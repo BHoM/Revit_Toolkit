@@ -49,6 +49,9 @@ namespace BH.UI.Revit.Adapter
         {
             AdapterId = BH.Engine.Adapters.Revit.Convert.AdapterId;
             Config.UseAdapterId = false;
+            Config.ProcessInMemory = false;
+            Config.SeparateProperties = true;
+            Config.CloneBeforePush = true;
 
             m_Document = document;
             m_UIControlledApplication = uIControlledApplication;
