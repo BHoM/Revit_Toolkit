@@ -38,11 +38,21 @@ namespace BH.UI.Revit.Adapter
     public partial class RevitUIAdapter
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /**** Update                                    ****/
         /***************************************************/
 
-        public override int UpdateProperty(FilterRequest filter, string property, object newValue, Dictionary<string, object> config = null)
+
+        /***************************************************/
+        /**** UpdateProperty                            ****/
+        /***************************************************/
+
+        // This method used to be called from the UpdateProperty component
+        // Now it is never called as it doesn't override anymore
+        // This logic should be called from the Push component instead
+        protected int UpdateProperty(IRequest request, string property, object newValue)
         {
+            FilterRequest filter = request as FilterRequest;
+
             if (filter == null || filter.Type == null)
                 return -1;
 
@@ -51,23 +61,20 @@ namespace BH.UI.Revit.Adapter
             using (Transaction aTransaction = new Transaction(Document, "UpdateProperty"))
             {
                 aTransaction.Start();
-                aResult = UpdateProperty(filter, property, newValue);
+                aResult = UpdatePropertyHelper(filter, property, newValue);
                 aTransaction.Commit();
             }
 
             return aResult;
         }
 
-        /***************************************************/
-        /**** Private Methods                           ****/
-        /***************************************************/
-
-        private int UpdateProperty(FilterRequest filter, string property, object newValue)
+        // This should be changed to take IRequest as input instead. Perhaps renamed as UpdatePropertyHelper or something
+        private int UpdatePropertyHelper(FilterRequest filter, string property, object newValue)
         {
             if (Document == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Properties of Revit objects could not be updated because Revit Document is null.");
-                return - 1;
+                return -1;
             }
 
             if (filter == null)
@@ -95,22 +102,20 @@ namespace BH.UI.Revit.Adapter
             };
 
             Document aDocument = Document;
-            UIDocument aUIDocument = UIDocument; 
+            UIDocument aUIDocument = UIDocument;
 
             int aCount = 0;
-            foreach(ElementId aElementId in aFilterRequestDictionary.Keys)
+            foreach (ElementId aElementId in aFilterRequestDictionary.Keys)
             {
                 Element aElement = aDocument.GetElement(aElementId);
                 if (aElement != null)
-                    aCount += UpdateProperty(aUIDocument, aElement, aUpdatePropertySettings);
+                    aCount += UpdatePropertyDocumentHelper(aUIDocument, aElement, aUpdatePropertySettings);
             }
 
             return aCount;
         }
 
-        /***************************************************/
-
-        private static int UpdateProperty(UIDocument uIDocument, Element element, UpdatePropertySettings updatePropertySettings)
+        private static int UpdatePropertyDocumentHelper(UIDocument uIDocument, Element element, UpdatePropertySettings updatePropertySettings)
         {
             if (updatePropertySettings == null)
                 return 0;
@@ -126,6 +131,5 @@ namespace BH.UI.Revit.Adapter
             return 0;
         }
 
-        /***************************************************/
     }
 }
