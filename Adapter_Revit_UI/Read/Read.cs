@@ -116,7 +116,7 @@ namespace BH.UI.Revit.Adapter
 
         /***************************************************/
 
-        public override IEnumerable<IBHoMObject> Read(FilterRequest filterRequest)
+        protected override IEnumerable<IBHoMObject> Read(IRequest request)
         {
             Document aDocument = Document;
 
@@ -126,7 +126,7 @@ namespace BH.UI.Revit.Adapter
                 return null;
             }
 
-            if (filterRequest == null)
+            if (request == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided FilterRequest is null.");
                 return null;
@@ -136,7 +136,7 @@ namespace BH.UI.Revit.Adapter
 
             List<IBHoMObject> aResult = new List<IBHoMObject>();
 
-            Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary = Query.FilterRequestDictionary(filterRequest, aUIDocument);
+            Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary = Query.FilterRequestDictionary(request as FilterRequest, aUIDocument);
             if (aFilterRequestDictionary == null)
                 return null;
 
