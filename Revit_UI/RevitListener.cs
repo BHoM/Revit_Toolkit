@@ -158,9 +158,6 @@ namespace BH.UI.Revit
             PullEvent pullEvent = new PullEvent();
             m_pullEvent = ExternalEvent.Create(pullEvent);
 
-            UpdatePropertyEvent updatePropEvent = new UpdatePropertyEvent();
-            m_updatePropertyEvent = ExternalEvent.Create(updatePropEvent);
-
             //empty list for package holding
             LatestPackage = new List<IObject>();
 
