@@ -54,7 +54,6 @@ namespace BH.UI.Revit.Engine
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_MEPSpaces);
             }
 
-
             if (type == typeof(BH.oM.Physical.Elements.Wall))
             {
                 aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Walls);
