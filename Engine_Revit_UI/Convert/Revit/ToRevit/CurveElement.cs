@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -53,6 +53,7 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             if (!BH.Engine.Geometry.Query.IsPlanar(aCurve_BHoM as dynamic))
+                //TODO: error that the nurbs nonplanar
                 return null;
 
             List<oM.Geometry.Point> aPointList = BH.Engine.Geometry.Query.ControlPoints(aCurve_BHoM as dynamic);
@@ -63,7 +64,7 @@ namespace BH.UI.Revit.Engine
             XYZ aPoint_2 = null;
             XYZ aPoint_3 = null;
 
-            if(aPointList.Count == 2)
+            if (BH.Engine.Geometry.Query.IsCollinear(aPointList, BH.oM.Geometry.Tolerance.Distance))
             {
                 aPoint_1 = aPointList[0].ToRevit(pushSettings);
                 aPoint_2 = aPointList[1].ToRevit(pushSettings);

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -26,6 +26,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.Engine.Geometry;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace BH.UI.Revit.Engine
 {
@@ -50,6 +51,7 @@ namespace BH.UI.Revit.Engine
                 oM.Geometry.Arc aArc = curve as oM.Geometry.Arc;
                 double radius = pushSettings.ConvertUnits ? UnitUtils.ConvertToInternalUnits(aArc.Radius, DisplayUnitType.DUT_METERS) : aArc.Radius;
                 return Autodesk.Revit.DB.Arc.Create(ToRevit(aArc.CoordinateSystem, pushSettings), radius, aArc.StartAngle, aArc.EndAngle);
+                //return Autodesk.Revit.DB.Arc.Create(aArc.CoordinateSystem.Origin.ToRevitXYZ(pushSettings), radius, aArc.StartAngle, aArc.EndAngle, aArc.CoordinateSystem.X.ToRevitXYZ(pushSettings).Normalize(), aArc.CoordinateSystem.Y.ToRevitXYZ(pushSettings).Normalize());
             }
 
             if (curve is NurbsCurve)
@@ -58,8 +60,16 @@ namespace BH.UI.Revit.Engine
                 List<double> knots = aNurbCurve.Knots.ToList();
                 knots.Insert(0, knots[0]);
                 knots.Add(knots[knots.Count - 1]);
-                return NurbSpline.CreateCurve(aNurbCurve.Degree(), knots, aNurbCurve.ControlPoints.Select(x => x.ToRevit(pushSettings)).ToList(), aNurbCurve.Weights);
-                //return NurbSpline.Create(HermiteSpline.Create(aNurbCurve.ControlPoints.Cast<oM.Geometry.Point>().ToList().ConvertAll(x => ToRevit(x, pushSettings)), false));
+                List<XYZ> controlPoints = aNurbCurve.ControlPoints.Select(x => x.ToRevit(pushSettings)).ToList();
+                try
+                {
+                    return NurbSpline.CreateCurve(aNurbCurve.Degree(), knots, controlPoints, aNurbCurve.Weights);
+                }
+                catch
+                {
+                    BH.Engine.Reflection.Compute.RecordWarning("Conversion of BHoM nurbs curve to Revit curve based on degree and knot vector failed. A simplified (possibly different) spline has been created.");
+                    return NurbSpline.CreateCurve(controlPoints, aNurbCurve.Weights);
+                }
             }
 
             if (curve is oM.Geometry.Ellipse)
@@ -76,6 +86,76 @@ namespace BH.UI.Revit.Engine
             }
 
             return null;
+        }
+
+        /***************************************************/
+
+        internal static List<Curve> ToRevitCurves(this ICurve curve, PushSettings pushSettings = null)
+        {
+            if (curve is Polyline || curve is PolyCurve)
+            {
+                List<Curve> result = new List<Curve>();
+                foreach (ICurve cc in curve.ISubParts())
+                {
+                    result.AddRange(cc.ToRevitCurves(pushSettings));
+                }
+
+                return result;
+            }
+            else if (curve is BH.oM.Geometry.Arc)
+            {
+                BH.oM.Geometry.Arc arc = curve as BH.oM.Geometry.Arc;
+                if (arc.Radius < Tolerance.Distance)
+                    return new List<Curve>();
+                
+                if (Math.Abs(2 * Math.PI) - arc.EndAngle + arc.StartAngle < BH.oM.Geometry.Tolerance.Angle)
+                {
+                    double r = arc.Radius;
+                    if (pushSettings.ConvertUnits)
+                        r = UnitUtils.ConvertToInternalUnits(r, DisplayUnitType.DUT_METERS);
+
+                    XYZ centre = arc.CoordinateSystem.Origin.ToRevitXYZ(pushSettings);
+                    XYZ xAxis = arc.CoordinateSystem.X.ToRevitXYZ(pushSettings).Normalize();
+                    XYZ yAxis = arc.CoordinateSystem.Y.ToRevitXYZ(pushSettings).Normalize();
+
+                    Autodesk.Revit.DB.Arc arc1 = Autodesk.Revit.DB.Arc.Create(centre, r, 0, Math.PI, xAxis, yAxis);
+                    Autodesk.Revit.DB.Arc arc2 = Autodesk.Revit.DB.Arc.Create(centre, r, 0, Math.PI, -xAxis, -yAxis);
+                    return new List<Curve> { arc1, arc2 };
+                }
+            }
+            else if (curve is Circle)
+            {
+                Circle circle = curve as Circle;
+                double r = circle.Radius;
+                if (pushSettings.ConvertUnits)
+                    r = UnitUtils.ConvertToInternalUnits(r, DisplayUnitType.DUT_METERS);
+                
+                XYZ centre = circle.Centre.ToRevitXYZ(pushSettings);
+                XYZ normal = circle.Normal.ToRevitXYZ(pushSettings).Normalize();
+                Autodesk.Revit.DB.Plane p = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(normal, centre);
+
+                Autodesk.Revit.DB.Arc arc1 = Autodesk.Revit.DB.Arc.Create(p, r, 0, Math.PI);
+                Autodesk.Revit.DB.Arc arc2 = Autodesk.Revit.DB.Arc.Create(centre, r, 0, Math.PI, -arc1.XDirection, -arc1.YDirection);
+                return new List<Curve> { arc1, arc2 };
+            }
+            else if (curve is NurbsCurve)
+            {
+                Curve nc = curve.ToRevitCurve(pushSettings);
+                if (nc.GetEndPoint(0).DistanceTo(nc.GetEndPoint(1)) <= BH.oM.Geometry.Tolerance.Distance)
+                {
+                    double param1 = nc.GetEndParameter(0);
+                    double param2 = nc.GetEndParameter(1);
+                    Curve c1 = nc.Clone();
+                    Curve c2 = nc.Clone();
+                    c1.MakeBound(param1, (param1 + param2) * 0.5);
+                    c2.MakeBound((param1 + param2) * 0.5, param2);
+                    return new List<Curve> { c1, c2 };
+                }
+                else
+                    return new List<Curve> { nc };
+            }
+
+            return new List<Curve> { curve.ToRevitCurve(pushSettings) };
         }
 
         /***************************************************/
