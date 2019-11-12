@@ -104,12 +104,12 @@ namespace BH.UI.Revit.Engine
                 BuildingAnalyticalFragment aBuildingAnalyticalFragment = new BuildingAnalyticalFragment();
                 aBuildingAnalyticalFragment.GMTOffset = aTimeZone;
                 aBuildingAnalyticalFragment.NorthAngle = aProjectAngle;
-                aBuilding.AddFragment(aOriginContextFragment);
+                aBuilding.AddFragment(aBuildingAnalyticalFragment);
 
                 BuildingContextFragment aBuildingContextFragment = new BuildingContextFragment();
                 aBuildingContextFragment.PlaceName = aPlaceName;
                 aBuildingContextFragment.WeatherStation = aWeatherStationName;
-                aBuilding.AddFragment(aOriginContextFragment);
+                aBuilding.AddFragment(aBuildingContextFragment);
 
                 aBuilding = Modify.SetIdentifiers(aBuilding, aDocument.ProjectInformation) as Building;
                 if (pullSettings.CopyCustomData)
