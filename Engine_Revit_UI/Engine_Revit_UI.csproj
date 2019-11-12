@@ -228,6 +228,7 @@
     <Compile Include="Convert\Environment\ToRevit\Space.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\Grid.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\Level.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\Brep.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Grid.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Level.cs" />
     <Compile Include="Convert\Architecture\ToRevit\Ceiling.cs" />

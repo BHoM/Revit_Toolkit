@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -177,6 +177,48 @@ namespace BH.Engine.Adapters.Revit
                 Properties = aInstanceProperties,
                 CustomData = new System.Collections.Generic.Dictionary<string, object>(bHoMObject.CustomData)
             };
+
+            return aModelInstance;
+        }
+
+        /***************************************************/
+
+        public static ModelInstance ModelInstance(string categoryName, ISurface location)
+        {
+            if (string.IsNullOrWhiteSpace(categoryName) || location == null)
+                return null;
+
+            InstanceProperties aInstanceProperties = new InstanceProperties();
+            aInstanceProperties.CustomData.Add(Convert.CategoryName, categoryName);
+
+            ModelInstance aModelInstance = new ModelInstance()
+            {
+                Properties = aInstanceProperties,
+                Name = "Surface",
+                Location = location
+            };
+            aModelInstance.CustomData.Add(Convert.CategoryName, categoryName);
+
+            return aModelInstance;
+        }
+
+        /***************************************************/
+
+        public static ModelInstance ModelInstance(string categoryName, ISolid location)
+        {
+            if (string.IsNullOrWhiteSpace(categoryName) || location == null)
+                return null;
+
+            InstanceProperties aInstanceProperties = new InstanceProperties();
+            aInstanceProperties.CustomData.Add(Convert.CategoryName, categoryName);
+
+            ModelInstance aModelInstance = new ModelInstance()
+            {
+                Properties = aInstanceProperties,
+                Name = "Solid",
+                Location = location
+            };
+            aModelInstance.CustomData.Add(Convert.CategoryName, categoryName);
 
             return aModelInstance;
         }

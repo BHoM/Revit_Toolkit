@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -365,6 +365,18 @@ namespace BH.UI.Revit.Engine
         internal static void ElementTypeNotFoundWarning(this IBHoMObject iBHoMObject)
         {
             string aMessage = "Element type has not been found for given BHoM Object.";
+
+            if (iBHoMObject != null)
+                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, iBHoMObject.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordError(aMessage);
+        }
+
+        /***************************************************/
+
+        internal static void GeometryConvertFailed(this IBHoMObject iBHoMObject)
+        {
+            string aMessage = "Conversion of the element geometry failed.";
 
             if (iBHoMObject != null)
                 aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, iBHoMObject.BHoM_Guid);

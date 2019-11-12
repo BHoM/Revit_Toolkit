@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -26,6 +26,8 @@ using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 
+using System;
+
 namespace BH.UI.Revit.Engine
 {
     public static partial class Convert
@@ -49,6 +51,25 @@ namespace BH.UI.Revit.Engine
             pushSettings.DefaultIfNull();
 
             BuiltInCategory aBuiltInCategory = modelInstance.Properties.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
+
+            if (modelInstance.Location is ISurface || modelInstance.Location is ISolid)
+            {
+                BRepBuilder brep = ToRevitBrep(modelInstance.Location as dynamic, pushSettings);
+                if (brep == null || !brep.IsResultAvailable())
+                {
+                    BH.Engine.Reflection.Compute.RecordError(String.Format("Geometry conversion failed. BHoM GUID: {0}", modelInstance.BHoM_Guid));
+                    return null;
+                }
+
+                DirectShape directShape = DirectShape.CreateElement(document, new ElementId((int)aBuiltInCategory));
+                directShape.AppendShape(brep);
+                aElement = directShape;
+            }
+            else
+            {
+                Compute.GeometryConvertFailed(modelInstance);
+                return null;
+            }
 
             ElementType aElementType = modelInstance.Properties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
             if (aElementType == null)
@@ -107,6 +128,7 @@ namespace BH.UI.Revit.Engine
 
             return aElement;
         }
+
 
         /***************************************************/
         /**** Private Methods                           ****/
