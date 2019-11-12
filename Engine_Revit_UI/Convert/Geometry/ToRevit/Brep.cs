@@ -94,55 +94,10 @@ namespace BH.UI.Revit.Engine
                 BRepBuilderGeometryId face = brep.AddFace(bbsg, false);
 
                 brep.AddLoop(face, rp.Normal, ps.ExternalBoundary, true, pushSettings);
-                
-                //foreach (ICurve c in ps.ExternalBoundary)
-                //{
-                //    CurveLoop cl = new CurveLoop();
-                //    foreach (ICurve sp in c.ISubParts())
-                //    {
-                //        foreach (Curve cc in sp.ToRevitCurves(pushSettings))
-                //        {
-                //            cl.Append(cc);
-                //        }
-                //    }
-
-                //    if (!cl.IsCounterclockwise(rp.Normal))
-                //        cl.Flip();
-
-                //    BRepBuilderGeometryId loop = brep.AddLoop(face);
-                //    foreach (Curve cc in cl)
-                //    {
-                //        BRepBuilderGeometryId edge = brep.AddEdge(BRepBuilderEdgeGeometry.Create(cc));
-                //        brep.AddCoEdge(loop, edge, false);
-                //    }
-
-                //    brep.FinishLoop(loop);
-                //}
 
                 foreach (ICurve c in ps.InternalBoundaries)
                 {
                     brep.AddLoop(face, rp.Normal, c, false, pushSettings);
-
-                    //CurveLoop cl = new CurveLoop();
-                    //foreach (ICurve sp in c.ISubParts())
-                    //{
-                    //    foreach (Curve cc in sp.ToRevitCurves(pushSettings))
-                    //    {
-                    //        cl.Append(cc);
-                    //    }
-                    //}
-
-                    //if (cl.IsCounterclockwise(rp.Normal))
-                    //    cl.Flip();
-
-                    //BRepBuilderGeometryId loop = brep.AddLoop(face);
-                    //foreach (Curve cc in cl)
-                    //{
-                    //    BRepBuilderGeometryId edge = brep.AddEdge(BRepBuilderEdgeGeometry.Create(cc));
-                    //    brep.AddCoEdge(loop, edge, false);
-                    //}
-
-                    //brep.FinishLoop(loop);
                 }
 
                 brep.FinishFace(face);
