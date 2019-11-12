@@ -115,7 +115,7 @@ namespace BH.UI.Revit.Engine
 
         private static bool TryAddSurface(this BRepBuilder brep, NurbsSurface ns, PushSettings pushSettings)
         {
-            if (ns.IsClosed() || ns.IsPeriodic())
+            if (ns.IsClosed())
             {
                 BH.Engine.Reflection.Compute.RecordError("Revit does not support closed or periodic nurbs surfaces, convert failed.");
                 return false;
