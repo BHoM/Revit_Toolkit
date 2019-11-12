@@ -57,7 +57,7 @@ namespace BH.UI.Revit.Engine
                 BRepBuilder brep = ToRevitBrep(modelInstance.Location as dynamic, pushSettings);
                 if (brep == null || !brep.IsResultAvailable())
                 {
-                    BH.Engine.Reflection.Compute.RecordError(String.Format("Geometry conversion failed. BHoM GUID: {0}", modelInstance.BHoM_Guid));
+                    Compute.GeometryConvertFailed(modelInstance);
                     return null;
                 }
 
@@ -67,55 +67,52 @@ namespace BH.UI.Revit.Engine
             }
             else
             {
-                Compute.GeometryConvertFailed(modelInstance);
-                return null;
-            }
-
-            ElementType aElementType = modelInstance.Properties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
-            if (aElementType == null)
-            {
-                Compute.ElementTypeNotFoundWarning(modelInstance);
-                return null;
-            }
-
-            if (aElementType is FamilySymbol)
-            {
-                FamilySymbol aFamilySymbol = (FamilySymbol)aElementType;
-                FamilyPlacementType aFamilyPlacementType = aFamilySymbol.Family.FamilyPlacementType;
-
-                IGeometry aIGeometry = modelInstance.Location;
-
-                if(aFamilyPlacementType == FamilyPlacementType.Invalid || 
-                    aFamilyPlacementType == FamilyPlacementType.Adaptive ||
-                    (aIGeometry is oM.Geometry.Point && (aFamilyPlacementType == FamilyPlacementType.CurveBased || aFamilyPlacementType == FamilyPlacementType.CurveBasedDetail || aFamilyPlacementType == FamilyPlacementType.CurveDrivenStructural)) || 
-                    (aIGeometry is ICurve && (aFamilyPlacementType == FamilyPlacementType.OneLevelBased || aFamilyPlacementType == FamilyPlacementType.OneLevelBasedHosted)))
+                ElementType aElementType = modelInstance.Properties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
+                if (aElementType == null)
                 {
-                    Compute.InvalidFamilyPlacementTypeWarning(modelInstance, aElementType);
+                    Compute.ElementTypeNotFoundWarning(modelInstance);
                     return null;
                 }
 
-                switch (aFamilyPlacementType)
+                if (aElementType is FamilySymbol)
                 {
-                    //TODO: Implement rest of the cases
-                    case FamilyPlacementType.CurveBased:
-                        aElement = ToRevitElement_CurveBased(modelInstance, aFamilySymbol, pushSettings);
-                        break;
-                    case FamilyPlacementType.OneLevelBased:
-                        aElement = ToRevitElement_OneLevelBased(modelInstance, aFamilySymbol, pushSettings);
-                        break;
-                    case FamilyPlacementType.CurveDrivenStructural:
-                        aElement = ToRevitElement_CurveDrivenStructural(modelInstance, aFamilySymbol, pushSettings);
-                        break;
-                    case FamilyPlacementType.TwoLevelsBased:
-                        aElement = ToRevitElement_TwoLevelsBased(modelInstance, aFamilySymbol, pushSettings);
-                        break;
-                    default:
-                        Compute.FamilyPlacementTypeNotSupportedWarning(modelInstance, aElementType);
+                    FamilySymbol aFamilySymbol = (FamilySymbol)aElementType;
+                    FamilyPlacementType aFamilyPlacementType = aFamilySymbol.Family.FamilyPlacementType;
+
+                    IGeometry aIGeometry = modelInstance.Location;
+
+                    if (aFamilyPlacementType == FamilyPlacementType.Invalid ||
+                        aFamilyPlacementType == FamilyPlacementType.Adaptive ||
+                        (aIGeometry is oM.Geometry.Point && (aFamilyPlacementType == FamilyPlacementType.CurveBased || aFamilyPlacementType == FamilyPlacementType.CurveBasedDetail || aFamilyPlacementType == FamilyPlacementType.CurveDrivenStructural)) ||
+                        (aIGeometry is ICurve && (aFamilyPlacementType == FamilyPlacementType.OneLevelBased || aFamilyPlacementType == FamilyPlacementType.OneLevelBasedHosted)))
+                    {
+                        Compute.InvalidFamilyPlacementTypeWarning(modelInstance, aElementType);
                         return null;
+                    }
+
+                    switch (aFamilyPlacementType)
+                    {
+                        //TODO: Implement rest of the cases
+                        case FamilyPlacementType.CurveBased:
+                            aElement = ToRevitElement_CurveBased(modelInstance, aFamilySymbol, pushSettings);
+                            break;
+                        case FamilyPlacementType.OneLevelBased:
+                            aElement = ToRevitElement_OneLevelBased(modelInstance, aFamilySymbol, pushSettings);
+                            break;
+                        case FamilyPlacementType.CurveDrivenStructural:
+                            aElement = ToRevitElement_CurveDrivenStructural(modelInstance, aFamilySymbol, pushSettings);
+                            break;
+                        case FamilyPlacementType.TwoLevelsBased:
+                            aElement = ToRevitElement_TwoLevelsBased(modelInstance, aFamilySymbol, pushSettings);
+                            break;
+                        default:
+                            Compute.FamilyPlacementTypeNotSupportedWarning(modelInstance, aElementType);
+                            return null;
+                    }
                 }
+                else if (aElementType is WallType)
+                    aElement = ToRevitElement_Wall(modelInstance, (WallType)aElementType, pushSettings);
             }
-            else if (aElementType is WallType)
-                aElement = ToRevitElement_Wall(modelInstance, (WallType)aElementType, pushSettings);
 
             aElement.CheckIfNullPush(modelInstance);
             if (aElement == null)
