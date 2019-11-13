@@ -90,7 +90,7 @@ namespace BH.UI.Revit.Engine
 
             SpaceAnalyticalFragment aSpaceAnalyticalFragment = new SpaceAnalyticalFragment();
             aSpaceAnalyticalFragment = aSpaceAnalyticalFragment.UpdateValues(pullSettings, spatialElement) as SpaceAnalyticalFragment;
-            aSpace.AddFragment(aSpaceAnalyticalFragment);
+            aSpace.AddFragment(aOriginContextFragment);
 
             SpaceContextFragment aSpaceContextFragment = new SpaceContextFragment();
             aSpaceContextFragment = aSpaceContextFragment.UpdateValues(pullSettings, spatialElement) as SpaceContextFragment;
@@ -152,7 +152,7 @@ namespace BH.UI.Revit.Engine
             SpaceAnalyticalFragment aSpaceAnalyticalFragment = new SpaceAnalyticalFragment();
             aSpaceAnalyticalFragment = aSpaceAnalyticalFragment.UpdateValues(pullSettings, energyAnalysisSpace) as SpaceAnalyticalFragment;
             aSpaceAnalyticalFragment = aSpaceAnalyticalFragment.UpdateValues(pullSettings, aSpatialElement) as SpaceAnalyticalFragment;
-            aSpace.AddFragment(aSpaceAnalyticalFragment);
+            aSpace.AddFragment(aOriginContextFragment);
 
             SpaceContextFragment aSpaceContextFragment = new SpaceContextFragment();
             List<string> aConnectedElements = new List<string>();

@@ -56,13 +56,8 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             List<View> aViewList = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().ToList();
-#if REVIT2020
-            View aView = aViewList.Find(x => !x.IsTemplate && x.Name == aViewName);
-#else
             View aView = aViewList.Find(x => !x.IsTemplate && x.ViewName == aViewName);
-#endif
-
-            if (aView == null)
+            if(aView == null)
                 return null;
 
             List<ViewSheet> aViewSheetList = new FilteredElementCollector(document).OfClass(typeof(ViewSheet)).Cast<ViewSheet>().ToList();

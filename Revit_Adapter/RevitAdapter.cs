@@ -163,19 +163,59 @@ namespace BH.Adapter.Revit
 
         /***************************************************/
 
-        public override int Delete(IRequest request, Dictionary<string, object> config = null)
+        public override int Delete(FilterRequest filter, Dictionary<string, object> config = null)
         {
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)
             {
                 InternalAdapter.RevitSettings = RevitSettings;
-                return InternalAdapter.Delete(request, config);
+                return InternalAdapter.Delete(filter, config);
             }
 
             throw new NotImplementedException();
         }
 
         /***************************************************/
+
+        public override int UpdateProperty(FilterRequest filter, string property, object newValue, Dictionary<string, object> config = null)
+        {
+            //If internal adapter is loaded call it directly
+            if (InternalAdapter != null)
+            {
+                InternalAdapter.RevitSettings = RevitSettings;
+                return InternalAdapter.UpdateProperty(filter, property, newValue, config);
+            }
+
+            //Reset the wait event
+            m_waitEvent.Reset();
+
+
+            if (!CheckConnection())
+                return 0;
+
+            config = config == null ? new Dictionary<string, object>() : null;
+
+            //Send data through the socket link
+            m_linkIn.SendData(new List<object>() { PackageType.UpdateProperty, new Tuple<FilterRequest,string,object>(filter,property, newValue), config, RevitSettings });
+
+            //Wait until the return message has been recieved
+            if (!m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime)))
+                Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
+
+            int returnValue = 0;
+            //Grab the return objects from the latest package
+            if (m_returnPackage.Count > 0 && m_returnPackage[0] is int)
+                returnValue = (int)m_returnPackage[0];
+
+            //Clear the return list
+            m_returnPackage.Clear();
+
+            //Raise returned events
+            RaiseEvents();
+
+            //Return the package
+            return returnValue;
+        }
 
         public bool IsValid()
         {
@@ -249,7 +289,7 @@ namespace BH.Adapter.Revit
         /**** Protected  Methods                        ****/
         /***************************************************/
 
-        protected override bool Create<T>(IEnumerable<T> objects)
+        protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {
             throw new NotImplementedException();
         }

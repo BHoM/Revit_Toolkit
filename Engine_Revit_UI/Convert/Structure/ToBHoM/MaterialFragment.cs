@@ -155,25 +155,14 @@ namespace BH.UI.Revit.Engine
         private static IMaterialFragment Update(this IMaterialFragment materialFragment, StructuralAsset structuralAsset)
         {
             double density = UnitUtils.ConvertFromInternalUnits(structuralAsset.Density, DisplayUnitType.DUT_KILOGRAMS_PER_CUBIC_METER);
-
-#if REVIT2020
-
-#else
             double dampingRatio = structuralAsset.DampingRatio;
-#endif
-
             oM.Geometry.Vector youngsModulus = BH.Engine.Geometry.Create.Vector(UnitUtils.ConvertFromInternalUnits(structuralAsset.YoungModulus.X, DisplayUnitType.DUT_PASCALS), UnitUtils.ConvertFromInternalUnits(structuralAsset.YoungModulus.Y, DisplayUnitType.DUT_PASCALS), UnitUtils.ConvertFromInternalUnits(structuralAsset.YoungModulus.Z, DisplayUnitType.DUT_PASCALS));
             oM.Geometry.Vector thermalExpansionCoeff = BH.Engine.Geometry.Create.Vector(UnitUtils.ConvertFromInternalUnits(structuralAsset.ThermalExpansionCoefficient.X, DisplayUnitType.DUT_INV_CELSIUS), UnitUtils.ConvertFromInternalUnits(structuralAsset.ThermalExpansionCoefficient.Y, DisplayUnitType.DUT_INV_CELSIUS), UnitUtils.ConvertFromInternalUnits(structuralAsset.ThermalExpansionCoefficient.Z, DisplayUnitType.DUT_INV_CELSIUS));
             oM.Geometry.Vector poissonsRatio = BH.Engine.Geometry.Create.Vector(structuralAsset.PoissonRatio.X, structuralAsset.PoissonRatio.Y, structuralAsset.PoissonRatio.Z);
             oM.Geometry.Vector shearModulus = BH.Engine.Geometry.Create.Vector(UnitUtils.ConvertFromInternalUnits(structuralAsset.ShearModulus.X, DisplayUnitType.DUT_PASCALS), UnitUtils.ConvertFromInternalUnits(structuralAsset.ShearModulus.Y, DisplayUnitType.DUT_PASCALS), UnitUtils.ConvertFromInternalUnits(structuralAsset.ShearModulus.Z, DisplayUnitType.DUT_PASCALS));
 
             materialFragment.Density = density;
-#if REVIT2020
-
-#else
             materialFragment.DampingRatio = dampingRatio;
-#endif
-
 
             if (materialFragment is BH.oM.Structure.MaterialFragments.Aluminium)
             {

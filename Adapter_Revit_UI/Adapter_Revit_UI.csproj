@@ -36,8 +36,7 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\Build\</OutputPath>
     <DefineConstants>TRACE;DEBUG;REVIT2018</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>..\Build\Adapter_Revit_UI.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -49,8 +48,7 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\Build\</OutputPath>
     <DefineConstants>TRACE;DEBUG;REVIT2019</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>..\Build\Adapter_Revit_UI.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -79,28 +77,6 @@
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AssemblyName>Adapter_Revit_UI_2019</AssemblyName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2020|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\Build\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;REVIT2020</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <AssemblyName>Adapter_Revit_UI_2020</AssemblyName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2020|AnyCPU'">
-    <OutputPath>..\Build\</OutputPath>
-    <DefineConstants>TRACE;REVIT2020</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <AssemblyName>Adapter_Revit_UI_2020</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytical_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -146,40 +122,12 @@
       <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
-      <HintPath>..\libs\2018\RevitAPI.dll</HintPath>
+    <Reference Include="RevitAPI, Version=18.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Revit.RevitApi.x64.2018.0.0\lib\net45\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
-      <HintPath>..\libs\2018\RevitAPIIFC.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
-      <HintPath>..\libs\2018\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
-      <HintPath>..\libs\2019\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
-      <HintPath>..\libs\2019\RevitAPIIFC.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
-      <HintPath>..\libs\2019\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
-      <HintPath>..\libs\2020\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
-      <HintPath>..\libs\2020\RevitAPIIFC.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
-      <HintPath>..\libs\2020\RevitAPIUI.dll</HintPath>
+    <Reference Include="RevitAPIUI, Version=18.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Revit.RevitApiUI.x64.2018.0.0\lib\net45\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Structure_oM">
@@ -196,18 +144,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CRUD\Create.cs" />
-    <Compile Include="CRUD\Delete.cs" />
-    <Compile Include="AdapterActions\Execute.cs" />
-    <Compile Include="AdapterActions\Push.cs" />
-    <Compile Include="CRUD\Read.cs" />
+    <Compile Include="Create\Create.cs" />
+    <Compile Include="Delete\Delete.cs" />
+    <Compile Include="Execute\Execute.cs" />
+    <Compile Include="Pull\Push.cs" />
+    <Compile Include="Push\Push.cs" />
+    <Compile Include="Read\Read.cs" />
     <Compile Include="Types\Comparer.cs" />
     <Compile Include="Types\DependencyTypes.cs" />
-    <Compile Include="CRUD\Update.cs" />
+    <Compile Include="Update\Update.cs" />
     <Compile Include="Messages\Errors.cs" />
     <Compile Include="Messages\Warnings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RevitUIAdapter.cs" />
+    <Compile Include="Update\UpdateProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine_Revit_UI\Engine_Revit_UI.csproj">
@@ -226,6 +176,9 @@
       <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
       <Name>Revit_oM</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
