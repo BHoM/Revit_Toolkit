@@ -81,10 +81,10 @@ namespace BH.UI.Revit.Engine
                     }
 
                 }
-                //else if (hostObject is Floor)
-                //    aISurface = BH.Engine.Physical.Create.Floor(aPlanarSurface, aConstruction);
-                //else if (hostObject is RoofBase)
-                //    aISurface = BH.Engine.Physical.Create.Roof(aConstruction, aPlanarSurface);                  
+                else if (hostObject is Floor)
+                    aISurface = BH.Engine.Physical.Create.Floor(aPlanarSurface, aConstruction);
+                else if (hostObject is RoofBase)
+                    aISurface = BH.Engine.Physical.Create.Roof(aConstruction, aPlanarSurface);                  
 
                 if (aISurface == null)
                     continue;

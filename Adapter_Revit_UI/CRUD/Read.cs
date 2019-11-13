@@ -143,26 +143,26 @@ namespace BH.UI.Revit.Adapter
             if (aFilterRequestDictionary == null)
                 return null;
 
-            //    if (aDocument == null)
-            //    {
-            //        BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
-            //        return null;
-            //    }
+        //    if (aDocument == null)
+        //    {
+        //        BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
+        //        return null;
+        //    }
 
-            //    if (filterRequest == null)
-            //    {
-            //        BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided FilterRequest is null.");
-            //        return null;
-            //    }
+        //    if (filterRequest == null)
+        //    {
+        //        BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided FilterRequest is null.");
+        //        return null;
+        //    }
 
-            //    Autodesk.Revit.UI.UIDocument aUIDocument = null;
+        //    Autodesk.Revit.UI.UIDocument aUIDocument = null;
 
-            //    if (aUIDocument == null)
-            //        aUIDocument = UIDocument;
+        //    if (aUIDocument == null)
+        //        aUIDocument = UIDocument;
 
 
-            return Query.IBHoMObjects(aUIDocument, filterRequest, RevitSettings);
-        }
+        //    return Query.IBHoMObjects(aUIDocument, filterRequest, RevitSettings);
+        //}
 
         /***************************************************/
 
