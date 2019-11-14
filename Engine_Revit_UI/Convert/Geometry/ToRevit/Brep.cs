@@ -161,10 +161,10 @@ namespace BH.UI.Revit.Engine
                 BRepBuilderSurfaceGeometry bbsg = BRepBuilderSurfaceGeometry.CreateNURBSSurface(ns.UDegree, ns.VDegree, uKnots, vKnots, pointList, weightList, false, null);
                 BRepBuilderGeometryId face = brep.AddFace(bbsg, false);
 
-                foreach (ICurve c in ns.ExternalBoundaries3d)
+                foreach (SurfaceTrim trim in ns.OuterTrims)
                 {
                     BRepBuilderGeometryId loop = brep.AddLoop(face);
-                    foreach (ICurve sp in c.ISubParts())
+                    foreach (ICurve sp in trim.Curve3d.ISubParts())
                     {
                         List<Curve> ccs = sp.ToRevitCurves(pushSettings);
                         foreach (Curve cc in ccs)
@@ -176,10 +176,10 @@ namespace BH.UI.Revit.Engine
                     brep.FinishLoop(loop);
                 }
 
-                foreach (ICurve c in ns.InternalBoundaries3d)
+                foreach (SurfaceTrim trim in ns.InnerTrims)
                 {
                     BRepBuilderGeometryId loop = brep.AddLoop(face);
-                    foreach (ICurve sp in c.ISubParts())
+                    foreach (ICurve sp in trim.Curve3d.ISubParts())
                     {
                         List<Curve> ccs = sp.ToRevitCurves(pushSettings);
                         foreach (Curve cc in ccs)
