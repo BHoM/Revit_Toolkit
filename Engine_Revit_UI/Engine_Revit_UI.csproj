@@ -284,7 +284,6 @@
     <Compile Include="Convert\Environment\ToBHoM\Space.cs" />
     <Compile Include="Convert\Environment\ToRevit\CompoundStructureLayer.cs" />
     <Compile Include="Convert\Environment\ToRevit\Element.cs" />
-    <Compile Include="Convert\Environment\ToRevit\ElementType.cs" />
     <Compile Include="Compute\Notes.cs" />
     <Compile Include="Compute\Warnings.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\ICurve.cs" />
@@ -370,14 +369,12 @@
     <Compile Include="Query\MaterialGrade.cs" />
     <Compile Include="Query\Outlines.cs" />
     <Compile Include="Query\SpatialElementId.cs" />
-    <Compile Include="Query\SpatialElementIds.cs" />
     <Compile Include="Query\HostedBuildingElements.cs" />
     <Compile Include="Query\BHoMTypes.cs" />
     <Compile Include="Query\IsHorizontal.cs" />
     <Compile Include="Query\IsVertical.cs" />
     <Compile Include="Query\Level.cs" />
     <Compile Include="Query\LookupParameter.cs" />
-    <Compile Include="Query\RevitType.cs" />
     <Compile Include="Query\RevitTypes.cs" />
     <Compile Include="Query\Discipline.cs" />
     <Compile Include="Query\Profiles.cs" />
