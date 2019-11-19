@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static BHoMObject ToBHoMGrid(this Grid grid, PullSettings pullSettings = null)
+        internal static BH.oM.Geometry.SettingOut.Grid ToBHoMGrid(this Grid grid, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

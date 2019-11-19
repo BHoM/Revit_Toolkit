@@ -74,7 +74,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public Family Family(this oM.Adapters.Revit.Elements.Family family, Document document, IEnumerable<BuiltInCategory> builtInCategories, FamilyLoadSettings familyLoadSettings = null)
+        public static Family Family(this oM.Adapters.Revit.Elements.Family family, Document document, IEnumerable<BuiltInCategory> builtInCategories, FamilyLoadSettings familyLoadSettings = null)
         {
             if (family == null || document == null || builtInCategories == null || builtInCategories.Count() == 0)
                 return null;

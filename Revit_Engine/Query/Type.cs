@@ -38,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Gets matching type of variable with comparison rule.")]
         [Input("ComparisonRule", "Comparison Rule")]
         [Output("Type")]
-        static public Type Type(IComparisonRule comparisonRule)
+        public static Type Type(IComparisonRule comparisonRule)
         {
             if(comparisonRule == null)
                 return null;

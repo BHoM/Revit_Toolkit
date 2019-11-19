@@ -36,7 +36,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public oM.Physical.Constructions.Construction Construction(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
+        public static oM.Physical.Constructions.Construction Construction(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
         {
             if (energyAnalysisOpening == null)
                 return null;
@@ -50,7 +50,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public oM.Physical.Constructions.Construction Construction(string constructionName, string materialName)
+        public static oM.Physical.Constructions.Construction Construction(string constructionName, string materialName)
         {
             if (string.IsNullOrEmpty(constructionName) || string.IsNullOrEmpty(materialName))
                 return null;

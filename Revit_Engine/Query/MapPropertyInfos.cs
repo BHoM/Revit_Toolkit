@@ -33,7 +33,7 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public IEnumerable<PropertyInfo> MapPropertyInfos(this Type type)
+        public static IEnumerable<PropertyInfo> MapPropertyInfos(this Type type)
         {
             if (type == null)
                 return null;

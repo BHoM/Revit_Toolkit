@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public oM.Physical.Constructions.Layer Layer(this CompoundStructureLayer compoundStructureLayer, Document doc, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
+        public static oM.Physical.Constructions.Layer Layer(this CompoundStructureLayer compoundStructureLayer, Document doc, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
         {
             if (compoundStructureLayer == null)
                 return null;

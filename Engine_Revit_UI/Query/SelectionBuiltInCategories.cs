@@ -26,6 +26,8 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 
+using BH.oM.Reflection.Attributes;
+
 namespace BH.UI.Revit.Engine
 {
     public static partial class Query
@@ -33,7 +35,8 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
+
+        [DeprecatedAttribute("3.0", "BH.UI.Revit.Engine.Query.SelectionBuiltInCategories method is not supported any more")]
         public static List<BuiltInCategory> SelectionBuiltInCategories(this UIDocument uIDocument)
         {
             if (uIDocument == null)
@@ -48,10 +51,10 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             List<BuiltInCategory> aResult = new List<BuiltInCategory>();
-            foreach(ElementId aElementId in aSelection.GetElementIds())
+            foreach (ElementId aElementId in aSelection.GetElementIds())
             {
                 Element aElement = aDocument.GetElement(aElementId);
-                if(aElement != null && aElement.Category != null)
+                if (aElement != null && aElement.Category != null)
                 {
                     BuiltInCategory aBuiltInCategory = (BuiltInCategory)aElement.Category.Id.IntegerValue;
                     if (!aResult.Contains(aBuiltInCategory))

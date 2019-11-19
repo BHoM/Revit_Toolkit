@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public List<PolyCurve> TopFacesPolyCurves(this HostObject hostObject, PullSettings pullSettings = null)
+        public static List<PolyCurve> TopFacesPolyCurves(this HostObject hostObject, PullSettings pullSettings = null)
         {
             if (hostObject == null)
                 return null;

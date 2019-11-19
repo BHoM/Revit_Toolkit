@@ -31,7 +31,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public ElementId SpatialElementId(this EnergyAnalysisSpace energyAnalysisSpace)
+        public static ElementId SpatialElementId(this EnergyAnalysisSpace energyAnalysisSpace)
         {
             if (energyAnalysisSpace == null)
                 return null;

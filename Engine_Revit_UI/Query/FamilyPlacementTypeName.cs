@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public string FamilyPlacementTypeName(this Family family)
+        public static string FamilyPlacementTypeName(this Family family)
         {
             if (family == null)
                 return null;

@@ -27,6 +27,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.UI.Revit.Engine
 {
@@ -35,8 +36,9 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-        
-        static public Level NextLevel(this Level Level)
+
+        [DeprecatedAttribute("3.0", "BH.UI.Revit.Engine.Query.NextLevel method is not supported any more")]
+        public static Level NextLevel(this Level Level)
         {
             if (Level == null)
                 return null;

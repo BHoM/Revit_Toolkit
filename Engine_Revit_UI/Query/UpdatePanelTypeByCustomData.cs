@@ -74,9 +74,13 @@ namespace BH.UI.Revit.Engine
             return elements;
         }
 
+        /***************************************************/
+
         public static Panel UpdateBuildingElementTypeByCustomData(this Panel element)
         {
             return (new List<Panel> { element }).UpdateBuildingElementTypeByCustomData()[0];
         }
+
+        /***************************************************/
     }
 }

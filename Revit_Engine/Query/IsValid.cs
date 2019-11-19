@@ -41,7 +41,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("name", "Name")]
         [Input("value", "Value to ")]
         [Output("IsValid")]
-        static public bool IsValid(this IComparisonRule comparisonRule, object value_Base, object value_ToBeCompared, bool tryConvert = true)
+        public static bool IsValid(this IComparisonRule comparisonRule, object value_Base, object value_ToBeCompared, bool tryConvert = true)
         {
             if (comparisonRule == null)
                 return false;
@@ -171,7 +171,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Checks if RevitAdapter is valid.")]
         [Input("revitAdapter", "Revit Adapter")]
         [Output("IsValid")]
-        static public bool IsValid(this RevitAdapter revitAdapter)
+        public static bool IsValid(this RevitAdapter revitAdapter)
         {
             if (revitAdapter == null)
                 return false;

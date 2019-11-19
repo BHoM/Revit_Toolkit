@@ -27,7 +27,7 @@ namespace BH.Adapter.Revit
     public partial class RevitAdapter
     {
         /***************************************************/
-        /**** IAdapter Interface                        ****/
+        /****              Public Methods               ****/
         /***************************************************/
 
         public override bool Execute(string command, Dictionary<string, object> parameters = null, Dictionary<string, object> config = null)

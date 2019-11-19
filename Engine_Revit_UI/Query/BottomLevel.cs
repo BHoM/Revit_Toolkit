@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public Level BottomLevel(this oM.Geometry.ICurve curve, Document document, bool convertUnits = true)
+        public static Level BottomLevel(this oM.Geometry.ICurve curve, Document document, bool convertUnits = true)
         {
             if (curve == null)
                 return null;
@@ -49,7 +49,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public Level BottomLevel(this oM.Geometry.Point point, Document document, bool convertUnits = true)
+        public static Level BottomLevel(this oM.Geometry.Point point, Document document, bool convertUnits = true)
         {
             if (point == null)
                 return null;
@@ -59,7 +59,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public Level BottomLevel(this double elevation, Document document, bool convertUnits = true, double tolerance = oM.Geometry.Tolerance.Distance)
+        public static Level BottomLevel(this double elevation, Document document, bool convertUnits = true, double tolerance = oM.Geometry.Tolerance.Distance)
         {
             if (double.IsNaN(elevation) || double.IsNegativeInfinity(elevation) || double.IsPositiveInfinity(elevation))
                 return null;

@@ -35,7 +35,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public Discipline Discipline(this FilterRequest filterRequest, RevitSettings revitSettings)
+        public static Discipline Discipline(this FilterRequest filterRequest, RevitSettings revitSettings)
         {
             Discipline? aDiscipline = null;
 
@@ -56,7 +56,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public Discipline Discipline(this IEnumerable<FilterRequest> filterRequest, RevitSettings revitSettings)
+        public static Discipline Discipline(this IEnumerable<FilterRequest> filterRequest, RevitSettings revitSettings)
         {
             if (filterRequest == null || filterRequest.Count() == 0)
                 return oM.Adapters.Revit.Enums.Discipline.Undefined;

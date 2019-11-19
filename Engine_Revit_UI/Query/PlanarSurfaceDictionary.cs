@@ -37,7 +37,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> PlanarSurfaceDictionary(this HostObject hostObject, bool pullOpenings = true, PullSettings pullSettings = null)
+        public static Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> PlanarSurfaceDictionary(this HostObject hostObject, bool pullOpenings = true, PullSettings pullSettings = null)
         {
             List<PolyCurve> aPolyCurveList = Query.Profiles(hostObject, pullSettings);
 

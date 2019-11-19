@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public IMaterialFragment LibraryMaterial(this StructuralMaterialType structuralMaterialType, string materialGrade)
+        public static IMaterialFragment LibraryMaterial(this StructuralMaterialType structuralMaterialType, string materialGrade)
         {
             if (string.IsNullOrWhiteSpace(materialGrade))
                 return null;

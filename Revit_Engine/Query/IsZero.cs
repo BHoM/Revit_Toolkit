@@ -36,7 +36,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Checks if given double value is almost equal 0 (MicroDistance Tolerance).")]
         [Input("double", "Double value")]
         [Output("IsZero")]
-        static public bool IsZero(double @double)
+        public static bool IsZero(double @double)
         {
             return oM.Geometry.Tolerance.MicroDistance > Math.Abs(@double);
         }

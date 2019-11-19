@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using Autodesk.Revit.DB;
 
 using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
 
 
 namespace BH.UI.Revit.Engine
@@ -36,22 +37,22 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static IEnumerable<BuiltInCategory> AppendBuiltInCategories(this IEnumerable<BuiltInCategory> builtInCategories_ToBeAppended, IEnumerable<BuiltInCategory> builtInCategories, bool AllowDuplicates = false)
+        public static IEnumerable<BuiltInCategory> Append(this IEnumerable<BuiltInCategory> currentSet, IEnumerable<BuiltInCategory> newItems, bool allowDuplicates = false)
         {
-            if (builtInCategories_ToBeAppended == null && builtInCategories == null)
+            if (newItems == null && currentSet == null)
                 return null;
 
-            if (builtInCategories_ToBeAppended == null)
-                return new List<BuiltInCategory>(builtInCategories);
+            if (newItems == null)
+                return new List<BuiltInCategory>(currentSet);
 
-            if (builtInCategories == null || builtInCategories.Count() == 0)
-                return new List<BuiltInCategory>(builtInCategories_ToBeAppended);
+            if (currentSet == null || currentSet.Count() == 0)
+                return new List<BuiltInCategory>(newItems);
 
-            List<BuiltInCategory> aBuiltInCategoryList = new List<BuiltInCategory>(builtInCategories_ToBeAppended);
+            List<BuiltInCategory> aBuiltInCategoryList = new List<BuiltInCategory>(newItems);
 
-            foreach (BuiltInCategory aBuiltInCategory in builtInCategories)
+            foreach (BuiltInCategory aBuiltInCategory in currentSet)
             {
-                if (AllowDuplicates || !aBuiltInCategoryList.Contains(aBuiltInCategory))
+                if (allowDuplicates || !aBuiltInCategoryList.Contains(aBuiltInCategory))
                     aBuiltInCategoryList.Add(aBuiltInCategory);
             }
 
@@ -60,19 +61,19 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Dictionary<FilterRequest, List<Element>> Append(this Dictionary<FilterRequest, List<Element>> filterRequestDictionary_ToBeAppended, Dictionary<FilterRequest, List<Element>> filterRequestDictionary)
+        public static Dictionary<FilterRequest, List<Element>> Append(this Dictionary<FilterRequest, List<Element>> currentSet, Dictionary<FilterRequest, List<Element>> newItems)
         {
-            if (filterRequestDictionary_ToBeAppended == null && filterRequestDictionary == null)
+            if (currentSet == null && newItems == null)
                 return null;
 
-            if (filterRequestDictionary_ToBeAppended == null)
-                return new Dictionary<FilterRequest, List<Element>>(filterRequestDictionary);
+            if (currentSet == null)
+                return new Dictionary<FilterRequest, List<Element>>(newItems);
 
-            if (filterRequestDictionary == null || filterRequestDictionary.Count == 0)
-                return new Dictionary<FilterRequest, List<Element>>(filterRequestDictionary_ToBeAppended);
+            if (newItems == null || newItems.Count == 0)
+                return new Dictionary<FilterRequest, List<Element>>(currentSet);
 
-            Dictionary<FilterRequest, List<Element>> aResult = new Dictionary<FilterRequest, List<Element>>(filterRequestDictionary_ToBeAppended);
-            foreach (KeyValuePair<FilterRequest, List<Element>> aKeyValuePair in filterRequestDictionary)
+            Dictionary<FilterRequest, List<Element>> aResult = new Dictionary<FilterRequest, List<Element>>(currentSet);
+            foreach (KeyValuePair<FilterRequest, List<Element>> aKeyValuePair in newItems)
             {
                 if (aKeyValuePair.Value == null)
                     continue;
@@ -93,5 +94,17 @@ namespace BH.UI.Revit.Engine
             return aResult;
         }
 
+
+        /***************************************************/
+        /**** Deprecated Methods                        ****/
+        /***************************************************/
+
+        [DeprecatedAttribute("3.0", "AppendBuiltInCategories had been renamed to Append", null, "Append")]
+        public static IEnumerable<BuiltInCategory> AppendBuiltInCategories(this IEnumerable<BuiltInCategory> builtInCategories_ToBeAppended, IEnumerable<BuiltInCategory> builtInCategories, bool AllowDuplicates = false)
+        {
+            return Append(builtInCategories, builtInCategories_ToBeAppended, AllowDuplicates);
+        }
+
+        /***************************************************/
     }
 }

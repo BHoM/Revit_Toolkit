@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public StructuralMaterialType StructuralMaterialType(this string materialClass)
+        public static StructuralMaterialType StructuralMaterialType(this string materialClass)
         {
             if (string.IsNullOrEmpty(materialClass))
                 return Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined;

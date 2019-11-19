@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public bool IsSimilar(this Curve curve_1, Curve curve_2, double tolerance = oM.Geometry.Tolerance.MicroDistance)
+        public static bool IsSimilar(this Curve curve_1, Curve curve_2, double tolerance = oM.Geometry.Tolerance.MicroDistance)
         {
             if (curve_1 == null && curve_2 == null)
                 return true;

@@ -46,6 +46,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("height", "Height of wall Environment Panel")]
         [Input("familyTypeName", "Revit Family Type Name for wall Environment Panel")]
         [Output("Environment Panel")]
+        [Deprecated("3.0", "All Create methods for BH.oM.Environment.Elements.Panel are stored in BH.Engine.Environment.Create.")]
         public static Panel Panel(ICurve curve, double height, string familyTypeName)
         {
             if (curve == null || string.IsNullOrEmpty(familyTypeName) || height <= 0)
@@ -79,50 +80,11 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        /*[Description("Creates BuildingElement by given PolyCurve and Revit Family Type Name")]
-        [Input("polyCurve", "Polycurve describing profile of Environment Panel")]
-        [Input("familyTypeName", "Revit Family Type Name for wall Environment Panel")]
-        [Output("BuildingElement")]
-        public static Panel Panel(PolyCurve polyCurve, string familyTypeName)
-        {
-            if (polyCurve == null || string.IsNullOrEmpty(familyTypeName))
-                return null;
-
-            BuildingElement aBuildingElement = Environment.Create.BuildingElement(polyCurve);
-            aBuildingElement.Name = familyTypeName;
-
-            return aBuildingElement;
-        }*/
-
-        /***************************************************/
-
-        /*[Description("Creates BuildingElement by given PolyCurve, BuildingElementType and Revit Family Type Name")]
-        [Input("polyCurve", "Polycurve describing profile of Environment Panel")]
-        [Input("buildingElementType", "Environment PanelType")]
-        [Input("familyTypeName", "Revit Family Type Name for wall Environment Panel")]
-        [Output("Environment Panel")]
-        public static Panel Panel(PolyCurve polyCurve, PanelType buildingElementType, string familyTypeName)
-        {
-            if (polyCurve == null || string.IsNullOrEmpty(familyTypeName))
-                return null;
-
-            OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-            aOriginContextFragment.TypeName = familyTypeName;
-
-            Panel aBuildingElement = Environment.Create.Panel(type: buildingElementType, externalEdges: polyCurve.ToEdges());
-            aBuildingElement.Name = familyTypeName;
-
-            aBuildingElement.AddFragment(aOriginContextFragment);
-
-            return aBuildingElement;
-        }*/
-
-        /***************************************************/
-
         [Description("Creates Environment Panel by given profile points and Revit Family Type Name")]
         [Input("points", "points describing profile of Environment Panel")]
         [Input("familyTypeName", "Revit Family Type Name for wall Environment Panel")]
         [Output("Environment Panel")]
+        [Deprecated("3.0", "All Create methods for BH.oM.Environment.Elements.Panel are stored in BH.Engine.Environment.Create.")]
         public static Panel Panel(IEnumerable<Point> points, string familyTypeName)
         {
             if (points == null || string.IsNullOrEmpty(familyTypeName) || points.Count() < 3)
@@ -151,6 +113,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("buildingElementType", "Environment PanelType")]
         [Input("familyTypeName", "Revit Family Type Name for wall Environment Panel")]
         [Output("Environment Panel")]
+        [Deprecated("3.0", "All Create methods for BH.oM.Environment.Elements.Panel are stored in BH.Engine.Environment.Create.")]
         public static Panel BuildingElement(IEnumerable<Point> points, PanelType panelType, string familyTypeName)
         {
             if (points == null || string.IsNullOrEmpty(familyTypeName) || points.Count() < 3)

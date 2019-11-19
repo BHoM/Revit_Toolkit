@@ -36,7 +36,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public List<oM.Environment.Elements.Panel> HostedBuildingElements(HostObject hostObject, Face face, PullSettings pullSettings = null)
+        public static List<oM.Environment.Elements.Panel> HostedBuildingElements(HostObject hostObject, Face face, PullSettings pullSettings = null)
         {
             if (hostObject == null)
                 return null;
