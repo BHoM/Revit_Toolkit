@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static oM.Geometry.SettingOut.Level ToBHoMLevel(this Level level, PullSettings pullSettings = null)
+        internal static BH.oM.Geometry.SettingOut.Level ToBHoMLevel(this Level level, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
