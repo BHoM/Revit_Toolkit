@@ -38,6 +38,10 @@ namespace BH.UI.Revit.Engine
 {
     public static partial class Modify
     {
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
+
         internal static BH.oM.Physical.Constructions.Construction UpdateMaterialProperties(this BH.oM.Physical.Constructions.Construction construction, HostObjAttributes hostObjectAttributes, string materialGrade, PullSettings pullSettings)
         {
             BH.oM.Physical.Constructions.Construction newConstruction = construction.GetShallowClone() as BH.oM.Physical.Constructions.Construction;
@@ -73,6 +77,8 @@ namespace BH.UI.Revit.Engine
             return newConstruction;
         }
 
+        /***************************************************/
+
         internal static BH.oM.Physical.Materials.Material UpdateMaterialProperties(this BH.oM.Physical.Materials.Material material, Autodesk.Revit.DB.Material sourceMaterial, PullSettings pullSettings, string materialGrade = null, StructuralMaterialType structuralMaterialType = StructuralMaterialType.Undefined)
         {
             BH.oM.Physical.Materials.Material newMaterial = material.GetShallowClone() as BH.oM.Physical.Materials.Material;
@@ -93,6 +99,8 @@ namespace BH.UI.Revit.Engine
 
             return newMaterial;
         }
+
+        /***************************************************/
 
         internal static bool TryUpdateEmptyMaterialFromLibrary(this BH.oM.Physical.Materials.Material material, StructuralMaterialType structuralMaterialType, PullSettings pullSettings, string materialGrade = null)
         {
@@ -128,6 +136,8 @@ namespace BH.UI.Revit.Engine
             }
         }
 
+        /***************************************************/
+
         internal static List<IMaterialProperties> ToBHoMMaterialProperties(this Autodesk.Revit.DB.Material material, PullSettings pullSettings, string materialGrade = null)
         {
             List<IMaterialProperties> result = new List<IMaterialProperties>();
@@ -142,6 +152,9 @@ namespace BH.UI.Revit.Engine
             return result;
         }
 
+
+        /***************************************************/
+        /**** Private Methods                           ****/
         /***************************************************/
 
         private static IMaterialProperties ToBHoMMaterialProperties(this Autodesk.Revit.DB.Material material, Type type, PullSettings pullSettings, string materialGrade = null)
@@ -169,47 +182,6 @@ namespace BH.UI.Revit.Engine
                 default:
                     return new List<Type>();
             }
-        }
-
-        /***************************************************/
-
-        private static bool ContainsDisciplineProperties(this oM.Physical.Materials.Material material, oM.Adapters.Revit.Enums.Discipline discipline)
-        {
-            List<Type> types = discipline.MaterialTypes();
-            return material.Properties.All(x => types.Contains(x.GetType()));
-        }
-
-        /***************************************************/
-
-        internal static List<IMaterialProperties> GetMaterialProperties(this oM.Physical.Materials.Material material, oM.Adapters.Revit.Enums.Discipline discipline)
-        {
-            List<IMaterialProperties> result = new List<IMaterialProperties>();
-            foreach (Type type in discipline.MaterialTypes())
-            {
-                IMaterialProperties properties = material.GetMaterialProperties(type);
-                if (properties != null)
-                    result.Add(properties);
-            }
-
-            return result;
-        }
-
-        /***************************************************/
-
-        private static IMaterialProperties GetMaterialProperties(this oM.Physical.Materials.Material material, Type type)
-        {
-            foreach (IMaterialProperties properties in material.Properties)
-            {
-                if (properties.GetType() == type)
-                {
-                    //TODO: is that copy OK?
-                    IMaterialProperties result = properties.GetShallowClone() as IMaterialProperties;
-                    result.CustomData = new Dictionary<string, object>(material.CustomData);
-                    return result;
-                }
-            }
-
-            return null;
         }
 
         /***************************************************/

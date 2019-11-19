@@ -36,7 +36,7 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public Plane Plane(this PolyCurve polyCurve, double tolerance = Tolerance.Distance)
+        public static Plane Plane(this PolyCurve polyCurve, double tolerance = Tolerance.Distance)
         {
             if (polyCurve == null)
                 return null;
@@ -55,7 +55,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        static public Plane Plane(this Polyline polyline, double tolerance = Tolerance.Distance)
+        public static Plane Plane(this Polyline polyline, double tolerance = Tolerance.Distance)
         {
             if (polyline == null)
                 return null;
@@ -72,7 +72,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        static public Plane Plane(this IEnumerable<Point> points)
+        public static Plane Plane(this IEnumerable<Point> points)
         {
             if (points == null || points.Count() < 2)
                 return null;

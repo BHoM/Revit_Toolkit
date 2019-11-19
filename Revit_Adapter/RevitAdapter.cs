@@ -48,6 +48,7 @@ namespace BH.Adapter.Revit
         /***************************************************/
         /**** Constructors                              ****/
         /***************************************************/
+
         [Description("Adapter to connect to an open Revit file. Connection will be made to the active document (based on active view). Make sure to only have ONE Revit Window open, or connection will not work as intended.")]
         [Input("revitSettings", "Connect RevitSettings to control what is being connected")]
         [Input("active", "Establish connection with Revit by setting to 'True'")]

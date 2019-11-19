@@ -48,7 +48,6 @@ namespace BH.UI.Revit.Engine
             if (document == null || uniqueIds == null)
                 return null;
 
-
             List<ElementId> aElementIdList = new List<ElementId>();
             foreach (string aUniqueId in uniqueIds)
             {
@@ -135,11 +134,8 @@ namespace BH.UI.Revit.Engine
                     aElementIds = aElementIdList;
                 }
             }
-
-
-
+            
             return aElementIds;
-                
         }
 
         /***************************************************/
@@ -308,8 +304,7 @@ namespace BH.UI.Revit.Engine
                         break;
                     }
             }
-
-
+            
             return new FilteredElementCollector(document).OfClass(aType).ToElementIds();
         }
 

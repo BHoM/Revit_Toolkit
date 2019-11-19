@@ -26,6 +26,10 @@ namespace BH.UI.Revit.Engine
 {
     public static partial class Query
     {
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
+
         internal static string Name(SpatialElement spatialElement)
         {
             if (spatialElement == null)
@@ -52,5 +56,7 @@ namespace BH.UI.Revit.Engine
 
             return aResult;
         }
+
+        /***************************************************/
     }
 }

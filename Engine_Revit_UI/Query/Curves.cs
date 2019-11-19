@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public List<oM.Geometry.ICurve> Curves(this GeometryElement geometryElement, Transform transform = null, PullSettings pullSettings = null)
+        public static List<oM.Geometry.ICurve> Curves(this GeometryElement geometryElement, Transform transform = null, PullSettings pullSettings = null)
         {
             if (geometryElement == null)
                 return null;
@@ -89,7 +89,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public List<oM.Geometry.ICurve> Curves(this Element element, Options options, PullSettings pullSettings = null)
+        public static List<oM.Geometry.ICurve> Curves(this Element element, Options options, PullSettings pullSettings = null)
         {
             GeometryElement aGeometryElement = element.get_Geometry(options);
 
@@ -102,7 +102,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public List<oM.Geometry.ICurve> Curves(this oM.Geometry.Polyline polyline)
+        public static List<oM.Geometry.ICurve> Curves(this oM.Geometry.Polyline polyline)
         {
             if (polyline == null)
                 return null;
@@ -120,5 +120,7 @@ namespace BH.UI.Revit.Engine
 
             return aResult;
         }
+
+        /***************************************************/
     }
 }

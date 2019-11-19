@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public List<Solid> Solids(this GeometryElement geometryElement, Transform transform = null, PullSettings pullSettings = null)
+        public static List<Solid> Solids(this GeometryElement geometryElement, Transform transform = null, PullSettings pullSettings = null)
         {
             if (geometryElement == null)
                 return null;
@@ -68,7 +68,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public List<Solid> Solids(this Element element, Options options, PullSettings pullSettings = null)
+        public static List<Solid> Solids(this Element element, Options options, PullSettings pullSettings = null)
         {
             GeometryElement aGeometryElement = element.get_Geometry(options);
 

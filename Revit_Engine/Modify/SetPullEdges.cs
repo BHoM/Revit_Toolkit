@@ -51,6 +51,11 @@ namespace BH.Engine.Adapters.Revit
             return aFilterRequest;
         }
 
+
+        /***************************************************/
+        /**** Deprecated Methods                        ****/
+        /***************************************************/
+
         [Deprecated("2.2")]
         [Description("Sets Pull Edges option for FilterRequest.")]
         [Input("filterRequest", "FilterRequest")]

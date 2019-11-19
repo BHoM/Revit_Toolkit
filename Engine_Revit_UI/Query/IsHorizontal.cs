@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public bool IsHorizontal(PlanarFace planarFace)
+        public static bool IsHorizontal(PlanarFace planarFace)
         {
             return IsVertical(planarFace.FaceNormal);
         }

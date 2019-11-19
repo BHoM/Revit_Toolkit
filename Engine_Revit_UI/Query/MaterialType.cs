@@ -25,6 +25,7 @@ using System;
 using Autodesk.Revit.DB.Structure;
 
 using BH.oM.Common.Materials;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.UI.Revit.Engine
 {
@@ -34,7 +35,8 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public MaterialType? MaterialType(this string materialClass)
+        [DeprecatedAttribute("3.0", "BH.UI.Revit.Engine.Query.MaterialType method is not supported any more")]
+        public static MaterialType? MaterialType(this string materialClass)
         {
             if (string.IsNullOrEmpty(materialClass))
                 return null;
@@ -45,7 +47,7 @@ namespace BH.UI.Revit.Engine
 
             string aMaterialClass = materialClass.ToLower().Trim();
 
-            switch(aMaterialClass)
+            switch (aMaterialClass)
             {
                 case "aluminium":
                     return oM.Common.Materials.MaterialType.Aluminium;
@@ -65,7 +67,8 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public MaterialType? MaterialType(this StructuralMaterialType StructuralMaterialType)
+        [DeprecatedAttribute("3.0", "BH.UI.Revit.Engine.Query.MaterialType method is not supported any more")]
+        public static MaterialType? MaterialType(this StructuralMaterialType StructuralMaterialType)
         {
             switch (StructuralMaterialType)
             {

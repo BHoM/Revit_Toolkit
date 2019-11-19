@@ -174,7 +174,6 @@ namespace BH.UI.Revit.Engine
             return aResults;
         }
 
-        /***************************************************/
 
         /***************************************************/
         /**** Private Methods                           ****/
@@ -235,8 +234,7 @@ namespace BH.UI.Revit.Engine
 
                 }
             }
-
-
+            
             if (!ExporterIFCUtils.HasElevationProfile(wall))
                 return null;
 

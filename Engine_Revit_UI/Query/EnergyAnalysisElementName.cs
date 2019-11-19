@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public string EnergyAnalysisElementName(this Element element)
+        public static string EnergyAnalysisElementName(this Element element)
         {
             if (element == null)
                 return null;
@@ -40,7 +40,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public string EnergyAnalysisElementName(this string Name)
+        public static string EnergyAnalysisElementName(this string Name)
         {
             if (Name == null)
                 return null;

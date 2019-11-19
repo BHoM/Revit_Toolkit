@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public IEnumerable<string> Names(this MapSettings mapSettings, Type type, string name)
+        public static IEnumerable<string> Names(this MapSettings mapSettings, Type type, string name)
         {
             if (mapSettings == null || type == null || string.IsNullOrWhiteSpace(name))
                 return null;

@@ -30,16 +30,6 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        ///// <summary>
-        ///// Sets Revit Parameter
-        ///// </summary>
-        ///// <param name="parameter">Revit Parameter</param>
-        ///// <param name="value">New parameter value to be set</param>
-        ///// <param name="document">Revit Document. If Document is not null then method checks if Element with given ElementId exists.</param>
-        ///// <returns name="convertUnits">Convert Units from SI to Internal Revit unit</returns>
-        ///// <search>
-        ///// SetParameter, Revit, Modify, set parameter
-        ///// </search>
         public static Parameter SetParameter(this Parameter parameter, object value, Document document = null, bool convertUnits = true)
         {
             if (parameter == null || parameter.IsReadOnly)
@@ -203,6 +193,8 @@ namespace BH.UI.Revit.Engine
             return false;
         }
 
+        /***************************************************/
+
         internal static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, double value)
         {
             Parameter parameter = familyInstance.get_Parameter(builtInParam);
@@ -214,6 +206,8 @@ namespace BH.UI.Revit.Engine
 
             return false;
         }
+
+        /***************************************************/
 
         internal static bool TrySetParameter(this Element familyInstance, string parameterName, int value)
         {
@@ -227,6 +221,8 @@ namespace BH.UI.Revit.Engine
             return false;
         }
 
+        /***************************************************/
+
         internal static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, int value)
         {
             Parameter parameter = familyInstance.get_Parameter(builtInParam);
@@ -238,6 +234,8 @@ namespace BH.UI.Revit.Engine
 
             return false;
         }
+
+        /***************************************************/
 
         internal static bool TrySetParameter(this Element familyInstance, string parameterName, string value)
         {
@@ -251,6 +249,8 @@ namespace BH.UI.Revit.Engine
             return false;
         }
 
+        /***************************************************/
+
         internal static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, string value)
         {
             Parameter parameter = familyInstance.get_Parameter(builtInParam);
@@ -262,6 +262,8 @@ namespace BH.UI.Revit.Engine
 
             return false;
         }
+
+        /***************************************************/
 
         internal static bool TrySetParameter(this Element familyInstance, string parameterName, ElementId value)
         {
@@ -275,6 +277,8 @@ namespace BH.UI.Revit.Engine
             return false;
         }
 
+        /***************************************************/
+
         internal static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, ElementId value)
         {
             Parameter parameter = familyInstance.get_Parameter(builtInParam);
@@ -286,5 +290,7 @@ namespace BH.UI.Revit.Engine
 
             return false;
         }
+
+        /***************************************************/
     }
 }

@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public string MaterialGrade(this Element element)
+        public static string MaterialGrade(this Element element)
         {
             if (element == null)
                 return null;

@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public PlanarFace Top(this Solid solid)
+        public static PlanarFace Top(this Solid solid)
         {
             PlanarFace aResult = null;
             FaceArray aFaceArray = solid.Faces;

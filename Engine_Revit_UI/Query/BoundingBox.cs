@@ -35,7 +35,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public BoundingBox BoundingBox(this Element Element, Options Options, PullSettings pullSettings = null)
+        public static BoundingBox BoundingBox(this Element Element, Options Options, PullSettings pullSettings = null)
         {
             List<ICurve> aCurves = Element.Curves(Options, pullSettings);
 

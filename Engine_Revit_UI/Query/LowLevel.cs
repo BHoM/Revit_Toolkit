@@ -35,7 +35,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public Level LowLevel(this Document document, double elevation, bool convertUnits = true)
+        public static Level LowLevel(this Document document, double elevation, bool convertUnits = true)
         {
             List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
             if (aLevelList == null || aLevelList.Count == 0)
@@ -59,7 +59,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public Level LowLevel(this Document document, oM.Geometry.ICurve curve, bool convertUnits = true)
+        public static Level LowLevel(this Document document, oM.Geometry.ICurve curve, bool convertUnits = true)
         {
             double aElevation = LowElevation(curve);
 
@@ -68,7 +68,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public Level LowLevel(this Document document, IObject2D object2D, bool convertUnits = true)
+        public static Level LowLevel(this Document document, IObject2D object2D, bool convertUnits = true)
         {
             double aElevation = LowElevation(object2D);
 

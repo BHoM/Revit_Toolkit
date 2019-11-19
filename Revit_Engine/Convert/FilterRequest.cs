@@ -26,6 +26,10 @@ namespace BH.Engine.Adapters.Revit
     {
         public static class FilterRequest
         {
+            /***************************************************/
+            /**** Public Properties                         ****/
+            /***************************************************/
+
             public const string RequestType = "RequestType";
             public const string FilterRequests = "FilterRequests";
             public const string CategoryName = "CategoryName";
@@ -46,6 +50,8 @@ namespace BH.Engine.Adapters.Revit
             public const string Value = "Value";
             public const string ComparisonRule = "ComparisonRule";
             public const string RelatedFilterRequest = "RelatedFilterRequest";
+
+            /***************************************************/
         }
     }
 }

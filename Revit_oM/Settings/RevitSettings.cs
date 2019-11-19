@@ -35,8 +35,7 @@ namespace BH.oM.Adapters.Revit.Settings
         public FamilyLoadSettings FamilyLoadSettings { get; set; } = new FamilyLoadSettings();
         public GeneralSettings GeneralSettings { get; set; } = new GeneralSettings();
         public MapSettings MapSettings { get; set; } = new MapSettings();
-
-
+        
         /***************************************************/
     }
 }

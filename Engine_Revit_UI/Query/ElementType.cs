@@ -37,7 +37,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public ElementType ElementType(this IBHoMObject bHoMObject, IEnumerable<ElementType> elementTypes, bool exactMatch = true)
+        public static ElementType ElementType(this IBHoMObject bHoMObject, IEnumerable<ElementType> elementTypes, bool exactMatch = true)
         {
             if (elementTypes == null || bHoMObject == null)
                 return null;
@@ -78,7 +78,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public ElementType ElementType(this IBHoMObject bHoMObject, Document document, IEnumerable<BuiltInCategory> builtInCategories, FamilyLoadSettings familyLoadSettings = null, bool DuplicateTypeIfNotExists = true)
+        public static ElementType ElementType(this IBHoMObject bHoMObject, Document document, IEnumerable<BuiltInCategory> builtInCategories, FamilyLoadSettings familyLoadSettings = null, bool DuplicateTypeIfNotExists = true)
         {
             if (bHoMObject == null || document == null || builtInCategories == null || builtInCategories.Count() == 0)
                 return null;
@@ -213,7 +213,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public ElementType ElementType(this IBHoMObject bHoMObject, Document document, BuiltInCategory builtInCategory, FamilyLoadSettings familyLoadSettings = null, bool DuplicateTypeIfNotExists = true)
+        public static ElementType ElementType(this IBHoMObject bHoMObject, Document document, BuiltInCategory builtInCategory, FamilyLoadSettings familyLoadSettings = null, bool DuplicateTypeIfNotExists = true)
         {
             return ElementType(bHoMObject, document, new BuiltInCategory[] { builtInCategory }, familyLoadSettings, DuplicateTypeIfNotExists);
         }

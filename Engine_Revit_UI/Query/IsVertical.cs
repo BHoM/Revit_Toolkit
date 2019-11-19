@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
         
-        static public bool IsVertical(XYZ xyz)
+        public static bool IsVertical(XYZ xyz)
         {
             return BH.Engine.Adapters.Revit.Query.IsZero(xyz.X) && BH.Engine.Adapters.Revit.Query.IsZero(xyz.Y);
         }

@@ -37,7 +37,7 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public bool IsValid(this Element element, string parameterName, IComparisonRule comparisonRule, object value = null, bool convertUnits = true)
+        public static bool IsValid(this Element element, string parameterName, IComparisonRule comparisonRule, object value = null, bool convertUnits = true)
         {
             if (element == null || string.IsNullOrWhiteSpace(parameterName) || comparisonRule == null)
                 return false;
@@ -47,7 +47,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public bool IsValid(this Parameter parameter, IComparisonRule comparisonRule, object value, bool convertUnits = true)
+        public static bool IsValid(this Parameter parameter, IComparisonRule comparisonRule, object value, bool convertUnits = true)
         {
             if (comparisonRule == null)
                 return false;

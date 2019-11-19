@@ -32,14 +32,14 @@ namespace BH.UI.Revit.Engine
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public double LowElevation(ICurve curve)
+        public static double LowElevation(ICurve curve)
         {
             return BH.Engine.Geometry.Query.Bounds(curve as dynamic).Min.Z;
         }
 
         /***************************************************/
 
-        static public double LowElevation(this Panel panel)
+        public static double LowElevation(this Panel panel)
         {
             if (panel == null || panel.ExternalEdges == null)
                 return double.NaN;
@@ -57,7 +57,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public double LowElevation(this IObject2D object2D)
+        public static double LowElevation(this IObject2D object2D)
         {
             if (object2D == null || object2D.Surface == null)
                 return double.NaN;
@@ -69,7 +69,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public double LowElevation(this oM.Physical.Elements.ISurface surface)
+        public static double LowElevation(this oM.Physical.Elements.ISurface surface)
         {
             if (surface == null || surface.Location == null)
                 return double.NaN;
@@ -79,7 +79,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        static public double LowElevation(this ISurface surface)
+        public static double LowElevation(this ISurface surface)
         {
             if (surface == null || surface == null)
                 return double.NaN;

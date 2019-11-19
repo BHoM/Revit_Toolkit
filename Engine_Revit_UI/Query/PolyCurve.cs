@@ -237,6 +237,7 @@ namespace BH.UI.Revit.Engine
             return PolyCurve(familyInstance, aSolidList, aPlaneList, pullSettings);
         }
 
+
         /***************************************************/
         /**** Private Methods                           ****/
         /***************************************************/

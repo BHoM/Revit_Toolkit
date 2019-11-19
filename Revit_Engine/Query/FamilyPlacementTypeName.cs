@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
         /**** Public Methods                            ****/
         /***************************************************/
 
-        static public string FamilyPlacementTypeName(this oM.Adapters.Revit.Generic.RevitFilePreview revitFilePreview)
+        public static string FamilyPlacementTypeName(this oM.Adapters.Revit.Generic.RevitFilePreview revitFilePreview)
         {
             if (revitFilePreview == null || revitFilePreview.CustomData == null)
                 return null;
@@ -49,7 +49,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        static public string FamilyPlacementTypeName(this Family family)
+        public static string FamilyPlacementTypeName(this Family family)
         {
             if (family == null || family.CustomData == null)
                 return null;
