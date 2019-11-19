@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Modify
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static IEnumerable<BuiltInCategory> Append(this IEnumerable<BuiltInCategory> currentSet, IEnumerable<BuiltInCategory> newItems, bool allowDuplicates = false)

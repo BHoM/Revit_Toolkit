@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static List<PolyCurve> Profiles(this HostObject hostObject, PullSettings pullSettings = null)
@@ -176,7 +176,7 @@ namespace BH.UI.Revit.Engine
 
 
         /***************************************************/
-        /**** Private Methods                           ****/
+        /****              Private Methods              ****/
         /***************************************************/
 
         public static List<PolyCurve> Profiles_Wall(this Wall wall, PullSettings pullSettings = null)

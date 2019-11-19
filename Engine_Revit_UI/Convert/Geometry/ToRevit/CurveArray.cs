@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static CurveArray ToRevitCurveArray(this PolyCurve polyCurve, PushSettings pushSettings = null)
+        public static CurveArray ToRevitCurveArray(this PolyCurve polyCurve, PushSettings pushSettings = null)
         {
             if (polyCurve == null)
                 return null;
@@ -55,7 +55,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static CurveArray ToRevitCurveArray(this Polyline polyline, PushSettings pushSettings = null)
+        public static CurveArray ToRevitCurveArray(this Polyline polyline, PushSettings pushSettings = null)
         {
             if (polyline == null)
                 return null;

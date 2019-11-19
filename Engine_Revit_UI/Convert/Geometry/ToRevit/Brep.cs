@@ -36,7 +36,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static BRepBuilder ToRevitBrep(this ISurface surface, PushSettings pushSettings = null)
+        public static BRepBuilder ToRevitBrep(this ISurface surface, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
             BRepBuilder brep = new BRepBuilder(BRepType.OpenShell);
@@ -50,7 +50,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static BRepBuilder ToRevitBrep(this BoundaryRepresentation boundaryRepresentation, PushSettings pushSettings = null)
+        public static BRepBuilder ToRevitBrep(this BoundaryRepresentation boundaryRepresentation, PushSettings pushSettings = null)
         {
             //TODO: allow creating void and solid?
             pushSettings = pushSettings.DefaultIfNull();

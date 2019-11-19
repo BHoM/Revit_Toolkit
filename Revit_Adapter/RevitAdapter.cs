@@ -38,7 +38,7 @@ namespace BH.Adapter.Revit
     public partial class RevitAdapter : BHoMAdapter
     {   
         /***************************************************/
-        /**** Public Properties                         ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public static InternalRevitAdapter InternalAdapter { get; set; } = null;
@@ -46,7 +46,7 @@ namespace BH.Adapter.Revit
 
 
         /***************************************************/
-        /**** Constructors                              ****/
+        /****                Constructors               ****/
         /***************************************************/
 
         [Description("Adapter to connect to an open Revit file. Connection will be made to the active document (based on active view). Make sure to only have ONE Revit Window open, or connection will not work as intended.")]
@@ -77,7 +77,7 @@ namespace BH.Adapter.Revit
 
 
         /***************************************************/
-        /**** Public methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public override List<IObject> Push(IEnumerable<IObject> objects, string tag = "", Dictionary<string, object> config = null)
@@ -188,7 +188,7 @@ namespace BH.Adapter.Revit
 
 
         /***************************************************/
-        /**** Private  Fields                           ****/
+        /****              Private  Fields              ****/
         /***************************************************/
 
         private SocketLink_Tcp m_linkIn;
@@ -201,7 +201,7 @@ namespace BH.Adapter.Revit
 
 
         /***************************************************/
-        /**** Private  Methods                          ****/
+        /****             Private  Methods              ****/
         /***************************************************/
 
         private void M_linkOut_DataObservers(oM.Socket.DataPackage package)
@@ -247,7 +247,7 @@ namespace BH.Adapter.Revit
 
 
         /***************************************************/
-        /**** Protected  Methods                        ****/
+        /****             Protected  Methods            ****/
         /***************************************************/
 
         protected override bool Create<T>(IEnumerable<T> objects)

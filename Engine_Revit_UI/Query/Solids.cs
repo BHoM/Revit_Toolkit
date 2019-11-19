@@ -29,7 +29,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static List<Solid> Solids(this GeometryElement geometryElement, Transform transform = null, PullSettings pullSettings = null)

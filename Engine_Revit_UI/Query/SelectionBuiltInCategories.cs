@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [DeprecatedAttribute("3.0", "BH.UI.Revit.Engine.Query.SelectionBuiltInCategories method is not supported any more")]

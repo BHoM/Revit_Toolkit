@@ -30,13 +30,15 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /**** Private Methods                           ****/
+        /****              Public Methods               ****/
         /***************************************************/
 
-        internal static CompoundStructureLayer ToRevitCompoundStructureLayer(this oM.Physical.Constructions.Construction constructionLayer, Document document, PushSettings pushSettings = null)
+        public static CompoundStructureLayer ToRevitCompoundStructureLayer(this oM.Physical.Constructions.Construction constructionLayer, Document document, PushSettings pushSettings = null)
         {
             Compute.AnalyticalObjectConversionWarning(constructionLayer, typeof(oM.Common.Properties.CompoundLayer));
             return null;
         }
+
+        /***************************************************/
     }
 }

@@ -29,10 +29,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        internal static Level ToRevitLevel(this oM.Geometry.SettingOut.Level level, Document document, PushSettings pushSettings = null)
+        public static Level ToRevitLevel(this oM.Geometry.SettingOut.Level level, Document document, PushSettings pushSettings = null)
         {
             Level aLevel = pushSettings.FindRefObject<Level>(document, level.BHoM_Guid);
             if (aLevel != null)

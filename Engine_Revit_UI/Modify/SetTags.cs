@@ -29,7 +29,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Modify
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static Element SetTags(this Element element, IBHoMObject bHoMObject, string tagsParameterName)

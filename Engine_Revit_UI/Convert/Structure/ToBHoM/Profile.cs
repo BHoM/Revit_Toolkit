@@ -38,10 +38,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static IProfile ToBHoMProfile(this FamilySymbol familySymbol, PullSettings pullSettings = null)
+        public static IProfile ToBHoMProfile(this FamilySymbol familySymbol, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -553,7 +553,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static IProfile BHoMFreeFormProfile(this FamilyInstance familyInstance, PullSettings pullSettings)
+        public static IProfile BHoMFreeFormProfile(this FamilyInstance familyInstance, PullSettings pullSettings)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

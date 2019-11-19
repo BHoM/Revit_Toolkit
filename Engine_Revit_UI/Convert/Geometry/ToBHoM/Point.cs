@@ -29,10 +29,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static oM.Geometry.Point ToBHoM(this LocationPoint locationPoint, PullSettings pullSettings = null)
+        public static oM.Geometry.Point ToBHoM(this LocationPoint locationPoint, PullSettings pullSettings = null)
         {
             if (locationPoint == null)
                 return null;
@@ -44,7 +44,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static oM.Geometry.Point ToBHoM(this XYZ xyz, PullSettings pullSettings = null)
+        public static oM.Geometry.Point ToBHoM(this XYZ xyz, PullSettings pullSettings = null)
         {
             if (xyz == null)
                 return null;

@@ -30,7 +30,7 @@ namespace BH.oM.Adapters.Revit.Settings
     public class MapSettings : BHoMObject
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public List<TypeMap> TypeMaps { get; set; } = new List<TypeMap>();

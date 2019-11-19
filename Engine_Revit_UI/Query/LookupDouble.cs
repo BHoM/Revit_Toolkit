@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static double LookupDouble(this Element element, string parameterName, bool convertUnits = true)

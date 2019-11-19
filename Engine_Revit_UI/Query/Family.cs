@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static Family Family(this IBHoMObject bHoMObject, Document document)
@@ -122,13 +122,7 @@ namespace BH.UI.Revit.Engine
         {
             return Family(family, document, new BuiltInCategory[] { builtInCategory }, familyLoadSettings);
         }
-
-        /***************************************************/
-        /**** Private Methods                           ****/
-        /***************************************************/
-
-
-
+        
         /***************************************************/
     }
 }

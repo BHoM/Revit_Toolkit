@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Modify
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Sets Family name for Environment Context Properties")]

@@ -28,10 +28,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static InstanceProperties ToBHoMInstanceProperties(this Autodesk.Revit.DB.ElementType elementType, PullSettings pullSettings = null)
+        public static InstanceProperties ToBHoMInstanceProperties(this Autodesk.Revit.DB.ElementType elementType, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -57,7 +57,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static InstanceProperties ToBHoMInstanceProperties(this Autodesk.Revit.DB.GraphicsStyle graphicStyle, PullSettings pullSettings = null)
+        public static InstanceProperties ToBHoMInstanceProperties(this Autodesk.Revit.DB.GraphicsStyle graphicStyle, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

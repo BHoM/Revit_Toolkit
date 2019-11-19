@@ -41,7 +41,7 @@ namespace BH.UI.Revit.Adapter
     public partial class RevitUIAdapter
     {
         /***************************************************/
-        /**** Protected Methods                         ****/
+        /****             Protected Methods             ****/
         /***************************************************/
         
         protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
@@ -210,8 +210,9 @@ namespace BH.UI.Revit.Adapter
             return aResult;
         }
 
+
         /***************************************************/
-        /**** Private Methods                           ****/
+        /****              Private Methods              ****/
         /***************************************************/
 
         private static IEnumerable<IBHoMObject> Read(Element element, RevitSettings revitSettings, PullSettings pullSettings = null)

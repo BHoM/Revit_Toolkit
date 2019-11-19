@@ -32,7 +32,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Gets child FilterRequests for given FiletrRequest (FilterRequest can be combined by logical operation - LogicalAndSelectionFilterRequest, LogicalOrSelectionFilterRequest).")]

@@ -36,7 +36,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Modify
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Links Revit parameter with BHoM parameter for given TypeMap.")]

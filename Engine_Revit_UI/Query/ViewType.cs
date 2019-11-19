@@ -27,7 +27,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static ViewType ViewType(this oM.Adapters.Revit.Enums.RevitViewType revitViewType)

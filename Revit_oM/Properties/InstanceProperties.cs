@@ -27,7 +27,7 @@ namespace BH.oM.Adapters.Revit.Properties
     public class InstanceProperties : BHoMObject
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         /***************************************************/

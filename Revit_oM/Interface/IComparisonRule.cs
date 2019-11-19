@@ -27,7 +27,7 @@ namespace BH.oM.Adapters.Revit.Interface
     public interface IComparisonRule : IObject
     {
         /***************************************************/
-        /**** Public Properties                         ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
 

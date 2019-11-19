@@ -28,7 +28,7 @@ namespace BH.oM.Adapters.Revit.Generic
     public class NumberComparisonRule : IComparisonRule
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public int RoundDecimals { get; set; } = -1;

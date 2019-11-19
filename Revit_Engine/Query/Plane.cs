@@ -33,7 +33,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static Plane Plane(this PolyCurve polyCurve, double tolerance = Tolerance.Distance)

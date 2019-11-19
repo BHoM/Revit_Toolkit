@@ -30,7 +30,7 @@ namespace BH.oM.Adapters.Revit.Elements
     public class ModelInstance : BHoMObject, IInstance
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public InstanceProperties Properties { get; set; } = new InstanceProperties();

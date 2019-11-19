@@ -29,7 +29,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static Level BottomLevel(this oM.Geometry.ICurve curve, Document document, bool convertUnits = true)
@@ -88,8 +88,9 @@ namespace BH.UI.Revit.Engine
             return null;
         }
 
+
         /***************************************************/
-        /**** Private Methods                           ****/
+        /****              Private Methods              ****/
         /***************************************************/
 
         static private double MinElevation(oM.Geometry.ICurve curve)

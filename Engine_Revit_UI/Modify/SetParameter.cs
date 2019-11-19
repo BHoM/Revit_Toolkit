@@ -27,7 +27,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Modify
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static Parameter SetParameter(this Parameter parameter, object value, Document document = null, bool convertUnits = true)
@@ -181,7 +181,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static bool TrySetParameter(this Element familyInstance, string parameterName, double value)
+        public static bool TrySetParameter(this Element familyInstance, string parameterName, double value)
         {
             Parameter parameter = familyInstance.LookupParameter(parameterName);
             if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Double)
@@ -195,7 +195,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, double value)
+        public static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, double value)
         {
             Parameter parameter = familyInstance.get_Parameter(builtInParam);
             if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Double)
@@ -209,7 +209,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static bool TrySetParameter(this Element familyInstance, string parameterName, int value)
+        public static bool TrySetParameter(this Element familyInstance, string parameterName, int value)
         {
             Parameter parameter = familyInstance.LookupParameter(parameterName);
             if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Integer)
@@ -223,7 +223,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, int value)
+        public static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, int value)
         {
             Parameter parameter = familyInstance.get_Parameter(builtInParam);
             if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Integer)
@@ -237,7 +237,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static bool TrySetParameter(this Element familyInstance, string parameterName, string value)
+        public static bool TrySetParameter(this Element familyInstance, string parameterName, string value)
         {
             Parameter parameter = familyInstance.LookupParameter(parameterName);
             if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.String)
@@ -251,7 +251,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, string value)
+        public static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, string value)
         {
             Parameter parameter = familyInstance.get_Parameter(builtInParam);
             if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.String)
@@ -265,7 +265,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static bool TrySetParameter(this Element familyInstance, string parameterName, ElementId value)
+        public static bool TrySetParameter(this Element familyInstance, string parameterName, ElementId value)
         {
             Parameter parameter = familyInstance.LookupParameter(parameterName);
             if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.ElementId)
@@ -279,7 +279,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, ElementId value)
+        public static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, ElementId value)
         {
             Parameter parameter = familyInstance.get_Parameter(builtInParam);
             if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.ElementId)

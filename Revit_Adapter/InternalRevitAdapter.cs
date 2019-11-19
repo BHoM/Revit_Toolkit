@@ -28,7 +28,7 @@ namespace BH.Adapter.Revit
     {
 
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public RevitSettings RevitSettings { get; set; }

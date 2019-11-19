@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static List<T> FindRefObjects<T>(this PullSettings pullSettings, int elementId) where T : IBHoMObject

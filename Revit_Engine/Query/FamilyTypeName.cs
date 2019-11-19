@@ -30,7 +30,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Gets Revit Family Type name for given FilterRequest (Example: FamilyFilterRequest).")]

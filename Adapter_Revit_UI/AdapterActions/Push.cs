@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Adapter
     {
 
         /***************************************************/
-        /**** Protected Methods                         ****/
+        /****             Protected Methods             ****/
         /***************************************************/
 
         public override List<IObject> Push(IEnumerable<IObject> objects, string tag = "", Dictionary<string, object> config = null)
@@ -58,5 +58,6 @@ namespace BH.UI.Revit.Adapter
             return aSuccess ? objectsToPush : new List<IObject>();
         }
 
+        /***************************************************/
     }
 }

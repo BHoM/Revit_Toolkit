@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static bool IsSimilar(this Curve curve_1, Curve curve_2, double tolerance = oM.Geometry.Tolerance.MicroDistance)

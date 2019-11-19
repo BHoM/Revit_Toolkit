@@ -33,10 +33,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        internal static Floor ToRevitFloor(this oM.Physical.Elements.Floor floor, Document document, PushSettings pushSettings = null)
+        public static Floor ToRevitFloor(this oM.Physical.Elements.Floor floor, Document document, PushSettings pushSettings = null)
         {
             if (floor == null || floor.Construction == null || document == null)
                 return null;

@@ -36,7 +36,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static Curve ToRevitCurve(this ICurve curve, PushSettings pushSettings = null)
+        public static Curve ToRevitCurve(this ICurve curve, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
@@ -90,7 +90,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static List<Curve> ToRevitCurves(this ICurve curve, PushSettings pushSettings = null)
+        public static List<Curve> ToRevitCurves(this ICurve curve, PushSettings pushSettings = null)
         {
             if (curve is Polyline || curve is PolyCurve)
             {

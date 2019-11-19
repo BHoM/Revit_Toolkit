@@ -31,7 +31,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static Plane ToRevitPlane(this oM.Geometry.Plane plane, PushSettings pushSettings = null)
+        public static Plane ToRevitPlane(this oM.Geometry.Plane plane, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 

@@ -33,10 +33,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /**** Internal Methods                          ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static ViewPlan ToRevitViewPlan(this oM.Adapters.Revit.Elements.ViewPlan viewPlan, Document document, PushSettings pushSettings = null)
+        public static ViewPlan ToRevitViewPlan(this oM.Adapters.Revit.Elements.ViewPlan viewPlan, Document document, PushSettings pushSettings = null)
         {
             if (viewPlan == null || string.IsNullOrEmpty(viewPlan.LevelName) || string.IsNullOrEmpty(viewPlan.Name))
                 return null;

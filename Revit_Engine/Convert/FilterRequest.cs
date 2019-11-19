@@ -27,7 +27,7 @@ namespace BH.Engine.Adapters.Revit
         public static class FilterRequest
         {
             /***************************************************/
-            /**** Public Properties                         ****/
+            /****             Public Properties             ****/
             /***************************************************/
 
             public const string RequestType = "RequestType";

@@ -28,7 +28,7 @@ namespace BH.oM.Adapters.Revit.Settings
     public class RevitSettings : BHoMObject
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public ConnectionSettings ConnectionSettings { get; set; } = new ConnectionSettings();

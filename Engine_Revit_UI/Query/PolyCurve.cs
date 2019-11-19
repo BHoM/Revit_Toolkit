@@ -35,7 +35,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static PolyCurve PolyCurve(this MeshTriangle meshTriangle, PullSettings pullSettings = null)
@@ -213,7 +213,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static PolyCurve PolyCurve(this FamilyInstance familyInstance, HostObject hostObject, PullSettings pullSettings = null)
+        public static PolyCurve PolyCurve(this FamilyInstance familyInstance, HostObject hostObject, PullSettings pullSettings = null)
         {
             if (hostObject == null)
                 return null;
@@ -239,7 +239,7 @@ namespace BH.UI.Revit.Engine
 
 
         /***************************************************/
-        /**** Private Methods                           ****/
+        /****              Private Methods              ****/
         /***************************************************/
 
         private static PolyCurve PolyCurve(this FamilyInstance familyInstance, IEnumerable<Solid> solids, IEnumerable<oM.Geometry.Plane> planes, PullSettings pullSettings = null)

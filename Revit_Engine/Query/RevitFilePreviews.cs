@@ -33,7 +33,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Returns all RevitFilePreviews for FamilyLibrary of given Category, Family and Family Type Name")]

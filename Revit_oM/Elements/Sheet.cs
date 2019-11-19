@@ -28,7 +28,7 @@ namespace BH.oM.Adapters.Revit.Elements
     public class Sheet : BHoMObject
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();

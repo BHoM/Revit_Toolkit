@@ -32,10 +32,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /**** Internal Methods                          ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static CurveElement ToCurveElement(this ModelInstance modelInstance, Document document, PushSettings pushSettings = null)
+        public static CurveElement ToCurveElement(this ModelInstance modelInstance, Document document, PushSettings pushSettings = null)
         {
             CurveElement aCurveElement = pushSettings.FindRefObject<CurveElement>(document, modelInstance.BHoM_Guid);
             if (aCurveElement != null)
@@ -120,7 +120,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static CurveElement ToCurveElement(this DraftingInstance draftingInstance, Document document, PushSettings pushSettings = null)
+        public static CurveElement ToCurveElement(this DraftingInstance draftingInstance, Document document, PushSettings pushSettings = null)
         {
             CurveElement aCurveElement = pushSettings.FindRefObject<CurveElement>(document, draftingInstance.BHoM_Guid);
             if (aCurveElement != null)

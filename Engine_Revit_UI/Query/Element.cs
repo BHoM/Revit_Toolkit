@@ -28,7 +28,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static Element Element(this Document document, string uniqueId, string linkUniqueId = null)

@@ -36,10 +36,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this Element element, ICurve crv, PullSettings pullSettings = null)
+        public static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this Element element, ICurve crv, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -95,7 +95,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this FamilyInstance familyInstance, PullSettings pullSettings = null)
+        public static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
             //Create a BuildingElement from the familyInstance geometry
             pullSettings = pullSettings.DefaultIfNull();
@@ -154,7 +154,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this EnergyAnalysisSurface energyAnalysisSurface, PullSettings pullSettings = null)
+        public static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this EnergyAnalysisSurface energyAnalysisSurface, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -267,7 +267,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        //internal static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisOpening energyAnalysisOpening, EnergyAnalysisSurface energyAnalysisSurface = null, PullSettings pullSettings = null)
+        //public static BuildingElement ToBHoMBuildingElement(this EnergyAnalysisOpening energyAnalysisOpening, EnergyAnalysisSurface energyAnalysisSurface = null, PullSettings pullSettings = null)
         //{
         //    pullSettings = pullSettings.DefaultIfNull();
 
@@ -368,7 +368,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this Ceiling ceiling, PullSettings pullSettings = null)
+        public static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this Ceiling ceiling, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -435,7 +435,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this Floor floor, PullSettings pullSettings = null)
+        public static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this Floor floor, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -504,7 +504,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this RoofBase roofBase, PullSettings pullSettings = null)
+        public static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this RoofBase roofBase, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -571,7 +571,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this Wall wall, PullSettings pullSettings = null)
+        public static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this Wall wall, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -633,12 +633,6 @@ namespace BH.UI.Revit.Engine
             aPanels = aPanels.UpdateBuildingElementTypeByCustomData();
             return aPanels;
         }
-
-        /***************************************************/
-        /****             Internal methods              ****/
-        /***************************************************/
-
-        
 
         /***************************************************/
     }

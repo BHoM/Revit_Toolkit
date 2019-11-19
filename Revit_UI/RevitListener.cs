@@ -42,7 +42,7 @@ namespace BH.UI.Revit
     public class RevitListener : IExternalApplication
     {
         /***************************************************/
-        /**** Public properties                         ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public List<IObject> LatestPackage { get; set; }
@@ -76,7 +76,7 @@ namespace BH.UI.Revit
         public static RevitSettings AdapterSettings { get; set; } = null;
 
         /***************************************************/
-        /**** Public methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public RevitUIAdapter GetAdapter(Document document)
@@ -125,7 +125,7 @@ namespace BH.UI.Revit
 
 
         /***************************************************/
-        /**** Revit addin methods                       ****/
+        /****           Revit addin methods             ****/
         /***************************************************/
 
         public Result OnShutdown(UIControlledApplication application)
@@ -190,7 +190,7 @@ namespace BH.UI.Revit
 
 
         /***************************************************/
-        /**** Data observer method                      ****/
+        /****           Data observer method            ****/
         /***************************************************/
 
         private void M_linkIn_DataObservers(oM.Socket.DataPackage package)
@@ -274,7 +274,7 @@ namespace BH.UI.Revit
 
 
         /***************************************************/
-        /**** Private feilds                            ****/
+        /****             Private fields                ****/
         /***************************************************/
 
         private SocketLink_Tcp m_linkIn;

@@ -30,10 +30,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /**** Internal Methods                          ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static ElementType ToRevitElementType(this InstanceProperties instanceProperties, Document document, PushSettings pushSettings = null)
+        public static ElementType ToRevitElementType(this InstanceProperties instanceProperties, Document document, PushSettings pushSettings = null)
         {
             ElementType aElementType = pushSettings.FindRefObject<ElementType>(document, instanceProperties.BHoM_Guid);
             if (aElementType != null)

@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Modify
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static Element SetParameters(this Element element, IBHoMObject bHoMObject, IEnumerable<BuiltInParameter> builtInParametersIgnore = null, bool convertUnits = true)

@@ -31,7 +31,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Create
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Creates Connection Settings Class which stores basic information about Adapter Connection settings such as Push Port, Pull Port and Maximum Time to Wait")]

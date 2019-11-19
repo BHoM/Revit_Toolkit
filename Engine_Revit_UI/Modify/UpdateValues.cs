@@ -36,7 +36,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Modify
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static IObject UpdateValues(this IObject iObject, PullSettings pullSettings, Element Element)

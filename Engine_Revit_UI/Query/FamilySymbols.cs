@@ -31,7 +31,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static IEnumerable<FamilySymbol> FamilySymbols(this oM.Adapters.Revit.Generic.RevitFilePreview revitFilePreview, Document document)

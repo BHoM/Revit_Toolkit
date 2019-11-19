@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static bool IsContaining(this BoundingBoxXYZ box, XYZ pt, bool acceptOnEdge = true, double tolerance = Tolerance.Distance)

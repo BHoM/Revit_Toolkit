@@ -30,7 +30,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Modify
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Updates CustomData Value for given name.")]

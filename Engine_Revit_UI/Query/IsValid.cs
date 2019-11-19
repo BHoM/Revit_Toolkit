@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static bool IsValid(this Element element, string parameterName, IComparisonRule comparisonRule, object value = null, bool convertUnits = true)

@@ -31,7 +31,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static XYZ ToRevitXYZ(this oM.Geometry.Point point, PushSettings pushSettings = null)
+        public static XYZ ToRevitXYZ(this oM.Geometry.Point point, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
@@ -43,7 +43,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static XYZ ToRevitXYZ(this oM.Geometry.Vector vector, PushSettings pushSettings = null)
+        public static XYZ ToRevitXYZ(this oM.Geometry.Vector vector, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 

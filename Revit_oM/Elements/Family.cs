@@ -29,7 +29,7 @@ namespace BH.oM.Adapters.Revit.Elements
     public class Family : BHoMObject
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public List<InstanceProperties> PropertiesList { get; set; } = new List<InstanceProperties>();

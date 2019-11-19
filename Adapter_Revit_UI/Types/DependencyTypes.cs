@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Adapter
     public partial class RevitUIAdapter
     {
         /***************************************************/
-        /**** BHoM Adapter Interface                    ****/
+        /****           BHoM Adapter Interface          ****/
         /***************************************************/
 
         protected override List<Type> DependencyTypes<T>()
@@ -58,7 +58,7 @@ namespace BH.UI.Revit.Adapter
 
 
         /***************************************************/
-        /**** Private Fields                            ****/
+        /****               Private Fields              ****/
         /***************************************************/
 
         private static Dictionary<Type, List<Type>> m_DependencyTypes = new Dictionary<Type, List<Type>>

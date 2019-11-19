@@ -33,10 +33,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        internal static RoofBase ToRevitRoofBase(this oM.Physical.Elements.Roof roof, Document document, PushSettings pushSettings = null)
+        public static RoofBase ToRevitRoofBase(this oM.Physical.Elements.Roof roof, Document document, PushSettings pushSettings = null)
         {
             if (roof == null || roof.Location == null || document == null)
                 return null;

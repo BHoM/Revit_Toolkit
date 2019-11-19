@@ -28,8 +28,9 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
+
         public static oM.Environment.Elements.OpeningType? OpeningType(this BuiltInCategory builtInCategory)
         {
             switch (builtInCategory)
@@ -54,5 +55,7 @@ namespace BH.UI.Revit.Engine
 
             return OpeningType((BuiltInCategory)Category.Id.IntegerValue);
         }
+
+        /***************************************************/
     }
 }

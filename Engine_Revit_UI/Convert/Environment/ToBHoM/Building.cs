@@ -35,11 +35,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
-
-        //internal static Building ToBHoMBuilding(this Document document, PullSettings pullSettings = null)
-        internal static List<IBHoMObject> ToBHoMObjects(this ProjectInfo projectInfo, PullSettings pullSettings = null)
+        
+        public static List<IBHoMObject> ToBHoMObjects(this ProjectInfo projectInfo, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

@@ -41,10 +41,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static IFramingElement ToBHoMFramingElement(this FamilyInstance familyInstance, PullSettings pullSettings = null)
+        public static IFramingElement ToBHoMFramingElement(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

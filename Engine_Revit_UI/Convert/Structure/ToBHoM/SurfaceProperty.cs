@@ -36,10 +36,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static ISurfaceProperty ToBHoMSurfaceProperty(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null, string materialGrade = null)
+        public static ISurfaceProperty ToBHoMSurfaceProperty(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null, string materialGrade = null)
         {
             Document document = hostObjAttributes.Document;
 

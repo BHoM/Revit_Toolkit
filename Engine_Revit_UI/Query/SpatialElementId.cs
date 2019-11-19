@@ -28,7 +28,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static ElementId SpatialElementId(this EnergyAnalysisSpace energyAnalysisSpace)

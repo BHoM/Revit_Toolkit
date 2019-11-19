@@ -33,10 +33,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static List<oM.Architecture.Elements.Ceiling> ToBHoMCeilings(this Ceiling ceiling, PullSettings pullSettings = null)
+        public static List<oM.Architecture.Elements.Ceiling> ToBHoMCeilings(this Ceiling ceiling, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

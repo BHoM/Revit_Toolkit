@@ -33,10 +33,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static oM.Geometry.ICurve ToBHoM(this Curve curve, PullSettings pullSettings = null)
+        public static oM.Geometry.ICurve ToBHoM(this Curve curve, PullSettings pullSettings = null)
         {
             if (curve == null)
                 return null;
@@ -85,7 +85,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static oM.Geometry.ICurve ToBHoM(this LocationCurve locationCurve, PullSettings pullSettings = null)
+        public static oM.Geometry.ICurve ToBHoM(this LocationCurve locationCurve, PullSettings pullSettings = null)
         {
             if (locationCurve == null)
                 return null;
@@ -97,7 +97,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static oM.Geometry.ICurve ToBHoM(this Edge edge, PullSettings pullSettings = null)
+        public static oM.Geometry.ICurve ToBHoM(this Edge edge, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

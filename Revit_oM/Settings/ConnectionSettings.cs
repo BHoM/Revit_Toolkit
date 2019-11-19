@@ -28,7 +28,7 @@ namespace BH.oM.Adapters.Revit.Settings
     public class ConnectionSettings : BHoMObject
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public int PushPort { get; set; } = 14128;

@@ -35,10 +35,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static oM.Physical.Materials.Material ToBHoMEmptyMaterial(this Autodesk.Revit.DB.Material material, PullSettings pullSettings = null)
+        public static oM.Physical.Materials.Material ToBHoMEmptyMaterial(this Autodesk.Revit.DB.Material material, PullSettings pullSettings = null)
         {
             if (material == null)
                 return new oM.Physical.Materials.Material { Name = "Unknown Material" };

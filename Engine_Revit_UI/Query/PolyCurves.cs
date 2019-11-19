@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static List<PolyCurve> PolyCurves(this Autodesk.Revit.DB.Face face, Transform transform = null, PullSettings pullSettings = null)
@@ -93,7 +93,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static List<PolyCurve> PolyCurves(this Autodesk.Revit.DB.Mesh mesh, PullSettings pullSettings = null)
+        public static List<PolyCurve> PolyCurves(this Autodesk.Revit.DB.Mesh mesh, PullSettings pullSettings = null)
         {
             if (mesh == null)
                 return null;

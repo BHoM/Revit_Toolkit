@@ -30,7 +30,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("gets integer representation of Space ElementId (stored in CustomData) for given BHoMObject.")]

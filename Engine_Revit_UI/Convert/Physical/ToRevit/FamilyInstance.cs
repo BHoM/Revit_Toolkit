@@ -40,7 +40,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static FamilyInstance ToRevitFamilyInstance(this IFramingElement framingElement, Document document, PushSettings pushSettings = null)
+        public static FamilyInstance ToRevitFamilyInstance(this IFramingElement framingElement, Document document, PushSettings pushSettings = null)
         {
             if (framingElement == null || document == null)
                 return null;
@@ -454,7 +454,7 @@ namespace BH.UI.Revit.Engine
 
 
         /***************************************************/
-        /**** Private Methods                           ****/
+        /****              Private Methods              ****/
         /***************************************************/
 
         private static bool AdjustLocation(this IFramingElement framingElement, out BH.oM.Geometry.ICurve adjustedLocation)

@@ -37,7 +37,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static List<IBHoMObject> GetEnergyAnalysisModel(this Document document, PullSettings pullSettings = null)
@@ -195,7 +195,7 @@ namespace BH.UI.Revit.Engine
 
 
         /***************************************************/
-        /**** Private Classes                           ****/
+        /****              Private Classes              ****/
         /***************************************************/
 
         private class WarningSwallower : IFailuresPreprocessor

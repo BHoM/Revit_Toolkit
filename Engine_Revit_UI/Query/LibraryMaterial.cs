@@ -31,7 +31,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static IMaterialFragment LibraryMaterial(this StructuralMaterialType structuralMaterialType, string materialGrade)

@@ -34,10 +34,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static BHoMObject ToBHoMRoom(this SpatialElement spatialElement, PullSettings pullSettings = null)
+        public static BHoMObject ToBHoMRoom(this SpatialElement spatialElement, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

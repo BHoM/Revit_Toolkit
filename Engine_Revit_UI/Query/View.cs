@@ -32,10 +32,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        internal static View View(this DraftingInstance draftingInstance, Document document)
+        public static View View(this DraftingInstance draftingInstance, Document document)
         {
             if (string.IsNullOrWhiteSpace(draftingInstance.ViewName))
                 return null;

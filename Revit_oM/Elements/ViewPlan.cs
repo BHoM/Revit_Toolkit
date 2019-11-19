@@ -29,7 +29,7 @@ namespace BH.oM.Adapters.Revit.Elements
     public class ViewPlan : BHoMObject, IView
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
