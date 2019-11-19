@@ -32,7 +32,7 @@ namespace BH.UI.Revit
     public class UpdatePorts : IExternalCommand
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)

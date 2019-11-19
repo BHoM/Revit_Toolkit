@@ -25,7 +25,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /**** Public Properties                         ****/
+        /****             Public Properties             ****/
         /***************************************************/
         
         public const string AdapterId = "Revit_id";

@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static List<oM.Environment.Elements.Panel> HostedBuildingElements(HostObject hostObject, Face face, PullSettings pullSettings = null)

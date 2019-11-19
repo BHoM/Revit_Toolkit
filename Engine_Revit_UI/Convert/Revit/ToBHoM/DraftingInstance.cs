@@ -28,10 +28,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static oM.Adapters.Revit.Elements.DraftingInstance ToBHoMDraftingInstance(this CurveElement curveElement, PullSettings pullSettings = null)
+        public static oM.Adapters.Revit.Elements.DraftingInstance ToBHoMDraftingInstance(this CurveElement curveElement, PullSettings pullSettings = null)
         {
             oM.Adapters.Revit.Elements.DraftingInstance aDraftingInstance = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.DraftingInstance>(curveElement.Id.IntegerValue);
             if (aDraftingInstance != null)

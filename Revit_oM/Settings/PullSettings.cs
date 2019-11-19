@@ -29,7 +29,7 @@ namespace BH.oM.Adapters.Revit.Settings
     public class PullSettings : BHoMObject
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public Enums.Discipline Discipline { get; set; } = Enums.Discipline.Physical;

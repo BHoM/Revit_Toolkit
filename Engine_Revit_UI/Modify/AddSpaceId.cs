@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Modify
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static oM.Environment.Elements.Panel AddSpaceId(this oM.Environment.Elements.Panel panel, EnergyAnalysisSurface energyAnalysisSurface)

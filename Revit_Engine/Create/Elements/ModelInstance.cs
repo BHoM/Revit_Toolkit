@@ -32,7 +32,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Create
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Creates ModelInstance by given Point, Family Name and Family Type Name. ModelInstance represents generic 3D elements which have not been defined in BHoM structure")]

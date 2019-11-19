@@ -28,7 +28,7 @@ namespace BH.oM.Adapters.Revit.Generic
     public class TextComparisonRule : IComparisonRule
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public TextComparisonType TextComparisonType { get; set; } = TextComparisonType.Equal;

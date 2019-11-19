@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Modify
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static Location Move(this Location location, Vector vector, PushSettings pushSettings = null)

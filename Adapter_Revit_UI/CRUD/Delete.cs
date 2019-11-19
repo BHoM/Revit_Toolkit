@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Adapter
     public partial class RevitUIAdapter
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static bool Delete(IEnumerable<BHoMObject> bHoMObjects, Document document)
@@ -96,7 +96,7 @@ namespace BH.UI.Revit.Adapter
         }
 
         /***************************************************/
-        /**** Private Methods                           ****/
+        /****              Private Methods              ****/
         /***************************************************/
 
         private static bool DeleteByUniqueId(BHoMObject bHoMObject, Document document)

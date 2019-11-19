@@ -27,7 +27,7 @@ namespace BH.oM.Adapters.Revit.Generic
     public class RevitFilePreview : BHoMObject
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public string Path { get; set; } = null;

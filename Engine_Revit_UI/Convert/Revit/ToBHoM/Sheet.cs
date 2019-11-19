@@ -30,10 +30,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static Sheet ToBHoMSheet(this ViewSheet viewSheet, PullSettings pullSettings = null)
+        public static Sheet ToBHoMSheet(this ViewSheet viewSheet, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

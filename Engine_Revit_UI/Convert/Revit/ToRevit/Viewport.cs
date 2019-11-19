@@ -33,10 +33,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /**** Internal Methods                          ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static Viewport ToRevitViewport(this oM.Adapters.Revit.Elements.Viewport viewport, Document document, PushSettings pushSettings = null)
+        public static Viewport ToRevitViewport(this oM.Adapters.Revit.Elements.Viewport viewport, Document document, PushSettings pushSettings = null)
         {
             if (viewport == null || viewport.Location == null)
                 return null;

@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> PlanarSurfaceDictionary(this HostObject hostObject, bool pullOpenings = true, PullSettings pullSettings = null)

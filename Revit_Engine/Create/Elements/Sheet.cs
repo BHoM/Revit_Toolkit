@@ -30,7 +30,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Create
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Creates Sheet object by given name and number.")]

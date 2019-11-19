@@ -31,7 +31,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static IEnumerable<string> Names(this MapSettings mapSettings, Type type, string name)

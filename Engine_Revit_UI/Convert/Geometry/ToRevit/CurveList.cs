@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static List<Curve> ToRevitCurveList(this oM.Environment.Elements.Panel panel, PushSettings pushSettings = null)
+        public static List<Curve> ToRevitCurveList(this oM.Environment.Elements.Panel panel, PushSettings pushSettings = null)
         {
             if (panel == null || panel.ExternalEdges == null)
                 return null;
@@ -50,7 +50,7 @@ namespace BH.UI.Revit.Engine
         }
 
 
-        internal static List<Curve> ToRevitCurveList(this ICurve curve, PushSettings pushSettings = null)
+        public static List<Curve> ToRevitCurveList(this ICurve curve, PushSettings pushSettings = null)
         {
             if (curve == null)
                 return null;

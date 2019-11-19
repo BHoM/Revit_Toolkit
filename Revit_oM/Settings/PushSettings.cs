@@ -31,7 +31,7 @@ namespace BH.oM.Adapters.Revit.Settings
     public class PushSettings : BHoMObject
     {
         /***************************************************/
-        /**** Public Properties                         ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public bool CopyCustomData { get; set; } = true;

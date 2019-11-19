@@ -30,10 +30,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static BH.oM.Geometry.SettingOut.Grid ToBHoMGrid(this Grid grid, PullSettings pullSettings = null)
+        public static BH.oM.Geometry.SettingOut.Grid ToBHoMGrid(this Grid grid, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

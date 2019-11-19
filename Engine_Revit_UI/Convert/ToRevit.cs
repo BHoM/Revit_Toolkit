@@ -38,7 +38,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static Element ToRevit(this oM.Geometry.SettingOut.Grid grid, Document document, PushSettings pushSettings = null)

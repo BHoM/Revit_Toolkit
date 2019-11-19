@@ -29,10 +29,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static oM.Adapters.Revit.Elements.Viewport ToBHoMViewport(this Viewport viewport, PullSettings pullSettings = null)
+        public static oM.Adapters.Revit.Elements.Viewport ToBHoMViewport(this Viewport viewport, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

@@ -31,7 +31,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Cheks whatever Environment Panel is external element. Works only for Environment Panels pulled from analytical model and adjacency have been assigned.")]

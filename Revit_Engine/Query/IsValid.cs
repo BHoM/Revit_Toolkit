@@ -33,7 +33,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Checks if given double value is almost equal 0 (MicroDistance Tolerance).")]
@@ -180,7 +180,7 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
-        /**** Private Methods                           ****/
+        /****              Private Methods              ****/
         /***************************************************/
 
         private static bool TryConvert(object Value, out double Result)

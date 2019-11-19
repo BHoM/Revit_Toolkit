@@ -36,10 +36,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static oM.Structure.MaterialFragments.IMaterialFragment ToBHoMMaterialFragment(this Autodesk.Revit.DB.Material material, PullSettings pullSettings = null, string materialGrade = null)
+        public static oM.Structure.MaterialFragments.IMaterialFragment ToBHoMMaterialFragment(this Autodesk.Revit.DB.Material material, PullSettings pullSettings = null, string materialGrade = null)
         {
             if (material == null)
             {
@@ -88,7 +88,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static oM.Structure.MaterialFragments.IMaterialFragment BHoMEmptyMaterialFragment(this Autodesk.Revit.DB.Structure.StructuralMaterialType structuralMaterialType, PullSettings pullSettings = null)
+        public static oM.Structure.MaterialFragments.IMaterialFragment BHoMEmptyMaterialFragment(this Autodesk.Revit.DB.Structure.StructuralMaterialType structuralMaterialType, PullSettings pullSettings = null)
         {
             string name;
             if (structuralMaterialType == StructuralMaterialType.Undefined)

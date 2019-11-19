@@ -30,7 +30,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Create
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Creates Revit File Preview Class which stores basic information about Revit File such as Family Category, Familiy Type Names etc.")]

@@ -30,10 +30,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        internal static ICurve Location(this Wall wall, PullSettings pullSettings = null)
+        public static ICurve Location(this Wall wall, PullSettings pullSettings = null)
         {
             if (wall == null)
                 return null;

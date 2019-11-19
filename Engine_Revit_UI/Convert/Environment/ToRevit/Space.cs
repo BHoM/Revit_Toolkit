@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static Autodesk.Revit.DB.Mechanical.Space ToRevitSpace(this Space space, Document document, PushSettings pushSettings = null)
+        public static Autodesk.Revit.DB.Mechanical.Space ToRevitSpace(this Space space, Document document, PushSettings pushSettings = null)
         {
             if (space == null)
                 return null;

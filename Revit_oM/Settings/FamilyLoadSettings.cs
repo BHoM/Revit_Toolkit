@@ -28,7 +28,7 @@ namespace BH.oM.Adapters.Revit.Settings
     public class FamilyLoadSettings : BHoMObject
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public Generic.FamilyLibrary FamilyLibrary { get; set; } = new Generic.FamilyLibrary();

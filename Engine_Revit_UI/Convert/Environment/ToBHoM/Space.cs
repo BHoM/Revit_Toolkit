@@ -34,10 +34,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static Space ToBHoMSpace(this SpatialElement spatialElement, PullSettings pullSettings = null)
+        public static Space ToBHoMSpace(this SpatialElement spatialElement, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -50,7 +50,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, PullSettings pullSettings = null)
+        public static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, PullSettings pullSettings = null)
         {
             if (spatialElement == null || spatialElementBoundaryOptions == null)
                 return new Space();
@@ -62,7 +62,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, PullSettings pullSettings = null)
+        public static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, PullSettings pullSettings = null)
         {
             if (spatialElement == null || spatialElementGeometryCalculator == null)
                 return new Space();
@@ -122,7 +122,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static Space ToBHoMSpace(this EnergyAnalysisSpace energyAnalysisSpace, PullSettings pullSettings = null)
+        public static Space ToBHoMSpace(this EnergyAnalysisSpace energyAnalysisSpace, PullSettings pullSettings = null)
         {
             if (energyAnalysisSpace == null)
                 return new Space();

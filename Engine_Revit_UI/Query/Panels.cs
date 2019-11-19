@@ -33,10 +33,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        internal static List<oM.Environment.Elements.Panel> Panels(this GeometryElement geometryElement, PullSettings pullSettings = null)
+        public static List<oM.Environment.Elements.Panel> Panels(this GeometryElement geometryElement, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -64,7 +64,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static List<oM.Environment.Elements.Panel> Panels(this PlanarFace planarFace, PullSettings pullSettings = null)
+        public static List<oM.Environment.Elements.Panel> Panels(this PlanarFace planarFace, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

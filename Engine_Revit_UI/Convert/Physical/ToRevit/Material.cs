@@ -29,10 +29,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /**** Internal Methods                          ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static Material ToRevitMaterial(this BHP.Material material, Document document, PushSettings pushSettings = null)
+        public static Material ToRevitMaterial(this BHP.Material material, Document document, PushSettings pushSettings = null)
         {
             Material aMaterial = pushSettings.FindRefObject<Material>(document, material.BHoM_Guid);
             if (aMaterial != null)

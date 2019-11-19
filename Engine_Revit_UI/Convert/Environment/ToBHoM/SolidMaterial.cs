@@ -30,10 +30,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static SolidMaterial ToBHoMSolidMaterial(this Material material, PullSettings pullSettings = null)
+        public static SolidMaterial ToBHoMSolidMaterial(this Material material, PullSettings pullSettings = null)
         {
             if (material == null)
                 return null;

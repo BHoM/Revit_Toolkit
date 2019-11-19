@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static XYZ ToRevit(this Vector vector, PushSettings pushSettings = null)
+        public static XYZ ToRevit(this Vector vector, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 

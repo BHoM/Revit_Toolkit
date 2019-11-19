@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static oM.Geometry.SettingOut.Level Level(this Element element, PullSettings pullSettings = null)

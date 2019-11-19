@@ -30,7 +30,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Create
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Creates BHoMObject by given Revit ElementId (Element.Id). Allows to pull parameters from any element from Revit")]

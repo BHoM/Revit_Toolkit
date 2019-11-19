@@ -32,7 +32,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Create
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Creates General Settings class which contols general behaviour of Adapter")]

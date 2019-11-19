@@ -30,7 +30,7 @@ namespace BH.UI.Revit
     public class PullEvent : IExternalEventHandler
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public void Execute(UIApplication app)

@@ -31,7 +31,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Create
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Creates Viewport on specific location point and which is assigned to the view by given name and to the sheet by given sheet Number.")]

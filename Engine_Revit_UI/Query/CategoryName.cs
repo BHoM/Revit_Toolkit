@@ -31,7 +31,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static string CategoryName(this BuiltInCategory builtInCategory, Document document)

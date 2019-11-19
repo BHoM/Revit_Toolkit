@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Adapter
     public partial class RevitUIAdapter : InternalRevitAdapter
     {
         /***************************************************/
-        /**** Private Properties                        ****/
+        /****             Private Properties            ****/
         /***************************************************/
 
         private UIControlledApplication m_UIControlledApplication;
@@ -41,7 +41,7 @@ namespace BH.UI.Revit.Adapter
 
 
         /***************************************************/
-        /**** Public Constructors                       ****/
+        /****            Public Constructors            ****/
         /***************************************************/
         
         public RevitUIAdapter(UIControlledApplication uIControlledApplication, Document document)
@@ -56,9 +56,9 @@ namespace BH.UI.Revit.Adapter
 
 
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
-        
+
         public Document Document
         {
             get

@@ -31,10 +31,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static oM.Physical.Constructions.Construction ToBHoMConstruction(this WallType wallType, PullSettings pullSettings = null)
+        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this WallType wallType, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -43,7 +43,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static oM.Physical.Constructions.Construction ToBHoMConstruction(this FloorType floorType, PullSettings pullSettings = null)
+        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this FloorType floorType, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -52,7 +52,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static oM.Physical.Constructions.Construction ToBHoMConstruction(this CeilingType ceilingType, PullSettings pullSettings = null)
+        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this CeilingType ceilingType, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -61,7 +61,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static oM.Physical.Constructions.Construction ToBHoMConstruction(this RoofType roofType, PullSettings pullSettings = null)
+        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this RoofType roofType, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -70,7 +70,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static oM.Physical.Constructions.Construction ToBHoMConstruction(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null)
+        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null)
         {
             oM.Physical.Constructions.Construction aConstruction = pullSettings.FindRefObject<oM.Physical.Constructions.Construction>(hostObjAttributes.Id.IntegerValue);
             if (aConstruction != null)

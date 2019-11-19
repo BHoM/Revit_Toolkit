@@ -35,10 +35,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static Window ToBHoMWindow(this FamilyInstance familyInstance, PullSettings pullSettings = null)
+        public static Window ToBHoMWindow(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
@@ -76,7 +76,7 @@ namespace BH.UI.Revit.Engine
             return aWindow;
         }
 
-        internal static Window ToBHoMWindow(this Panel panel, PullSettings pullSettings = null)
+        public static Window ToBHoMWindow(this Panel panel, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

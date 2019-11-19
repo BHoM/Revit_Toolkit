@@ -27,7 +27,7 @@ namespace BH.oM.Adapters.Revit.Generic
     public class ParameterExistsComparisonRule : IComparisonRule
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public bool Inverted { get; set; } = false;

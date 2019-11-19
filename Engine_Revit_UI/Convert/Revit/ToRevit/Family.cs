@@ -30,10 +30,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /**** Internal Methods                          ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static Family ToRevitFamily(this oM.Adapters.Revit.Elements.Family family, Document document, PushSettings pushSettings = null)
+        public static Family ToRevitFamily(this oM.Adapters.Revit.Elements.Family family, Document document, PushSettings pushSettings = null)
         {
             Family aFamily = pushSettings.FindRefObject<Family>(document, family.BHoM_Guid);
             if (aFamily != null)

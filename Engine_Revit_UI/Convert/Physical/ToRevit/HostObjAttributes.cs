@@ -32,10 +32,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /**** Internal Methods                          ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static HostObjAttributes ToRevitHostObjAttributes(this oM.Physical.Constructions.IConstruction construction, Document document, PushSettings pushSettings = null)
+        public static HostObjAttributes ToRevitHostObjAttributes(this oM.Physical.Constructions.IConstruction construction, Document document, PushSettings pushSettings = null)
         {
             if (construction == null || document == null)
                 return null;

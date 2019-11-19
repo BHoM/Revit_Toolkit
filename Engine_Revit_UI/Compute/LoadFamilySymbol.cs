@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Compute
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static FamilySymbol LoadFamilySymbol(this FamilyLoadSettings FamilyLoadSettings, Document document, string categoryName, string familyName, string familyTypeName = null)

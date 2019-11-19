@@ -35,7 +35,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static List<ICurve> Outlines(this HostObject hostObject, PullSettings pullSettings = null)

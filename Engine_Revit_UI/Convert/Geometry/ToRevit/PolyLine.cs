@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static PolyLine ToRevitPolyLine(this oM.Geometry.Polyline polyline, PushSettings pushSettings = null)
+        public static PolyLine ToRevitPolyLine(this oM.Geometry.Polyline polyline, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 

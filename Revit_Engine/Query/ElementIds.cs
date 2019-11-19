@@ -32,7 +32,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Gets integer representation of ElementIds for given FilterRequest (Example: SelectionFilterRequest).")]

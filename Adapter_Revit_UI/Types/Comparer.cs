@@ -29,7 +29,7 @@ namespace BH.UI.Revit.Adapter
     public partial class RevitUIAdapter
     {
         /***************************************************/
-        /**** BHoM Adapter Interface                    ****/
+        /****           BHoM Adapter Interface          ****/
         /***************************************************/
 
         protected override IEqualityComparer<T> Comparer<T>()
@@ -49,7 +49,7 @@ namespace BH.UI.Revit.Adapter
 
 
         /***************************************************/
-        /**** Private Fields                            ****/
+        /****               Private Fields              ****/
         /***************************************************/
 
         private static Dictionary<Type, object> m_Comparers = new Dictionary<Type, object>

@@ -40,7 +40,7 @@ namespace BH.UI.Revit.Adapter
     public partial class RevitUIAdapter : BH.Adapter.Revit.InternalRevitAdapter
     {
         /***************************************************/
-        /**** Protected Methods                         ****/
+        /****             Protected Methods             ****/
         /***************************************************/
 
         protected override bool Create<T>(IEnumerable<T> objects)
@@ -84,7 +84,7 @@ namespace BH.UI.Revit.Adapter
 
 
         /***************************************************/
-        /**** Private Methods                           ****/
+        /****              Private Methods              ****/
         /***************************************************/
 
         private static bool Create<T>(IEnumerable<T> objects, UIControlledApplication UIContralledApplication, Document document, RevitSettings revitSettings) where T : IObject
@@ -363,7 +363,7 @@ namespace BH.UI.Revit.Adapter
         }
 
         /***************************************************/
-        /**** Private Classes                           ****/
+        /****              Private Classes              ****/
         /***************************************************/
 
         private class FamilyLoadOptions : IFamilyLoadOptions

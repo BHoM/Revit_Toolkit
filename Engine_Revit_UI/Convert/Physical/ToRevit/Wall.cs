@@ -31,10 +31,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        internal static Wall ToRevitWall(this oM.Physical.Elements.Wall wall, Document document, PushSettings pushSettings = null)
+        public static Wall ToRevitWall(this oM.Physical.Elements.Wall wall, Document document, PushSettings pushSettings = null)
         {
             if (wall == null || wall.Location == null || document == null)
                 return null;

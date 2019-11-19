@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static Discipline Discipline(this FilterRequest filterRequest, RevitSettings revitSettings)

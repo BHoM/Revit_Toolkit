@@ -32,10 +32,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        internal static Door ToBHoMDoor(this FamilyInstance familyInstance, PullSettings pullSettings = null)
+        public static Door ToBHoMDoor(this FamilyInstance familyInstance, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 

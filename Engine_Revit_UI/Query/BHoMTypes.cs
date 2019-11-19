@@ -35,7 +35,7 @@ using BH.oM.Adapters.Revit.Elements;
 namespace BH.UI.Revit.Engine
 {
     /***************************************************/
-    /**** Public Methods                            ****/
+    /****              Public methods               ****/
     /***************************************************/
     
     public static partial class Query

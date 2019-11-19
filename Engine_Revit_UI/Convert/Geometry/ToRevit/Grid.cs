@@ -28,10 +28,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Convert
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        internal static Grid ToRevitGrid(this oM.Geometry.SettingOut.Grid grid, Document document, PushSettings pushSettings = null)
+        public static Grid ToRevitGrid(this oM.Geometry.SettingOut.Grid grid, Document document, PushSettings pushSettings = null)
         {
             Grid aGrid = pushSettings.FindRefObject<Grid>(document, grid.BHoM_Guid);
             if (aGrid != null)

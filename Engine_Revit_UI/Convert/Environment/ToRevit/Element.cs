@@ -35,7 +35,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        internal static Element ToRevitElement(this oM.Environment.Elements.Panel panel, Document document, PushSettings pushSettings = null)
+        public static Element ToRevitElement(this oM.Environment.Elements.Panel panel, Document document, PushSettings pushSettings = null)
         {
             if (panel == null)
                 return null;

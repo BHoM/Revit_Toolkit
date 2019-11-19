@@ -30,7 +30,7 @@ namespace BH.oM.Adapters.Revit.Generic
     public class TypeMap : BHoMObject
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public Type Type { get; set; } = null;

@@ -28,7 +28,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Modify
     {
         /***************************************************/
-        /**** Public Methods                            ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Element element, bool convertUnits = true, string namePrefix = null)

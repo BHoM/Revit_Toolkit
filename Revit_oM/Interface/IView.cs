@@ -28,7 +28,7 @@ namespace BH.oM.Adapters.Revit.Interface
     public interface IView : IBHoMObject
     {
         /***************************************************/
-        /**** Public Properties                         ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         InstanceProperties InstanceProperties { get; set; }

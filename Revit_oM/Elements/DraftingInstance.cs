@@ -30,7 +30,7 @@ namespace BH.oM.Adapters.Revit.Elements
     public class DraftingInstance : BHoMObject, IInstance 
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public InstanceProperties Properties { get; set; } = new InstanceProperties();

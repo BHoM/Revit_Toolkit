@@ -28,7 +28,7 @@ namespace BH.oM.Adapters.Revit.Settings
     public class GeneralSettings : BHoMObject
     {
         /***************************************************/
-        /**** Public Properties                        ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
         public Discipline DefaultDiscipline { get; set; } = Discipline.Physical;
