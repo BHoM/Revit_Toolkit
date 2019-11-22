@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
@@ -63,7 +64,7 @@ namespace BH.UI.Revit.Engine
             XYZ aPoint_2 = null;
             XYZ aPoint_3 = null;
 
-            if(aPointList.Count == 2)
+            if (aPointList.IsCollinear(BH.oM.Geometry.Tolerance.Distance))
             {
                 aPoint_1 = aPointList[0].ToRevit(pushSettings);
                 aPoint_2 = aPointList[1].ToRevit(pushSettings);
