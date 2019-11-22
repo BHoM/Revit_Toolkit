@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -94,8 +94,7 @@ namespace BH.UI.Revit.Engine
             double aElevation = aLevel.Elevation;
             if (pushSettings.ConvertUnits)
                 aElevation = aElevation.ToSI(UnitType.UT_Length);
-
-            //oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aLowElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
+            
             oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
 
             ICurve aCurve = BH.Engine.Geometry.Modify.Project(aPlanarSurface.ExternalBoundary as dynamic, aPlane) as ICurve;
