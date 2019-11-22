@@ -41,12 +41,12 @@ namespace BH.UI.Revit.Engine
             if (aGrid != null)
                 return aGrid;
 
-            aGrid = BH.Engine.Geometry.SettingOut.Create.Grid(grid.Curve.ToBHoM(pullSettings));
+            aGrid = BH.Engine.Geometry.SettingOut.Create.Grid(grid.Curve.ToBHoM());
             aGrid.Name = grid.Name;
 
             aGrid = Modify.SetIdentifiers(aGrid, grid) as oM.Geometry.SettingOut.Grid;
             if (pullSettings.CopyCustomData)
-                aGrid = Modify.SetCustomData(aGrid, grid, pullSettings.ConvertUnits) as oM.Geometry.SettingOut.Grid;
+                aGrid = Modify.SetCustomData(aGrid, grid) as oM.Geometry.SettingOut.Grid;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aGrid);
 

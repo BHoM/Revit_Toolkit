@@ -1,6 +1,6 @@
 ﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -136,7 +136,7 @@ namespace BH.UI.Revit.Engine
             
             framingElement = Modify.SetIdentifiers(framingElement, familyInstance) as IFramingElement;
             if (pullSettings.CopyCustomData)
-                framingElement = Modify.SetCustomData(framingElement, familyInstance, pullSettings.ConvertUnits) as IFramingElement;
+                framingElement = Modify.SetCustomData(framingElement, familyInstance) as IFramingElement;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(framingElement);
 
@@ -154,7 +154,7 @@ namespace BH.UI.Revit.Engine
                 rotation = Math.PI * 0.5 + (location as LocationPoint).Rotation;
             else if (location is LocationCurve)
             {
-                BH.oM.Geometry.ICurve locationCurve = (location as LocationCurve).Curve.ToBHoM(pullSettings);
+                BH.oM.Geometry.ICurve locationCurve = (location as LocationCurve).Curve.ToBHoM();
                 if (locationCurve is BH.oM.Geometry.Line)
                 {
                     Transform transform = familyInstance.GetTotalTransform();
@@ -176,9 +176,9 @@ namespace BH.UI.Revit.Engine
                 else
                 {
                     if (IsVerticalNonLinearCurve((location as LocationCurve).Curve))
-                        rotation = Math.PI * 0.5 - familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, false);
+                        rotation = Math.PI * 0.5 - familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
                     else
-                        rotation = -familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, false);
+                        rotation = -familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
 
                     if (familyInstance.Mirrored)
                         rotation *= -1;
@@ -216,12 +216,12 @@ namespace BH.UI.Revit.Engine
                     double topOffset = topOffsetParam.AsDouble();
                     XYZ baseNode = new XYZ(loc.X, loc.Y, baseLevel + baseOffset);
                     XYZ topNode = new XYZ(loc.X, loc.Y, topLevel + topOffset);
-                    locationCurve = new oM.Geometry.Line { Start = baseNode.ToBHoM(pullSettings), End = topNode.ToBHoM(pullSettings) };
+                    locationCurve = new oM.Geometry.Line { Start = baseNode.ToBHoM(), End = topNode.ToBHoM() };
                 }
             }
             else if (location is LocationCurve)
             {
-                locationCurve = (location as LocationCurve).Curve.ToBHoM(pullSettings);
+                locationCurve = (location as LocationCurve).Curve.ToBHoM();
                 double startExtension = 0;
                 double endExtension = 0;
 
@@ -240,10 +240,10 @@ namespace BH.UI.Revit.Engine
                             BH.Engine.Reflection.Compute.RecordWarning(string.Format("A slanted column is attached at base or top, this may cause wrong length on pull to BHoM. Element Id: {0}", familyInstance.Id.IntegerValue));
 
                         if (attachedBase == 1)
-                            startExtension = -familyInstance.LookupDouble(BuiltInParameter.COLUMN_BASE_ATTACHMENT_OFFSET_PARAM, pullSettings.ConvertUnits);
+                            startExtension = -familyInstance.LookupDouble(BuiltInParameter.COLUMN_BASE_ATTACHMENT_OFFSET_PARAM);
                         else
                         {
-                            double baseExtensionValue = familyInstance.LookupDouble(BuiltInParameter.SLANTED_COLUMN_BASE_EXTENSION, pullSettings.ConvertUnits);
+                            double baseExtensionValue = familyInstance.LookupDouble(BuiltInParameter.SLANTED_COLUMN_BASE_EXTENSION);
                             if (!double.IsNaN(baseExtensionValue) && Math.Abs(baseExtensionValue) > BH.oM.Geometry.Tolerance.Distance)
                             {
                                 int baseCutStyle = familyInstance.LookupInteger(BuiltInParameter.SLANTED_COLUMN_BASE_CUT_STYLE);
@@ -263,10 +263,10 @@ namespace BH.UI.Revit.Engine
                         }
 
                         if (attachedTop == 1)
-                            endExtension = -familyInstance.LookupDouble(BuiltInParameter.COLUMN_TOP_ATTACHMENT_OFFSET_PARAM, pullSettings.ConvertUnits);
+                            endExtension = -familyInstance.LookupDouble(BuiltInParameter.COLUMN_TOP_ATTACHMENT_OFFSET_PARAM);
                         else
                         {
-                            double topExtensionValue = familyInstance.LookupDouble(BuiltInParameter.SLANTED_COLUMN_TOP_EXTENSION, pullSettings.ConvertUnits);
+                            double topExtensionValue = familyInstance.LookupDouble(BuiltInParameter.SLANTED_COLUMN_TOP_EXTENSION);
                             if (!double.IsNaN(topExtensionValue) && Math.Abs(topExtensionValue) > BH.oM.Geometry.Tolerance.Distance)
                             {
                                 int topCutStyle = familyInstance.LookupInteger(BuiltInParameter.SLANTED_COLUMN_TOP_CUT_STYLE);
@@ -296,8 +296,8 @@ namespace BH.UI.Revit.Engine
                 int yzJustification = familyInstance.LookupInteger(BuiltInParameter.YZ_JUSTIFICATION);
                 if (yzJustification == 0)
                 {
-                    double yOffset = familyInstance.LookupDouble(BuiltInParameter.Y_OFFSET_VALUE, false);
-                    double zOffset = -familyInstance.LookupDouble(BuiltInParameter.Z_OFFSET_VALUE, false);
+                    double yOffset = familyInstance.LookupDouble(BuiltInParameter.Y_OFFSET_VALUE);
+                    double zOffset = -familyInstance.LookupDouble(BuiltInParameter.Z_OFFSET_VALUE);
                     if (double.IsNaN(yOffset))
                         yOffset = 0;
                     if (double.IsNaN(zOffset))
@@ -323,15 +323,15 @@ namespace BH.UI.Revit.Engine
                         }
                     }
 
-                    startOffset = (new XYZ(0, yOffset, zOffset)).ToBHoMVector(pullSettings);
-                    endOffset = (new XYZ(0, yOffset, zOffset)).ToBHoMVector(pullSettings);
+                    startOffset = (new XYZ(0, yOffset, zOffset)).ToBHoMVector();
+                    endOffset = (new XYZ(0, yOffset, zOffset)).ToBHoMVector();
                 }
                 else if (yzJustification == 1)
                 {
-                    double yOffsetStart = familyInstance.LookupDouble(BuiltInParameter.START_Y_OFFSET_VALUE, false);
-                    double yOffsetEnd = familyInstance.LookupDouble(BuiltInParameter.END_Y_OFFSET_VALUE, false);
-                    double zOffsetStart = -familyInstance.LookupDouble(BuiltInParameter.START_Z_OFFSET_VALUE, false);
-                    double zOffsetEnd = -familyInstance.LookupDouble(BuiltInParameter.END_Z_OFFSET_VALUE, false);
+                    double yOffsetStart = familyInstance.LookupDouble(BuiltInParameter.START_Y_OFFSET_VALUE);
+                    double yOffsetEnd = familyInstance.LookupDouble(BuiltInParameter.END_Y_OFFSET_VALUE);
+                    double zOffsetStart = -familyInstance.LookupDouble(BuiltInParameter.START_Z_OFFSET_VALUE);
+                    double zOffsetEnd = -familyInstance.LookupDouble(BuiltInParameter.END_Z_OFFSET_VALUE);
                     if (double.IsNaN(yOffsetStart))
                         yOffsetStart = 0;
                     if (double.IsNaN(yOffsetEnd))
@@ -373,8 +373,8 @@ namespace BH.UI.Revit.Engine
                         }
                     }
 
-                    startOffset = (new XYZ(0, yOffsetStart, zOffsetStart)).ToBHoMVector(pullSettings);
-                    endOffset = (new XYZ(0, yOffsetEnd, zOffsetEnd)).ToBHoMVector(pullSettings);
+                    startOffset = (new XYZ(0, yOffsetStart, zOffsetStart)).ToBHoMVector();
+                    endOffset = (new XYZ(0, yOffsetEnd, zOffsetEnd)).ToBHoMVector();
                 }
             }
         }

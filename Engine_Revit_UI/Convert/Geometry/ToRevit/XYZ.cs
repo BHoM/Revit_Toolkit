@@ -31,26 +31,16 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static XYZ ToRevitXYZ(this oM.Geometry.Point point, PushSettings pushSettings = null)
+        public static XYZ ToRevitXYZ(this oM.Geometry.Point point)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            if (pushSettings.ConvertUnits)
-                return new XYZ(point.X.FromSI(UnitType.UT_Length), point.Y.FromSI(UnitType.UT_Length), point.Z.FromSI(UnitType.UT_Length));
-            else
-                return new XYZ(point.X, point.Y, point.Z);
+            return new XYZ(point.X.FromSI(UnitType.UT_Length), point.Y.FromSI(UnitType.UT_Length), point.Z.FromSI(UnitType.UT_Length));
         }
 
         /***************************************************/
 
-        public static XYZ ToRevitXYZ(this oM.Geometry.Vector vector, PushSettings pushSettings = null)
+        public static XYZ ToRevitXYZ(this oM.Geometry.Vector vector)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            if (pushSettings.ConvertUnits)
-                return new XYZ(vector.X.FromSI(UnitType.UT_Length), vector.Y.FromSI(UnitType.UT_Length), vector.Z.FromSI(UnitType.UT_Length));
-            else
-                return new XYZ(vector.X, vector.Y, vector.Z);
+            return new XYZ(vector.X.FromSI(UnitType.UT_Length), vector.Y.FromSI(UnitType.UT_Length), vector.Z.FromSI(UnitType.UT_Length));
         }
 
         /***************************************************/

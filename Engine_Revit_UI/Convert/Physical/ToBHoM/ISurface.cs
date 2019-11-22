@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -105,7 +105,7 @@ namespace BH.UI.Revit.Engine
 
                 aISurface = Modify.SetIdentifiers(aISurface, hostObject) as oM.Physical.Elements.ISurface;
                 if (pullSettings.CopyCustomData)
-                    aISurface = Modify.SetCustomData(aISurface, hostObject, pullSettings.ConvertUnits) as oM.Physical.Elements.ISurface;
+                    aISurface = Modify.SetCustomData(aISurface, hostObject) as oM.Physical.Elements.ISurface;
 
                 aISurface = aISurface.UpdateValues(pullSettings, hostObject) as oM.Physical.Elements.ISurface;
 

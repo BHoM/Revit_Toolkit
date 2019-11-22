@@ -79,7 +79,7 @@ namespace BH.UI.Revit.Engine
             aSpace = Create.Space(aName);
 
             if(spatialElement.Location != null && spatialElement.Location is LocationPoint)
-                aSpace.Location = ((LocationPoint)spatialElement.Location).ToBHoM(pullSettings);
+                aSpace.Location = ((LocationPoint)spatialElement.Location).ToBHoM();
 
             //Set ExtendedProperties
             OriginContextFragment aOriginContextFragment = new OriginContextFragment();
@@ -100,24 +100,11 @@ namespace BH.UI.Revit.Engine
             //Set custom data
             aSpace = Modify.SetIdentifiers(aSpace, spatialElement) as Space;
             if (pullSettings.CopyCustomData)
-                aSpace = Modify.SetCustomData(aSpace, spatialElement, pullSettings.ConvertUnits) as Space;
+                aSpace = Modify.SetCustomData(aSpace, spatialElement) as Space;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSpace);
             aSpace = aSpace.UpdateValues(pullSettings, spatialElement) as Space;
             return aSpace;
-
-            //if (!SpatialElementGeometryCalculator.CanCalculateGeometry(spatialElement))
-            //{
-            //    //SpatialElementGeometryResults aSpatialElementGeometryResults = spatialElementGeometryCalculator.CalculateSpatialElementGeometry(spatialElement);
-            //    //foreach(SpatialElementBoundarySubface aSpatialElementBoundarySubface in  aSpatialElementGeometryResults.GetBoundaryFaceInfo())
-            //    //{
-            //    //    aSpatialElementBoundarySubface.
-            //    //}
-            //}
-            //else
-            //{
-
-            //}
         }
 
         /***************************************************/
@@ -139,7 +126,7 @@ namespace BH.UI.Revit.Engine
             aSpace = Create.Space(aName);
 
             if (aSpatialElement != null && aSpatialElement.Location != null)
-                aSpace.Location = (aSpatialElement.Location as LocationPoint).ToBHoM(pullSettings);
+                aSpace.Location = (aSpatialElement.Location as LocationPoint).ToBHoM();
 
             //Set ExtendedProperties
             OriginContextFragment aOriginContextFragment = new OriginContextFragment();
@@ -167,14 +154,9 @@ namespace BH.UI.Revit.Engine
             aSpace = Modify.SetIdentifiers(aSpace, aSpatialElement) as Space;
             if (pullSettings.CopyCustomData)
             {
-                aSpace = Modify.SetCustomData(aSpace, aSpatialElement, pullSettings.ConvertUnits) as Space;
-                double aInnerVolume = energyAnalysisSpace.InnerVolume;
-                double aAnalyticalVolume = energyAnalysisSpace.AnalyticalVolume;
-                if (pullSettings.ConvertUnits)
-                {
-                    aInnerVolume = aInnerVolume.ToSI(UnitType.UT_Volume);
-                    aAnalyticalVolume = aAnalyticalVolume.ToSI(UnitType.UT_Volume);
-                }
+                aSpace = Modify.SetCustomData(aSpace, aSpatialElement) as Space;
+                double aInnerVolume = energyAnalysisSpace.InnerVolume.ToSI(UnitType.UT_Volume);
+                double aAnalyticalVolume = energyAnalysisSpace.AnalyticalVolume.ToSI(UnitType.UT_Volume);
 
                 aSpace = Modify.SetCustomData(aSpace, "Inner Volume", aInnerVolume) as Space;
                 aSpace = Modify.SetCustomData(aSpace, "Analytical Volume", aAnalyticalVolume) as Space;

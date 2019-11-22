@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -35,10 +35,8 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Geometry.Polyline ToBHoM(this Polyloop polyloop, PullSettings pullSettings = null)
+        public static oM.Geometry.Polyline ToBHoM(this Polyloop polyloop)
         {
-            pullSettings = pullSettings.DefaultIfNull();
-
             IList<XYZ> aXYZs = polyloop.GetPoints();
             if (aXYZs == null)
                 return null;
@@ -47,9 +45,9 @@ namespace BH.UI.Revit.Engine
             if (aXYZs.Count > 0)
             {
                 foreach (XYZ aXYZ in aXYZs)
-                    aPointList.Add(aXYZ.ToBHoM(pullSettings));
+                    aPointList.Add(aXYZ.ToBHoM());
 
-                aPointList.Add(aXYZs[0].ToBHoM(pullSettings));
+                aPointList.Add(aXYZs[0].ToBHoM());
             }
 
             return BH.Engine.Geometry.Create.Polyline(aPointList);

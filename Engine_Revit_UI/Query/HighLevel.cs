@@ -35,7 +35,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Level HighLevel(this Document document, double elevation, bool convertUnits = true)
+        public static Level HighLevel(this Document document, double elevation)
         {
             List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
             if (aLevelList == null || aLevelList.Count == 0)
@@ -43,18 +43,14 @@ namespace BH.UI.Revit.Engine
 
             aLevelList.Sort((x, y) => x.Elevation.CompareTo(y.Elevation));
 
-            double aElevation = aLevelList.First().Elevation;
-            if (convertUnits)
-                aElevation = aElevation.ToSI(UnitType.UT_Length);
+            double aElevation = aLevelList.First().Elevation.ToSI(UnitType.UT_Length);
 
             if (Math.Abs(elevation - aElevation) < oM.Geometry.Tolerance.MacroDistance)
                 return aLevelList.First();
 
             for (int i = 1; i < aLevelList.Count; i++)
             {
-                aElevation = aLevelList[i].Elevation;
-                if (convertUnits)
-                    aElevation = aElevation.ToSI(UnitType.UT_Length);
+                aElevation = aLevelList[i].Elevation.ToSI(UnitType.UT_Length);
 
                 //if (Elevation) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
                 if (Math.Round(elevation, 3, MidpointRounding.AwayFromZero) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
@@ -67,20 +63,20 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Level HighLevel(this Document document, oM.Geometry.ICurve curve, bool convertUnits = true)
+        public static Level HighLevel(this Document document, oM.Geometry.ICurve curve)
         {
             double aElevation = HighElevation(curve);
 
-            return HighLevel(document, aElevation, convertUnits);
+            return HighLevel(document, aElevation);
         }
 
         /***************************************************/
 
-        public static Level HighLevel(this Document document, IObject2D object2D, bool convertUnits = true)
+        public static Level HighLevel(this Document document, IObject2D object2D)
         {
             double aElevation = HighElevation(object2D);
 
-            return HighLevel(document, aElevation, convertUnits);
+            return HighLevel(document, aElevation);
         }
 
         /***************************************************/

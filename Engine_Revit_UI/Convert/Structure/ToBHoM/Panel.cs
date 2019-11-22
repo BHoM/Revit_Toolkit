@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -92,7 +92,7 @@ namespace BH.UI.Revit.Engine
 
                 panel = Modify.SetIdentifiers(panel, hostObject) as oM.Structure.Elements.Panel;
                 if (pullSettings.CopyCustomData)
-                    panel = Modify.SetCustomData(panel, hostObject, pullSettings.ConvertUnits) as oM.Structure.Elements.Panel;
+                    panel = Modify.SetCustomData(panel, hostObject) as oM.Structure.Elements.Panel;
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(panel);
 

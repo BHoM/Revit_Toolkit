@@ -32,14 +32,9 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static XYZ ToRevit(this Vector vector, PushSettings pushSettings = null)
+        public static XYZ ToRevit(this Vector vector)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            if (pushSettings.ConvertUnits)
-                return new XYZ(vector.X.FromSI(UnitType.UT_Length), vector.Y.FromSI(UnitType.UT_Length), vector.Z.FromSI(UnitType.UT_Length));
-            else
-                return new XYZ(vector.X, vector.Y, vector.Z);
+            return new XYZ(vector.X.FromSI(UnitType.UT_Length), vector.Y.FromSI(UnitType.UT_Length), vector.Z.FromSI(UnitType.UT_Length));
         }
 
         /***************************************************/

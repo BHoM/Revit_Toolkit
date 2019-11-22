@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -37,7 +37,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static bool IsValid(this Element element, string parameterName, IComparisonRule comparisonRule, object value = null, bool convertUnits = true)
+        public static bool IsValid(this Element element, string parameterName, IComparisonRule comparisonRule, object value = null)
         {
             if (element == null || string.IsNullOrWhiteSpace(parameterName) || comparisonRule == null)
                 return false;
@@ -47,7 +47,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static bool IsValid(this Parameter parameter, IComparisonRule comparisonRule, object value, bool convertUnits = true)
+        public static bool IsValid(this Parameter parameter, IComparisonRule comparisonRule, object value)
         {
             if (comparisonRule == null)
                 return false;
@@ -86,9 +86,7 @@ namespace BH.UI.Revit.Engine
                 switch (parameter.StorageType)
                 {
                     case StorageType.Double:
-                        aValue = parameter.AsDouble();
-                        if (convertUnits)
-                            aValue = Convert.ToSI((double)aValue, parameter.Definition.UnitType);
+                        aValue = Convert.ToSI(parameter.AsDouble(), parameter.Definition.UnitType);
                         break;
                     case StorageType.Integer:
                         aValue = parameter.AsInteger();

@@ -54,7 +54,7 @@ namespace BH.UI.Revit.Engine
 
             if (modelInstance.Location is ISurface || modelInstance.Location is ISolid)
             {
-                BRepBuilder brep = ToRevitBrep(modelInstance.Location as dynamic, pushSettings);
+                BRepBuilder brep = ToRevitBrep(modelInstance.Location as dynamic);
                 if (brep == null || !brep.IsResultAvailable())
                 {
                     Compute.GeometryConvertFailed(modelInstance);
@@ -119,7 +119,7 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aElement, modelInstance, null, pushSettings.ConvertUnits);
+                Modify.SetParameters(aElement, modelInstance, null);
 
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(modelInstance, aElement);
 
@@ -191,7 +191,7 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             if (aElement != null && pushSettings.CopyCustomData)
-                Modify.SetParameters(aElement, draftingInstance, null, pushSettings.ConvertUnits);
+                Modify.SetParameters(aElement, draftingInstance, null);
 
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(draftingInstance, aElement);
 
@@ -213,13 +213,13 @@ namespace BH.UI.Revit.Engine
 
             Document aDocument = familySymbol.Document;
 
-            ICurve Curve = (ICurve)modelInstance.Location;
+            ICurve curve = (ICurve)modelInstance.Location;
 
-            Level aLevel = Curve.BottomLevel(familySymbol.Document, pushSettings.ConvertUnits);
+            Level aLevel = curve.BottomLevel(familySymbol.Document);
             if (aLevel == null)
                 return null;
 
-            Curve aCurve = ToRevitCurve(Curve, pushSettings);
+            Curve aCurve = curve.ToRevitCurve();
             return aDocument.Create.NewFamilyInstance(aCurve, familySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
         }
 
@@ -240,11 +240,11 @@ namespace BH.UI.Revit.Engine
 
             oM.Geometry.Point aPoint = (oM.Geometry.Point)modelInstance.Location;
 
-            Level aLevel = aPoint.BottomLevel(aDocument, pushSettings.ConvertUnits);
+            Level aLevel = aPoint.BottomLevel(aDocument);
             if (aLevel == null)
                 return null;
 
-            XYZ aXYZ = ToRevitXYZ(aPoint, pushSettings);
+            XYZ aXYZ = aPoint.ToRevitXYZ();
             return aDocument.Create.NewFamilyInstance(aXYZ, familySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
         }
 
@@ -279,13 +279,13 @@ namespace BH.UI.Revit.Engine
 
             Document aDocument = familySymbol.Document;
 
-            ICurve Curve = (ICurve)modelInstance.Location;
+            ICurve curve = (ICurve)modelInstance.Location;
 
-            Level aLevel = Curve.BottomLevel(aDocument, pushSettings.ConvertUnits);
+            Level aLevel = curve.BottomLevel(aDocument);
             if (aLevel == null)
                 return null;
 
-            Curve aCurve = ToRevitCurve(Curve, pushSettings);
+            Curve aCurve = curve.ToRevitCurve();
             return aDocument.Create.NewFamilyInstance(aCurve, familySymbol, aLevel, aStructuralType);
         }
 
@@ -318,11 +318,11 @@ namespace BH.UI.Revit.Engine
             {
                 oM.Geometry.Point aPoint = (oM.Geometry.Point)modelInstance.Location;
 
-                Level aLevel = aPoint.BottomLevel(aDocument, pushSettings.ConvertUnits);
+                Level aLevel = aPoint.BottomLevel(aDocument);
                 if (aLevel == null)
                     return null;
 
-                XYZ aXYZ = ToRevitXYZ(aPoint, pushSettings);
+                XYZ aXYZ = aPoint.ToRevitXYZ();
                 return aDocument.Create.NewFamilyInstance(aXYZ, familySymbol, aLevel, aStructuralType);
             }
             else if (modelInstance.Location is oM.Geometry.Line)
@@ -334,11 +334,11 @@ namespace BH.UI.Revit.Engine
                     return null;
                 }
 
-                Level aLevel = line.Start.BottomLevel(aDocument, pushSettings.ConvertUnits);
+                Level aLevel = line.Start.BottomLevel(aDocument);
                 if (aLevel == null)
                     return null;
 
-                Curve curve = line.ToRevitCurve(pushSettings);
+                Curve curve = line.ToRevitCurve();
                 return aDocument.Create.NewFamilyInstance(curve, familySymbol, aLevel, aStructuralType);
             }
             else
@@ -363,13 +363,13 @@ namespace BH.UI.Revit.Engine
 
             Document aDocument = wallType.Document;
 
-            ICurve Curve = (ICurve)modelInstance.Location;
+            ICurve curve = (ICurve)modelInstance.Location;
 
-            Level aLevel = Curve.BottomLevel(wallType.Document, pushSettings.ConvertUnits);
+            Level aLevel = curve.BottomLevel(wallType.Document);
             if (aLevel == null)
                 return null;
 
-            Curve aCurve = ToRevitCurve(Curve, pushSettings);
+            Curve aCurve = curve.ToRevitCurve();
             return Wall.Create(aDocument, aCurve, aLevel.Id, false);
         }
 

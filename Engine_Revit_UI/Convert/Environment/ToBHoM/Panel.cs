@@ -83,7 +83,7 @@ namespace BH.UI.Revit.Engine
 
             aPanel = Modify.SetIdentifiers(aPanel, element) as oM.Environment.Elements.Panel;
             if (pullSettings.CopyCustomData)
-                aPanel = Modify.SetCustomData(aPanel, element, pullSettings.ConvertUnits) as oM.Environment.Elements.Panel;
+                aPanel = Modify.SetCustomData(aPanel, element) as oM.Environment.Elements.Panel;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
 
@@ -142,7 +142,7 @@ namespace BH.UI.Revit.Engine
 
             aPanel = Modify.SetIdentifiers(aPanel, familyInstance) as oM.Environment.Elements.Panel;
             if (pullSettings.CopyCustomData)
-                aPanel = Modify.SetCustomData(aPanel, familyInstance, pullSettings.ConvertUnits) as oM.Environment.Elements.Panel;
+                aPanel = Modify.SetCustomData(aPanel, familyInstance) as oM.Environment.Elements.Panel;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
 
@@ -165,7 +165,7 @@ namespace BH.UI.Revit.Engine
             //Get the geometry Curve
             ICurve aCurve = null;
             if (energyAnalysisSurface != null)
-                aCurve = energyAnalysisSurface.GetPolyloop().ToBHoM(pullSettings);
+                aCurve = energyAnalysisSurface.GetPolyloop().ToBHoM();
 
             //Get the name and element type
             Element aElement = Query.Element(energyAnalysisSurface.Document, energyAnalysisSurface.CADObjectUniqueId, energyAnalysisSurface.CADLinkUniqueId);
@@ -237,24 +237,20 @@ namespace BH.UI.Revit.Engine
             aPanel = Modify.SetIdentifiers(aPanel, aElement) as oM.Environment.Elements.Panel;
             if (pullSettings.CopyCustomData)
             {
-                aPanel = Modify.SetCustomData(aPanel, aElement, pullSettings.ConvertUnits) as oM.Environment.Elements.Panel;
-                double aHeight = energyAnalysisSurface.Height;
-                double aWidth = energyAnalysisSurface.Width;
+                aPanel = Modify.SetCustomData(aPanel, aElement) as oM.Environment.Elements.Panel;
+                double aHeight = energyAnalysisSurface.Height.ToSI(UnitType.UT_Length);
+                double aWidth = energyAnalysisSurface.Width.ToSI(UnitType.UT_Length);
                 double aAzimuth = energyAnalysisSurface.Azimuth;
-                if (pullSettings.ConvertUnits)
-                {
-                    aHeight = aHeight.ToSI(UnitType.UT_Length);
-                    aWidth = aWidth.ToSI(UnitType.UT_Length);
-                }
+
                 aPanel = Modify.SetCustomData(aPanel, "Height", aHeight) as oM.Environment.Elements.Panel;
                 aPanel = Modify.SetCustomData(aPanel, "Width", aWidth) as oM.Environment.Elements.Panel;
                 aPanel = Modify.SetCustomData(aPanel, "Azimuth", aAzimuth) as oM.Environment.Elements.Panel;
-                aPanel = Modify.SetCustomData(aPanel, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME, pullSettings.ConvertUnits) as oM.Environment.Elements.Panel;
+                aPanel = Modify.SetCustomData(aPanel, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME) as oM.Environment.Elements.Panel;
                 aPanel = Modify.AddSpaceId(aPanel, energyAnalysisSurface);
                 aPanel = Modify.AddAdjacentSpaceId(aPanel, energyAnalysisSurface);
 
                 if (aElementType != null)
-                    aPanel = Modify.SetCustomData(aPanel, aElementType, pullSettings.ConvertUnits, "Type ") as oM.Environment.Elements.Panel;
+                    aPanel = Modify.SetCustomData(aPanel, aElementType, "Type ") as oM.Environment.Elements.Panel;
             }
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
@@ -320,7 +316,7 @@ namespace BH.UI.Revit.Engine
                 //Assign custom data
                 aPanel = Modify.SetIdentifiers(aPanel, ceiling) as oM.Environment.Elements.Panel;
                 if (pullSettings.CopyCustomData)
-                    aPanel = Modify.SetCustomData(aPanel, ceiling, pullSettings.ConvertUnits) as oM.Environment.Elements.Panel;
+                    aPanel = Modify.SetCustomData(aPanel, ceiling) as oM.Environment.Elements.Panel;
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
                 aPanel = aPanel.UpdateValues(pullSettings, aCeilingType) as oM.Environment.Elements.Panel;
@@ -388,7 +384,7 @@ namespace BH.UI.Revit.Engine
                 //Assign custom data
                 aPanel = Modify.SetIdentifiers(aPanel, floor) as oM.Environment.Elements.Panel;
                 if (pullSettings.CopyCustomData)
-                    aPanel = Modify.SetCustomData(aPanel, floor, pullSettings.ConvertUnits) as oM.Environment.Elements.Panel;
+                    aPanel = Modify.SetCustomData(aPanel, floor) as oM.Environment.Elements.Panel;
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
 
@@ -455,7 +451,7 @@ namespace BH.UI.Revit.Engine
                 //Assign custom data
                 aPanel = Modify.SetIdentifiers(aPanel, roofBase) as oM.Environment.Elements.Panel;
                 if (pullSettings.CopyCustomData)
-                    aPanel = Modify.SetCustomData(aPanel, roofBase, pullSettings.ConvertUnits) as oM.Environment.Elements.Panel;
+                    aPanel = Modify.SetCustomData(aPanel, roofBase) as oM.Environment.Elements.Panel;
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
 
@@ -520,7 +516,7 @@ namespace BH.UI.Revit.Engine
                 //Assign custom data
                 aPanel = Modify.SetIdentifiers(aPanel, wall) as oM.Environment.Elements.Panel;
                 if (pullSettings.CopyCustomData)
-                    aPanel = Modify.SetCustomData(aPanel, wall, pullSettings.ConvertUnits) as oM.Environment.Elements.Panel;
+                    aPanel = Modify.SetCustomData(aPanel, wall) as oM.Environment.Elements.Panel;
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
 

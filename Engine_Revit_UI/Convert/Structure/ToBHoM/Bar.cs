@@ -1,6 +1,6 @@
 ﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -201,7 +201,7 @@ namespace BH.UI.Revit.Engine
 
                 bars[i] = Modify.SetIdentifiers(bars[i], familyInstance) as Bar;
                 if (pullSettings.CopyCustomData)
-                    bars[i] = Modify.SetCustomData(bars[i], familyInstance, pullSettings.ConvertUnits) as Bar;
+                    bars[i] = Modify.SetCustomData(bars[i], familyInstance) as Bar;
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(bars[i]);
             }
@@ -219,7 +219,7 @@ namespace BH.UI.Revit.Engine
             if (curve == null)
                 return;
 
-            locationCurve = curve.ToBHoM(pullSettings);
+            locationCurve = curve.ToBHoM();
         }
 
         /***************************************************/

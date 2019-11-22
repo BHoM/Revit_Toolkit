@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -71,7 +71,7 @@ namespace BH.UI.Revit.Engine
 
                 aCeiling = Modify.SetIdentifiers(aCeiling, ceiling) as oM.Architecture.Elements.Ceiling;
                 if (pullSettings.CopyCustomData)
-                    aCeiling = Modify.SetCustomData(aCeiling, ceiling, pullSettings.ConvertUnits) as oM.Architecture.Elements.Ceiling;
+                    aCeiling = Modify.SetCustomData(aCeiling, ceiling) as oM.Architecture.Elements.Ceiling;
 
                 aCeiling = aCeiling.UpdateValues(pullSettings, ceiling) as oM.Architecture.Elements.Ceiling;
 

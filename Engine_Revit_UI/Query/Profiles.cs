@@ -111,7 +111,7 @@ namespace BH.UI.Revit.Engine
                         if (aSketch.Profile == null)
                             continue;
 
-                        List<PolyCurve> aPolyCurveList = Convert.ToBHoM(aSketch, pullSettings);
+                        List<PolyCurve> aPolyCurveList = aSketch.ToBHoM();
                         if (aPolyCurveList == null)
                             continue;
 
@@ -120,27 +120,6 @@ namespace BH.UI.Revit.Engine
                                 aResult.Add(aPolyCurve);
                     }
                 }
-
-                //if (aLevel != null && aResult.Count > 0)
-                //{
-                //    //double aElevation = aLevel.Elevation;
-                //    //if (pullSettings.ConvertUnits)
-                //    //    aElevation = aElevation.ToSI(UnitType.UnitType.UT_Length);
-
-                //    //Parameter aParameter = hostObject.get_Parameter(BuiltInParameter.WALL_TOP_OFFSET);
-                //    //if (aParameter != null)
-                //    //{
-                //    //    double aOffset = aParameter.AsDouble().ToSI(UnitType.UnitType.UT_Length);
-                //    //    aElevation = aElevation + aOffset;
-                //    //}
-
-                //    //Vector aVector = BH.Engine.Geometry.Create.Vector(0, 0, aElevation);
-                //    BoundingBoxXYZ aBoundingBoxXYZ = hostObject.get_BoundingBox(null);
-
-                //    //Vector aVector = BH.Engine.Geometry.Create.Vector(0, 0, aBoundingBoxXYZ.Min.Z);
-                //    //for (int i = 0; i < aResult.Count; i++)
-                //    //    aResult[i] = BH.Engine.Geometry.Modify.Translate(aResult[i], -aVector);
-                //}
             }
 
             if (hostObject is Wall && aResult.Count == 0)
@@ -166,7 +145,7 @@ namespace BH.UI.Revit.Engine
                 List<BH.oM.Geometry.ICurve> aCurveList = new List<ICurve>();
                 foreach (BoundarySegment aboundarySegment in boundarySegments_List)
                 {
-                    aCurveList.Add(Convert.ToBHoM(aboundarySegment.GetCurve(), pullSettings));
+                    aCurveList.Add(aboundarySegment.GetCurve().ToBHoM());
                 }
                 aResults.Add(BH.Engine.Geometry.Create.PolyCurve(aCurveList));
             }
@@ -189,22 +168,16 @@ namespace BH.UI.Revit.Engine
                 LocationCurve aLocationCurve = wall.Location as LocationCurve;
                 if (aLocationCurve != null)
                 {
-                    ICurve aCurve = Convert.ToBHoM(aLocationCurve, pullSettings);
+                    ICurve aCurve = aLocationCurve.ToBHoM();
                     if (aCurve != null)
                     {
                         oM.Geometry.Plane aPlane = null;
 
-                        double aMax = aBoundingBoxXYZ.Max.Z;
-                        if (pullSettings != null && pullSettings.ConvertUnits)
-                            aMax = aMax.ToSI(UnitType.UT_Length);
-
+                        double aMax = aBoundingBoxXYZ.Max.Z.ToSI(UnitType.UT_Length);
                         aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aMax), BH.Engine.Geometry.Create.Vector(0, 0, 1));
                         ICurve aCurve_Max = BH.Engine.Geometry.Modify.IProject(aCurve, aPlane);
 
-                        double aMin = aBoundingBoxXYZ.Min.Z;
-                        if (pullSettings != null && pullSettings.ConvertUnits)
-                            aMin = aMin.ToSI(UnitType.UT_Length);
-
+                        double aMin = aBoundingBoxXYZ.Min.Z.ToSI(UnitType.UT_Length);
                         aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aMin), BH.Engine.Geometry.Create.Vector(0, 0, 1));
                         ICurve aCurve_Min = BH.Engine.Geometry.Modify.IProject(aCurve, aPlane);
 
@@ -245,7 +218,7 @@ namespace BH.UI.Revit.Engine
             aPolyCurveList = new List<PolyCurve>();
             foreach (CurveLoop aCurveLoop in aCurveLoopList)
             {
-                PolyCurve aPolyCurve = Convert.ToBHoM(aCurveLoop, pullSettings);
+                PolyCurve aPolyCurve = aCurveLoop.ToBHoM();
                 if (aPolyCurve != null)
                     aPolyCurveList.Add(aPolyCurve);
             }

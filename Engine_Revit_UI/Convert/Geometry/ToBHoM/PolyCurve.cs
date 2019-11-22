@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -36,16 +36,14 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Geometry.PolyCurve ToBHoM(this CurveLoop curveLoop, PullSettings pullSettings = null)
+        public static oM.Geometry.PolyCurve ToBHoM(this CurveLoop curveLoop)
         {
             if (curveLoop == null)
                 return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
-
             List<oM.Geometry.ICurve> aICurveList = new List<oM.Geometry.ICurve>();
             foreach (Curve aCurve in curveLoop)
-                aICurveList.Add(aCurve.ToBHoM(pullSettings));
+                aICurveList.Add(aCurve.ToBHoM());
 
             return BH.Engine.Geometry.Create.PolyCurve(aICurveList);
         }

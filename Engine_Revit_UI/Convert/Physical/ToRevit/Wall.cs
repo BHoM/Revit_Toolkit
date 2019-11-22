@@ -84,11 +84,11 @@ namespace BH.UI.Revit.Engine
             if (double.IsNaN(aLowElevation))
                 return null;
 
-            Level aLevel = document.LowLevel(aLowElevation, true);
+            Level aLevel = document.LowLevel(aLowElevation);
             if (aLevel == null)
                 return null;
 
-            aWall = Wall.Create(document, Convert.ToRevitCurveList(aPlanarSurface.ExternalBoundary, pushSettings), aWallType.Id, aLevel.Id, false);
+            aWall = Wall.Create(document, aPlanarSurface.ExternalBoundary.ToRevitCurveList(), aWallType.Id, aLevel.Id, false);
 
             Parameter aParameter = null;
 
@@ -102,19 +102,13 @@ namespace BH.UI.Revit.Engine
                 aParameter.Set(aHeight);
             }
 
-            double aElevation_Level = aLevel.Elevation;
-            if (pushSettings.ConvertUnits)
-                aElevation_Level = aElevation_Level.ToSI(UnitType.UT_Length);
-
+            double aElevation_Level = aLevel.Elevation.ToSI(UnitType.UT_Length);
             if (System.Math.Abs(aLowElevation - aElevation_Level) > Tolerance.MacroDistance)
             {
                 aParameter = aWall.get_Parameter(BuiltInParameter.WALL_BASE_OFFSET);
                 if (aParameter != null)
                 {
-                    double aOffset = aLowElevation - aElevation_Level;
-                    if (pushSettings.ConvertUnits)
-                        aOffset = aOffset.FromSI(UnitType.UT_Length);
-
+                    double aOffset = (aLowElevation - aElevation_Level).FromSI(UnitType.UT_Length);
                     aParameter.Set(aOffset);
                 }
             }
@@ -124,7 +118,7 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aWall, wall, new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT, BuiltInParameter.WALL_BASE_OFFSET, BuiltInParameter.WALL_HEIGHT_TYPE, BuiltInParameter.WALL_USER_HEIGHT_PARAM }, pushSettings.ConvertUnits);
+                Modify.SetParameters(aWall, wall, new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT, BuiltInParameter.WALL_BASE_OFFSET, BuiltInParameter.WALL_HEIGHT_TYPE, BuiltInParameter.WALL_USER_HEIGHT_PARAM });
 
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(wall, aWall);
 

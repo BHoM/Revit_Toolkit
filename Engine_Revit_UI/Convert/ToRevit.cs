@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -185,7 +185,7 @@ namespace BH.UI.Revit.Engine
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitPlane(coordinateSystem, pushSettings);
+            return coordinateSystem.ToRevitPlane();
         }
 
         /***************************************************/
@@ -194,7 +194,7 @@ namespace BH.UI.Revit.Engine
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitCurve(curve, pushSettings);
+            return curve.ToRevitCurve();
         }
 
         /***************************************************/
@@ -203,7 +203,7 @@ namespace BH.UI.Revit.Engine
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitCurveArray(polyCurve, pushSettings);
+            return polyCurve.ToRevitCurveArray();
         }
 
         /***************************************************/
@@ -212,7 +212,7 @@ namespace BH.UI.Revit.Engine
         {
             pushSettings = pushSettings.DefaultIfNull();
 
-            return ToRevitXYZ(point, pushSettings);
+            return point.ToRevitXYZ();
         }
 
         /***************************************************/

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -35,10 +35,8 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static List<PolyCurve> ToBHoM(this Sketch sketch, PullSettings pullSettings = null)
+        public static List<PolyCurve> ToBHoM(this Sketch sketch)
         {
-            pullSettings = pullSettings.DefaultIfNull();
-
             SketchPlane aSketchPlane = sketch.SketchPlane;
             //oM.Geometry.CoordinateSystem.Cartesian aCartesian = ToBHoM(aSketchPlane.GetPlane(), pullSettings);
 
@@ -49,7 +47,7 @@ namespace BH.UI.Revit.Engine
             List<PolyCurve> aResult = new List<PolyCurve>();
             foreach (CurveArray aCurveArray in sketch.Profile)
             {
-                PolyCurve aPolyCurve = BH.Engine.Geometry.Create.PolyCurve(ToBHoM(aCurveArray, pullSettings));
+                PolyCurve aPolyCurve = BH.Engine.Geometry.Create.PolyCurve(aCurveArray.ToBHoM());
 
                //aPolyCurve = BH.Engine.Geometry.Modify.Translate(aPolyCurve, -aVector);
 
@@ -61,27 +59,23 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<PolyCurve> ToBHoM(this CurveArrArray curveArrArray, PullSettings pullSettings = null)
+        public static List<PolyCurve> ToBHoM(this CurveArrArray curveArrArray)
         {
-            pullSettings = pullSettings.DefaultIfNull();
-
             List<PolyCurve> aResult = new List<PolyCurve>();
             foreach (CurveArray aCurveArray in curveArrArray)
-                aResult.Add(BH.Engine.Geometry.Create.PolyCurve(ToBHoM(aCurveArray, pullSettings)));
+                aResult.Add(BH.Engine.Geometry.Create.PolyCurve(aCurveArray.ToBHoM()));
 
             return aResult;
         }
 
         /***************************************************/
 
-        public static List<PolyCurve> ToBHoM(this EdgeArrayArray edgeArray, PullSettings pullSettings = null)
+        public static List<PolyCurve> ToBHoM(this EdgeArrayArray edgeArray)
         {
-            pullSettings = pullSettings.DefaultIfNull();
-
             List<PolyCurve> aResult = new List<PolyCurve>();
             foreach (EdgeArray ea in edgeArray)
             {
-                aResult.Add(BH.Engine.Geometry.Create.PolyCurve(ea.ToBHoM(pullSettings)));
+                aResult.Add(BH.Engine.Geometry.Create.PolyCurve(ea.ToBHoM()));
             }
             return aResult;
         }

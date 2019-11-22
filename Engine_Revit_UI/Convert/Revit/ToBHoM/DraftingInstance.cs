@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -43,12 +43,12 @@ namespace BH.UI.Revit.Engine
 
             oM.Adapters.Revit.Properties.InstanceProperties aInstanceProperties = ToBHoMInstanceProperties(curveElement.LineStyle as GraphicsStyle, pullSettings) as oM.Adapters.Revit.Properties.InstanceProperties;
 
-            aDraftingInstance = BH.Engine.Adapters.Revit.Create.DraftingInstance(aInstanceProperties, aView.Name, curveElement.GeometryCurve.ToBHoM(pullSettings));
+            aDraftingInstance = BH.Engine.Adapters.Revit.Create.DraftingInstance(aInstanceProperties, aView.Name, curveElement.GeometryCurve.ToBHoM());
 
             aDraftingInstance.Name = curveElement.Name;
             aDraftingInstance = Modify.SetIdentifiers(aDraftingInstance, curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
             if (pullSettings.CopyCustomData)
-                aDraftingInstance = Modify.SetCustomData(aDraftingInstance, curveElement, true) as oM.Adapters.Revit.Elements.DraftingInstance;
+                aDraftingInstance = Modify.SetCustomData(aDraftingInstance, curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
 
             aDraftingInstance = aDraftingInstance.UpdateValues(pullSettings, curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
 

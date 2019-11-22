@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -33,13 +33,11 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Plane ToRevitPlane(this Cartesian coordinateSystem, PushSettings pushSettings = null)
+        public static Plane ToRevitPlane(this Cartesian coordinateSystem)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            XYZ origin = coordinateSystem.Origin.ToRevit(pushSettings);
-            XYZ X = coordinateSystem.X.ToRevit(pushSettings).Normalize();
-            XYZ Y = coordinateSystem.Y.ToRevit(pushSettings).Normalize();
+            XYZ origin = coordinateSystem.Origin.ToRevit();
+            XYZ X = coordinateSystem.X.ToRevit().Normalize();
+            XYZ Y = coordinateSystem.Y.ToRevit().Normalize();
             return Plane.CreateByOriginAndBasis(origin, X, Y);
         }
 

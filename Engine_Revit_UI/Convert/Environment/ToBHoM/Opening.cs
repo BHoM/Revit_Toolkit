@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -48,7 +48,7 @@ namespace BH.UI.Revit.Engine
                 if (aResult != null)
                     return aResult;
 
-                ICurve aCurve = energyAnalysisOpening.GetPolyloop().ToBHoM(pullSettings);
+                ICurve aCurve = energyAnalysisOpening.GetPolyloop().ToBHoM();
                 aResult = Create.Opening(externalEdges: aCurve.ToEdges());
 
                 OriginContextFragment aOriginContextFragment = new OriginContextFragment();
@@ -62,7 +62,7 @@ namespace BH.UI.Revit.Engine
 
                 aResult = Modify.SetIdentifiers(aResult, energyAnalysisOpening) as oM.Environment.Elements.Opening;
                 if (pullSettings.CopyCustomData)
-                    aResult = Modify.SetCustomData(aResult, energyAnalysisOpening, pullSettings.ConvertUnits) as oM.Environment.Elements.Opening;
+                    aResult = Modify.SetCustomData(aResult, energyAnalysisOpening) as oM.Environment.Elements.Opening;
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult);
                 aResult = aResult.UpdateValues(pullSettings, energyAnalysisOpening) as oM.Environment.Elements.Opening;
@@ -76,7 +76,7 @@ namespace BH.UI.Revit.Engine
 
                 ElementType aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
 
-                ICurve aCurve = energyAnalysisOpening.GetPolyloop().ToBHoM(pullSettings);
+                ICurve aCurve = energyAnalysisOpening.GetPolyloop().ToBHoM();
                 aResult = Create.Opening(externalEdges: aCurve.ToEdges());
                 aResult.Name = Query.FamilyTypeFullName(aElement);
 
@@ -97,10 +97,10 @@ namespace BH.UI.Revit.Engine
 
                 aResult = Modify.SetIdentifiers(aResult, aElement) as oM.Environment.Elements.Opening;
                 if (pullSettings.CopyCustomData)
-                    aResult = Modify.SetCustomData(aResult, aElement, pullSettings.ConvertUnits) as oM.Environment.Elements.Opening;
+                    aResult = Modify.SetCustomData(aResult, aElement) as oM.Environment.Elements.Opening;
 
                 if (aElementType != null)
-                    aResult = Modify.SetCustomData(aResult, aElementType, pullSettings.ConvertUnits, "Type ") as oM.Environment.Elements.Opening;
+                    aResult = Modify.SetCustomData(aResult, aElementType, "Type ") as oM.Environment.Elements.Opening;
 
 
 

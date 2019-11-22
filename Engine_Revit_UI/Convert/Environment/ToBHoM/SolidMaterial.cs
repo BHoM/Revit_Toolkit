@@ -52,13 +52,7 @@ namespace BH.UI.Revit.Engine
                 aResult.Description = aParameter.AsString();
 
             Update(aResult, material, pullSettings);
-
             aResult = aResult.UpdateValues(pullSettings, material) as SolidMaterial;
-
-            //Set custom data
-            //aResult = Modify.SetIdentifiers(aResult, material) as SolidMaterial;
-            //if (pullSettings.CopyCustomData)
-            //    aResult = Modify.SetCustomData(aResult, material, pullSettings.ConvertUnits) as SolidMaterial;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult);
             return aResult;
@@ -102,9 +96,9 @@ namespace BH.UI.Revit.Engine
         {
             solidMaterial.Conductivity = thermalAsset.ThermalConductivity;
             solidMaterial.SpecificHeat = thermalAsset.SpecificHeat;
-            solidMaterial.Density = thermalAsset.Density;
-            if (pullSettings != null && pullSettings.ConvertUnits)
-                solidMaterial.Density = solidMaterial.Density.ToSI(UnitType.UT_MassDensity);
+            solidMaterial.Density = thermalAsset.Density.ToSI(UnitType.UT_MassDensity);
         }
+
+        /***************************************************/
     }
 }

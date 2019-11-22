@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -51,7 +51,7 @@ namespace BH.UI.Revit.Engine
             aViewPlan.Name = viewPlan.Name;
             aViewPlan = Modify.SetIdentifiers(aViewPlan, viewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
             if (pullSettings.CopyCustomData)
-                aViewPlan = Modify.SetCustomData(aViewPlan, viewPlan, true) as oM.Adapters.Revit.Elements.ViewPlan;
+                aViewPlan = Modify.SetCustomData(aViewPlan, viewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
 
             aViewPlan = aViewPlan.UpdateValues(pullSettings, viewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
 

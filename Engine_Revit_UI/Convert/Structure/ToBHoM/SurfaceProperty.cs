@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -64,9 +64,7 @@ namespace BH.UI.Revit.Engine
                         break;
                     }
 
-                    aThickness = csl.Width;
-                    if (pullSettings.ConvertUnits)
-                        aThickness = aThickness.ToSI(UnitType.UT_Section_Dimension);
+                    aThickness = csl.Width.ToSI(UnitType.UT_Section_Dimension);
 
                     Material revitMaterial = document.GetElement(csl.MaterialId) as Material;
                     if (revitMaterial == null)
@@ -119,7 +117,7 @@ namespace BH.UI.Revit.Engine
 
             aProperty2D = Modify.SetIdentifiers(aProperty2D, hostObjAttributes) as ConstantThickness;
             if (pullSettings.CopyCustomData)
-                aProperty2D = Modify.SetCustomData(aProperty2D, hostObjAttributes, pullSettings.ConvertUnits) as ConstantThickness;
+                aProperty2D = Modify.SetCustomData(aProperty2D, hostObjAttributes) as ConstantThickness;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aProperty2D);
 

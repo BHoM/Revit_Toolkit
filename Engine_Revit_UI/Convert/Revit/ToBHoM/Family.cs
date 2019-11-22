@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -73,7 +73,7 @@ namespace BH.UI.Revit.Engine
 
             aFamily = Modify.SetIdentifiers(aFamily, family) as oM.Adapters.Revit.Elements.Family;
             if (pullSettings.CopyCustomData)
-                aFamily = Modify.SetCustomData(aFamily, family, pullSettings.ConvertUnits) as oM.Adapters.Revit.Elements.Family;
+                aFamily = Modify.SetCustomData(aFamily, family) as oM.Adapters.Revit.Elements.Family;
 
             aFamily = aFamily.UpdateValues(pullSettings, family) as oM.Adapters.Revit.Elements.Family;
 

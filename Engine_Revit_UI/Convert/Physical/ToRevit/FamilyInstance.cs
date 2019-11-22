@@ -1,6 +1,6 @@
 ﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -87,7 +87,7 @@ namespace BH.UI.Revit.Engine
             if (!CheckLocationCurveColumns(framingElement))
                 return null;
             
-            Line columnLine = framingElement.Location.ToRevitCurve(pushSettings) as Line;
+            Line columnLine = framingElement.Location.ToRevitCurve() as Line;
             Level aLevel = null;
 
             aCustomDataValue = framingElement.CustomDataValue("Base Level");
@@ -98,7 +98,7 @@ namespace BH.UI.Revit.Engine
             }
 
             if (aLevel == null)
-                aLevel = Query.BottomLevel(framingElement.Location, document, pushSettings.ConvertUnits);
+                aLevel = Query.BottomLevel(framingElement.Location, document);
 
             FamilySymbol aFamilySymbol = framingElement.Property.ToRevitFamilySymbol_Column(document, pushSettings);
 
@@ -193,7 +193,7 @@ namespace BH.UI.Revit.Engine
                     BuiltInParameter.SLANTED_COLUMN_TOP_CUT_STYLE,
                     BuiltInParameter.STRUCTURAL_MATERIAL_PARAM
                 };
-                Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
+                Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore);
             }
 
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElement, aFamilyInstance);
@@ -258,7 +258,7 @@ namespace BH.UI.Revit.Engine
             //Update justification based on custom data
             BH.oM.Geometry.ICurve adjustedLocation;
             bool adjusted = framingElement.AdjustLocation(out adjustedLocation);
-            Curve revitCurve = adjustedLocation.ToRevitCurve(pushSettings);
+            Curve revitCurve = adjustedLocation.ToRevitCurve();
 
             bool isVertical, isLinear;
             //Check if curve is planar, and if so, if it is vertical. This is used to determine if the orientation angle needs
@@ -276,7 +276,7 @@ namespace BH.UI.Revit.Engine
             }
 
             if (aLevel == null)
-                aLevel = Query.BottomLevel(framingElement.Location, document, pushSettings.ConvertUnits);
+                aLevel = Query.BottomLevel(framingElement.Location, document);
 
             FamilySymbol aFamilySymbol = framingElement.Property.ToRevitFamilySymbol_Framing(document, pushSettings);
 
@@ -388,7 +388,7 @@ namespace BH.UI.Revit.Engine
                 }
 
 
-                Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore, pushSettings.ConvertUnits);
+                Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore);
             }
 
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElement, aFamilyInstance);

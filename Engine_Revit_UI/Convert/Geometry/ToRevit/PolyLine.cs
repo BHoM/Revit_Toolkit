@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -32,11 +32,9 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static PolyLine ToRevitPolyLine(this oM.Geometry.Polyline polyline, PushSettings pushSettings = null)
+        public static PolyLine ToRevitPolyLine(this oM.Geometry.Polyline polyline)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return PolyLine.Create(polyline.ControlPoints.ToList().ConvertAll(x => x.ToRevitXYZ(pushSettings)));
+            return PolyLine.Create(polyline.ControlPoints.ConvertAll(x => x.ToRevitXYZ()));
         }
 
         /***************************************************/

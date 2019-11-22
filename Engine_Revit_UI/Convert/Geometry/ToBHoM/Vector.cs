@@ -34,17 +34,12 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Geometry.Vector ToBHoMVector(this XYZ xyz, PullSettings pullSettings = null)
+        public static oM.Geometry.Vector ToBHoMVector(this XYZ xyz)
         {
             if (xyz == null)
                 return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
-
-            if (pullSettings.ConvertUnits)
-                return Create.Vector(xyz.X.ToSI(UnitType.UT_Length), xyz.Y.ToSI(UnitType.UT_Length), xyz.Z.ToSI(UnitType.UT_Length));
-            else
-                return Create.Vector(xyz.X, xyz.Y, xyz.Z);
+            return Create.Vector(xyz.X.ToSI(UnitType.UT_Length), xyz.Y.ToSI(UnitType.UT_Length), xyz.Z.ToSI(UnitType.UT_Length));
         }
 
         /***************************************************/

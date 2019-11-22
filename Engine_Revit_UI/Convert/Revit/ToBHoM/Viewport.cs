@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -40,7 +40,7 @@ namespace BH.UI.Revit.Engine
             if (aViewport != null)
                 return aViewport;
 
-            oM.Geometry.Point aLocation = viewport.GetBoxCenter().ToBHoM(pullSettings);
+            oM.Geometry.Point aLocation = viewport.GetBoxCenter().ToBHoM();
             string aViewName = viewport.get_Parameter(BuiltInParameter.VIEW_NAME).AsString();
             string aSheetNumber = viewport.get_Parameter(BuiltInParameter.VIEWPORT_SHEET_NUMBER).AsString();
 
@@ -54,7 +54,7 @@ namespace BH.UI.Revit.Engine
 
             aViewport = Modify.SetIdentifiers(aViewport, viewport) as oM.Adapters.Revit.Elements.Viewport;
             if (pullSettings.CopyCustomData)
-                aViewport = Modify.SetCustomData(aViewport, viewport, pullSettings.ConvertUnits) as oM.Adapters.Revit.Elements.Viewport;
+                aViewport = Modify.SetCustomData(aViewport, viewport) as oM.Adapters.Revit.Elements.Viewport;
 
             aViewport = aViewport.UpdateValues(pullSettings, viewport) as oM.Adapters.Revit.Elements.Viewport;
 

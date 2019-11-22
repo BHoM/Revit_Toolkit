@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -33,17 +33,15 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static CurveArray ToRevitCurveArray(this PolyCurve polyCurve, PushSettings pushSettings = null)
+        public static CurveArray ToRevitCurveArray(this PolyCurve polyCurve)
         {
             if (polyCurve == null)
                 return null;
 
-            pushSettings = pushSettings.DefaultIfNull();
-
             CurveArray aCurveArray = new CurveArray();
             foreach (ICurve aICurve in polyCurve.Curves)
             {
-                List<Curve> aCurveList = aICurve.ToRevitCurveList(pushSettings);
+                List<Curve> aCurveList = aICurve.ToRevitCurveList();
                 if (aCurveList == null || aCurveList.Count == 0)
                     continue;
 
@@ -55,19 +53,17 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static CurveArray ToRevitCurveArray(this Polyline polyline, PushSettings pushSettings = null)
+        public static CurveArray ToRevitCurveArray(this Polyline polyline)
         {
             if (polyline == null)
                 return null;
-
-            pushSettings = pushSettings.DefaultIfNull();
 
             List<ICurve> aCureList = Query.Curves(polyline);
             if (aCureList == null)
                 return null;
 
             CurveArray aCurveArray = new CurveArray();
-            aCureList.ForEach(x => aCurveArray.Append(x.ToRevit(pushSettings)));
+            aCureList.ForEach(x => aCurveArray.Append(x.ToRevit()));
             return aCurveArray;
         }
 

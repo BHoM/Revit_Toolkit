@@ -1,6 +1,6 @@
 ﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -50,10 +50,7 @@ namespace BH.UI.Revit.Engine
 
             if (aLevel == null)
             {
-                double aElevation = level.Elevation;
-                if (pushSettings.ConvertUnits)
-                    aElevation = Convert.FromSI(aElevation, UnitType.UT_Length);
-
+                double aElevation = level.Elevation.FromSI(UnitType.UT_Length);
                 aLevel = Level.Create(document, aElevation);
                 aLevel.Name = level.Name;
             }
@@ -63,7 +60,7 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aLevel, level, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV }, pushSettings.ConvertUnits);
+                Modify.SetParameters(aLevel, level, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
 
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(level, aLevel);
 

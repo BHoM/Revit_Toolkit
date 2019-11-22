@@ -57,19 +57,12 @@ namespace BH.UI.Revit.Engine
 
                 if (aDocument.SiteLocation != null)
                 {
-                    aElevation = aDocument.SiteLocation.Elevation;
-                    aLongitude = aDocument.SiteLocation.Longitude;
-                    aLatitude = aDocument.SiteLocation.Latitude;
+                    aElevation = aDocument.SiteLocation.Elevation.ToSI(UnitType.UT_Length);
+                    aLongitude = aDocument.SiteLocation.Longitude.ToSI(UnitType.UT_Length);
+                    aLatitude = aDocument.SiteLocation.Latitude.ToSI(UnitType.UT_Length);
                     aTimeZone = aDocument.SiteLocation.TimeZone;
                     aPlaceName = aDocument.SiteLocation.PlaceName;
                     aWeatherStationName = aDocument.SiteLocation.WeatherStationName;
-
-                    if (pullSettings.ConvertUnits)
-                    {
-                        aElevation = aElevation.ToSI(UnitType.UT_Length);
-                        aLongitude = aLongitude.ToSI(UnitType.UT_Length);
-                        aLatitude = aLatitude.ToSI(UnitType.UT_Length);
-                    }
                 }
 
                 double aProjectAngle = 0;
@@ -122,7 +115,7 @@ namespace BH.UI.Revit.Engine
                     aBuilding = Modify.SetCustomData(aBuilding, "Project North/South Offset", aProjectNorthSouthOffset) as Building;
                     aBuilding = Modify.SetCustomData(aBuilding, "Project Elevation", aProjectElevation) as Building;
 
-                    aBuilding = Modify.SetCustomData(aBuilding, aDocument.ProjectInformation, pullSettings.ConvertUnits) as Building;
+                    aBuilding = Modify.SetCustomData(aBuilding, aDocument.ProjectInformation) as Building;
                 }
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aBuilding);

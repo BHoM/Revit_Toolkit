@@ -36,21 +36,19 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Curve ToRevitCurve(this ICurve curve, PushSettings pushSettings = null)
+        public static Curve ToRevitCurve(this ICurve curve)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
             if (curve is oM.Geometry.Line)
             {
                 oM.Geometry.Line aLine = curve as oM.Geometry.Line;
-                return Autodesk.Revit.DB.Line.CreateBound(ToRevit(aLine.Start, pushSettings), ToRevit(aLine.End, pushSettings));
+                return Autodesk.Revit.DB.Line.CreateBound(aLine.Start.ToRevit(), aLine.End.ToRevit());
             }
 
             if (curve is oM.Geometry.Arc)
             {
                 oM.Geometry.Arc aArc = curve as oM.Geometry.Arc;
-                double radius = pushSettings.ConvertUnits ? aArc.Radius.FromSI(UnitType.UT_Length) : aArc.Radius;
-                return Autodesk.Revit.DB.Arc.Create(ToRevit(aArc.CoordinateSystem, pushSettings), radius, aArc.StartAngle, aArc.EndAngle);
+                double radius = aArc.Radius.FromSI(UnitType.UT_Length);
+                return Autodesk.Revit.DB.Arc.Create(aArc.CoordinateSystem.ToRevit(), radius, aArc.StartAngle, aArc.EndAngle);
                 //return Autodesk.Revit.DB.Arc.Create(aArc.CoordinateSystem.Origin.ToRevitXYZ(pushSettings), radius, aArc.StartAngle, aArc.EndAngle, aArc.CoordinateSystem.X.ToRevitXYZ(pushSettings).Normalize(), aArc.CoordinateSystem.Y.ToRevitXYZ(pushSettings).Normalize());
             }
 
@@ -60,7 +58,7 @@ namespace BH.UI.Revit.Engine
                 List<double> knots = aNurbCurve.Knots.ToList();
                 knots.Insert(0, knots[0]);
                 knots.Add(knots[knots.Count - 1]);
-                List<XYZ> controlPoints = aNurbCurve.ControlPoints.Select(x => x.ToRevit(pushSettings)).ToList();
+                List<XYZ> controlPoints = aNurbCurve.ControlPoints.Select(x => x.ToRevit()).ToList();
                 try
                 {
                     return NurbSpline.CreateCurve(aNurbCurve.Degree(), knots, controlPoints, aNurbCurve.Weights);
@@ -75,14 +73,14 @@ namespace BH.UI.Revit.Engine
             if (curve is oM.Geometry.Ellipse)
             {
                 oM.Geometry.Ellipse aEllipse = curve as oM.Geometry.Ellipse;
-                return Autodesk.Revit.DB.Ellipse.CreateCurve(ToRevit(aEllipse.Centre, pushSettings), aEllipse.Radius1, aEllipse.Radius2, ToRevit(aEllipse.Axis1, pushSettings), ToRevit(aEllipse.Axis2, pushSettings), 0, 1);
+                return Autodesk.Revit.DB.Ellipse.CreateCurve(aEllipse.Centre.ToRevit(), aEllipse.Radius1, aEllipse.Radius2, aEllipse.Axis1.ToRevit(), aEllipse.Axis2.ToRevit(), 0, 1);
             }
 
             if (curve is Polyline)
             {
                 Polyline aPolyline = curve as Polyline;
                 if (aPolyline.ControlPoints.Count == 2)
-                    return Autodesk.Revit.DB.Line.CreateBound(ToRevit(aPolyline.ControlPoints[0], pushSettings), ToRevit(aPolyline.ControlPoints[1], pushSettings));
+                    return Autodesk.Revit.DB.Line.CreateBound(aPolyline.ControlPoints[0].ToRevit(), aPolyline.ControlPoints[1].ToRevit());
             }
 
             return null;
@@ -90,14 +88,14 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<Curve> ToRevitCurves(this ICurve curve, PushSettings pushSettings = null)
+        public static List<Curve> ToRevitCurves(this ICurve curve)
         {
             if (curve is Polyline || curve is PolyCurve)
             {
                 List<Curve> result = new List<Curve>();
                 foreach (ICurve cc in curve.ISubParts())
                 {
-                    result.AddRange(cc.ToRevitCurves(pushSettings));
+                    result.AddRange(cc.ToRevitCurves());
                 }
 
                 return result;
@@ -110,13 +108,10 @@ namespace BH.UI.Revit.Engine
                 
                 if (Math.Abs(2 * Math.PI) - arc.EndAngle + arc.StartAngle < BH.oM.Geometry.Tolerance.Angle)
                 {
-                    double r = arc.Radius;
-                    if (pushSettings.ConvertUnits)
-                        r = r.FromSI(UnitType.UT_Length);
-
-                    XYZ centre = arc.CoordinateSystem.Origin.ToRevitXYZ(pushSettings);
-                    XYZ xAxis = arc.CoordinateSystem.X.ToRevitXYZ(pushSettings).Normalize();
-                    XYZ yAxis = arc.CoordinateSystem.Y.ToRevitXYZ(pushSettings).Normalize();
+                    double r = arc.Radius.FromSI(UnitType.UT_Length);
+                    XYZ centre = arc.CoordinateSystem.Origin.ToRevitXYZ();
+                    XYZ xAxis = arc.CoordinateSystem.X.ToRevitXYZ().Normalize();
+                    XYZ yAxis = arc.CoordinateSystem.Y.ToRevitXYZ().Normalize();
 
                     Autodesk.Revit.DB.Arc arc1 = Autodesk.Revit.DB.Arc.Create(centre, r, 0, Math.PI, xAxis, yAxis);
                     Autodesk.Revit.DB.Arc arc2 = Autodesk.Revit.DB.Arc.Create(centre, r, 0, Math.PI, -xAxis, -yAxis);
@@ -126,12 +121,10 @@ namespace BH.UI.Revit.Engine
             else if (curve is Circle)
             {
                 Circle circle = curve as Circle;
-                double r = circle.Radius;
-                if (pushSettings.ConvertUnits)
-                    r = r.FromSI(UnitType.UT_Length);
+                double r = circle.Radius.FromSI(UnitType.UT_Length);
                 
-                XYZ centre = circle.Centre.ToRevitXYZ(pushSettings);
-                XYZ normal = circle.Normal.ToRevitXYZ(pushSettings).Normalize();
+                XYZ centre = circle.Centre.ToRevitXYZ();
+                XYZ normal = circle.Normal.ToRevitXYZ().Normalize();
                 Autodesk.Revit.DB.Plane p = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(normal, centre);
 
                 Autodesk.Revit.DB.Arc arc1 = Autodesk.Revit.DB.Arc.Create(p, r, 0, Math.PI);
@@ -140,7 +133,7 @@ namespace BH.UI.Revit.Engine
             }
             else if (curve is NurbsCurve)
             {
-                Curve nc = curve.ToRevitCurve(pushSettings);
+                Curve nc = curve.ToRevitCurve();
                 if (nc.GetEndPoint(0).DistanceTo(nc.GetEndPoint(1)) <= BH.oM.Geometry.Tolerance.Distance)
                 {
                     double param1 = nc.GetEndParameter(0);
@@ -155,7 +148,7 @@ namespace BH.UI.Revit.Engine
                     return new List<Curve> { nc };
             }
 
-            return new List<Curve> { curve.ToRevitCurve(pushSettings) };
+            return new List<Curve> { curve.ToRevitCurve() };
         }
 
         /***************************************************/

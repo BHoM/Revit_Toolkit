@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -36,43 +36,37 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static List<oM.Geometry.ICurve> ToBHoM(this List<Curve> curves, PullSettings pullSettings = null)
+        public static List<oM.Geometry.ICurve> ToBHoM(this List<Curve> curves)
         {
             if (curves == null)
                 return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
-
-            return curves.Select(c => c.ToBHoM(pullSettings)).ToList();
+            return curves.Select(c => c.ToBHoM()).ToList();
         }
 
         /***************************************************/
 
-        public static List<oM.Geometry.ICurve> ToBHoM(this CurveArray curveArray, PullSettings pullSettings = null)
+        public static List<oM.Geometry.ICurve> ToBHoM(this CurveArray curveArray)
         {
             if (curveArray == null)
                 return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
-
             List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
             for (int i = 0; i < curveArray.Size; i++)
             {
-                result.Add(curveArray.get_Item(i).ToBHoM(pullSettings));
+                result.Add(curveArray.get_Item(i).ToBHoM());
             }
             return result;
         }
 
         /***************************************************/
 
-        public static List<oM.Geometry.ICurve> ToBHoM(this EdgeArray edgeArray, PullSettings pullSettings = null)
+        public static List<oM.Geometry.ICurve> ToBHoM(this EdgeArray edgeArray)
         {
-            pullSettings = pullSettings.DefaultIfNull();
-
             List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
             foreach (Edge aEdge in edgeArray)
             {
-                result.Add(aEdge.ToBHoM(pullSettings));
+                result.Add(aEdge.ToBHoM());
             }
 
             return result;

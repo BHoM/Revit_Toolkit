@@ -36,12 +36,11 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static BRepBuilder ToRevitBrep(this ISurface surface, PushSettings pushSettings = null)
+        public static BRepBuilder ToRevitBrep(this ISurface surface)
         {
-            pushSettings = pushSettings.DefaultIfNull();
             BRepBuilder brep = new BRepBuilder(BRepType.OpenShell);
 
-            if (!TryAddSurface(brep, surface as dynamic, pushSettings))
+            if (!TryAddSurface(brep, surface as dynamic))
                 return null;
 
             brep.Finish();
@@ -50,14 +49,13 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static BRepBuilder ToRevitBrep(this BoundaryRepresentation boundaryRepresentation, PushSettings pushSettings = null)
+        public static BRepBuilder ToRevitBrep(this BoundaryRepresentation boundaryRepresentation)
         {
             //TODO: allow creating void and solid?
-            pushSettings = pushSettings.DefaultIfNull();
             BRepBuilder brep = new BRepBuilder(BRepType.OpenShell);
             foreach (ISurface s in boundaryRepresentation.Surfaces)
             {
-                if (!TryAddSurface(brep, s as dynamic, pushSettings))
+                if (!TryAddSurface(brep, s as dynamic))
                     return null;
             }
 
@@ -70,11 +68,11 @@ namespace BH.UI.Revit.Engine
         /****              Private methods              ****/
         /***************************************************/
 
-        private static bool TryAddSurface(this BRepBuilder brep, PolySurface ps, PushSettings pushSettings)
+        private static bool TryAddSurface(this BRepBuilder brep, PolySurface ps)
         {
             foreach (ISurface s in ps.Surfaces)
             {
-                if (!TryAddSurface(brep, s as dynamic, pushSettings))
+                if (!TryAddSurface(brep, s as dynamic))
                     return false;
             }
 
@@ -83,21 +81,21 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static bool TryAddSurface(this BRepBuilder brep, PlanarSurface ps, PushSettings pushSettings)
+        private static bool TryAddSurface(this BRepBuilder brep, PlanarSurface ps)
         {
             try
             {
                 BH.oM.Geometry.Plane p = ps.ExternalBoundary.IFitPlane();
-                Autodesk.Revit.DB.Plane rp = p.ToRevitPlane(pushSettings);
+                Autodesk.Revit.DB.Plane rp = p.ToRevitPlane();
 
                 BRepBuilderSurfaceGeometry bbsg = BRepBuilderSurfaceGeometry.Create(rp, null);
                 BRepBuilderGeometryId face = brep.AddFace(bbsg, false);
 
-                brep.AddLoop(face, rp.Normal, ps.ExternalBoundary, true, pushSettings);
+                brep.AddLoop(face, rp.Normal, ps.ExternalBoundary, true);
 
                 foreach (ICurve c in ps.InternalBoundaries)
                 {
-                    brep.AddLoop(face, rp.Normal, c, false, pushSettings);
+                    brep.AddLoop(face, rp.Normal, c, false);
                 }
 
                 brep.FinishFace(face);
@@ -113,7 +111,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static bool TryAddSurface(this BRepBuilder brep, NurbsSurface ns, PushSettings pushSettings)
+        private static bool TryAddSurface(this BRepBuilder brep, NurbsSurface ns)
         {
             if (ns.IsClosed())
             {
@@ -141,7 +139,7 @@ namespace BH.UI.Revit.Engine
                     weights[i] = new double[uvCount[1]];
                     for (int j = 0; j < uvCount[1]; j++)
                     {
-                        points[i][j] = ns.ControlPoints[j + (uvCount[1] * i)].ToRevitXYZ(pushSettings);
+                        points[i][j] = ns.ControlPoints[j + (uvCount[1] * i)].ToRevitXYZ();
                         weights[i][j] = ns.Weights[j + (uvCount[1] * i)];
                     }
                 }
@@ -166,7 +164,7 @@ namespace BH.UI.Revit.Engine
                     BRepBuilderGeometryId loop = brep.AddLoop(face);
                     foreach (ICurve sp in trim.Curve3d.ISubParts())
                     {
-                        List<Curve> ccs = sp.ToRevitCurves(pushSettings);
+                        List<Curve> ccs = sp.ToRevitCurves();
                         foreach (Curve cc in ccs)
                         {
                             BRepBuilderGeometryId edge = brep.AddEdge(BRepBuilderEdgeGeometry.Create(cc));
@@ -181,7 +179,7 @@ namespace BH.UI.Revit.Engine
                     BRepBuilderGeometryId loop = brep.AddLoop(face);
                     foreach (ICurve sp in trim.Curve3d.ISubParts())
                     {
-                        List<Curve> ccs = sp.ToRevitCurves(pushSettings);
+                        List<Curve> ccs = sp.ToRevitCurves();
                         foreach (Curve cc in ccs)
                         {
                             BRepBuilderGeometryId edge = brep.AddEdge(BRepBuilderEdgeGeometry.Create(cc));
@@ -205,12 +203,12 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static void AddLoop(this BRepBuilder brep, BRepBuilderGeometryId face, XYZ normal, ICurve curve, bool external, PushSettings pushSettings)
+        private static void AddLoop(this BRepBuilder brep, BRepBuilderGeometryId face, XYZ normal, ICurve curve, bool external)
         {
             CurveLoop cl = new CurveLoop();
             foreach (ICurve sp in curve.ISubParts())
             {
-                foreach (Curve cc in sp.ToRevitCurves(pushSettings))
+                foreach (Curve cc in sp.ToRevitCurves())
                 {
                     cl.Append(cc);
                 }

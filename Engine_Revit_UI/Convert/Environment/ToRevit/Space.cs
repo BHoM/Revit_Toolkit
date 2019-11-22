@@ -42,15 +42,11 @@ namespace BH.UI.Revit.Engine
             if (aSpace != null)
                 return aSpace;
 
-            Level aLevel = Query.BottomLevel(space.Location.Z, document, pushSettings.ConvertUnits);
+            Level aLevel = Query.BottomLevel(space.Location.Z, document);
             if (aLevel == null)
                 return null;
 
-            UV aUV = new UV(space.Location.X, space.Location.Y);
-
-            if (pushSettings.ConvertUnits)
-                aUV = new UV(aUV.U.FromSI(UnitType.UT_Length), aUV.V.FromSI(UnitType.UT_Length));
-
+            UV aUV = new UV(space.Location.X.FromSI(UnitType.UT_Length), space.Location.Y.FromSI(UnitType.UT_Length));
             aSpace = document.Create.NewSpace(aLevel, aUV);
 
             aSpace.CheckIfNullPush(space);
@@ -60,7 +56,7 @@ namespace BH.UI.Revit.Engine
             aSpace.Name = space.Name;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aSpace, space, null, pushSettings.ConvertUnits);
+                Modify.SetParameters(aSpace, space, null);
 
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(space, aSpace);
 
