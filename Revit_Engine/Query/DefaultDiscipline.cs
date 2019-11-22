@@ -38,12 +38,12 @@ namespace BH.Engine.Adapters.Revit
         [Description("Gets Default Discipline for given RevitSettings.")]
         [Input("revitSettings", "RevitSettings")]
         [Output("Discipline")]
-        public static Discipline? DefaultDiscipline(this RevitSettings revitSettings)
+        public static Discipline DefaultDiscipline(this RevitSettings revitSettings)
         {
             if (revitSettings == null || revitSettings.GeneralSettings == null)
-                return null;
-
-            return revitSettings.GeneralSettings.DefaultDiscipline;
+                return oM.Adapters.Revit.Enums.Discipline.Undefined;
+            else
+                return revitSettings.GeneralSettings.DefaultDiscipline;
         }
 
         /***************************************************/
@@ -51,15 +51,12 @@ namespace BH.Engine.Adapters.Revit
         [Description("Gets Default Discipline for given FilterRequest.")]
         [Input("filterRequest", "FilterRequest")]
         [Output("Discipline")]
-        public static Discipline? DefaultDiscipline(this FilterRequest filterRequest)
+        public static Discipline DefaultDiscipline(this FilterRequest filterRequest)
         {
-            if (filterRequest == null)
-                return null;
-
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.DefaultDiscipline))
-                return null;
-
-            return (Discipline)filterRequest.Equalities[Convert.FilterRequest.DefaultDiscipline];
+            if (filterRequest == null || !filterRequest.Equalities.ContainsKey(Convert.FilterRequest.DefaultDiscipline))
+                return oM.Adapters.Revit.Enums.Discipline.Undefined;
+            else
+                return (Discipline)filterRequest.Equalities[Convert.FilterRequest.DefaultDiscipline];
         }
 
         /***************************************************/

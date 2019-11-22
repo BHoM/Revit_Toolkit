@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 using BH.oM.Reflection.Attributes;
+using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -40,10 +41,10 @@ namespace BH.Engine.Adapters.Revit
         [Description("Gets Discipline for given BHoM Type.")]
         [Input("type", "BHoM Type")]
         [Output("Discipline")]
-        public static Discipline? Discipline(this Type type)
+        public static Discipline Discipline(this Type type)
         {
             if (type == null)
-                return null;
+                return oM.Adapters.Revit.Enums.Discipline.Undefined;
 
             if(type.Namespace.StartsWith("BH.oM.Structure"))
                 return oM.Adapters.Revit.Enums.Discipline.Structural;
@@ -57,7 +58,7 @@ namespace BH.Engine.Adapters.Revit
             if (type.Namespace.StartsWith("BH.oM.Physical"))
                 return oM.Adapters.Revit.Enums.Discipline.Physical;
 
-            return null;
+            return oM.Adapters.Revit.Enums.Discipline.Undefined;
         }
 
         /***************************************************/
@@ -65,35 +66,69 @@ namespace BH.Engine.Adapters.Revit
         [Description("Gets Discipline for given FilterRequest.")]
         [Input("filterRequest", "FilterRequest")]
         [Output("Discipline")]
-        public static Discipline? Discipline(this FilterRequest filterRequest)
+        public static Discipline Discipline(this FilterRequest filterRequest)
         {
             if (filterRequest == null)
-                return null;
+                return oM.Adapters.Revit.Enums.Discipline.Undefined;
 
-            List<Discipline> aDisciplineList = new List<Discipline>();
-
-            IEnumerable<FilterRequest> aFilterRequests = Query.FilterRequests(filterRequest);
-            if (aFilterRequests != null && aFilterRequests.Count() > 0)
+            Discipline discipline = oM.Adapters.Revit.Enums.Discipline.Undefined;
+            IEnumerable<FilterRequest> filterRequests = filterRequest.FilterRequests();
+            if (filterRequests != null)
             {
-                foreach (FilterRequest aFilterRequest in aFilterRequests)
+                foreach (FilterRequest fr in filterRequests)
                 {
-                    Discipline? aDiscipline = Discipline(filterRequest);
-                    if (aDiscipline != null && aDiscipline.HasValue)
-                        return aDiscipline;
+                    discipline = fr.Discipline();
+                    if (discipline != oM.Adapters.Revit.Enums.Discipline.Undefined)
+                        return discipline;
                 }
             }
             else
             {
-                Discipline? aDiscipline = Discipline(filterRequest.Type);
-                if (aDiscipline != null && aDiscipline.HasValue)
-                    return aDiscipline.Value;
-
-                aDiscipline = DefaultDiscipline(filterRequest);
-                if (aDiscipline != null && aDiscipline.HasValue)
-                    return aDiscipline.Value;
+                discipline = filterRequest.Type.Discipline();
+                if (discipline != oM.Adapters.Revit.Enums.Discipline.Undefined)
+                    return discipline;
+                else
+                    return DefaultDiscipline(filterRequest);
             }
 
-            return null;
+            return discipline;
+        }
+
+        /***************************************************/
+
+        [Description("Gets Discipline for given FilterRequest and RevitSettings.")]
+        [Input("filterRequest", "FilterRequest")]
+        [Input("revitSettings", "RevitSettings")]
+        [Output("Discipline")]
+        public static Discipline Discipline(this FilterRequest filterRequest, RevitSettings revitSettings)
+        {
+            Discipline discipline = filterRequest.Discipline();
+            if (discipline != oM.Adapters.Revit.Enums.Discipline.Undefined)
+                return discipline;
+
+            return Query.DefaultDiscipline(revitSettings);
+        }
+
+        /***************************************************/
+
+        [Description("Gets Discipline for given FilterRequests and RevitSettings.")]
+        [Input("filterRequests", "IEnumerable<FilterRequest>")]
+        [Input("revitSettings", "RevitSettings")]
+        [Output("Discipline")]
+        public static Discipline Discipline(this IEnumerable<FilterRequest> filterRequests, RevitSettings revitSettings)
+        {
+            if (filterRequests == null)
+                return oM.Adapters.Revit.Enums.Discipline.Undefined;
+
+            Discipline discipline = oM.Adapters.Revit.Enums.Discipline.Undefined;
+            foreach (FilterRequest filterRequest in filterRequests)
+            {
+                discipline = filterRequest.Discipline();
+                if (discipline != oM.Adapters.Revit.Enums.Discipline.Undefined)
+                    return discipline;
+            }
+
+            return Query.DefaultDiscipline(revitSettings);
         }
 
         /***************************************************/
