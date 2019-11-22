@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -43,7 +43,7 @@ namespace BH.UI.Revit.Engine
 
             aInstanceProperties = Modify.SetIdentifiers(aInstanceProperties, elementType) as InstanceProperties;
             if (pullSettings.CopyCustomData)
-                aInstanceProperties = Modify.SetCustomData(aInstanceProperties, elementType, pullSettings.ConvertUnits) as InstanceProperties;
+                aInstanceProperties = Modify.SetCustomData(aInstanceProperties, elementType) as InstanceProperties;
 
             aInstanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = elementType.FamilyName;
             aInstanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = elementType.Name;
@@ -70,7 +70,7 @@ namespace BH.UI.Revit.Engine
 
             aInstanceProperties = Modify.SetIdentifiers(aInstanceProperties, graphicStyle) as InstanceProperties;
             if (pullSettings.CopyCustomData)
-                aInstanceProperties = Modify.SetCustomData(aInstanceProperties, graphicStyle, pullSettings.ConvertUnits) as InstanceProperties;
+                aInstanceProperties = Modify.SetCustomData(aInstanceProperties, graphicStyle) as InstanceProperties;
 
             aInstanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = graphicStyle.GraphicsStyleCategory.Parent.Name;
 

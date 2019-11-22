@@ -35,7 +35,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Level LowLevel(this Document document, double elevation, bool convertUnits = true)
+        public static Level LowLevel(this Document document, double elevation)
         {
             List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
             if (aLevelList == null || aLevelList.Count == 0)
@@ -43,9 +43,7 @@ namespace BH.UI.Revit.Engine
 
             aLevelList.Sort((x, y) => y.Elevation.CompareTo(x.Elevation));
 
-            double aElevation = elevation;
-            if (convertUnits)
-                aElevation = aElevation.FromSI(UnitType.UT_Length);
+            double aElevation = elevation.FromSI(UnitType.UT_Length);
 
             if (Math.Abs(aElevation - aLevelList.First().Elevation) < oM.Geometry.Tolerance.MacroDistance)
                 return aLevelList.First();
@@ -59,20 +57,20 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Level LowLevel(this Document document, oM.Geometry.ICurve curve, bool convertUnits = true)
+        public static Level LowLevel(this Document document, oM.Geometry.ICurve curve)
         {
             double aElevation = LowElevation(curve);
 
-            return LowLevel(document, aElevation, convertUnits);
+            return LowLevel(document, aElevation);
         }
 
         /***************************************************/
 
-        public static Level LowLevel(this Document document, IObject2D object2D, bool convertUnits = true)
+        public static Level LowLevel(this Document document, IObject2D object2D)
         {
             double aElevation = LowElevation(object2D);
 
-            return LowLevel(document, aElevation, convertUnits);
+            return LowLevel(document, aElevation);
         }
 
         /***************************************************/

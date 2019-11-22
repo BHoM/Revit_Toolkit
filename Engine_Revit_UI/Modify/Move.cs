@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -43,7 +43,7 @@ namespace BH.UI.Revit.Engine
             if (location.IsReadOnly)
                 return null;
 
-            XYZ aXYZ = vector.ToRevit(pushSettings);
+            XYZ aXYZ = vector.ToRevit();
             if (aXYZ.GetLength() < Tolerance.MicroDistance)
                 return location;
 
@@ -82,7 +82,7 @@ namespace BH.UI.Revit.Engine
             if (locationCurve.IsReadOnly)
                 return null;
 
-            Curve aCurve = iCurve.ToRevitCurve(pushSettings);
+            Curve aCurve = iCurve.ToRevitCurve();
             if (Query.IsSimilar(aCurve, locationCurve.Curve))
                 return locationCurve;
 
@@ -151,13 +151,11 @@ namespace BH.UI.Revit.Engine
             if (element == null || space == null)
                 return null;
 
-            Level aLevel = Query.BottomLevel(space.Location.Z, element.Document, pullSettings.ConvertUnits);
+            Level aLevel = Query.BottomLevel(space.Location.Z, element.Document);
             if (aLevel == null)
                 return null;
 
             oM.Geometry.Point aPoint = BH.Engine.Geometry.Create.Point(space.Location.X, space.Location.Y, aLevel.Elevation);
-
-            //Parameter aParameter = Modify.SetParameter(element.get_Parameter(BuiltInParameter.), aLevel.Id, element.Document, pullSettings.ConvertUnits);
 
             return Move(element.Location, aPoint, pullSettings);
         }

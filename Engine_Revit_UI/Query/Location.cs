@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -41,7 +41,7 @@ namespace BH.UI.Revit.Engine
             if (pullSettings == null)
                 pullSettings = PullSettings.Default;
 
-            return (wall.Location as LocationCurve).ToBHoM(pullSettings);
+            return (wall.Location as LocationCurve).ToBHoM();
         }
 
         /***************************************************/

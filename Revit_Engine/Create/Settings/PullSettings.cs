@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -40,15 +40,13 @@ namespace BH.Engine.Adapters.Revit
         [Input("discipline", "Default disciplne for pull method")]
         [Input("refObjects", "Additional reference objects created during Pull process")]
         [Input("copyCustomData", "Saves Parameters of Revit Element into CustomData of BHoM Object")]
-        [Input("convertUnits", "Converts units of parameters to SI")]
         [Output("PullSettings")]
-        public static PullSettings PullSettings(Discipline discipline = Discipline.Physical, Dictionary<int, List<IBHoMObject>> refObjects = null, bool copyCustomData = true, bool convertUnits = true)
+        public static PullSettings PullSettings(Discipline discipline = Discipline.Physical, Dictionary<int, List<IBHoMObject>> refObjects = null, bool copyCustomData = true)
         {
             PullSettings aPullSettings = new PullSettings()
             {
                 Discipline = discipline,
                 CopyCustomData = copyCustomData,
-                ConvertUnits = convertUnits,
                 RefObjects = refObjects
             };
 
@@ -68,6 +66,30 @@ namespace BH.Engine.Adapters.Revit
                 Discipline = discipline,
                 MapSettings = mapSettings,
                 RefObjects = new Dictionary<int, List<IBHoMObject>>(),
+            };
+
+            return aPullSettings;
+        }
+
+
+        /***************************************************/
+        /****            Deprecated methods             ****/
+        /***************************************************/
+
+        [Description("Creates Pull Settings class which contols pull behaviour of Adapter")]
+        [Input("discipline", "Default disciplne for pull method")]
+        [Input("refObjects", "Additional reference objects created during Pull process")]
+        [Input("copyCustomData", "Saves Parameters of Revit Element into CustomData of BHoM Object")]
+        [Input("convertUnits", "Converts units of parameters to SI")]
+        [Output("PullSettings")]
+        [Deprecated("3.0", "The method has been replaced with a similar one without argument convertUnits.")]
+        public static PullSettings PullSettings(Discipline discipline = Discipline.Physical, Dictionary<int, List<IBHoMObject>> refObjects = null, bool copyCustomData = true, bool convertUnits = true)
+        {
+            PullSettings aPullSettings = new PullSettings()
+            {
+                Discipline = discipline,
+                CopyCustomData = copyCustomData,
+                RefObjects = refObjects
             };
 
             return aPullSettings;

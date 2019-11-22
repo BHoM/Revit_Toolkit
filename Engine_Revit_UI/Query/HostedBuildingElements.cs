@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -83,11 +83,11 @@ namespace BH.UI.Revit.Engine
                         continue;
 
                     List<oM.Geometry.Point> aPointList = new List<oM.Geometry.Point>();
-                    aPointList.Add(aXYZ_Max.ToBHoM(pullSettings));
-                    aPointList.Add(aXYZ_U.ToBHoM(pullSettings));
-                    aPointList.Add(aXYZ_Min.ToBHoM(pullSettings));
-                    aPointList.Add(aXYZ_V.ToBHoM(pullSettings));
-                    aPointList.Add(aXYZ_Max.ToBHoM(pullSettings));
+                    aPointList.Add(aXYZ_Max.ToBHoM());
+                    aPointList.Add(aXYZ_U.ToBHoM());
+                    aPointList.Add(aXYZ_Min.ToBHoM());
+                    aPointList.Add(aXYZ_V.ToBHoM());
+                    aPointList.Add(aXYZ_Max.ToBHoM());
 
                     oM.Environment.Elements.Panel aPanel = Convert.ToBHoMEnvironmentPanel(aElement_Hosted, BH.Engine.Geometry.Create.Polyline(aPointList), pullSettings);
                     if (aPanel != null)

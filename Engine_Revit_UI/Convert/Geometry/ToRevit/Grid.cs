@@ -1,6 +1,6 @@
 ﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -39,7 +39,7 @@ namespace BH.UI.Revit.Engine
 
             pushSettings.DefaultIfNull();
 
-            Curve aCurve = Convert.ToRevitCurve(grid.Curve, pushSettings);
+            Curve aCurve = grid.Curve.ToRevitCurve();
 
             if (aCurve is Line)
                 aGrid = Grid.Create(document, (Line)aCurve);
@@ -51,7 +51,7 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aGrid, grid, null, pushSettings.ConvertUnits);
+                Modify.SetParameters(aGrid, grid, null);
 
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(grid, aGrid);
 

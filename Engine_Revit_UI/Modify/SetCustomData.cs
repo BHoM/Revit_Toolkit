@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -31,7 +31,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
         
-        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Element element, bool convertUnits = true, string namePrefix = null)
+        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Element element, string namePrefix = null)
         {
             if (bHoMObject == null || element == null)
                 return bHoMObject;
@@ -39,21 +39,21 @@ namespace BH.UI.Revit.Engine
             IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
 
             foreach (Parameter aParameter in element.ParametersMap)
-                aBHoMObject = SetCustomData(aBHoMObject, aParameter, convertUnits, namePrefix);
+                aBHoMObject = SetCustomData(aBHoMObject, aParameter, namePrefix);
 
             return aBHoMObject;
         }
 
         /***************************************************/
         
-        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Element element, BuiltInParameter builtInParameter,  bool convertUnits = true)
+        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Element element, BuiltInParameter builtInParameter)
         {
             if (bHoMObject == null || element == null)
                 return bHoMObject;
 
             IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
 
-            aBHoMObject = SetCustomData(aBHoMObject, element.get_Parameter(builtInParameter), convertUnits);
+            aBHoMObject = SetCustomData(aBHoMObject, element.get_Parameter(builtInParameter));
                 
 
             return aBHoMObject;
@@ -61,7 +61,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, bool convertUnits = true, string namePrefix = null)
+        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, string namePrefix = null)
         {
             if (bHoMObject == null || parameter == null)
                 return bHoMObject;
@@ -73,8 +73,6 @@ namespace BH.UI.Revit.Engine
             {
                 case StorageType.Double:
                     aValue = parameter.AsDouble();
-                    if (convertUnits)
-                        aValue = Convert.ToSI((double)aValue, parameter.Definition.UnitType);
                     break;
                 case StorageType.ElementId:
                     ElementId aElementId = parameter.AsElementId();

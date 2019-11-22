@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -33,31 +33,27 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static double LookupDouble(this Element element, string parameterName, bool convertUnits = true)
+        public static double LookupDouble(this Element element, string parameterName)
         {
             double value = double.NaN;
+
             Parameter p = element.LookupParameter(parameterName);
-            if (p != null && p.HasValue)
-            {
-                value = p.AsDouble();
-                if (convertUnits)
-                    value = Convert.ToSI(value, p.Definition.UnitType);
-            }
+            if (p != null)
+                value = Convert.ToSI(p.AsDouble(), p.Definition.UnitType);
+
             return value;
         }
 
         /***************************************************/
 
-        public static double LookupDouble(this Element element, BuiltInParameter builtInParameter, bool convertUnits = true)
+        public static double LookupDouble(this Element element, BuiltInParameter builtInParameter)
         {
             double value = double.NaN;
+
             Parameter p = element.get_Parameter(builtInParameter);
-            if (p != null && p.HasValue)
-            {
-                value = p.AsDouble();
-                if (convertUnits)
-                    value = Convert.ToSI(value, p.Definition.UnitType);
-            }
+            if (p != null)
+                value = Convert.ToSI(p.AsDouble(), p.Definition.UnitType);
+
             return value;
         }
 
@@ -89,16 +85,14 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static double LookupDouble(this Element element, IEnumerable<string> parameterNames, bool convertUnits = true)
+        public static double LookupDouble(this Element element, IEnumerable<string> parameterNames)
         {
             double value = double.NaN;
+
             Parameter p = element.LookupParameter(parameterNames);
             if (p != null)
-            {
-                value = p.AsDouble();
-                if (convertUnits)
-                    value = Convert.ToSI(value, p.Definition.UnitType);
-            }
+                value = Convert.ToSI(p.AsDouble(), p.Definition.UnitType);
+
             return value;
         }
 

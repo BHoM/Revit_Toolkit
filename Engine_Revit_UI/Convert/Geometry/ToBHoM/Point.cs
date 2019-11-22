@@ -32,29 +32,22 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Geometry.Point ToBHoM(this LocationPoint locationPoint, PullSettings pullSettings = null)
+        public static oM.Geometry.Point ToBHoM(this LocationPoint locationPoint)
         {
             if (locationPoint == null)
                 return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
-
-            return ToBHoM(locationPoint.Point, pullSettings);
+            return locationPoint.Point.ToBHoM();
         }
 
         /***************************************************/
 
-        public static oM.Geometry.Point ToBHoM(this XYZ xyz, PullSettings pullSettings = null)
+        public static oM.Geometry.Point ToBHoM(this XYZ xyz)
         {
             if (xyz == null)
                 return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
-
-            if (pullSettings.ConvertUnits)
-                return BH.Engine.Geometry.Create.Point(xyz.X.ToSI(UnitType.UT_Length), xyz.Y.ToSI(UnitType.UT_Length), xyz.Z.ToSI(UnitType.UT_Length));
-            else
-                return BH.Engine.Geometry.Create.Point(xyz.X, xyz.Y, xyz.Z);
+            return BH.Engine.Geometry.Create.Point(xyz.X.ToSI(UnitType.UT_Length), xyz.Y.ToSI(UnitType.UT_Length), xyz.Z.ToSI(UnitType.UT_Length));
         }
 
         /***************************************************/

@@ -36,20 +36,18 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Geometry.ICurve ToBHoM(this Curve curve, PullSettings pullSettings = null)
+        public static oM.Geometry.ICurve ToBHoM(this Curve curve)
         {
             if (curve == null)
                 return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
-
             if (curve is Line)
-                return BH.Engine.Geometry.Create.Line(ToBHoM(curve.GetEndPoint(0), pullSettings), ToBHoM(curve.GetEndPoint(1), pullSettings));
+                return BH.Engine.Geometry.Create.Line(curve.GetEndPoint(0).ToBHoM(), curve.GetEndPoint(1).ToBHoM());
 
             if (curve is Arc)
             {
                 Arc aArc = curve as Arc;
-                double radius = pullSettings.ConvertUnits ? aArc.Radius.ToSI(UnitType.UT_Length) : aArc.Radius;
+                double radius = aArc.Radius.ToSI(UnitType.UT_Length);
                 Plane plane = Plane.CreateByOriginAndBasis(aArc.Center, aArc.XDirection, aArc.YDirection);
                 double startAngle = aArc.XDirection.AngleOnPlaneTo(aArc.GetEndPoint(0) - aArc.Center, aArc.Normal);
                 double endAngle = aArc.XDirection.AngleOnPlaneTo(aArc.GetEndPoint(1) - aArc.Center, aArc.Normal);
@@ -57,7 +55,7 @@ namespace BH.UI.Revit.Engine
                 {
                     startAngle -= 2 * Math.PI;
                 }
-                return BH.Engine.Geometry.Create.Arc(ToBHoM(plane, pullSettings), radius, startAngle, endAngle);
+                return BH.Engine.Geometry.Create.Arc(plane.ToBHoM(), radius, startAngle, endAngle);
             }
             if (curve is NurbSpline)
             {
@@ -69,7 +67,7 @@ namespace BH.UI.Revit.Engine
 
                 return new BH.oM.Geometry.NurbsCurve
                 {
-                    ControlPoints = nurbs.CtrlPoints.Select(x => x.ToBHoM(pullSettings)).ToList(),
+                    ControlPoints = nurbs.CtrlPoints.Select(x => x.ToBHoM()).ToList(),
                     Knots = knots,
                     Weights = nurbs.Weights.Cast<double>().ToList()
 
@@ -80,28 +78,24 @@ namespace BH.UI.Revit.Engine
             if (aXYZs == null || aXYZs.Count < 2)
                 return null;
 
-            return BH.Engine.Geometry.Create.Polyline(aXYZs.ToList().ConvertAll(x => ToBHoM(x, pullSettings)));
+            return BH.Engine.Geometry.Create.Polyline(aXYZs.ToList().ConvertAll(x => x.ToBHoM()));
         }
 
         /***************************************************/
 
-        public static oM.Geometry.ICurve ToBHoM(this LocationCurve locationCurve, PullSettings pullSettings = null)
+        public static oM.Geometry.ICurve ToBHoM(this LocationCurve locationCurve)
         {
             if (locationCurve == null)
                 return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
-
-            return ToBHoM(locationCurve.Curve, pullSettings);
+            return locationCurve.Curve.ToBHoM();
         }
 
         /***************************************************/
 
-        public static oM.Geometry.ICurve ToBHoM(this Edge edge, PullSettings pullSettings = null)
+        public static oM.Geometry.ICurve ToBHoM(this Edge edge)
         {
-            pullSettings = pullSettings.DefaultIfNull();
-
-            return ToBHoM(edge.AsCurve(), pullSettings);
+            return edge.AsCurve().ToBHoM();
         }
 
         /***************************************************/

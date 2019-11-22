@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -43,9 +43,9 @@ namespace BH.UI.Revit.Engine
             if (meshTriangle == null)
                 return null;
 
-            oM.Geometry.Point aPoint_1 = meshTriangle.get_Vertex(0).ToBHoM(pullSettings);
-            oM.Geometry.Point aPoint_2 = meshTriangle.get_Vertex(1).ToBHoM(pullSettings);
-            oM.Geometry.Point aPoint_3 = meshTriangle.get_Vertex(2).ToBHoM(pullSettings);
+            oM.Geometry.Point aPoint_1 = meshTriangle.get_Vertex(0).ToBHoM();
+            oM.Geometry.Point aPoint_2 = meshTriangle.get_Vertex(1).ToBHoM();
+            oM.Geometry.Point aPoint_3 = meshTriangle.get_Vertex(2).ToBHoM();
 
             return Create.PolyCurve(new ICurve[] { Create.Line(aPoint_1, aPoint_2), Create.Line(aPoint_2, aPoint_3), Create.Line(aPoint_3, aPoint_1) });
         }
@@ -252,11 +252,11 @@ namespace BH.UI.Revit.Engine
                 if (aPlane == null)
                     continue;
 
-                Autodesk.Revit.DB.Plane aPlane_Revit = Convert.ToRevitPlane(aPlane, new PushSettings() { ConvertUnits = true });
+                Autodesk.Revit.DB.Plane aPlane_Revit = Convert.ToRevitPlane(aPlane);
                 if (aPlane_Revit == null)
                     continue;
 
-                XYZ aNormal_Temp = aPlane.Normal.ToRevitXYZ(new PushSettings() { ConvertUnits = true });
+                XYZ aNormal_Temp = aPlane.Normal.ToRevitXYZ();
                 aNormal_Temp = aNormal_Temp.Normalize();
 
                 BoundingBoxXYZ aBoundingBoxXYZ = familyInstance.get_BoundingBox(null);
@@ -294,7 +294,7 @@ namespace BH.UI.Revit.Engine
                                     continue;
 
                                 if (IsContaining(aBoundingBoxXYZ, aCurve.GetEndPoint(0), true) && IsContaining(aBoundingBoxXYZ, aCurve.GetEndPoint(1), true))
-                                    aCurveList_Temp.Add(aCurve.ToBHoM(pullSettings));
+                                    aCurveList_Temp.Add(aCurve.ToBHoM());
                             }
                         }
                     }

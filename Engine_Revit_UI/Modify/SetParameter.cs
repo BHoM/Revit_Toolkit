@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Parameter SetParameter(this Parameter parameter, object value, Document document = null, bool convertUnits = true)
+        public static Parameter SetParameter(this Parameter parameter, object value, Document document = null)
         {
             if (parameter == null || parameter.IsReadOnly)
                 return null;
@@ -62,19 +62,16 @@ namespace BH.UI.Revit.Engine
 
                     if (!double.IsNaN(aDouble))
                     {
-                        if(convertUnits)
+                        try
                         {
-                            try
-                            {
-                                aDouble = Convert.FromSI(aDouble, parameter.Definition.UnitType);
-                            }
-                            catch
-                            {
-                                aDouble = double.NaN;
-                            }
+                            aDouble = Convert.FromSI(aDouble, parameter.Definition.UnitType);
+                        }
+                        catch
+                        {
+                            aDouble = double.NaN;
                         }
 
-                        if(!double.IsNaN(aDouble))
+                        if (!double.IsNaN(aDouble))
                         {
                             parameter.Set(aDouble);
                             return parameter;

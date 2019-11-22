@@ -41,12 +41,7 @@ namespace BH.UI.Revit.Engine
             pullSettings = pullSettings.DefaultIfNull();
 
             oM.Physical.Constructions.Layer aLayer = new oM.Physical.Constructions.Layer();
-
-            double aThickness = compoundStructureLayer.Width;
-            if (pullSettings.ConvertUnits)
-                aThickness = aThickness.ToSI(UnitType.UT_Length);
-
-            aLayer.Thickness = aThickness;
+            aLayer.Thickness = compoundStructureLayer.Width.ToSI(UnitType.UT_Length);
 
             Autodesk.Revit.DB.Material revitMaterial = doc.GetElement(compoundStructureLayer.MaterialId) as Autodesk.Revit.DB.Material;
             aLayer.Material = revitMaterial.ToBHoMEmptyMaterial(pullSettings);

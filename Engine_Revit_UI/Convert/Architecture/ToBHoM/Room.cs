@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -54,11 +54,11 @@ namespace BH.UI.Revit.Engine
             //Set custom data
             aRoom = Modify.SetIdentifiers(aRoom, spatialElement) as oM.Architecture.Elements.Room;
             if (pullSettings.CopyCustomData)
-                aRoom = Modify.SetCustomData(aRoom, spatialElement, pullSettings.ConvertUnits) as oM.Architecture.Elements.Room;
+                aRoom = Modify.SetCustomData(aRoom, spatialElement) as oM.Architecture.Elements.Room;
 
             //Set location
             if (spatialElement.Location != null && spatialElement.Location is LocationPoint)
-                aRoom.Location = ((LocationPoint)spatialElement.Location).ToBHoM(pullSettings);
+                aRoom.Location = ((LocationPoint)spatialElement.Location).ToBHoM();
 
             //Set ExtendedProperties
             OriginContextFragment aOriginContextFragment = new OriginContextFragment();
@@ -69,7 +69,7 @@ namespace BH.UI.Revit.Engine
 
             aRoom = Modify.SetIdentifiers(aRoom, spatialElement) as oM.Architecture.Elements.Room;
             if (pullSettings.CopyCustomData)
-                aRoom = Modify.SetCustomData(aRoom, spatialElement, pullSettings.ConvertUnits) as oM.Architecture.Elements.Room;
+                aRoom = Modify.SetCustomData(aRoom, spatialElement) as oM.Architecture.Elements.Room;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aRoom);
 

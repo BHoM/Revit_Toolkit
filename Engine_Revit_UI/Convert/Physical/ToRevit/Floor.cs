@@ -84,20 +84,15 @@ namespace BH.UI.Revit.Engine
 
             double aLowElevation = floor.LowElevation();
 
-            Level aLevel = document.HighLevel(aLowElevation, true);
-
-            double aElevation = aLevel.Elevation;
-            if (pushSettings.ConvertUnits)
-                aElevation = aElevation.ToSI(UnitType.UT_Length);
-
+            Level aLevel = document.HighLevel(aLowElevation);
             oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aLowElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
             ICurve aCurve = BH.Engine.Geometry.Modify.Project(aPlanarSurface.ExternalBoundary as dynamic, aPlane) as ICurve;
 
             CurveArray aCurveArray = null;
             if (aCurve is PolyCurve)
-                aCurveArray = ((PolyCurve)aCurve).ToRevitCurveArray(pushSettings);
+                aCurveArray = ((PolyCurve)aCurve).ToRevitCurveArray();
             else if (aCurve is Polyline)
-                aCurveArray = ((Polyline)aCurve).ToRevitCurveArray(pushSettings);
+                aCurveArray = ((Polyline)aCurve).ToRevitCurveArray();
 
             if (aCurveArray == null)
                 return null;
@@ -109,7 +104,7 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aFloor, floor, new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM }, pushSettings.ConvertUnits);
+                Modify.SetParameters(aFloor, floor, new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM });
 
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(floor, aFloor);
 

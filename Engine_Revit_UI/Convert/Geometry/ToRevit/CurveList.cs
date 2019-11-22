@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<Curve> ToRevitCurveList(this oM.Environment.Elements.Panel panel, PushSettings pushSettings = null)
+        public static List<Curve> ToRevitCurveList(this oM.Environment.Elements.Panel panel)
         {
             if (panel == null || panel.ExternalEdges == null)
                 return null;
@@ -42,39 +42,38 @@ namespace BH.UI.Revit.Engine
             List<Curve> aResult = new List<Curve>();
             foreach (oM.Environment.Elements.Edge aEdge in panel.ExternalEdges)
             {
-                List<Curve> aCurveList = ToRevitCurveList(aEdge.Curve, pushSettings);
+                List<Curve> aCurveList = aEdge.Curve.ToRevitCurveList();
                 if (aCurveList != null && aCurveList.Count > 0)
                     aResult.AddRange(aCurveList);
             }
             return aResult;
         }
 
+        /***************************************************/
 
-        public static List<Curve> ToRevitCurveList(this ICurve curve, PushSettings pushSettings = null)
+        public static List<Curve> ToRevitCurveList(this ICurve curve)
         {
             if (curve == null)
                 return null;
 
-            pushSettings = pushSettings.DefaultIfNull();
-
             List<Curve> aResult = new List<Curve>();
             if (curve is oM.Geometry.Arc)
-                aResult.Add(curve.ToRevit(pushSettings));
+                aResult.Add(curve.ToRevit());
             if (curve is oM.Geometry.Ellipse)
-                aResult.Add(curve.ToRevit(pushSettings));
+                aResult.Add(curve.ToRevit());
             else if (curve is Circle)
-                aResult.Add(curve.ToRevit(pushSettings));
+                aResult.Add(curve.ToRevit());
             else if (curve is oM.Geometry.Line)
-                aResult.Add(curve.ToRevit(pushSettings));
+                aResult.Add(curve.ToRevit());
             else if (curve is NurbsCurve)
-                aResult.Add(curve.ToRevit(pushSettings));
+                aResult.Add(curve.ToRevit());
             else if (curve is Polyline)
             {
                 List<ICurve> aCureList = Query.Curves((Polyline)curve);
                 if (aCureList == null)
                     return null;
 
-                aCureList.ForEach(x => aResult.Add(x.ToRevit(pushSettings)));
+                aCureList.ForEach(x => aResult.Add(x.ToRevit()));
             }
             else if (curve is PolyCurve)
             {
@@ -84,7 +83,7 @@ namespace BH.UI.Revit.Engine
 
                 foreach (ICurve aCurve in aPolyCurve.Curves)
                 {
-                    List<Curve> aCurveList = aCurve.ToRevitCurveList(pushSettings);
+                    List<Curve> aCurveList = aCurve.ToRevitCurveList();
                     if (aCurveList != null && aCurveList.Count > 0)
                     {
                         aResult.AddRange(aCurveList);

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -48,7 +48,7 @@ namespace BH.UI.Revit.Engine
             aViewSheet = ViewSheet.Create(document, ElementId.InvalidElementId);
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aViewSheet, sheet, null, pushSettings.ConvertUnits);
+                Modify.SetParameters(aViewSheet, sheet, null);
 
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(sheet, aViewSheet);
 

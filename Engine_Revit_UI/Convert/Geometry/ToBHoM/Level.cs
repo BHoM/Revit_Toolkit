@@ -41,12 +41,12 @@ namespace BH.UI.Revit.Engine
             if (aLevel != null)
                 return aLevel;
 
-            aLevel = BH.Engine.Geometry.Create.Level(ToSI(level.ProjectElevation, UnitType.UT_Length));
+            aLevel = BH.Engine.Geometry.Create.Level(level.ProjectElevation.ToSI(UnitType.UT_Length));
             aLevel.Name = level.Name;
 
             aLevel = Modify.SetIdentifiers(aLevel, level) as oM.Geometry.SettingOut.Level;
             if (pullSettings.CopyCustomData)
-                aLevel = Modify.SetCustomData(aLevel, level, pullSettings.ConvertUnits) as oM.Geometry.SettingOut.Level;
+                aLevel = Modify.SetCustomData(aLevel, level) as oM.Geometry.SettingOut.Level;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aLevel);
 

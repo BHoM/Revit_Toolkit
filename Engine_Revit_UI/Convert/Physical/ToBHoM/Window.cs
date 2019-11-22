@@ -1,6 +1,6 @@
 ﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -69,7 +69,7 @@ namespace BH.UI.Revit.Engine
 
             aWindow = Modify.SetIdentifiers(aWindow, familyInstance) as Window;
             if (pullSettings.CopyCustomData)
-                aWindow = Modify.SetCustomData(aWindow, familyInstance, pullSettings.ConvertUnits) as Window;
+                aWindow = Modify.SetCustomData(aWindow, familyInstance) as Window;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aWindow);
 
@@ -83,18 +83,6 @@ namespace BH.UI.Revit.Engine
             Window aWindow = pullSettings.FindRefObject<Window>(panel.Id.IntegerValue);
             if (aWindow != null)
                 return aWindow;
-
-            //ElementId aElementId = panel.FindHostPanel(); ;
-            //if (aElementId == null || aElementId == ElementId.InvalidElementId)
-            //    return null;
-
-            //List<PolyCurve> aPolyCurveList = Query.Profiles_Wall(panel.Document.GetElement(aElementId) as dynamic, pullSettings);
-            //if (aPolyCurveList == null || aPolyCurveList.Count == 0)
-            //    return null;
-
-            //PlanarSurface aPlanarSurface = BH.Engine.Geometry.Create.PlanarSurface(aPolyCurveList.First());
-
-            //List<ICurve> aCurveList = Query.Curves(panel, new Options(), pullSettings);
 
             PolyCurve aPolyCurve = Query.PolyCurve(panel, pullSettings);
             if (aPolyCurve == null)
@@ -119,7 +107,7 @@ namespace BH.UI.Revit.Engine
 
             aWindow = Modify.SetIdentifiers(aWindow, panel) as Window;
             if (pullSettings.CopyCustomData)
-                aWindow = Modify.SetCustomData(aWindow, panel, pullSettings.ConvertUnits) as Window;
+                aWindow = Modify.SetCustomData(aWindow, panel) as Window;
 
             pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aWindow);
 

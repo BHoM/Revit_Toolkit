@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -34,7 +34,6 @@ namespace BH.oM.Adapters.Revit.Settings
 
         public Enums.Discipline Discipline { get; set; } = Enums.Discipline.Physical;
         public bool CopyCustomData { get; set; } = true;
-        public bool ConvertUnits { get; set; } = true;
         public MapSettings MapSettings { get; set; } = null;
         public Dictionary<int, List<IBHoMObject>> RefObjects = null;
 

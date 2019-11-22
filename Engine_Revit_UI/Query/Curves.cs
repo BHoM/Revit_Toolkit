@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -72,13 +72,13 @@ namespace BH.UI.Revit.Engine
                     if (aEdgeArray == null)
                         continue;
 
-                    List<oM.Geometry.ICurve> aCurveList = aEdgeArray.ToBHoM(pullSettings);
+                    List<oM.Geometry.ICurve> aCurveList = aEdgeArray.ToBHoM();
                     if (aCurveList != null && aCurveList.Count != 0)
                         aResult.AddRange(aCurveList);                        
                 }
                 else if(aGeometryObject is Curve)
                 {
-                    oM.Geometry.ICurve aCurve = ((Curve)aGeometryObject).ToBHoM(pullSettings);
+                    oM.Geometry.ICurve aCurve = ((Curve)aGeometryObject).ToBHoM();
                     if (aCurve != null)
                         aResult.Add(aCurve);
                 }

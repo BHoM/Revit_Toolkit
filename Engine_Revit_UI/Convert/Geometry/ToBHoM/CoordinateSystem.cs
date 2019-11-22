@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -32,14 +32,12 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Geometry.CoordinateSystem.Cartesian ToBHoM(this Plane plane, PullSettings pullSettings = null)
+        public static oM.Geometry.CoordinateSystem.Cartesian ToBHoM(this Plane plane)
         {
             if (plane == null)
                 return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
-
-            return BH.Engine.Geometry.Create.CartesianCoordinateSystem(ToBHoM(plane.Origin, pullSettings), ToBHoMVector(plane.XVec, pullSettings), ToBHoMVector(plane.YVec, pullSettings));
+            return BH.Engine.Geometry.Create.CartesianCoordinateSystem(ToBHoM(plane.Origin), ToBHoMVector(plane.XVec), ToBHoMVector(plane.YVec));
         }
 
         /***************************************************/

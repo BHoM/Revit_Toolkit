@@ -32,34 +32,30 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
         
-        public static Level BottomLevel(this oM.Geometry.ICurve curve, Document document, bool convertUnits = true)
+        public static Level BottomLevel(this oM.Geometry.ICurve curve, Document document)
         {
             if (curve == null)
                 return null;
 
             double aMinElevation = MinElevation(curve);
 
-            //double aMinElevation = BH.Engine.Geometry.Query.Bounds(curve as dynamic).Min.Z;
-            //if (convertUnits)
-            //    aMinElevation = aMinElevation.FromSI(UnitType.UT_Length);
-
-            return BottomLevel(aMinElevation, document, convertUnits);
+            return BottomLevel(aMinElevation, document);
         }
 
 
         /***************************************************/
 
-        public static Level BottomLevel(this oM.Geometry.Point point, Document document, bool convertUnits = true)
+        public static Level BottomLevel(this oM.Geometry.Point point, Document document)
         {
             if (point == null)
                 return null;
 
-            return BottomLevel(point.Z, document, convertUnits);
+            return BottomLevel(point.Z, document);
         }
 
         /***************************************************/
 
-        public static Level BottomLevel(this double elevation, Document document, bool convertUnits = true, double tolerance = oM.Geometry.Tolerance.Distance)
+        public static Level BottomLevel(this double elevation, Document document, double tolerance = oM.Geometry.Tolerance.Distance)
         {
             if (double.IsNaN(elevation) || double.IsNegativeInfinity(elevation) || double.IsPositiveInfinity(elevation))
                 return null;
@@ -67,9 +63,7 @@ namespace BH.UI.Revit.Engine
             List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
             aLevelList.Sort((x, y) => x.Elevation.CompareTo(y.Elevation));
 
-            double aElevation = elevation;
-            if (convertUnits)
-                aElevation = aElevation.FromSI(UnitType.UT_Length);
+            double aElevation = elevation.FromSI(UnitType.UT_Length);
 
             if (aElevation <= aLevelList.First().Elevation)
                 return aLevelList.First();
