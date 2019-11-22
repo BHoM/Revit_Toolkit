@@ -42,7 +42,7 @@ namespace BH.UI.Revit.Engine
             pullSettings = pullSettings.DefaultIfNull();
 
             if (pullSettings.ConvertUnits)
-                return Create.Vector(UnitUtils.ConvertFromInternalUnits(xyz.X, DisplayUnitType.DUT_METERS), UnitUtils.ConvertFromInternalUnits(xyz.Y, DisplayUnitType.DUT_METERS), UnitUtils.ConvertFromInternalUnits(xyz.Z, DisplayUnitType.DUT_METERS));
+                return Create.Vector(xyz.X.ToSI(UnitType.UT_Length), xyz.Y.ToSI(UnitType.UT_Length), xyz.Z.ToSI(UnitType.UT_Length));
             else
                 return Create.Vector(xyz.X, xyz.Y, xyz.Z);
         }

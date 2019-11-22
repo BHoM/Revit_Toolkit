@@ -172,8 +172,8 @@ namespace BH.UI.Revit.Engine
                 double aAnalyticalVolume = energyAnalysisSpace.AnalyticalVolume;
                 if (pullSettings.ConvertUnits)
                 {
-                    aInnerVolume = UnitUtils.ConvertFromInternalUnits(aInnerVolume, DisplayUnitType.DUT_CUBIC_METERS);
-                    aAnalyticalVolume = UnitUtils.ConvertFromInternalUnits(aAnalyticalVolume, DisplayUnitType.DUT_CUBIC_METERS);
+                    aInnerVolume = aInnerVolume.ToSI(UnitType.UT_Volume);
+                    aAnalyticalVolume = aAnalyticalVolume.ToSI(UnitType.UT_Volume);
                 }
 
                 aSpace = Modify.SetCustomData(aSpace, "Inner Volume", aInnerVolume) as Space;

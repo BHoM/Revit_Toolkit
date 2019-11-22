@@ -49,7 +49,7 @@ namespace BH.UI.Revit.Engine
             if (curve is Arc)
             {
                 Arc aArc = curve as Arc;
-                double radius = pullSettings.ConvertUnits ? UnitUtils.ConvertFromInternalUnits(aArc.Radius, DisplayUnitType.DUT_METERS) : aArc.Radius;
+                double radius = pullSettings.ConvertUnits ? aArc.Radius.ToSI(UnitType.UT_Length) : aArc.Radius;
                 Plane plane = Plane.CreateByOriginAndBasis(aArc.Center, aArc.XDirection, aArc.YDirection);
                 double startAngle = aArc.XDirection.AngleOnPlaneTo(aArc.GetEndPoint(0) - aArc.Center, aArc.Normal);
                 double endAngle = aArc.XDirection.AngleOnPlaneTo(aArc.GetEndPoint(1) - aArc.Center, aArc.Normal);

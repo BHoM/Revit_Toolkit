@@ -41,7 +41,7 @@ namespace BH.UI.Revit.Engine
 
             //double aMinElevation = BH.Engine.Geometry.Query.Bounds(curve as dynamic).Min.Z;
             //if (convertUnits)
-            //    aMinElevation = UnitUtils.ConvertToInternalUnits(aMinElevation, DisplayUnitType.DUT_METERS);
+            //    aMinElevation = aMinElevation.FromSI(UnitType.UT_Length);
 
             return BottomLevel(aMinElevation, document, convertUnits);
         }
@@ -69,7 +69,7 @@ namespace BH.UI.Revit.Engine
 
             double aElevation = elevation;
             if (convertUnits)
-                aElevation = UnitUtils.ConvertToInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+                aElevation = aElevation.FromSI(UnitType.UT_Length);
 
             if (aElevation <= aLevelList.First().Elevation)
                 return aLevelList.First();

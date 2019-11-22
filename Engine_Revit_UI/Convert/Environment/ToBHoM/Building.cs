@@ -66,9 +66,9 @@ namespace BH.UI.Revit.Engine
 
                     if (pullSettings.ConvertUnits)
                     {
-                        aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
-                        aLongitude = UnitUtils.ConvertFromInternalUnits(aLongitude, DisplayUnitType.DUT_METERS);
-                        aLatitude = UnitUtils.ConvertFromInternalUnits(aLatitude, DisplayUnitType.DUT_METERS);
+                        aElevation = aElevation.ToSI(UnitType.UT_Length);
+                        aLongitude = aLongitude.ToSI(UnitType.UT_Length);
+                        aLatitude = aLatitude.ToSI(UnitType.UT_Length);
                     }
                 }
 

@@ -318,6 +318,7 @@
     <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\OpeningType.cs" />
     <Compile Include="Query\TopFacesPolyCurves.cs" />
+    <Compile Include="Query\BHoMUnitType.cs" />
     <Compile Include="Query\View.cs" />
     <Compile Include="Query\UpdatePanelTypeByCustomData.cs" />
     <Compile Include="Query\LowElevation.cs" />

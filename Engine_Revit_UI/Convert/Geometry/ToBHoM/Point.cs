@@ -52,7 +52,7 @@ namespace BH.UI.Revit.Engine
             pullSettings = pullSettings.DefaultIfNull();
 
             if (pullSettings.ConvertUnits)
-                return BH.Engine.Geometry.Create.Point(UnitUtils.ConvertFromInternalUnits(xyz.X, DisplayUnitType.DUT_METERS), UnitUtils.ConvertFromInternalUnits(xyz.Y, DisplayUnitType.DUT_METERS), UnitUtils.ConvertFromInternalUnits(xyz.Z, DisplayUnitType.DUT_METERS));
+                return BH.Engine.Geometry.Create.Point(xyz.X.ToSI(UnitType.UT_Length), xyz.Y.ToSI(UnitType.UT_Length), xyz.Z.ToSI(UnitType.UT_Length));
             else
                 return BH.Engine.Geometry.Create.Point(xyz.X, xyz.Y, xyz.Z);
         }

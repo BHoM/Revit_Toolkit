@@ -125,12 +125,12 @@ namespace BH.UI.Revit.Engine
                 //{
                 //    //double aElevation = aLevel.Elevation;
                 //    //if (pullSettings.ConvertUnits)
-                //    //    aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+                //    //    aElevation = aElevation.ToSI(UnitType.UnitType.UT_Length);
 
                 //    //Parameter aParameter = hostObject.get_Parameter(BuiltInParameter.WALL_TOP_OFFSET);
                 //    //if (aParameter != null)
                 //    //{
-                //    //    double aOffset = UnitUtils.ConvertFromInternalUnits(aParameter.AsDouble(), DisplayUnitType.DUT_METERS);
+                //    //    double aOffset = aParameter.AsDouble().ToSI(UnitType.UnitType.UT_Length);
                 //    //    aElevation = aElevation + aOffset;
                 //    //}
 
@@ -196,14 +196,14 @@ namespace BH.UI.Revit.Engine
 
                         double aMax = aBoundingBoxXYZ.Max.Z;
                         if (pullSettings != null && pullSettings.ConvertUnits)
-                            aMax = UnitUtils.ConvertFromInternalUnits(aMax, DisplayUnitType.DUT_METERS);
+                            aMax = aMax.ToSI(UnitType.UT_Length);
 
                         aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aMax), BH.Engine.Geometry.Create.Vector(0, 0, 1));
                         ICurve aCurve_Max = BH.Engine.Geometry.Modify.IProject(aCurve, aPlane);
 
                         double aMin = aBoundingBoxXYZ.Min.Z;
                         if (pullSettings != null && pullSettings.ConvertUnits)
-                            aMin = UnitUtils.ConvertFromInternalUnits(aMin, DisplayUnitType.DUT_METERS);
+                            aMin = aMin.ToSI(UnitType.UT_Length);
 
                         aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aMin), BH.Engine.Geometry.Create.Vector(0, 0, 1));
                         ICurve aCurve_Min = BH.Engine.Geometry.Modify.IProject(aCurve, aPlane);

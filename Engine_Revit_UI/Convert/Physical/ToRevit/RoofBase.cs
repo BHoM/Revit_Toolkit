@@ -93,7 +93,7 @@ namespace BH.UI.Revit.Engine
 
             double aElevation = aLevel.Elevation;
             if (pushSettings.ConvertUnits)
-                aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+                aElevation = aElevation.ToSI(UnitType.UT_Length);
 
             //oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aLowElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
             oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));

@@ -49,7 +49,7 @@ namespace BH.UI.Revit.Engine
             UV aUV = new UV(space.Location.X, space.Location.Y);
 
             if (pushSettings.ConvertUnits)
-                aUV = new UV(UnitUtils.ConvertToInternalUnits(aUV.U, DisplayUnitType.DUT_METERS), UnitUtils.ConvertToInternalUnits(aUV.V, DisplayUnitType.DUT_METERS));
+                aUV = new UV(aUV.U.FromSI(UnitType.UT_Length), aUV.V.FromSI(UnitType.UT_Length));
 
             aSpace = document.Create.NewSpace(aLevel, aUV);
 
