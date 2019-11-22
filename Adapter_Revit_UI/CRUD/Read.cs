@@ -167,7 +167,7 @@ namespace BH.UI.Revit.Adapter
                 if (aFilterRequests == null)
                     continue;
 
-                Discipline aDiscipline = Query.Discipline(aFilterRequests, aRevitSettings);
+                Discipline aDiscipline = BH.Engine.Adapters.Revit.Query.Discipline(aFilterRequests, aRevitSettings);
 
                 PullSettings aPullSettings = null;
                 if (!aDictionary_PullSettings.TryGetValue(aDiscipline, out aPullSettings))
