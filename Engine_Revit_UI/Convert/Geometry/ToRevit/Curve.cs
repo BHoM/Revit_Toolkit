@@ -49,7 +49,7 @@ namespace BH.UI.Revit.Engine
             if (curve is oM.Geometry.Arc)
             {
                 oM.Geometry.Arc aArc = curve as oM.Geometry.Arc;
-                double radius = pushSettings.ConvertUnits ? UnitUtils.ConvertToInternalUnits(aArc.Radius, DisplayUnitType.DUT_METERS) : aArc.Radius;
+                double radius = pushSettings.ConvertUnits ? aArc.Radius.FromSI(UnitType.UT_Length) : aArc.Radius;
                 return Autodesk.Revit.DB.Arc.Create(ToRevit(aArc.CoordinateSystem, pushSettings), radius, aArc.StartAngle, aArc.EndAngle);
                 //return Autodesk.Revit.DB.Arc.Create(aArc.CoordinateSystem.Origin.ToRevitXYZ(pushSettings), radius, aArc.StartAngle, aArc.EndAngle, aArc.CoordinateSystem.X.ToRevitXYZ(pushSettings).Normalize(), aArc.CoordinateSystem.Y.ToRevitXYZ(pushSettings).Normalize());
             }
@@ -112,7 +112,7 @@ namespace BH.UI.Revit.Engine
                 {
                     double r = arc.Radius;
                     if (pushSettings.ConvertUnits)
-                        r = UnitUtils.ConvertToInternalUnits(r, DisplayUnitType.DUT_METERS);
+                        r = r.FromSI(UnitType.UT_Length);
 
                     XYZ centre = arc.CoordinateSystem.Origin.ToRevitXYZ(pushSettings);
                     XYZ xAxis = arc.CoordinateSystem.X.ToRevitXYZ(pushSettings).Normalize();
@@ -128,7 +128,7 @@ namespace BH.UI.Revit.Engine
                 Circle circle = curve as Circle;
                 double r = circle.Radius;
                 if (pushSettings.ConvertUnits)
-                    r = UnitUtils.ConvertToInternalUnits(r, DisplayUnitType.DUT_METERS);
+                    r = r.FromSI(UnitType.UT_Length);
                 
                 XYZ centre = circle.Centre.ToRevitXYZ(pushSettings);
                 XYZ normal = circle.Normal.ToRevitXYZ(pushSettings).Normalize();

@@ -45,7 +45,7 @@ namespace BH.UI.Revit.Engine
 
             double aElevation = aLevelList.First().Elevation;
             if (convertUnits)
-                aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+                aElevation = aElevation.ToSI(UnitType.UT_Length);
 
             if (Math.Abs(elevation - aElevation) < oM.Geometry.Tolerance.MacroDistance)
                 return aLevelList.First();
@@ -54,7 +54,7 @@ namespace BH.UI.Revit.Engine
             {
                 aElevation = aLevelList[i].Elevation;
                 if (convertUnits)
-                    aElevation = UnitUtils.ConvertFromInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+                    aElevation = aElevation.ToSI(UnitType.UT_Length);
 
                 //if (Elevation) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
                 if (Math.Round(elevation, 3, MidpointRounding.AwayFromZero) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))

@@ -45,7 +45,7 @@ namespace BH.UI.Revit.Engine
 
             double aElevation = elevation;
             if (convertUnits)
-                aElevation = UnitUtils.ConvertToInternalUnits(aElevation, DisplayUnitType.DUT_METERS);
+                aElevation = aElevation.FromSI(UnitType.UT_Length);
 
             if (Math.Abs(aElevation - aLevelList.First().Elevation) < oM.Geometry.Tolerance.MacroDistance)
                 return aLevelList.First();

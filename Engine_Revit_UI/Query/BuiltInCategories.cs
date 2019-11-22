@@ -225,5 +225,7 @@ namespace BH.UI.Revit.Engine
             }
             return aBuiltInCategories;
         }
+
+        /***************************************************/
     }
 }

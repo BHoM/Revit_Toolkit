@@ -112,13 +112,13 @@ namespace BH.UI.Revit.Engine
             aParameter = aWall.get_Parameter(BuiltInParameter.WALL_USER_HEIGHT_PARAM);
             if (aParameter != null)
             {
-                double aHeight = UnitUtils.ConvertToInternalUnits(panel.HighElevation() - aLowElevation, DisplayUnitType.DUT_METERS);
+                double aHeight = (panel.HighElevation() - aLowElevation).FromSI(UnitType.UT_Length);
                 aParameter.Set(aHeight);
             }
 
             double aElevation_Level = aLevel.Elevation;
             if (pushSettings.ConvertUnits)
-                aElevation_Level = UnitUtils.ConvertFromInternalUnits(aElevation_Level, DisplayUnitType.DUT_METERS);
+                aElevation_Level = aElevation_Level.ToSI(UnitType.UT_Length);
 
             if (System.Math.Abs(aLowElevation - aElevation_Level) > oM.Geometry.Tolerance.MacroDistance)
             {
@@ -127,7 +127,7 @@ namespace BH.UI.Revit.Engine
                 {
                     double aOffset = aLowElevation - aElevation_Level;
                     if (pushSettings.ConvertUnits)
-                        aOffset = UnitUtils.ConvertToInternalUnits(aOffset, DisplayUnitType.DUT_METERS);
+                        aOffset = aOffset.FromSI(UnitType.UT_Length);
 
                     aParameter.Set(aOffset);
                 }

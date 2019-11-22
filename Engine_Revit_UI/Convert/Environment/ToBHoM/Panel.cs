@@ -213,8 +213,8 @@ namespace BH.UI.Revit.Engine
                         Autodesk.Revit.DB.Mechanical.Space aSpace = (Autodesk.Revit.DB.Mechanical.Space)aSpatialElement;
 
                         BuildingResultFragment aBuildingResultsProperties = new BuildingResultFragment();
-                        aBuildingResultsProperties.PeakCooling = UnitUtils.ConvertFromInternalUnits(aSpace.DesignCoolingLoad, DisplayUnitType.DUT_WATTS);
-                        aBuildingResultsProperties.PeakHeating = UnitUtils.ConvertFromInternalUnits(aSpace.DesignHeatingLoad, DisplayUnitType.DUT_WATTS);
+                        aBuildingResultsProperties.PeakCooling = aSpace.DesignCoolingLoad.ToSI(UnitType.UT_HVAC_Cooling_Load);
+                        aBuildingResultsProperties.PeakHeating = aSpace.DesignHeatingLoad.ToSI(UnitType.UT_HVAC_Heating_Load);
                         aPanel.AddFragment(aBuildingResultsProperties);
                     }
                 }
@@ -243,8 +243,8 @@ namespace BH.UI.Revit.Engine
                 double aAzimuth = energyAnalysisSurface.Azimuth;
                 if (pullSettings.ConvertUnits)
                 {
-                    aHeight = UnitUtils.ConvertFromInternalUnits(aHeight, DisplayUnitType.DUT_METERS);
-                    aWidth = UnitUtils.ConvertFromInternalUnits(aWidth, DisplayUnitType.DUT_METERS);
+                    aHeight = aHeight.ToSI(UnitType.UT_Length);
+                    aWidth = aWidth.ToSI(UnitType.UT_Length);
                 }
                 aPanel = Modify.SetCustomData(aPanel, "Height", aHeight) as oM.Environment.Elements.Panel;
                 aPanel = Modify.SetCustomData(aPanel, "Width", aWidth) as oM.Environment.Elements.Panel;
@@ -348,8 +348,8 @@ namespace BH.UI.Revit.Engine
         //        double aWidth = energyAnalysisOpening.Width;
         //        if (pullSettings.ConvertUnits)
         //        {
-        //            aHeight = UnitUtils.ConvertFromInternalUnits(aHeight, DisplayUnitType.DUT_METERS);
-        //            aWidth = UnitUtils.ConvertFromInternalUnits(aWidth, DisplayUnitType.DUT_METERS);
+                    //aHeight = aHeight.ToSI(UnitType.UT_Length);
+                    //aWidth = aWidth.ToSI(UnitType.UT_Length);
         //        }
         //        aBuildingElement = Modify.SetCustomData(aBuildingElement, "Height", aHeight) as BuildingElement;
         //        aBuildingElement = Modify.SetCustomData(aBuildingElement, "Width", aWidth) as BuildingElement;

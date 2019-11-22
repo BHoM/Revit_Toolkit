@@ -44,7 +44,7 @@ namespace BH.UI.Revit.Engine
 
             double aThickness = compoundStructureLayer.Width;
             if (pullSettings.ConvertUnits)
-                aThickness = UnitUtils.ConvertFromInternalUnits(aThickness, DisplayUnitType.DUT_METERS);
+                aThickness = aThickness.ToSI(UnitType.UT_Length);
 
             aLayer.Thickness = aThickness;
 

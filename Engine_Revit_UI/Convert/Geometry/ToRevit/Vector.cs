@@ -37,7 +37,7 @@ namespace BH.UI.Revit.Engine
             pushSettings = pushSettings.DefaultIfNull();
 
             if (pushSettings.ConvertUnits)
-                return new XYZ(UnitUtils.ConvertToInternalUnits(vector.X, DisplayUnitType.DUT_METERS), UnitUtils.ConvertToInternalUnits(vector.Y, DisplayUnitType.DUT_METERS), UnitUtils.ConvertToInternalUnits(vector.Z, DisplayUnitType.DUT_METERS));
+                return new XYZ(vector.X.FromSI(UnitType.UT_Length), vector.Y.FromSI(UnitType.UT_Length), vector.Z.FromSI(UnitType.UT_Length));
             else
                 return new XYZ(vector.X, vector.Y, vector.Z);
         }

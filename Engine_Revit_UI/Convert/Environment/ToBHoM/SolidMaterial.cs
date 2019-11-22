@@ -104,7 +104,7 @@ namespace BH.UI.Revit.Engine
             solidMaterial.SpecificHeat = thermalAsset.SpecificHeat;
             solidMaterial.Density = thermalAsset.Density;
             if (pullSettings != null && pullSettings.ConvertUnits)
-                solidMaterial.Density = UnitUtils.ConvertFromInternalUnits(solidMaterial.Density, DisplayUnitType.DUT_KILOGRAMS_PER_CUBIC_METER);
+                solidMaterial.Density = solidMaterial.Density.ToSI(UnitType.UT_MassDensity);
         }
     }
 }
