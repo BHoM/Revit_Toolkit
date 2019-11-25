@@ -52,7 +52,12 @@
     <Compile Include="Elements\ViewPlan.cs" />
     <Compile Include="Elements\ModelInstance.cs" />
     <Compile Include="Elements\Viewport.cs" />
-    <Compile Include="Enums.cs" />
+    <Compile Include="Enums\AdapterMode.cs" />
+    <Compile Include="Enums\Discipline.cs" />
+    <Compile Include="Enums\NumberComparisonType.cs" />
+    <Compile Include="Enums\RequestType.cs" />
+    <Compile Include="Enums\RevitViewType.cs" />
+    <Compile Include="Enums\TextComparisonType.cs" />
     <Compile Include="Generic\FamilyLibrary.cs" />
     <Compile Include="Generic\ParameterExistsComparisonRule.cs" />
     <Compile Include="Generic\TextComparisonRule.cs" />

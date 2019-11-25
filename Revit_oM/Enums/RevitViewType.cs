@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -22,36 +22,7 @@
 
 namespace BH.oM.Adapters.Revit.Enums
 {
-    public enum Discipline
-    {
-        Undefined,
-        Environmental,
-        Structural,
-        Architecture,
-        Physical
-    }
 
-    public enum RequestType
-    {
-        Undefined,
-        Selection,
-        Category,
-        Workset,
-        ActiveWorkset,
-        LogicalAnd,
-        LogicalOr,
-        ViewTemplate,
-        OpenWorksets,
-        TypeName,
-        Family,
-        SelectionSet,
-        View,
-        Parameter
-    }
-
-    //
-    // Summary:
-    //     An enumerated type listing available view types.
     public enum RevitViewType
     {
         //
@@ -152,33 +123,6 @@ namespace BH.oM.Adapters.Revit.Enums
         //
         // Remarks:
         //     Internal views are not available to API users
-        Internal = 214
+        Internal = 214,
     }
-
-    public enum AdapterMode
-    {
-        Delete,
-        Replace,
-        Update
-    }
-
-    public enum TextComparisonType
-    {
-        Equal,
-        NotEqual,
-        Contains,
-        StartsWith,
-        EndsWith
-    }
-
-    public enum NumberComparisonType
-    {
-        Equal,
-        NotEqual,
-        Greater,
-        Less,
-        LessOrEqual,
-        GreaterOrEqual
-    }
-
 }

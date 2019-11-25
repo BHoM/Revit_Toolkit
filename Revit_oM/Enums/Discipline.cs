@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
@@ -20,27 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Base;
-
-namespace BH.oM.Adapters.Revit.Settings
+namespace BH.oM.Adapters.Revit.Enums
 {
-    public class PushSettings : BHoMObject
+    public enum Discipline
     {
-        /***************************************************/
-        /****             Public Properties             ****/
-        /***************************************************/
-
-        public bool CopyCustomData { get; set; } = true;
-        public AdapterMode AdapterMode { get; set; } = AdapterMode.Replace;
-        public FamilyLoadSettings FamilyLoadSettings { get; set; } = null;
-        public MapSettings MapSettings { get; set; } = null;
-        public Dictionary<Guid, List<int>> RefObjects = null;
-        public static PushSettings Default = new PushSettings();
-
-        /***************************************************/
+        Undefined,
+        Environmental,
+        Structural,
+        Architecture,
+        Physical,
     }
 }
