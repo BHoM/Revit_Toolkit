@@ -36,9 +36,6 @@ namespace BH.oM.Adapters.Revit.Settings
         public bool CopyCustomData { get; set; } = true;
         public MapSettings MapSettings { get; set; } = null;
         public Dictionary<int, List<IBHoMObject>> RefObjects = null;
-
-        /***************************************************/
-
         public static PullSettings Default = new PullSettings();
 
         /***************************************************/

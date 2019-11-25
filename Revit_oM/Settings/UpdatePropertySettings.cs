@@ -32,9 +32,6 @@ namespace BH.oM.Adapters.Revit.Settings
 
         public string ParameterName { get; set; } = null;
         public object Value { get; set; } = null;
-
-        /***************************************************/
-
         public static UpdatePropertySettings Default = new UpdatePropertySettings();
 
         /***************************************************/
