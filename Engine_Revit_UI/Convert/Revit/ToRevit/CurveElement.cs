@@ -38,131 +38,131 @@ namespace BH.UI.Revit.Engine
 
         public static CurveElement ToCurveElement(this ModelInstance modelInstance, Document document, PushSettings pushSettings = null)
         {
-            CurveElement aCurveElement = pushSettings.FindRefObject<CurveElement>(document, modelInstance.BHoM_Guid);
-            if (aCurveElement != null)
-                return aCurveElement;
+            CurveElement curveElement = pushSettings.FindRefObject<CurveElement>(document, modelInstance.BHoM_Guid);
+            if (curveElement != null)
+                return curveElement;
 
             pushSettings.DefaultIfNull();
 
             if (!(modelInstance.Location is ICurve))
                 return null;
 
-            ICurve aCurve_BHoM = (ICurve)modelInstance.Location;
+            ICurve curve = (ICurve)modelInstance.Location;
 
-            Curve aCurve_Revit = aCurve_BHoM.ToRevit(pushSettings);
-            if (aCurve_Revit == null)
+            Curve revitCurve = curve.ToRevit(pushSettings);
+            if (revitCurve == null)
                 return null;
 
-            if (!BH.Engine.Geometry.Query.IsPlanar(aCurve_BHoM as dynamic))
+            if (!BH.Engine.Geometry.Query.IsPlanar(curve as dynamic))
                 return null;
 
-            List<oM.Geometry.Point> aPointList = BH.Engine.Geometry.Query.ControlPoints(aCurve_BHoM as dynamic);
-            if (aPointList == null || aPointList.Count <= 1)
+            List<oM.Geometry.Point> points = BH.Engine.Geometry.Query.ControlPoints(curve as dynamic);
+            if (points == null || points.Count <= 1)
                 return null;
 
-            XYZ aPoint_1 = null;
-            XYZ aPoint_2 = null;
-            XYZ aPoint_3 = null;
+            XYZ point1 = null;
+            XYZ point2 = null;
+            XYZ point3 = null;
 
-            if (aPointList.IsCollinear(BH.oM.Geometry.Tolerance.Distance))
+            if (points.IsCollinear(BH.oM.Geometry.Tolerance.Distance))
             {
-                aPoint_1 = aPointList[0].ToRevit(pushSettings);
-                aPoint_2 = aPointList[1].ToRevit(pushSettings);
+                point1 = points[0].ToRevit(pushSettings);
+                point2 = points[1].ToRevit(pushSettings);
 
-                XYZ aVector = aPoint_2 - aPoint_1;
-                double aLength = aVector.GetLength();
-                aVector = aVector.Normalize();
-                XYZ aVector_Parallel = null;
-                if (aVector.X == 1)
-                    aVector_Parallel = new XYZ(0, 1, 0);
-                else if (aVector.Y == 1)
-                    aVector_Parallel = new XYZ(1, 0, 0);
-                else if (aVector.Z == 1)
-                    aVector_Parallel = new XYZ(0, 1, 0);
-                else if (aVector.X != 0)
-                    aVector_Parallel = new XYZ(-aVector.X, aVector.Y, aVector.Z);
-                else if (aVector.Y != 0)
-                    aVector_Parallel = new XYZ(aVector.X, -aVector.Y, aVector.Z);
-                else if (aVector.Z != 0)
-                    aVector_Parallel = new XYZ(aVector.X, aVector.Y, -aVector.Z);
+                XYZ vector = point2 - point1;
+                double length = vector.GetLength();
+                vector = vector.Normalize();
+                XYZ parallelVector = null;
+                if (vector.X == 1)
+                    parallelVector = new XYZ(0, 1, 0);
+                else if (vector.Y == 1)
+                    parallelVector = new XYZ(1, 0, 0);
+                else if (vector.Z == 1)
+                    parallelVector = new XYZ(0, 1, 0);
+                else if (vector.X != 0)
+                    parallelVector = new XYZ(-vector.X, vector.Y, vector.Z);
+                else if (vector.Y != 0)
+                    parallelVector = new XYZ(vector.X, -vector.Y, vector.Z);
+                else if (vector.Z != 0)
+                    parallelVector = new XYZ(vector.X, vector.Y, -vector.Z);
                 else
-                    aVector_Parallel = XYZ.Zero;
+                    parallelVector = XYZ.Zero;
 
-                aVector = aVector_Parallel * aLength;
+                vector = parallelVector * length;
 
-                aPoint_3 = aPoint_1 + aVector;
+                point3 = point1 + vector;
             }
             else
             {
-                aPoint_1 = aPointList[0].ToRevit(pushSettings);
-                aPoint_2 = aPointList[1].ToRevit(pushSettings);
-                aPoint_3 = aPointList[2].ToRevit(pushSettings);
+                point1 = points[0].ToRevit(pushSettings);
+                point2 = points[1].ToRevit(pushSettings);
+                point3 = points[2].ToRevit(pushSettings);
             }
 
-            SketchPlane aSketchPlane = SketchPlane.Create(document, Autodesk.Revit.DB.Plane.CreateByThreePoints(aPoint_1, aPoint_2, aPoint_3));
+            SketchPlane sketchPlane = SketchPlane.Create(document, Autodesk.Revit.DB.Plane.CreateByThreePoints(point1, point2, point3));
 
-            aCurveElement = document.Create.NewModelCurve(aCurve_Revit, aSketchPlane);
+            curveElement = document.Create.NewModelCurve(revitCurve, sketchPlane);
 
             if (modelInstance.Properties != null)
             {
-                string aName = modelInstance.Properties.Name;
-                if (!string.IsNullOrEmpty(aName))
+                string name = modelInstance.Properties.Name;
+                if (!string.IsNullOrEmpty(name))
                 {
-                    Element aElement = new FilteredElementCollector(document).OfClass(typeof(GraphicsStyle)).ToList().Find(x => x.Name == aName);
-                    if (aElement != null)
-                        aCurveElement.LineStyle = aElement;
+                    Element element = new FilteredElementCollector(document).OfClass(typeof(GraphicsStyle)).ToList().Find(x => x.Name == name);
+                    if (element != null)
+                        curveElement.LineStyle = element;
                 }
             }
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(modelInstance, aCurveElement);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(modelInstance, curveElement);
 
-            return aCurveElement;
+            return curveElement;
         }
 
         /***************************************************/
 
         public static CurveElement ToCurveElement(this DraftingInstance draftingInstance, Document document, PushSettings pushSettings = null)
         {
-            CurveElement aCurveElement = pushSettings.FindRefObject<CurveElement>(document, draftingInstance.BHoM_Guid);
-            if (aCurveElement != null)
-                return aCurveElement;
+            CurveElement curveElement = pushSettings.FindRefObject<CurveElement>(document, draftingInstance.BHoM_Guid);
+            if (curveElement != null)
+                return curveElement;
 
             pushSettings.DefaultIfNull();
 
             if (!(draftingInstance.Location is ICurve))
                 return null;
 
-            ICurve aCurve_BHoM = (ICurve)draftingInstance.Location;
+            ICurve curve = (ICurve)draftingInstance.Location;
 
-            Curve aCurve_Revit = aCurve_BHoM.ToRevit(pushSettings);
-            if (aCurve_Revit == null)
+            Curve revitCurve = curve.ToRevit(pushSettings);
+            if (revitCurve == null)
                 return null;
 
-            if (!BH.Engine.Geometry.Query.IsPlanar(aCurve_BHoM as dynamic))
+            if (!BH.Engine.Geometry.Query.IsPlanar(curve as dynamic))
                 return null;
 
-            View aView = Query.View(draftingInstance, document);
-            if (aView == null)
+            View view = Query.View(draftingInstance, document);
+            if (view == null)
                 return null;
 
-            aCurveElement = document.Create.NewDetailCurve(aView, aCurve_Revit);
-            if (aCurveElement == null)
+            curveElement = document.Create.NewDetailCurve(view, revitCurve);
+            if (curveElement == null)
                 return null;
 
             if (draftingInstance.Properties != null)
             {
-                string aName = draftingInstance.Properties.Name;
-                if(!string.IsNullOrEmpty(aName))
+                string name = draftingInstance.Properties.Name;
+                if(!string.IsNullOrEmpty(name))
                 {
-                    Element aElement = new FilteredElementCollector(document).OfClass(typeof(GraphicsStyle)).ToList().Find(x => x.Name == aName);
-                    if(aElement != null)
-                        aCurveElement.LineStyle = aElement;
+                    Element element = new FilteredElementCollector(document).OfClass(typeof(GraphicsStyle)).ToList().Find(x => x.Name == name);
+                    if(element != null)
+                        curveElement.LineStyle = element;
                 } 
             }
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(draftingInstance, aCurveElement);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(draftingInstance, curveElement);
 
-            return aCurveElement;
+            return curveElement;
         }
 
         /***************************************************/

@@ -41,72 +41,72 @@ namespace BH.UI.Revit.Engine
             if (viewPlan == null || string.IsNullOrEmpty(viewPlan.LevelName) || string.IsNullOrEmpty(viewPlan.Name))
                 return null;
 
-            ViewPlan aViewPlan = pushSettings.FindRefObject<ViewPlan>(document, viewPlan.BHoM_Guid);
-            if (aViewPlan != null)
-                return aViewPlan;
+            ViewPlan revitViewPlan = pushSettings.FindRefObject<ViewPlan>(document, viewPlan.BHoM_Guid);
+            if (revitViewPlan != null)
+                return revitViewPlan;
 
             pushSettings.DefaultIfNull();
 
-            ElementId aElementId_Level = null;
+            ElementId levelElementID = null;
 
-            List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
-            if (aLevelList == null || aLevelList.Count < 1)
+            List<Level> levels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
+            if (levels == null || levels.Count < 1)
                 return null;
 
-            Level aLevel = aLevelList.Find(x => x.Name == viewPlan.LevelName);
-            if (aLevel == null)
+            Level level = levels.Find(x => x.Name == viewPlan.LevelName);
+            if (level == null)
                 return null;
 
-            aElementId_Level = aLevel.Id;
+            levelElementID = level.Id;
 
-            ElementId aElementId_ViewFamilyType = ElementId.InvalidElementId;
+            ElementId viewFamilyTypeElementID = ElementId.InvalidElementId;
 
-            IEnumerable<ElementType> aViewFamilyTypes = new FilteredElementCollector(document).OfClass(typeof(ViewFamilyType)).Cast<ElementType>();
+            IEnumerable<ElementType> viewFamilyTypes = new FilteredElementCollector(document).OfClass(typeof(ViewFamilyType)).Cast<ElementType>();
 
-            ElementType aElementType = viewPlan.ElementType(aViewFamilyTypes, false);
-            if (aElementType == null)
+            ElementType elementType = viewPlan.ElementType(viewFamilyTypes, false);
+            if (elementType == null)
                 return null;
 
-            foreach (ViewFamilyType aViewFamilyType in aViewFamilyTypes)
+            foreach (ViewFamilyType viewFamilyType in viewFamilyTypes)
             {
-                if(aViewFamilyType.FamilyName == "Floor Plan")
+                if(viewFamilyType.FamilyName == "Floor Plan")
                 {
-                    aElementId_ViewFamilyType = aViewFamilyType.Id;
+                    viewFamilyTypeElementID = viewFamilyType.Id;
                     break;
                 }
             }
 
-            if (aElementId_ViewFamilyType == ElementId.InvalidElementId)
+            if (viewFamilyTypeElementID == ElementId.InvalidElementId)
                 return null;
 
-            aViewPlan = ViewPlan.Create(document, aElementId_ViewFamilyType, aElementId_Level);
+            revitViewPlan = ViewPlan.Create(document, viewFamilyTypeElementID, levelElementID);
 #if REVIT2020
-            aViewPlan.Name = viewPlan.Name;
+            revitViewPlan.Name = viewPlan.Name;
 #else
-            aViewPlan.ViewName = viewPlan.Name;
+            revitViewPlan.ViewName = viewPlan.Name;
 #endif
 
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aViewPlan, viewPlan, null);
+                Modify.SetParameters(revitViewPlan, viewPlan, null);
 
-            object aValue = null;
-            if(viewPlan.CustomData.TryGetValue(BH.Engine.Adapters.Revit.Convert.ViewTemplate, out aValue))
+            object value = null;
+            if(viewPlan.CustomData.TryGetValue(BH.Engine.Adapters.Revit.Convert.ViewTemplate, out value))
             {
-                if(aValue is string)
+                if(value is string)
                 {
-                    List<ViewPlan> aViewPlanList = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).Cast<ViewPlan>().ToList();
-                    ViewPlan aViewPlan_Template = aViewPlanList.Find(x => x.IsTemplate && aValue.Equals(x.Name));
-                    if (aViewPlan_Template == null)
+                    List<ViewPlan> viewPlans = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).Cast<ViewPlan>().ToList();
+                    ViewPlan viewPlanTemplate = viewPlans.Find(x => x.IsTemplate && value.Equals(x.Name));
+                    if (viewPlanTemplate == null)
                         Compute.ViewTemplateNotExistsWarning(viewPlan);
                     else
-                        aViewPlan.ViewTemplateId = aViewPlan_Template.Id;
+                        revitViewPlan.ViewTemplateId = viewPlanTemplate.Id;
                 }
             }
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(viewPlan, aViewPlan);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(viewPlan, revitViewPlan);
 
-            return aViewPlan;
+            return revitViewPlan;
         }
 
         /***************************************************/

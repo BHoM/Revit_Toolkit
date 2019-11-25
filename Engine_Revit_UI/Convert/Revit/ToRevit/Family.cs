@@ -35,9 +35,9 @@ namespace BH.UI.Revit.Engine
 
         public static Family ToRevitFamily(this oM.Adapters.Revit.Elements.Family family, Document document, PushSettings pushSettings = null)
         {
-            Family aFamily = pushSettings.FindRefObject<Family>(document, family.BHoM_Guid);
-            if (aFamily != null)
-                return aFamily;
+            Family revitFamily = pushSettings.FindRefObject<Family>(document, family.BHoM_Guid);
+            if (revitFamily != null)
+                return revitFamily;
 
             pushSettings.DefaultIfNull();
 
@@ -47,20 +47,20 @@ namespace BH.UI.Revit.Engine
                     ToRevitElementType(aInstanceProperties, document, pushSettings);
             }
 
-            BuiltInCategory aBuiltInCategory = family.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
+            BuiltInCategory builtInCategory = family.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
 
-            aFamily = family.Family(document, aBuiltInCategory, pushSettings.FamilyLoadSettings);
+            revitFamily = family.Family(document, builtInCategory, pushSettings.FamilyLoadSettings);
 
-            aFamily.CheckIfNullPush(family);
-            if (aFamily == null)
+            revitFamily.CheckIfNullPush(family);
+            if (revitFamily == null)
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aFamily, family, null);
+                Modify.SetParameters(revitFamily, family, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(family, aFamily);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(family, revitFamily);
 
-            return aFamily;
+            return revitFamily;
         }
 
         /***************************************************/

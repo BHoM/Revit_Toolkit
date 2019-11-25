@@ -41,43 +41,43 @@ namespace BH.UI.Revit.Engine
             if (viewport == null || viewport.Location == null)
                 return null;
 
-            Viewport aViewport = pushSettings.FindRefObject<Viewport>(document, viewport.BHoM_Guid);
-            if (aViewport != null)
-                return aViewport;
+            Viewport revitViewPort = pushSettings.FindRefObject<Viewport>(document, viewport.BHoM_Guid);
+            if (revitViewPort != null)
+                return revitViewPort;
 
             pushSettings.DefaultIfNull();
 
-            string aViewName = BH.Engine.Adapters.Revit.Query.ViewName(viewport);
-            if (string.IsNullOrEmpty(aViewName))
+            string viewName = BH.Engine.Adapters.Revit.Query.ViewName(viewport);
+            if (string.IsNullOrEmpty(viewName))
                 return null;
 
-            string aSheetNumber = BH.Engine.Adapters.Revit.Query.SheetNumber(viewport);
-            if (string.IsNullOrEmpty(aSheetNumber))
+            string sheetNumber = BH.Engine.Adapters.Revit.Query.SheetNumber(viewport);
+            if (string.IsNullOrEmpty(sheetNumber))
                 return null;
 
-            List<View> aViewList = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().ToList();
+            List<View> viewList = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().ToList();
 #if REVIT2020
-            View aView = aViewList.Find(x => !x.IsTemplate && x.Name == aViewName);
+            View view = viewList.Find(x => !x.IsTemplate && x.Name == viewName);
 #else
-            View aView = aViewList.Find(x => !x.IsTemplate && x.ViewName == aViewName);
+            View view = viewList.Find(x => !x.IsTemplate && x.ViewName == viewName);
 #endif
 
-            if (aView == null)
+            if (view == null)
                 return null;
 
-            List<ViewSheet> aViewSheetList = new FilteredElementCollector(document).OfClass(typeof(ViewSheet)).Cast<ViewSheet>().ToList();
-            ViewSheet aViewSheet = aViewSheetList.Find(x => !x.IsTemplate && !x.IsPlaceholder && x.SheetNumber == aSheetNumber);
-            if (aViewSheet == null)
+            List<ViewSheet> viewSheetList = new FilteredElementCollector(document).OfClass(typeof(ViewSheet)).Cast<ViewSheet>().ToList();
+            ViewSheet viewSheet = viewSheetList.Find(x => !x.IsTemplate && !x.IsPlaceholder && x.SheetNumber == sheetNumber);
+            if (viewSheet == null)
                 return null;
 
-            aViewport = Viewport.Create(document, aViewSheet.Id, aView.Id, ToRevit(viewport.Location, pushSettings));
+            revitViewPort = Viewport.Create(document, viewSheet.Id, view.Id, ToRevit(viewport.Location, pushSettings));
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aViewport, viewport, null);
+                Modify.SetParameters(revitViewPort, viewport, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(viewport, aViewport);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(viewport, revitViewPort);
 
-            return aViewport;
+            return revitViewPort;
         }
 
         /***************************************************/
