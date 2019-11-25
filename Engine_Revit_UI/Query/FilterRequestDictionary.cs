@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -42,50 +42,50 @@ namespace BH.UI.Revit.Engine
             if (uIDocument == null || filterRequest == null)
                 return null;
 
-            Dictionary<ElementId, List<FilterRequest>> aResult = new Dictionary<ElementId, List<FilterRequest>>();
+            Dictionary<ElementId, List<FilterRequest>> result = new Dictionary<ElementId, List<FilterRequest>>();
 
-            IEnumerable<FilterRequest> aFilterRequests = BH.Engine.Adapters.Revit.Query.FilterRequests(filterRequest);
-            if (aFilterRequests != null && aFilterRequests.Count() > 0)
+            IEnumerable<FilterRequest> requests = BH.Engine.Adapters.Revit.Query.FilterRequests(filterRequest);
+            if (requests != null && requests.Count() > 0)
             {
-                RequestType aQueryType = BH.Engine.Adapters.Revit.Query.RequestType(filterRequest);
+                RequestType queryType = BH.Engine.Adapters.Revit.Query.RequestType(filterRequest);
 
-                Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary = null;
-                foreach (FilterRequest aFilterRequest in aFilterRequests)
+                Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary = null;
+                foreach (FilterRequest request in requests)
                 {
-                    Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary_Temp = FilterRequestDictionary(aFilterRequest, uIDocument);
-                    if (aFilterRequestDictionary == null)
+                    Dictionary<ElementId, List<FilterRequest>> tempDictionary = FilterRequestDictionary(request, uIDocument);
+                    if (filterRequestDictionary == null)
                     {
-                        aFilterRequestDictionary = aFilterRequestDictionary_Temp;
+                        filterRequestDictionary = tempDictionary;
                     }
                     else
                     {
-                        if (aQueryType == RequestType.LogicalAnd)
-                            aFilterRequestDictionary = Query.LogicalAnd(aFilterRequestDictionary, aFilterRequestDictionary_Temp);
+                        if (queryType == RequestType.LogicalAnd)
+                            filterRequestDictionary = Query.LogicalAnd(filterRequestDictionary, tempDictionary);
                         else
-                            aFilterRequestDictionary = Query.LogicalOr(aFilterRequestDictionary, aFilterRequestDictionary_Temp);
+                            filterRequestDictionary = Query.LogicalOr(filterRequestDictionary, tempDictionary);
                     }
                 }
-                aResult = aFilterRequestDictionary;
+                result = filterRequestDictionary;
             }
             else
             {
-                IEnumerable<ElementId> aElementIds = ElementIds(filterRequest, uIDocument);
-                if (aElementIds != null)
+                IEnumerable<ElementId> elementIDs = ElementIds(filterRequest, uIDocument);
+                if (elementIDs != null)
                 {
-                    foreach(ElementId aElementId in aElementIds)
+                    foreach(ElementId id in elementIDs)
                     {
-                        List<FilterRequest> aFilterRequestList = null;
-                        if (!aResult.TryGetValue(aElementId, out aFilterRequestList))
+                        List<FilterRequest> requestList = null;
+                        if (!result.TryGetValue(id, out requestList))
                         {
-                            aFilterRequestList = new List<FilterRequest>();
-                            aResult.Add(aElementId, aFilterRequestList);
+                            requestList = new List<FilterRequest>();
+                            result.Add(id, requestList);
                         }
-                        aFilterRequestList.Add(filterRequest);
+                        requestList.Add(filterRequest);
                     }
                 }
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

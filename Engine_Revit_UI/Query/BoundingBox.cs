@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -35,18 +35,18 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static BoundingBox BoundingBox(this Element Element, Options Options, PullSettings pullSettings = null)
+        public static BoundingBox BoundingBox(this Element element, Options Options, PullSettings pullSettings = null)
         {
-            List<ICurve> aCurves = Element.Curves(Options, pullSettings);
+            List<ICurve> curves = element.Curves(Options, pullSettings);
 
-            if (aCurves == null || aCurves.Count == 0)
+            if (curves == null || curves.Count == 0)
                 return null;
 
-            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.IBounds(aCurves[0]);
-            for (int i = 1; i < aCurves.Count; i++)
-                aBoundingBox += BH.Engine.Geometry.Query.IBounds(aCurves[i]);
+            BoundingBox bbox = BH.Engine.Geometry.Query.IBounds(curves[0]);
+            for (int i = 1; i < curves.Count; i++)
+                bbox += BH.Engine.Geometry.Query.IBounds(curves[i]);
 
-            return aBoundingBox;
+            return bbox;
         }
 
         /***************************************************/

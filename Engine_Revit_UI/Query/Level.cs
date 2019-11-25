@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -44,11 +44,11 @@ namespace BH.UI.Revit.Engine
             if (element == null || element.LevelId == null || element.LevelId == Autodesk.Revit.DB.ElementId.InvalidElementId)
                 return null;
 
-            Level aLevel = element.Document.GetElement(element.LevelId) as Level;
-            if (aLevel == null)
+            Level level = element.Document.GetElement(element.LevelId) as Level;
+            if (level == null)
                 return null;
 
-            return Convert.ToBHoMLevel(aLevel, pullSettings) as oM.Geometry.SettingOut.Level;
+            return Convert.ToBHoMLevel(level, pullSettings) as oM.Geometry.SettingOut.Level;
         }
 
         /***************************************************/

@@ -37,9 +37,9 @@ namespace BH.UI.Revit.Engine
             if (curve == null)
                 return null;
 
-            double aMinElevation = MinElevation(curve);
+            double minElevation = MinElevation(curve);
 
-            return BottomLevel(aMinElevation, document);
+            return BottomLevel(minElevation, document);
         }
 
 
@@ -60,24 +60,24 @@ namespace BH.UI.Revit.Engine
             if (double.IsNaN(elevation) || double.IsNegativeInfinity(elevation) || double.IsPositiveInfinity(elevation))
                 return null;
 
-            List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
-            aLevelList.Sort((x, y) => x.Elevation.CompareTo(y.Elevation));
+            List<Level> levels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
+            levels.Sort((x, y) => x.Elevation.CompareTo(y.Elevation));
 
-            double aElevation = elevation.FromSI(UnitType.UT_Length);
+            double levelElevation = elevation.FromSI(UnitType.UT_Length);
 
-            if (aElevation <= aLevelList.First().Elevation)
-                return aLevelList.First();
+            if (levelElevation <= levels.First().Elevation)
+                return levels.First();
 
-            if (aElevation >= aLevelList.Last().Elevation)
-                return aLevelList.Last();
+            if (levelElevation >= levels.Last().Elevation)
+                return levels.Last();
 
-            Level aLevel = aLevelList.Find(x => System.Math.Abs(x.Elevation - aElevation) < tolerance);
-            if (aLevel != null)
-                return aLevel;
+            Level level = levels.Find(x => System.Math.Abs(x.Elevation - levelElevation) < tolerance);
+            if (level != null)
+                return level;
 
-            for (int i = 1; i < aLevelList.Count; i++)
-                if (aLevelList[i].Elevation > aElevation)
-                    return aLevelList[i - 1];
+            for (int i = 1; i < levels.Count; i++)
+                if (levels[i].Elevation > levelElevation)
+                    return levels[i - 1];
 
             return null;
         }

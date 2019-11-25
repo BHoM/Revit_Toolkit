@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -30,29 +30,29 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static string FamilyTypeFullName(this Element Element)
+        public static string FamilyTypeFullName(this Element element)
         {
-            if (Element == null)
+            if (element == null)
                 return null;
 
-            if (Element is Family)
+            if (element is Family)
                 return null;
 
-            ElementType aElementType = Element as ElementType;
+            ElementType type = element as ElementType;
 
-            if(aElementType == null)
+            if(type == null)
             {
-                ElementId aElementId = Element.GetTypeId();
-                if (aElementId == null || aElementId == Autodesk.Revit.DB.ElementId.InvalidElementId)
+                ElementId id = element.GetTypeId();
+                if (id == null || id == Autodesk.Revit.DB.ElementId.InvalidElementId)
                     return null;
 
-                aElementType = Element.Document.GetElement(aElementId) as ElementType;
+                type = element.Document.GetElement(id) as ElementType;
             }
 
-            if (aElementType == null)
+            if (type == null)
                 return null;
 
-            return BH.Engine.Adapters.Revit.Query.FamilyTypeFullName(aElementType.FamilyName, aElementType.Name);
+            return BH.Engine.Adapters.Revit.Query.FamilyTypeFullName(type.FamilyName, type.Name);
         }
 
         /***************************************************/

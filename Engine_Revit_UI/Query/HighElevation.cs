@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -44,9 +44,9 @@ namespace BH.UI.Revit.Engine
             if (object2D == null || object2D.Surface == null)
                 return double.NaN;
 
-            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.Bounds(object2D.Surface as dynamic);
+            BoundingBox bbox = BH.Engine.Geometry.Query.Bounds(object2D.Surface as dynamic);
 
-            return aBoundingBox.Max.Z;
+            return bbox.Max.Z;
         }
 
         /***************************************************/
@@ -56,15 +56,15 @@ namespace BH.UI.Revit.Engine
             if (panel == null || panel.ExternalEdges == null)
                 return double.NaN;
 
-            double aResult = double.NaN;
-            foreach (Edge aEdge in panel.ExternalEdges)
+            double result = double.NaN;
+            foreach (Edge edge in panel.ExternalEdges)
             {
-                BoundingBox aBoundingBox = BH.Engine.Geometry.Query.Bounds(aEdge.Curve as dynamic);
-                if (aBoundingBox != null && (double.IsNaN(aResult) || aResult > aBoundingBox.Max.Z))
-                    aResult = aBoundingBox.Max.Z;
+                BoundingBox bbox = BH.Engine.Geometry.Query.Bounds(edge.Curve as dynamic);
+                if (bbox != null && (double.IsNaN(result) || result > bbox.Max.Z))
+                    result = bbox.Max.Z;
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/
@@ -74,10 +74,8 @@ namespace BH.UI.Revit.Engine
             if (surface == null || surface.Location == null || !(surface.Location is PlanarSurface))
                 return double.NaN;
 
-            ISurface aISurface = surface.Location;
-
-            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.Bounds(surface.Location as PlanarSurface);
-            return aBoundingBox.Max.Z;
+            BoundingBox bbox = BH.Engine.Geometry.Query.Bounds(surface.Location as PlanarSurface);
+            return bbox.Max.Z;
         }
 
         /***************************************************/

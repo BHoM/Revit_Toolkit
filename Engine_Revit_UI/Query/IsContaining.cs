@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -58,20 +58,20 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
 
         //TODO: Not accurate method may cause issue with opening assigement. To be fixed
-        public static bool IsContaining(this PlanarSurface planarSurface_1, PlanarSurface planarSurface_2)
+        public static bool IsContaining(this PlanarSurface planarSurface1, PlanarSurface planarSurface2)
         {
-            if (planarSurface_1 == null || planarSurface_2 == null)
+            if (planarSurface1 == null || planarSurface2 == null)
                 return false;
 
-            ICurve aICurve_2 = planarSurface_2.ExternalBoundary;
-            if (aICurve_2 == null)
+            ICurve curve2 = planarSurface2.ExternalBoundary;
+            if (curve2 == null)
                 return false;
 
-            List<oM.Geometry.Point> aPointList = BH.Engine.Geometry.Query.IControlPoints(aICurve_2);
-            if (aPointList == null || aPointList.Count == 0)
+            List<oM.Geometry.Point> points = BH.Engine.Geometry.Query.IControlPoints(curve2);
+            if (points == null || points.Count == 0)
                 return false;
 
-            return IsContaining(planarSurface_1, aPointList);
+            return IsContaining(planarSurface1, points);
         }
 
         /***************************************************/
@@ -82,16 +82,15 @@ namespace BH.UI.Revit.Engine
             if(planarSurface == null || points == null)
                 return false;
 
-            ICurve aICurve = planarSurface.ExternalBoundary;
-            if (aICurve == null)
+            ICurve curve = planarSurface.ExternalBoundary;
+            if (curve == null)
                 return false;
 
-            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.IBounds(aICurve);
+            BoundingBox bbox = BH.Engine.Geometry.Query.IBounds(curve);
 
-            foreach (oM.Geometry.Point aPoint in points)
+            foreach (oM.Geometry.Point pt in points)
             {
-
-                if (BH.Engine.Geometry.Query.IIsContaining(aBoundingBox, aPoint))
+                if (BH.Engine.Geometry.Query.IIsContaining(bbox, pt))
                     return true;
             }
 

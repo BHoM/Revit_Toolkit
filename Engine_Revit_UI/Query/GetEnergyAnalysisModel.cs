@@ -47,150 +47,148 @@ namespace BH.UI.Revit.Engine
             if(pullSettings.RefObjects == null)
                 pullSettings.RefObjects = new Dictionary<int, List<IBHoMObject>>();
 
-            using (Transaction aTransaction = new Transaction(document, "GetAnalyticalModel"))
+            using (Transaction transaction = new Transaction(document, "GetAnalyticalModel"))
             {
-                aTransaction.Start();
+                transaction.Start();
 
-                FailureHandlingOptions aFailureHandlingOptions = aTransaction.GetFailureHandlingOptions();
-                aFailureHandlingOptions.SetFailuresPreprocessor(new WarningSwallower());
-                aTransaction.SetFailureHandlingOptions(aFailureHandlingOptions);
+                FailureHandlingOptions failureHandlingOptions = transaction.GetFailureHandlingOptions();
+                failureHandlingOptions.SetFailuresPreprocessor(new WarningSwallower());
+                transaction.SetFailureHandlingOptions(failureHandlingOptions);
 
-                EnergyAnalysisDetailModel aEnergyAnalysisDetailModel = null;
+                EnergyAnalysisDetailModel energyAnalysisDetailModel = null;
 
-                using (SubTransaction aSubTransaction = new SubTransaction(document))
+                using (SubTransaction subTransaction = new SubTransaction(document))
                 {
-                    aSubTransaction.Start();
-                    aEnergyAnalysisDetailModel = EnergyAnalysisDetailModel.GetMainEnergyAnalysisDetailModel(document);
-                    if (aEnergyAnalysisDetailModel != null && aEnergyAnalysisDetailModel.IsValidObject)
-                        document.Delete(aEnergyAnalysisDetailModel.Id);
+                    subTransaction.Start();
+                    energyAnalysisDetailModel = EnergyAnalysisDetailModel.GetMainEnergyAnalysisDetailModel(document);
+                    if (energyAnalysisDetailModel != null && energyAnalysisDetailModel.IsValidObject)
+                        document.Delete(energyAnalysisDetailModel.Id);
 
-                    aSubTransaction.Commit();
+                    subTransaction.Commit();
                 }
 
-                EnergyAnalysisDetailModelOptions aEnergyAnalysisDetailModelOptions = new EnergyAnalysisDetailModelOptions();
-                aEnergyAnalysisDetailModelOptions.Tier = EnergyAnalysisDetailModelTier.SecondLevelBoundaries;
-                aEnergyAnalysisDetailModelOptions.EnergyModelType = EnergyModelType.SpatialElement;
-                aEnergyAnalysisDetailModelOptions.ExportMullions = true;
-                aEnergyAnalysisDetailModelOptions.IncludeShadingSurfaces = true;
-                aEnergyAnalysisDetailModelOptions.SimplifyCurtainSystems = false;
+                EnergyAnalysisDetailModelOptions energyAnalysisDetailModelOptions = new EnergyAnalysisDetailModelOptions();
+                energyAnalysisDetailModelOptions.Tier = EnergyAnalysisDetailModelTier.SecondLevelBoundaries;
+                energyAnalysisDetailModelOptions.EnergyModelType = EnergyModelType.SpatialElement;
+                energyAnalysisDetailModelOptions.ExportMullions = true;
+                energyAnalysisDetailModelOptions.IncludeShadingSurfaces = true;
+                energyAnalysisDetailModelOptions.SimplifyCurtainSystems = false;
 
-                EnergyDataSettings aEnergyDataSettings = EnergyDataSettings.GetFromDocument(document);
-                aEnergyDataSettings.ExportComplexity = gbXMLExportComplexity.ComplexWithMullionsAndShadingSurfaces;
-                aEnergyDataSettings.ExportDefaults = false;
-                aEnergyDataSettings.SliverSpaceTolerance = Convert.FromSI(0.005, UnitType.UT_Length);
-                aEnergyDataSettings.AnalysisType = AnalysisMode.BuildingElements;
-                aEnergyDataSettings.EnergyModel = false;
+                EnergyDataSettings energyDataSettings = EnergyDataSettings.GetFromDocument(document);
+                energyDataSettings.ExportComplexity = gbXMLExportComplexity.ComplexWithMullionsAndShadingSurfaces;
+                energyDataSettings.ExportDefaults = false;
+                energyDataSettings.SliverSpaceTolerance = Convert.FromSI(0.005, UnitType.UT_Length);
+                energyDataSettings.AnalysisType = AnalysisMode.BuildingElements;
+                energyDataSettings.EnergyModel = false;
 
                 //Reseting Project Base Point
-                IEnumerable<Element> aElementList = new FilteredElementCollector(document).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_ProjectBasePoint);
-                foreach (Element aElement in aElementList)
+                IEnumerable<Element> elements = new FilteredElementCollector(document).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_ProjectBasePoint);
+                foreach (Element element in elements)
                 {
-                    if (aElement.Pinned)
-                        aElement.Pinned = false;
+                    if (element.Pinned)
+                        element.Pinned = false;
 
-                    Parameter aParameter = null;
+                    Parameter parameter = null;
 
-                    aParameter = aElement.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM);
-                    if (aParameter != null && !aParameter.IsReadOnly)
-                        aParameter.Set(0.0);
+                    parameter = element.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM);
+                    if (parameter != null && !parameter.IsReadOnly)
+                        parameter.Set(0.0);
 
-                    aParameter = aElement.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM);
-                    if (aParameter != null && !aParameter.IsReadOnly)
-                        aParameter.Set(0.0);
+                    parameter = element.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM);
+                    if (parameter != null && !parameter.IsReadOnly)
+                        parameter.Set(0.0);
 
-                    aParameter = aElement.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM);
-                    if (aParameter != null && !aParameter.IsReadOnly)
-                        aParameter.Set(0.0);
+                    parameter = element.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM);
+                    if (parameter != null && !parameter.IsReadOnly)
+                        parameter.Set(0.0);
 
-                    aParameter = aElement.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM);
-                    if(aParameter != null && !aParameter.IsReadOnly)
-                        aParameter.Set(0.0);
+                    parameter = element.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM);
+                    if(parameter != null && !parameter.IsReadOnly)
+                        parameter.Set(0.0);
 
-                    aParameter = aElement.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM);
-                    if (aParameter != null && !aParameter.IsReadOnly)
-                        aParameter.Set(0.0);
+                    parameter = element.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM);
+                    if (parameter != null && !parameter.IsReadOnly)
+                        parameter.Set(0.0);
                 }
 
                 //AnalyticalSpaces
-                aEnergyAnalysisDetailModel = EnergyAnalysisDetailModel.Create(document, aEnergyAnalysisDetailModelOptions);
-                IList<EnergyAnalysisSpace> aEnergyAnalysisSpaces = aEnergyAnalysisDetailModel.GetAnalyticalSpaces();
-                Dictionary<string, EnergyAnalysisSurface> aEnergyAnalysisSurfaces = new Dictionary<string, EnergyAnalysisSurface>();
-                foreach (EnergyAnalysisSpace aEnergyAnalysisSpace in aEnergyAnalysisSpaces)
+                energyAnalysisDetailModel = EnergyAnalysisDetailModel.Create(document, energyAnalysisDetailModelOptions);
+                IList<EnergyAnalysisSpace> energyAnalysisSpaces = energyAnalysisDetailModel.GetAnalyticalSpaces();
+                Dictionary<string, EnergyAnalysisSurface> energyAnalsyisSurfaces = new Dictionary<string, EnergyAnalysisSurface>();
+                foreach (EnergyAnalysisSpace energyAnalysisSpace in energyAnalysisSpaces)
                 {
                     try
                     {
-                        Space aSpace = aEnergyAnalysisSpace.ToBHoMSpace(pullSettings);
+                        Space space = energyAnalysisSpace.ToBHoMSpace(pullSettings);
 
-                        foreach (EnergyAnalysisSurface aEnergyAnalysisSurface in aEnergyAnalysisSpace.GetAnalyticalSurfaces())
-                            if (!aEnergyAnalysisSurfaces.ContainsKey(aEnergyAnalysisSurface.SurfaceName))
-                                aEnergyAnalysisSurfaces.Add(aEnergyAnalysisSurface.SurfaceName, aEnergyAnalysisSurface);
+                        foreach (EnergyAnalysisSurface energyAnalysisSurface in energyAnalysisSpace.GetAnalyticalSurfaces())
+                        {
+                            if (!energyAnalsyisSurfaces.ContainsKey(energyAnalysisSurface.SurfaceName))
+                                energyAnalsyisSurfaces.Add(energyAnalysisSurface.SurfaceName, energyAnalysisSurface);
+                        }
                     }
-                    catch(Exception aException)
+                    catch
                     {
-                        aEnergyAnalysisSpace.ElementCouldNotBeQueriedWarning();
+                        energyAnalysisSpace.ElementCouldNotBeQueriedWarning();
                     }
                 }
 
                 //EnergyAnalysisSurfaces
-                foreach (KeyValuePair<string, EnergyAnalysisSurface> aKeyValuePair in aEnergyAnalysisSurfaces)
+                foreach (KeyValuePair<string, EnergyAnalysisSurface> kvp in energyAnalsyisSurfaces)
                 {
                     try
                     {
-                        oM.Environment.Elements.Panel aPanel = aKeyValuePair.Value.ToBHoMEnvironmentPanel(pullSettings);
+                        oM.Environment.Elements.Panel panel = kvp.Value.ToBHoMEnvironmentPanel(pullSettings);
 
-                        List<IBHoMObject> aBHoMObjectList_Hosted = new List<IBHoMObject>();
-                        foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aKeyValuePair.Value.GetAnalyticalOpenings())
+                        List<IBHoMObject> hostedBHoMObjects = new List<IBHoMObject>();
+                        foreach (EnergyAnalysisOpening energyAnalysisOpening in kvp.Value.GetAnalyticalOpenings())
                         {
-                            //BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(aKeyValuePair.Value, pullSettings);
-
-                            oM.Environment.Elements.Opening aOpening = aEnergyAnalysisOpening.ToBHoMOpening(pullSettings);
-                            aPanel.Openings.Add(aOpening);
+                            oM.Environment.Elements.Opening opening = energyAnalysisOpening.ToBHoMOpening(pullSettings);
+                            panel.Openings.Add(opening);
                         }
                     }
-                    catch (Exception aException)
+                    catch
                     {
-                        aKeyValuePair.Value.ElementCouldNotBeQueriedWarning();
+                        kvp.Value.ElementCouldNotBeQueriedWarning();
                     }
                 }
 
                 //AnalyticalShadingSurfaces
-                IList<EnergyAnalysisSurface> aAnalyticalShadingSurfaceList = aEnergyAnalysisDetailModel.GetAnalyticalShadingSurfaces();
-                foreach (EnergyAnalysisSurface aEnergyAnalysisSurface in aAnalyticalShadingSurfaceList)
+                IList<EnergyAnalysisSurface> analyticalShadingSurfaces = energyAnalysisDetailModel.GetAnalyticalShadingSurfaces();
+                foreach (EnergyAnalysisSurface energyAnalysisSurface in analyticalShadingSurfaces)
                 {
                     try
                     {
-                        oM.Environment.Elements.Panel aBuildingElement = aEnergyAnalysisSurface.ToBHoMEnvironmentPanel(pullSettings);
+                        oM.Environment.Elements.Panel panel = energyAnalysisSurface.ToBHoMEnvironmentPanel(pullSettings);
 
-                        List<IBHoMObject> aBHoMObjectList_Hosted = new List<IBHoMObject>();
-                        foreach (EnergyAnalysisOpening aEnergyAnalysisOpening in aEnergyAnalysisSurface.GetAnalyticalOpenings())
+                        List<IBHoMObject> hostedBHoMObjects = new List<IBHoMObject>();
+                        foreach (EnergyAnalysisOpening energyOpening in energyAnalysisSurface.GetAnalyticalOpenings())
                         {
-                            //BuildingElement aBuildingElement_Opening = aEnergyAnalysisOpening.ToBHoMBuildingElement(aEnergyAnalysisSurface, pullSettings);
-
-                            oM.Environment.Elements.Opening aOpening = aEnergyAnalysisOpening.ToBHoMOpening(pullSettings);
-                            aBuildingElement.Openings.Add(aOpening);
+                            oM.Environment.Elements.Opening opening = energyOpening.ToBHoMOpening(pullSettings);
+                            panel.Openings.Add(opening);
                         }
                     }
-                    catch (Exception aException)
+                    catch
                     {
-                        aEnergyAnalysisSurface.ElementCouldNotBeQueriedWarning();
+                        energyAnalysisSurface.ElementCouldNotBeQueriedWarning();
                     }
 
                 }
 
-                aTransaction.RollBack();
+                transaction.RollBack();
             }
 
             //Levels
-            IEnumerable<Level> aLevels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>();
-            foreach (Level aLevel in aLevels)
-                Convert.ToBHoMLevel(aLevel, pullSettings);
+            IEnumerable<Level> levels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>();
+            foreach (Level level in levels)
+                Convert.ToBHoMLevel(level, pullSettings);
 
-            List<IBHoMObject> aResult = new List<IBHoMObject>();
-            foreach (List<IBHoMObject> aBHoMObjectList in pullSettings.RefObjects.Values)
-                if (aBHoMObjectList != null)
-                    aResult.AddRange(aBHoMObjectList);
+            List<IBHoMObject> result = new List<IBHoMObject>();
+            foreach (List<IBHoMObject> bhomObjects in pullSettings.RefObjects.Values)
+                if (bhomObjects != null)
+                    result.AddRange(bhomObjects);
 
-            return aResult;
+            return result;
         }
 
 
@@ -200,13 +198,13 @@ namespace BH.UI.Revit.Engine
 
         private class WarningSwallower : IFailuresPreprocessor
         {
-            public FailureProcessingResult PreprocessFailures(FailuresAccessor FailuresAccessor)
+            public FailureProcessingResult PreprocessFailures(FailuresAccessor failuresAccessor)
             {
-                IList<FailureMessageAccessor> aFailureMessageAccessors = FailuresAccessor.GetFailureMessages();
+                IList<FailureMessageAccessor> failureMessageAccessors = failuresAccessor.GetFailureMessages();
 
-                foreach (FailureMessageAccessor aFailureMessageAccessor in aFailureMessageAccessors)
+                foreach (FailureMessageAccessor failureMessageAccessor in failureMessageAccessors)
                 {
-                    FailuresAccessor.DeleteWarning(aFailureMessageAccessor);
+                    failuresAccessor.DeleteWarning(failureMessageAccessor);
                 }
                 return FailureProcessingResult.Continue;
             }

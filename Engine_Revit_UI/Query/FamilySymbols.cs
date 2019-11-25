@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -39,40 +39,39 @@ namespace BH.UI.Revit.Engine
             if (document == null || revitFilePreview == null)
                 return null;
 
-            IEnumerable<Family> aFamilies = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>();
-            if (aFamilies == null)
+            IEnumerable<Family> families = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>();
+            if (families == null)
                 return null;
 
-            string aCategoryName = BH.Engine.Adapters.Revit.Query.CategoryName(revitFilePreview);
+            string categoryName = BH.Engine.Adapters.Revit.Query.CategoryName(revitFilePreview);
 
-            string aName = System.IO.Path.GetFileNameWithoutExtension(revitFilePreview.Path);
-            if (string.IsNullOrEmpty(aName))
+            string name = System.IO.Path.GetFileNameWithoutExtension(revitFilePreview.Path);
+            if (string.IsNullOrEmpty(name))
                 return null;
 
-            foreach (Family aFamily in aFamilies)
+            foreach (Family revitFamily in families)
             {
-                if (aFamily.IsInPlace || !aFamily.IsUserCreated || aFamily.FamilyCategory == null)
+                if (revitFamily.IsInPlace || !revitFamily.IsUserCreated || revitFamily.FamilyCategory == null)
                     continue;
 
-                if (!string.IsNullOrEmpty(aCategoryName) && !aFamily.FamilyCategory.Name.Equals(aCategoryName))
+                if (!string.IsNullOrEmpty(categoryName) && !revitFamily.FamilyCategory.Name.Equals(categoryName))
                     continue;
 
-                if(aFamily.Name == aName)
+                if(revitFamily.Name == name)
                 {
-                    IEnumerable<ElementId> aElementIds = aFamily.GetFamilySymbolIds();
-                    if (aElementIds == null)
+                    IEnumerable<ElementId> elementIDs = revitFamily.GetFamilySymbolIds();
+                    if (elementIDs == null)
                         return null;
 
-                    List<FamilySymbol> aResult = new List<FamilySymbol>();
-                    foreach (ElementId aElementId in aElementIds)
-                        aResult.Add(document.GetElement(aElementId) as FamilySymbol);
+                    List<FamilySymbol> result = new List<FamilySymbol>();
+                    foreach (ElementId id in elementIDs)
+                        result.Add(document.GetElement(id) as FamilySymbol);
 
-                    return aResult;
+                    return result;
                 }
             }
 
             return null;
-
         }
 
         /***************************************************/
