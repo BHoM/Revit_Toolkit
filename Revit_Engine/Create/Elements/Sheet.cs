@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -39,19 +39,19 @@ namespace BH.Engine.Adapters.Revit
         [Output("Sheet")]
         public static Sheet Sheet(string name, string number)
         {
-            Sheet aSheet = new Sheet()
+            Sheet sheet = new Sheet()
             {
                 Name = name
             };
 
-            aSheet.CustomData.Add("Sheet Name", name);
-            aSheet.CustomData.Add("Sheet Number", number);
+            sheet.CustomData.Add("Sheet Name", name);
+            sheet.CustomData.Add("Sheet Number", number);
 
-            aSheet.CustomData.Add(Convert.FamilyName, "Sheet");
-            aSheet.CustomData.Add(Convert.FamilyTypeName, "Sheet");
-            aSheet.CustomData.Add(Convert.CategoryName, "Sheets");
+            sheet.CustomData.Add(Convert.FamilyName, "Sheet");
+            sheet.CustomData.Add(Convert.FamilyTypeName, "Sheet");
+            sheet.CustomData.Add(Convert.CategoryName, "Sheets");
 
-            return aSheet;
+            return sheet;
         }
 
         /***************************************************/

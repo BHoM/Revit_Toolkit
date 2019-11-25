@@ -74,14 +74,14 @@ namespace BH.Engine.Adapters.Revit
             if (properties == null || point == null)
                 return null;
 
-            ModelInstance aModelInstance = new ModelInstance()
+            ModelInstance modelInstance = new ModelInstance()
             {
                 Properties = properties,
                 Name = properties.Name,
                 Location = point
             };
 
-            return aModelInstance;
+            return modelInstance;
         }
 
         /***************************************************/
@@ -95,14 +95,14 @@ namespace BH.Engine.Adapters.Revit
             if (properties == null || curve == null)
                 return null;
 
-            ModelInstance aModelInstance = new ModelInstance()
+            ModelInstance modelInstance = new ModelInstance()
             {
                 Properties = properties,
                 Name = properties.Name,
                 Location = curve
             };
 
-            return aModelInstance;
+            return modelInstance;
         }
 
         /***************************************************/
@@ -115,18 +115,18 @@ namespace BH.Engine.Adapters.Revit
             if (location == null)
                 return null;
 
-            InstanceProperties aInstanceProperties = new InstanceProperties();
-            aInstanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
+            InstanceProperties instanceProperties = new InstanceProperties();
+            instanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
 
-            ModelInstance aModelInstance = new ModelInstance()
+            ModelInstance modelInstance = new ModelInstance()
             {
-                Properties = aInstanceProperties,
+                Properties = instanceProperties,
                 Name = "Detail Lines",
                 Location = location
             };
-            aModelInstance.CustomData.Add(Convert.CategoryName, "Lines");
+            modelInstance.CustomData.Add(Convert.CategoryName, "Lines");
 
-            return aModelInstance;
+            return modelInstance;
         }
 
         /***************************************************/
@@ -140,19 +140,19 @@ namespace BH.Engine.Adapters.Revit
             if (location == null)
                 return null;
 
-            InstanceProperties aInstanceProperties = new InstanceProperties();
-            aInstanceProperties.Name = name;
-            aInstanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
+            InstanceProperties instanceProperties = new InstanceProperties();
+            instanceProperties.Name = name;
+            instanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
 
-            ModelInstance aModelInstance = new ModelInstance()
+            ModelInstance modelInstance = new ModelInstance()
             {
-                Properties = aInstanceProperties,
+                Properties = instanceProperties,
                 Name = "Detail Lines",
                 Location = location
             };
-            aModelInstance.CustomData.Add(Convert.CategoryName, "Lines");
+            modelInstance.CustomData.Add(Convert.CategoryName, "Lines");
 
-            return aModelInstance;
+            return modelInstance;
         }
 
         /***************************************************/
@@ -165,20 +165,20 @@ namespace BH.Engine.Adapters.Revit
             if (bHoMObject == null)
                 return null;
 
-            InstanceProperties aInstanceProperties = new InstanceProperties()
+            InstanceProperties instanceProperties = new InstanceProperties()
             {
                 Name = bHoMObject.Name,
                 CustomData = new System.Collections.Generic.Dictionary<string, object>(bHoMObject.CustomData)
             };
 
-            ModelInstance aModelInstance = new ModelInstance()
+            ModelInstance modelInstance = new ModelInstance()
             {
                 Name = bHoMObject.Name,
-                Properties = aInstanceProperties,
+                Properties = instanceProperties,
                 CustomData = new System.Collections.Generic.Dictionary<string, object>(bHoMObject.CustomData)
             };
 
-            return aModelInstance;
+            return modelInstance;
         }
 
         /***************************************************/
@@ -188,18 +188,18 @@ namespace BH.Engine.Adapters.Revit
             if (string.IsNullOrWhiteSpace(categoryName) || location == null)
                 return null;
 
-            InstanceProperties aInstanceProperties = new InstanceProperties();
-            aInstanceProperties.CustomData.Add(Convert.CategoryName, categoryName);
+            InstanceProperties instanceProperties = new InstanceProperties();
+            instanceProperties.CustomData.Add(Convert.CategoryName, categoryName);
 
-            ModelInstance aModelInstance = new ModelInstance()
+            ModelInstance modelInstance = new ModelInstance()
             {
-                Properties = aInstanceProperties,
+                Properties = instanceProperties,
                 Name = "Surface",
                 Location = location
             };
-            aModelInstance.CustomData.Add(Convert.CategoryName, categoryName);
+            modelInstance.CustomData.Add(Convert.CategoryName, categoryName);
 
-            return aModelInstance;
+            return modelInstance;
         }
 
         /***************************************************/
@@ -209,18 +209,18 @@ namespace BH.Engine.Adapters.Revit
             if (string.IsNullOrWhiteSpace(categoryName) || location == null)
                 return null;
 
-            InstanceProperties aInstanceProperties = new InstanceProperties();
-            aInstanceProperties.CustomData.Add(Convert.CategoryName, categoryName);
+            InstanceProperties instanceProperties = new InstanceProperties();
+            instanceProperties.CustomData.Add(Convert.CategoryName, categoryName);
 
-            ModelInstance aModelInstance = new ModelInstance()
+            ModelInstance modelInstance = new ModelInstance()
             {
-                Properties = aInstanceProperties,
+                Properties = instanceProperties,
                 Name = "Solid",
                 Location = location
             };
-            aModelInstance.CustomData.Add(Convert.CategoryName, categoryName);
+            modelInstance.CustomData.Add(Convert.CategoryName, categoryName);
 
-            return aModelInstance;
+            return modelInstance;
         }
 
         /***************************************************/

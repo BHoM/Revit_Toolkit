@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -61,7 +61,7 @@ namespace BH.Engine.Adapters.Revit
             if (properties == null || string.IsNullOrWhiteSpace(viewName) || location == null)
                 return null;
 
-            DraftingInstance aDraftingInstance = new DraftingInstance()
+            DraftingInstance draftingInstance = new DraftingInstance()
             {
                 Properties = properties,
                 Name = properties.Name,
@@ -69,7 +69,7 @@ namespace BH.Engine.Adapters.Revit
                 Location = location
             };
 
-            return aDraftingInstance;
+            return draftingInstance;
         }
 
         /***************************************************/
@@ -84,7 +84,7 @@ namespace BH.Engine.Adapters.Revit
             if (properties == null || string.IsNullOrWhiteSpace(viewName) || location == null)
                 return null;
 
-            DraftingInstance aDraftingInstance = new DraftingInstance()
+            DraftingInstance draftingInstance = new DraftingInstance()
             {
                 Properties = properties,
                 Name = properties.Name,
@@ -92,7 +92,7 @@ namespace BH.Engine.Adapters.Revit
                 Location = location
             };
 
-            return aDraftingInstance;
+            return draftingInstance;
         }
 
         /***************************************************/
@@ -106,19 +106,19 @@ namespace BH.Engine.Adapters.Revit
             if (string.IsNullOrWhiteSpace(viewName) || location == null)
                 return null;
 
-            InstanceProperties aInstanceProperties = new InstanceProperties();
-            aInstanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
+            InstanceProperties instanceProperties = new InstanceProperties();
+            instanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
 
-            DraftingInstance aDraftingInstance = new DraftingInstance()
+            DraftingInstance draftingInstance = new DraftingInstance()
             {
-                Properties = aInstanceProperties,
+                Properties = instanceProperties,
                 Name = "Detail Lines",
                 ViewName = viewName,
                 Location = location
             };
-            aDraftingInstance.CustomData.Add(Convert.CategoryName, "Lines");
+            draftingInstance.CustomData.Add(Convert.CategoryName, "Lines");
 
-            return aDraftingInstance;
+            return draftingInstance;
         }
 
         /***************************************************/
@@ -133,20 +133,20 @@ namespace BH.Engine.Adapters.Revit
             if (string.IsNullOrWhiteSpace(viewName) || location == null)
                 return null;
 
-            InstanceProperties aInstanceProperties = new InstanceProperties();
-            aInstanceProperties.Name = name;
-            aInstanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
+            InstanceProperties instanceProperties = new InstanceProperties();
+            instanceProperties.Name = name;
+            instanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
 
-            DraftingInstance aDraftingInstance = new DraftingInstance()
+            DraftingInstance draftingInstance = new DraftingInstance()
             {
-                Properties = aInstanceProperties,
+                Properties = instanceProperties,
                 Name = "Detail Lines",
                 ViewName = viewName,
                 Location = location
             };
-            aDraftingInstance.CustomData.Add(Convert.CategoryName, "Lines");
+            draftingInstance.CustomData.Add(Convert.CategoryName, "Lines");
 
-            return aDraftingInstance;
+            return draftingInstance;
         }
 
         /***************************************************/

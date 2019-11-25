@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -41,18 +41,18 @@ namespace BH.Engine.Adapters.Revit
         [Output("Viewport")]
         public static Viewport Viewport(string sheetNumber, string viewName, Point location)
         {
-            Viewport aViewport = new Viewport()
+            Viewport viewport = new Viewport()
             {
                 Location = location
             };
 
-            aViewport.CustomData.Add("Sheet Number", sheetNumber);
-            aViewport.CustomData.Add("View Name", viewName);
+            viewport.CustomData.Add("Sheet Number", sheetNumber);
+            viewport.CustomData.Add("View Name", viewName);
 
-            aViewport.CustomData.Add(Convert.FamilyName, "Viewport");
-            aViewport.CustomData.Add(Convert.CategoryName, "Viewports");
+            viewport.CustomData.Add(Convert.FamilyName, "Viewport");
+            viewport.CustomData.Add(Convert.CategoryName, "Viewports");
 
-            return aViewport;
+            return viewport;
         }
 
         /***************************************************/

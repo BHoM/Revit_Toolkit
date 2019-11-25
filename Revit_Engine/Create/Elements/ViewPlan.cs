@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -39,19 +39,19 @@ namespace BH.Engine.Adapters.Revit
         [Output("ViewPlan")]
         public static ViewPlan ViewPlan(string name, string levelName)
         {
-            ViewPlan aViewPlan = new ViewPlan()
+            ViewPlan viewPlan = new ViewPlan()
             {
                 Name = name,
                 LevelName = levelName,
                 IsTemplate = false
             };
 
-            aViewPlan.CustomData.Add("View Name", name);
+            viewPlan.CustomData.Add("View Name", name);
 
-            aViewPlan.CustomData.Add(Convert.CategoryName, "Views");
-            aViewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
+            viewPlan.CustomData.Add(Convert.CategoryName, "Views");
+            viewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
 
-            return aViewPlan;
+            return viewPlan;
         }
 
         /***************************************************/
@@ -61,19 +61,19 @@ namespace BH.Engine.Adapters.Revit
         [Output("ViewPlan")]
         public static ViewPlan ViewPlan(string name)
         {
-            ViewPlan aViewPlan = new ViewPlan()
+            ViewPlan viewPlan = new ViewPlan()
             {
                 Name = name,
                 LevelName = null,
                 IsTemplate = true
             };
 
-            aViewPlan.CustomData.Add("View Name", name);
+            viewPlan.CustomData.Add("View Name", name);
 
-            aViewPlan.CustomData.Add(Convert.CategoryName, "Views");
-            aViewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
+            viewPlan.CustomData.Add(Convert.CategoryName, "Views");
+            viewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
 
-            return aViewPlan;
+            return viewPlan;
         }
 
         /***************************************************/
@@ -85,20 +85,20 @@ namespace BH.Engine.Adapters.Revit
         [Output("ViewPlan")]
         public static ViewPlan ViewPlan(string name, string levelName, string viewTemplateName)
         {
-            ViewPlan aViewPlan = new ViewPlan()
+            ViewPlan viewPlan = new ViewPlan()
             {
                 Name = name,
                 LevelName = levelName,
                 IsTemplate = false
             };
 
-            aViewPlan.CustomData.Add("View Name", name);
+            viewPlan.CustomData.Add("View Name", name);
 
-            aViewPlan.CustomData.Add(Convert.CategoryName, "Views");
-            aViewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
-            aViewPlan.CustomData.Add(Convert.ViewTemplate, viewTemplateName);
+            viewPlan.CustomData.Add(Convert.CategoryName, "Views");
+            viewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
+            viewPlan.CustomData.Add(Convert.ViewTemplate, viewTemplateName);
 
-            return aViewPlan;
+            return viewPlan;
         }
 
         /***************************************************/
