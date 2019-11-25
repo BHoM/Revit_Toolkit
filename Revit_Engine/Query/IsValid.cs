@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -41,46 +41,46 @@ namespace BH.Engine.Adapters.Revit
         [Input("name", "Name")]
         [Input("value", "Value to ")]
         [Output("IsValid")]
-        public static bool IsValid(this IComparisonRule comparisonRule, object value_Base, object value_ToBeCompared, bool tryConvert = true)
+        public static bool IsValid(this IComparisonRule comparisonRule, object valueBase, object valueToBeCompared, bool tryConvert = true)
         {
             if (comparisonRule == null)
                 return false;
 
             if(comparisonRule is TextComparisonRule)
             {
-                if (value_Base == null && value_ToBeCompared == null)
+                if (valueBase == null && valueToBeCompared == null)
                     return true;
 
-                if (value_Base == null || value_ToBeCompared == null)
+                if (valueBase == null || valueToBeCompared == null)
                     return false;
 
-                string aValue_Base = null;
-                if (value_Base is string)
-                    aValue_Base = (string)value_Base;
+                string baseValue = null;
+                if (valueBase is string)
+                    baseValue = (string)valueBase;
                 else if(tryConvert)
-                    aValue_Base = value_Base.ToString();
+                    baseValue = valueBase.ToString();
 
-                string aValue_ToBeCompared = null;
-                if (value_ToBeCompared is string)
-                    aValue_ToBeCompared = (string)value_ToBeCompared;
+                string comparedValue = null;
+                if (valueToBeCompared is string)
+                    comparedValue = (string)valueToBeCompared;
                 else if (tryConvert)
-                    aValue_ToBeCompared = value_ToBeCompared.ToString();
+                    comparedValue = valueToBeCompared.ToString();
 
-                if (aValue_Base == null || aValue_ToBeCompared == null)
+                if (baseValue == null || comparedValue == null)
                     return false;
 
                 switch (((TextComparisonRule)comparisonRule).TextComparisonType)
                 {
                     case oM.Adapters.Revit.Enums.TextComparisonType.Contains:
-                        return aValue_Base.Contains(aValue_ToBeCompared);
+                        return baseValue.Contains(comparedValue);
                     case oM.Adapters.Revit.Enums.TextComparisonType.EndsWith:
-                        return aValue_Base.EndsWith(aValue_ToBeCompared);
+                        return baseValue.EndsWith(comparedValue);
                     case oM.Adapters.Revit.Enums.TextComparisonType.Equal:
-                        return aValue_Base.Equals(aValue_ToBeCompared);
+                        return baseValue.Equals(comparedValue);
                     case oM.Adapters.Revit.Enums.TextComparisonType.NotEqual:
-                        return !aValue_Base.Equals(aValue_ToBeCompared);
+                        return !baseValue.Equals(comparedValue);
                     case oM.Adapters.Revit.Enums.TextComparisonType.StartsWith:
-                        return aValue_Base.StartsWith(aValue_ToBeCompared);
+                        return baseValue.StartsWith(comparedValue);
                 }
 
                 return false;
@@ -88,58 +88,58 @@ namespace BH.Engine.Adapters.Revit
 
             if(comparisonRule is NumberComparisonRule)
             {
-                if (value_Base == null || value_ToBeCompared == null)
+                if (valueBase == null || valueToBeCompared == null)
                     return false;
 
-                double aValue_Base = double.NaN;
-                if (value_Base is double)
+                double baseValue = double.NaN;
+                if (valueBase is double)
                 {
-                    aValue_Base = (double)value_Base;
+                    baseValue = (double)valueBase;
                 }
                 else if (tryConvert)
                 {
-                    if (!TryConvert(value_Base, out aValue_Base))
+                    if (!TryConvert(valueBase, out baseValue))
                         return false;
                 }
 
-                if(double.IsNaN(aValue_Base))
+                if(double.IsNaN(baseValue))
                     return false;
 
-                double aValue_ToBeCompared = double.NaN;
-                if (value_ToBeCompared is double)
+                double comparedValue = double.NaN;
+                if (valueToBeCompared is double)
                 {
-                    aValue_ToBeCompared = (double)value_ToBeCompared;
+                    comparedValue = (double)valueToBeCompared;
                 }
                 else if (tryConvert)
                 {
-                    if (!TryConvert(value_ToBeCompared, out aValue_ToBeCompared))
+                    if (!TryConvert(valueToBeCompared, out comparedValue))
                         return false;
                 }
 
-                if (double.IsNaN(aValue_ToBeCompared))
+                if (double.IsNaN(comparedValue))
                     return false;
 
-                NumberComparisonRule aNumberComparisonRule = (NumberComparisonRule)comparisonRule;
-                if (aNumberComparisonRule.RoundDecimals >= 0)
+                NumberComparisonRule numberComparisonRule = (NumberComparisonRule)comparisonRule;
+                if (numberComparisonRule.RoundDecimals >= 0)
                 {
-                    aValue_Base = Math.Round(aValue_Base, aNumberComparisonRule.RoundDecimals);
-                    aValue_ToBeCompared = Math.Round(aValue_ToBeCompared, aNumberComparisonRule.RoundDecimals);
+                    baseValue = Math.Round(baseValue, numberComparisonRule.RoundDecimals);
+                    comparedValue = Math.Round(comparedValue, numberComparisonRule.RoundDecimals);
                 }
 
-                switch (aNumberComparisonRule.NumberComparisonType)
+                switch (numberComparisonRule.NumberComparisonType)
                 {
                     case oM.Adapters.Revit.Enums.NumberComparisonType.Equal:
-                        return aValue_Base.Equals(aValue_ToBeCompared);
+                        return baseValue.Equals(comparedValue);
                     case oM.Adapters.Revit.Enums.NumberComparisonType.Greater:
-                        return aValue_Base > aValue_ToBeCompared;
+                        return baseValue > comparedValue;
                     case oM.Adapters.Revit.Enums.NumberComparisonType.GreaterOrEqual:
-                        return aValue_Base >= aValue_ToBeCompared;
+                        return baseValue >= comparedValue;
                     case oM.Adapters.Revit.Enums.NumberComparisonType.Less:
-                        return aValue_Base < aValue_ToBeCompared;
+                        return baseValue < comparedValue;
                     case oM.Adapters.Revit.Enums.NumberComparisonType.LessOrEqual:
-                        return aValue_Base <= aValue_ToBeCompared;
+                        return baseValue <= comparedValue;
                     case oM.Adapters.Revit.Enums.NumberComparisonType.NotEqual:
-                        return !aValue_Base.Equals(aValue_ToBeCompared);
+                        return !baseValue.Equals(comparedValue);
                 }
 
                 return false;
@@ -147,20 +147,20 @@ namespace BH.Engine.Adapters.Revit
 
             if(comparisonRule is ParameterExistsComparisonRule)
             {
-                if (value_Base == null || value_ToBeCompared == null)
+                if (valueBase == null || valueToBeCompared == null)
                     return false;
 
-                if (value_Base == null || value_ToBeCompared == null)
+                if (valueBase == null || valueToBeCompared == null)
                     return false;
 
-                if (!(value_Base is string && value_ToBeCompared is string))
+                if (!(valueBase is string && valueToBeCompared is string))
                     return false;
 
-                bool aResult = value_Base.Equals(value_ToBeCompared);
+                bool result = valueBase.Equals(valueToBeCompared);
                 if (((ParameterExistsComparisonRule)comparisonRule).Inverted)
-                    aResult = !aResult;
+                    result = !result;
 
-                return aResult;
+                return result;
             }
 
             return false;
@@ -183,37 +183,36 @@ namespace BH.Engine.Adapters.Revit
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static bool TryConvert(object Value, out double Result)
+        private static bool TryConvert(object value, out double result)
         {
-            Result = double.NaN;
+            result = double.NaN;
 
-            if (Value == null)
+            if (value == null)
                 return false;
 
-            if (Value is double)
+            if (value is double)
             {
-                Result = (double)Value;
+                result = (double)value;
                 return true;
             }
 
-            if (Value is int || Value is short || Value is long || Value is Single)
+            if (value is int || value is short || value is long || value is Single)
             {
                 try
                 {
-                    Result = System.Convert.ToDouble(Value);
+                    result = System.Convert.ToDouble(value);
                 }
                 catch
                 {
                     return false;
                 }
             }
-            else if(Value is string)
+            else if(value is string)
             {
-                return double.TryParse((string)Value, out Result);
+                return double.TryParse((string)value, out result);
             }
 
-            return double.TryParse(Value.ToString(), out Result);
-
+            return double.TryParse(value.ToString(), out result);
         }
 
         /***************************************************/

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -40,11 +40,11 @@ namespace BH.Engine.Adapters.Revit
             if (revitFilePreview == null || revitFilePreview.CustomData == null)
                 return null;
 
-            object aValue = null;
-            if (!revitFilePreview.CustomData.TryGetValue(Convert.FamilyPlacementTypeName, out aValue))
+            object value = null;
+            if (!revitFilePreview.CustomData.TryGetValue(Convert.FamilyPlacementTypeName, out value))
                 return null;
 
-            return aValue as string;
+            return value as string;
         }
 
         /***************************************************/
@@ -54,11 +54,11 @@ namespace BH.Engine.Adapters.Revit
             if (family == null || family.CustomData == null)
                 return null;
 
-            object aValue = null;
-            if (!family.CustomData.TryGetValue(Convert.FamilyPlacementTypeName, out aValue))
+            object value = null;
+            if (!family.CustomData.TryGetValue(Convert.FamilyPlacementTypeName, out value))
                 return null;
 
-            return aValue as string;
+            return value as string;
         }
 
         /***************************************************/

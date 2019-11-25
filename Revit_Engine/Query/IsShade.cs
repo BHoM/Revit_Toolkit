@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -50,10 +50,10 @@ namespace BH.Engine.Adapters.Revit
             if (!environmentPanel.CustomData.ContainsKey(Convert.AdjacentSpaceId))
                 return false;
 
-            int aSpaceId = environmentPanel.SpaceId();
-            int aAdjacentSpaceId = environmentPanel.AdjacentSpaceId();
+            int spaceId = environmentPanel.SpaceId();
+            int adjacenetId = environmentPanel.AdjacentSpaceId();
 
-            return aSpaceId == -1 && aAdjacentSpaceId == -1;
+            return spaceId == -1 && adjacenetId == -1;
         }
 
         /***************************************************/

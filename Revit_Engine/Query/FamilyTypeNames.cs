@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -46,34 +46,36 @@ namespace BH.Engine.Adapters.Revit
             if (familyLibrary == null)
                 return null;
 
-            List<string> aFamilyTypeNames = new List<string>();
+            List<string> familyTypeNames = new List<string>();
 
-            List<Dictionary<string, Dictionary<string, string>>> aDictionaryList_Category = new List<Dictionary<string, Dictionary<string, string>>>();
+            List<Dictionary<string, Dictionary<string, string>>> categoryDictionary = new List<Dictionary<string, Dictionary<string, string>>>();
 
             if (string.IsNullOrEmpty(categoryName))
-                aDictionaryList_Category = familyLibrary.Dictionary.Values.ToList();
+                categoryDictionary = familyLibrary.Dictionary.Values.ToList();
             else
             {
-                Dictionary<string, Dictionary<string, string>> aDictionary_Category = null;
-                if (familyLibrary.Dictionary.TryGetValue(categoryName, out aDictionary_Category))
-                    aDictionaryList_Category.Add(aDictionary_Category);
+                Dictionary<string, Dictionary<string, string>> categoryDict = null;
+                if (familyLibrary.Dictionary.TryGetValue(categoryName, out categoryDict))
+                    categoryDictionary.Add(categoryDict);
             }
 
-            foreach (Dictionary<string, Dictionary<string, string>> aDictionary_Category in aDictionaryList_Category)
+            foreach (Dictionary<string, Dictionary<string, string>> catDict in categoryDictionary)
             {
                 if (string.IsNullOrEmpty(familyName))
                 {
-                    aFamilyTypeNames.AddRange(aDictionary_Category.Keys);
+                    familyTypeNames.AddRange(catDict.Keys);
                 }
                 else
                 {
-                    foreach (KeyValuePair<string, Dictionary<string, string>> aKeyValuePair_Category in aDictionary_Category)
-                        if (aKeyValuePair_Category.Value.ContainsKey(familyName))
-                            aFamilyTypeNames.Add(aKeyValuePair_Category.Key);
+                    foreach (KeyValuePair<string, Dictionary<string, string>> kvp in catDict)
+                    {
+                        if (kvp.Value.ContainsKey(familyName))
+                            familyTypeNames.Add(kvp.Key);
+                    }
                 }
             }
 
-            return aFamilyTypeNames;
+            return familyTypeNames;
         }
 
         /***************************************************/
@@ -99,38 +101,37 @@ namespace BH.Engine.Adapters.Revit
             if (xDocument == null || xDocument.Root == null || xDocument.Root.Attributes() == null)
                 return null;
 
-            List<XAttribute> aAttributeList = xDocument.Root.Attributes().ToList();
-            XAttribute aFirstAttribute = aAttributeList.Find(x => x.Name.LocalName == "A");
-            XAttribute aSecondAttribute = aAttributeList.Find(x => x.Name.LocalName == "xmlns");
+            List<XAttribute> attributes = xDocument.Root.Attributes().ToList();
+            XAttribute firstAttribute = attributes.Find(x => x.Name.LocalName == "A");
+            XAttribute secondAttribute = attributes.Find(x => x.Name.LocalName == "xmlns");
 
-            if (aFirstAttribute != null && aSecondAttribute != null)
+            if (firstAttribute != null && secondAttribute != null)
             {
-                XName aName = XName.Get("family", aFirstAttribute.Value);
-                XElement aXElement = xDocument.Root.Element(aName);
-                if (aXElement != null)
+                XName name = XName.Get("family", firstAttribute.Value);
+                XElement element = xDocument.Root.Element(name);
+                if (element != null)
                 {
-                    aName = XName.Get("part", aFirstAttribute.Value);
-                    List<XElement> aXElementList = aXElement.Elements(aName).ToList();
-                    if (aXElementList != null)
+                    name = XName.Get("part", firstAttribute.Value);
+                    List<XElement> elements = element.Elements(name).ToList();
+                    if (elements != null)
                     {
-                        List<string> aResult = new List<string>();
-                        aName = XName.Get("title", aSecondAttribute.Value);
-                        foreach (XElement XElement_Type in aXElementList)
+                        List<string> result = new List<string>();
+                        name = XName.Get("title", secondAttribute.Value);
+                        foreach (XElement elementType in elements)
                         {
-                            XElement aXElement_Title = XElement_Type.Element(aName);
-                            if (aXElement_Title != null && !string.IsNullOrEmpty(aXElement_Title.Value))
-                                aResult.Add(aXElement_Title.Value);
+                            XElement elementTitle = elementType.Element(name);
+                            if (elementTitle != null && !string.IsNullOrEmpty(elementTitle.Value))
+                                result.Add(elementTitle.Value);
                         }
-                        return aResult;
+                        return result;
                     }
                 }
             }
+
             return null;
         }
 
         /***************************************************/
-
-
     }
 }
 

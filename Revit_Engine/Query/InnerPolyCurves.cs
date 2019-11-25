@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -47,28 +47,27 @@ namespace BH.Engine.Adapters.Revit
             if (polyCurves == null || polyCurves.Count() == 0 || polyCurve == null)
                 return null;
 
-            BoundingBox aBoundingBox_Main = Geometry.Query.Bounds(polyCurve);
+            BoundingBox bbox = Geometry.Query.Bounds(polyCurve);
 
-
-            List<PolyCurve> aResult = new List<PolyCurve>();
-            foreach (PolyCurve aPolyCurve in polyCurves)
+            List<PolyCurve> result = new List<PolyCurve>();
+            foreach (PolyCurve pcurve in polyCurves)
             {
-                BoundingBox aBoundingBox = Geometry.Query.Bounds(aPolyCurve);
+                BoundingBox boundingBox = Geometry.Query.Bounds(pcurve);
 
-                if (aBoundingBox.Min.Equals(aBoundingBox.Min) && aBoundingBox.Max.Equals(aBoundingBox_Main.Max))
+                if (boundingBox.Min.Equals(boundingBox.Min) && boundingBox.Max.Equals(bbox.Max))
                     continue;
 
-                if (!Geometry.Query.IsContaining(aBoundingBox_Main, aBoundingBox))
+                if (!Geometry.Query.IsContaining(bbox, boundingBox))
                     continue;
 
-                Point aPoint_Centroid = Geometry.Query.Centroid(aPolyCurve);
-                if (!Geometry.Query.IsContaining(polyCurve, new List<Point>() { aPoint_Centroid }))
+                Point centroid = Geometry.Query.Centroid(pcurve);
+                if (!Geometry.Query.IsContaining(polyCurve, new List<Point>() { centroid }))
                     continue;
 
-                aResult.Add(aPolyCurve);
+                result.Add(pcurve);
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

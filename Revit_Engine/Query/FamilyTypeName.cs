@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -57,13 +57,13 @@ namespace BH.Engine.Adapters.Revit
             if (bHoMObject == null)
                 return null;
 
-            object aValue = null;
-            if (bHoMObject.CustomData.TryGetValue(Convert.FamilyTypeName, out aValue))
+            object value = null;
+            if (bHoMObject.CustomData.TryGetValue(Convert.FamilyTypeName, out value))
             {
-                if (aValue == null)
+                if (value == null)
                     return null;
 
-                return aValue.ToString();
+                return value.ToString();
             }
 
             return null;
@@ -79,12 +79,12 @@ namespace BH.Engine.Adapters.Revit
             if (string.IsNullOrWhiteSpace(familyTypeFullName))
                 return null;
 
-            int aIndex = familyTypeFullName.IndexOf(":");
-            if (aIndex <= 0)
+            int index = familyTypeFullName.IndexOf(":");
+            if (index <= 0)
                 return null;
 
-            string aResult = familyTypeFullName.Substring(aIndex+1);
-            return aResult.Trim();
+            string result = familyTypeFullName.Substring(index+1);
+            return result.Trim();
         }
 
         /***************************************************/

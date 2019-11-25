@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -46,16 +46,16 @@ namespace BH.Engine.Adapters.Revit
             if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.ElementIds))
                 return null;
 
-            IEnumerable<int> aResult = filterRequest.Equalities[Convert.FilterRequest.ElementIds] as IEnumerable<int>;
+            IEnumerable<int> result = filterRequest.Equalities[Convert.FilterRequest.ElementIds] as IEnumerable<int>;
 
-            if (aResult == null && filterRequest.Equalities[Convert.FilterRequest.ElementIds] is IEnumerable<object>)
+            if (result == null && filterRequest.Equalities[Convert.FilterRequest.ElementIds] is IEnumerable<object>)
             {
-                IEnumerable<object> aObjects = filterRequest.Equalities[Convert.FilterRequest.ElementIds] as IEnumerable<object>;
-                if (aObjects != null)
-                    return aObjects.ToList().ConvertAll(x => System.Convert.ToInt32(x));
+                IEnumerable<object> objects = filterRequest.Equalities[Convert.FilterRequest.ElementIds] as IEnumerable<object>;
+                if (objects != null)
+                    return objects.ToList().ConvertAll(x => System.Convert.ToInt32(x));
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

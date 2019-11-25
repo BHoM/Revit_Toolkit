@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -41,44 +41,44 @@ namespace BH.Engine.Adapters.Revit
         [Input("revitFilePreview", "RevitFilePreview")]
         [Input("FamilyTypeNames", "Family Type Names.")]
         [Output("Family")]
-        public static Family Family(this RevitFilePreview revitFilePreview, IEnumerable<string> FamilyTypeNames)
+        public static Family Family(this RevitFilePreview revitFilePreview, IEnumerable<string> familyTypeNames)
         {
             if (revitFilePreview == null)
                 return null;
 
-            string aFamilyName = revitFilePreview.FamilyName();
-            if (string.IsNullOrEmpty(aFamilyName))
+            string familyName = revitFilePreview.FamilyName();
+            if (string.IsNullOrEmpty(familyName))
                 return null;
 
-            string aCategoryName = revitFilePreview.CategoryName();
+            string categoryName = revitFilePreview.CategoryName();
 
-            List<oM.Adapters.Revit.Properties.InstanceProperties> aInstancePropertiesList = new List<oM.Adapters.Revit.Properties.InstanceProperties>();
+            List<oM.Adapters.Revit.Properties.InstanceProperties> instanceProperties = new List<oM.Adapters.Revit.Properties.InstanceProperties>();
 
-            List<string> aFamilyTypeNameList = revitFilePreview.FamilyTypeNames();
-            if (aFamilyTypeNameList != null)
+            List<string> familyTypeNameList = revitFilePreview.FamilyTypeNames();
+            if (familyTypeNameList != null)
             {
-                foreach (string aFamilyTypeName in aFamilyTypeNameList)
+                foreach (string familyTypeName in familyTypeNameList)
                 {
-                    if (FamilyTypeNames != null && !FamilyTypeNames.Contains(aFamilyTypeName))
+                    if (familyTypeNames != null && !familyTypeNames.Contains(familyTypeName))
                         continue;
 
-                    oM.Adapters.Revit.Properties.InstanceProperties aInstanceProperties = Create.InstanceProperties(aFamilyName, aFamilyTypeName);
-                    aInstanceProperties = aInstanceProperties.UpdateCustomDataValue(Convert.CategoryName, aCategoryName) as oM.Adapters.Revit.Properties.InstanceProperties;
-                    aInstancePropertiesList.Add(aInstanceProperties);
+                    oM.Adapters.Revit.Properties.InstanceProperties instanceProps = Create.InstanceProperties(familyName, familyTypeName);
+                    instanceProps = instanceProps.UpdateCustomDataValue(Convert.CategoryName, categoryName) as oM.Adapters.Revit.Properties.InstanceProperties;
+                    instanceProperties.Add(instanceProps);
                 }
             }
 
-            Family aFamily = new Family()
+            Family family = new Family()
             {
-                PropertiesList = aInstancePropertiesList
+                PropertiesList = instanceProperties
             };
 
-            aFamily = aFamily.UpdateCustomDataValue(Convert.FamilyName, aFamilyName) as Family;
-            aFamily = aFamily.UpdateCustomDataValue(Convert.CategoryName, aCategoryName) as Family;
+            family = family.UpdateCustomDataValue(Convert.FamilyName, familyName) as Family;
+            family = family.UpdateCustomDataValue(Convert.CategoryName, categoryName) as Family;
 
-            aFamily = aFamily.UpdateCustomDataValue(Convert.FamilyPlacementTypeName, revitFilePreview.CustomDataValue(Convert.FamilyPlacementTypeName)) as Family;
+            family = family.UpdateCustomDataValue(Convert.FamilyPlacementTypeName, revitFilePreview.CustomDataValue(Convert.FamilyPlacementTypeName)) as Family;
 
-            return aFamily;
+            return family;
         }
 
         /***************************************************/

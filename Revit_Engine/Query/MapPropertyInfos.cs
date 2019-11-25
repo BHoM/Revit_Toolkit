@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -38,22 +38,22 @@ namespace BH.Engine.Adapters.Revit
             if (type == null)
                 return null;
 
-            PropertyInfo[] aPropertyInfos = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            if (aPropertyInfos == null || aPropertyInfos.Length == 0)
-                return aPropertyInfos;
+            PropertyInfo[] propertyInfos = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            if (propertyInfos == null || propertyInfos.Length == 0)
+                return propertyInfos;
 
-            List<PropertyInfo> aResult = new List<PropertyInfo>();
-            foreach(PropertyInfo aPropertyInfo in aPropertyInfos)
+            List<PropertyInfo> result = new List<PropertyInfo>();
+            foreach(PropertyInfo pInfo in propertyInfos)
             {
-                if (aPropertyInfo.GetSetMethod() == null)
+                if (pInfo.GetSetMethod() == null)
                     continue;
 
-                Type aType = aPropertyInfo.PropertyType;
-                if (aType == typeof(double) || aType == typeof(int) || aType == typeof(string) || aType == typeof(long) || aType == typeof(bool) || aType == typeof(short))
-                    aResult.Add(aPropertyInfo);
+                Type propertyType = pInfo.PropertyType;
+                if (propertyType == typeof(double) || propertyType == typeof(int) || propertyType == typeof(string) || propertyType == typeof(long) || propertyType == typeof(bool) || propertyType == typeof(short))
+                    result.Add(pInfo);
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/
