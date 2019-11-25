@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -48,21 +48,21 @@ namespace BH.Engine.Adapters.Revit
             if (object2DProperties == null || edges == null)
                 return null;
 
-            List<ICurve> aInternalCurveList = null;
+            List<ICurve> internalCurves = null;
             if(internalEdges != null && internalEdges.Count() > 0)
-                aInternalCurveList = internalEdges.ToList().ConvertAll(x => x as ICurve);
+                internalCurves = internalEdges.ToList().ConvertAll(x => x as ICurve);
 
-            PlanarSurface aPlanarSurface = Geometry.Create.PlanarSurface(edges, aInternalCurveList);
-            if (aPlanarSurface == null)
+            PlanarSurface planarSrf = Geometry.Create.PlanarSurface(edges, internalCurves);
+            if (planarSrf == null)
                 return null;
 
-            Floor aFloor = new Floor()
+            Floor floor = new Floor()
             {
                 Properties = object2DProperties,
-                Surface = aPlanarSurface
+                Surface = planarSrf
             };
 
-            return aFloor;
+            return floor;
         }
 
         /***************************************************/

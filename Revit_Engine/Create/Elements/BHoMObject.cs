@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -38,14 +38,14 @@ namespace BH.Engine.Adapters.Revit
         [Output("BHoMObject")]
         public static BHoMObject BHoMObject(int elementId)
         {
-            BHoMObject aBHoMObject = new BHoMObject()
+            BHoMObject obj = new BHoMObject()
             {
 
             };
 
-            aBHoMObject.CustomData.Add(Convert.ElementId, elementId);
+            obj.CustomData.Add(Convert.ElementId, elementId);
 
-            return aBHoMObject;
+            return obj;
         }
 
         /***************************************************/
@@ -55,14 +55,14 @@ namespace BH.Engine.Adapters.Revit
         [Output("BHoMObject")]
         public static BHoMObject BHoMObject(string uniqueId)
         {
-            BHoMObject aBHoMObject = new BHoMObject()
+            BHoMObject obj = new BHoMObject()
             {
 
             };
 
-            aBHoMObject.CustomData.Add(Convert.AdapterId, uniqueId);
+            obj.CustomData.Add(Convert.AdapterId, uniqueId);
 
-            return aBHoMObject;
+            return obj;
         }
 
         /***************************************************/

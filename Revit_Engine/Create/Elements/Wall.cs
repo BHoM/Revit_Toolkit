@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -51,23 +51,23 @@ namespace BH.Engine.Adapters.Revit
             if (Geometry.Query.IIsClosed(locationCurve))
                 return null;
 
-            Point aPoint_1 = Geometry.Query.IStartPoint(locationCurve);
-            Point aPoint_2 = Geometry.Query.IEndPoint(locationCurve);
+            Point point1 = Geometry.Query.IStartPoint(locationCurve);
+            Point point2 = Geometry.Query.IEndPoint(locationCurve);
 
-            ICurve aICurve = Geometry.Modify.ITranslate(locationCurve, Geometry.Create.Vector(0, 0, height));
+            ICurve curve = Geometry.Modify.ITranslate(locationCurve, Geometry.Create.Vector(0, 0, height));
 
-            Line aLine_1 = Geometry.Create.Line(Geometry.Query.IEndPoint(locationCurve), Geometry.Query.IStartPoint(aICurve));
-            Line aLine_2 = Geometry.Create.Line(Geometry.Query.IEndPoint(aICurve), Geometry.Query.IStartPoint(locationCurve));
+            Line line1 = Geometry.Create.Line(Geometry.Query.IEndPoint(locationCurve), Geometry.Query.IStartPoint(curve));
+            Line line2 = Geometry.Create.Line(Geometry.Query.IEndPoint(curve), Geometry.Query.IStartPoint(locationCurve));
 
-            PolyCurve aPolyCurve = Geometry.Create.PolyCurve(new ICurve[] { locationCurve, aLine_1, aICurve, aLine_2 });
+            PolyCurve polycurve = Geometry.Create.PolyCurve(new ICurve[] { locationCurve, line1, curve, line2 });
 
-            Wall aWall = new Wall()
+            Wall wall = new Wall()
             {
                 Properties = object2DProperties,
-                Surface = Geometry.Create.PlanarSurface(aPolyCurve)
+                Surface = Geometry.Create.PlanarSurface(polycurve)
             };
 
-            return aWall;
+            return wall;
         }
 
         /***************************************************/
@@ -82,17 +82,17 @@ namespace BH.Engine.Adapters.Revit
             if (object2DProperties == null || edges == null)
                 return null;
 
-            PlanarSurface aPlanarSurface = Geometry.Create.PlanarSurface(edges);
-            if (aPlanarSurface == null)
+            PlanarSurface planarSrf = Geometry.Create.PlanarSurface(edges);
+            if (planarSrf == null)
                 return null;
 
-            Wall aWall = new Wall()
+            Wall wall = new Wall()
             {
                 Properties = object2DProperties,
-                Surface = aPlanarSurface
+                Surface = planarSrf
             };
 
-            return aWall;
+            return wall;
         }
 
         /***************************************************/
