@@ -176,8 +176,8 @@ namespace BH.UI.Revit.Engine
                         case FamilyPlacementType.ViewBased:
                             if (geometry is oM.Geometry.Point)
                             {
-                                XYZ aXYZ = ToRevit((oM.Geometry.Point)geometry, pushSettings);
-                                element = document.Create.NewFamilyInstance(aXYZ, familySymbol, view);
+                                XYZ xyz = ToRevit((oM.Geometry.Point)geometry, pushSettings);
+                                element = document.Create.NewFamilyInstance(xyz, familySymbol, view);
                             }
                             break;
                         case FamilyPlacementType.OneLevelBased:

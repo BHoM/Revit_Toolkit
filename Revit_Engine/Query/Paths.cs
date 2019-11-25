@@ -59,8 +59,8 @@ namespace BH.Engine.Adapters.Revit
             List<Dictionary<string, string>> typeDictionary = new List<Dictionary<string, string>>();
             if (string.IsNullOrEmpty(typeName))
             {
-                foreach (Dictionary<string, Dictionary<string, string>> aDictionary_Category in categoryDictionary)
-                    typeDictionary.AddRange(aDictionary_Category.Values);
+                foreach (Dictionary<string, Dictionary<string, string>> dictionary_Category in categoryDictionary)
+                    typeDictionary.AddRange(dictionary_Category.Values);
             }
             else
             {
@@ -80,9 +80,9 @@ namespace BH.Engine.Adapters.Revit
             {
                 foreach (Dictionary<string, string> familyDictionary in typeDictionary)
                 {
-                    string aPath = null;
-                    if (familyDictionary.TryGetValue(familyName, out aPath))
-                        pathList.Add(aPath);
+                    string path = null;
+                    if (familyDictionary.TryGetValue(familyName, out path))
+                        pathList.Add(path);
                 }
             }
 

@@ -45,9 +45,9 @@ namespace BH.UI.Revit.Engine
 
             pullSettings = pullSettings.DefaultIfNull();
 
-            ConstantThickness aConstantThickness = pullSettings.FindRefObject<ConstantThickness>(hostObjAttributes.Id.IntegerValue);
-            if (aConstantThickness != null)
-                return aConstantThickness;
+            ConstantThickness constantThickness = pullSettings.FindRefObject<ConstantThickness>(hostObjAttributes.Id.IntegerValue);
+            if (constantThickness != null)
+                return constantThickness;
 
             double thickness = 0;
             IMaterialFragment materialFragment = null;

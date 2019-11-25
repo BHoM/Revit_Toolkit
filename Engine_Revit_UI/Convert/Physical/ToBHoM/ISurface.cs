@@ -60,13 +60,13 @@ namespace BH.UI.Revit.Engine
 
             foreach (KeyValuePair<PlanarSurface, List<oM.Physical.Elements.IOpening>> kvp in dictionary)
             {
-                PlanarSurface aPlanarSurface = kvp.Key;
+                PlanarSurface planarSurface = kvp.Key;
 
                 oM.Physical.Elements.ISurface iSurface = null;
 
                 if (hostObject is Wall)
                 {
-                    iSurface = BH.Engine.Physical.Create.Wall(aPlanarSurface, construction);
+                    iSurface = BH.Engine.Physical.Create.Wall(planarSurface, construction);
 
                     Wall wall = (Wall)hostObject;
                     CurtainGrid curtainGrid = wall.CurtainGrid;
@@ -74,17 +74,17 @@ namespace BH.UI.Revit.Engine
                     {
                         foreach (ElementId elementID in curtainGrid.GetPanelIds())
                         {
-                            Panel aPanel = wall.Document.GetElement(elementID) as Panel;
-                            if (aPanel == null)
+                            Panel panel = wall.Document.GetElement(elementID) as Panel;
+                            if (panel == null)
                                 continue;
                         }
                     }
 
                 }
                 else if (hostObject is Floor)
-                    iSurface = BH.Engine.Physical.Create.Floor(aPlanarSurface, construction);
+                    iSurface = BH.Engine.Physical.Create.Floor(planarSurface, construction);
                 else if (hostObject is RoofBase)
-                    iSurface = BH.Engine.Physical.Create.Roof(construction, aPlanarSurface);                  
+                    iSurface = BH.Engine.Physical.Create.Roof(construction, planarSurface);                  
 
                 if (iSurface == null)
                     continue;

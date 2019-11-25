@@ -85,14 +85,14 @@ namespace BH.Engine.Adapters.Revit
         [Deprecated("3.0", "The method has been replaced with a similar one without argument convertUnits.")]
         public static PullSettings PullSettings(Discipline discipline = Discipline.Physical, Dictionary<int, List<IBHoMObject>> refObjects = null, bool copyCustomData = true, bool convertUnits = true)
         {
-            PullSettings aPullSettings = new PullSettings()
+            PullSettings pullSettings = new PullSettings()
             {
                 Discipline = discipline,
                 CopyCustomData = copyCustomData,
                 RefObjects = refObjects
             };
 
-            return aPullSettings;
+            return pullSettings;
         }
 
         /***************************************************/

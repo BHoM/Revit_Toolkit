@@ -262,7 +262,7 @@ namespace BH.UI.Revit.Engine
                 return result;
             }
                         
-            return null; //TODO: shouldn't it be aResult?
+            return null; //TODO: shouldn't it be result?
         }
 
         /***************************************************/

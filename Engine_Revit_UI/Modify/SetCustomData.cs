@@ -38,8 +38,8 @@ namespace BH.UI.Revit.Engine
 
             IBHoMObject obj = bHoMObject.GetShallowClone() as IBHoMObject;
 
-            foreach (Parameter aParameter in element.ParametersMap)
-                obj = SetCustomData(obj, aParameter, namePrefix);
+            foreach (Parameter parameter in element.ParametersMap)
+                obj = SetCustomData(obj, parameter, namePrefix);
 
             return obj;
         }

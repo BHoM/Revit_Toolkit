@@ -172,8 +172,8 @@ namespace BH.UI.Revit.Engine
             {
                 if(elementType is FamilySymbol)
                 {
-                    foreach (ElementId aElementId in new FilteredElementCollector(document).WherePasses(new FamilyInstanceFilter(document, elementType.Id)).ToElementIds())
-                        result.Add(aElementId);
+                    foreach (ElementId elementId in new FilteredElementCollector(document).WherePasses(new FamilyInstanceFilter(document, elementType.Id)).ToElementIds())
+                        result.Add(elementId);
                 }
                 else
                 {
@@ -246,16 +246,16 @@ namespace BH.UI.Revit.Engine
 
             List<SelectionFilterElement> selectionFilterElements = new FilteredElementCollector(document).OfClass(typeof(SelectionFilterElement)).Cast<SelectionFilterElement>().ToList();
 
-            SelectionFilterElement aSelectionFilterElement = null;
+            SelectionFilterElement selectionFilterElement = null;
             if (caseSensitive)
-                aSelectionFilterElement = selectionFilterElements.Find(x => x.Name == selectionFilterElementName);
+                selectionFilterElement = selectionFilterElements.Find(x => x.Name == selectionFilterElementName);
             else
-                aSelectionFilterElement = selectionFilterElements.Find(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper() == selectionFilterElementName.ToUpper());
+                selectionFilterElement = selectionFilterElements.Find(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper() == selectionFilterElementName.ToUpper());
 
-            if (aSelectionFilterElement == null)
+            if (selectionFilterElement == null)
                 return null;
 
-            return aSelectionFilterElement.GetElementIds();
+            return selectionFilterElement.GetElementIds();
         }
 
         /***************************************************/
@@ -295,11 +295,11 @@ namespace BH.UI.Revit.Engine
 
             if (type == null)
             {
-                foreach (TypeInfo aTypeInfo in assembly.DefinedTypes)
+                foreach (TypeInfo typeInfo in assembly.DefinedTypes)
                 {
-                    if (aTypeInfo.Name == typeName)
+                    if (typeInfo.Name == typeName)
                     {
-                        type = aTypeInfo.AsType();
+                        type = typeInfo.AsType();
                         break;
                     }
                 }
@@ -372,8 +372,8 @@ namespace BH.UI.Revit.Engine
                 elementIDs = ElementIds(uIDocument.Document, filterRequest.Type);
                 if (elementIDs != null)
                 {
-                    foreach (ElementId aElementId in elementIDs)
-                        result.Add(aElementId);
+                    foreach (ElementId elementId in elementIDs)
+                        result.Add(elementId);
                 }
             }
 
@@ -384,8 +384,8 @@ namespace BH.UI.Revit.Engine
             elementIDs = ElementIds(document, activeWorkset, openWorksets, worksetName);
             if (elementIDs != null)
             {
-                foreach (ElementId aElementId in elementIDs)
-                    result.Add(aElementId);
+                foreach (ElementId elementId in elementIDs)
+                    result.Add(elementId);
             }
 
             //Category
@@ -395,8 +395,8 @@ namespace BH.UI.Revit.Engine
                 elementIDs = ElementIds(document, categoryName);
                 if (elementIDs != null)
                 {
-                    foreach (ElementId aElementId in elementIDs)
-                            result.Add(aElementId);
+                    foreach (ElementId elementId in elementIDs)
+                            result.Add(elementId);
                 }
             }
 
@@ -406,8 +406,8 @@ namespace BH.UI.Revit.Engine
                 ICollection<ElementId> elementIDCollection = uIDocument.Selection.GetElementIds();
                 if (elementIDCollection != null)
                 {
-                    foreach (ElementId aElementId in elementIDCollection)
-                        result.Add(aElementId);
+                    foreach (ElementId elementId in elementIDCollection)
+                        result.Add(elementId);
                 }
             }
 

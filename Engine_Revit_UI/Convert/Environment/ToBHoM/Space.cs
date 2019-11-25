@@ -143,8 +143,8 @@ namespace BH.UI.Revit.Engine
 
             SpaceContextFragment spaceContext = new SpaceContextFragment();
             List<string> connectedElements = new List<string>();
-            foreach (EnergyAnalysisSurface aEnergyAnalysisSurface in energyAnalysisSpace.GetAnalyticalSurfaces())
-                connectedElements.Add(aEnergyAnalysisSurface.CADObjectUniqueId);
+            foreach (EnergyAnalysisSurface energyAnalysisSurface in energyAnalysisSpace.GetAnalyticalSurfaces())
+                connectedElements.Add(energyAnalysisSurface.CADObjectUniqueId);
             spaceContext.ConnectedElements = connectedElements;
             spaceContext = spaceContext.UpdateValues(pullSettings, energyAnalysisSpace) as SpaceContextFragment;
             spaceContext = spaceContext.UpdateValues(pullSettings, spatialElement) as SpaceContextFragment;

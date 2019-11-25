@@ -98,8 +98,8 @@ namespace BH.UI.Revit.Engine
 
             if(planarSurfaces != null && planarSurfaces.Count > 0)
             {
-                foreach (PlanarSurface aPlanarSurface in planarSurfaces)
-                    result[aPlanarSurface] = null;
+                foreach (PlanarSurface planarSurface in planarSurfaces)
+                    result[planarSurface] = null;
 
                 if(pullOpenings)
                 {
@@ -172,8 +172,8 @@ namespace BH.UI.Revit.Engine
                 }
             }
 
-            foreach (PlanarSurface aPlanarSurface in nonPlanarSurfaces)
-                result[aPlanarSurface] = null;
+            foreach (PlanarSurface nonPlanarSurface in nonPlanarSurfaces)
+                result[nonPlanarSurface] = null;
 
             return result;
         }

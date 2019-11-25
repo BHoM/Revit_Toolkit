@@ -112,8 +112,8 @@ namespace BH.UI.Revit.Engine
             parameter = wall.get_Parameter(BuiltInParameter.WALL_USER_HEIGHT_PARAM);
             if (parameter != null)
             {
-                double aHeight = (panel.HighElevation() - lowElevation).FromSI(UnitType.UT_Length);
-                parameter.Set(aHeight);
+                double height = (panel.HighElevation() - lowElevation).FromSI(UnitType.UT_Length);
+                parameter.Set(height);
             }
 
             double levelElevation = level.Elevation.ToSI(UnitType.UT_Length);
