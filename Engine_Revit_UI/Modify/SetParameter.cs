@@ -38,88 +38,88 @@ namespace BH.UI.Revit.Engine
             switch (parameter.StorageType)
             {
                 case StorageType.Double:
-                    double aDouble = double.NaN;
+                    double dbl = double.NaN;
                     if (value is double)
                     {
-                        aDouble = (double)value;
+                        dbl = (double)value;
                     }
                     else if(value is int || value is byte || value is float|| value is long)
                     {
-                        aDouble = System.Convert.ToDouble(value);
+                        dbl = System.Convert.ToDouble(value);
                     }
                     else if (value is bool)
                     {
                         if ((bool)value)
-                            aDouble = 1.0;
+                            dbl = 1.0;
                         else
-                            aDouble = 0.0;
+                            dbl = 0.0;
                     }
                     else if (value is string)
                     {
-                        if (!double.TryParse((string)value, out aDouble))
-                            aDouble = double.NaN;
+                        if (!double.TryParse((string)value, out dbl))
+                            dbl = double.NaN;
                     }
 
-                    if (!double.IsNaN(aDouble))
+                    if (!double.IsNaN(dbl))
                     {
                         try
                         {
-                            aDouble = Convert.FromSI(aDouble, parameter.Definition.UnitType);
+                            dbl = Convert.FromSI(dbl, parameter.Definition.UnitType);
                         }
                         catch
                         {
-                            aDouble = double.NaN;
+                            dbl = double.NaN;
                         }
 
-                        if (!double.IsNaN(aDouble))
+                        if (!double.IsNaN(dbl))
                         {
-                            parameter.Set(aDouble);
+                            parameter.Set(dbl);
                             return parameter;
                         }
                     }
                     break;
                 case StorageType.ElementId:
-                    ElementId aElementId = null;
+                    ElementId elementID = null;
                     if (value is int)
                     {
-                        aElementId = new ElementId((int)value);
+                        elementID = new ElementId((int)value);
                     }
                     else if (value is string)
                     {
-                        int aInt;
-                        if (int.TryParse((string)value, out aInt))
-                            aElementId = new ElementId(aInt);
+                        int num;
+                        if (int.TryParse((string)value, out num))
+                            elementID = new ElementId(num);
                     }
                     else if(value != null)
                     {
-                        int aInt;
-                        if (int.TryParse(value.ToString(), out aInt))
-                            aElementId = new ElementId(aInt);
+                        int num;
+                        if (int.TryParse(value.ToString(), out num))
+                            elementID = new ElementId(num);
                     }
 
-                    if(aElementId != null)
+                    if(elementID != null)
                     {
-                        bool aExists = false;
-                        if (aElementId == ElementId.InvalidElementId)
-                            aExists = true;
+                        bool exists = false;
+                        if (elementID == ElementId.InvalidElementId)
+                            exists = true;
 
-                        if(!aExists)
+                        if(!exists)
                         {
                             if (document == null)
                             {
-                                aExists = true;
+                                exists = true;
                             }
                             else
                             {
-                                Element aElement = document.GetElement(aElementId);
-                                aExists = aElement != null;
+                                Element element = document.GetElement(elementID);
+                                exists = element != null;
                             }
                                 
                         }
 
-                        if(aExists)
+                        if(exists)
                         {
-                            parameter.Set(aElementId);
+                            parameter.Set(elementID);
                             return parameter;
                         }
                     }
@@ -145,10 +145,10 @@ namespace BH.UI.Revit.Engine
                     }
                     else if (value is string)
                     {
-                        int aInt = 0;
-                        if (int.TryParse((string)value, out aInt))
+                        int num = 0;
+                        if (int.TryParse((string)value, out num))
                         {
-                            parameter.Set(aInt);
+                            parameter.Set(num);
                             return parameter;
                         }  
                     }
@@ -156,8 +156,8 @@ namespace BH.UI.Revit.Engine
                 case StorageType.String:
                     if (value == null)
                     {
-                        string aString = null;
-                        parameter.Set(aString);
+                        string val = null;
+                        parameter.Set(val);
                         return parameter;
                     }
                     else if (value is string)
@@ -170,7 +170,6 @@ namespace BH.UI.Revit.Engine
                         parameter.Set(value.ToString());
                         return parameter;
                     }
-                    break;
             }
 
             return null;

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -37,50 +37,50 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null || element == null)
                 return bHoMObject;
 
-            IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
+            IBHoMObject obj = bHoMObject.GetShallowClone() as IBHoMObject;
 
-            aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.ElementId, element.Id.IntegerValue);
-            aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.AdapterId, element.UniqueId);
+            obj = obj.SetCustomData(BH.Engine.Adapters.Revit.Convert.ElementId, element.Id.IntegerValue);
+            obj = obj.SetCustomData(BH.Engine.Adapters.Revit.Convert.AdapterId, element.UniqueId);
 
-            int aWorksetId = WorksetId.InvalidWorksetId.IntegerValue;
+            int worksetID = WorksetId.InvalidWorksetId.IntegerValue;
             if (element.Document != null && element.Document.IsWorkshared)
             {
-                WorksetId aWorksetId_Revit = element.WorksetId;
-                if (aWorksetId_Revit != null)
-                    aWorksetId = aWorksetId_Revit.IntegerValue;
+                WorksetId revitWorksetID = element.WorksetId;
+                if (revitWorksetID != null)
+                    worksetID = revitWorksetID.IntegerValue;
             }
-            aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.WorksetId, aWorksetId);
+            obj = obj.SetCustomData(BH.Engine.Adapters.Revit.Convert.WorksetId, worksetID);
 
-            Parameter aParameter = null;
+            Parameter parameter = null;
 
             if (element is Family)
             {
-                Family aFamily = (Family)element;
+                Family family = (Family)element;
 
-                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyName, aFamily.Name);
+                obj = obj.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyName, family.Name);
 
-                if (aFamily.FamilyCategory != null)
-                    aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.CategoryName, aFamily.FamilyCategory.Name);
+                if (family.FamilyCategory != null)
+                    obj = obj.SetCustomData(BH.Engine.Adapters.Revit.Convert.CategoryName, family.FamilyCategory.Name);
 
-                aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName, Query.FamilyPlacementTypeName(aFamily));
+                obj = obj.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName, Query.FamilyPlacementTypeName(family));
             }
             else
             {
-                aParameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
-                if (aParameter != null)
-                    aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyName, aParameter.AsValueString());
+                parameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
+                if (parameter != null)
+                    obj = obj.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyName, parameter.AsValueString());
 
-                aParameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
-                if (aParameter != null)
-                    aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyTypeName, aParameter.AsValueString());
+                parameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
+                if (parameter != null)
+                    obj = obj.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyTypeName, parameter.AsValueString());
 
-                aParameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
-                if (aParameter != null)
-                    aBHoMObject = aBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.CategoryName, aParameter.AsValueString());
+                parameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
+                if (parameter != null)
+                    obj = obj.SetCustomData(BH.Engine.Adapters.Revit.Convert.CategoryName, parameter.AsValueString());
             }
 
 
-            return aBHoMObject;
+            return obj;
         }
 
         /***************************************************/

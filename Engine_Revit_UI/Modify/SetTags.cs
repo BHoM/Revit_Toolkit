@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -37,18 +37,18 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null || element == null || string.IsNullOrEmpty(tagsParameterName))
                 return null;
 
-            Parameter aParameter = element.LookupParameter(tagsParameterName);
-            if (aParameter == null || aParameter.IsReadOnly || aParameter.StorageType != StorageType.String)
+            Parameter parameter = element.LookupParameter(tagsParameterName);
+            if (parameter == null || parameter.IsReadOnly || parameter.StorageType != StorageType.String)
                 return null;
 
-            string aValue_New = null;
+            string newValue = null;
             if(bHoMObject.Tags != null)
-                aValue_New = string.Join("\n", bHoMObject.Tags);
+                newValue = string.Join("\n", bHoMObject.Tags);
 
-            string aValue_Old = aParameter.AsString();
+            string oldValue = parameter.AsString();
 
-            if (aValue_New != aValue_Old)
-                aParameter.Set(aValue_New);
+            if (newValue != oldValue)
+                parameter.Set(newValue);
 
 
             return element;
@@ -61,27 +61,26 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null || element == null || string.IsNullOrEmpty(tagsParameterName))
                 return null;
 
-            Parameter aParameter = element.LookupParameter(tagsParameterName);
-            if (aParameter == null || aParameter.StorageType != StorageType.String)
+            Parameter parameter = element.LookupParameter(tagsParameterName);
+            if (parameter == null || parameter.StorageType != StorageType.String)
                 return null;
 
-            string aValueString = aParameter.AsString();
+            string value = parameter.AsString();
 
-            IBHoMObject aIBHoMObject = bHoMObject.GetShallowClone();
+            IBHoMObject iBHoMObject = bHoMObject.GetShallowClone();
 
-            if (string.IsNullOrEmpty(aValueString) && (bHoMObject.Tags == null || bHoMObject.Tags.Count == 0))
-                return aIBHoMObject;
+            if (string.IsNullOrEmpty(value) && (bHoMObject.Tags == null || bHoMObject.Tags.Count == 0))
+                return iBHoMObject;
 
-            if (aIBHoMObject.Tags == null)
-                aIBHoMObject.Tags = new System.Collections.Generic.HashSet<string>();
+            if (iBHoMObject.Tags == null)
+                iBHoMObject.Tags = new System.Collections.Generic.HashSet<string>();
 
-            string[] aValues = aValueString.Split('\n');
+            string[] values = value.Split('\n');
 
-            foreach (string aValue in aValues)
-                aIBHoMObject.Tags.Add(aValue);
+            foreach (string aValue in values)
+                iBHoMObject.Tags.Add(aValue);
 
-
-            return aIBHoMObject;
+            return iBHoMObject;
         }
 
         /***************************************************/

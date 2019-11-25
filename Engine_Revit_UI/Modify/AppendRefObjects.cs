@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -43,9 +43,9 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null)
                 return refObjects;
 
-            int aElementId = BH.Engine.Adapters.Revit.Query.ElementId(bHoMObject);
+            int elementID = BH.Engine.Adapters.Revit.Query.ElementId(bHoMObject);
 
-            return AppendRefObjects(refObjects, bHoMObject, aElementId);
+            return AppendRefObjects(refObjects, bHoMObject, elementID);
         }
 
         /***************************************************/
@@ -58,23 +58,23 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null)
                 return refObjects;
 
-            Dictionary<int, List<IBHoMObject>> aRefObjects = null;
+            Dictionary<int, List<IBHoMObject>> dictionary = null;
             if (refObjects != null)
-                aRefObjects = new Dictionary<int, List<IBHoMObject>>(refObjects);
+                dictionary = new Dictionary<int, List<IBHoMObject>>(refObjects);
             else
-                aRefObjects = new Dictionary<int, List<IBHoMObject>>();
+                dictionary = new Dictionary<int, List<IBHoMObject>>();
 
-            List<IBHoMObject> aBHoMObjectList = null;
-            if (!aRefObjects.TryGetValue(elementId, out aBHoMObjectList))
+            List<IBHoMObject> bhomObjectList = null;
+            if (!dictionary.TryGetValue(elementId, out bhomObjectList))
             {
-                aBHoMObjectList = new List<IBHoMObject>();
-                aRefObjects.Add(elementId, aBHoMObjectList);
+                bhomObjectList = new List<IBHoMObject>();
+                dictionary.Add(elementId, bhomObjectList);
             }
 
-            if (aBHoMObjectList != null)
-                aBHoMObjectList.Add(bHoMObject);
+            if (bhomObjectList != null)
+                bhomObjectList.Add(bHoMObject);
 
-            return aRefObjects;
+            return dictionary;
         }
 
         /***************************************************/
@@ -90,23 +90,23 @@ namespace BH.UI.Revit.Engine
             if (element == null)
                 return refObjects;
 
-            Dictionary<Guid, List<int>> aRefObjects = null;
+            Dictionary<Guid, List<int>> dictionary = null;
             if (refObjects != null)
-                aRefObjects = new Dictionary<Guid, List<int>>(refObjects);
+                dictionary = new Dictionary<Guid, List<int>>(refObjects);
             else
-                aRefObjects = new Dictionary<Guid, List<int>>();
+                dictionary = new Dictionary<Guid, List<int>>();
 
-            List<int> aIntList = null;
-            if (!aRefObjects.TryGetValue(bHoMObject.BHoM_Guid, out aIntList))
+            List<int> ints = null;
+            if (!dictionary.TryGetValue(bHoMObject.BHoM_Guid, out ints))
             {
-                aIntList = new List<int>();
-                aRefObjects.Add(bHoMObject.BHoM_Guid, aIntList);
+                ints = new List<int>();
+                dictionary.Add(bHoMObject.BHoM_Guid, ints);
             }
 
-            if (aIntList != null && !aIntList.Contains(element.Id.IntegerValue))
-                aIntList.Add(element.Id.IntegerValue);
+            if (ints != null && !ints.Contains(element.Id.IntegerValue))
+                ints.Add(element.Id.IntegerValue);
 
-            return aRefObjects;
+            return dictionary;
         }
 
         /***************************************************/
@@ -122,27 +122,27 @@ namespace BH.UI.Revit.Engine
             if (elements == null || elements.Count() == 0)
                 return refObjects;
 
-            Dictionary<Guid, List<int>> aRefObjects = null;
+            Dictionary<Guid, List<int>> dictionary = null;
             if (refObjects != null)
-                aRefObjects = new Dictionary<Guid, List<int>>(refObjects);
+                dictionary = new Dictionary<Guid, List<int>>(refObjects);
             else
-                aRefObjects = new Dictionary<Guid, List<int>>();
+                dictionary = new Dictionary<Guid, List<int>>();
 
-            List<int> aIntList = null;
-            if (!aRefObjects.TryGetValue(bHoMObject.BHoM_Guid, out aIntList))
+            List<int> ints = null;
+            if (!dictionary.TryGetValue(bHoMObject.BHoM_Guid, out ints))
             {
-                aIntList = new List<int>();
-                aRefObjects.Add(bHoMObject.BHoM_Guid, aIntList);
+                ints = new List<int>();
+                dictionary.Add(bHoMObject.BHoM_Guid, ints);
             }
 
-            foreach(Element aElement in elements)
+            foreach(Element element in elements)
             {
-                if (aIntList != null && !aIntList.Contains(aElement.Id.IntegerValue))
-                    aIntList.Add(aElement.Id.IntegerValue);
+                if (ints != null && !ints.Contains(element.Id.IntegerValue))
+                    ints.Add(element.Id.IntegerValue);
             }
 
 
-            return aRefObjects;
+            return dictionary;
         }
 
         /***************************************************/
