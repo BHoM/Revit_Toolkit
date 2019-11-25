@@ -68,16 +68,16 @@ namespace BH.UI.Revit.Adapter
 
         /***************************************************/
 
-        private static void DeletePinnedElementError(Element Element)
+        private static void DeletePinnedElementError(Element element)
         {
-            BH.Engine.Reflection.Compute.RecordError(string.Format("Could not delete pinned element. Element Id: {0}", Element.Id));
+            BH.Engine.Reflection.Compute.RecordError(string.Format("Could not delete pinned element. Element Id: {0}", element.Id));
         }
 
         /***************************************************/
 
-        private static void ConvertBeforePushError(IBHoMObject iBHoMObject, Type TypeToConvert)
+        private static void ConvertBeforePushError(IBHoMObject iBHoMObject, Type typeToConvert)
         {
-            BH.Engine.Reflection.Compute.RecordError(string.Format("{0} has to be converted to {1} before pushing. BHoM object Guid: {2}", iBHoMObject.GetType().Name, TypeToConvert.Name, iBHoMObject.BHoM_Guid));
+            BH.Engine.Reflection.Compute.RecordError(string.Format("{0} has to be converted to {1} before pushing. BHoM object Guid: {2}", iBHoMObject.GetType().Name, typeToConvert.Name, iBHoMObject.BHoM_Guid));
         }
 
         /***************************************************/

@@ -38,7 +38,7 @@ namespace BH.UI.Revit.Adapter
 
         public override List<IObject> Push(IEnumerable<IObject> objects, string tag = "", Dictionary<string, object> config = null)
         {
-            bool aSuccess = true;
+            bool success = true;
 
             List<IObject> objectsToPush = Config.CloneBeforePush ? objects.Select(x => x is BHoMObject ? ((BHoMObject)x).GetShallowClone() : x).ToList() : objects.ToList(); //ToList() necessary for the return collection to function properly for cloned objects
 
@@ -52,10 +52,10 @@ namespace BH.UI.Revit.Adapter
                 var list = miListObject.Invoke(typeGroup, new object[] { typeGroup });
 
                 if (iBHoMObjectType.IsAssignableFrom(typeGroup.Key))
-                    aSuccess &= Create(list as dynamic);                    
+                    success &= Create(list as dynamic);                    
             }
 
-            return aSuccess ? objectsToPush : new List<IObject>();
+            return success ? objectsToPush : new List<IObject>();
         }
 
         /***************************************************/
