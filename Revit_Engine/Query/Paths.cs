@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -43,50 +43,50 @@ namespace BH.Engine.Adapters.Revit
             if (familyLibrary == null || familyLibrary.Dictionary == null || familyLibrary.Dictionary.Keys.Count == 0)
                 return null;
 
-            List<string> aPathList = new List<string>();
+            List<string> pathList = new List<string>();
 
-            List<Dictionary<string, Dictionary<string, string>>> aDictionaryList_Category = new List<Dictionary<string, Dictionary<string, string>>>();
+            List<Dictionary<string, Dictionary<string, string>>> categoryDictionary = new List<Dictionary<string, Dictionary<string, string>>>();
 
             if (string.IsNullOrEmpty(categoryName))
-                aDictionaryList_Category = familyLibrary.Dictionary.Values.ToList();
+                categoryDictionary = familyLibrary.Dictionary.Values.ToList();
             else
             {
-                Dictionary<string, Dictionary<string, string>> aDictionary_Category = null;
-                if (familyLibrary.Dictionary.TryGetValue(categoryName, out aDictionary_Category))
-                    aDictionaryList_Category.Add(aDictionary_Category);
+                Dictionary<string, Dictionary<string, string>> catDict = null;
+                if (familyLibrary.Dictionary.TryGetValue(categoryName, out catDict))
+                    categoryDictionary.Add(catDict);
             }
 
-            List<Dictionary<string, string>> aDictionaryList_Type = new List<Dictionary<string, string>>();
+            List<Dictionary<string, string>> typeDictionary = new List<Dictionary<string, string>>();
             if (string.IsNullOrEmpty(typeName))
             {
-                foreach (Dictionary<string, Dictionary<string, string>> aDictionary_Category in aDictionaryList_Category)
-                    aDictionaryList_Type.AddRange(aDictionary_Category.Values);
+                foreach (Dictionary<string, Dictionary<string, string>> aDictionary_Category in categoryDictionary)
+                    typeDictionary.AddRange(aDictionary_Category.Values);
             }
             else
             {
-                foreach (Dictionary<string, Dictionary<string, string>> aDictionary_Category in aDictionaryList_Category)
+                foreach (Dictionary<string, Dictionary<string, string>> catDict in categoryDictionary)
                 {
-                    Dictionary<string, string> aDictionary_Family = null;
-                    if (aDictionary_Category.TryGetValue(typeName, out aDictionary_Family))
-                        aDictionaryList_Type.Add(aDictionary_Family);
+                    Dictionary<string, string> familyDictionary = null;
+                    if (catDict.TryGetValue(typeName, out familyDictionary))
+                        typeDictionary.Add(familyDictionary);
                 }
             }
 
             if (string.IsNullOrEmpty(familyName))
             {
-                aDictionaryList_Type.ForEach(x => aPathList.AddRange(x.Values));
+                typeDictionary.ForEach(x => pathList.AddRange(x.Values));
             }
             else
             {
-                foreach (Dictionary<string, string> aDictionary_Family in aDictionaryList_Type)
+                foreach (Dictionary<string, string> familyDictionary in typeDictionary)
                 {
                     string aPath = null;
-                    if (aDictionary_Family.TryGetValue(familyName, out aPath))
-                        aPathList.Add(aPath);
+                    if (familyDictionary.TryGetValue(familyName, out aPath))
+                        pathList.Add(aPath);
                 }
             }
 
-            return aPathList.Distinct();
+            return pathList.Distinct();
         }
 
         /***************************************************/

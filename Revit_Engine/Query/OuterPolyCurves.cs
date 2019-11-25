@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -49,37 +49,35 @@ namespace BH.Engine.Adapters.Revit
             if (polyCurves.Count() == 1)
                 return new List<PolyCurve>() { polyCurves.ElementAt(0) };
 
-            List<PolyCurve> aResult = new List<PolyCurve>();
+            List<PolyCurve> result = new List<PolyCurve>();
 
-            List<PolyCurve> aPolyCurveList = polyCurves.ToList();
+            List<PolyCurve> polycurves = polyCurves.ToList();
 
-           // aPolyCurveList.RemoveAll(x => Geometry.Query.PointInRegion(x) == null || !Geometry.Query.IsClosed(x));
+            polycurves.Sort((x, y) => Geometry.Query.Area(x).CompareTo(Geometry.Query.Area(y)));
 
-            aPolyCurveList.Sort((x, y) => Geometry.Query.Area(x).CompareTo(Geometry.Query.Area(y)));
-
-            while (aPolyCurveList.Count > 0)
+            while (polycurves.Count > 0)
             {
-                PolyCurve aPolyCurve = aPolyCurveList[0];
+                PolyCurve pcurve = polycurves[0];
 
-                bool aExternal = true;
+                bool external = true;
 
-                Point aPoint = Geometry.Query.PointInRegion(aPolyCurve);
-                for (int i = 1; i < aPolyCurveList.Count; i++)
+                Point point = Geometry.Query.PointInRegion(pcurve);
+                for (int i = 1; i < polycurves.Count; i++)
                 {
-                    if (Geometry.Query.IsContaining(aPolyCurveList[i], new List<Point>() { aPoint }))
+                    if (Geometry.Query.IsContaining(polycurves[i], new List<Point>() { point }))
                     {
-                        aExternal = false;
+                        external = false;
                         break;
                     }
                 }
 
-                if (aExternal)
-                    aResult.Add(aPolyCurve);
+                if (external)
+                    result.Add(pcurve);
 
-                aPolyCurveList.RemoveAt(0);
+                polycurves.RemoveAt(0);
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

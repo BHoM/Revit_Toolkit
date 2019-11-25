@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -50,40 +50,40 @@ namespace BH.Engine.Adapters.Revit
             if (revitFilePreview == null)
                 return null;
 
-            string aPath = revitFilePreview.Path;
+            string path = revitFilePreview.Path;
 
             if (string.IsNullOrWhiteSpace(revitFilePreview.Path) || !File.Exists(revitFilePreview.Path))
                 return null;
 
             if (File.Exists(revitFilePreview.Path))
             {
-                StorageInfo aStorageInfo = (StorageInfo)InvokeStorageRootMethod(null, "Open", aPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                StorageInfo storageInfo = (StorageInfo)InvokeStorageRootMethod(null, "Open", path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-                if (aStorageInfo != null)
+                if (storageInfo != null)
                 {
-                    XDocument aXDocument = null;
-                    StreamInfo[] aStreamInfoArray = aStorageInfo.GetStreams();
-                    List<string> aNames = aStreamInfoArray.ToList().ConvertAll(x => x.Name);
-                    foreach (StreamInfo aStreamInfo in aStreamInfoArray)
+                    XDocument document = null;
+                    StreamInfo[] streamInfo = storageInfo.GetStreams();
+                    List<string> names = streamInfo.ToList().ConvertAll(x => x.Name);
+                    foreach (StreamInfo sInfo in streamInfo)
                     {
-                        if (aStreamInfo.Name.Equals("PartAtom"))
+                        if (sInfo.Name.Equals("PartAtom"))
                         {
-                            byte[] aBytes = ParseStreamInfo(aStreamInfo);
+                            byte[] bytes = ParseStreamInfo(sInfo);
                             
                             try
                             {
-                                aXDocument = System.Xml.Linq.XDocument.Parse(Encoding.UTF8.GetString(aBytes));
+                                document = System.Xml.Linq.XDocument.Parse(Encoding.UTF8.GetString(bytes));
                             }
                             catch
                             {
                                 return null;
                             }
 
-                            if (aXDocument == null)
+                            if (document == null)
                             {
                                 try
                                 {
-                                    aXDocument = System.Xml.Linq.XDocument.Parse(Encoding.Default.GetString(aBytes));
+                                    document = System.Xml.Linq.XDocument.Parse(Encoding.Default.GetString(bytes));
                                 }
                                 catch
                                 {
@@ -95,8 +95,8 @@ namespace BH.Engine.Adapters.Revit
                         }
                     }
 
-                    CloseStorageInfo(aStorageInfo);
-                    return aXDocument;
+                    CloseStorageInfo(storageInfo);
+                    return document;
                 }
             }
 
@@ -109,24 +109,24 @@ namespace BH.Engine.Adapters.Revit
 
         private static object InvokeStorageRootMethod(StorageInfo storageInfoRoot, string methodName, params object[] methodArgs)
         {
-            BindingFlags aBindingFlags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod;
-            Type aStorageRootType = typeof(StorageInfo).Assembly.GetType("System.IO.Packaging.StorageRoot", true, false);
-            object aResult = aStorageRootType.InvokeMember(methodName, aBindingFlags, null, storageInfoRoot, methodArgs);
-            return aResult;
+            BindingFlags bindingFlags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod;
+            Type storageType = typeof(StorageInfo).Assembly.GetType("System.IO.Packaging.StorageRoot", true, false);
+            object result = storageType.InvokeMember(methodName, bindingFlags, null, storageInfoRoot, methodArgs);
+            return result;
         }
 
         /***************************************************/
 
         private static byte[] ParseStreamInfo(StreamInfo streamInfo)
         {
-            byte[] aResult = null;
+            byte[] result = null;
             try
             {
-                using (Stream aStream = streamInfo.GetStream(FileMode.Open, FileAccess.Read))
+                using (Stream stream = streamInfo.GetStream(FileMode.Open, FileAccess.Read))
                 {
-                    aResult = new byte[aStream.Length];
-                    aStream.Read(aResult, 0, aResult.Length);
-                    return aResult;
+                    result = new byte[stream.Length];
+                    stream.Read(result, 0, result.Length);
+                    return result;
                 }
             }
             catch (Exception ex)
@@ -135,7 +135,7 @@ namespace BH.Engine.Adapters.Revit
             }
             finally
             {
-                aResult = null;
+                result = null;
             }
         }
 
