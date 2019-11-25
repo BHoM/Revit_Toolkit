@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -57,23 +57,23 @@ namespace BH.Engine.Adapters.Revit
             if (xDocument == null || xDocument.Root == null)
                 return null;
 
-            List<XElement> aXElementList = xDocument.Root.Elements().ToList();
-            if (aXElementList != null && aXElementList.Count > 0)
+            List<XElement> elementList = xDocument.Root.Elements().ToList();
+            if (elementList != null && elementList.Count > 0)
             {
-                XName aName = XName.Get("category", "http://www.w3.org/2005/Atom");
-                aXElementList = aXElementList.FindAll(x => x.Name == aName);
-                if (aXElementList != null)
-                    foreach (XElement aXElement in aXElementList)
+                XName name = XName.Get("category", "http://www.w3.org/2005/Atom");
+                elementList = elementList.FindAll(x => x.Name == name);
+                if (elementList != null)
+                    foreach (XElement element in elementList)
                     {
-                        List<XElement> aChildXElementList = aXElement.Elements().ToList();
-                        aName = XName.Get("scheme", "http://www.w3.org/2005/Atom");
+                        List<XElement> childList = element.Elements().ToList();
+                        name = XName.Get("scheme", "http://www.w3.org/2005/Atom");
 
-                        if (aChildXElementList != null && aChildXElementList.Find(x => x.Name == aName && x.Value == "std:oc1") != null)
+                        if (childList != null && childList.Find(x => x.Name == name && x.Value == "std:oc1") != null)
                         {
-                            aName = XName.Get("term", "http://www.w3.org/2005/Atom");
-                            XElement aChildXElement = aChildXElementList.Find(x => x.Name == aName);
-                            if (aChildXElement != null)
-                                return aChildXElement.Value;
+                            name = XName.Get("term", "http://www.w3.org/2005/Atom");
+                            XElement childElement = childList.Find(x => x.Name == name);
+                            if (childElement != null)
+                                return childElement.Value;
                         }
                     }
             }

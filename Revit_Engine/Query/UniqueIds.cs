@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -43,17 +43,17 @@ namespace BH.Engine.Adapters.Revit
             if (bHoMObjects == null)
                 return null;
 
-            List<string> aUniqueIdList = new List<string>();
-            foreach (IBHoMObject aBHoMObject in bHoMObjects)
+            List<string> uniqueIDs = new List<string>();
+            foreach (IBHoMObject obj in bHoMObjects)
             {
-                string aUniqueId = UniqueId(aBHoMObject);
-                if (string.IsNullOrEmpty(aUniqueId) && removeNulls)
+                string id = UniqueId(obj);
+                if (string.IsNullOrEmpty(id) && removeNulls)
                     continue;
 
-                aUniqueIdList.Add(aUniqueId);
+                uniqueIDs.Add(id);
             }
 
-            return aUniqueIdList;
+            return uniqueIDs;
         }
 
         /***************************************************/

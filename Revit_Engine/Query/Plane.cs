@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -41,16 +41,15 @@ namespace BH.Engine.Adapters.Revit
             if (polyCurve == null)
                 return null;
 
-            List<Point> aPointList = Geometry.Query.ControlPoints(polyCurve);
+            List<Point> points = Geometry.Query.ControlPoints(polyCurve);
 
-            if (aPointList == null || aPointList.Count < 2)
+            if (points == null || points.Count < 2)
                 return null;
 
-            if (!Geometry.Query.IsCoplanar(aPointList, tolerance))
+            if (!Geometry.Query.IsCoplanar(points, tolerance))
                 return null;
 
-            return Plane(aPointList);
-
+            return Plane(points);
         }
 
         /***************************************************/
@@ -67,7 +66,6 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             return Plane(polyline.ControlPoints);
-
         }
 
         /***************************************************/
@@ -77,20 +75,20 @@ namespace BH.Engine.Adapters.Revit
             if (points == null || points.Count() < 2)
                 return null;
 
-            Point aPoint_1 = points.ElementAt(0);
-            Point aPoint_2 = null;
-            Point aPoint_3 = null;
+            Point point1 = points.ElementAt(0);
+            Point point2 = null;
+            Point point3 = null;
 
             for (int i = 1; i < points.Count() - 1; i++)
             {
-                aPoint_2 = points.ElementAt(i);
+                point2 = points.ElementAt(i);
                 for (int j = 1; j < points.Count() - 1; j++)
                 {
-                    aPoint_3 = points.ElementAt(j);
+                    point3 = points.ElementAt(j);
 
-                    Vector aVector = Geometry.Query.CrossProduct(aPoint_2 - aPoint_1, aPoint_3 - aPoint_1);
-                    if (Geometry.Query.Length(aVector) > Tolerance.Distance)
-                        return Geometry.Create.Plane(aPoint_1, aPoint_2, aPoint_3);
+                    Vector vector = Geometry.Query.CrossProduct(point2 - point1, point3 - point1);
+                    if (Geometry.Query.Length(vector) > Tolerance.Distance)
+                        return Geometry.Create.Plane(point1, point2, point3);
                 }
             }
 

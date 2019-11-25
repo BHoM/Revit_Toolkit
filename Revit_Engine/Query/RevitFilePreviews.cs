@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -47,19 +47,19 @@ namespace BH.Engine.Adapters.Revit
             if (familyLibrary == null || familyLibrary.Dictionary == null || familyLibrary.Dictionary.Keys.Count == 0)
                 return null;
 
-            IEnumerable<string> aPaths = familyLibrary.Paths(categoryName, familyName, familyTypeName);
-            if (aPaths == null)
+            IEnumerable<string> paths = familyLibrary.Paths(categoryName, familyName, familyTypeName);
+            if (paths == null)
                 return null;
 
-            List<RevitFilePreview> aResult = new List<RevitFilePreview>();
-            if (aPaths.Count() == 0)
-                return aResult;
+            List<RevitFilePreview> result = new List<RevitFilePreview>();
+            if (paths.Count() == 0)
+                return result;
 
-            foreach (string aPath in aPaths)
-                aResult.Add(Create.RevitFilePreview(aPath));
+            foreach (string path in paths)
+                result.Add(Create.RevitFilePreview(path));
 
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/
