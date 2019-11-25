@@ -42,39 +42,39 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Physical.Elements.ISurface> aISurfaceList = pullSettings.FindRefObjects<oM.Physical.Elements.ISurface>(hostObject.Id.IntegerValue);
-            if (aISurfaceList != null && aISurfaceList.Count > 0)
-                return aISurfaceList;
+            List<oM.Physical.Elements.ISurface> surfaces = pullSettings.FindRefObjects<oM.Physical.Elements.ISurface>(hostObject.Id.IntegerValue);
+            if (surfaces != null && surfaces.Count > 0)
+                return surfaces;
 
             //TODO: check if the attributes != null
             HostObjAttributes hostObjAttributes = hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes;
-            oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(hostObjAttributes, pullSettings);
+            oM.Physical.Constructions.Construction construction = ToBHoMConstruction(hostObjAttributes, pullSettings);
             string materialGrade = hostObject.MaterialGrade();
-            aConstruction = aConstruction.UpdateMaterialProperties(hostObjAttributes, materialGrade, pullSettings);
+            construction = construction.UpdateMaterialProperties(hostObjAttributes, materialGrade, pullSettings);
 
-            Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> aDictionary = Query.PlanarSurfaceDictionary(hostObject, true, pullSettings);
-            if (aDictionary == null)
+            Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> dictionary = Query.PlanarSurfaceDictionary(hostObject, true, pullSettings);
+            if (dictionary == null)
                 return null;
 
-            aISurfaceList = new List<oM.Physical.Elements.ISurface>();
+            surfaces = new List<oM.Physical.Elements.ISurface>();
 
-            foreach (KeyValuePair<PlanarSurface, List<oM.Physical.Elements.IOpening>> aKeyValuePair in aDictionary)
+            foreach (KeyValuePair<PlanarSurface, List<oM.Physical.Elements.IOpening>> kvp in dictionary)
             {
-                PlanarSurface aPlanarSurface = aKeyValuePair.Key;
+                PlanarSurface aPlanarSurface = kvp.Key;
 
-                oM.Physical.Elements.ISurface aISurface = null;
+                oM.Physical.Elements.ISurface iSurface = null;
 
                 if (hostObject is Wall)
                 {
-                    aISurface = BH.Engine.Physical.Create.Wall(aPlanarSurface, aConstruction);
+                    iSurface = BH.Engine.Physical.Create.Wall(aPlanarSurface, construction);
 
-                    Wall aWall = (Wall)hostObject;
-                    CurtainGrid aCurtainGrid = aWall.CurtainGrid;
-                    if (aCurtainGrid != null)
+                    Wall wall = (Wall)hostObject;
+                    CurtainGrid curtainGrid = wall.CurtainGrid;
+                    if (curtainGrid != null)
                     {
-                        foreach (ElementId aElementId in aCurtainGrid.GetPanelIds())
+                        foreach (ElementId elementID in curtainGrid.GetPanelIds())
                         {
-                            Panel aPanel = aWall.Document.GetElement(aElementId) as Panel;
+                            Panel aPanel = wall.Document.GetElement(elementID) as Panel;
                             if (aPanel == null)
                                 continue;
                         }
@@ -82,39 +82,39 @@ namespace BH.UI.Revit.Engine
 
                 }
                 else if (hostObject is Floor)
-                    aISurface = BH.Engine.Physical.Create.Floor(aPlanarSurface, aConstruction);
+                    iSurface = BH.Engine.Physical.Create.Floor(aPlanarSurface, construction);
                 else if (hostObject is RoofBase)
-                    aISurface = BH.Engine.Physical.Create.Roof(aConstruction, aPlanarSurface);                  
+                    iSurface = BH.Engine.Physical.Create.Roof(construction, aPlanarSurface);                  
 
-                if (aISurface == null)
+                if (iSurface == null)
                     continue;
 
-                if (aKeyValuePair.Value != null)
-                    aISurface.Openings = aKeyValuePair.Value;
+                if (kvp.Value != null)
+                    iSurface.Openings = kvp.Value;
          
-                aISurface.Name = Query.FamilyTypeFullName(hostObject);
+                iSurface.Name = Query.FamilyTypeFullName(hostObject);
 
-                ElementType aElementType = hostObject.Document.GetElement(hostObject.GetTypeId()) as ElementType;
+                ElementType elementType = hostObject.Document.GetElement(hostObject.GetTypeId()) as ElementType;
                 //Set ExtendedProperties
-                OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-                aOriginContextFragment.ElementID = hostObject.Id.IntegerValue.ToString();
-                aOriginContextFragment.TypeName = Query.FamilyTypeFullName(hostObject);
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, hostObject) as OriginContextFragment;
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aElementType) as OriginContextFragment;
-                aISurface.Fragments.Add(aOriginContextFragment);
+                OriginContextFragment originContext = new OriginContextFragment();
+                originContext.ElementID = hostObject.Id.IntegerValue.ToString();
+                originContext.TypeName = Query.FamilyTypeFullName(hostObject);
+                originContext = originContext.UpdateValues(pullSettings, hostObject) as OriginContextFragment;
+                originContext = originContext.UpdateValues(pullSettings, elementType) as OriginContextFragment;
+                iSurface.Fragments.Add(originContext);
 
-                aISurface = Modify.SetIdentifiers(aISurface, hostObject) as oM.Physical.Elements.ISurface;
+                iSurface = Modify.SetIdentifiers(iSurface, hostObject) as oM.Physical.Elements.ISurface;
                 if (pullSettings.CopyCustomData)
-                    aISurface = Modify.SetCustomData(aISurface, hostObject) as oM.Physical.Elements.ISurface;
+                    iSurface = Modify.SetCustomData(iSurface, hostObject) as oM.Physical.Elements.ISurface;
 
-                aISurface = aISurface.UpdateValues(pullSettings, hostObject) as oM.Physical.Elements.ISurface;
+                iSurface = iSurface.UpdateValues(pullSettings, hostObject) as oM.Physical.Elements.ISurface;
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aISurface);
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(iSurface);
 
-                aISurfaceList.Add(aISurface);
+                surfaces.Add(iSurface);
             }
 
-            return aISurfaceList;
+            return surfaces;
         }
 
         /***************************************************/

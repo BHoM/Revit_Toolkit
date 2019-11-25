@@ -42,76 +42,74 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            Window aWindow = pullSettings.FindRefObject<Window>(familyInstance.Id.IntegerValue);
-            if (aWindow != null)
-                return aWindow;
+            Window window = pullSettings.FindRefObject<Window>(familyInstance.Id.IntegerValue);
+            if (window != null)
+                return window;
 
-            PolyCurve aPolyCurve = Query.PolyCurve(familyInstance, pullSettings);
-            if (aPolyCurve == null)
+            PolyCurve polycurve = Query.PolyCurve(familyInstance, pullSettings);
+            if (polycurve == null)
                 return null;
 
-            aWindow = new Window()
+            window = new Window()
             {
                 Name = Query.FamilyTypeFullName(familyInstance),
-                Location = BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve)
-
+                Location = BH.Engine.Geometry.Create.PlanarSurface(polycurve)
             };
 
 
-            ElementType aElementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
+            ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
             //Set ExtendedProperties
-            OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-            aOriginContextFragment.ElementID = familyInstance.Id.IntegerValue.ToString();
-            aOriginContextFragment.TypeName = Query.FamilyTypeFullName(familyInstance);
-            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, familyInstance) as OriginContextFragment;
-            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aElementType) as OriginContextFragment;
-            aWindow.Fragments.Add(aOriginContextFragment);
+            OriginContextFragment originContext = new OriginContextFragment();
+            originContext.ElementID = familyInstance.Id.IntegerValue.ToString();
+            originContext.TypeName = Query.FamilyTypeFullName(familyInstance);
+            originContext = originContext.UpdateValues(pullSettings, familyInstance) as OriginContextFragment;
+            originContext = originContext.UpdateValues(pullSettings, elementType) as OriginContextFragment;
+            window.Fragments.Add(originContext);
 
-            aWindow = Modify.SetIdentifiers(aWindow, familyInstance) as Window;
+            window = Modify.SetIdentifiers(window, familyInstance) as Window;
             if (pullSettings.CopyCustomData)
-                aWindow = Modify.SetCustomData(aWindow, familyInstance) as Window;
+                window = Modify.SetCustomData(window, familyInstance) as Window;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aWindow);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(window);
 
-            return aWindow;
+            return window;
         }
 
         public static Window ToBHoMWindow(this Panel panel, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            Window aWindow = pullSettings.FindRefObject<Window>(panel.Id.IntegerValue);
-            if (aWindow != null)
-                return aWindow;
+            Window window = pullSettings.FindRefObject<Window>(panel.Id.IntegerValue);
+            if (window != null)
+                return window;
 
-            PolyCurve aPolyCurve = Query.PolyCurve(panel, pullSettings);
-            if (aPolyCurve == null)
+            PolyCurve polycurve = Query.PolyCurve(panel, pullSettings);
+            if (polycurve == null)
                 return null;
             
-            aWindow = new Window()
+            window = new Window()
             {
                 Name = Query.FamilyTypeFullName(panel),
-                Location = BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve)
-
+                Location = BH.Engine.Geometry.Create.PlanarSurface(polycurve)
             };
 
 
-            ElementType aElementType = panel.Document.GetElement(panel.GetTypeId()) as ElementType;
+            ElementType elementType = panel.Document.GetElement(panel.GetTypeId()) as ElementType;
             //Set ExtendedProperties
-            OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-            aOriginContextFragment.ElementID = panel.Id.IntegerValue.ToString();
-            aOriginContextFragment.TypeName = Query.FamilyTypeFullName(panel);
-            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, panel) as OriginContextFragment;
-            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aElementType) as OriginContextFragment;
-            aWindow.Fragments.Add(aOriginContextFragment);
+            OriginContextFragment originContext = new OriginContextFragment();
+            originContext.ElementID = panel.Id.IntegerValue.ToString();
+            originContext.TypeName = Query.FamilyTypeFullName(panel);
+            originContext = originContext.UpdateValues(pullSettings, panel) as OriginContextFragment;
+            originContext = originContext.UpdateValues(pullSettings, elementType) as OriginContextFragment;
+            window.Fragments.Add(originContext);
 
-            aWindow = Modify.SetIdentifiers(aWindow, panel) as Window;
+            window = Modify.SetIdentifiers(window, panel) as Window;
             if (pullSettings.CopyCustomData)
-                aWindow = Modify.SetCustomData(aWindow, panel) as Window;
+                window = Modify.SetCustomData(window, panel) as Window;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aWindow);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(window);
 
-            return aWindow;
+            return window;
         }
 
         /***************************************************/

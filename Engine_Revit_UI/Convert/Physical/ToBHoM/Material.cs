@@ -38,26 +38,26 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Physical.Materials.Material ToBHoMEmptyMaterial(this Autodesk.Revit.DB.Material material, PullSettings pullSettings = null)
+        public static oM.Physical.Materials.Material ToBHoMEmptyMaterial(this Autodesk.Revit.DB.Material revitMaterial, PullSettings pullSettings = null)
         {
-            if (material == null)
+            if (revitMaterial == null)
                 return new oM.Physical.Materials.Material { Name = "Unknown Material" };
 
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Physical.Materials.Material aMaterial = pullSettings.FindRefObject<oM.Physical.Materials.Material>(material.Id.IntegerValue);
-            if (aMaterial != null)
-                return aMaterial;
+            oM.Physical.Materials.Material material = pullSettings.FindRefObject<oM.Physical.Materials.Material>(revitMaterial.Id.IntegerValue);
+            if (material != null)
+                return material;
 
-            aMaterial = new oM.Physical.Materials.Material { Properties = new System.Collections.Generic.List<IMaterialProperties>(), Name = material.Name };
+            material = new oM.Physical.Materials.Material { Properties = new System.Collections.Generic.List<IMaterialProperties>(), Name = revitMaterial.Name };
             
-            aMaterial = Modify.SetIdentifiers(aMaterial, material) as oM.Physical.Materials.Material;
+            material = Modify.SetIdentifiers(material, revitMaterial) as oM.Physical.Materials.Material;
             if (pullSettings.CopyCustomData)
-                aMaterial = Modify.SetCustomData(aMaterial, material) as oM.Physical.Materials.Material;
+                material = Modify.SetCustomData(material, revitMaterial) as oM.Physical.Materials.Material;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aMaterial);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(material);
 
-            return aMaterial;
+            return material;
         }
 
         /***************************************************/

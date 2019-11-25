@@ -72,37 +72,37 @@ namespace BH.UI.Revit.Engine
 
         public static oM.Physical.Constructions.Construction ToBHoMConstruction(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null)
         {
-            oM.Physical.Constructions.Construction aConstruction = pullSettings.FindRefObject<oM.Physical.Constructions.Construction>(hostObjAttributes.Id.IntegerValue);
-            if (aConstruction != null)
-                return aConstruction;
+            oM.Physical.Constructions.Construction construction = pullSettings.FindRefObject<oM.Physical.Constructions.Construction>(hostObjAttributes.Id.IntegerValue);
+            if (construction != null)
+                return construction;
 
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<BH.oM.Physical.Constructions.Layer> aLayerList = new List<oM.Physical.Constructions.Layer>();
-            CompoundStructure aCompoundStructure = hostObjAttributes.GetCompoundStructure();
-            if (aCompoundStructure != null)
+            List<BH.oM.Physical.Constructions.Layer> layers = new List<oM.Physical.Constructions.Layer>();
+            CompoundStructure compoundStructure = hostObjAttributes.GetCompoundStructure();
+            if (compoundStructure != null)
             {
-                IEnumerable<CompoundStructureLayer> aCompoundStructureLayers = aCompoundStructure.GetLayers();
-                if (aCompoundStructureLayers != null)
+                IEnumerable<CompoundStructureLayer> compoundStructureLayers = compoundStructure.GetLayers();
+                if (compoundStructureLayers != null)
                 {
-                    BuiltInCategory aBuiltInCategory = (BuiltInCategory)hostObjAttributes.Category.Id.IntegerValue;
+                    BuiltInCategory buildInCategory = (BuiltInCategory)hostObjAttributes.Category.Id.IntegerValue;
 
-                    foreach (CompoundStructureLayer aCompoundStructureLayer in aCompoundStructureLayers)
-                        aLayerList.Add(Query.Layer(aCompoundStructureLayer, hostObjAttributes.Document, aBuiltInCategory, pullSettings));
+                    foreach (CompoundStructureLayer layer in compoundStructureLayers)
+                        layers.Add(Query.Layer(layer, hostObjAttributes.Document, buildInCategory, pullSettings));
                 }
             }
 
-            aConstruction = BH.Engine.Physical.Create.Construction(Query.FamilyTypeFullName(hostObjAttributes), aLayerList);
+            construction = BH.Engine.Physical.Create.Construction(Query.FamilyTypeFullName(hostObjAttributes), layers);
 
-            aConstruction = Modify.SetIdentifiers(aConstruction, hostObjAttributes) as oM.Physical.Constructions.Construction;
+            construction = Modify.SetIdentifiers(construction, hostObjAttributes) as oM.Physical.Constructions.Construction;
             if (pullSettings.CopyCustomData)
-                aConstruction = Modify.SetCustomData(aConstruction, hostObjAttributes) as oM.Physical.Constructions.Construction;
+                construction = Modify.SetCustomData(construction, hostObjAttributes) as oM.Physical.Constructions.Construction;
 
-            aConstruction = aConstruction.UpdateValues(pullSettings, hostObjAttributes) as oM.Physical.Constructions.Construction;
+            construction = construction.UpdateValues(pullSettings, hostObjAttributes) as oM.Physical.Constructions.Construction;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aConstruction);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(construction);
 
-            return aConstruction;
+            return construction;
         }
 
         /***************************************************/
