@@ -39,36 +39,36 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            Door aDoor = pullSettings.FindRefObject<Door>(familyInstance.Id.IntegerValue);
-            if (aDoor != null)
-                return aDoor;
+            Door door = pullSettings.FindRefObject<Door>(familyInstance.Id.IntegerValue);
+            if (door != null)
+                return door;
 
-            PolyCurve aPolyCurve = Query.PolyCurve(familyInstance, pullSettings);
-            if (aPolyCurve == null)
+            PolyCurve polycurve = Query.PolyCurve(familyInstance, pullSettings);
+            if (polycurve == null)
                 return null;
 
-            aDoor = new Door()
+            door = new Door()
             {
                 Name = Query.FamilyTypeFullName(familyInstance),
-                Location = BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve)
+                Location = BH.Engine.Geometry.Create.PlanarSurface(polycurve)
             };
 
-            ElementType aElementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
+            ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
             //Set ExtendedProperties
-            OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-            aOriginContextFragment.ElementID = familyInstance.Id.IntegerValue.ToString();
-            aOriginContextFragment.TypeName = Query.FamilyTypeFullName(familyInstance);
-            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, familyInstance) as OriginContextFragment;
-            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aElementType) as OriginContextFragment;
-            aDoor.Fragments.Add(aOriginContextFragment);
+            OriginContextFragment originContext = new OriginContextFragment();
+            originContext.ElementID = familyInstance.Id.IntegerValue.ToString();
+            originContext.TypeName = Query.FamilyTypeFullName(familyInstance);
+            originContext = originContext.UpdateValues(pullSettings, familyInstance) as OriginContextFragment;
+            originContext = originContext.UpdateValues(pullSettings, elementType) as OriginContextFragment;
+            door.Fragments.Add(originContext);
 
-            aDoor = Modify.SetIdentifiers(aDoor, familyInstance) as Door;
+            door = Modify.SetIdentifiers(door, familyInstance) as Door;
             if (pullSettings.CopyCustomData)
-                aDoor = Modify.SetCustomData(aDoor, familyInstance) as Door;
+                door = Modify.SetCustomData(door, familyInstance) as Door;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aDoor);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(door);
 
-            return aDoor;
+            return door;
         }
 
         /***************************************************/
