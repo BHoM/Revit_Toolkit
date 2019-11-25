@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -38,25 +38,25 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
 
         [DeprecatedAttribute("3.0", "BH.UI.Revit.Engine.Query.NextLevel method is not supported any more")]
-        public static Level NextLevel(this Level Level)
+        public static Level NextLevel(this Level level)
         {
-            if (Level == null)
+            if (level == null)
                 return null;
 
-            List<Level> aLevelList = new FilteredElementCollector(Level.Document).OfClass(typeof(Level)).Cast<Level>().ToList();
-            if (aLevelList == null || aLevelList.Count < 2)
+            List<Level> levels = new FilteredElementCollector(level.Document).OfClass(typeof(Level)).Cast<Level>().ToList();
+            if (levels == null || levels.Count < 2)
                 return null;
 
-            aLevelList.Sort((x, y) => x.ProjectElevation.CompareTo(y.ProjectElevation));
+            levels.Sort((x, y) => x.ProjectElevation.CompareTo(y.ProjectElevation));
 
-            int aIndex = aLevelList.FindIndex(x => x.Id == Level.Id);
-            if (aIndex == -1)
+            int index = levels.FindIndex(x => x.Id == level.Id);
+            if (index == -1)
                 return null;
 
-            if (aIndex == aLevelList.Count - 1)
+            if (index == levels.Count - 1)
                 return null;
 
-            return aLevelList[aIndex + 1];
+            return levels[index + 1];
         }
 
         /***************************************************/

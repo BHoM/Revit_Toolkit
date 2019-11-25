@@ -41,54 +41,54 @@ namespace BH.UI.Revit.Engine
             if (face == null)
                 return null;
 
-            List<PolyCurve> aResult = new List<PolyCurve>();
+            List<PolyCurve> result = new List<PolyCurve>();
 
-            foreach (CurveLoop aCurveLoop in face.GetEdgesAsCurveLoops())
+            foreach (CurveLoop curveLoop in face.GetEdgesAsCurveLoops())
             {
-                List<ICurve> aCurveList = new List<ICurve>();
-                foreach (Curve aCurve in aCurveLoop)
+                List<ICurve> curves = new List<ICurve>();
+                foreach (Curve curve in curveLoop)
                 {
-                    ICurve aICurve = null;
+                    ICurve crv = null;
 
                     if (transform != null)
-                        aICurve = aCurve.CreateTransformed(transform).ToBHoM();
+                        crv = Convert.ToBHoM(curve.CreateTransformed(transform));
                     else
-                        aICurve = aCurve.ToBHoM();
+                        crv = Convert.ToBHoM(curve);
 
-                    aCurveList.Add(aICurve);
+                    curves.Add(crv);
                 }
-                aResult.Add(Create.PolyCurve(aCurveList));
+                result.Add(Create.PolyCurve(curves));
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/
 
         public static List<PolyCurve> PolyCurves(this Element element, IEnumerable<Reference> references, PullSettings pullSettings = null)
         {
-            List<PolyCurve> aPolyCurveList = new List<PolyCurve>();
+            List<PolyCurve> polycurves = new List<PolyCurve>();
 
-            foreach (Reference aReference in references)
+            foreach (Reference reference in references)
             {
-                Autodesk.Revit.DB.Face aFace = element.GetGeometryObjectFromReference(aReference) as Autodesk.Revit.DB.Face;
-                if (aFace == null)
+                Autodesk.Revit.DB.Face face = element.GetGeometryObjectFromReference(reference) as Autodesk.Revit.DB.Face;
+                if (face == null)
                     continue;
 
-                List<PolyCurve> aPolyCurveList_Temp = null;
+                List<PolyCurve> tempCurves = null;
 
-                if (aFace is PlanarFace)
-                    aPolyCurveList_Temp = ((PlanarFace)aFace).PolyCurves(null, pullSettings);
+                if (face is PlanarFace)
+                    tempCurves = ((PlanarFace)face).PolyCurves(null, pullSettings);
                 else
-                    aPolyCurveList_Temp = aFace.Triangulate().PolyCurves(pullSettings);
+                    tempCurves = face.Triangulate().PolyCurves(pullSettings);
 
-                if (aPolyCurveList_Temp == null || aPolyCurveList_Temp.Count == 0)
+                if (tempCurves == null || tempCurves.Count == 0)
                     continue;
 
-                aPolyCurveList.AddRange(aPolyCurveList_Temp);
+                polycurves.AddRange(tempCurves);
             }
 
-            return aPolyCurveList;
+            return polycurves;
         }
 
         /***************************************************/
@@ -98,14 +98,14 @@ namespace BH.UI.Revit.Engine
             if (mesh == null)
                 return null;
 
-            List<PolyCurve> aResult = new List<PolyCurve>();
+            List<PolyCurve> result = new List<PolyCurve>();
             for (int i=0; i < mesh.NumTriangles; i++)
             {
-                PolyCurve aPolyCurve = mesh.get_Triangle(i).PolyCurve(pullSettings);
-                if (aPolyCurve != null)
-                    aResult.Add(aPolyCurve);
+                PolyCurve pcurve = mesh.get_Triangle(i).PolyCurve(pullSettings);
+                if (pcurve != null)
+                    result.Add(pcurve);
             }
-            return aResult;
+            return result;
         }
 
         /***************************************************/

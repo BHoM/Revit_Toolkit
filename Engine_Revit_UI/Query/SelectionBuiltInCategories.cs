@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -37,31 +37,31 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
 
         [DeprecatedAttribute("3.0", "BH.UI.Revit.Engine.Query.SelectionBuiltInCategories method is not supported any more")]
-        public static List<BuiltInCategory> SelectionBuiltInCategories(this UIDocument uIDocument)
+        public static List<BuiltInCategory> SelectionBuiltInCategories(this UIDocument uiDocument)
         {
-            if (uIDocument == null)
+            if (uiDocument == null)
                 return null;
 
-            Selection aSelection = uIDocument.Selection;
-            if (aSelection == null)
+            Selection selection = uiDocument.Selection;
+            if (selection == null)
                 return null;
 
-            Document aDocument = uIDocument.Document;
-            if (aDocument == null)
+            Document document = uiDocument.Document;
+            if (document == null)
                 return null;
 
-            List<BuiltInCategory> aResult = new List<BuiltInCategory>();
-            foreach (ElementId aElementId in aSelection.GetElementIds())
+            List<BuiltInCategory> result = new List<BuiltInCategory>();
+            foreach (ElementId id in selection.GetElementIds())
             {
-                Element aElement = aDocument.GetElement(aElementId);
-                if (aElement != null && aElement.Category != null)
+                Element element = document.GetElement(id);
+                if (element != null && element.Category != null)
                 {
-                    BuiltInCategory aBuiltInCategory = (BuiltInCategory)aElement.Category.Id.IntegerValue;
-                    if (!aResult.Contains(aBuiltInCategory))
-                        aResult.Add(aBuiltInCategory);
+                    BuiltInCategory builtInCategory = (BuiltInCategory)element.Category.Id.IntegerValue;
+                    if (!result.Contains(builtInCategory))
+                        result.Add(builtInCategory);
                 }
             }
-            return aResult;
+            return result;
         }
 
         /***************************************************/

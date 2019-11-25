@@ -52,80 +52,78 @@ namespace BH.UI.Revit.Engine
             if (hostObject is Ceiling)
                 return Profiles_Ceiling((Ceiling)hostObject, pullSettings);
 
-            Document aDocument = hostObject.Document;
+            Document document = hostObject.Document;
 
-            
-
-            IEnumerable<ElementId> aElementIds = null;
-            using (Transaction aTransaction = new Transaction(aDocument, "Temp"))
+            IEnumerable<ElementId> elementIDs = null;
+            using (Transaction transaction = new Transaction(document, "Temp"))
             {
-                FailureHandlingOptions aFailureHandlingOptions = aTransaction.GetFailureHandlingOptions().SetClearAfterRollback(true);
+                FailureHandlingOptions aFailureHandlingOptions = transaction.GetFailureHandlingOptions().SetClearAfterRollback(true);
 
                 //IMPORTANT: have to be two separate transactions othewise HostObject become Invalid
 
-                aTransaction.Start();
+                transaction.Start();
                 try
                 {
-                    aElementIds = aDocument.Delete(hostObject.Id);
+                    elementIDs = document.Delete(hostObject.Id);
                 }
-                catch(Exception aException)
+                catch
                 {
-                    aElementIds = null;
+                    elementIDs = null;
                 }
 
-                aTransaction.RollBack(aFailureHandlingOptions);
+                transaction.RollBack(aFailureHandlingOptions);
 
-                aTransaction.Start();
+                transaction.Start();
                 try
                 {
-                    IList<ElementId> aElementId_Inserts = hostObject.FindInserts(true, true, true, true);
-                    if (aElementId_Inserts != null && aElementId_Inserts.Count > 0)
+                    IList<ElementId> insertElementIDs = hostObject.FindInserts(true, true, true, true);
+                    if (insertElementIDs != null && insertElementIDs.Count > 0)
                     {
-                        IEnumerable<ElementId> aElementIds_Temp = aDocument.Delete(aElementId_Inserts);
-                        if (aElementIds_Temp != null && aElementIds_Temp.Count() != 0)
-                            aElementIds = aElementIds.ToList().FindAll(x => !aElementIds_Temp.Contains(x));
+                        IEnumerable<ElementId> tempElementIDs = document.Delete(insertElementIDs);
+                        if (tempElementIDs != null && tempElementIDs.Count() != 0)
+                            elementIDs = elementIDs.ToList().FindAll(x => !tempElementIDs.Contains(x));
                     }
                 }
-                catch (Exception aException)
+                catch
                 {
 
                 }
-                aTransaction.RollBack(aFailureHandlingOptions);
+                transaction.RollBack(aFailureHandlingOptions);
             }
 
-            List<PolyCurve> aResult = new List<PolyCurve>();
-            if (aElementIds != null && aElementIds.Count() > 0)
+            List<PolyCurve> result = new List<PolyCurve>();
+            if (elementIDs != null && elementIDs.Count() > 0)
             {
-                Level aLevel = aDocument.GetElement(hostObject.LevelId) as Level;
+                Level level = document.GetElement(hostObject.LevelId) as Level;
 
-                foreach (ElementId aElementId in aElementIds)
+                foreach (ElementId id in elementIDs)
                 {
-                    Element aElement = aDocument.GetElement(aElementId);
-                    if (aElement == null)
+                    Element element = document.GetElement(id);
+                    if (element == null)
                         continue;
 
-                    if (aElement is Sketch)
+                    if (element is Sketch)
                     {
-                        Sketch aSketch = (Sketch)aElement;
+                        Sketch sketch = (Sketch)element;
 
-                        if (aSketch.Profile == null)
+                        if (sketch.Profile == null)
                             continue;
 
-                        List<PolyCurve> aPolyCurveList = aSketch.ToBHoM();
-                        if (aPolyCurveList == null)
+                        List<PolyCurve> polycurves = Convert.ToBHoM(sketch);
+                        if (polycurves == null)
                             continue;
 
-                        foreach (PolyCurve aPolyCurve in aPolyCurveList)
-                            if (aPolyCurve != null)
-                                aResult.Add(aPolyCurve);
+                        foreach (PolyCurve polycurve in polycurves)
+                            if (polycurve != null)
+                                result.Add(polycurve);
                     }
                 }
             }
 
-            if (hostObject is Wall && aResult.Count == 0)
+            if (hostObject is Wall && result.Count == 0)
                 return Profiles_Wall((Wall)hostObject, pullSettings);
 
-            return aResult;
+            return result;
         }
 
         public static List<PolyCurve> Profiles(this SpatialElement spatialElement, PullSettings pullSettings = null)
@@ -136,21 +134,21 @@ namespace BH.UI.Revit.Engine
             if (boundarySegments == null)
                 return null;
 
-            List<PolyCurve> aResults = new List<PolyCurve>();
+            List<PolyCurve> results = new List<PolyCurve>();
 
-            foreach (IList<BoundarySegment> boundarySegments_List in boundarySegments)
+            foreach (IList<BoundarySegment> boundarySegmentList in boundarySegments)
             {
-                if (boundarySegments_List == null)
+                if (boundarySegmentList == null)
                     continue;
-                List<BH.oM.Geometry.ICurve> aCurveList = new List<ICurve>();
-                foreach (BoundarySegment aboundarySegment in boundarySegments_List)
+                List<BH.oM.Geometry.ICurve> curves = new List<ICurve>();
+                foreach (BoundarySegment boundarySegment in boundarySegmentList)
                 {
-                    aCurveList.Add(aboundarySegment.GetCurve().ToBHoM());
+                    curves.Add(Convert.ToBHoM(boundarySegment.GetCurve()));
                 }
-                aResults.Add(BH.Engine.Geometry.Create.PolyCurve(aCurveList));
+                results.Add(BH.Engine.Geometry.Create.PolyCurve(curves));
             }
 
-            return aResults;
+            return results;
         }
 
 
@@ -160,69 +158,69 @@ namespace BH.UI.Revit.Engine
 
         public static List<PolyCurve> Profiles_Wall(this Wall wall, PullSettings pullSettings = null)
         {
-            List<PolyCurve> aPolyCurveList = null;
+            List<PolyCurve> polycurves = null;
 
-            BoundingBoxXYZ aBoundingBoxXYZ = wall.get_BoundingBox(null);
-            if (aBoundingBoxXYZ != null)
+            BoundingBoxXYZ bboxXYZ = wall.get_BoundingBox(null);
+            if (bboxXYZ != null)
             {
-                LocationCurve aLocationCurve = wall.Location as LocationCurve;
-                if (aLocationCurve != null)
+                LocationCurve locationCurve = wall.Location as LocationCurve;
+                if (locationCurve != null)
                 {
-                    ICurve aCurve = aLocationCurve.ToBHoM();
-                    if (aCurve != null)
+                    ICurve curve = Convert.ToBHoM(locationCurve);
+                    if (curve != null)
                     {
-                        oM.Geometry.Plane aPlane = null;
+                        oM.Geometry.Plane plane = null;
 
-                        double aMax = aBoundingBoxXYZ.Max.Z.ToSI(UnitType.UT_Length);
-                        aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aMax), BH.Engine.Geometry.Create.Vector(0, 0, 1));
-                        ICurve aCurve_Max = BH.Engine.Geometry.Modify.IProject(aCurve, aPlane);
+                        double max = bboxXYZ.Max.Z.ToSI(UnitType.UT_Length);
+                        plane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, max), BH.Engine.Geometry.Create.Vector(0, 0, 1));
+                        ICurve maxCurve = BH.Engine.Geometry.Modify.IProject(curve, plane);
 
-                        double aMin = aBoundingBoxXYZ.Min.Z.ToSI(UnitType.UT_Length);
-                        aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aMin), BH.Engine.Geometry.Create.Vector(0, 0, 1));
-                        ICurve aCurve_Min = BH.Engine.Geometry.Modify.IProject(aCurve, aPlane);
+                        double min = bboxXYZ.Min.Z.ToSI(UnitType.UT_Length);
+                        plane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, min), BH.Engine.Geometry.Create.Vector(0, 0, 1));
+                        ICurve minCurve = BH.Engine.Geometry.Modify.IProject(curve, plane);
 
-                        oM.Geometry.Point aPoint_1;
-                        oM.Geometry.Point aPoint_2;
-                        oM.Geometry.Point aPoint_3;
+                        oM.Geometry.Point point1;
+                        oM.Geometry.Point point2;
+                        oM.Geometry.Point point3;
 
-                        aPoint_1 = BH.Engine.Geometry.Query.IEndPoint(aCurve_Min);
-                        aPoint_2 = BH.Engine.Geometry.Query.IStartPoint(aCurve_Max);
-                        aPoint_3 = BH.Engine.Geometry.Query.IEndPoint(aCurve_Max);
-                        if (BH.Engine.Geometry.Query.Distance(aPoint_1, aPoint_3) < BH.Engine.Geometry.Query.Distance(aPoint_1, aPoint_2))
+                        point1 = BH.Engine.Geometry.Query.IEndPoint(minCurve);
+                        point2 = BH.Engine.Geometry.Query.IStartPoint(maxCurve);
+                        point3 = BH.Engine.Geometry.Query.IEndPoint(maxCurve);
+                        if (BH.Engine.Geometry.Query.Distance(point1, point3) < BH.Engine.Geometry.Query.Distance(point1, point2))
                         {
-                            oM.Geometry.Point aPoint_Temp = aPoint_2;
+                            oM.Geometry.Point tempPoint = point2;
 
-                            aCurve_Max = BH.Engine.Geometry.Modify.IFlip(aCurve_Max);
-                            aPoint_2 = aPoint_3;
-                            aPoint_3 = aPoint_Temp;
+                            maxCurve = BH.Engine.Geometry.Modify.IFlip(maxCurve);
+                            point2 = point3;
+                            point3 = tempPoint;
                         }
 
-                        oM.Geometry.Line aLine_1 = BH.Engine.Geometry.Create.Line(aPoint_1, aPoint_2);
-                        oM.Geometry.Line aLine_2 = BH.Engine.Geometry.Create.Line(aPoint_3, BH.Engine.Geometry.Query.IStartPoint(aCurve_Min));
+                        oM.Geometry.Line line1 = BH.Engine.Geometry.Create.Line(point1, point2);
+                        oM.Geometry.Line line2 = BH.Engine.Geometry.Create.Line(point3, BH.Engine.Geometry.Query.IStartPoint(minCurve));
 
-                        aPolyCurveList = new List<PolyCurve>();
-                        aPolyCurveList.Add(BH.Engine.Geometry.Create.PolyCurve(new ICurve[] { aCurve_Min, aLine_1, aCurve_Max, aLine_2 }));
-                        return aPolyCurveList;
+                        polycurves = new List<PolyCurve>();
+                        polycurves.Add(BH.Engine.Geometry.Create.PolyCurve(new ICurve[] { minCurve, line1, maxCurve, line2 }));
+                        return polycurves;
                     }
-
                 }
             }
             
             if (!ExporterIFCUtils.HasElevationProfile(wall))
                 return null;
 
-            IList<CurveLoop> aCurveLoopList = ExporterIFCUtils.GetElevationProfile(wall);
-            if (aCurveLoopList == null)
+            IList<CurveLoop> curveLoops = ExporterIFCUtils.GetElevationProfile(wall);
+            if (curveLoops == null)
                 return null;
 
-            aPolyCurveList = new List<PolyCurve>();
-            foreach (CurveLoop aCurveLoop in aCurveLoopList)
+            polycurves = new List<PolyCurve>();
+            foreach (CurveLoop curveLoop in curveLoops)
             {
-                PolyCurve aPolyCurve = aCurveLoop.ToBHoM();
-                if (aPolyCurve != null)
-                    aPolyCurveList.Add(aPolyCurve);
+                PolyCurve polycurve = Convert.ToBHoM(curveLoop);
+                if (polycurve != null)
+                    polycurves.Add(polycurve);
             }
-            return aPolyCurveList;
+
+            return polycurves;
         }
 
         /***************************************************/

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -51,12 +51,12 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static oM.Environment.Elements.PanelType? PanelType(this Category Category)
+        public static oM.Environment.Elements.PanelType? PanelType(this Category category)
         {
-            if (Category == null)
+            if (category == null)
                 return null;
 
-            return PanelType((BuiltInCategory)Category.Id.IntegerValue);
+            return PanelType((BuiltInCategory)category.Id.IntegerValue);
         }
 
         /***************************************************/

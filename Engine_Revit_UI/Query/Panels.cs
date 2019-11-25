@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -40,26 +40,25 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Environment.Elements.Panel> aResult = new List<oM.Environment.Elements.Panel>();
-            foreach (GeometryObject aGeometryObject in geometryElement)
+            List<oM.Environment.Elements.Panel> result = new List<oM.Environment.Elements.Panel>();
+            foreach (GeometryObject geomObject in geometryElement)
             {
-                Solid aSolid = aGeometryObject as Solid;
-                if (aSolid == null)
+                Solid solid = geomObject as Solid;
+                if (solid == null)
                     continue;
 
-                PlanarFace aPlanarFace = Query.Top(aSolid);
-                if (aPlanarFace == null)
+                PlanarFace planarFace = Query.Top(solid);
+                if (planarFace == null)
                     continue;
 
-                List<BH.oM.Environment.Elements.Panel> aBuildingElementPanelList = aPlanarFace.Panels(pullSettings);
-                if (aBuildingElementPanelList == null || aBuildingElementPanelList.Count < 1)
+                List<BH.oM.Environment.Elements.Panel> panels = planarFace.Panels(pullSettings);
+                if (panels == null || panels.Count < 1)
                     continue;
 
-                aResult.AddRange(aBuildingElementPanelList);
+                result.AddRange(panels);
             }
 
-            return aResult;
-
+            return result;
         }
 
         /***************************************************/
@@ -68,17 +67,17 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Environment.Elements.Panel> aResult = new List<oM.Environment.Elements.Panel>();
+            List<oM.Environment.Elements.Panel> result = new List<oM.Environment.Elements.Panel>();
 
-            List<PolyCurve> aPolyCurveList = Query.PolyCurves(planarFace, null, pullSettings);
+            List<PolyCurve> polycurves = Query.PolyCurves(planarFace, null, pullSettings);
 
-            foreach (PolyCurve aPolyCurve in aPolyCurveList)
+            foreach (PolyCurve polycurve in polycurves)
             {
-                oM.Environment.Elements.Panel aPanel = Create.Panel(externalEdges: aPolyCurve.ToEdges());
-                aResult.Add(aPanel);
+                oM.Environment.Elements.Panel panel = Create.Panel(externalEdges: polycurve.ToEdges());
+                result.Add(panel);
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

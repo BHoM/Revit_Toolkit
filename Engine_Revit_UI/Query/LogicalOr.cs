@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -35,48 +35,49 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Dictionary<ElementId, List<FilterRequest>> LogicalOr(this Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary_1, Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary_2)
+        public static Dictionary<ElementId, List<FilterRequest>> LogicalOr(this Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary1, Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary2)
         {
-            if (filterRequestDictionary_1 == null || filterRequestDictionary_2 == null)
+            if (filterRequestDictionary1 == null || filterRequestDictionary2 == null)
                 return null;
 
-            if (filterRequestDictionary_1.Count == 0)
-                return new Dictionary<ElementId, List<FilterRequest>>(filterRequestDictionary_2);
+            if (filterRequestDictionary1.Count == 0)
+                return new Dictionary<ElementId, List<FilterRequest>>(filterRequestDictionary2);
 
-            if (filterRequestDictionary_2.Count == 0)
-                return new Dictionary<ElementId, List<FilterRequest>>(filterRequestDictionary_1);
+            if (filterRequestDictionary2.Count == 0)
+                return new Dictionary<ElementId, List<FilterRequest>>(filterRequestDictionary1);
 
-
-            Dictionary<ElementId, List<FilterRequest>> aResult = new Dictionary<ElementId, List<FilterRequest>>();
-            foreach(KeyValuePair<ElementId, List<FilterRequest>> aKeyValuePair in filterRequestDictionary_1)
+            Dictionary<ElementId, List<FilterRequest>> result = new Dictionary<ElementId, List<FilterRequest>>();
+            foreach(KeyValuePair<ElementId, List<FilterRequest>> kvp in filterRequestDictionary1)
             {
-                List<FilterRequest> aFilterRequestList = null;
-                if (!aResult.TryGetValue(aKeyValuePair.Key, out aFilterRequestList))
+                List<FilterRequest> requests = null;
+                if (!result.TryGetValue(kvp.Key, out requests))
                 {
-                    aFilterRequestList = new List<FilterRequest>();
-                    aResult.Add(aKeyValuePair.Key, aFilterRequestList);
+                    requests = new List<FilterRequest>();
+                    result.Add(kvp.Key, requests);
                 }
 
-                foreach(FilterRequest aFilterRequest in aKeyValuePair.Value)
-                    if (!aFilterRequestList.Contains(aFilterRequest))
-                        aFilterRequestList.Add(aFilterRequest);
+                foreach (FilterRequest request in kvp.Value)
+                {
+                    if (!requests.Contains(request))
+                        requests.Add(request);
+                }
             }
 
-            foreach (KeyValuePair<ElementId, List<FilterRequest>> aKeyValuePair in filterRequestDictionary_2)
+            foreach (KeyValuePair<ElementId, List<FilterRequest>> kvp in filterRequestDictionary2)
             {
-                List<FilterRequest> aFilterRequestList = null;
-                if (!aResult.TryGetValue(aKeyValuePair.Key, out aFilterRequestList))
+                List<FilterRequest> requests = null;
+                if (!result.TryGetValue(kvp.Key, out requests))
                 {
-                    aFilterRequestList = new List<FilterRequest>();
-                    aResult.Add(aKeyValuePair.Key, aFilterRequestList);
+                    requests = new List<FilterRequest>();
+                    result.Add(kvp.Key, requests);
                 }
 
-                foreach (FilterRequest aFilterRequest in aKeyValuePair.Value)
-                    if (!aFilterRequestList.Contains(aFilterRequest))
-                        aFilterRequestList.Add(aFilterRequest);
+                foreach (FilterRequest request in kvp.Value)
+                    if (!requests.Contains(request))
+                        requests.Add(request);
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

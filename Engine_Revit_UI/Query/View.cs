@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -40,25 +40,25 @@ namespace BH.UI.Revit.Engine
             if (string.IsNullOrWhiteSpace(draftingInstance.ViewName))
                 return null;
 
-            List<View> aViewList = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().ToList();
-            aViewList.RemoveAll(x => x.IsTemplate || x is ViewSchedule || x is View3D || x is ViewSheet);
+            List<View> views = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().ToList();
+            views.RemoveAll(x => x.IsTemplate || x is ViewSchedule || x is View3D || x is ViewSheet);
 
-            View aView = null;
+            View view = null;
 
-            if (aViewList != null && aViewList.Count > 0)
-                aView = aViewList.Find(x => x.Name == draftingInstance.ViewName);
+            if (views != null && views.Count > 0)
+                view = views.Find(x => x.Name == draftingInstance.ViewName);
 
-            if (aView != null)
-                return aView;
+            if (view != null)
+                return view;
 
-            aViewList = new FilteredElementCollector(document).OfClass(typeof(ViewSheet)).Cast<View>().ToList();
-            string aTitle = draftingInstance.ViewName;
-            if (!aTitle.StartsWith("Sheet: "))
-                aTitle = string.Format("Sheet: {0}", aTitle);
+            views = new FilteredElementCollector(document).OfClass(typeof(ViewSheet)).Cast<View>().ToList();
+            string title = draftingInstance.ViewName;
+            if (!title.StartsWith("Sheet: "))
+                title = string.Format("Sheet: {0}", title);
 
-            aView = aViewList.Find(x => x.Title == aTitle);
+            view = views.Find(x => x.Title == title);
 
-            return aView;
+            return view;
         }
 
         /***************************************************/

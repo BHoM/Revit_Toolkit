@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -36,33 +36,34 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Dictionary<ElementId, List<FilterRequest>> LogicalAnd(this Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary_1, Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary_2)
+        public static Dictionary<ElementId, List<FilterRequest>> LogicalAnd(this Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary1, Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary2)
         {
-            if (filterRequestDictionary_1 == null || filterRequestDictionary_2 == null)
+            if (filterRequestDictionary1 == null || filterRequestDictionary2 == null)
                 return null;
 
-            Dictionary<ElementId, List<FilterRequest>> aResult = new Dictionary<ElementId, List<FilterRequest>>();
+            Dictionary<ElementId, List<FilterRequest>> result = new Dictionary<ElementId, List<FilterRequest>>();
 
-            if (filterRequestDictionary_1.Count() == 0 || filterRequestDictionary_2.Count() == 0)
-                return aResult;
+            if (filterRequestDictionary1.Count() == 0 || filterRequestDictionary2.Count() == 0)
+                return result;
 
-            foreach(KeyValuePair<ElementId, List<FilterRequest>> aKeyValuePair in filterRequestDictionary_1)
+            foreach(KeyValuePair<ElementId, List<FilterRequest>> kvp in filterRequestDictionary1)
             {
-                if (aKeyValuePair.Value == null || aKeyValuePair.Value.Count == 0)
+                if (kvp.Value == null || kvp.Value.Count == 0)
                     continue;
 
-                List<FilterRequest> aFilterRequestList = null;
-                if (filterRequestDictionary_2.TryGetValue(aKeyValuePair.Key, out aFilterRequestList))
+                List<FilterRequest> requests = null;
+                if (filterRequestDictionary2.TryGetValue(kvp.Key, out requests))
                 {
-                    if (aFilterRequestList == null || aFilterRequestList.Count == 0)
+                    if (requests == null || requests.Count == 0)
                         continue;
 
-                    List<FilterRequest> aFilterRequestList_Temp = new List<FilterRequest>(aKeyValuePair.Value);
-                    aFilterRequestList_Temp.AddRange(aFilterRequestList);
-                    aResult.Add(aKeyValuePair.Key, aFilterRequestList_Temp);
+                    List<FilterRequest> requestsTemp = new List<FilterRequest>(kvp.Value);
+                    requestsTemp.AddRange(requests);
+                    result.Add(kvp.Key, requestsTemp);
                 }
             }
-            return aResult;
+
+            return result;
         }
 
         /***************************************************/

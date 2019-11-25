@@ -43,11 +43,11 @@ namespace BH.UI.Revit.Engine
             if (meshTriangle == null)
                 return null;
 
-            oM.Geometry.Point aPoint_1 = meshTriangle.get_Vertex(0).ToBHoM();
-            oM.Geometry.Point aPoint_2 = meshTriangle.get_Vertex(1).ToBHoM();
-            oM.Geometry.Point aPoint_3 = meshTriangle.get_Vertex(2).ToBHoM();
+            oM.Geometry.Point point1 = meshTriangle.get_Vertex(0).ToBHoM();
+            oM.Geometry.Point point2 = meshTriangle.get_Vertex(1).ToBHoM();
+            oM.Geometry.Point point3 = meshTriangle.get_Vertex(2).ToBHoM();
 
-            return Create.PolyCurve(new ICurve[] { Create.Line(aPoint_1, aPoint_2), Create.Line(aPoint_2, aPoint_3), Create.Line(aPoint_3, aPoint_1) });
+            return Create.PolyCurve(new ICurve[] { Create.Line(point1, point2), Create.Line(point2, point3), Create.Line(point3, point1) });
         }
 
         /***************************************************/
@@ -57,158 +57,158 @@ namespace BH.UI.Revit.Engine
             if (familyInstance == null)
                 return null;
 
-            HostObject aHostObject = familyInstance.Host as HostObject;
-            if (aHostObject == null)
+            HostObject hostObject = familyInstance.Host as HostObject;
+            if (hostObject == null)
                 return null;
 
-            List<PolyCurve> aPolyCurveList = Profiles(aHostObject, pullSettings);
-            if (aPolyCurveList == null || aPolyCurveList.Count == 0)
+            List<PolyCurve> polycurves = Profiles(hostObject, pullSettings);
+            if (polycurves == null || polycurves.Count == 0)
                 return null;
 
-            List<oM.Geometry.Plane> aPlaneList = new List<oM.Geometry.Plane>();
-            foreach (PolyCurve aPolyCurve in aPolyCurveList)
+            List<oM.Geometry.Plane> planes = new List<oM.Geometry.Plane>();
+            foreach (PolyCurve polycurve in polycurves)
             {
-                oM.Geometry.Plane aPlane_Temp = BH.Engine.Adapters.Revit.Query.Plane(aPolyCurve);
-                if (aPlane_Temp != null)
-                    aPlaneList.Add(aPlane_Temp);
+                oM.Geometry.Plane tempPlane = BH.Engine.Adapters.Revit.Query.Plane(polycurve);
+                if (tempPlane != null)
+                    planes.Add(tempPlane);
             }
 
             //TODO: Get geometry from Host
-            List<ICurve> aCurveList = Query.Curves(familyInstance, new Options(), pullSettings);
-            if (aCurveList == null || aCurveList.Count == 0)
+            List<ICurve> curves = Query.Curves(familyInstance, new Options(), pullSettings);
+            if (curves == null || curves.Count == 0)
             {
-                if (aHostObject == null)
+                if (hostObject == null)
                     return null;
 
-                List<Solid> aSolidList = aHostObject.Solids(new Options(), pullSettings);
-                if (aSolidList == null || aSolidList.Count == 0)
+                List<Solid> solids = hostObject.Solids(new Options(), pullSettings);
+                if (solids == null || solids.Count == 0)
                     return null;
 
-                PolyCurve aPolyCurve = PolyCurve(familyInstance, aSolidList, aPlaneList, pullSettings);
-                if (aPolyCurve != null)
-                    return aPolyCurve;
+                PolyCurve polycurve = PolyCurve(familyInstance, solids, planes, pullSettings);
+                if (polycurve != null)
+                    return polycurve;
             }
 
-            if (aCurveList == null || aCurveList.Count == 0)
+            if (curves == null || curves.Count == 0)
                 return null;
 
-            double aMin = double.MaxValue;
-            oM.Geometry.Plane aPlane = null;
-            foreach (ICurve aICurve in aCurveList)
+            double min = double.MaxValue;
+            oM.Geometry.Plane plane = null;
+            foreach (ICurve curve in curves)
             {
-                List<oM.Geometry.Point> aPointList_Temp = BH.Engine.Geometry.Query.IControlPoints(aICurve);
-                if (aPointList_Temp == null || aPointList_Temp.Count == 0)
+                List<oM.Geometry.Point> tempPoints = BH.Engine.Geometry.Query.IControlPoints(curve);
+                if (tempPoints == null || tempPoints.Count == 0)
                     continue;
 
-                foreach (oM.Geometry.Plane aPlane_Temp in aPlaneList)
+                foreach (oM.Geometry.Plane tempPlane in planes)
                 {
-                    double aMin_Temp = aPointList_Temp.ConvertAll(x => BH.Engine.Geometry.Query.Distance(x, aPlane_Temp)).Min();
-                    if (aMin_Temp < aMin)
+                    double tempMin = tempPoints.ConvertAll(x => BH.Engine.Geometry.Query.Distance(x, tempPlane)).Min();
+                    if (tempMin < min)
                     {
-                        aPlane = aPlane_Temp;
-                        aMin = aMin_Temp;
+                        plane = tempPlane;
+                        min = tempMin;
                     }
                 }
             }
 
-            BoundingBox aBoundingBox = null;
-            List<oM.Geometry.Point> aPointList = new List<oM.Geometry.Point>();
-            foreach (ICurve aICurve in aCurveList)
+            BoundingBox bbox = null;
+            List<oM.Geometry.Point> points = new List<oM.Geometry.Point>();
+            foreach (ICurve curve in curves)
             {
-                ICurve aICurve_Temp = null;
+                ICurve tempCurve = null;
                 try
                 {
-                    aICurve_Temp = BH.Engine.Geometry.Modify.IProject(aICurve, aPlane);
+                    tempCurve = BH.Engine.Geometry.Modify.IProject(curve, plane);
                 }
-                catch (System.Exception aException)
+                catch
                 {
                     //TODO: to be fixed in Geometry engine case when normal of arc is diferent to normal of a plane
                     //aICurve_Temp = BH.Engine.Geometry.Modify.IProject(aICurve, aPlane);
                 }
 
-                if (aICurve_Temp == null)
+                if (tempCurve == null)
                     continue;
 
-                if (aBoundingBox == null)
-                    aBoundingBox = BH.Engine.Geometry.Query.IBounds(aICurve_Temp);
+                if (bbox == null)
+                    bbox = BH.Engine.Geometry.Query.IBounds(tempCurve);
                 else
-                    aBoundingBox += BH.Engine.Geometry.Query.IBounds(aICurve_Temp);
+                    bbox += BH.Engine.Geometry.Query.IBounds(tempCurve);
 
 
                 //TODO: Issue with projecting to proper type - workaround solution: recognise object and call ControlPoints instead IControlPoints
-                if (aICurve_Temp is oM.Geometry.Arc)
+                if (tempCurve is oM.Geometry.Arc)
                 {
-                    aPointList.AddRange(((oM.Geometry.Arc)aICurve_Temp).ControlPoints());
+                    points.AddRange(((oM.Geometry.Arc)tempCurve).ControlPoints());
                 }
-                else if (aICurve_Temp is Polyline)
+                else if (tempCurve is Polyline)
                 {
-                    aPointList.AddRange(((Polyline)aICurve_Temp).ControlPoints());
+                    points.AddRange(((Polyline)tempCurve).ControlPoints());
                 }
                 else
                 {
-                    aPointList.AddRange(aICurve_Temp.IControlPoints());
+                    points.AddRange(tempCurve.IControlPoints());
                 }
 
             }
 
-            XYZ aHandOrientation = familyInstance.HandOrientation;
-            Vector aHandDirection = Create.Vector(aHandOrientation.X, aHandOrientation.Y, aHandOrientation.Z);
-            aHandDirection = BH.Engine.Geometry.Modify.Project(aHandDirection, aPlane).Normalise();
+            XYZ handOrientation = familyInstance.HandOrientation;
+            Vector handDirection = Create.Vector(handOrientation.X, handOrientation.Y, handOrientation.Z);
+            handDirection = BH.Engine.Geometry.Modify.Project(handDirection, plane).Normalise();
 
-            Vector aUpDirection = BH.Engine.Geometry.Query.CrossProduct(aHandDirection, aPlane.Normal).Normalise();
+            Vector upDirection = BH.Engine.Geometry.Query.CrossProduct(handDirection, plane.Normal).Normalise();
 
-            double aMax_Up = double.MinValue;
-            double aMax_Hand = double.MinValue;
+            double maxUp = double.MinValue;
+            double maxHand = double.MinValue;
 
-            for (int i = 0; i < aPointList.Count; i++)
+            for (int i = 0; i < points.Count; i++)
             {
-                for (int j = i + 1; j < aPointList.Count; j++)
+                for (int j = i + 1; j < points.Count; j++)
                 {
-                    double aDotProduct;
+                    double dotProduct;
 
-                    Vector aVector = Create.Vector(aPointList[i].X - aPointList[j].X, aPointList[i].Y - aPointList[j].Y, aPointList[i].Z - aPointList[j].Z);
+                    Vector vector = Create.Vector(points[i].X - points[j].X, points[i].Y - points[j].Y, points[i].Z - points[j].Z);
 
-                    aDotProduct = BH.Engine.Geometry.Query.DotProduct(aVector, aHandDirection);
-                    if (aDotProduct > 0)
+                    dotProduct = BH.Engine.Geometry.Query.DotProduct(vector, handDirection);
+                    if (dotProduct > 0)
                     {
-                        Vector aVector_Temp = aHandDirection * aDotProduct;
-                        double aHand = BH.Engine.Geometry.Query.Length(aVector_Temp);
-                        if (aHand > aMax_Hand)
-                            aMax_Hand = aHand;
+                        Vector tempVector = handDirection * dotProduct;
+                        double hand = BH.Engine.Geometry.Query.Length(tempVector);
+                        if (hand > maxHand)
+                            maxHand = hand;
                     }
 
-                    aDotProduct = BH.Engine.Geometry.Query.DotProduct(aVector, aUpDirection);
-                    if (aDotProduct > 0)
+                    dotProduct = BH.Engine.Geometry.Query.DotProduct(vector, upDirection);
+                    if (dotProduct > 0)
                     {
-                        Vector aVector_Temp = aUpDirection * aDotProduct;
-                        double aUp = BH.Engine.Geometry.Query.Length(aVector_Temp);
-                        if (aUp > aMax_Up)
-                            aMax_Up = aUp;
+                        Vector tempVector = upDirection * dotProduct;
+                        double up = BH.Engine.Geometry.Query.Length(tempVector);
+                        if (up > maxUp)
+                            maxUp = up;
                     }
                 }
             }
 
-            if (aMax_Up < 0 || aMax_Hand < 0)
+            if (maxUp < 0 || maxHand < 0)
                 return null;
 
-            aUpDirection = aUpDirection * aMax_Up / 2;
-            aHandDirection = aHandDirection * aMax_Hand / 2;
+            upDirection = upDirection * maxUp / 2;
+            handDirection = handDirection * maxHand / 2;
 
-            oM.Geometry.Point aCenter = BH.Engine.Geometry.Query.Centre(aBoundingBox);
+            oM.Geometry.Point centre = BH.Engine.Geometry.Query.Centre(bbox);
 
-            oM.Geometry.Point aPoint_1 = BH.Engine.Geometry.Modify.Translate(aCenter, aUpDirection);
-            aPoint_1 = BH.Engine.Geometry.Modify.Translate(aPoint_1, aHandDirection);
+            oM.Geometry.Point point1 = BH.Engine.Geometry.Modify.Translate(centre, upDirection);
+            point1 = BH.Engine.Geometry.Modify.Translate(point1, handDirection);
 
-            oM.Geometry.Point aPoint_2 = BH.Engine.Geometry.Modify.Translate(aCenter, aUpDirection);
-            aPoint_2 = BH.Engine.Geometry.Modify.Translate(aPoint_2, -aHandDirection);
+            oM.Geometry.Point point2 = BH.Engine.Geometry.Modify.Translate(centre, upDirection);
+            point2 = BH.Engine.Geometry.Modify.Translate(point2, -handDirection);
 
-            oM.Geometry.Point aPoint_3 = BH.Engine.Geometry.Modify.Translate(aCenter, -aUpDirection);
-            aPoint_3 = BH.Engine.Geometry.Modify.Translate(aPoint_3, -aHandDirection);
+            oM.Geometry.Point point3 = BH.Engine.Geometry.Modify.Translate(centre, -upDirection);
+            point3 = BH.Engine.Geometry.Modify.Translate(point3, -handDirection);
 
-            oM.Geometry.Point aPoint_4 = BH.Engine.Geometry.Modify.Translate(aCenter, -aUpDirection);
-            aPoint_4 = BH.Engine.Geometry.Modify.Translate(aPoint_4, aHandDirection);
+            oM.Geometry.Point point4 = BH.Engine.Geometry.Modify.Translate(centre, -upDirection);
+            point4 = BH.Engine.Geometry.Modify.Translate(point4, handDirection);
 
-            return Create.PolyCurve(new oM.Geometry.Line[] { Create.Line(aPoint_1, aPoint_2), Create.Line(aPoint_2, aPoint_3), Create.Line(aPoint_3, aPoint_4), Create.Line(aPoint_4, aPoint_1) });
+            return Create.PolyCurve(new oM.Geometry.Line[] { Create.Line(point1, point2), Create.Line(point2, point3), Create.Line(point3, point4), Create.Line(point4, point1) });
         }
 
         /***************************************************/
@@ -218,23 +218,23 @@ namespace BH.UI.Revit.Engine
             if (hostObject == null)
                 return null;
 
-            List<PolyCurve> aPolyCurveList = Profiles(hostObject, pullSettings);
-            if (aPolyCurveList == null || aPolyCurveList.Count == 0)
+            List<PolyCurve> polycurves = Profiles(hostObject, pullSettings);
+            if (polycurves == null || polycurves.Count == 0)
                 return null;
 
-            List<oM.Geometry.Plane> aPlaneList = new List<oM.Geometry.Plane>();
-            foreach (PolyCurve aPolyCurve in aPolyCurveList)
+            List<oM.Geometry.Plane> planes = new List<oM.Geometry.Plane>();
+            foreach (PolyCurve polycurve in polycurves)
             {
-                oM.Geometry.Plane aPlane_Temp = BH.Engine.Adapters.Revit.Query.Plane(aPolyCurve);
-                if (aPlane_Temp != null)
-                    aPlaneList.Add(aPlane_Temp);
+                oM.Geometry.Plane tempPlane = BH.Engine.Adapters.Revit.Query.Plane(polycurve);
+                if (tempPlane != null)
+                    planes.Add(tempPlane);
             }
 
-            List<Solid> aSolidList = hostObject.Solids(new Options(), pullSettings);
-            if (aSolidList == null || aSolidList.Count == 0)
+            List<Solid> solids = hostObject.Solids(new Options(), pullSettings);
+            if (solids == null || solids.Count == 0)
                 return null;
 
-            return PolyCurve(familyInstance, aSolidList, aPlaneList, pullSettings);
+            return PolyCurve(familyInstance, solids, planes, pullSettings);
         }
 
 
@@ -247,78 +247,78 @@ namespace BH.UI.Revit.Engine
             if (familyInstance == null || solids == null || planes == null)
                 return null;
 
-            foreach (oM.Geometry.Plane aPlane in planes)
+            foreach (oM.Geometry.Plane plane in planes)
             {
-                if (aPlane == null)
+                if (plane == null)
                     continue;
 
-                Autodesk.Revit.DB.Plane aPlane_Revit = Convert.ToRevitPlane(aPlane);
-                if (aPlane_Revit == null)
+                Autodesk.Revit.DB.Plane revitPlane = Convert.ToRevitPlane(plane);
+                if (revitPlane == null)
                     continue;
 
-                XYZ aNormal_Temp = aPlane.Normal.ToRevitXYZ();
-                aNormal_Temp = aNormal_Temp.Normalize();
+                XYZ tempNormal = plane.Normal.ToRevitXYZ();
+                tempNormal = tempNormal.Normalize();
 
-                BoundingBoxXYZ aBoundingBoxXYZ = familyInstance.get_BoundingBox(null);
+                BoundingBoxXYZ bboxXYZ = familyInstance.get_BoundingBox(null);
 
-                foreach (Solid aSolid in solids)
+                foreach (Solid solid in solids)
                 {
-                    Solid aSolid_Temp = BooleanOperationsUtils.CutWithHalfSpace(aSolid, aPlane_Revit);
-                    if (aSolid_Temp == null || aSolid_Temp.Faces == null || aSolid_Temp.Faces.Size == 0)
+                    Solid tempSolid = BooleanOperationsUtils.CutWithHalfSpace(solid, revitPlane);
+                    if (tempSolid == null || tempSolid.Faces == null || tempSolid.Faces.Size == 0)
                         continue;
 
-                    List<PlanarFace> aPlanarFaceList = new List<PlanarFace>();
-                    foreach (Autodesk.Revit.DB.Face aFace in aSolid_Temp.Faces)
+                    List<PlanarFace> planarFaces = new List<PlanarFace>();
+                    foreach (Autodesk.Revit.DB.Face face in tempSolid.Faces)
                     {
-                        PlanarFace aPlanarFace = aFace as PlanarFace;
+                        PlanarFace planarFace = face as PlanarFace;
 
-                        if (aPlanarFace == null)
+                        if (planarFace == null)
                             continue;
 
-                        if (aPlanarFace.FaceNormal.IsAlmostEqualTo(aNormal_Temp, Tolerance.Distance))
-                            aPlanarFaceList.Add(aPlanarFace);
+                        if (planarFace.FaceNormal.IsAlmostEqualTo(tempNormal, Tolerance.Distance))
+                            planarFaces.Add(planarFace);
                     }
 
-                    if (aPlanarFaceList == null || aPlanarFaceList.Count == 0)
+                    if (planarFaces == null || planarFaces.Count == 0)
                         continue;
 
-                    List<ICurve> aCurveList_Temp = new List<ICurve>();
-                    foreach (PlanarFace aPlanarFace in aPlanarFaceList)
+                    List<ICurve> tempCurves = new List<ICurve>();
+                    foreach (PlanarFace planarFace in planarFaces)
                     {
-                        foreach (EdgeArray aEdgeArray in aPlanarFace.EdgeLoops)
+                        foreach (EdgeArray edges in planarFace.EdgeLoops)
                         {
-                            foreach (Edge aEdge in aEdgeArray)
+                            foreach (Edge edge in edges)
                             {
-                                Curve aCurve = aEdge.AsCurve();
-                                if (aCurve == null)
+                                Curve curve = edge.AsCurve();
+                                if (curve == null)
                                     continue;
 
-                                if (IsContaining(aBoundingBoxXYZ, aCurve.GetEndPoint(0), true) && IsContaining(aBoundingBoxXYZ, aCurve.GetEndPoint(1), true))
-                                    aCurveList_Temp.Add(aCurve.ToBHoM());
+                                if (IsContaining(bboxXYZ, curve.GetEndPoint(0), true) && IsContaining(bboxXYZ, curve.GetEndPoint(1), true))
+                                    tempCurves.Add(curve.ToBHoM());
                             }
                         }
                     }
 
-                    if (aCurveList_Temp == null || aCurveList_Temp.Count == 0)
+                    if (tempCurves == null || tempCurves.Count == 0)
                         continue;
 
-                    List<PolyCurve> aResult = BH.Engine.Geometry.Modify.IJoin(aCurveList_Temp);
-                    if (aResult == null || aResult.Count == 0)
+                    List<PolyCurve> result = BH.Engine.Geometry.Modify.IJoin(tempCurves);
+                    if (result == null || result.Count == 0)
                         continue;
 
-                    aResult.RemoveAll(x => x == null);
-                    aResult.Sort((x, y) => y.Length().CompareTo(y.Length()));
+                    result.RemoveAll(x => x == null);
+                    result.Sort((x, y) => y.Length().CompareTo(y.Length()));
 
-                    PolyCurve aPolyCurve = aResult.First();
+                    PolyCurve pcurve = result.First();
 
-                    if (!BH.Engine.Geometry.Query.IsClosed(aPolyCurve) && aPolyCurve != null)
+                    if (!BH.Engine.Geometry.Query.IsClosed(pcurve) && pcurve != null)
                     {
-                        List<oM.Geometry.Point> aPoints = aPolyCurve.ControlPoints();
-                        if (aPoints != null && aPoints.Count > 2)
-                            aPolyCurve.Curves.Add(Create.Line(aPoints.Last(), aPoints.First()));
+                        List<oM.Geometry.Point> points = pcurve.ControlPoints();
+                        if (points != null && points.Count > 2)
+                            pcurve.Curves.Add(Create.Line(points.Last(), points.First()));
                     }
 
-                    return aPolyCurve;
+                    return pcurve;
                 }
             }
 

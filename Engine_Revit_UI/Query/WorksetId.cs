@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -37,18 +37,18 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null)
                 return null;
 
-            object aValue = null;
-            if (bHoMObject.CustomData.TryGetValue(BH.Engine.Adapters.Revit.Convert.WorksetId, out aValue))
+            object value = null;
+            if (bHoMObject.CustomData.TryGetValue(BH.Engine.Adapters.Revit.Convert.WorksetId, out value))
             {
-                if (aValue is string)
+                if (value is string)
                 {
-                    int aInt = -1;
-                    if (int.TryParse((string)aValue, out aInt))
-                        return new WorksetId(aInt);
+                    int num = -1;
+                    if (int.TryParse((string)value, out num))
+                        return new WorksetId(num);
                 }
-                else if (aValue is int)
+                else if (value is int)
                 {
-                    return new WorksetId((int)aValue);
+                    return new WorksetId((int)value);
                 }
                 else
                 {
@@ -66,11 +66,11 @@ namespace BH.UI.Revit.Engine
             if (document == null || string.IsNullOrEmpty(worksetName))
                 return null;
 
-            Workset aWorkset = new FilteredWorksetCollector(document).OfKind(WorksetKind.UserWorkset).First(x => x.Name == worksetName);
-            if (aWorkset == null)
+            Workset workset = new FilteredWorksetCollector(document).OfKind(WorksetKind.UserWorkset).First(x => x.Name == worksetName);
+            if (workset == null)
                 return null;
 
-            return aWorkset.Id;
+            return workset.Id;
         }
 
         /***************************************************/
