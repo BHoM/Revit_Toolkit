@@ -43,14 +43,14 @@ namespace BH.Engine.Adapters.Revit
         [Output("PullSettings")]
         public static PullSettings PullSettings(Discipline discipline = Discipline.Physical, Dictionary<int, List<IBHoMObject>> refObjects = null, bool copyCustomData = true)
         {
-            PullSettings aPullSettings = new PullSettings()
+            PullSettings settings = new PullSettings()
             {
                 Discipline = discipline,
                 CopyCustomData = copyCustomData,
                 RefObjects = refObjects
             };
 
-            return aPullSettings;
+            return settings;
         }
 
         /***************************************************/
@@ -61,14 +61,14 @@ namespace BH.Engine.Adapters.Revit
         [Output("PullSettings")]
         public static PullSettings PullSettings(Discipline discipline, MapSettings mapSettings)
         {
-            PullSettings aPullSettings = new PullSettings()
+            PullSettings settings = new PullSettings()
             {
                 Discipline = discipline,
                 MapSettings = mapSettings,
                 RefObjects = new Dictionary<int, List<IBHoMObject>>(),
             };
 
-            return aPullSettings;
+            return settings;
         }
 
 

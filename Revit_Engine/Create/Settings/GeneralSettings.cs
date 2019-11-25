@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -43,7 +43,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("GeneralSettings")]
         public static GeneralSettings GeneralSettings(Discipline defaultDiscipline = Discipline.Physical, bool replace = true, string tagsParameterName = "BHE_Tags", bool suppressFailureMessages = false)
         {
-            GeneralSettings aGeneralSettings = new GeneralSettings()
+            GeneralSettings generalSettings = new GeneralSettings()
             {
                 DefaultDiscipline = defaultDiscipline,
                 TagsParameterName = tagsParameterName,
@@ -51,9 +51,9 @@ namespace BH.Engine.Adapters.Revit
             };
 
             if (!replace)
-                aGeneralSettings.AdapterMode = AdapterMode.Update;
+                generalSettings.AdapterMode = AdapterMode.Update;
 
-            return aGeneralSettings;
+            return generalSettings;
         }
 
         /***************************************************/

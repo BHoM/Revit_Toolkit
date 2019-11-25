@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -40,12 +40,14 @@ namespace BH.Engine.Adapters.Revit
         [Output("MapSettings")]
         public static MapSettings MapSettings(IEnumerable<TypeMap> typeMaps)
         {
-            MapSettings aMapSettings = new MapSettings();
+            MapSettings mapSettings = new MapSettings();
             if (typeMaps != null)
-                foreach (TypeMap aTypeMap in typeMaps)
-                    aMapSettings = aMapSettings.AddTypeMap(aTypeMap);
+            {
+                foreach (TypeMap typeMap in typeMaps)
+                    mapSettings = mapSettings.AddTypeMap(typeMap);
+            }
 
-            return aMapSettings;
+            return mapSettings;
         }
 
         /***************************************************/
