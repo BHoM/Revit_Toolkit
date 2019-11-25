@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -67,37 +67,37 @@ namespace BH.Engine.Adapters.Revit
             if (string.IsNullOrWhiteSpace(sourceName) || destinationNames == null || destinationNames.Count() == 0)
                 return typeMap;
 
-            Type aType = typeMap.Type;
+            Type type = typeMap.Type;
 
-            if (aType == null)
+            if (type == null)
                 return typeMap;
 
-            TypeMap aTypeMap = typeMap.GetShallowClone() as TypeMap;
-            IEnumerable<PropertyInfo> aPropertyInfos = Query.MapPropertyInfos(aType);
-            if (aPropertyInfos == null || aPropertyInfos.Count() == 0)
+            TypeMap clonedTypeMap = typeMap.GetShallowClone() as TypeMap;
+            IEnumerable<PropertyInfo> propertyInfos = Query.MapPropertyInfos(type);
+            if (propertyInfos == null || propertyInfos.Count() == 0)
                 return typeMap;
 
-            foreach (PropertyInfo aPropertyInfo in aPropertyInfos)
-                if (aPropertyInfo.Name == sourceName)
+            foreach (PropertyInfo pInfo in propertyInfos)
+                if (pInfo.Name == sourceName)
                 {
-                    if (aTypeMap.Map == null)
-                        aTypeMap.Map = new Dictionary<string, HashSet<string>>();
+                    if (clonedTypeMap.Map == null)
+                        clonedTypeMap.Map = new Dictionary<string, HashSet<string>>();
 
-                    HashSet<string> aHashSet = null;
-                    if (!aTypeMap.Map.TryGetValue(sourceName, out aHashSet))
+                    HashSet<string> hashSet = null;
+                    if (!clonedTypeMap.Map.TryGetValue(sourceName, out hashSet))
                     {
-                        aHashSet = new HashSet<string>();
-                        aTypeMap.Map[sourceName] = aHashSet;
+                        hashSet = new HashSet<string>();
+                        clonedTypeMap.Map[sourceName] = hashSet;
                     }
 
                     foreach (string aDestinationName in destinationNames)
                         if (!string.IsNullOrWhiteSpace(aDestinationName))
-                            aHashSet.Add(aDestinationName);
+                            hashSet.Add(aDestinationName);
 
-                    return aTypeMap;
+                    return clonedTypeMap;
                 }
 
-            return aTypeMap;
+            return clonedTypeMap;
         }
 
         /***************************************************/
@@ -116,12 +116,12 @@ namespace BH.Engine.Adapters.Revit
             if (type == null || string.IsNullOrWhiteSpace(sourceName) || string.IsNullOrWhiteSpace(destinationName))
                 return mapSettings;
 
-            TypeMap aTypeMap = Create.TypeMap(type);
-            aTypeMap = aTypeMap.AddMap(sourceName, destinationName);
-            if (aTypeMap == null)
+            TypeMap typeMap = Create.TypeMap(type);
+            typeMap = typeMap.AddMap(sourceName, destinationName);
+            if (typeMap == null)
                 return mapSettings;
 
-            return mapSettings.AddTypeMap(aTypeMap, true);            
+            return mapSettings.AddTypeMap(typeMap, true);            
         }
 
         /***************************************************/

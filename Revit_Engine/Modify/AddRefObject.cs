@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -43,32 +43,32 @@ namespace BH.Engine.Adapters.Revit
             if (bHoMObject == null && bHoMObject == null)
                 return null;
 
-            Dictionary<int, List<IBHoMObject>> aResult = null;
+            Dictionary<int, List<IBHoMObject>> result = null;
             if (refObjects == null)
-                aResult = new Dictionary<int, List<IBHoMObject>>();
+                result = new Dictionary<int, List<IBHoMObject>>();
             else
-                aResult = new Dictionary<int, List<IBHoMObject>>(refObjects);
+                result = new Dictionary<int, List<IBHoMObject>>(refObjects);
 
             if (bHoMObject == null)
                 return new Dictionary<int, List<IBHoMObject>>(refObjects);
 
-            int aId = Query.ElementId(bHoMObject);
+            int id = Query.ElementId(bHoMObject);
 
-            List<IBHoMObject> aBHoMObjectList = null;
-            if (aResult.TryGetValue(aId, out aBHoMObjectList))
+            List<IBHoMObject> objects = null;
+            if (result.TryGetValue(id, out objects))
             {
-                if (aBHoMObjectList == null)
-                    aBHoMObjectList = new List<IBHoMObject>();
+                if (objects == null)
+                    objects = new List<IBHoMObject>();
 
-                if (aBHoMObjectList.Find(x => x != null && x.BHoM_Guid == bHoMObject.BHoM_Guid) == null)
-                    aBHoMObjectList.Add(bHoMObject);
+                if (objects.Find(x => x != null && x.BHoM_Guid == bHoMObject.BHoM_Guid) == null)
+                    objects.Add(bHoMObject);
             }
             else
             {
-                aResult.Add(aId, new List<IBHoMObject>() { bHoMObject });
+                result.Add(id, new List<IBHoMObject>() { bHoMObject });
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

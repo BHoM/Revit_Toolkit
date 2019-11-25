@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -43,16 +43,16 @@ namespace BH.Engine.Adapters.Revit
             if (bHoMObjects == null && bHoMObjects == null)
                 return null;
 
-            Dictionary<int, List<IBHoMObject>> aResult = null;
+            Dictionary<int, List<IBHoMObject>> result = null;
             if (refObjects == null)
-                aResult = new Dictionary<int, List<IBHoMObject>>();
+                result = new Dictionary<int, List<IBHoMObject>>();
             else
-                aResult = new Dictionary<int, List<IBHoMObject>>(refObjects);
+                result = new Dictionary<int, List<IBHoMObject>>(refObjects);
 
-            foreach (BHoMObject aBHoMObject in bHoMObjects)
-                aResult = aResult.AddRefObject(aBHoMObject);
+            foreach (BHoMObject obj in bHoMObjects)
+                result = result.AddRefObject(obj);
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

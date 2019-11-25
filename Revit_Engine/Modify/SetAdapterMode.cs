@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -43,11 +43,11 @@ namespace BH.Engine.Adapters.Revit
             if (revitSettings == null || revitSettings.GeneralSettings == null)
                 return null;
 
-            RevitSettings aRevitSettings = revitSettings.GetShallowClone() as RevitSettings;
-            aRevitSettings.GeneralSettings = aRevitSettings.GeneralSettings.GetShallowClone() as GeneralSettings;
-            aRevitSettings.GeneralSettings.AdapterMode = adapterMode;
+            RevitSettings settings = revitSettings.GetShallowClone() as RevitSettings;
+            settings.GeneralSettings = settings.GeneralSettings.GetShallowClone() as GeneralSettings;
+            settings.GeneralSettings.AdapterMode = adapterMode;
 
-            return aRevitSettings;
+            return settings;
         }
 
         /***************************************************/

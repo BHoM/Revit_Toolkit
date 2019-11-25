@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -42,12 +42,12 @@ namespace BH.Engine.Adapters.Revit
             if (originContextFragment == null)
                 return null;
 
-            OriginContextFragment aBuildingElementProperties = new OriginContextFragment();
-            aBuildingElementProperties.Description = originContextFragment.Description;
-            aBuildingElementProperties.ElementID = originContextFragment.ElementID;
-            aBuildingElementProperties.TypeName = familyTypeName;
+            OriginContextFragment originContext = new OriginContextFragment();
+            originContext.Description = originContextFragment.Description;
+            originContext.ElementID = originContextFragment.ElementID;
+            originContext.TypeName = familyTypeName;
 
-            return aBuildingElementProperties;
+            return originContext;
         }
 
         /***************************************************/
