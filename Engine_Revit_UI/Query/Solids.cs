@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -37,46 +37,45 @@ namespace BH.UI.Revit.Engine
             if (geometryElement == null)
                 return null;
 
-            List<Solid> aResult = new List<Solid>();
-            foreach (GeometryObject aGeometryObject in geometryElement)
+            List<Solid> result = new List<Solid>();
+            foreach (GeometryObject geomObject in geometryElement)
             {
-                if (aGeometryObject is GeometryInstance)
+                if (geomObject is GeometryInstance)
                 {
-                    GeometryInstance aGeometryInstance = (GeometryInstance)aGeometryObject;
+                    GeometryInstance geomInstance = (GeometryInstance)geomObject;
 
-                    Transform aTransform = aGeometryInstance.Transform;
+                    Transform transformation = geomInstance.Transform;
                     if (transform != null)
-                        aTransform = aTransform.Multiply(transform.Inverse);
+                        transformation = transformation.Multiply(transform.Inverse);
 
-                    GeometryElement aGeometryElement = aGeometryInstance.GetInstanceGeometry(aTransform);
-                    if (aGeometryElement == null)
+                    GeometryElement geomElement = geomInstance.GetInstanceGeometry(transformation);
+                    if (geomElement == null)
                         continue;
 
-                    List<Solid> aSolidList = Solids(aGeometryElement);
-                    if (aSolidList != null && aSolidList.Count != 0)
-                        aResult.AddRange(aSolidList);
-            }
-
-                else if (aGeometryObject is Solid)
-                {
-                    aResult.Add((Solid)aGeometryObject);                                              
+                    List<Solid> solids = Solids(geomElement);
+                    if (solids != null && solids.Count != 0)
+                        result.AddRange(solids);
                 }
-
+                else if (geomObject is Solid)
+                {
+                    result.Add((Solid)geomObject);                                              
+                }
             }
-            return aResult;
+
+            return result;
         }
 
         /***************************************************/
 
         public static List<Solid> Solids(this Element element, Options options, PullSettings pullSettings = null)
         {
-            GeometryElement aGeometryElement = element.get_Geometry(options);
+            GeometryElement geomElement = element.get_Geometry(options);
 
-            Transform aTransform = null;
+            Transform transform = null;
             if (element is FamilyInstance)
-                aTransform = ((FamilyInstance)element).GetTotalTransform();
+                transform = ((FamilyInstance)element).GetTotalTransform();
 
-            return Solids(aGeometryElement, aTransform, pullSettings);
+            return Solids(geomElement, transform, pullSettings);
         }
 
         /***************************************************/

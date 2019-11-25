@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -40,7 +40,7 @@ namespace BH.UI.Revit.Engine
         {
             foreach (string s in parameterNames)
             {
-                Parameter p= element.LookupParameter(s);
+                Parameter p = element.LookupParameter(s);
                 if (p != null && p.HasValue) return p;
             }
             return null;
@@ -53,28 +53,28 @@ namespace BH.UI.Revit.Engine
             if (element == null || mapSettings == null || type == null)
                 return null;
 
-            IEnumerable<string> aNames = BH.Engine.Adapters.Revit.Query.Names(mapSettings, type, name);
-            if (aNames == null || aNames.Count() == 0)
+            IEnumerable<string> names = BH.Engine.Adapters.Revit.Query.Names(mapSettings, type, name);
+            if (names == null || names.Count() == 0)
                 return null;
 
-            Parameter aResult = null;
-            foreach (string aName in aNames)
+            Parameter result = null;
+            foreach (string val in names)
             {
-                Parameter aParameter = element.LookupParameter(aName);
-                if (aParameter == null)
+                Parameter parameter = element.LookupParameter(val);
+                if (parameter == null)
                     continue;
 
-                if (!hasValue && !aParameter.HasValue)
+                if (!hasValue && !parameter.HasValue)
                     continue;
 
-                if(aResult == null)
-                    aResult = aParameter;
+                if(result == null)
+                    result = parameter;
 
-                if (aParameter.HasValue)
-                    return aParameter;
+                if (parameter.HasValue)
+                    return parameter;
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

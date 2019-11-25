@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -39,145 +39,143 @@ namespace BH.UI.Revit.Engine
 
         public static Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> PlanarSurfaceDictionary(this HostObject hostObject, bool pullOpenings = true, PullSettings pullSettings = null)
         {
-            List<PolyCurve> aPolyCurveList = Query.Profiles(hostObject, pullSettings);
+            List<PolyCurve> polycurves = Query.Profiles(hostObject, pullSettings);
 
-            List<PolyCurve> aPolyCurveList_Outer = null;
+            List<PolyCurve> outerPolycurves = null;
             try
             {
-                aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
+                outerPolycurves = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(polycurves);
             }
-            catch (Exception aException)
+            catch
             {
-                aPolyCurveList_Outer = aPolyCurveList;
+                outerPolycurves = polycurves;
             }
 
-            if (aPolyCurveList_Outer == null)
+            if (outerPolycurves == null)
                 return null;
 
-            List<PlanarSurface> aPlanarSurfaceList_NotPlanar = new List<PlanarSurface>();
-            List<PlanarSurface> aPlanarSurfaceList_Planar = new List<PlanarSurface>();
-            foreach (PolyCurve aPolyCurve in aPolyCurveList_Outer)
+            List<PlanarSurface> nonPlanarSurfaces = new List<PlanarSurface>();
+            List<PlanarSurface> planarSurfaces = new List<PlanarSurface>();
+            foreach (PolyCurve polycurve in outerPolycurves)
             {
-                List<PolyCurve> aPolyCurveList_Inner = null;
+                List<PolyCurve> innerPolycurves = null;
                 try
                 {
-                    aPolyCurveList_Inner = BH.Engine.Adapters.Revit.Query.InnerPolyCurves(aPolyCurve, aPolyCurveList);
+                    innerPolycurves = BH.Engine.Adapters.Revit.Query.InnerPolyCurves(polycurve, polycurves);
                 }
-                catch (Exception aException)
+                catch
                 {
 
                 }
 
-                List<ICurve> aICurveList = new List<ICurve>();
-                if (aPolyCurveList_Inner != null && aPolyCurveList_Inner.Count > 0)
-                    aICurveList = aPolyCurveList_Inner.ConvertAll(x => (ICurve)x);
+                List<ICurve> curves = new List<ICurve>();
+                if (innerPolycurves != null && innerPolycurves.Count > 0)
+                    curves = innerPolycurves.ConvertAll(x => (ICurve)x);
 
                 //TODO: Create method in Geometry Engine shall be used however IsClosed method returns false for some of the PolyCurves pulled from Revit
-                //PlanarSurface aPlanarSurface = BH.Engine.Geometry.Create.PlanarSurface(aPolyCurve, aPolyCurveList_Inner.ConvertAll(x => (ICurve)x)
-                PlanarSurface aPlanarSurface = new PlanarSurface()
+                PlanarSurface planarSurface = new PlanarSurface()
                 {
-                    ExternalBoundary = aPolyCurve,
-                    InternalBoundaries = aICurveList
+                    ExternalBoundary = polycurve,
+                    InternalBoundaries = curves
                 };
 
-                if (!BH.Engine.Geometry.Query.IIsPlanar(aPlanarSurface.ExternalBoundary))
+                if (!BH.Engine.Geometry.Query.IIsPlanar(planarSurface.ExternalBoundary))
                 {
                     BH.Engine.Reflection.Compute.RecordWarning("Invalid Geometry of ISurface. External Boundary of ISurface is not planar and Openings cannot be pulled.");
-                    aPlanarSurfaceList_NotPlanar.Add(aPlanarSurface);
+                    nonPlanarSurfaces.Add(planarSurface);
                 }
                 else
                 {
-                    aPlanarSurfaceList_Planar.Add(aPlanarSurface);
+                    planarSurfaces.Add(planarSurface);
                 }
                     
             }
 
-            if (aPlanarSurfaceList_Planar == null && aPlanarSurfaceList_NotPlanar == null)
+            if (planarSurfaces == null && nonPlanarSurfaces == null)
                 return null;
 
-            Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> aResult = new Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>>();
+            Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> result = new Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>>();
 
-            if(aPlanarSurfaceList_Planar != null && aPlanarSurfaceList_Planar.Count > 0)
+            if(planarSurfaces != null && planarSurfaces.Count > 0)
             {
-                foreach (PlanarSurface aPlanarSurface in aPlanarSurfaceList_Planar)
-                    aResult[aPlanarSurface] = null;
+                foreach (PlanarSurface aPlanarSurface in planarSurfaces)
+                    result[aPlanarSurface] = null;
 
                 if(pullOpenings)
                 {
-                    IEnumerable<ElementId> aElementIds_Hosted = hostObject.FindInserts(false, false, false, false);
-                    if (aElementIds_Hosted != null && aElementIds_Hosted.Count() > 0)
+                    IEnumerable<ElementId> hostedElementIDs = hostObject.FindInserts(false, false, false, false);
+                    if (hostedElementIDs != null && hostedElementIDs.Count() > 0)
                     {
-                        List<oM.Physical.Elements.IOpening> aOpeningList = new List<oM.Physical.Elements.IOpening>();
-                        List<PolyCurve> aPolyCurveList_Internal = new List<PolyCurve>(); 
-                        foreach (ElementId aElementId in aElementIds_Hosted)
+                        List<oM.Physical.Elements.IOpening> openings = new List<oM.Physical.Elements.IOpening>();
+                        List<PolyCurve> internalPolycurves = new List<PolyCurve>(); 
+                        foreach (ElementId id in hostedElementIDs)
                         {
-                            FamilyInstance aFamilyInstance = hostObject.Document.GetElement(aElementId) as FamilyInstance;
-                            if (aFamilyInstance == null)
+                            FamilyInstance familyInstance = hostObject.Document.GetElement(id) as FamilyInstance;
+                            if (familyInstance == null)
                                 continue;
 
-                            if (aFamilyInstance.Category == null)
+                            if (familyInstance.Category == null)
                                 continue;
 
-                            switch ((BuiltInCategory)(aFamilyInstance.Category.Id.IntegerValue))
+                            switch ((BuiltInCategory)(familyInstance.Category.Id.IntegerValue))
                             {
                                 case Autodesk.Revit.DB.BuiltInCategory.OST_Windows:
-                                    aOpeningList.Add(aFamilyInstance.ToBHoMWindow(pullSettings));
+                                    openings.Add(familyInstance.ToBHoMWindow(pullSettings));
                                     break;
                                 case Autodesk.Revit.DB.BuiltInCategory.OST_Doors:
-                                    aOpeningList.Add(aFamilyInstance.ToBHoMDoor(pullSettings));
+                                    openings.Add(familyInstance.ToBHoMDoor(pullSettings));
                                     break;
                                 default:
-                                    PolyCurve aPolyCurve = aFamilyInstance.PolyCurve(hostObject, pullSettings);
-                                    if (aPolyCurve != null)
-                                        aPolyCurveList_Internal.Add(aPolyCurve);
+                                    PolyCurve pcurve = familyInstance.PolyCurve(hostObject, pullSettings);
+                                    if (pcurve != null)
+                                        internalPolycurves.Add(pcurve);
                                     break;
                             }
                         }
 
-                        if (aOpeningList != null && aOpeningList.Count > 0)
+                        if (openings != null && openings.Count > 0)
                         {
-                            aOpeningList.RemoveAll(x => x == null);
-                            foreach (oM.Physical.Elements.IOpening aOpening in aOpeningList)
+                            openings.RemoveAll(x => x == null);
+                            foreach (oM.Physical.Elements.IOpening opening in openings)
                             {
-                                if (aOpening.Location == null)
+                                if (opening.Location == null)
                                     continue;
 
-                                PlanarSurface aPlanarSurface = aPlanarSurfaceList_Planar.Find(x => x.IsContaining(aOpening.Location as PlanarSurface));
-                                if (aPlanarSurface == null)
+                                PlanarSurface planarSrf = planarSurfaces.Find(x => x.IsContaining(opening.Location as PlanarSurface));
+                                if (planarSrf == null)
                                     continue;
 
-                                List<oM.Physical.Elements.IOpening> aOpeningList_Temp = aResult[aPlanarSurface];
-                                if (aOpeningList_Temp == null)
+                                List<oM.Physical.Elements.IOpening> tempOpenings = result[planarSrf];
+                                if (tempOpenings == null)
                                 {
-                                    aOpeningList_Temp = new List<oM.Physical.Elements.IOpening>();
-                                    aResult[aPlanarSurface] = aOpeningList_Temp;
+                                    tempOpenings = new List<oM.Physical.Elements.IOpening>();
+                                    result[planarSrf] = tempOpenings;
                                 }
 
-                                aOpeningList_Temp.Add(aOpening);
+                                tempOpenings.Add(opening);
                             }
                         }
 
-                        if (aPolyCurveList_Internal != null && aPolyCurveList_Internal.Count > 0)
+                        if (internalPolycurves != null && internalPolycurves.Count > 0)
                         {
-                            aPolyCurveList_Internal.RemoveAll(x => x == null);
-                            foreach (PolyCurve aPolyCurve in aPolyCurveList_Internal)
+                            internalPolycurves.RemoveAll(x => x == null);
+                            foreach (PolyCurve pcurve in internalPolycurves)
                             {
-                                PlanarSurface aPlanarSurface = aPlanarSurfaceList_Planar.Find(x => x.IsContaining(BH.Engine.Geometry.Query.IControlPoints(aPolyCurve)));
-                                if (aPlanarSurface == null)
+                                PlanarSurface planarSrf = planarSurfaces.Find(x => x.IsContaining(BH.Engine.Geometry.Query.IControlPoints(pcurve)));
+                                if (planarSrf == null)
                                     continue;
 
-                                aPlanarSurface.InternalBoundaries.Add(aPolyCurve);
+                                planarSrf.InternalBoundaries.Add(pcurve);
                             }
                         }
                     }
                 }
             }
 
+            foreach (PlanarSurface aPlanarSurface in nonPlanarSurfaces)
+                result[aPlanarSurface] = null;
 
-            foreach (PlanarSurface aPlanarSurface in aPlanarSurfaceList_NotPlanar)
-                aResult[aPlanarSurface] = null;
-
-            return aResult;
+            return result;
         }
 
         /***************************************************/

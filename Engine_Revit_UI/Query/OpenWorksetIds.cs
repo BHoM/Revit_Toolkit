@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -36,14 +36,14 @@ namespace BH.UI.Revit.Engine
             if (document == null)
                 return null;
 
-            FilteredWorksetCollector aFilteredWorksetCollector = new FilteredWorksetCollector(document).OfKind(WorksetKind.UserWorkset);
+            FilteredWorksetCollector filteredWorksetCollector = new FilteredWorksetCollector(document).OfKind(WorksetKind.UserWorkset);
 
-            List<WorksetId> aResult = new List<WorksetId>();
-            foreach (Workset aWorkset in aFilteredWorksetCollector)
-                if (aWorkset.IsOpen)
-                    aResult.Add(aWorkset.Id);
+            List<WorksetId> result = new List<WorksetId>();
+            foreach (Workset workset in filteredWorksetCollector)
+                if (workset.IsOpen)
+                    result.Add(workset.Id);
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

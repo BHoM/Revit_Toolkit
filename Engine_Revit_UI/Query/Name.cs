@@ -1,6 +1,6 @@
 ﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -35,26 +35,26 @@ namespace BH.UI.Revit.Engine
             if (spatialElement == null)
                 return null;
 
-            string aName = null;
-            string aNumber = spatialElement.Number;
+            string name = null;
+            string number = spatialElement.Number;
 
-            Parameter aParameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
-            if (aParameter != null)
-                aName = aParameter.AsString();
+            Parameter parameter = spatialElement.get_Parameter(BuiltInParameter.ROOM_NAME);
+            if (parameter != null)
+                name = parameter.AsString();
 
-            string aResult = null;
-            if (!string.IsNullOrEmpty(aName))
-                aResult = aName;
+            string result = null;
+            if (!string.IsNullOrEmpty(name))
+                result = name;
 
-            if (!string.IsNullOrEmpty(aNumber))
+            if (!string.IsNullOrEmpty(number))
             {
-                if (string.IsNullOrEmpty(aResult))
-                    aResult = aNumber;
+                if (string.IsNullOrEmpty(result))
+                    result = number;
                 else
-                    aResult = string.Format("{0} {1}", aNumber, aResult);
+                    result = string.Format("{0} {1}", number, result);
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

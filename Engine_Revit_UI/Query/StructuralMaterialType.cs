@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -38,13 +38,13 @@ namespace BH.UI.Revit.Engine
             if (string.IsNullOrEmpty(materialClass))
                 return Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined;
 
-            StructuralMaterialType aStructuralMaterialType = Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined;
-            if (Enum.TryParse(materialClass, out aStructuralMaterialType))
-                return aStructuralMaterialType;
+            StructuralMaterialType structuralMaterialType = Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined;
+            if (Enum.TryParse(materialClass, out structuralMaterialType))
+                return structuralMaterialType;
 
-            string aMaterialClass = materialClass.ToLower().Trim();
+            string matClass = materialClass.ToLower().Trim();
 
-            switch(aMaterialClass)
+            switch(matClass)
             {
                 case "aluminium":
                     return Autodesk.Revit.DB.Structure.StructuralMaterialType.Aluminum;
@@ -58,7 +58,6 @@ namespace BH.UI.Revit.Engine
             }
 
             return Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined;
-
         }
 
         /***************************************************/

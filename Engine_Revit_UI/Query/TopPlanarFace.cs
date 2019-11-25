@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -32,16 +32,16 @@ namespace BH.UI.Revit.Engine
         
         public static PlanarFace Top(this Solid solid)
         {
-            PlanarFace aResult = null;
-            FaceArray aFaceArray = solid.Faces;
-            foreach (Face aFace in aFaceArray)
+            PlanarFace result = null;
+            FaceArray faceArray = solid.Faces;
+            foreach (Face face in faceArray)
             {
-                PlanarFace aPlanarFace = aFace as PlanarFace;
-                if (null != aPlanarFace && Query.IsHorizontal(aPlanarFace))
-                    if ((null == aResult) || (aResult.Origin.Z < aPlanarFace.Origin.Z))
-                        aResult = aPlanarFace;
+                PlanarFace planarFace = face as PlanarFace;
+                if (null != planarFace && Query.IsHorizontal(planarFace))
+                    if ((null == result) || (result.Origin.Z < planarFace.Origin.Z))
+                        result = planarFace;
             }
-            return aResult;
+            return result;
         }
 
         /***************************************************/

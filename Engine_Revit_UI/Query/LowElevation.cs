@@ -44,15 +44,15 @@ namespace BH.UI.Revit.Engine
             if (panel == null || panel.ExternalEdges == null)
                 return double.NaN;
 
-            double aResult = double.NaN;
-            foreach(Edge aEdge in panel.ExternalEdges)
+            double result = double.NaN;
+            foreach(Edge edge in panel.ExternalEdges)
             {
-                BoundingBox aBoundingBox = BH.Engine.Geometry.Query.Bounds(aEdge.Curve as dynamic);
-                if(aBoundingBox != null && (double.IsNaN(aResult) || aResult < aBoundingBox.Min.Z))
-                        aResult = aBoundingBox.Min.Z;
+                BoundingBox bbox = BH.Engine.Geometry.Query.Bounds(edge.Curve as dynamic);
+                if(bbox != null && (double.IsNaN(result) || result < bbox.Min.Z))
+                        result = bbox.Min.Z;
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/
@@ -62,9 +62,9 @@ namespace BH.UI.Revit.Engine
             if (object2D == null || object2D.Surface == null)
                 return double.NaN;
 
-            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.Bounds(object2D.Surface as dynamic);
+            BoundingBox bbox = BH.Engine.Geometry.Query.Bounds(object2D.Surface as dynamic);
 
-            return aBoundingBox.Min.Z;
+            return bbox.Min.Z;
         }
 
         /***************************************************/
@@ -84,9 +84,9 @@ namespace BH.UI.Revit.Engine
             if (surface == null || surface == null)
                 return double.NaN;
 
-            BoundingBox aBoundingBox = BH.Engine.Geometry.Query.Bounds(surface as dynamic);
+            BoundingBox bbox = BH.Engine.Geometry.Query.Bounds(surface as dynamic);
 
-            return aBoundingBox.Min.Z;
+            return bbox.Min.Z;
         }
 
         /***************************************************/

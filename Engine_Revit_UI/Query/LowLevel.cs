@@ -37,40 +37,42 @@ namespace BH.UI.Revit.Engine
 
         public static Level LowLevel(this Document document, double elevation)
         {
-            List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
-            if (aLevelList == null || aLevelList.Count == 0)
+            List<Level> levels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
+            if (levels == null || levels.Count == 0)
                 return null;
 
-            aLevelList.Sort((x, y) => y.Elevation.CompareTo(x.Elevation));
+            levels.Sort((x, y) => y.Elevation.CompareTo(x.Elevation));
 
-            double aElevation = elevation.FromSI(UnitType.UT_Length);
+            double levelElevation = elevation.FromSI(UnitType.UT_Length);
 
-            if (Math.Abs(aElevation - aLevelList.First().Elevation) < oM.Geometry.Tolerance.MacroDistance)
-                return aLevelList.First();
+            if (Math.Abs(levelElevation - levels.First().Elevation) < oM.Geometry.Tolerance.MacroDistance)
+                return levels.First();
 
-            for (int i = 1; i < aLevelList.Count; i++)
-                if (Math.Round(aElevation, 3, MidpointRounding.AwayFromZero) >= Math.Round(aLevelList[i].Elevation, 3, MidpointRounding.AwayFromZero))
-                    return aLevelList[i];
+            for (int i = 1; i < levels.Count; i++)
+            {
+                if (Math.Round(levelElevation, 3, MidpointRounding.AwayFromZero) >= Math.Round(levels[i].Elevation, 3, MidpointRounding.AwayFromZero))
+                    return levels[i];
+            }
 
-            return aLevelList.Last();
+            return levels.Last();
         }
 
         /***************************************************/
 
         public static Level LowLevel(this Document document, oM.Geometry.ICurve curve)
         {
-            double aElevation = LowElevation(curve);
+            double elevation = LowElevation(curve);
 
-            return LowLevel(document, aElevation);
+            return LowLevel(document, elevation);
         }
 
         /***************************************************/
 
         public static Level LowLevel(this Document document, IObject2D object2D)
         {
-            double aElevation = LowElevation(object2D);
+            double elevation = LowElevation(object2D);
 
-            return LowLevel(document, aElevation);
+            return LowLevel(document, elevation);
         }
 
         /***************************************************/

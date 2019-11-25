@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -46,167 +46,167 @@ namespace BH.UI.Revit.Engine
             if (!typeof(IBHoMObject).IsAssignableFrom(type))//BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(type, typeof(BHoMObject)))
                 return null;
 
-            List<System.Type> aResult = new List<System.Type>();
+            List<System.Type> result = new List<System.Type>();
             if (type == typeof(oM.Environment.Elements.Panel))
             {
-                aResult.Add(typeof(Floor));
-                aResult.Add(typeof(Wall));
-                aResult.Add(typeof(Ceiling));
-                aResult.Add(typeof(RoofBase));
-                aResult.Add(typeof(FamilyInstance));
-                return aResult;
+                result.Add(typeof(Floor));
+                result.Add(typeof(Wall));
+                result.Add(typeof(Ceiling));
+                result.Add(typeof(RoofBase));
+                result.Add(typeof(FamilyInstance));
+                return result;
             }
 
             if (type == typeof(oM.Physical.Elements.Wall))
             {
-                aResult.Add(typeof(Wall));
-                return aResult;
+                result.Add(typeof(Wall));
+                return result;
             }
 
             if (type == typeof(oM.Physical.Elements.Floor))
             {
-                aResult.Add(typeof(Floor));
-                return aResult;
+                result.Add(typeof(Floor));
+                return result;
             }
 
             if (type == typeof(oM.Physical.Elements.Roof))
             {
-                aResult.Add(typeof(RoofBase));
-                return aResult;
+                result.Add(typeof(RoofBase));
+                return result;
             }
 
 
             if (type == typeof(oM.Physical.Elements.Window))
             {
-                aResult.Add(typeof(FamilyInstance));
+                result.Add(typeof(FamilyInstance));
                 //aResult.Add(typeof(Wall));
                 //DO NOT ADD: Autodesk.Revit.DB.Panel -> does not work with FilteredElementCollector
                 //aResult.Add(typeof(Autodesk.Revit.DB.Panel));
-                return aResult;
+                return result;
             }
 
 
             if (type == typeof(oM.Physical.Elements.Door))
             {
-                aResult.Add(typeof(FamilyInstance));
-                return aResult;
+                result.Add(typeof(FamilyInstance));
+                return result;
             }
 
             if(typeof(oM.Physical.Elements.ISurface).IsAssignableFrom(type))
             {
-                aResult.Add(typeof(Wall));
-                aResult.Add(typeof(Floor));
-                aResult.Add(typeof(RoofBase));
-                return aResult;
+                result.Add(typeof(Wall));
+                result.Add(typeof(Floor));
+                result.Add(typeof(RoofBase));
+                return result;
             }
 
             if (type == typeof(oM.Structure.Elements.Panel))
             {
-                aResult.Add(typeof(Floor));
-                aResult.Add(typeof(Wall));
-                return aResult;
+                result.Add(typeof(Floor));
+                result.Add(typeof(Wall));
+                return result;
             }
 
             if (type == typeof(oM.Structure.Elements.Bar))
             {
-                aResult.Add(typeof(FamilyInstance));
-                return aResult;
+                result.Add(typeof(FamilyInstance));
+                return result;
             }
 
             if (type == typeof(BH.oM.Physical.Elements.Cable) || type == typeof(BH.oM.Physical.Elements.Pile))
-                return aResult;
+                return result;
 
             if (typeof(BH.oM.Physical.Elements.IFramingElement).IsAssignableFrom(type))
             {
-                aResult.Add(typeof(FamilyInstance));
-                return aResult;
+                result.Add(typeof(FamilyInstance));
+                return result;
             }
 
             if (type == typeof(Building))
             {
-                aResult.Add(typeof(ProjectInfo));
-                return aResult;
+                result.Add(typeof(ProjectInfo));
+                return result;
             }
 
             if (type == typeof(oM.Geometry.SettingOut.Level))
             {
-                aResult.Add(typeof(Level));
-                return aResult;
+                result.Add(typeof(Level));
+                return result;
             }
 
             if (type == typeof(Space))
             {
-                aResult.Add(typeof(SpatialElement));
-                return aResult;
+                result.Add(typeof(SpatialElement));
+                return result;
             }
 
             if (type == typeof(oM.Architecture.Elements.Room))
             {
-                aResult.Add(typeof(SpatialElement));
-                return aResult;
+                result.Add(typeof(SpatialElement));
+                return result;
             }
 
             if (type == typeof(oM.Geometry.SettingOut.Grid))
             {
-                aResult.Add(typeof(Grid));
-                return aResult;
+                result.Add(typeof(Grid));
+                return result;
             }
 
             if (type == typeof(Sheet))
             {
-                aResult.Add(typeof(ViewSheet));
-                return aResult;
+                result.Add(typeof(ViewSheet));
+                return result;
             }
 
             if (type == typeof(oM.Adapters.Revit.Elements.ViewPlan))
             {
-                aResult.Add(typeof(Autodesk.Revit.DB.ViewPlan));
-                return aResult;
+                result.Add(typeof(Autodesk.Revit.DB.ViewPlan));
+                return result;
             }
 
             if (type == typeof(DraftingInstance))
             {
-                aResult.Add(typeof(FamilyInstance));
-                aResult.Add(typeof(CurveElement));
-                return aResult;
+                result.Add(typeof(FamilyInstance));
+                result.Add(typeof(CurveElement));
+                return result;
             }
 
             if (type == typeof(ModelInstance))
             {
-                aResult.Add(typeof(FamilyInstance));
-                aResult.Add(typeof(CurveElement));
-                return aResult;
+                result.Add(typeof(FamilyInstance));
+                result.Add(typeof(CurveElement));
+                return result;
             }
 
             if (type == typeof(oM.Adapters.Revit.Properties.InstanceProperties))
             {
-                aResult.Add(typeof(ElementType));
-                aResult.Add(typeof(GraphicsStyle));
-                return aResult;
+                result.Add(typeof(ElementType));
+                result.Add(typeof(GraphicsStyle));
+                return result;
             }
 
             if (type == typeof(oM.Adapters.Revit.Elements.Viewport))
             {
-                aResult.Add(typeof(Autodesk.Revit.DB.Viewport));
-                return aResult;
+                result.Add(typeof(Autodesk.Revit.DB.Viewport));
+                return result;
             }
 
             if (type == typeof(oM.Adapters.Revit.Generic.RevitFilePreview))
             {
-                aResult.Add(typeof(Autodesk.Revit.DB.Family));
-                return aResult;
+                result.Add(typeof(Autodesk.Revit.DB.Family));
+                return result;
             }
 
             if (type == typeof(oM.Architecture.Elements.Ceiling))
             {
-                aResult.Add(typeof(Ceiling));
-                return aResult;
+                result.Add(typeof(Ceiling));
+                return result;
             }
 
             if (type == typeof(oM.Geometry.ShapeProfiles.ISectionProfile))
             {
-                aResult.Add(typeof(FamilySymbol));
-                return aResult;
+                result.Add(typeof(FamilySymbol));
+                return result;
             }
 
             return null;

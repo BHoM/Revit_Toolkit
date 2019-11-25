@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -41,13 +41,13 @@ namespace BH.UI.Revit.Engine
             if (string.IsNullOrEmpty(materialClass))
                 return null;
 
-            MaterialType aMaterialType;
-            if (Enum.TryParse(materialClass, out aMaterialType))
-                return aMaterialType;
+            MaterialType type;
+            if (Enum.TryParse(materialClass, out type))
+                return type;
 
-            string aMaterialClass = materialClass.ToLower().Trim();
+            string matClass = materialClass.ToLower().Trim();
 
-            switch (aMaterialClass)
+            switch (matClass)
             {
                 case "aluminium":
                     return oM.Common.Materials.MaterialType.Aluminium;
