@@ -45,19 +45,19 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            IProfile aProfile = pullSettings.FindRefObject<IProfile>(familySymbol.Id.IntegerValue);
-            if (aProfile != null)
-                return aProfile;
+            IProfile profile = pullSettings.FindRefObject<IProfile>(familySymbol.Id.IntegerValue);
+            if (profile != null)
+                return profile;
 
             string familyName = familySymbol.Family.Name;
             Parameter sectionShapeParam = familySymbol.get_Parameter(BuiltInParameter.STRUCTURAL_SECTION_SHAPE);
             StructuralSectionShape sectionShape = sectionShapeParam == null ? sectionShape = StructuralSectionShape.NotDefined : (StructuralSectionShape)sectionShapeParam.AsInteger();
             
-            List<Type> aTypes = Query.BHoMTypes(sectionShape).ToList();
-            if (aTypes.Count == 0)
-                aTypes.AddRange(Query.BHoMTypes(familyName));
+            List<Type> types = Query.BHoMTypes(sectionShape).ToList();
+            if (types.Count == 0)
+                types.AddRange(Query.BHoMTypes(familyName));
 
-            if (aTypes.Contains(typeof(CircleProfile)))
+            if (types.Contains(typeof(CircleProfile)))
             {
                 double diameter;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -70,19 +70,18 @@ namespace BH.UI.Revit.Engine
 
                 if (!double.IsNaN(diameter))
                 {
-                    aProfile = BHG.Create.CircleProfile(diameter);
+                    profile = BHG.Create.CircleProfile(diameter);
                 }
                 else
                 {
                     double radius = familySymbol.LookupDouble(radiusNames);
                     if (!double.IsNaN(radius))
                     {
-                        aProfile = BHG.Create.CircleProfile(radius * 2);
+                        profile = BHG.Create.CircleProfile(radius * 2);
                     }
                 }
             }
-
-            else if (aTypes.Contains(typeof(FabricatedISectionProfile)))
+            else if (types.Contains(typeof(FabricatedISectionProfile)))
             {
                 double height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -123,11 +122,10 @@ namespace BH.UI.Revit.Engine
 
                 if (!double.IsNaN(height) && !double.IsNaN(topFlangeWidth) && !double.IsNaN(botFlangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(topFlangeThickness) && !double.IsNaN(botFlangeThickness))
                 {
-                    aProfile = BHG.Create.FabricatedISectionProfile(height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize);
+                    profile = BHG.Create.FabricatedISectionProfile(height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize);
                 }
             }
-
-            else if (aTypes.Contains(typeof(RectangleProfile)))
+            else if (types.Contains(typeof(RectangleProfile)))
             {
                 double height, width, cornerRadius;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -163,11 +161,10 @@ namespace BH.UI.Revit.Engine
 
                 if (!double.IsNaN(height) && !double.IsNaN(width))
                 {
-                    aProfile = BHG.Create.RectangleProfile(height, width, cornerRadius);
+                    profile = BHG.Create.RectangleProfile(height, width, cornerRadius);
                 }
             }
-
-            else if (aTypes.Contains(typeof(AngleProfile)))
+            else if (types.Contains(typeof(AngleProfile)))
             {
                 double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -207,11 +204,10 @@ namespace BH.UI.Revit.Engine
 
                 if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
                 {
-                    aProfile = BHG.Create.AngleProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+                    profile = BHG.Create.AngleProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
-
-            else if (aTypes.Contains(typeof(BoxProfile)))
+            else if (types.Contains(typeof(BoxProfile)))
             {
                 double height, width, thickness, outerRadius, innerRadius;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -238,11 +234,10 @@ namespace BH.UI.Revit.Engine
 
                 if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(thickness))
                 {
-                    aProfile = BHG.Create.BoxProfile(height, width, thickness, outerRadius, innerRadius);
+                    profile = BHG.Create.BoxProfile(height, width, thickness, outerRadius, innerRadius);
                 }
             }
-
-            else if (aTypes.Contains(typeof(ChannelProfile)))
+            else if (types.Contains(typeof(ChannelProfile)))
             {
                 double height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -282,11 +277,10 @@ namespace BH.UI.Revit.Engine
 
                 if (!double.IsNaN(height) && !double.IsNaN(flangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
                 {
-                    aProfile = BHG.Create.ChannelProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
+                    profile = BHG.Create.ChannelProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
-
-            else if (aTypes.Contains(typeof(ISectionProfile)))
+            else if (types.Contains(typeof(ISectionProfile)))
             {
                 double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -325,11 +319,10 @@ namespace BH.UI.Revit.Engine
 
                 if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
                 {
-                    aProfile = BHG.Create.ISectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+                    profile = BHG.Create.ISectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
-
-            else if (aTypes.Contains(typeof(TSectionProfile)))
+            else if (types.Contains(typeof(TSectionProfile)))
             {
                 double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
 
@@ -379,11 +372,10 @@ namespace BH.UI.Revit.Engine
 
                 if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
                 {
-                    aProfile = BHG.Create.TSectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+                    profile = BHG.Create.TSectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
-
-            else if (aTypes.Contains(typeof(ZSectionProfile)))
+            else if (types.Contains(typeof(ZSectionProfile)))
             {
                 double height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -412,11 +404,10 @@ namespace BH.UI.Revit.Engine
 
                 if (!double.IsNaN(height) && !double.IsNaN(flangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
                 {
-                    aProfile = BHG.Create.ZSectionProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
+                    profile = BHG.Create.ZSectionProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
                 }
             }
-
-            else if (aTypes.Contains(typeof(TubeProfile)))
+            else if (types.Contains(typeof(TubeProfile)))
             {
                 double thickness, diameter;
                 StructuralSection section = familySymbol.GetStructuralSection();
@@ -440,28 +431,28 @@ namespace BH.UI.Revit.Engine
 
                 if (!double.IsNaN(diameter) && !double.IsNaN(thickness))
                 {
-                    aProfile = BHG.Create.TubeProfile(diameter, thickness);
+                    profile = BHG.Create.TubeProfile(diameter, thickness);
                 }
 
                 double radius = familySymbol.LookupDouble(radiusNames);
                 if (!double.IsNaN(radius) && !double.IsNaN(thickness))
                 {
-                    aProfile = BHG.Create.TubeProfile(radius * 2, thickness);
+                    profile = BHG.Create.TubeProfile(radius * 2, thickness);
                 }
             }
             
-            if (aProfile == null)
+            if (profile == null)
                 return null;
 
-            aProfile = Modify.SetIdentifiers(aProfile, familySymbol) as IProfile;
+            profile = Modify.SetIdentifiers(profile, familySymbol) as IProfile;
             if (pullSettings.CopyCustomData)
-                aProfile = Modify.SetCustomData(aProfile, familySymbol) as IProfile;
+                profile = Modify.SetCustomData(profile, familySymbol) as IProfile;
 
-            aProfile.Name = familySymbol.Name;
+            profile.Name = familySymbol.Name;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aProfile);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(profile);
 
-            return aProfile;
+            return profile;
         }
 
         /***************************************************/

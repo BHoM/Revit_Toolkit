@@ -49,7 +49,7 @@ namespace BH.UI.Revit.Engine
             if (aConstantThickness != null)
                 return aConstantThickness;
 
-            double aThickness = 0;
+            double thickness = 0;
             IMaterialFragment materialFragment = null;
 
             bool composite = false;
@@ -57,14 +57,14 @@ namespace BH.UI.Revit.Engine
             {
                 if (csl.Function == MaterialFunctionAssignment.Structure)
                 {
-                    if (aThickness != 0)
+                    if (thickness != 0)
                     {
                         composite = true;
-                        aThickness = 0;
+                        thickness = 0;
                         break;
                     }
 
-                    aThickness = csl.Width.ToSI(UnitType.UT_Section_Dimension);
+                    thickness = csl.Width.ToSI(UnitType.UT_Section_Dimension);
 
                     Material revitMaterial = document.GetElement(csl.MaterialId) as Material;
                     if (revitMaterial == null)
@@ -104,7 +104,7 @@ namespace BH.UI.Revit.Engine
             //TODO: Clean it up!
             if (composite)
                 hostObjAttributes.CompositePanelWarning();
-            else if (aThickness == 0)
+            else if (thickness == 0)
                 BH.Engine.Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
 
             oM.Structure.SurfaceProperties.PanelType panelType = oM.Structure.SurfaceProperties.PanelType.Undefined;
@@ -113,15 +113,15 @@ namespace BH.UI.Revit.Engine
             else if (hostObjAttributes is FloorType)
                 panelType = oM.Structure.SurfaceProperties.PanelType.Slab;
 
-            ConstantThickness aProperty2D = new ConstantThickness { PanelType = panelType, Thickness = aThickness, Material = materialFragment, Name = hostObjAttributes.Name };
+            ConstantThickness property2D = new ConstantThickness { PanelType = panelType, Thickness = thickness, Material = materialFragment, Name = hostObjAttributes.Name };
 
-            aProperty2D = Modify.SetIdentifiers(aProperty2D, hostObjAttributes) as ConstantThickness;
+            property2D = Modify.SetIdentifiers(property2D, hostObjAttributes) as ConstantThickness;
             if (pullSettings.CopyCustomData)
-                aProperty2D = Modify.SetCustomData(aProperty2D, hostObjAttributes) as ConstantThickness;
+                property2D = Modify.SetCustomData(property2D, hostObjAttributes) as ConstantThickness;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aProperty2D);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(property2D);
 
-            return aProperty2D;
+            return property2D;
         }
 
         /***************************************************/
