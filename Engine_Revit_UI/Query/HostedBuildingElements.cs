@@ -71,14 +71,14 @@ namespace BH.UI.Revit.Engine
                     XYZ minXYZ = intersectionResult.XYZPoint;
                     UV minUV = intersectionResult.UVPoint;
 
-                    double aU = maxUV.U - minUV.U;
-                    double aV = maxUV.V - minUV.V;
+                    double u = maxUV.U - minUV.U;
+                    double v = maxUV.V - minUV.V;
 
-                    XYZ vXYZ = face.Evaluate(new UV(maxUV.U, maxUV.V - aV));
+                    XYZ vXYZ = face.Evaluate(new UV(maxUV.U, maxUV.V - v));
                     if (vXYZ == null)
                         continue;
 
-                    XYZ uXYZ = face.Evaluate(new UV(maxUV.U - aU, maxUV.V));
+                    XYZ uXYZ = face.Evaluate(new UV(maxUV.U - u, maxUV.V));
                     if (uXYZ == null)
                         continue;
 

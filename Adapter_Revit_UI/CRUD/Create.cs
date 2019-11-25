@@ -94,7 +94,7 @@ namespace BH.UI.Revit.Adapter
             if (UIContralledApplication != null && revitSettings.GeneralSettings.SuppressFailureMessages)
                 UIContralledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
 
-            PushSettings aPushSettings = new PushSettings()
+            PushSettings pushSettings = new PushSettings()
             {
                 AdapterMode = revitSettings.GeneralSettings.AdapterMode,
                 CopyCustomData = true,
@@ -141,8 +141,8 @@ namespace BH.UI.Revit.Adapter
                                 if (familySymbols.Count() > 0)
                                     family = familySymbols.First().Family;
 
-                                foreach (FamilySymbol aFamilySymbol in familySymbols)
-                                    document.Delete(aFamilySymbol.Id);
+                                foreach (FamilySymbol familySymbol in familySymbols)
+                                    document.Delete(familySymbol.Id);
                             }
 
                             SetIdentifiers(bhomObject, family);
@@ -198,7 +198,7 @@ namespace BH.UI.Revit.Adapter
 
                             if (type != typeof(BHoMObject))
                             {
-                                element = BH.UI.Revit.Engine.Convert.ToRevit(bhomObject as dynamic, document, aPushSettings);
+                                element = BH.UI.Revit.Engine.Convert.ToRevit(bhomObject as dynamic, document, pushSettings);
                                 SetIdentifiers(bhomObject, element);
                             }
 
@@ -210,7 +210,7 @@ namespace BH.UI.Revit.Adapter
                             {
                                 try
                                 {
-                                    Location aLocation = Modify.Move(element, bhomObject, aPushSettings);
+                                    Location location = Modify.Move(element, bhomObject, pushSettings);
                                 }
                                 catch
                                 {

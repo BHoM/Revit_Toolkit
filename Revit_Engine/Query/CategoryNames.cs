@@ -53,8 +53,8 @@ namespace BH.Engine.Adapters.Revit
                 List<Dictionary<string, string>> familyDictionary = new List<Dictionary<string, string>>();
                 if(string.IsNullOrEmpty(familyTypeName))
                 {
-                    foreach (KeyValuePair<string, Dictionary<string, string>> aKeyValuePair_Type in typeDictionary)
-                        familyDictionary.Add(aKeyValuePair_Type.Value);
+                    foreach (KeyValuePair<string, Dictionary<string, string>> keyValuePair_Type in typeDictionary)
+                        familyDictionary.Add(keyValuePair_Type.Value);
                 }
                 else if(kvp.Value.ContainsKey(familyTypeName))
                 {

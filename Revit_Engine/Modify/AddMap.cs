@@ -90,9 +90,9 @@ namespace BH.Engine.Adapters.Revit
                         clonedTypeMap.Map[sourceName] = hashSet;
                     }
 
-                    foreach (string aDestinationName in destinationNames)
-                        if (!string.IsNullOrWhiteSpace(aDestinationName))
-                            hashSet.Add(aDestinationName);
+                    foreach (string destinationName in destinationNames)
+                        if (!string.IsNullOrWhiteSpace(destinationName))
+                            hashSet.Add(destinationName);
 
                     return clonedTypeMap;
                 }

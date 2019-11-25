@@ -64,9 +64,9 @@ namespace BH.UI.Revit.Engine
         public static List<oM.Geometry.ICurve> ToBHoM(this EdgeArray edgeArray)
         {
             List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
-            foreach (Edge aEdge in edgeArray)
+            foreach (Edge edge in edgeArray)
             {
-                result.Add(aEdge.ToBHoM());
+                result.Add(edge.ToBHoM());
             }
 
             return result;

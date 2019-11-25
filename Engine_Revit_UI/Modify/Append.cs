@@ -85,9 +85,9 @@ namespace BH.UI.Revit.Engine
                 }
                 else
                 {
-                    foreach (Element aElement in kvp.Value)
-                        if (elements.Find(x => x.Id == aElement.Id) == null)
-                            elements.Add(aElement);
+                    foreach (Element element in kvp.Value)
+                        if (elements.Find(x => x.Id == element.Id) == null)
+                            elements.Add(element);
                 }
             }
 

@@ -92,8 +92,8 @@ namespace BH.UI.Revit.Engine
             customDataValue = framingElement.CustomDataValue("Base Level");
             if (customDataValue != null && customDataValue is int)
             {
-                ElementId aElementId = new ElementId((int)customDataValue);
-                level = document.GetElement(aElementId) as Level;
+                ElementId elementId = new ElementId((int)customDataValue);
+                level = document.GetElement(elementId) as Level;
             }
 
             if (level == null)

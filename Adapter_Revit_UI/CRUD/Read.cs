@@ -232,9 +232,9 @@ namespace BH.UI.Revit.Adapter
                 {
                     obj = Engine.Convert.ToBHoM(element as dynamic, pullSettings);
                 }
-                catch (Exception aException)
+                catch (Exception exception)
                 {
-                    BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted becasue of missing ToBHoM method. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, aException.Message));
+                    BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted becasue of missing ToBHoM method. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, exception.Message));
                     converted = false;
                 }
             }
@@ -252,9 +252,9 @@ namespace BH.UI.Revit.Adapter
                         {
                             iGeometry = element.Location.ToBHoM(pullSettings);
                         }
-                        catch (Exception aException)
+                        catch (Exception exception)
                         {
-                            BH.Engine.Reflection.Compute.RecordWarning(string.Format("Location of BHoM object could not be converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, aException.Message));
+                            BH.Engine.Reflection.Compute.RecordWarning(string.Format("Location of BHoM object could not be converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, exception.Message));
                         }
 
                         if (iGeometry != null)
@@ -294,10 +294,10 @@ namespace BH.UI.Revit.Adapter
                     }
 
                 }
-                catch (Exception aException)
+                catch (Exception exception)
                 {
                     if (converted)
-                        BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, aException.Message));
+                        BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, exception.Message));
                 }
             }
 

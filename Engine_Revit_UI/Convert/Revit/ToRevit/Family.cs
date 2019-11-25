@@ -43,8 +43,8 @@ namespace BH.UI.Revit.Engine
 
             if (family.PropertiesList != null && family.PropertiesList.Count > 0)
             {
-                foreach(InstanceProperties aInstanceProperties in family.PropertiesList)
-                    ToRevitElementType(aInstanceProperties, document, pushSettings);
+                foreach(InstanceProperties instanceProperties in family.PropertiesList)
+                    ToRevitElementType(instanceProperties, document, pushSettings);
             }
 
             BuiltInCategory builtInCategory = family.BuiltInCategory(document, pushSettings.FamilyLoadSettings);

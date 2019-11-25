@@ -44,14 +44,14 @@ namespace BH.UI.Revit.Engine
                 {
                     GeometryInstance geometryInstance = (GeometryInstance)geometryObject;
 
-                    Transform aTransform = geometryInstance.Transform;
+                    Transform geometryTransform = geometryInstance.Transform;
                     if (transform != null)
-                        aTransform = aTransform.Multiply(transform.Inverse);
+                        geometryTransform = geometryTransform.Multiply(transform.Inverse);
 
                     List<oM.Geometry.ICurve> curves = null;
                     GeometryElement geomElement = null;
 
-                    geomElement = geometryInstance.GetInstanceGeometry(aTransform);
+                    geomElement = geometryInstance.GetInstanceGeometry(geometryTransform);
                     if (geomElement == null)
                         continue;
 

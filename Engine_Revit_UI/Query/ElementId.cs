@@ -41,9 +41,9 @@ namespace BH.UI.Revit.Engine
             {
                 if (value is string)
                 {
-                    int aInt = -1;
-                    if (int.TryParse((string)value, out aInt))
-                        return new ElementId(aInt);
+                    int i = -1;
+                    if (int.TryParse((string)value, out i))
+                        return new ElementId(i);
                 }
                 else if (value is int)
                 {

@@ -65,17 +65,17 @@ namespace BH.Engine.Adapters.Revit
                 {
                     tempTypeMap = typeMap.GetShallowClone() as TypeMap;
 
-                    foreach (KeyValuePair<string, HashSet<string>> aKeyValuePair in mapType.Map)
+                    foreach (KeyValuePair<string, HashSet<string>> keyValuePair in mapType.Map)
                     {
                         HashSet<string> hashSet = null;
-                        if(!tempTypeMap.Map.TryGetValue(aKeyValuePair.Key, out hashSet))
+                        if(!tempTypeMap.Map.TryGetValue(keyValuePair.Key, out hashSet))
                         {
                             hashSet = new HashSet<string>();
-                            tempTypeMap.Map[aKeyValuePair.Key] = hashSet;
+                            tempTypeMap.Map[keyValuePair.Key] = hashSet;
                         }
 
-                        foreach (string aName in aKeyValuePair.Value)
-                            hashSet.Add(aName);
+                        foreach (string name in keyValuePair.Value)
+                            hashSet.Add(name);
                     }
                 }
 

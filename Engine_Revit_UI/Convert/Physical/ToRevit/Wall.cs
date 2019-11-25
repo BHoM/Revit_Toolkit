@@ -98,8 +98,8 @@ namespace BH.UI.Revit.Engine
             parameter = revitWall.get_Parameter(BuiltInParameter.WALL_USER_HEIGHT_PARAM);
             if (parameter != null)
             {
-                double aHeight = (wall.HighElevation() - lowElevation).FromSI(UnitType.UT_Length);
-                parameter.Set(aHeight);
+                double height = (wall.HighElevation() - lowElevation).FromSI(UnitType.UT_Length);
+                parameter.Set(height);
             }
 
             double levelElevation = level.Elevation.ToSI(UnitType.UT_Length);

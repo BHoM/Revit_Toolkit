@@ -181,11 +181,11 @@ namespace BH.UI.Revit
 
         private void AddRibbonItems(UIControlledApplication application)
         {
-            RibbonPanel aRibbonPanel = application.CreateRibbonPanel("RevitListen");
+            RibbonPanel ribbonPanel = application.CreateRibbonPanel("RevitListen");
 
-            PushButton aPushButton = aRibbonPanel.AddItem(new PushButtonData("Update Ports", "Update Ports", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".UpdatePorts")) as PushButton;
+            PushButton pushButton = ribbonPanel.AddItem(new PushButtonData("Update Ports", "Update Ports", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".UpdatePorts")) as PushButton;
             //aPushButton.LargeImage = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(TestResource.Test.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            aPushButton.ToolTip = "Update the ports that revit is listening on for information from external softwares sending BHoM information";
+            pushButton.ToolTip = "Update the ports that revit is listening on for information from external softwares sending BHoM information";
         }
 
 

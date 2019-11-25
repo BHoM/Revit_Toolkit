@@ -57,7 +57,7 @@ namespace BH.UI.Revit.Engine
             IEnumerable<ElementId> elementIDs = null;
             using (Transaction transaction = new Transaction(document, "Temp"))
             {
-                FailureHandlingOptions aFailureHandlingOptions = transaction.GetFailureHandlingOptions().SetClearAfterRollback(true);
+                FailureHandlingOptions failureHandlingOptions = transaction.GetFailureHandlingOptions().SetClearAfterRollback(true);
 
                 //IMPORTANT: have to be two separate transactions othewise HostObject become Invalid
 
@@ -71,7 +71,7 @@ namespace BH.UI.Revit.Engine
                     elementIDs = null;
                 }
 
-                transaction.RollBack(aFailureHandlingOptions);
+                transaction.RollBack(failureHandlingOptions);
 
                 transaction.Start();
                 try
@@ -88,7 +88,7 @@ namespace BH.UI.Revit.Engine
                 {
 
                 }
-                transaction.RollBack(aFailureHandlingOptions);
+                transaction.RollBack(failureHandlingOptions);
             }
 
             List<PolyCurve> result = new List<PolyCurve>();

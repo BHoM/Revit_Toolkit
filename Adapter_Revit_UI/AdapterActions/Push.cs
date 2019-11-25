@@ -44,7 +44,7 @@ namespace BH.UI.Revit.Adapter
 
             Type iBHoMObjectType = typeof(IBHoMObject);
             MethodInfo miToList = typeof(Enumerable).GetMethod("Cast");
-            List<IObject> aResult = new List<IObject>();
+            List<IObject> result = new List<IObject>();
             foreach (var typeGroup in objectsToPush.GroupBy(x => x.GetType()))
             {
                 MethodInfo miListObject = miToList.MakeGenericMethod(new[] { typeGroup.Key });

@@ -80,8 +80,8 @@ namespace BH.UI.Revit.Engine
 
             Document document = material.Document;
 
-            PropertySetElement aPropertySetElement = document.GetElement(elementID) as PropertySetElement;
-            solidMaterial.Update(aPropertySetElement.GetThermalAsset(), pullSettings);
+            PropertySetElement propertySetElement = document.GetElement(elementID) as PropertySetElement;
+            solidMaterial.Update(propertySetElement.GetThermalAsset(), pullSettings);
         }
 
         /***************************************************/

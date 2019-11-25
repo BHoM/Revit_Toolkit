@@ -65,20 +65,20 @@ namespace BH.UI.Revit.Engine
             if (parameter == null || parameter.StorageType != StorageType.String)
                 return null;
 
-            string value = parameter.AsString();
+            string tags = parameter.AsString();
 
             IBHoMObject iBHoMObject = bHoMObject.GetShallowClone();
 
-            if (string.IsNullOrEmpty(value) && (bHoMObject.Tags == null || bHoMObject.Tags.Count == 0))
+            if (string.IsNullOrEmpty(tags) && (bHoMObject.Tags == null || bHoMObject.Tags.Count == 0))
                 return iBHoMObject;
 
             if (iBHoMObject.Tags == null)
                 iBHoMObject.Tags = new System.Collections.Generic.HashSet<string>();
 
-            string[] values = value.Split('\n');
+            string[] values = tags.Split('\n');
 
-            foreach (string aValue in values)
-                iBHoMObject.Tags.Add(aValue);
+            foreach (string value in values)
+                iBHoMObject.Tags.Add(value);
 
             return iBHoMObject;
         }
