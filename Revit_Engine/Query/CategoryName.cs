@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -59,24 +59,24 @@ namespace BH.Engine.Adapters.Revit
             if (xDocument == null || xDocument.Root == null || xDocument.Root.Attributes() == null)
                 return null;
 
-            List<XAttribute> aAttributeList = xDocument.Root.Attributes().ToList();
-            XAttribute aAttribute = aAttributeList.Find(x => x.Name.LocalName == "xmlns");
-            if (aAttribute != null)
+            List<XAttribute> attributes = xDocument.Root.Attributes().ToList();
+            XAttribute attribute = attributes.Find(x => x.Name.LocalName == "xmlns");
+            if (attribute != null)
             {
-                XName aName = XName.Get("category", aAttribute.Value);
-                List<XElement> aXElementList = xDocument.Root.Elements(aName).ToList();
-                if (aXElementList != null)
+                XName name = XName.Get("category", attribute.Value);
+                List<XElement> elements = xDocument.Root.Elements(name).ToList();
+                if (elements != null)
                 {
-                    aName = XName.Get("scheme", aAttribute.Value);
-                    foreach (XElement aXElement in aXElementList)
+                    name = XName.Get("scheme", attribute.Value);
+                    foreach (XElement element in elements)
                     {
-                        XElement aXElement_Scheme = aXElement.Element(aName);
-                        if (aXElement_Scheme != null && aXElement_Scheme.Value == "adsk:revit:grouping")
+                        XElement scheme = element.Element(name);
+                        if (scheme != null && scheme.Value == "adsk:revit:grouping")
                         {
-                            aName = XName.Get("term", aAttribute.Value);
-                            XElement aXElement_Term = aXElement.Element(aName);
-                            if (aXElement_Term != null)
-                                return aXElement_Term.Value;
+                            name = XName.Get("term", attribute.Value);
+                            XElement termElement = element.Element(name);
+                            if (termElement != null)
+                                return termElement.Value;
                         }
                     }
                 }
@@ -95,13 +95,13 @@ namespace BH.Engine.Adapters.Revit
             if (bHoMObject == null)
                 return null;
 
-            object aValue = null;
-            if (bHoMObject.CustomData.TryGetValue(Convert.CategoryName, out aValue))
+            object value = null;
+            if (bHoMObject.CustomData.TryGetValue(Convert.CategoryName, out value))
             {
-                if (aValue == null)
+                if (value == null)
                     return null;
 
-                return aValue.ToString();
+                return value.ToString();
             }
 
             return null;

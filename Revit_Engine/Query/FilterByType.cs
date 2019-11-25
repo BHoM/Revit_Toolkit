@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -50,12 +50,12 @@ namespace BH.Engine.Adapters.Revit
             if (objects == null || objects.Count() == 0)
                 return objects;
 
-            List<object> aResult = new List<object>();
-            foreach (object aObject in objects)
-                if (aObject.GetType() == type)
-                    aResult.Add(aObject);
+            List<object> result = new List<object>();
+            foreach (object obj in objects)
+                if (obj.GetType() == type)
+                    result.Add(obj);
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -42,13 +42,13 @@ namespace BH.Engine.Adapters.Revit
             if (bHoMObject == null)
                 return null;
 
-            IBHoMObject aBHoMObject = bHoMObject.GetShallowClone();
+            IBHoMObject obj = bHoMObject.GetShallowClone();
 
-            aBHoMObject.CustomData.Remove(Convert.ElementId);
-            aBHoMObject.CustomData.Remove(Convert.AdapterId);
+            obj.CustomData.Remove(Convert.ElementId);
+            obj.CustomData.Remove(Convert.AdapterId);
 
 
-            return aBHoMObject;
+            return obj;
         }
 
         /***************************************************/
@@ -61,19 +61,19 @@ namespace BH.Engine.Adapters.Revit
             if (filterRequest == null)
                 return null;
 
-            FilterRequest aFilterRequest = new FilterRequest();
+            FilterRequest request = new FilterRequest();
 
             if (filterRequest.Equalities != null)
-                aFilterRequest.Equalities = new Dictionary<string, object>(filterRequest.Equalities);
+                request.Equalities = new Dictionary<string, object>(filterRequest.Equalities);
             else
-                aFilterRequest.Equalities = new Dictionary<string, object>();
+                request.Equalities = new Dictionary<string, object>();
 
-            aFilterRequest.Tag = filterRequest.Tag;
+            request.Tag = filterRequest.Tag;
 
-            aFilterRequest.Type = filterRequest.Type;
+            request.Type = filterRequest.Type;
 
 
-            return aFilterRequest;
+            return request;
         }
 
         /***************************************************/

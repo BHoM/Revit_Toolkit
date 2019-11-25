@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -44,40 +44,42 @@ namespace BH.Engine.Adapters.Revit
             if (familyLibrary == null || familyLibrary.Dictionary == null)
                 return null;
 
-            List<string> aCategoryNameList = new List<string>();
+            List<string> categoryNames = new List<string>();
 
-            foreach (KeyValuePair<string, Dictionary<string, Dictionary<string, string>>> aKeyValuePair_Category in familyLibrary.Dictionary)
+            foreach (KeyValuePair<string, Dictionary<string, Dictionary<string, string>>> kvp in familyLibrary.Dictionary)
             {
-                Dictionary<string, Dictionary<string, string>> aDictionary_Type = aKeyValuePair_Category.Value;
+                Dictionary<string, Dictionary<string, string>> typeDictionary = kvp.Value;
 
-                List<Dictionary<string, string>> aDictionaryList_Family = new List<Dictionary<string, string>>();
+                List<Dictionary<string, string>> familyDictionary = new List<Dictionary<string, string>>();
                 if(string.IsNullOrEmpty(familyTypeName))
                 {
-                    foreach (KeyValuePair<string, Dictionary<string, string>> aKeyValuePair_Type in aDictionary_Type)
-                        aDictionaryList_Family.Add(aKeyValuePair_Type.Value);
+                    foreach (KeyValuePair<string, Dictionary<string, string>> aKeyValuePair_Type in typeDictionary)
+                        familyDictionary.Add(aKeyValuePair_Type.Value);
                 }
-                else if(aKeyValuePair_Category.Value.ContainsKey(familyTypeName))
+                else if(kvp.Value.ContainsKey(familyTypeName))
                 {
-                    aDictionaryList_Family.Add(aDictionary_Type[familyTypeName]);
+                    familyDictionary.Add(typeDictionary[familyTypeName]);
                 }
 
                 if(string.IsNullOrEmpty(familyName))
                 {
-                    if (aDictionaryList_Family.Count > 0)
-                        aCategoryNameList.Add(aKeyValuePair_Category.Key);
+                    if (familyDictionary.Count > 0)
+                        categoryNames.Add(kvp.Key);
                 }
                 else
                 {
-                    foreach(Dictionary<string, string> aDictionary_Family in aDictionaryList_Family)
-                        if(aDictionary_Family.ContainsKey(familyName))
+                    foreach (Dictionary<string, string> dict in familyDictionary)
+                    {
+                        if (dict.ContainsKey(familyName))
                         {
-                            aCategoryNameList.Add(aKeyValuePair_Category.Key);
+                            categoryNames.Add(kvp.Key);
                             break;
                         }
+                    }
                 }
             }
 
-            return aCategoryNameList;
+            return categoryNames;
         }
 
         /***************************************************/
