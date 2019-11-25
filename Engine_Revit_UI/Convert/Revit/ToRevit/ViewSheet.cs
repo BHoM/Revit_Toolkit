@@ -39,20 +39,20 @@ namespace BH.UI.Revit.Engine
             if (sheet == null)
                 return null;
 
-            ViewSheet aViewSheet = pushSettings.FindRefObject<ViewSheet>(document, sheet.BHoM_Guid);
-            if (aViewSheet != null)
-                return aViewSheet;
+            ViewSheet viewSheet = pushSettings.FindRefObject<ViewSheet>(document, sheet.BHoM_Guid);
+            if (viewSheet != null)
+                return viewSheet;
 
             pushSettings.DefaultIfNull();
 
-            aViewSheet = ViewSheet.Create(document, ElementId.InvalidElementId);
+            viewSheet = ViewSheet.Create(document, ElementId.InvalidElementId);
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aViewSheet, sheet, null);
+                Modify.SetParameters(viewSheet, sheet, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(sheet, aViewSheet);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(sheet, viewSheet);
 
-            return aViewSheet;
+            return viewSheet;
         }
 
         /***************************************************/

@@ -35,26 +35,26 @@ namespace BH.UI.Revit.Engine
 
         public static ElementType ToRevitElementType(this InstanceProperties instanceProperties, Document document, PushSettings pushSettings = null)
         {
-            ElementType aElementType = pushSettings.FindRefObject<ElementType>(document, instanceProperties.BHoM_Guid);
-            if (aElementType != null)
-                return aElementType;
+            ElementType elementType = pushSettings.FindRefObject<ElementType>(document, instanceProperties.BHoM_Guid);
+            if (elementType != null)
+                return elementType;
 
             pushSettings.DefaultIfNull();
 
-            BuiltInCategory aBuiltInCategory = instanceProperties.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
+            BuiltInCategory builtInCategory = instanceProperties.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
 
-            aElementType = instanceProperties.ElementType(document, aBuiltInCategory, pushSettings.FamilyLoadSettings, true);
+            elementType = instanceProperties.ElementType(document, builtInCategory, pushSettings.FamilyLoadSettings, true);
 
-            aElementType.CheckIfNullPush(instanceProperties);
-            if (aElementType == null)
+            elementType.CheckIfNullPush(instanceProperties);
+            if (elementType == null)
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aElementType, instanceProperties, null);
+                Modify.SetParameters(elementType, instanceProperties, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(instanceProperties, aElementType);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(instanceProperties, elementType);
 
-            return aElementType;
+            return elementType;
         }
 
         /***************************************************/
