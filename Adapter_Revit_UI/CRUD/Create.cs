@@ -60,26 +60,26 @@ namespace BH.UI.Revit.Adapter
             if (objects.Count() < 1)
                 return false;
 
-            Document aDocument = Document;
+            Document document = Document;
 
-            bool aResult = false;
-            if (!aDocument.IsModifiable && !aDocument.IsReadOnly)
+            bool result = false;
+            if (!document.IsModifiable && !document.IsReadOnly)
             {
                 //Transaction has to be opened
-                using (Transaction aTransaction = new Transaction(aDocument, "Create"))
+                using (Transaction transaction = new Transaction(document, "Create"))
                 {
-                    aTransaction.Start();
-                    aResult = Create(objects, UIControlledApplication, aDocument, RevitSettings);
-                    aTransaction.Commit();
+                    transaction.Start();
+                    result = Create(objects, UIControlledApplication, document, RevitSettings);
+                    transaction.Commit();
                 }
             }
             else
             {
                 //Transaction is already opened
-                aResult = Create(objects, UIControlledApplication, aDocument, RevitSettings);
+                result = Create(objects, UIControlledApplication, document, RevitSettings);
             }
 
-            return aResult; ;
+            return result; ;
         }
 
 
@@ -89,7 +89,7 @@ namespace BH.UI.Revit.Adapter
 
         private static bool Create<T>(IEnumerable<T> objects, UIControlledApplication UIContralledApplication, Document document, RevitSettings revitSettings) where T : IObject
         {
-            string aTagsParameterName = revitSettings.GeneralSettings.TagsParameterName;
+            string tagsParameterName = revitSettings.GeneralSettings.TagsParameterName;
 
             if (UIContralledApplication != null && revitSettings.GeneralSettings.SuppressFailureMessages)
                 UIContralledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
@@ -104,135 +104,135 @@ namespace BH.UI.Revit.Adapter
 
             for (int i = 0; i < objects.Count(); i++)
             {
-                IBHoMObject aBHoMObject = objects.ElementAt<T>(i) as IBHoMObject;
+                IBHoMObject bhomObject = objects.ElementAt<T>(i) as IBHoMObject;
 
-                if (aBHoMObject == null)
+                if (bhomObject == null)
                 {
                     NullObjectCreateError(typeof(IBHoMObject));
                     continue;
                 }
 
-                if (aBHoMObject is Bar)
+                if (bhomObject is Bar)
                 {
-                    ConvertBeforePushError(aBHoMObject, typeof(BH.oM.Physical.Elements.IFramingElement));
+                    ConvertBeforePushError(bhomObject, typeof(BH.oM.Physical.Elements.IFramingElement));
                     continue;
                 }
-                else if (aBHoMObject is BH.oM.Structure.Elements.Panel || aBHoMObject is BH.oM.Environment.Elements.Panel)
+                else if (bhomObject is BH.oM.Structure.Elements.Panel || bhomObject is BH.oM.Environment.Elements.Panel)
                 {
-                    ConvertBeforePushError(aBHoMObject, typeof(BH.oM.Physical.Elements.ISurface));
+                    ConvertBeforePushError(bhomObject, typeof(BH.oM.Physical.Elements.ISurface));
                     continue;
                 }
 
-                Element aElement = null;
+                Element element = null;
 
                 try
                 {
-                    if (aBHoMObject is oM.Adapters.Revit.Generic.RevitFilePreview)
+                    if (bhomObject is oM.Adapters.Revit.Generic.RevitFilePreview)
                     {
-                        oM.Adapters.Revit.Generic.RevitFilePreview aRevitFilePreview = (oM.Adapters.Revit.Generic.RevitFilePreview)aBHoMObject;
+                        oM.Adapters.Revit.Generic.RevitFilePreview revitFilePreview = (oM.Adapters.Revit.Generic.RevitFilePreview)bhomObject;
 
-                        Family aFamily = null;
+                        Family family = null;
 
                         if(revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
                         {
-                            IEnumerable<FamilySymbol> aFamilySymbols = Query.FamilySymbols(aRevitFilePreview, document);
-                            if (aFamilySymbols != null)
+                            IEnumerable<FamilySymbol> familySymbols = Query.FamilySymbols(revitFilePreview, document);
+                            if (familySymbols != null)
                             {
-                                if (aFamilySymbols.Count() > 0)
-                                    aFamily = aFamilySymbols.First().Family;
+                                if (familySymbols.Count() > 0)
+                                    family = familySymbols.First().Family;
 
-                                foreach (FamilySymbol aFamilySymbol in aFamilySymbols)
+                                foreach (FamilySymbol aFamilySymbol in familySymbols)
                                     document.Delete(aFamilySymbol.Id);
                             }
 
-                            SetIdentifiers(aBHoMObject, aFamily);
+                            SetIdentifiers(bhomObject, family);
 
-                            IEnumerable<ElementId> aElementIds = aFamily.GetFamilySymbolIds();
-                            if (aElementIds == null || aElementIds.Count() == 0)
-                                document.Delete(aFamily.Id);
+                            IEnumerable<ElementId> elementIDs = family.GetFamilySymbolIds();
+                            if (elementIDs == null || elementIDs.Count() == 0)
+                                document.Delete(family.Id);
                         }
                         else
                         {
-                            FamilyLoadOptions aFamilyLoadOptions = new FamilyLoadOptions(revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Update);
-                            if (document.LoadFamily(aRevitFilePreview.Path, out aFamily))
+                            FamilyLoadOptions familyLoadOptions = new FamilyLoadOptions(revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Update);
+                            if (document.LoadFamily(revitFilePreview.Path, out family))
                             {
-                                SetIdentifiers(aBHoMObject, aFamily);
-                                aElement = aFamily;
+                                SetIdentifiers(bhomObject, family);
+                                element = family;
                             }
                         }
                     }
                     else
                     {
-                        string aUniqueId = BH.Engine.Adapters.Revit.Query.UniqueId(aBHoMObject);
-                        if (!string.IsNullOrEmpty(aUniqueId))
-                            aElement = document.GetElement(aUniqueId);
+                        string uniqueID = BH.Engine.Adapters.Revit.Query.UniqueId(bhomObject);
+                        if (!string.IsNullOrEmpty(uniqueID))
+                            element = document.GetElement(uniqueID);
 
-                        if (aElement == null)
+                        if (element == null)
                         {
-                            int aId = BH.Engine.Adapters.Revit.Query.ElementId(aBHoMObject);
-                            if (aId != -1)
-                                aElement = document.GetElement(new ElementId(aId));
+                            int id = BH.Engine.Adapters.Revit.Query.ElementId(bhomObject);
+                            if (id != -1)
+                                element = document.GetElement(new ElementId(id));
                         }
 
-                        if (aElement != null)
+                        if (element != null)
                         {
                             if (revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Replace || revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
                             {
-                                if (aElement.Pinned)
+                                if (element.Pinned)
                                 {
-                                    DeletePinnedElementError(aElement);
+                                    DeletePinnedElementError(element);
                                     continue;
                                 }
 
-                                document.Delete(aElement.Id);
-                                aElement = null;
+                                document.Delete(element.Id);
+                                element = null;
                             }
                         }
 
                         if (revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
                             continue;
 
-                        if (aElement == null)
+                        if (element == null)
                         {
-                            Type aType = aBHoMObject.GetType();
+                            Type type = bhomObject.GetType();
 
-                            if (aType != typeof(BHoMObject))
+                            if (type != typeof(BHoMObject))
                             {
-                                aElement = BH.UI.Revit.Engine.Convert.ToRevit(aBHoMObject as dynamic, document, aPushSettings);
-                                SetIdentifiers(aBHoMObject, aElement);
+                                element = BH.UI.Revit.Engine.Convert.ToRevit(bhomObject as dynamic, document, aPushSettings);
+                                SetIdentifiers(bhomObject, element);
                             }
 
                         }
                         else
                         {
-                            aElement = Modify.SetParameters(aElement, aBHoMObject);
-                            if (aElement != null && aElement.Location != null)
+                            element = Modify.SetParameters(element, bhomObject);
+                            if (element != null && element.Location != null)
                             {
                                 try
                                 {
-                                    Location aLocation = Modify.Move(aElement, aBHoMObject, aPushSettings);
+                                    Location aLocation = Modify.Move(element, bhomObject, aPushSettings);
                                 }
-                                catch (Exception aException)
+                                catch
                                 {
-                                    ObjectNotMovedWarning(aBHoMObject);
+                                    ObjectNotMovedWarning(bhomObject);
                                 }
 
                             }
 
-                            if (aBHoMObject is IView || aBHoMObject is oM.Adapters.Revit.Elements.Family || aBHoMObject is InstanceProperties)
-                                aElement.Name = aBHoMObject.Name;
+                            if (bhomObject is IView || bhomObject is oM.Adapters.Revit.Elements.Family || bhomObject is InstanceProperties)
+                                element.Name = bhomObject.Name;
                         }
                     }
                 }
-                catch (Exception aException)
+                catch
                 {
-                    ObjectNotCreatedCreateError(aBHoMObject);
-                    aElement = null;
+                    ObjectNotCreatedCreateError(bhomObject);
+                    element = null;
                 }
 
                 //Assign Tags
-                if (aElement != null && !string.IsNullOrEmpty(aTagsParameterName))
-                    Modify.SetTags(aElement, aBHoMObject, aTagsParameterName);
+                if (element != null && !string.IsNullOrEmpty(tagsParameterName))
+                    Modify.SetTags(element, bhomObject, tagsParameterName);
             }
 
             if (UIContralledApplication != null)
@@ -245,46 +245,36 @@ namespace BH.UI.Revit.Adapter
 
         private static void ControlledApplication_FailuresProcessing(object sender, Autodesk.Revit.DB.Events.FailuresProcessingEventArgs e)
         {
-            bool aHasFailure = false;
-            FailuresAccessor aFailuresAccessor = e.GetFailuresAccessor();
-            List<FailureMessageAccessor> aFailureMessageAccessorList = aFailuresAccessor.GetFailureMessages().ToList();
-            List<ElementId> ElemntsToDelete = new List<ElementId>();
-            foreach (FailureMessageAccessor aFailureMessageAccessor in aFailureMessageAccessorList)
+            bool hasFailure = false;
+            FailuresAccessor failuresAccessor = e.GetFailuresAccessor();
+            List<FailureMessageAccessor> failureMessageAccessorsList = failuresAccessor.GetFailureMessages().ToList();
+            List<ElementId> elementsToDelete = new List<ElementId>();
+            foreach (FailureMessageAccessor failureMessageAccessor in failureMessageAccessorsList)
             {
                 try
                 {
-                    if (aFailureMessageAccessor.GetSeverity() == FailureSeverity.Warning)
+                    if (failureMessageAccessor.GetSeverity() == FailureSeverity.Warning)
                     {
-                        aFailuresAccessor.DeleteWarning(aFailureMessageAccessor);
+                        failuresAccessor.DeleteWarning(failureMessageAccessor);
                         continue;
                     }
                     else
                     {
-                        aFailuresAccessor.ResolveFailure(aFailureMessageAccessor);
-                        aHasFailure = true;
+                        failuresAccessor.ResolveFailure(failureMessageAccessor);
+                        hasFailure = true;
                         continue;
-                        //return FailureProcessingResult.ProceedWithCommit;
                     }
 
-                    //List<ElementId> FailingElementIds = aFailureMessageAccessor.GetFailingElementIds().ToList();
-                    //ElementId FailingElementId = FailingElementIds[0];
-                    //if (!ElemntsToDelete.Contains(FailingElementId))
-                    //    ElemntsToDelete.Add(FailingElementId);
-
-                    //aHasFailure = true;
-
-                    //aFailuresAccessor.DeleteWarning(aFailureMessageAccessor);
-
                 }
-                catch (Exception ex)
+                catch
                 {
                 }
             }
 
-            if (ElemntsToDelete.Count > 0)
-                aFailuresAccessor.DeleteElements(ElemntsToDelete);
+            if (elementsToDelete.Count > 0)
+                failuresAccessor.DeleteElements(elementsToDelete);
 
-            if (aHasFailure)
+            if (hasFailure)
                 e.SetProcessingResult(FailureProcessingResult.ProceedWithCommit);
 
             e.SetProcessingResult(FailureProcessingResult.Continue);
@@ -302,50 +292,50 @@ namespace BH.UI.Revit.Adapter
 
             if (element is Family)
             {
-                Family aFamily = (Family)element;
+                Family family = (Family)element;
 
-                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName, Query.FamilyPlacementTypeName(aFamily));
-                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyName, aFamily.Name);
-                if (aFamily.FamilyCategory != null)
-                    SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.CategoryName, aFamily.FamilyCategory.Name);
+                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName, Query.FamilyPlacementTypeName(family));
+                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyName, family.Name);
+                if (family.FamilyCategory != null)
+                    SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.CategoryName, family.FamilyCategory.Name);
             }
             else
             {
-                int aWorksetId = WorksetId.InvalidWorksetId.IntegerValue;
+                int worksetID = WorksetId.InvalidWorksetId.IntegerValue;
                 if (element.Document != null && element.Document.IsWorkshared)
                 {
-                    WorksetId aWorksetId_Revit = element.WorksetId;
-                    if (aWorksetId_Revit != null)
-                        aWorksetId = aWorksetId_Revit.IntegerValue;
+                    WorksetId revitWorksetID = element.WorksetId;
+                    if (revitWorksetID != null)
+                        worksetID = revitWorksetID.IntegerValue;
                 }
-                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.WorksetId, aWorksetId);
+                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.WorksetId, worksetID);
 
-                Parameter aParameter = null;
+                Parameter parameter = null;
 
-                aParameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
-                if (aParameter != null)
+                parameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
+                if (parameter != null)
                 {
-                    string aValue = aParameter.AsValueString();
-                    if (!string.IsNullOrEmpty(aValue))
-                        SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyName, aValue);
-                }
-
-
-                aParameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
-                if (aParameter != null)
-                {
-                    string aValue = aParameter.AsValueString();
-                    if (!string.IsNullOrEmpty(aValue))
-                        SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyTypeName, aValue);
+                    string value = parameter.AsValueString();
+                    if (!string.IsNullOrEmpty(value))
+                        SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyName, value);
                 }
 
 
-                aParameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
-                if (aParameter != null)
+                parameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
+                if (parameter != null)
                 {
-                    string aValue = aParameter.AsValueString();
-                    if (!string.IsNullOrEmpty(aValue))
-                        SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.CategoryName, aValue);
+                    string value = parameter.AsValueString();
+                    if (!string.IsNullOrEmpty(value))
+                        SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyTypeName, value);
+                }
+
+
+                parameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
+                if (parameter != null)
+                {
+                    string value = parameter.AsValueString();
+                    if (!string.IsNullOrEmpty(value))
+                        SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.CategoryName, value);
                 }
             }
 
@@ -367,16 +357,16 @@ namespace BH.UI.Revit.Adapter
 
         private class FamilyLoadOptions : IFamilyLoadOptions
         {
-            private bool pUpdate;
+            private bool Update;
 
             public FamilyLoadOptions(bool update)
             {
-                pUpdate = update;
+                this.Update = update;
             }
 
             public bool OnFamilyFound(bool familyInUse, out bool overwriteParameterValues)
             {
-                if (pUpdate)
+                if (Update)
                 {
                     overwriteParameterValues = false;
                     return false;
@@ -389,7 +379,7 @@ namespace BH.UI.Revit.Adapter
 
             public bool OnSharedFamilyFound(Family sharedFamily, bool familyInUse, out FamilySource source, out bool overwriteParameterValues)
             {
-                if (pUpdate)
+                if (Update)
                 {
                     overwriteParameterValues = false;
                     source = FamilySource.Project;

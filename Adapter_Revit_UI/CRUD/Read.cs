@@ -58,69 +58,69 @@ namespace BH.UI.Revit.Adapter
                 return null;
             }
 
-            List<FilterRequest> aFilterRequestList = new List<FilterRequest>();
+            List<FilterRequest> filterRequestList = new List<FilterRequest>();
             if (ids != null && ids.Count > 0)
             {
-                List<string> aUniqueIdList = new List<string>();
-                List<int> aElementIdList = new List<int>();
-                foreach (object aObject in ids)
-                    if(aObject != null)
+                List<string> uniqueIDList = new List<string>();
+                List<int> elementIDList = new List<int>();
+                foreach (object obj in ids)
+                    if(obj != null)
                     {
-                        if (aObject is int)
-                            aElementIdList.Add((int)aObject);
-                        else if (aObject is string)
-                            aUniqueIdList.Add((string)aObject);
+                        if (obj is int)
+                            elementIDList.Add((int)obj);
+                        else if (obj is string)
+                            uniqueIDList.Add((string)obj);
                     }
 
-                FilterRequest aFilterRequest_UniqueIds = null;
-                FilterRequest aFilterRequest_ElementIds = null;
+                FilterRequest filterRequestUniqueIDs = null;
+                FilterRequest filterRequestElementIDs = null;
 
-                if (aUniqueIdList.Count > 0)
-                    aFilterRequest_UniqueIds = BH.Engine.Adapters.Revit.Create.SelectionFilterRequest(aUniqueIdList);
+                if (uniqueIDList.Count > 0)
+                    filterRequestUniqueIDs = BH.Engine.Adapters.Revit.Create.SelectionFilterRequest(uniqueIDList);
 
-                if (aElementIdList.Count > 0)
-                    aFilterRequest_ElementIds = BH.Engine.Adapters.Revit.Create.SelectionFilterRequest(aElementIdList);
+                if (elementIDList.Count > 0)
+                    filterRequestElementIDs = BH.Engine.Adapters.Revit.Create.SelectionFilterRequest(elementIDList);
 
-                if (aFilterRequest_UniqueIds != null && aFilterRequest_ElementIds != null)
+                if (filterRequestUniqueIDs != null && filterRequestElementIDs != null)
                 {
-                    aFilterRequestList.Add(BH.Engine.Adapters.Revit.Create.LogicalOrFilterRequest(new List<FilterRequest>() { aFilterRequest_ElementIds, aFilterRequest_UniqueIds }));
+                    filterRequestList.Add(BH.Engine.Adapters.Revit.Create.LogicalOrFilterRequest(new List<FilterRequest>() { filterRequestElementIDs, filterRequestUniqueIDs }));
                 }
                 else
                 {
-                    if(aFilterRequest_UniqueIds != null)
-                        aFilterRequestList.Add(aFilterRequest_UniqueIds);
+                    if(filterRequestUniqueIDs != null)
+                        filterRequestList.Add(filterRequestUniqueIDs);
 
-                    if (aFilterRequest_ElementIds != null)
-                        aFilterRequestList.Add(aFilterRequest_ElementIds);
+                    if (filterRequestElementIDs != null)
+                        filterRequestList.Add(filterRequestElementIDs);
                 }
 
             }
 
             if(type != null)
             {
-                aFilterRequestList.Add(new FilterRequest() {Type = type });
+                filterRequestList.Add(new FilterRequest() {Type = type });
             }
 
-            IEnumerable<IBHoMObject> aResult = new List<IBHoMObject>();
+            IEnumerable<IBHoMObject> result = new List<IBHoMObject>();
 
-            if (aFilterRequestList == null || aFilterRequestList.Count == 0)
-                return aResult;
+            if (filterRequestList == null || filterRequestList.Count == 0)
+                return result;
 
-            if (aFilterRequestList.Count == 1)
-                aResult = Read(aFilterRequestList.First());
+            if (filterRequestList.Count == 1)
+                result = Read(filterRequestList.First());
             else
-                aResult = Read(BH.Engine.Adapters.Revit.Create.LogicalAndFilterRequest(aFilterRequestList));
+                result = Read(BH.Engine.Adapters.Revit.Create.LogicalAndFilterRequest(filterRequestList));
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/
 
         protected override IEnumerable<IBHoMObject> Read(FilterRequest filterRequest)
         {
-            Document aDocument = Document;
+            Document document = Document;
 
-            if (aDocument == null)
+            if (document == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
                 return null;
@@ -133,81 +133,81 @@ namespace BH.UI.Revit.Adapter
             }
 
             //TODO: this is temporary solution. Any further calls in this method to FilterRequest shall be changed to IRequest
-            FilterRequest aFilterRequest = filterRequest as FilterRequest;
-            if (aFilterRequest == null)
+            FilterRequest filterRequestFromIRequest = filterRequest as FilterRequest;
+            if (filterRequestFromIRequest == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is not FilterRequest.");
                 return null;
             }
 
-            Autodesk.Revit.UI.UIDocument aUIDocument = UIDocument;
+            Autodesk.Revit.UI.UIDocument uiDocument = UIDocument;
 
-            List<IBHoMObject> aResult = new List<IBHoMObject>();
+            List<IBHoMObject> result = new List<IBHoMObject>();
 
-            Dictionary<ElementId, List<FilterRequest>> aFilterRequestDictionary = Query.FilterRequestDictionary(aFilterRequest, aUIDocument);
-            if (aFilterRequestDictionary == null)
+            Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary = Query.FilterRequestDictionary(filterRequestFromIRequest, uiDocument);
+            if (filterRequestDictionary == null)
                 return null;
 
-            Dictionary<Discipline, PullSettings> aDictionary_PullSettings = new Dictionary<Discipline, PullSettings>();
+            Dictionary<Discipline, PullSettings> dictionaryPullSettings = new Dictionary<Discipline, PullSettings>();
 
-            RevitSettings aRevitSettings = RevitSettings;
+            RevitSettings revitSettings = RevitSettings;
 
-            MapSettings aMapSettings = RevitSettings.MapSettings;
-            if (aMapSettings.TypeMaps == null || aMapSettings.TypeMaps.Count == 0)
-                aMapSettings = BH.Engine.Adapters.Revit.Query.DefaultMapSettings();
+            MapSettings mapSettings = RevitSettings.MapSettings;
+            if (mapSettings.TypeMaps == null || mapSettings.TypeMaps.Count == 0)
+                mapSettings = BH.Engine.Adapters.Revit.Query.DefaultMapSettings();
 
-            List <ElementId> aElementIdList = new List<ElementId>();
-            foreach (KeyValuePair<ElementId, List<FilterRequest>> aKeyValuePair in aFilterRequestDictionary)
+            List <ElementId> elementIDList = new List<ElementId>();
+            foreach (KeyValuePair<ElementId, List<FilterRequest>> kvp in filterRequestDictionary)
             {
-                Element aElement = aDocument.GetElement(aKeyValuePair.Key);
-                if (aElement == null || aElementIdList.Contains(aElement.Id))
+                Element element = document.GetElement(kvp.Key);
+                if (element == null || elementIDList.Contains(element.Id))
                     continue;
 
-                IEnumerable<FilterRequest> aFilterRequests = Query.FilterRequests(aFilterRequestDictionary, aElement.Id);
-                if (aFilterRequests == null)
+                IEnumerable<FilterRequest> filterRequests = Query.FilterRequests(filterRequestDictionary, element.Id);
+                if (filterRequests == null)
                     continue;
 
-                Discipline aDiscipline = BH.Engine.Adapters.Revit.Query.Discipline(aFilterRequests, aRevitSettings);
+                Discipline discipline = BH.Engine.Adapters.Revit.Query.Discipline(filterRequests, revitSettings);
 
-                PullSettings aPullSettings = null;
-                if (!aDictionary_PullSettings.TryGetValue(aDiscipline, out aPullSettings))
+                PullSettings pullSettings = null;
+                if (!dictionaryPullSettings.TryGetValue(discipline, out pullSettings))
                 {
-                    aPullSettings = BH.Engine.Adapters.Revit.Create.PullSettings(aDiscipline, aMapSettings);
-                    aDictionary_PullSettings.Add(aDiscipline, aPullSettings);
+                    pullSettings = BH.Engine.Adapters.Revit.Create.PullSettings(discipline, mapSettings);
+                    dictionaryPullSettings.Add(discipline, pullSettings);
                 }
 
-                IEnumerable<IBHoMObject> aIBHoMObjects = Read(aElement, aRevitSettings, aPullSettings);
+                IEnumerable<IBHoMObject> iBHoMObjects = Read(element, revitSettings, pullSettings);
 
-                if (aIBHoMObjects != null && aIBHoMObjects.Count() > 0)
+                if (iBHoMObjects != null && iBHoMObjects.Count() > 0)
                 { 
                     //Pull Element Edges
-                    if (BH.Engine.Adapters.Revit.Query.PullEdges(aFilterRequests))
+                    if (BH.Engine.Adapters.Revit.Query.PullEdges(filterRequests))
                     {
-                        Options aOptions = new Options();
-                        aOptions.ComputeReferences = false;
-                        aOptions.DetailLevel = ViewDetailLevel.Fine;
-                        aOptions.IncludeNonVisibleObjects = BH.Engine.Adapters.Revit.Query.IncludeNonVisibleObjects(aFilterRequests);
+                        Options options = new Options();
+                        options.ComputeReferences = false;
+                        options.DetailLevel = ViewDetailLevel.Fine;
+                        options.IncludeNonVisibleObjects = BH.Engine.Adapters.Revit.Query.IncludeNonVisibleObjects(filterRequests);
 
-                        foreach(IBHoMObject aIBHoMObject in aIBHoMObjects)
+                        foreach(IBHoMObject iBHoMObject in iBHoMObjects)
                         {
-                            ElementId aElementId = aIBHoMObject.ElementId();
-                            if (aElementId == null || aElementId == ElementId.InvalidElementId)
+                            ElementId elementId = iBHoMObject.ElementId();
+                            if (elementId == null || elementId == ElementId.InvalidElementId)
                                 continue;
 
-                            Element aElement_Temp = aDocument.GetElement(aElementId);
-                            if (aElement_Temp == null)
+                            Element elementTemp = document.GetElement(elementId);
+                            if (elementTemp == null)
                                 continue;
 
-                            aIBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Edges] = aElement_Temp.Curves(aOptions, aPullSettings);
+                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Edges] = elementTemp.Curves(options, pullSettings);
                         }
                     }
 
-                    aResult.AddRange(aIBHoMObjects);
-                    aElementIdList.Add(aElement.Id);
+                    result.AddRange(iBHoMObjects);
+                    elementIDList.Add(element.Id);
                 }
             }
 
-            return aResult;
+            return result;
         }
 
 
@@ -220,112 +220,112 @@ namespace BH.UI.Revit.Adapter
             if (element == null || !element.IsValidObject)
                 return new List<IBHoMObject>();
 
-            object aObject = null;
-            bool aConverted = true;
+            object obj = null;
+            bool converted = true;
 
-            List<IBHoMObject> aResult = new List<IBHoMObject>();
+            List<IBHoMObject> result = new List<IBHoMObject>();
 
-            IEnumerable<Type> aTypes = Query.BHoMTypes(element);
-            if (aTypes != null && aTypes.Count() > 0)
+            IEnumerable<Type> types = Query.BHoMTypes(element);
+            if (types != null && types.Count() > 0)
             {
                 try
                 {
-                    aObject = Engine.Convert.ToBHoM(element as dynamic, pullSettings);
+                    obj = Engine.Convert.ToBHoM(element as dynamic, pullSettings);
                 }
                 catch (Exception aException)
                 {
                     BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted becasue of missing ToBHoM method. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, aException.Message));
-                    aConverted = false;
+                    converted = false;
                 }
             }
 
-            if (aObject == null)
+            if (obj == null)
             {
                 try
                 {
-                    IBHoMObject aIBHoMObject = null;
+                    IBHoMObject iBHoMObject = null;
 
                     if (element.Location is LocationPoint || element.Location is LocationCurve)
                     {
-                        IGeometry aIGeometry = null;
+                        IGeometry iGeometry = null;
                         try
                         {
-                            aIGeometry = element.Location.ToBHoM(pullSettings);
+                            iGeometry = element.Location.ToBHoM(pullSettings);
                         }
                         catch (Exception aException)
                         {
                             BH.Engine.Reflection.Compute.RecordWarning(string.Format("Location of BHoM object could not be converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, aException.Message));
                         }
 
-                        if (aIGeometry != null)
+                        if (iGeometry != null)
                         {
-                            ElementType aElementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-                            if(aElementType != null)
+                            ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
+                            if(elementType != null)
                             {
-                                InstanceProperties aObjectProperties = Engine.Convert.ToBHoM(aElementType, pullSettings) as InstanceProperties;
-                                if(aObjectProperties != null)
+                                InstanceProperties objectProperties = Engine.Convert.ToBHoM(elementType, pullSettings) as InstanceProperties;
+                                if(objectProperties != null)
                                 {
                                     if (element.ViewSpecific)
-                                        aIBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingInstance(aObjectProperties, element.Document.GetElement(element.OwnerViewId).Name, aIGeometry as dynamic);
+                                        iBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingInstance(objectProperties, element.Document.GetElement(element.OwnerViewId).Name, iGeometry as dynamic);
                                     else
-                                        aIBHoMObject = BH.Engine.Adapters.Revit.Create.ModelInstance(aObjectProperties, aIGeometry as dynamic);
+                                        iBHoMObject = BH.Engine.Adapters.Revit.Create.ModelInstance(objectProperties, iGeometry as dynamic);
                                 }
                             }
                         }
                     }
 
-                    if (aIBHoMObject == null && element is ElementType)
-                        aIBHoMObject = Engine.Convert.ToBHoM((ElementType)element, pullSettings);
-                    if(aIBHoMObject == null && element is Autodesk.Revit.DB.Family)
-                        aIBHoMObject = Engine.Convert.ToBHoM((Autodesk.Revit.DB.Family)element, pullSettings);
+                    if (iBHoMObject == null && element is ElementType)
+                        iBHoMObject = Engine.Convert.ToBHoM((ElementType)element, pullSettings);
+                    if(iBHoMObject == null && element is Autodesk.Revit.DB.Family)
+                        iBHoMObject = Engine.Convert.ToBHoM((Autodesk.Revit.DB.Family)element, pullSettings);
 
-                    if (aIBHoMObject == null)
-                        aIBHoMObject = new BHoMObject();
+                    if (iBHoMObject == null)
+                        iBHoMObject = new BHoMObject();
 
-                    if (aIBHoMObject != null)
+                    if (iBHoMObject != null)
                     {
-                        if (!(aIBHoMObject is DraftingInstance) && element.ViewSpecific)
-                            aIBHoMObject = aIBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.ViewName, element.Document.GetElement(element.OwnerViewId).Name);
+                        if (!(iBHoMObject is DraftingInstance) && element.ViewSpecific)
+                            iBHoMObject = iBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.ViewName, element.Document.GetElement(element.OwnerViewId).Name);
 
-                        aIBHoMObject.Name = element.Name;
-                        aIBHoMObject = Modify.SetIdentifiers(aIBHoMObject, element);
-                        aIBHoMObject = Modify.SetCustomData(aIBHoMObject, element);
-                        aObject = aIBHoMObject;
+                        iBHoMObject.Name = element.Name;
+                        iBHoMObject = Modify.SetIdentifiers(iBHoMObject, element);
+                        iBHoMObject = Modify.SetCustomData(iBHoMObject, element);
+                        obj = iBHoMObject;
                     }
 
                 }
                 catch (Exception aException)
                 {
-                    if (aConverted)
+                    if (converted)
                         BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, aException.Message));
                 }
             }
 
-            if (aObject != null)
+            if (obj != null)
             {
-                aResult = new List<IBHoMObject>();
-                if (aObject is IBHoMObject)
-                    aResult.Add((IBHoMObject)aObject);
-                else if (aObject is IEnumerable<IBHoMObject>)
-                    aResult.AddRange((IEnumerable<IBHoMObject>)aObject);
+                result = new List<IBHoMObject>();
+                if (obj is IBHoMObject)
+                    result.Add((IBHoMObject)obj);
+                else if (obj is IEnumerable<IBHoMObject>)
+                    result.AddRange((IEnumerable<IBHoMObject>)obj);
             }
 
             //Assign Tags
-            string aTagsParameterName = null;
+            string tagsParameterName = null;
             if (revitSettings != null && revitSettings.GeneralSettings != null)
-                aTagsParameterName = revitSettings.GeneralSettings.TagsParameterName;
+                tagsParameterName = revitSettings.GeneralSettings.TagsParameterName;
 
-            if (aResult != null && !string.IsNullOrEmpty(aTagsParameterName))
+            if (result != null && !string.IsNullOrEmpty(tagsParameterName))
             {
-                for (int i = 0; i < aResult.Count; i++)
+                for (int i = 0; i < result.Count; i++)
                 {
-                    IBHoMObject aIBHoMObject = Modify.SetTags(aResult[i], element, aTagsParameterName);
-                    if (aIBHoMObject != null)
-                        aResult[i] = aIBHoMObject;
+                    IBHoMObject iBHoMObject = Modify.SetTags(result[i], element, tagsParameterName);
+                    if (iBHoMObject != null)
+                        result[i] = iBHoMObject;
                 }
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

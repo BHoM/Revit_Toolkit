@@ -54,19 +54,19 @@ namespace BH.UI.Revit.Adapter
             if (bHoMObjects.Count() < 1)
                 return false;
 
-            List<ElementId> aElementIdList = Query.ElementIds(document, BH.Engine.Adapters.Revit.Query.UniqueIds(bHoMObjects, true), true);
+            List<ElementId> elementIDList = Query.ElementIds(document, BH.Engine.Adapters.Revit.Query.UniqueIds(bHoMObjects, true), true);
 
-            if (aElementIdList == null || aElementIdList.Count < 1)
+            if (elementIDList == null || elementIDList.Count < 1)
                 return false;
 
-            bool aResult = false;
-            using (Transaction aTransaction = new Transaction(document, "Create"))
+            bool result = false;
+            using (Transaction transaction = new Transaction(document, "Create"))
             {
-                aTransaction.Start();
-                aResult = Delete(aElementIdList, document);
-                aTransaction.Commit();
+                transaction.Start();
+                result = Delete(elementIDList, document);
+                transaction.Commit();
             }
-            return aResult;
+            return result;
         }
 
         /***************************************************/
@@ -85,14 +85,14 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            bool aResult = false;
-            using (Transaction aTransaction = new Transaction(document, "Create"))
+            bool result = false;
+            using (Transaction transaction = new Transaction(document, "Create"))
             {
-                aTransaction.Start();
-                aResult = DeleteByUniqueId(bHoMObject, document);
-                aTransaction.Commit();
+                transaction.Start();
+                result = DeleteByUniqueId(bHoMObject, document);
+                transaction.Commit();
             }
-            return aResult;
+            return result;
         }
 
         /***************************************************/
@@ -107,11 +107,11 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            string aUniqueId = BH.Engine.Adapters.Revit.Query.UniqueId(bHoMObject);
-            if (aUniqueId != null)
+            string uniqueID = BH.Engine.Adapters.Revit.Query.UniqueId(bHoMObject);
+            if (uniqueID != null)
             {
-                Element aElement = document.GetElement(aUniqueId);
-                return Delete(aElement);
+                Element element = document.GetElement(uniqueID);
+                return Delete(element);
             }
 
             return false;
@@ -133,12 +133,12 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            List<Element> aElementList = new FilteredElementCollector(document).OfClass(type).ToList();
-            if (aElementList == null || aElementList.Count < 1)
+            List<Element> elementList = new FilteredElementCollector(document).OfClass(type).ToList();
+            if (elementList == null || elementList.Count < 1)
                 return false;
 
-            Element aElement = aElementList.Find(x => x.Name == bHoMObject.Name);
-            return Delete(aElement);
+            Element element = elementList.Find(x => x.Name == bHoMObject.Name);
+            return Delete(element);
         }
 
         /***************************************************/
@@ -160,24 +160,24 @@ namespace BH.UI.Revit.Adapter
             if (bHoMObjects.Count() < 1)
                 return false;
 
-            List<Element> aElementList = new FilteredElementCollector(document).OfClass(type).ToList();
-            if (aElementList == null || aElementList.Count < 1)
+            List<Element> elementList = new FilteredElementCollector(document).OfClass(type).ToList();
+            if (elementList == null || elementList.Count < 1)
                 return false;
 
-            List<ElementId> aElementIdList = new List<ElementId>();
-            foreach(BHoMObject aBHoMObject in bHoMObjects)
+            List<ElementId> elementIDList = new List<ElementId>();
+            foreach(BHoMObject bhomObject in bHoMObjects)
             {
-                foreach(Element aElement in aElementList)
+                foreach(Element element in elementList)
                 {
-                    if(aBHoMObject.Name == aElement.Name)
+                    if(bhomObject.Name == element.Name)
                     {
-                        aElementIdList.Add(aElement.Id);
+                        elementIDList.Add(element.Id);
                         break;
                     }
                 }
             }
 
-            return Delete(aElementIdList, document);
+            return Delete(elementIDList, document);
         }
 
         /***************************************************/
@@ -190,8 +190,8 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            ICollection<ElementId> aElementIds = element.Document.Delete(element.Id);
-            if (aElementIds != null && aElementIds.Count > 0)
+            ICollection<ElementId> elementIDs = element.Document.Delete(element.Id);
+            if (elementIDs != null && elementIDs.Count > 0)
                 return true;
 
             return false;
@@ -210,13 +210,13 @@ namespace BH.UI.Revit.Adapter
             if (elementIds.Count() < 1)
                 return false;
 
-            List<ElementId> aElementIdList = new List<ElementId>();
+            List<ElementId> elementIDList = new List<ElementId>();
 
-            foreach (ElementId aElementId in elementIds)
-                aElementIdList.Add(aElementId);
+            foreach (ElementId elementId in elementIds)
+                elementIDList.Add(elementId);
 
-            ICollection<ElementId> aElementIds = document.Delete(aElementIdList);
-            if (aElementIds != null && aElementIds.Count > 0)
+            ICollection<ElementId> elementIDs = document.Delete(elementIDList);
+            if (elementIDs != null && elementIDs.Count > 0)
                 return true;
 
             return false;
