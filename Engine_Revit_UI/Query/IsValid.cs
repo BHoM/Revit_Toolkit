@@ -86,13 +86,7 @@ namespace BH.UI.Revit.Engine
                 switch (parameter.StorageType)
                 {
                     case StorageType.Double:
-<<<<<<< HEAD
-                        aValue = Convert.ToSI(parameter.AsDouble(), parameter.Definition.UnitType);
-=======
-                        val = parameter.AsDouble();
-                        if (convertUnits)
-                            val = Convert.ToSI((double)val, parameter.Definition.UnitType);
->>>>>>> #438 Engine_Revit_UI Query tidied save point
+                        val = Convert.ToSI(parameter.AsDouble(), parameter.Definition.UnitType);
                         break;
                     case StorageType.Integer:
                         val = parameter.AsInteger();
