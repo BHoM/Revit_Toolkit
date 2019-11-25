@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -43,14 +43,14 @@ namespace BH.Engine.Adapters.Revit
             if (bHoMObject == null)
                 return null;
 
-            IBHoMObject aIBHoMObject = bHoMObject.GetShallowClone();
+            IBHoMObject obj = bHoMObject.GetShallowClone();
 
-            if (aIBHoMObject.Tags == null)
-                aIBHoMObject.Tags = new HashSet<string>();
+            if (obj.Tags == null)
+                obj.Tags = new HashSet<string>();
 
-            aIBHoMObject.Tags.Add(tag);
+            obj.Tags.Add(tag);
 
-            return aIBHoMObject;
+            return obj;
         }
 
         /***************************************************/

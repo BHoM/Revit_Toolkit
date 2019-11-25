@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -43,11 +43,11 @@ namespace BH.Engine.Adapters.Revit
             if (modelInstance == null)
                 return null;
 
-            ModelInstance aModelInstance = modelInstance.GetShallowClone() as ModelInstance;
+            ModelInstance modInstance = modelInstance.GetShallowClone() as ModelInstance;
 
-            aModelInstance.Location = Geometry.Modify.Translate(aModelInstance.Location as dynamic, vector);
+            modInstance.Location = Geometry.Modify.Translate(modInstance.Location as dynamic, vector);
             
-            return aModelInstance;
+            return modInstance;
         }
 
         /***************************************************/

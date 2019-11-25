@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -48,42 +48,42 @@ namespace BH.Engine.Adapters.Revit
             if (typeMap == null || typeMap.Type == null)
                 return mapSettings;
 
-            MapSettings aMapSettings = mapSettings.GetShallowClone() as MapSettings;
-            if (aMapSettings.TypeMaps == null)
-                aMapSettings.TypeMaps = new List<TypeMap>();
+            MapSettings typeMapSettings = mapSettings.GetShallowClone() as MapSettings;
+            if (typeMapSettings.TypeMaps == null)
+                typeMapSettings.TypeMaps = new List<TypeMap>();
 
-            TypeMap aTypeMap = aMapSettings.TypeMaps.Find(x => typeMap.Type.Equals(x.Type));
-            if(aTypeMap == null)
+            TypeMap mapType = typeMapSettings.TypeMaps.Find(x => typeMap.Type.Equals(x.Type));
+            if(mapType == null)
             {
-                aMapSettings.TypeMaps.Add(typeMap);
+                typeMapSettings.TypeMaps.Add(typeMap);
             }
             else
             {
-                TypeMap aTypeMap_Temp = typeMap;
+                TypeMap tempTypeMap = typeMap;
 
                 if (merge)
                 {
-                    aTypeMap_Temp = typeMap.GetShallowClone() as TypeMap;
+                    tempTypeMap = typeMap.GetShallowClone() as TypeMap;
 
-                    foreach (KeyValuePair<string, HashSet<string>> aKeyValuePair in aTypeMap.Map)
+                    foreach (KeyValuePair<string, HashSet<string>> aKeyValuePair in mapType.Map)
                     {
-                        HashSet<string> aHashSet = null;
-                        if(!aTypeMap_Temp.Map.TryGetValue(aKeyValuePair.Key, out aHashSet))
+                        HashSet<string> hashSet = null;
+                        if(!tempTypeMap.Map.TryGetValue(aKeyValuePair.Key, out hashSet))
                         {
-                            aHashSet = new HashSet<string>();
-                            aTypeMap_Temp.Map[aKeyValuePair.Key] = aHashSet;
+                            hashSet = new HashSet<string>();
+                            tempTypeMap.Map[aKeyValuePair.Key] = hashSet;
                         }
 
                         foreach (string aName in aKeyValuePair.Value)
-                            aHashSet.Add(aName);
+                            hashSet.Add(aName);
                     }
                 }
 
-                aMapSettings.TypeMaps.Remove(aTypeMap);
-                aMapSettings.TypeMaps.Add(aTypeMap_Temp);
+                typeMapSettings.TypeMaps.Remove(mapType);
+                typeMapSettings.TypeMaps.Add(tempTypeMap);
             }
 
-            return aMapSettings;
+            return typeMapSettings;
         }
 
         /***************************************************/
