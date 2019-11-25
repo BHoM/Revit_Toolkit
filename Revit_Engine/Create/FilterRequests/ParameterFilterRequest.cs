@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -39,14 +39,14 @@ namespace BH.Engine.Adapters.Revit
         [Output("FilterRequest")]
         public static FilterRequest ParameterFilterRequest(FilterRequest filterRequest, string parameterName, TextComparisonType textComparisonType, string value)
         {
-            FilterRequest aFilterRequest = new FilterRequest();
-            aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Parameter;
-            aFilterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterRequest;
-            aFilterRequest.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
-            aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = Create.TextComparisonRule(textComparisonType);
-            aFilterRequest.Equalities[Convert.FilterRequest.Value] = value;
-            return aFilterRequest;
+            FilterRequest request = new FilterRequest();
+            request.Type = typeof(BHoMObject);
+            request.Equalities[Convert.FilterRequest.RequestType] = RequestType.Parameter;
+            request.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterRequest;
+            request.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
+            request.Equalities[Convert.FilterRequest.ComparisonRule] = Create.TextComparisonRule(textComparisonType);
+            request.Equalities[Convert.FilterRequest.Value] = value;
+            return request;
         }
 
         [Description("Creates FilterRequest which filters all elements by given parameter value.")]
@@ -57,14 +57,14 @@ namespace BH.Engine.Adapters.Revit
         [Output("FilterRequest")]
         public static FilterRequest ParameterFilterRequest(FilterRequest filterRequest, string parameterName, NumberComparisonType numberComparisonType, double value)
         {
-            FilterRequest aFilterRequest = new FilterRequest();
-            aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Parameter;
-            aFilterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterRequest;
-            aFilterRequest.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
-            aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = Create.NumberComparisonRule(numberComparisonType, 10);
-            aFilterRequest.Equalities[Convert.FilterRequest.Value] = value;
-            return aFilterRequest;
+            FilterRequest request = new FilterRequest();
+            request.Type = typeof(BHoMObject);
+            request.Equalities[Convert.FilterRequest.RequestType] = RequestType.Parameter;
+            request.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterRequest;
+            request.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
+            request.Equalities[Convert.FilterRequest.ComparisonRule] = Create.NumberComparisonRule(numberComparisonType, 10);
+            request.Equalities[Convert.FilterRequest.Value] = value;
+            return request;
         }
 
         [Description("Creates FilterRequest which filters all elements which contains or not contains given parameter.")]
@@ -75,13 +75,13 @@ namespace BH.Engine.Adapters.Revit
         [Output("FilterRequest")]
         public static FilterRequest ParameterFilterRequest(FilterRequest filterRequest, string parameterName, bool parameterExists = true)
         {
-            FilterRequest aFilterRequest = new FilterRequest();
-            aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Parameter;
-            aFilterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterRequest;
-            aFilterRequest.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
-            aFilterRequest.Equalities[Convert.FilterRequest.ComparisonRule] = Create.ParameterExistsComparisonRule(!parameterExists);
-            return aFilterRequest;
+            FilterRequest request = new FilterRequest();
+            request.Type = typeof(BHoMObject);
+            request.Equalities[Convert.FilterRequest.RequestType] = RequestType.Parameter;
+            request.Equalities[Convert.FilterRequest.RelatedFilterRequest] = filterRequest;
+            request.Equalities[Convert.FilterRequest.ParameterName] = parameterName;
+            request.Equalities[Convert.FilterRequest.ComparisonRule] = Create.ParameterExistsComparisonRule(!parameterExists);
+            return request;
         }
     }
 }

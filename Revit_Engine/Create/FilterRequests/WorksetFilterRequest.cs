@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -36,11 +36,11 @@ namespace BH.Engine.Adapters.Revit
         [Output("FilterRequest")]
         public static FilterRequest WorksetFilterRequest(string worksetName)
         {
-            FilterRequest aFilterRequest = new FilterRequest();
-            aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Workset;
-            aFilterRequest.Equalities[Convert.FilterRequest.WorksetName] = worksetName;
-            return aFilterRequest;
+            FilterRequest filterRequest = new FilterRequest();
+            filterRequest.Type = typeof(BHoMObject);
+            filterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Workset;
+            filterRequest.Equalities[Convert.FilterRequest.WorksetName] = worksetName;
+            return filterRequest;
         }
     }
 }

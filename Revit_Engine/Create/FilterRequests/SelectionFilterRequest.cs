@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -36,11 +36,11 @@ namespace BH.Engine.Adapters.Revit
         [Output("FilterRequest")]
         public static FilterRequest SelectionFilterRequest()
         {
-            FilterRequest aFilterRequest = new FilterRequest();
-            aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Selection;
-            aFilterRequest.Equalities[Convert.FilterRequest.IncludeSelected] = true;
-            return aFilterRequest;
+            FilterRequest filterRequest = new FilterRequest();
+            filterRequest.Type = typeof(BHoMObject);
+            filterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Selection;
+            filterRequest.Equalities[Convert.FilterRequest.IncludeSelected] = true;
+            return filterRequest;
         }
 
         [Description("Creates FilterRequest which filters all elements by given ElementIds.")]
@@ -48,11 +48,11 @@ namespace BH.Engine.Adapters.Revit
         [Output("FilterRequest")]
         public static FilterRequest SelectionFilterRequest(IEnumerable<int> elementIds)
         {
-            FilterRequest aFilterRequest = new FilterRequest();
-            aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Selection;
-            aFilterRequest.Equalities[Convert.FilterRequest.ElementIds] = elementIds;
-            return aFilterRequest;
+            FilterRequest filterRequest = new FilterRequest();
+            filterRequest.Type = typeof(BHoMObject);
+            filterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Selection;
+            filterRequest.Equalities[Convert.FilterRequest.ElementIds] = elementIds;
+            return filterRequest;
         }
 
         [Description("Creates FilterRequest which filters all elements by given UniqueIds.")]
@@ -60,11 +60,11 @@ namespace BH.Engine.Adapters.Revit
         [Output("FilterRequest")]
         public static FilterRequest SelectionFilterRequest(IEnumerable<string> uniqueIds)
         {
-            FilterRequest aFilterRequest = new FilterRequest();
-            aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Selection;
-            aFilterRequest.Equalities[Convert.FilterRequest.UniqueIds] = uniqueIds;
-            return aFilterRequest;
+            FilterRequest filterRequest = new FilterRequest();
+            filterRequest.Type = typeof(BHoMObject);
+            filterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Selection;
+            filterRequest.Equalities[Convert.FilterRequest.UniqueIds] = uniqueIds;
+            return filterRequest;
         }
     }
 }
