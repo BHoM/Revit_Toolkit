@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -39,15 +39,15 @@ namespace BH.Engine.Adapters.Revit
         [Output("InstanceProperties")]
         public static InstanceProperties InstanceProperties(string familyName, string familyTypeName)
         {
-            InstanceProperties aInstanceProperties = new InstanceProperties()
+            InstanceProperties instanceProperties = new InstanceProperties()
             {
                 Name = Query.FamilyTypeFullName(familyName, familyTypeName),
             };
 
-            aInstanceProperties.CustomData.Add(Convert.FamilyName, familyName);
-            aInstanceProperties.CustomData.Add(Convert.FamilyTypeName, familyTypeName);
+            instanceProperties.CustomData.Add(Convert.FamilyName, familyName);
+            instanceProperties.CustomData.Add(Convert.FamilyTypeName, familyTypeName);
 
-            return aInstanceProperties;
+            return instanceProperties;
         }
 
         /***************************************************/
@@ -57,12 +57,12 @@ namespace BH.Engine.Adapters.Revit
         [Output("InstanceProperties")]
         public static InstanceProperties InstanceProperties(string name)
         {
-            InstanceProperties aInstanceProperties = new InstanceProperties()
+            InstanceProperties instanceProperties = new InstanceProperties()
             {
                 Name = name,
             };
 
-            return aInstanceProperties;
+            return instanceProperties;
         }
 
         /***************************************************/
