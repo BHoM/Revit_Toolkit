@@ -33,24 +33,24 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static BH.oM.Geometry.SettingOut.Grid ToBHoMGrid(this Grid grid, PullSettings pullSettings = null)
+        public static BH.oM.Geometry.SettingOut.Grid ToBHoMGrid(this Grid revitGrid, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Geometry.SettingOut.Grid aGrid = pullSettings.FindRefObject<oM.Geometry.SettingOut.Grid>(grid.Id.IntegerValue);
-            if (aGrid != null)
-                return aGrid;
+            oM.Geometry.SettingOut.Grid grid = pullSettings.FindRefObject<oM.Geometry.SettingOut.Grid>(revitGrid.Id.IntegerValue);
+            if (grid != null)
+                return grid;
 
-            aGrid = BH.Engine.Geometry.SettingOut.Create.Grid(grid.Curve.ToBHoM());
-            aGrid.Name = grid.Name;
+            grid = BH.Engine.Geometry.SettingOut.Create.Grid(revitGrid.Curve.ToBHoM());
+            grid.Name = revitGrid.Name;
 
-            aGrid = Modify.SetIdentifiers(aGrid, grid) as oM.Geometry.SettingOut.Grid;
+            grid = Modify.SetIdentifiers(grid, revitGrid) as oM.Geometry.SettingOut.Grid;
             if (pullSettings.CopyCustomData)
-                aGrid = Modify.SetCustomData(aGrid, grid) as oM.Geometry.SettingOut.Grid;
+                grid = Modify.SetCustomData(grid, revitGrid) as oM.Geometry.SettingOut.Grid;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aGrid);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(grid);
 
-            return aGrid;
+            return grid;
         }
 
         /***************************************************/

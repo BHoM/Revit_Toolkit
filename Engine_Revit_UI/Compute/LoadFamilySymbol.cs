@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -37,72 +37,72 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static FamilySymbol LoadFamilySymbol(this FamilyLoadSettings FamilyLoadSettings, Document document, string categoryName, string familyName, string familyTypeName = null)
+        public static FamilySymbol LoadFamilySymbol(this FamilyLoadSettings familyLoadSettings, Document document, string categoryName, string familyName, string familyTypeName = null)
         {
-            if (FamilyLoadSettings == null || FamilyLoadSettings.FamilyLibrary == null || document == null)
+            if (familyLoadSettings == null || familyLoadSettings.FamilyLibrary == null || document == null)
                 return null;
 
-            FamilyLibrary aFamilyLibrary = FamilyLoadSettings.FamilyLibrary;
+            FamilyLibrary familyLibrary = familyLoadSettings.FamilyLibrary;
 
-            IEnumerable<string> aPaths = BH.Engine.Adapters.Revit.Query.Paths(aFamilyLibrary, categoryName, familyName, familyTypeName);
-            if (aPaths == null || aPaths.Count() == 0)
+            IEnumerable<string> paths = BH.Engine.Adapters.Revit.Query.Paths(familyLibrary, categoryName, familyName, familyTypeName);
+            if (paths == null || paths.Count() == 0)
                 return null;
 
-            string aPath = aPaths.First();
+            string path = paths.First();
 
-            string aTypeName = familyTypeName;
-            if (string.IsNullOrEmpty(aTypeName))
+            string typeName = familyTypeName;
+            if (string.IsNullOrEmpty(typeName))
             {
                 //Look for first available type name if type name not provided
 
-                RevitFilePreview aRevitFilePreview = Create.RevitFilePreview(aPath);
-                if (aRevitFilePreview == null)
+                RevitFilePreview revitFilePreview = Create.RevitFilePreview(path);
+                if (revitFilePreview == null)
                     return null;
 
-                List<string> aTypeNameList = BH.Engine.Adapters.Revit.Query.FamilyTypeNames(aRevitFilePreview);
-                if (aTypeNameList == null || aTypeNameList.Count < 1)
+                List<string> typeNameList = BH.Engine.Adapters.Revit.Query.FamilyTypeNames(revitFilePreview);
+                if (typeNameList == null || typeNameList.Count < 1)
                     return null;
 
-                aTypeName = aTypeNameList.First();
+                typeName = typeNameList.First();
             }
 
-            if (string.IsNullOrEmpty(aTypeName))
+            if (string.IsNullOrEmpty(typeName))
                 return null;
 
-            FamilySymbol aFamilySymbol = null;
+            FamilySymbol familySymbol = null;
 
-            if (document.LoadFamilySymbol(aPath, aTypeName, new FamilyLoadOptions(FamilyLoadSettings), out aFamilySymbol))
+            if (document.LoadFamilySymbol(path, typeName, new FamilyLoadOptions(familyLoadSettings), out familySymbol))
             {
-                if (!aFamilySymbol.IsActive)
-                    aFamilySymbol.Activate();
+                if (!familySymbol.IsActive)
+                    familySymbol.Activate();
             }
 
-            return aFamilySymbol;
+            return familySymbol;
         }
 
         /***************************************************/
 
         private class FamilyLoadOptions : IFamilyLoadOptions
         {
-            private bool pOverwriteParameterValues;
-            private bool pOverwriteFamily;
+            private bool gOverwriteParameterValues;
+            private bool gOverwriteFamily;
 
-            public FamilyLoadOptions(FamilyLoadSettings FamilyLoadSettings)
+            public FamilyLoadOptions(FamilyLoadSettings familyLoadSettings)
             {
-                pOverwriteParameterValues = FamilyLoadSettings.OverwriteParameterValues;
-                pOverwriteFamily = FamilyLoadSettings.OverwriteFamily;
+                gOverwriteParameterValues = familyLoadSettings.OverwriteParameterValues;
+                gOverwriteFamily = familyLoadSettings.OverwriteFamily;
             }
 
             public bool OnFamilyFound(bool familyInUse, out bool overwriteParameterValues)
             {
-                overwriteParameterValues = pOverwriteParameterValues;
-                return pOverwriteFamily;
+                overwriteParameterValues = gOverwriteParameterValues;
+                return gOverwriteFamily;
             }
 
             public bool OnSharedFamilyFound(Family sharedFamily, bool familyInUse, out FamilySource source, out bool overwriteParameterValues)
             {
-                overwriteParameterValues = pOverwriteParameterValues;
-                if(pOverwriteFamily)
+                overwriteParameterValues = gOverwriteParameterValues;
+                if(gOverwriteFamily)
                 {
                     source = FamilySource.Family;
                     return true;

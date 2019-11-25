@@ -39,12 +39,12 @@ namespace BH.UI.Revit.Engine
 
         internal static void NotConvertedWarning(this Element element)
         {
-            string aMessage = "Revit element could not be converted because conversion method does not exist.";
+            string message = "Revit element could not be converted because conversion method does not exist.";
 
             if (element != null)
-                aMessage = string.Format("{0} Element Id: {1}, Element Name: {2}", aMessage, element.Id.IntegerValue, element.Name);
+                message = string.Format("{0} Element Id: {1}, Element Name: {2}", message, element.Id.IntegerValue, element.Name);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
@@ -71,10 +71,10 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void CheckIfNullPush(this Element element, IBHoMObject BHoMObject)
+        internal static void CheckIfNullPush(this Element element, IBHoMObject bhomObject)
         {
             if (element == null)
-                BH.Engine.Reflection.Compute.RecordWarning(string.Format("Revit element has not been created due to BHoM/Revit conversion issues. BHoM element Guid: {0}", BHoMObject.BHoM_Guid));
+                BH.Engine.Reflection.Compute.RecordWarning(string.Format("Revit element has not been created due to BHoM/Revit conversion issues. BHoM element Guid: {0}", bhomObject.BHoM_Guid));
         }
 
         /***************************************************/
@@ -86,14 +86,14 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void NullRevitElementWarning(this IBHoMObject BHoMObject)
+        internal static void NullRevitElementWarning(this IBHoMObject bhomObject)
         {
-            string aMessage = "Referenced Revit element could not be found.";
+            string message = "Referenced Revit element could not be found.";
 
-            if (BHoMObject != null)
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, BHoMObject.BHoM_Guid);
+            if (bhomObject != null)
+                message = string.Format("{0} BHoM Guid: {1}", message, bhomObject.BHoM_Guid);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
@@ -124,8 +124,8 @@ namespace BH.UI.Revit.Engine
             {
                 string warning = string.Format("The BHoM object if missing following properties: {0}. BHoM_Guid: {1}.", string.Join(", ", nullPropertyNames), obj.BHoM_Guid);
 
-                ElementId revitId = obj.ElementId();
-                if (revitId != null) warning += string.Format(" Revit ElementId: {0}.", revitId.IntegerValue);
+                ElementId revitID = obj.ElementId();
+                if (revitID != null) warning += string.Format(" Revit ElementId: {0}.", revitID.IntegerValue);
                 BH.Engine.Reflection.Compute.RecordWarning(warning);
             }
         }
@@ -190,256 +190,256 @@ namespace BH.UI.Revit.Engine
 
         internal static void NonlinearBarWarning(this FamilyInstance bar)
         {
-            string aMessage = "Nonlinear bars are currently not supported in BHoM, the object is returned with empty geometry.";
+            string message = "Nonlinear bars are currently not supported in BHoM, the object is returned with empty geometry.";
 
             if (bar != null)
-                aMessage = string.Format("{0} Element Id: {1}", aMessage, bar.Id.IntegerValue);
+                message = string.Format("{0} Element Id: {1}", message, bar.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
         internal static void BarCurveNotFoundWarning(this FamilyInstance bar)
         {
-            string aMessage = "Bar curve could not be retrieved, the object is returned with empty geometry.";
+            string message = "Bar curve could not be retrieved, the object is returned with empty geometry.";
 
             if (bar != null)
-                aMessage = string.Format("{0} Element Id: {1}", aMessage, bar.Id.IntegerValue);
+                message = string.Format("{0} Element Id: {1}", message, bar.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
         internal static void UnsupportedOutlineCurveWarning(this HostObject hostObject)
         {
-            string aMessage = "The panel outline contains a curve that is currently not supported in BHoM, the object is returned with empty geometry.";
+            string message = "The panel outline contains a curve that is currently not supported in BHoM, the object is returned with empty geometry.";
 
             if (hostObject != null)
-                aMessage = string.Format("{0} Element Id: {1}", aMessage, hostObject.Id.IntegerValue);
+                message = string.Format("{0} Element Id: {1}", message, hostObject.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
         internal static void NonClosedOutlineWarning(this HostObject hostObject)
         {
-            string aMessage = "The panel outline is not closed, the object is returned with empty geometry.";
+            string message = "The panel outline is not closed, the object is returned with empty geometry.";
 
             if (hostObject != null)
-                aMessage = string.Format("{0} Element Id: {1}", aMessage, hostObject.Id.IntegerValue);
+                message = string.Format("{0} Element Id: {1}", message, hostObject.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
         internal static void ElementCouldNotBeQueriedWarning(this Element element)
         {
-            string aMessage = "Revit element could not be queried.";
+            string message = "Revit element could not be queried.";
 
             if (element != null)
-                aMessage = string.Format("{0} Element Id: {1}", aMessage, element.Id.IntegerValue);
+                message = string.Format("{0} Element Id: {1}", message, element.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
         internal static void NullStructuralAssetWarning(this BH.oM.Structure.MaterialFragments.IMaterialFragment material)
         {
-            string aMessage = "Could not find Revit Structural Asset for BHoM Object.";
+            string message = "Could not find Revit Structural Asset for BHoM Object.";
 
             if (material != null)
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, material.BHoM_Guid);
+                message = string.Format("{0} BHoM Guid: {1}", message, material.BHoM_Guid);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
         internal static void UnknownStructuralAssetWarning(this BH.oM.Structure.MaterialFragments.IMaterialFragment material)
         {
-            string aMessage = "Revit Structural Asset could not be converted into BHoM material properties.";
+            string message = "Revit Structural Asset could not be converted into BHoM material properties.";
 
             if (material != null)
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, material.BHoM_Guid);
+                message = string.Format("{0} BHoM Guid: {1}", message, material.BHoM_Guid);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
-        internal static void NullThermalAssetWarning(this oM.Environment.MaterialFragments.IEnvironmentMaterial IMaterialProperties)
+        internal static void NullThermalAssetWarning(this oM.Environment.MaterialFragments.IEnvironmentMaterial materialProperties)
         {
-            string aMessage = "Could not find Revit Thermal Asset for BHoM Object.";
+            string message = "Could not find Revit Thermal Asset for BHoM Object.";
 
-            if (IMaterialProperties != null)
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, IMaterialProperties.BHoM_Guid);
+            if (materialProperties != null)
+                message = string.Format("{0} BHoM Guid: {1}", message, materialProperties.BHoM_Guid);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
         internal static void MaterialTypeNotFoundWarning(this Material material)
         {
-            string aMessage = "Matching BHoM ElementType could not be found.";
+            string message = "Matching BHoM ElementType could not be found.";
 
             if (material != null)
-                aMessage = string.Format("{0} Material Element Id: {1}", aMessage, material.Id.IntegerValue);
+                message = string.Format("{0} Material Element Id: {1}", message, material.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
         internal static void MaterialTypeNotFoundWarning(this FamilyInstance familyInstance)
         {
-            string aMessage = "Matching BHoM ElementType could not be found.";
+            string message = "Matching BHoM ElementType could not be found.";
 
             if (familyInstance != null)
-                aMessage = string.Format("{0} Element Id: {1}", aMessage, familyInstance.Id.IntegerValue);
+                message = string.Format("{0} Element Id: {1}", message, familyInstance.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
         internal static void InvalidDataMaterialWarning(this Material material)
         {
-            string aMessage = "Material could not be correctly converted. Some BHoM Material data may not be valid.";
+            string message = "Material could not be correctly converted. Some BHoM Material data may not be valid.";
 
             if (material != null)
-                aMessage = string.Format("{0} Material Element Id: {1}", aMessage, material.Id.IntegerValue);
+                message = string.Format("{0} Material Element Id: {1}", message, material.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
         internal static void InvalidDataMaterialWarning(this Element element)
         {
-            string aMessage = "Material could not be correctly converted. Some BHoM Material data may not be valid.";
+            string message = "Material could not be correctly converted. Some BHoM Material data may not be valid.";
 
             if (element != null)
-                aMessage = string.Format("{0} Element Id: {1}", aMessage, element.Id.IntegerValue);
+                message = string.Format("{0} Element Id: {1}", message, element.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
         internal static void InvalidFamilyPlacementTypeWarning(this IBHoMObject iBHoMObject, ElementType elementType)
         {
-            string aMessage = "BHoM Object location does not match with the required placement type of Revit family";
+            string message = "BHoM Object location does not match with the required placement type of Revit family";
 
             if (iBHoMObject != null)
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, iBHoMObject.BHoM_Guid);
+                message = string.Format("{0} BHoM Guid: {1}", message, iBHoMObject.BHoM_Guid);
 
             if (elementType != null)
-                aMessage = string.Format("{0} Element Id : {1}", aMessage, elementType.Id.IntegerValue);
+                message = string.Format("{0} Element Id : {1}", message, elementType.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
         internal static void FamilyPlacementTypeNotSupportedWarning(this IBHoMObject iBHoMObject, ElementType elementType)
         {
-            string aMessage = "lacement type of Revit family is not supported.";
+            string message = "lacement type of Revit family is not supported.";
 
             if (iBHoMObject != null)
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, iBHoMObject.BHoM_Guid);
+                message = string.Format("{0} BHoM Guid: {1}", message, iBHoMObject.BHoM_Guid);
 
             if (elementType != null)
-                aMessage = string.Format("{0} Element Id : {1}", aMessage, elementType.Id.IntegerValue);
+                message = string.Format("{0} Element Id : {1}", message, elementType.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
         internal static void ElementTypeNotFoundWarning(this IBHoMObject iBHoMObject)
         {
-            string aMessage = "Element type has not been found for given BHoM Object.";
+            string message = "Element type has not been found for given BHoM Object.";
 
             if (iBHoMObject != null)
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, iBHoMObject.BHoM_Guid);
+                message = string.Format("{0} BHoM Guid: {1}", message, iBHoMObject.BHoM_Guid);
 
-            BH.Engine.Reflection.Compute.RecordError(aMessage);
+            BH.Engine.Reflection.Compute.RecordError(message);
         }
 
         /***************************************************/
 
         internal static void GeometryConvertFailed(this IBHoMObject iBHoMObject)
         {
-            string aMessage = "Conversion of the element geometry failed.";
+            string message = "Conversion of the element geometry failed.";
 
             if (iBHoMObject != null)
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, iBHoMObject.BHoM_Guid);
+                message = string.Format("{0} BHoM Guid: {1}", message, iBHoMObject.BHoM_Guid);
 
-            BH.Engine.Reflection.Compute.RecordError(aMessage);
+            BH.Engine.Reflection.Compute.RecordError(message);
         }
 
         /***************************************************/
 
         internal static void ViewTemplateNotExistsWarning(this oM.Adapters.Revit.Elements.ViewPlan viewPlan)
         {
-            string aMessage = "View Template has not been found for given BHoM ViewPlan.";
+            string message = "View Template has not been found for given BHoM ViewPlan.";
 
             if (viewPlan != null)
             {
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, viewPlan.BHoM_Guid);
+                message = string.Format("{0} BHoM Guid: {1}", message, viewPlan.BHoM_Guid);
 
                 if(viewPlan.CustomData.ContainsKey(BH.Engine.Adapters.Revit.Convert.ViewTemplate))
-                    aMessage = string.Format("{0} View Template Name: {1}", aMessage, viewPlan.CustomData[BH.Engine.Adapters.Revit.Convert.ViewTemplate]);
+                    message = string.Format("{0} View Template Name: {1}", message, viewPlan.CustomData[BH.Engine.Adapters.Revit.Convert.ViewTemplate]);
             }
 
-            BH.Engine.Reflection.Compute.RecordError(aMessage);
+            BH.Engine.Reflection.Compute.RecordError(message);
         }
 
         /***************************************************/
 
         internal static void NullObjectPropertiesWarining(this ModelInstance modelInstance)
         {
-            string aMessage = "Generic Object has no object properties.";
+            string message = "Generic Object has no object properties.";
 
             if (modelInstance != null)
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, modelInstance.BHoM_Guid);
+                message = string.Format("{0} BHoM Guid: {1}", message, modelInstance.BHoM_Guid);
 
-            BH.Engine.Reflection.Compute.RecordError(aMessage);
+            BH.Engine.Reflection.Compute.RecordError(message);
         }
 
         /***************************************************/
 
         internal static void NullObjectPropertiesWarining(this DraftingInstance draftingInstance)
         {
-            string aMessage = "Drafting Object has no object properties.";
+            string message = "Drafting Object has no object properties.";
 
             if (draftingInstance != null)
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, draftingInstance.BHoM_Guid);
+                message = string.Format("{0} BHoM Guid: {1}", message, draftingInstance.BHoM_Guid);
 
-            BH.Engine.Reflection.Compute.RecordError(aMessage);
+            BH.Engine.Reflection.Compute.RecordError(message);
         }
 
         /***************************************************/
 
         internal static void AnalyticalObjectConversionWarning(this IObject iObject, Type Type = null)
         {
-            string aMessage = "Analytical object cannot be converted to Revit.";
+            string message = "Analytical object cannot be converted to Revit.";
 
             if (iObject is IBHoMObject)
-                aMessage = string.Format("{0} BHoM Guid: {1} Type: {2}.", aMessage, ((IBHoMObject)iObject).BHoM_Guid, iObject.GetType().FullName);
+                message = string.Format("{0} BHoM Guid: {1} Type: {2}.", message, ((IBHoMObject)iObject).BHoM_Guid, iObject.GetType().FullName);
             else
-                aMessage = string.Format("{0} Type: {1}.", aMessage, iObject.GetType().FullName);
+                message = string.Format("{0} Type: {1}.", message, iObject.GetType().FullName);
 
             if (Type != null)
-                aMessage = string.Format("{0} Use {1} instead", aMessage, Type.FullName);
+                message = string.Format("{0} Use {1} instead", message, Type.FullName);
 
-            BH.Engine.Reflection.Compute.RecordError(aMessage);
+            BH.Engine.Reflection.Compute.RecordError(message);
         }
 
         /***************************************************/
@@ -453,14 +453,14 @@ namespace BH.UI.Revit.Engine
 
         internal static void InvalidTwoLevelLocationWarning(this IBHoMObject iBHoMObject, ElementType elementType)
         {
-            string aMessage = "Location line of the two-level based element is upside-down";
+            string message = "Location line of the two-level based element is upside-down";
             if (iBHoMObject != null)
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, iBHoMObject.BHoM_Guid);
+                message = string.Format("{0} BHoM Guid: {1}", message, iBHoMObject.BHoM_Guid);
 
             if (elementType != null)
-                aMessage = string.Format("{0} Element Id : {1}", aMessage, elementType.Id.IntegerValue);
+                message = string.Format("{0} Element Id : {1}", message, elementType.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordWarning(aMessage);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/

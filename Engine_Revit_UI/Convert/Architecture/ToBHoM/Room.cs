@@ -41,39 +41,39 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Architecture.Elements.Room aRoom = pullSettings.FindRefObject<oM.Architecture.Elements.Room>(spatialElement.Id.IntegerValue);
-            if (aRoom != null)
-                return aRoom;
+            oM.Architecture.Elements.Room room = pullSettings.FindRefObject<oM.Architecture.Elements.Room>(spatialElement.Id.IntegerValue);
+            if (room != null)
+                return room;
 
-            aRoom = new oM.Architecture.Elements.Room()
+            room = new oM.Architecture.Elements.Room()
             {
                 Perimeter = Query.Profiles(spatialElement, pullSettings).First()
             };
-            aRoom.Name = spatialElement.Name;
+            room.Name = spatialElement.Name;
 
             //Set custom data
-            aRoom = Modify.SetIdentifiers(aRoom, spatialElement) as oM.Architecture.Elements.Room;
+            room = Modify.SetIdentifiers(room, spatialElement) as oM.Architecture.Elements.Room;
             if (pullSettings.CopyCustomData)
-                aRoom = Modify.SetCustomData(aRoom, spatialElement) as oM.Architecture.Elements.Room;
+                room = Modify.SetCustomData(room, spatialElement) as oM.Architecture.Elements.Room;
 
             //Set location
             if (spatialElement.Location != null && spatialElement.Location is LocationPoint)
-                aRoom.Location = ((LocationPoint)spatialElement.Location).ToBHoM();
+                room.Location = ((LocationPoint)spatialElement.Location).ToBHoM();
 
             //Set ExtendedProperties
-            OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-            aOriginContextFragment.ElementID = spatialElement.Id.IntegerValue.ToString();
-            aOriginContextFragment.TypeName = Query.Name(spatialElement);
-            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, spatialElement) as OriginContextFragment;
-            aRoom.Fragments.Add(aOriginContextFragment);
+            OriginContextFragment originContext = new OriginContextFragment();
+            originContext.ElementID = spatialElement.Id.IntegerValue.ToString();
+            originContext.TypeName = Query.Name(spatialElement);
+            originContext = originContext.UpdateValues(pullSettings, spatialElement) as OriginContextFragment;
+            room.Fragments.Add(originContext);
 
-            aRoom = Modify.SetIdentifiers(aRoom, spatialElement) as oM.Architecture.Elements.Room;
+            room = Modify.SetIdentifiers(room, spatialElement) as oM.Architecture.Elements.Room;
             if (pullSettings.CopyCustomData)
-                aRoom = Modify.SetCustomData(aRoom, spatialElement) as oM.Architecture.Elements.Room;
+                room = Modify.SetCustomData(room, spatialElement) as oM.Architecture.Elements.Room;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aRoom);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(room);
 
-            return aRoom;
+            return room;
         }
 
         /***************************************************/

@@ -33,29 +33,29 @@ namespace BH.UI.Revit.Engine
 
         public static Grid ToRevitGrid(this oM.Geometry.SettingOut.Grid grid, Document document, PushSettings pushSettings = null)
         {
-            Grid aGrid = pushSettings.FindRefObject<Grid>(document, grid.BHoM_Guid);
-            if (aGrid != null)
-                return aGrid;
+            Grid revitGrid = pushSettings.FindRefObject<Grid>(document, grid.BHoM_Guid);
+            if (revitGrid != null)
+                return revitGrid;
 
             pushSettings.DefaultIfNull();
 
-            Curve aCurve = grid.Curve.ToRevitCurve();
+            Curve curve = grid.Curve.ToRevitCurve();
 
-            if (aCurve is Line)
-                aGrid = Grid.Create(document, (Line)aCurve);
-            if (aCurve is Arc)
-                aGrid = Grid.Create(document, (Arc)aCurve);
+            if (curve is Line)
+                revitGrid = Grid.Create(document, (Line)curve);
+            if (curve is Arc)
+                revitGrid = Grid.Create(document, (Arc)curve);
 
-            aGrid.CheckIfNullPush(grid);
-            if (aGrid == null)
+            revitGrid.CheckIfNullPush(grid);
+            if (revitGrid == null)
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aGrid, grid, null);
+                Modify.SetParameters(revitGrid, grid, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(grid, aGrid);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(grid, revitGrid);
 
-            return aGrid;
+            return revitGrid;
         }
 
         /***************************************************/

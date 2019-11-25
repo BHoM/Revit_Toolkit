@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -64,36 +64,36 @@ namespace BH.UI.Revit.Engine
 
         internal static void NonIsotopicStructuralAssetNote(this oM.Physical.Materials.Material material)
         {
-            string aMessage = "Revit Structural Asset is Non-Isotopic.";
+            string message = "Revit Structural Asset is Non-Isotopic.";
 
             if (material != null)
-                aMessage = string.Format("{0} BHoM Guid: {1}", aMessage, material.BHoM_Guid);
+                message = string.Format("{0} BHoM Guid: {1}", message, material.BHoM_Guid);
 
-            BH.Engine.Reflection.Compute.RecordNote(aMessage);
+            BH.Engine.Reflection.Compute.RecordNote(message);
         }
 
         /***************************************************/
 
         internal static void MaterialNotInLibraryNote(this Material material)
         {
-            string aMessage = "Material could not be found in BHoM Libary.";
+            string message = "Material could not be found in BHoM Libary.";
 
             if (material != null)
-                aMessage = string.Format("{0} Material Id: {1}", aMessage, material.Id.IntegerValue);
+                message = string.Format("{0} Material Id: {1}", message, material.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordNote(aMessage);
+            BH.Engine.Reflection.Compute.RecordNote(message);
         }
 
         /***************************************************/
 
         internal static void MaterialNotInLibraryNote(this Element element)
         {
-            string aMessage = "Material could not be found in BHoM Libary.";
+            string message = "Material could not be found in BHoM Libary.";
 
             if (element != null)
-                aMessage = string.Format("{0} Element Id: {1}", aMessage, element.Id.IntegerValue);
+                message = string.Format("{0} Element Id: {1}", message, element.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordNote(aMessage);
+            BH.Engine.Reflection.Compute.RecordNote(message);
         }
 
         /***************************************************/

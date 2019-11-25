@@ -38,29 +38,30 @@ namespace BH.UI.Revit.Engine
             if (space == null)
                 return null;
 
-            Autodesk.Revit.DB.Mechanical.Space aSpace = pushSettings.FindRefObject<Autodesk.Revit.DB.Mechanical.Space>(document, space.BHoM_Guid);
-            if (aSpace != null)
-                return aSpace;
+            Autodesk.Revit.DB.Mechanical.Space revitSpace = pushSettings.FindRefObject<Autodesk.Revit.DB.Mechanical.Space>(document, space.BHoM_Guid);
+            if (revitSpace != null)
+                return revitSpace;
 
-            Level aLevel = Query.BottomLevel(space.Location.Z, document);
-            if (aLevel == null)
+            Level level = Query.BottomLevel(space.Location.Z, document);
+            if (level == null)
                 return null;
 
-            UV aUV = new UV(space.Location.X.FromSI(UnitType.UT_Length), space.Location.Y.FromSI(UnitType.UT_Length));
-            aSpace = document.Create.NewSpace(aLevel, aUV);
+            UV uv = new UV(space.Location.X.FromSI(UnitType.UT_Length), space.Location.Y.FromSI(UnitType.UT_Length));
 
-            aSpace.CheckIfNullPush(space);
-            if (aSpace == null)
+            revitSpace = document.Create.NewSpace(level, uv);
+
+            revitSpace.CheckIfNullPush(space);
+            if (revitSpace == null)
                 return null;
 
-            aSpace.Name = space.Name;
+            revitSpace.Name = space.Name;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aSpace, space, null);
+                Modify.SetParameters(revitSpace, space, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(space, aSpace);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(space, revitSpace);
 
-            return aSpace;
+            return revitSpace;
         }
 
         /***************************************************/

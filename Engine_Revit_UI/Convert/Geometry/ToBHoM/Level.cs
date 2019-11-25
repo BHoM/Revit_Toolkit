@@ -33,24 +33,24 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static BH.oM.Geometry.SettingOut.Level ToBHoMLevel(this Level level, PullSettings pullSettings = null)
+        public static BH.oM.Geometry.SettingOut.Level ToBHoMLevel(this Level revitLevel, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Geometry.SettingOut.Level aLevel = pullSettings.FindRefObject<oM.Geometry.SettingOut.Level>(level.Id.IntegerValue);
-            if (aLevel != null)
-                return aLevel;
+            oM.Geometry.SettingOut.Level level = pullSettings.FindRefObject<oM.Geometry.SettingOut.Level>(revitLevel.Id.IntegerValue);
+            if (level != null)
+                return level;
 
-            aLevel = BH.Engine.Geometry.Create.Level(level.ProjectElevation.ToSI(UnitType.UT_Length));
-            aLevel.Name = level.Name;
+            level = BH.Engine.Geometry.Create.Level(revitLevel.ProjectElevation.ToSI(UnitType.UT_Length));
+            level.Name = revitLevel.Name;
 
-            aLevel = Modify.SetIdentifiers(aLevel, level) as oM.Geometry.SettingOut.Level;
+            level = Modify.SetIdentifiers(level, revitLevel) as oM.Geometry.SettingOut.Level;
             if (pullSettings.CopyCustomData)
-                aLevel = Modify.SetCustomData(aLevel, level) as oM.Geometry.SettingOut.Level;
+                level = Modify.SetCustomData(level, revitLevel) as oM.Geometry.SettingOut.Level;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aLevel);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(level);
 
-            return aLevel;
+            return level;
         }
 
         /***************************************************/
