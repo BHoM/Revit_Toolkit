@@ -50,14 +50,14 @@ namespace BH.UI.Revit.Engine
 
             pullSettings = pullSettings.DefaultIfNull();
             
-            StructuralMaterialType aStructuralMaterialType = Query.StructuralMaterialType(material.MaterialClass);
-            IMaterialFragment materialFragment = Query.LibraryMaterial(aStructuralMaterialType, materialGrade);
+            StructuralMaterialType structuralMaterialType = Query.StructuralMaterialType(material.MaterialClass);
+            IMaterialFragment materialFragment = Query.LibraryMaterial(structuralMaterialType, materialGrade);
             if (materialFragment != null)
                 return materialFragment;
 
             Compute.MaterialNotInLibraryNote(material);
             
-            switch (aStructuralMaterialType)
+            switch (structuralMaterialType)
             {
                 case StructuralMaterialType.Concrete:
                 case StructuralMaterialType.PrecastConcrete:
@@ -122,32 +122,32 @@ namespace BH.UI.Revit.Engine
         /****             Private methods               ****/
         /***************************************************/
 
-        private static IMaterialFragment Update(this IMaterialFragment material_Destination, Autodesk.Revit.DB.Material material_Source)
+        private static IMaterialFragment Update(this IMaterialFragment materialDestination, Autodesk.Revit.DB.Material materialSource)
         {
-            if (material_Source == null)
+            if (materialSource == null)
             {
-                Compute.NullRevitElementWarning(material_Destination);
-                return material_Destination;
+                Compute.NullRevitElementWarning(materialDestination);
+                return materialDestination;
             }
                 
-            ElementId aElementId = material_Source.StructuralAssetId;
-            if (aElementId == null || aElementId == ElementId.InvalidElementId)
+            ElementId elementID = materialSource.StructuralAssetId;
+            if (elementID == null || elementID == ElementId.InvalidElementId)
             {
-                Compute.NullStructuralAssetWarning(material_Destination);
-                return material_Destination;
+                Compute.NullStructuralAssetWarning(materialDestination);
+                return materialDestination;
             }
 
-            Document aDocument = material_Source.Document;
+            Document document = materialSource.Document;
 
-            PropertySetElement aPropertySetElement = aDocument.GetElement(aElementId) as PropertySetElement;
-            StructuralAsset structuralAsset = aPropertySetElement.GetStructuralAsset();
+            PropertySetElement propertySetElement = document.GetElement(elementID) as PropertySetElement;
+            StructuralAsset structuralAsset = propertySetElement.GetStructuralAsset();
             if (structuralAsset == null)
             {
-                Compute.NullStructuralAssetWarning(material_Destination);
-                return material_Destination;
+                Compute.NullStructuralAssetWarning(materialDestination);
+                return materialDestination;
             }
 
-            return material_Destination.Update(structuralAsset);
+            return materialDestination.Update(structuralAsset);
         }
 
         /***************************************************/
@@ -213,41 +213,5 @@ namespace BH.UI.Revit.Engine
 
             return materialFragment;
         }
-
-        /***************************************************/
-
-        //private static IMaterialFragment SetEmptyStructurallMaterial(this IMaterialFragment material_Destination, string materialClass)
-        //{
-        //    IMaterialFragment materialFragment = null;
-
-        //    switch (materialClass.ToLower())
-        //    {
-        //        case "aluminium":
-        //            materialFragment = new oM.Structure.MaterialFragments.Aluminium() { Name = material_Destination.Name };
-        //            break;
-        //        case "concrete":
-        //            materialFragment = new oM.Structure.MaterialFragments.Concrete() { Name = material_Destination.Name };
-        //            break;
-        //        case "steel":
-        //        case "metal":
-        //            materialFragment = new oM.Structure.MaterialFragments.Steel() { Name = material_Destination.Name };
-        //            break;
-        //        case "wood":
-        //        case "timber":
-        //            materialFragment = new oM.Structure.MaterialFragments.Timber() { Name = material_Destination.Name };
-        //            break;
-        //    }
-
-        //    return materialFragment;
-        //}
-
-        /***************************************************/
-
-        //private static void Update(this oM.Physical.Materials.Material material_Destination, ThermalAsset thermalAsset)
-        //{
-
-        //}
-
-        /***************************************************/
     }
 }

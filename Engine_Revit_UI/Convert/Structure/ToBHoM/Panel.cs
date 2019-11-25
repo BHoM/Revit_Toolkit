@@ -43,34 +43,34 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Structure.Elements.Panel> aResult = pullSettings.FindRefObjects<oM.Structure.Elements.Panel>(hostObject.Id.IntegerValue);
-            if (aResult != null && aResult.Count > 0)
-                return aResult;
+            List<oM.Structure.Elements.Panel> result = pullSettings.FindRefObjects<oM.Structure.Elements.Panel>(hostObject.Id.IntegerValue);
+            if (result != null && result.Count > 0)
+                return result;
 
             //TODO: check if the attributes != null
             HostObjAttributes hostObjAttributes = hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes;
             string materialGrade = hostObject.MaterialGrade();
-            ISurfaceProperty aProperty2D = hostObjAttributes.ToBHoMSurfaceProperty(pullSettings, materialGrade);
+            ISurfaceProperty property2D = hostObjAttributes.ToBHoMSurfaceProperty(pullSettings, materialGrade);
 
             List<oM.Geometry.ICurve> outlines = hostObject.Outlines(pullSettings);
             if (outlines != null && outlines.Count != 0)
             {
                 hostObject.AnalyticalPullWarning();
-                aResult = BHS.Create.Panel(outlines, aProperty2D, hostObject.Name);
+                result = BHS.Create.Panel(outlines, property2D, hostObject.Name);
             }
             else
             {
-                aResult = new List<oM.Structure.Elements.Panel>();
-                Dictionary<BH.oM.Geometry.PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> aDictionary = Query.PlanarSurfaceDictionary(hostObject, true, pullSettings);
-                if (aDictionary != null)
+                result = new List<oM.Structure.Elements.Panel>();
+                Dictionary<BH.oM.Geometry.PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> dictionary = Query.PlanarSurfaceDictionary(hostObject, true, pullSettings);
+                if (dictionary != null)
                 {
-                    foreach (BH.oM.Geometry.PlanarSurface planarSurface in aDictionary.Keys)
+                    foreach (BH.oM.Geometry.PlanarSurface planarSurface in dictionary.Keys)
                     {
                         List<BH.oM.Geometry.ICurve> internalBoundaries = new List<oM.Geometry.ICurve>(planarSurface.InternalBoundaries);
 
-                        if (aDictionary[planarSurface] != null)
+                        if (dictionary[planarSurface] != null)
                         {
-                            foreach (BH.oM.Physical.Elements.IOpening opening in aDictionary[planarSurface])
+                            foreach (BH.oM.Physical.Elements.IOpening opening in dictionary[planarSurface])
                             {
                                 BH.oM.Geometry.PlanarSurface openingSurface = opening.Location as BH.oM.Geometry.PlanarSurface;
                                 if (openingSurface != null)
@@ -80,15 +80,15 @@ namespace BH.UI.Revit.Engine
                             }
                         }
 
-                        aResult.Add(BHS.Create.Panel(planarSurface.ExternalBoundary, internalBoundaries, aProperty2D, hostObject.Name));
+                        result.Add(BHS.Create.Panel(planarSurface.ExternalBoundary, internalBoundaries, property2D, hostObject.Name));
                     }
                 }
             }
 
-            for (int i = 0; i < aResult.Count; i++)
+            for (int i = 0; i < result.Count; i++)
             {
-                oM.Structure.Elements.Panel panel = aResult[i] as oM.Structure.Elements.Panel;
-                panel.Property = aProperty2D;
+                oM.Structure.Elements.Panel panel = result[i] as oM.Structure.Elements.Panel;
+                panel.Property = property2D;
 
                 panel = Modify.SetIdentifiers(panel, hostObject) as oM.Structure.Elements.Panel;
                 if (pullSettings.CopyCustomData)
@@ -96,10 +96,10 @@ namespace BH.UI.Revit.Engine
 
                 pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(panel);
 
-                aResult[i] = panel;
+                result[i] = panel;
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/
