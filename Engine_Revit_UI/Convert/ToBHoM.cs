@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -39,17 +39,17 @@ namespace BH.UI.Revit.Engine
         /****      Convert Revit elements to BHoM       ****/
         /***************************************************/
 
-        public static IGeometry ToBHoM(this Location Location, PullSettings pullSettings = null)
+        public static IGeometry ToBHoM(this Location location, PullSettings pullSettings = null)
         {
-            if (Location == null) return null;
+            if (location == null) return null;
 
             switch (pullSettings.Discipline)
             {
                 default:
-                    if (Location is LocationPoint)
-                        return ToBHoM((LocationPoint)Location, pullSettings);
-                    else if (Location is LocationCurve)
-                        return ToBHoM((LocationCurve)Location, pullSettings);
+                    if (location is LocationPoint)
+                        return ToBHoM((LocationPoint)location, pullSettings);
+                    else if (location is LocationCurve)
+                        return ToBHoM((LocationCurve)location, pullSettings);
                     break;
             }
 
@@ -263,8 +263,6 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
-                //case Discipline.Environmental:
-                    //return wallType.ToBHoMElementProperties(pullSettings); 
                 case Discipline.Structural:
                     return wallType.ToBHoMSurfaceProperty(pullSettings) as IBHoMObject;
                 case Discipline.Architecture:
@@ -287,8 +285,6 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
-                //case Discipline.Environmental:
-                    //return floorType.ToBHoMElementProperties(pullSettings);
                 case Discipline.Structural:
                     return floorType.ToBHoMSurfaceProperty(pullSettings);
                 case Discipline.Architecture:
@@ -311,8 +307,6 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
-                //case Discipline.Environmental:
-                //return ceilingType.ToBHoMElementProperties(pullSettings);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
@@ -334,8 +328,6 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
-                //case Discipline.Environmental:
-                //return roofType.ToBHoMElementProperties(pullSettings);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
@@ -357,15 +349,9 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
-                //case Discipline.Environmental:
-                //return familySymbol.ToBHoMElementProperties(pullSettings);
-                //case Discipline.Structural:
                 default:
                     return familySymbol.ToBHoMProfile(pullSettings);
             }
-
-            familySymbol.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
@@ -420,14 +406,9 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
-                //case Discipline.Environmental:
-                //return elementType.ToBHoMElementProperties(pullSettings);
                 default:
                     return elementType.ToBHoMInstanceProperties(pullSettings);
             }
-
-            elementType.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
@@ -440,14 +421,9 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
-                //case Discipline.Environmental:
-                //return elementType.ToBHoMElementProperties(pullSettings);
                 default:
                     return graphicStyle.ToBHoMInstanceProperties(pullSettings);
             }
-
-            graphicStyle.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
@@ -548,9 +524,6 @@ namespace BH.UI.Revit.Engine
                 default:
                     return ToBHoMSheet(viewSheet, pullSettings);
             }
-
-            viewSheet.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
@@ -566,9 +539,6 @@ namespace BH.UI.Revit.Engine
                 default:
                     return ToBHoMViewport(viewport, pullSettings);
             }
-
-            viewport.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
@@ -584,9 +554,6 @@ namespace BH.UI.Revit.Engine
                 default:
                     return ToBHoMViewPlan(viewPlan, pullSettings);
             }
-
-            viewPlan.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
@@ -626,9 +593,6 @@ namespace BH.UI.Revit.Engine
                 default:
                     return ToBHoMFamily(family, pullSettings);
             }
-
-            family.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
@@ -641,14 +605,9 @@ namespace BH.UI.Revit.Engine
 
             switch (pullSettings.Discipline)
             {
-                //case Discipline.Environmental:
-                //return elementType.ToBHoMElementProperties(pullSettings);
                 default:
                     return curveElement.ToBHoMInstance(pullSettings);
             }
-
-            curveElement.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
