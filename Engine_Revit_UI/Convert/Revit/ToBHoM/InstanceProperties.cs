@@ -35,24 +35,24 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            InstanceProperties aInstanceProperties = pullSettings.FindRefObject<InstanceProperties>(elementType.Id.IntegerValue);
-            if (aInstanceProperties != null)
-                return aInstanceProperties;
+            InstanceProperties instanceProperties = pullSettings.FindRefObject<InstanceProperties>(elementType.Id.IntegerValue);
+            if (instanceProperties != null)
+                return instanceProperties;
 
-            aInstanceProperties = BH.Engine.Adapters.Revit.Create.InstanceProperties(elementType.FamilyName, elementType.Name);
+            instanceProperties = BH.Engine.Adapters.Revit.Create.InstanceProperties(elementType.FamilyName, elementType.Name);
 
-            aInstanceProperties = Modify.SetIdentifiers(aInstanceProperties, elementType) as InstanceProperties;
+            instanceProperties = Modify.SetIdentifiers(instanceProperties, elementType) as InstanceProperties;
             if (pullSettings.CopyCustomData)
-                aInstanceProperties = Modify.SetCustomData(aInstanceProperties, elementType) as InstanceProperties;
+                instanceProperties = Modify.SetCustomData(instanceProperties, elementType) as InstanceProperties;
 
-            aInstanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = elementType.FamilyName;
-            aInstanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = elementType.Name;
+            instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = elementType.FamilyName;
+            instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = elementType.Name;
 
-            aInstanceProperties = aInstanceProperties.UpdateValues(pullSettings, elementType) as InstanceProperties;
+            instanceProperties = instanceProperties.UpdateValues(pullSettings, elementType) as InstanceProperties;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aInstanceProperties);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(instanceProperties);
 
-            return aInstanceProperties;
+            return instanceProperties;
         }
 
         /***************************************************/
@@ -61,24 +61,24 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            InstanceProperties aInstanceProperties = pullSettings.FindRefObject<InstanceProperties>(graphicStyle.Id.IntegerValue);
-            if (aInstanceProperties != null)
-                return aInstanceProperties;
+            InstanceProperties instanceProperties = pullSettings.FindRefObject<InstanceProperties>(graphicStyle.Id.IntegerValue);
+            if (instanceProperties != null)
+                return instanceProperties;
 
-            aInstanceProperties = BH.Engine.Adapters.Revit.Create.InstanceProperties(null, null);
-            aInstanceProperties.Name = graphicStyle.Name;
+            instanceProperties = BH.Engine.Adapters.Revit.Create.InstanceProperties(null, null);
+            instanceProperties.Name = graphicStyle.Name;
 
-            aInstanceProperties = Modify.SetIdentifiers(aInstanceProperties, graphicStyle) as InstanceProperties;
+            instanceProperties = Modify.SetIdentifiers(instanceProperties, graphicStyle) as InstanceProperties;
             if (pullSettings.CopyCustomData)
-                aInstanceProperties = Modify.SetCustomData(aInstanceProperties, graphicStyle) as InstanceProperties;
+                instanceProperties = Modify.SetCustomData(instanceProperties, graphicStyle) as InstanceProperties;
 
-            aInstanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = graphicStyle.GraphicsStyleCategory.Parent.Name;
+            instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = graphicStyle.GraphicsStyleCategory.Parent.Name;
 
-            aInstanceProperties = aInstanceProperties.UpdateValues(pullSettings, graphicStyle) as InstanceProperties;
+            instanceProperties = instanceProperties.UpdateValues(pullSettings, graphicStyle) as InstanceProperties;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aInstanceProperties);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(instanceProperties);
 
-            return aInstanceProperties;
+            return instanceProperties;
         }
 
         /***************************************************/

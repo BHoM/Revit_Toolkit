@@ -32,35 +32,35 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Adapters.Revit.Elements.Viewport ToBHoMViewport(this Viewport viewport, PullSettings pullSettings = null)
+        public static oM.Adapters.Revit.Elements.Viewport ToBHoMViewport(this Viewport revitViewPort, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Adapters.Revit.Elements.Viewport aViewport = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.Viewport>(viewport.Id.IntegerValue);
-            if (aViewport != null)
-                return aViewport;
+            oM.Adapters.Revit.Elements.Viewport viewPort = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.Viewport>(revitViewPort.Id.IntegerValue);
+            if (viewPort != null)
+                return viewPort;
 
-            oM.Geometry.Point aLocation = viewport.GetBoxCenter().ToBHoM();
-            string aViewName = viewport.get_Parameter(BuiltInParameter.VIEW_NAME).AsString();
-            string aSheetNumber = viewport.get_Parameter(BuiltInParameter.VIEWPORT_SHEET_NUMBER).AsString();
+            oM.Geometry.Point location = revitViewPort.GetBoxCenter().ToBHoM();
+            string viewName = revitViewPort.get_Parameter(BuiltInParameter.VIEW_NAME).AsString();
+            string sheetNumber = revitViewPort.get_Parameter(BuiltInParameter.VIEWPORT_SHEET_NUMBER).AsString();
 
-            aViewport = BH.Engine.Adapters.Revit.Create.Viewport(aSheetNumber, aViewName, aLocation);
+            viewPort = BH.Engine.Adapters.Revit.Create.Viewport(sheetNumber, viewName, location);
 
-            ElementType aElementType = viewport.Document.GetElement(viewport.GetTypeId()) as ElementType;
-            if (aElementType != null)
-                aViewport.InstanceProperties = ToBHoMInstanceProperties(aElementType, pullSettings);
+            ElementType elementType = revitViewPort.Document.GetElement(revitViewPort.GetTypeId()) as ElementType;
+            if (elementType != null)
+                viewPort.InstanceProperties = ToBHoMInstanceProperties(elementType, pullSettings);
 
-            aViewport.Name = viewport.Name;
+            viewPort.Name = revitViewPort.Name;
 
-            aViewport = Modify.SetIdentifiers(aViewport, viewport) as oM.Adapters.Revit.Elements.Viewport;
+            viewPort = Modify.SetIdentifiers(viewPort, revitViewPort) as oM.Adapters.Revit.Elements.Viewport;
             if (pullSettings.CopyCustomData)
-                aViewport = Modify.SetCustomData(aViewport, viewport) as oM.Adapters.Revit.Elements.Viewport;
+                viewPort = Modify.SetCustomData(viewPort, revitViewPort) as oM.Adapters.Revit.Elements.Viewport;
 
-            aViewport = aViewport.UpdateValues(pullSettings, viewport) as oM.Adapters.Revit.Elements.Viewport;
+            viewPort = viewPort.UpdateValues(pullSettings, revitViewPort) as oM.Adapters.Revit.Elements.Viewport;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aViewport);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(viewPort);
 
-            return aViewport;
+            return viewPort;
         }
 
         /***************************************************/

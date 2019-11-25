@@ -31,33 +31,33 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Adapters.Revit.Elements.ViewPlan ToBHoMViewPlan(this ViewPlan viewPlan, PullSettings pullSettings = null)
+        public static oM.Adapters.Revit.Elements.ViewPlan ToBHoMViewPlan(this ViewPlan revitViewPlan, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Adapters.Revit.Elements.ViewPlan aViewPlan = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.ViewPlan>(viewPlan.Id.IntegerValue);
-            if (aViewPlan != null)
-                return aViewPlan;
+            oM.Adapters.Revit.Elements.ViewPlan viewPlan = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.ViewPlan>(revitViewPlan.Id.IntegerValue);
+            if (viewPlan != null)
+                return viewPlan;
 
-            if(!viewPlan.IsTemplate && viewPlan.GenLevel != null)
-                aViewPlan = BH.Engine.Adapters.Revit.Create.ViewPlan(viewPlan.Name, viewPlan.GenLevel.Name);
+            if(!revitViewPlan.IsTemplate && revitViewPlan.GenLevel != null)
+                viewPlan = BH.Engine.Adapters.Revit.Create.ViewPlan(revitViewPlan.Name, revitViewPlan.GenLevel.Name);
             else
-                aViewPlan = BH.Engine.Adapters.Revit.Create.ViewPlan(viewPlan.Name);
+                viewPlan = BH.Engine.Adapters.Revit.Create.ViewPlan(revitViewPlan.Name);
 
-            ElementType aElementType = viewPlan.Document.GetElement(viewPlan.GetTypeId()) as ElementType;
-            if(aElementType != null)
-                aViewPlan.InstanceProperties = ToBHoMInstanceProperties(aElementType, pullSettings);
+            ElementType elementType = revitViewPlan.Document.GetElement(revitViewPlan.GetTypeId()) as ElementType;
+            if(elementType != null)
+                viewPlan.InstanceProperties = ToBHoMInstanceProperties(elementType, pullSettings);
 
-            aViewPlan.Name = viewPlan.Name;
-            aViewPlan = Modify.SetIdentifiers(aViewPlan, viewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
+            viewPlan.Name = revitViewPlan.Name;
+            viewPlan = Modify.SetIdentifiers(viewPlan, revitViewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
             if (pullSettings.CopyCustomData)
-                aViewPlan = Modify.SetCustomData(aViewPlan, viewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
+                viewPlan = Modify.SetCustomData(viewPlan, revitViewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
 
-            aViewPlan = aViewPlan.UpdateValues(pullSettings, viewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
+            viewPlan = viewPlan.UpdateValues(pullSettings, revitViewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aViewPlan);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(viewPlan);
 
-            return aViewPlan;
+            return viewPlan;
         }
 
         /***************************************************/
