@@ -37,27 +37,27 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            Sheet aSheet = pullSettings.FindRefObject<Sheet>(viewSheet.Id.IntegerValue);
-            if (aSheet != null)
-                return aSheet;
+            Sheet sheet = pullSettings.FindRefObject<Sheet>(viewSheet.Id.IntegerValue);
+            if (sheet != null)
+                return sheet;
 
-            aSheet = BH.Engine.Adapters.Revit.Create.Sheet(viewSheet.Name, viewSheet.SheetNumber);
+            sheet = BH.Engine.Adapters.Revit.Create.Sheet(viewSheet.Name, viewSheet.SheetNumber);
 
-            ElementType aElementType = viewSheet.Document.GetElement(viewSheet.GetTypeId()) as ElementType;
-            if (aElementType != null)
-                aSheet.InstanceProperties = ToBHoMInstanceProperties(aElementType, pullSettings);
+            ElementType elementType = viewSheet.Document.GetElement(viewSheet.GetTypeId()) as ElementType;
+            if (elementType != null)
+                sheet.InstanceProperties = ToBHoMInstanceProperties(elementType, pullSettings);
 
-            aSheet.Name = viewSheet.Name;
+            sheet.Name = viewSheet.Name;
 
-            aSheet = Modify.SetIdentifiers(aSheet, viewSheet) as Sheet;
+            sheet = Modify.SetIdentifiers(sheet, viewSheet) as Sheet;
             if (pullSettings.CopyCustomData)
-                aSheet = Modify.SetCustomData(aSheet, viewSheet) as Sheet;
+                sheet = Modify.SetCustomData(sheet, viewSheet) as Sheet;
 
-            aSheet = aSheet.UpdateValues(pullSettings, viewSheet) as Sheet;
+            sheet = sheet.UpdateValues(pullSettings, viewSheet) as Sheet;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aSheet);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(sheet);
 
-            return aSheet;
+            return sheet;
         }
 
         /***************************************************/

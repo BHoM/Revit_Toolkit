@@ -33,24 +33,24 @@ namespace BH.UI.Revit.Engine
 
         public static oM.Adapters.Revit.Elements.ModelInstance ToBHoMModelInstance(this CurveElement curveElement, PullSettings pullSettings = null)
         {
-            oM.Adapters.Revit.Elements.ModelInstance aModelInstance = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.ModelInstance>(curveElement.Id.IntegerValue);
-            if (aModelInstance != null)
-                return aModelInstance;
+            oM.Adapters.Revit.Elements.ModelInstance modelInstance = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.ModelInstance>(curveElement.Id.IntegerValue);
+            if (modelInstance != null)
+                return modelInstance;
 
-            oM.Adapters.Revit.Properties.InstanceProperties aInstanceProperties = ToBHoMInstanceProperties(curveElement.LineStyle as GraphicsStyle, pullSettings) as oM.Adapters.Revit.Properties.InstanceProperties;
+            oM.Adapters.Revit.Properties.InstanceProperties instanceProperties = ToBHoMInstanceProperties(curveElement.LineStyle as GraphicsStyle, pullSettings) as oM.Adapters.Revit.Properties.InstanceProperties;
 
-            aModelInstance = BH.Engine.Adapters.Revit.Create.ModelInstance(aInstanceProperties, curveElement.GeometryCurve.ToBHoM());
+            modelInstance = BH.Engine.Adapters.Revit.Create.ModelInstance(instanceProperties, curveElement.GeometryCurve.ToBHoM());
 
-            aModelInstance.Name = curveElement.Name;
-            aModelInstance = Modify.SetIdentifiers(aModelInstance, curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
+            modelInstance.Name = curveElement.Name;
+            modelInstance = Modify.SetIdentifiers(modelInstance, curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
             if (pullSettings.CopyCustomData)
-                aModelInstance = Modify.SetCustomData(aModelInstance, curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
+                modelInstance = Modify.SetCustomData(modelInstance, curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
 
-            aModelInstance = aModelInstance.UpdateValues(pullSettings, curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
+            modelInstance = modelInstance.UpdateValues(pullSettings, curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aModelInstance);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(modelInstance);
 
-            return aModelInstance;
+            return modelInstance;
         }
 
         /***************************************************/

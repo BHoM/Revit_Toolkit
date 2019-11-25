@@ -33,28 +33,28 @@ namespace BH.UI.Revit.Engine
 
         public static oM.Adapters.Revit.Elements.DraftingInstance ToBHoMDraftingInstance(this CurveElement curveElement, PullSettings pullSettings = null)
         {
-            oM.Adapters.Revit.Elements.DraftingInstance aDraftingInstance = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.DraftingInstance>(curveElement.Id.IntegerValue);
-            if (aDraftingInstance != null)
-                return aDraftingInstance;
+            oM.Adapters.Revit.Elements.DraftingInstance draftingInstance = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.DraftingInstance>(curveElement.Id.IntegerValue);
+            if (draftingInstance != null)
+                return draftingInstance;
 
-            View aView = curveElement.Document.GetElement(curveElement.OwnerViewId) as View;
-            if (aView == null)
+            View view = curveElement.Document.GetElement(curveElement.OwnerViewId) as View;
+            if (view == null)
                 return null;
 
-            oM.Adapters.Revit.Properties.InstanceProperties aInstanceProperties = ToBHoMInstanceProperties(curveElement.LineStyle as GraphicsStyle, pullSettings) as oM.Adapters.Revit.Properties.InstanceProperties;
+            oM.Adapters.Revit.Properties.InstanceProperties instanceProperties = ToBHoMInstanceProperties(curveElement.LineStyle as GraphicsStyle, pullSettings) as oM.Adapters.Revit.Properties.InstanceProperties;
 
-            aDraftingInstance = BH.Engine.Adapters.Revit.Create.DraftingInstance(aInstanceProperties, aView.Name, curveElement.GeometryCurve.ToBHoM());
+            draftingInstance = BH.Engine.Adapters.Revit.Create.DraftingInstance(instanceProperties, view.Name, curveElement.GeometryCurve.ToBHoM());
 
-            aDraftingInstance.Name = curveElement.Name;
-            aDraftingInstance = Modify.SetIdentifiers(aDraftingInstance, curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
+            draftingInstance.Name = curveElement.Name;
+            draftingInstance = Modify.SetIdentifiers(draftingInstance, curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
             if (pullSettings.CopyCustomData)
-                aDraftingInstance = Modify.SetCustomData(aDraftingInstance, curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
+                draftingInstance = Modify.SetCustomData(draftingInstance, curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
 
-            aDraftingInstance = aDraftingInstance.UpdateValues(pullSettings, curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
+            draftingInstance = draftingInstance.UpdateValues(pullSettings, curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aDraftingInstance);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(draftingInstance);
 
-            return aDraftingInstance;
+            return draftingInstance;
         }
 
         /***************************************************/

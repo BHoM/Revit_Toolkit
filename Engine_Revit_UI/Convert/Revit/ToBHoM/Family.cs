@@ -37,49 +37,49 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Adapters.Revit.Elements.Family ToBHoMFamily(this Family family, PullSettings pullSettings = null)
+        public static oM.Adapters.Revit.Elements.Family ToBHoMFamily(this Family revitFamily, PullSettings pullSettings = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Adapters.Revit.Elements.Family aFamily = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.Family>(family.Id.IntegerValue);
-            if (aFamily != null)
-                return aFamily;
+            oM.Adapters.Revit.Elements.Family family = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.Family>(revitFamily.Id.IntegerValue);
+            if (family != null)
+                return family;
 
-            aFamily = new oM.Adapters.Revit.Elements.Family();
-            aFamily.Name = family.Name;
+            family = new oM.Adapters.Revit.Elements.Family();
+            family.Name = revitFamily.Name;
 
-            IEnumerable<ElementId> aElementIds = family.GetFamilySymbolIds();
-            if(aElementIds != null && aElementIds.Count() > 0 )
+            IEnumerable<ElementId> elementIDs = revitFamily.GetFamilySymbolIds();
+            if(elementIDs != null && elementIDs.Count() > 0 )
             {
-                if (aFamily.PropertiesList == null)
-                    aFamily.PropertiesList = new List<InstanceProperties>();
+                if (family.PropertiesList == null)
+                    family.PropertiesList = new List<InstanceProperties>();
 
-                foreach(ElementId aElementId in aElementIds)
+                foreach(ElementId elementID in elementIDs)
                 {
-                    if (aElementId == null || aElementId == ElementId.InvalidElementId)
+                    if (elementID == null || elementID == ElementId.InvalidElementId)
                         continue;
 
-                    ElementType aElementType = family.Document.GetElement(aElementId) as ElementType;
-                    if (aElementType == null)
+                    ElementType elementType = revitFamily.Document.GetElement(elementID) as ElementType;
+                    if (elementType == null)
                         continue;
 
-                    InstanceProperties aInstanceProperties = ToBHoMInstanceProperties(aElementType, pullSettings);
-                    if (aInstanceProperties == null)
+                    InstanceProperties instanceProperties = ToBHoMInstanceProperties(elementType, pullSettings);
+                    if (instanceProperties == null)
                         continue;
 
-                    aFamily.PropertiesList.Add(aInstanceProperties);
+                    family.PropertiesList.Add(instanceProperties);
                 }
             }
 
-            aFamily = Modify.SetIdentifiers(aFamily, family) as oM.Adapters.Revit.Elements.Family;
+            family = Modify.SetIdentifiers(family, revitFamily) as oM.Adapters.Revit.Elements.Family;
             if (pullSettings.CopyCustomData)
-                aFamily = Modify.SetCustomData(aFamily, family) as oM.Adapters.Revit.Elements.Family;
+                family = Modify.SetCustomData(family, revitFamily) as oM.Adapters.Revit.Elements.Family;
 
-            aFamily = aFamily.UpdateValues(pullSettings, family) as oM.Adapters.Revit.Elements.Family;
+            family = family.UpdateValues(pullSettings, revitFamily) as oM.Adapters.Revit.Elements.Family;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aFamily);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(family);
 
-            return aFamily;
+            return family;
         }
 
         /***************************************************/
