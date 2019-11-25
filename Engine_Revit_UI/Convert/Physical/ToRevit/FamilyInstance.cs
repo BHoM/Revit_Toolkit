@@ -63,7 +63,6 @@ namespace BH.UI.Revit.Engine
                 BH.Engine.Reflection.Compute.RecordError(string.Format("Push of {0} is not supported in current version of BHoM. BHoM element Guid: {1}",framingElement.GetType(), framingElement.BHoM_Guid));
                 return null;
             }
-
         }
 
         /***************************************************/
@@ -75,64 +74,64 @@ namespace BH.UI.Revit.Engine
             if (framingElement == null || document == null)
                 return null;
 
-            FamilyInstance aFamilyInstance = pushSettings.FindRefObject<FamilyInstance>(document, framingElement.BHoM_Guid);
-            if (aFamilyInstance != null)
-                return aFamilyInstance;
+            FamilyInstance familyInstance = pushSettings.FindRefObject<FamilyInstance>(document, framingElement.BHoM_Guid);
+            if (familyInstance != null)
+                return familyInstance;
 
             pushSettings.DefaultIfNull();
 
-            object aCustomDataValue = null;
+            object customDataValue = null;
 
             //Check that the curve works for revit
             if (!CheckLocationCurveColumns(framingElement))
                 return null;
             
             Line columnLine = framingElement.Location.ToRevitCurve() as Line;
-            Level aLevel = null;
+            Level level = null;
 
-            aCustomDataValue = framingElement.CustomDataValue("Base Level");
-            if (aCustomDataValue != null && aCustomDataValue is int)
+            customDataValue = framingElement.CustomDataValue("Base Level");
+            if (customDataValue != null && customDataValue is int)
             {
-                ElementId aElementId = new ElementId((int)aCustomDataValue);
-                aLevel = document.GetElement(aElementId) as Level;
+                ElementId aElementId = new ElementId((int)customDataValue);
+                level = document.GetElement(aElementId) as Level;
             }
 
-            if (aLevel == null)
-                aLevel = Query.BottomLevel(framingElement.Location, document);
+            if (level == null)
+                level = Query.BottomLevel(framingElement.Location, document);
 
-            FamilySymbol aFamilySymbol = framingElement.Property.ToRevitFamilySymbol_Column(document, pushSettings);
+            FamilySymbol familYSymbol = framingElement.Property.ToRevitFamilySymbol_Column(document, pushSettings);
 
-            if (aFamilySymbol == null)
+            if (familYSymbol == null)
             {
-                aFamilySymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralColumns, pushSettings.FamilyLoadSettings) as FamilySymbol;
+                familYSymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralColumns, pushSettings.FamilyLoadSettings) as FamilySymbol;
 
-                if (aFamilySymbol == null)
+                if (familYSymbol == null)
                 {
                     Compute.ElementTypeNotFoundWarning(framingElement);
                     return null;
                 }
             }
 
-            FamilyPlacementType aFamilyPlacementType = aFamilySymbol.Family.FamilyPlacementType;
-            if (aFamilyPlacementType != FamilyPlacementType.CurveBased && aFamilyPlacementType != FamilyPlacementType.CurveBasedDetail && aFamilyPlacementType != FamilyPlacementType.CurveDrivenStructural && aFamilyPlacementType != FamilyPlacementType.TwoLevelsBased)
+            FamilyPlacementType familyPlacementType = familYSymbol.Family.FamilyPlacementType;
+            if (familyPlacementType != FamilyPlacementType.CurveBased && familyPlacementType != FamilyPlacementType.CurveBasedDetail && familyPlacementType != FamilyPlacementType.CurveDrivenStructural && familyPlacementType != FamilyPlacementType.TwoLevelsBased)
             {
-                Compute.InvalidFamilyPlacementTypeWarning(framingElement, aFamilySymbol);
+                Compute.InvalidFamilyPlacementTypeWarning(framingElement, familYSymbol);
                 return null;
             }
 
-            aFamilyInstance = document.Create.NewFamilyInstance(columnLine, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Column);
+            familyInstance = document.Create.NewFamilyInstance(columnLine, familYSymbol, level, Autodesk.Revit.DB.Structure.StructuralType.Column);
 
-            aFamilyInstance.CheckIfNullPush(framingElement);
-            if (aFamilyInstance == null)
+            familyInstance.CheckIfNullPush(framingElement);
+            if (familyInstance == null)
                 return null;
 
             oM.Physical.FramingProperties.ConstantFramingProperty barProperty = framingElement.Property as oM.Physical.FramingProperties.ConstantFramingProperty;
             if (barProperty != null)
             {
                 double orientationAngle = ToRevitOrientationAngleColumn(barProperty.OrientationAngle, framingElement.Location as oM.Geometry.Line);
-                Parameter aParameter = aFamilyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
-                if (aParameter != null && !aParameter.IsReadOnly)
-                    aParameter.Set(orientationAngle);
+                Parameter parameter = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+                if (parameter != null && !parameter.IsReadOnly)
+                    parameter.Set(orientationAngle);
 
                 //TODO: if the material does not get assigned an error should be thrown?
                 if (barProperty.Material != null)
@@ -140,11 +139,11 @@ namespace BH.UI.Revit.Engine
                     Autodesk.Revit.DB.Material material = document.GetElement(new ElementId(BH.Engine.Adapters.Revit.Query.ElementId(barProperty.Material))) as Autodesk.Revit.DB.Material;
                     if (material != null)
                     {
-                        Parameter param = aFamilyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
+                        Parameter param = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
                         if (param != null && param.HasValue && !param.IsReadOnly)
-                            aFamilyInstance.StructuralMaterialId = material.Id;
+                            familyInstance.StructuralMaterialId = material.Id;
                         else
-                            BH.Engine.Reflection.Compute.RecordWarning(string.Format("The BHoM material has been correctly converted, but the property could not be assigned to the Revit element. ElementId: {0}", aFamilyInstance.Id));
+                            BH.Engine.Reflection.Compute.RecordWarning(string.Format("The BHoM material has been correctly converted, but the property could not be assigned to the Revit element. ElementId: {0}", familyInstance.Id));
                     }
                 }
             }
@@ -152,17 +151,17 @@ namespace BH.UI.Revit.Engine
             if (1 - Math.Abs(columnLine.Direction.DotProduct(XYZ.BasisZ)) < BH.oM.Geometry.Tolerance.Angle)
             {
                 document.Regenerate();
-                aFamilyInstance.TrySetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 0);
+                familyInstance.TrySetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 0);
 
-                aFamilyInstance.TrySetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM, columnLine.Origin.Z - aLevel.Elevation);
-                aFamilyInstance.TrySetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.Origin.Z + columnLine.Length - aLevel.Elevation);
+                familyInstance.TrySetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM, columnLine.Origin.Z - level.Elevation);
+                familyInstance.TrySetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.Origin.Z + columnLine.Length - level.Elevation);
                 document.Regenerate();
             }
 
-            aFamilyInstance.TrySetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_PARAM, aLevel.Id);
-            aFamilyInstance.TrySetParameter(BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM, aLevel.Id);
-            aFamilyInstance.TrySetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_PARAM, aLevel.Id);
-            aFamilyInstance.TrySetParameter(BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM, aLevel.Id);
+            familyInstance.TrySetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_PARAM, level.Id);
+            familyInstance.TrySetParameter(BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM, level.Id);
+            familyInstance.TrySetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_PARAM, level.Id);
+            familyInstance.TrySetParameter(BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM, level.Id);
 
             if (pushSettings.CopyCustomData)
             {
@@ -193,12 +192,13 @@ namespace BH.UI.Revit.Engine
                     BuiltInParameter.SLANTED_COLUMN_TOP_CUT_STYLE,
                     BuiltInParameter.STRUCTURAL_MATERIAL_PARAM
                 };
-                Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore);
+
+                Modify.SetParameters(familyInstance, framingElement, paramsToIgnore);
             }
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElement, aFamilyInstance);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElement, familyInstance);
 
-            return aFamilyInstance;
+            return familyInstance;
         }
 
         /***************************************************/
@@ -236,7 +236,6 @@ namespace BH.UI.Revit.Engine
             else
             {
                 return CheckOrientationAngleDomain(-bhomOrientationAngle);
-
             }
         }
 
@@ -247,13 +246,13 @@ namespace BH.UI.Revit.Engine
             if (framingElement == null || document == null)
                 return null;
 
-            FamilyInstance aFamilyInstance = pushSettings.FindRefObject<FamilyInstance>(document, framingElement.BHoM_Guid);
-            if (aFamilyInstance != null)
-                return aFamilyInstance;
+            FamilyInstance familyInstance = pushSettings.FindRefObject<FamilyInstance>(document, framingElement.BHoM_Guid);
+            if (familyInstance != null)
+                return familyInstance;
 
             pushSettings.DefaultIfNull();
 
-            object aCustomDataValue = null;
+            object customDataValue = null;
 
             //Update justification based on custom data
             BH.oM.Geometry.ICurve adjustedLocation;
@@ -266,56 +265,56 @@ namespace BH.UI.Revit.Engine
             if (!CheckLocationCurveBeams(framingElement, revitCurve, out isVertical, out isLinear))
                 return null;
 
-            Level aLevel = null;
+            Level level = null;
 
-            aCustomDataValue = framingElement.CustomDataValue("Reference Level");
-            if (aCustomDataValue != null && aCustomDataValue is int)
+            customDataValue = framingElement.CustomDataValue("Reference Level");
+            if (customDataValue != null && customDataValue is int)
             {
-                ElementId aElementId = new ElementId((int)aCustomDataValue);
-                aLevel = document.GetElement(aElementId) as Level;
+                ElementId elementID = new ElementId((int)customDataValue);
+                level = document.GetElement(elementID) as Level;
             }
 
-            if (aLevel == null)
-                aLevel = Query.BottomLevel(framingElement.Location, document);
+            if (level == null)
+                level = Query.BottomLevel(framingElement.Location, document);
 
-            FamilySymbol aFamilySymbol = framingElement.Property.ToRevitFamilySymbol_Framing(document, pushSettings);
+            FamilySymbol familySymbol = framingElement.Property.ToRevitFamilySymbol_Framing(document, pushSettings);
 
-            if (aFamilySymbol == null)
+            if (familySymbol == null)
             {
-                aFamilySymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralFraming, pushSettings.FamilyLoadSettings) as FamilySymbol;
+                familySymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralFraming, pushSettings.FamilyLoadSettings) as FamilySymbol;
 
-                if (aFamilySymbol == null)
+                if (familySymbol == null)
                 {
                     Compute.ElementTypeNotFoundWarning(framingElement);
                     return null;
                 }
             }
 
-            FamilyPlacementType aFamilyPlacementType = aFamilySymbol.Family.FamilyPlacementType;
-            if (aFamilyPlacementType != FamilyPlacementType.CurveBased && aFamilyPlacementType != FamilyPlacementType.CurveBasedDetail && aFamilyPlacementType != FamilyPlacementType.CurveDrivenStructural && aFamilyPlacementType != FamilyPlacementType.TwoLevelsBased)
+            FamilyPlacementType familyPlacementType = familySymbol.Family.FamilyPlacementType;
+            if (familyPlacementType != FamilyPlacementType.CurveBased && familyPlacementType != FamilyPlacementType.CurveBasedDetail && familyPlacementType != FamilyPlacementType.CurveDrivenStructural && familyPlacementType != FamilyPlacementType.TwoLevelsBased)
             {
-                Compute.InvalidFamilyPlacementTypeWarning(framingElement, aFamilySymbol);
+                Compute.InvalidFamilyPlacementTypeWarning(framingElement, familySymbol);
                 return null;
             }
 
             if (framingElement is Beam)
-                aFamilyInstance = document.Create.NewFamilyInstance(revitCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Beam);
+                familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.Beam);
             else if (framingElement is Bracing || framingElement is Cable)
-                aFamilyInstance = document.Create.NewFamilyInstance(revitCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.Brace);
+                familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.Brace);
             else
-                aFamilyInstance = document.Create.NewFamilyInstance(revitCurve, aFamilySymbol, aLevel, Autodesk.Revit.DB.Structure.StructuralType.UnknownFraming);
+                familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.UnknownFraming);
 
-            aFamilyInstance.CheckIfNullPush(framingElement);
-            if (aFamilyInstance == null)
+            familyInstance.CheckIfNullPush(framingElement);
+            if (familyInstance == null)
                 return null;
 
             oM.Physical.FramingProperties.ConstantFramingProperty barProperty = framingElement.Property as oM.Physical.FramingProperties.ConstantFramingProperty;
             if (barProperty != null)
             {
                 double orientationAngle = ToRevitOrientationAngleBeams(barProperty.OrientationAngle, isVertical, isLinear);
-                Parameter aParameter = aFamilyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
-                if (aParameter != null && !aParameter.IsReadOnly)
-                    aParameter.Set(orientationAngle);
+                Parameter parameter = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+                if (parameter != null && !parameter.IsReadOnly)
+                    parameter.Set(orientationAngle);
 
                 //TODO: if the material does not get assigned an error should be thrown?
                 if (barProperty.Material != null)
@@ -323,18 +322,18 @@ namespace BH.UI.Revit.Engine
                     Autodesk.Revit.DB.Material material = document.GetElement(new ElementId(BH.Engine.Adapters.Revit.Query.ElementId(barProperty.Material))) as Autodesk.Revit.DB.Material;
                     if (material != null)
                     {
-                        Parameter param = aFamilyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
+                        Parameter param = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
                         if (param != null && param.HasValue && !param.IsReadOnly)
-                            aFamilyInstance.StructuralMaterialId = material.Id;
+                            familyInstance.StructuralMaterialId = material.Id;
                         else
-                            BH.Engine.Reflection.Compute.RecordWarning(string.Format("The BHoM material has been correctly converted, but the property could not be assigned to the Revit element. ElementId: {0}", aFamilyInstance.Id));
+                            BH.Engine.Reflection.Compute.RecordWarning(string.Format("The BHoM material has been correctly converted, but the property could not be assigned to the Revit element. ElementId: {0}", familyInstance.Id));
                     }
                 }
             }
 
             //Sets the insertion point to the centroid. 
             //TODO: Remove this once FramingElement.AdjustedLocation() query method is added.
-            Parameter zJustification = aFamilyInstance.get_Parameter(BuiltInParameter.Z_JUSTIFICATION);
+            Parameter zJustification = familyInstance.get_Parameter(BuiltInParameter.Z_JUSTIFICATION);
             if (zJustification != null && !zJustification.IsReadOnly)
                 zJustification.Set((int)Autodesk.Revit.DB.Structure.ZJustification.Origin);
 
@@ -387,13 +386,12 @@ namespace BH.UI.Revit.Engine
                     paramsToIgnore = paramsToIgnoreList.ToArray();
                 }
 
-
-                Modify.SetParameters(aFamilyInstance, framingElement, paramsToIgnore);
+                Modify.SetParameters(familyInstance, framingElement, paramsToIgnore);
             }
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElement, aFamilyInstance);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElement, familyInstance);
 
-            return aFamilyInstance;
+            return familyInstance;
         }
 
         /***************************************************/

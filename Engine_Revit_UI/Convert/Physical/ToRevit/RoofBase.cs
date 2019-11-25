@@ -41,113 +41,113 @@ namespace BH.UI.Revit.Engine
             if (roof == null || roof.Location == null || document == null)
                 return null;
 
-            PlanarSurface aPlanarSurface = roof.Location as PlanarSurface;
-            if (aPlanarSurface == null)
+            PlanarSurface planarSurface = roof.Location as PlanarSurface;
+            if (planarSurface == null)
                 return null;
 
-            RoofBase aRoofBase = pushSettings.FindRefObject<RoofBase>(document, roof.BHoM_Guid);
-            if (aRoofBase != null)
-                return aRoofBase;
+            RoofBase roofBase = pushSettings.FindRefObject<RoofBase>(document, roof.BHoM_Guid);
+            if (roofBase != null)
+                return roofBase;
 
             pushSettings.DefaultIfNull();
 
-            RoofType aRoofType = null;
+            RoofType roofType = null;
 
             if (roof.Construction != null)
-                aRoofType = roof.Construction.ToRevitHostObjAttributes(document, pushSettings) as RoofType;
+                roofType = roof.Construction.ToRevitHostObjAttributes(document, pushSettings) as RoofType;
 
-            if (aRoofType == null)
+            if (roofType == null)
             {
-                string aFamilyTypeName = BH.Engine.Adapters.Revit.Query.FamilyTypeName(roof);
-                if (!string.IsNullOrEmpty(aFamilyTypeName))
+                string familyTypeName = BH.Engine.Adapters.Revit.Query.FamilyTypeName(roof);
+                if (!string.IsNullOrEmpty(familyTypeName))
                 {
-                    List<RoofType> aRoofTypeList = new FilteredElementCollector(document).OfClass(typeof(RoofType)).Cast<RoofType>().ToList().FindAll(x => x.Name == aFamilyTypeName);
-                    if (aRoofTypeList != null || aRoofTypeList.Count() != 0)
-                        aRoofType = aRoofTypeList.First();
+                    List<RoofType> roofTypeList = new FilteredElementCollector(document).OfClass(typeof(RoofType)).Cast<RoofType>().ToList().FindAll(x => x.Name == familyTypeName);
+                    if (roofTypeList != null || roofTypeList.Count() != 0)
+                        roofType = roofTypeList.First();
                 }
             }
 
-            if (aRoofType == null)
+            if (roofType == null)
             {
-                string aFamilyTypeName = roof.Name;
+                string familyTypeName = roof.Name;
 
-                if (!string.IsNullOrEmpty(aFamilyTypeName))
+                if (!string.IsNullOrEmpty(familyTypeName))
                 {
-                    List<RoofType> aRoofTypeList = new FilteredElementCollector(document).OfClass(typeof(RoofType)).Cast<RoofType>().ToList().FindAll(x => x.Name == aFamilyTypeName);
-                    if (aRoofTypeList != null || aRoofTypeList.Count() != 0)
-                        aRoofType = aRoofTypeList.First();
+                    List<RoofType> roofTypeList = new FilteredElementCollector(document).OfClass(typeof(RoofType)).Cast<RoofType>().ToList().FindAll(x => x.Name == familyTypeName);
+                    if (roofTypeList != null || roofTypeList.Count() != 0)
+                        roofType = roofTypeList.First();
                 }
             }
 
-            if (aRoofType == null)
+            if (roofType == null)
                 return null;
-
             
-            double aLowElevation = roof.LowElevation();
-            if (double.IsNaN(aLowElevation))
+            double lowElevation = roof.LowElevation();
+            if (double.IsNaN(lowElevation))
                 return null;
 
-            Level aLevel = document.HighLevel(aLowElevation);
-            if (aLevel == null)
+            Level level = document.HighLevel(lowElevation);
+            if (level == null)
                 return null;
 
-            double aElevation = aLevel.Elevation.ToSI(UnitType.UT_Length);
-            oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
+            double elevation = level.Elevation.ToSI(UnitType.UT_Length);
+            
+            oM.Geometry.Plane plane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, elevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
 
-            ICurve aCurve = BH.Engine.Geometry.Modify.Project(aPlanarSurface.ExternalBoundary as dynamic, aPlane) as ICurve;
+            ICurve curve = BH.Engine.Geometry.Modify.Project(planarSurface.ExternalBoundary as dynamic, plane) as ICurve;
 
-            CurveArray aCurveArray = null;
-            if (aCurve is PolyCurve)
-                aCurveArray = ((PolyCurve)aCurve).ToRevitCurveArray();
-            else if (aCurve is Polyline)
-                aCurveArray = ((Polyline)aCurve).ToRevitCurveArray();
+            CurveArray curveArray = null;
+            if (curve is PolyCurve)
+                curveArray = ((PolyCurve)curve).ToRevitCurveArray();
+            else if (curve is Polyline)
+                curveArray = ((Polyline)curve).ToRevitCurveArray();
 
-            if (aCurveArray == null)
+            if (curveArray == null)
                 return null;
 
-            ModelCurveArray aModelCurveArray = new ModelCurveArray();
-            aRoofBase = document.Create.NewFootPrintRoof(aCurveArray, aLevel, aRoofType, out aModelCurveArray);
-            if (aRoofBase != null)
+            ModelCurveArray modelCurveArray = new ModelCurveArray();
+            roofBase = document.Create.NewFootPrintRoof(curveArray, level, roofType, out modelCurveArray);
+            if (roofBase != null)
             {
-                Parameter aParameter = aRoofBase.get_Parameter(BuiltInParameter.ROOF_UPTO_LEVEL_PARAM);
-                if (aParameter != null)
-                    aParameter.Set(ElementId.InvalidElementId);
+                Parameter parameter = roofBase.get_Parameter(BuiltInParameter.ROOF_UPTO_LEVEL_PARAM);
+                if (parameter != null)
+                    parameter.Set(ElementId.InvalidElementId);
 
-                List<ICurve> aCurveList = null;
+                List<ICurve> curveList = null;
 
-                if (aPlanarSurface.ExternalBoundary is PolyCurve)
-                    aCurveList = ((PolyCurve)aPlanarSurface.ExternalBoundary).Curves;
-                else if (aPlanarSurface.ExternalBoundary is Polyline)
-                    aCurveList = Query.Curves((Polyline)aPlanarSurface.ExternalBoundary);
+                if (planarSurface.ExternalBoundary is PolyCurve)
+                    curveList = ((PolyCurve)planarSurface.ExternalBoundary).Curves;
+                else if (planarSurface.ExternalBoundary is Polyline)
+                    curveList = Query.Curves((Polyline)planarSurface.ExternalBoundary);
 
-                if (aCurveList != null && aCurveList.Count > 2)
+                if (curveList != null && curveList.Count > 2)
                 {
-                    SlabShapeEditor aSlabShapeEditor = aRoofBase.SlabShapeEditor;
-                    aSlabShapeEditor.ResetSlabShape();
+                    SlabShapeEditor slabShapeEditor = roofBase.SlabShapeEditor;
+                    slabShapeEditor.ResetSlabShape();
 
-                    foreach (ICurve aCurve_Temp in aCurveList)
+                    foreach (ICurve tempCurve in curveList)
                     {
-                        oM.Geometry.Point aPoint = BH.Engine.Geometry.Query.IStartPoint(aCurve_Temp);
-                        if (System.Math.Abs(aPoint.Z - aPlane.Origin.Z) > Tolerance.MicroDistance)
+                        oM.Geometry.Point point = BH.Engine.Geometry.Query.IStartPoint(tempCurve);
+                        if (System.Math.Abs(point.Z - plane.Origin.Z) > Tolerance.MicroDistance)
                         {
-                            XYZ aXYZ = aPoint.ToRevit(pushSettings);
-                            aSlabShapeEditor.DrawPoint(aXYZ);
+                            XYZ xyz = point.ToRevit(pushSettings);
+                            slabShapeEditor.DrawPoint(xyz);
                         }
                             
                     }
                 }
             }
 
-            aRoofBase.CheckIfNullPush(roof);
-            if (aRoofBase == null)
+            roofBase.CheckIfNullPush(roof);
+            if (roofBase == null)
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aRoofBase, roof, new BuiltInParameter[] { BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM, BuiltInParameter.ROOF_BASE_LEVEL_PARAM, BuiltInParameter.ROOF_UPTO_LEVEL_PARAM });
+                Modify.SetParameters(roofBase, roof, new BuiltInParameter[] { BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM, BuiltInParameter.ROOF_BASE_LEVEL_PARAM, BuiltInParameter.ROOF_UPTO_LEVEL_PARAM });
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(roof, aRoofBase);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(roof, roofBase);
 
-            return aRoofBase;
+            return roofBase;
         }
 
         /***************************************************/

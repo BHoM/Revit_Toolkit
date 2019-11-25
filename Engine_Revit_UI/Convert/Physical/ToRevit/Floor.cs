@@ -41,74 +41,77 @@ namespace BH.UI.Revit.Engine
             if (floor == null || floor.Construction == null || document == null)
                 return null;
 
-            PlanarSurface aPlanarSurface = floor.Location as PlanarSurface;
-            if (aPlanarSurface == null)
+            PlanarSurface planarSurface = floor.Location as PlanarSurface;
+            if (planarSurface == null)
                 return null;
 
-            Floor aFloor = pushSettings.FindRefObject<Floor>(document, floor.BHoM_Guid);
-            if (aFloor != null)
-                return aFloor;
+            Floor revitFloor = pushSettings.FindRefObject<Floor>(document, floor.BHoM_Guid);
+            if (revitFloor != null)
+                return revitFloor;
 
             pushSettings.DefaultIfNull();
 
-            FloorType aFloorType = null;
+            FloorType floorType = null;
 
-            if (floor.Construction!= null)
-                aFloorType = ToRevitHostObjAttributes(floor.Construction, document, pushSettings) as FloorType;
+            if (floor.Construction != null)
+                floorType = ToRevitHostObjAttributes(floor.Construction, document, pushSettings) as FloorType;
 
-            if (aFloorType == null)
+            if (floorType == null)
             {
-                string aFamilyTypeName = BH.Engine.Adapters.Revit.Query.FamilyTypeName(floor);
-                if (!string.IsNullOrEmpty(aFamilyTypeName))
+                string familyTypeName = BH.Engine.Adapters.Revit.Query.FamilyTypeName(floor);
+                if (!string.IsNullOrEmpty(familyTypeName))
                 {
-                    List<FloorType> aFloorTypeList = new FilteredElementCollector(document).OfClass(typeof(FloorType)).Cast<FloorType>().ToList().FindAll(x => x.Name == aFamilyTypeName);
-                    if (aFloorTypeList != null || aFloorTypeList.Count() != 0)
-                        aFloorType = aFloorTypeList.First();
+                    List<FloorType> floorTypeList = new FilteredElementCollector(document).OfClass(typeof(FloorType)).Cast<FloorType>().ToList().FindAll(x => x.Name == familyTypeName);
+                    if (floorTypeList != null || floorTypeList.Count() != 0)
+                        floorType = floorTypeList.First();
                 }
             }
 
-            if (aFloorType == null)
+            if (floorType == null)
             {
-                string aFamilyTypeName = floor.Name;
+                string familyTypeName = floor.Name;
 
-                if (!string.IsNullOrEmpty(aFamilyTypeName))
+                if (!string.IsNullOrEmpty(familyTypeName))
                 {
-                    List<FloorType> aFloorTypeList = new FilteredElementCollector(document).OfClass(typeof(FloorType)).Cast<FloorType>().ToList().FindAll(x => x.Name == aFamilyTypeName);
-                    if (aFloorTypeList != null || aFloorTypeList.Count() != 0)
-                        aFloorType = aFloorTypeList.First();
+                    List<FloorType> floorTypeList = new FilteredElementCollector(document).OfClass(typeof(FloorType)).Cast<FloorType>().ToList().FindAll(x => x.Name == familyTypeName);
+                    if (floorTypeList != null || floorTypeList.Count() != 0)
+                        floorType = floorTypeList.First();
                 }
             }
 
-            if (aFloorType == null)
+            if (floorType == null)
                 return null;
 
-            double aLowElevation = floor.LowElevation();
+            double lowElevation = floor.LowElevation();
 
-            Level aLevel = document.HighLevel(aLowElevation);
-            oM.Geometry.Plane aPlane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, aLowElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
-            ICurve aCurve = BH.Engine.Geometry.Modify.Project(aPlanarSurface.ExternalBoundary as dynamic, aPlane) as ICurve;
+            Level level = document.HighLevel(lowElevation);
 
-            CurveArray aCurveArray = null;
-            if (aCurve is PolyCurve)
-                aCurveArray = ((PolyCurve)aCurve).ToRevitCurveArray();
-            else if (aCurve is Polyline)
-                aCurveArray = ((Polyline)aCurve).ToRevitCurveArray();
+            double elevation = level.Elevation.ToSI(UnitType.UT_Length);
 
-            if (aCurveArray == null)
+            oM.Geometry.Plane plane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, lowElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
+            ICurve curve = BH.Engine.Geometry.Modify.Project(planarSurface.ExternalBoundary as dynamic, plane) as ICurve;
+
+            CurveArray curveArray = null;
+            if (curve is PolyCurve)
+                curveArray = ((PolyCurve)curve).ToRevitCurveArray();
+            else if (curve is Polyline)
+                curveArray = ((Polyline)curve).ToRevitCurveArray();
+
+            if (curveArray == null)
                 return null;
 
-            aFloor = document.Create.NewFloor(aCurveArray, aFloorType, aLevel, false);
+            revitFloor = document.Create.NewFloor(curveArray, floorType, level, false);
 
-            aFloor.CheckIfNullPush(floor);
-            if (aFloor == null)
+            revitFloor.CheckIfNullPush(floor);
+            if (revitFloor == null)
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aFloor, floor, new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM });
+                Modify.SetParameters(revitFloor, floor, new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM });
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(floor, aFloor);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(floor, revitFloor);
 
-            return aFloor;
+            return revitFloor;
         }
 
         /***************************************************/

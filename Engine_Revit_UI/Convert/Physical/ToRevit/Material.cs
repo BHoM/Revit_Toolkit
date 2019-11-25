@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -34,17 +34,17 @@ namespace BH.UI.Revit.Engine
 
         public static Material ToRevitMaterial(this BHP.Material material, Document document, PushSettings pushSettings = null)
         {
-            Material aMaterial = pushSettings.FindRefObject<Material>(document, material.BHoM_Guid);
-            if (aMaterial != null)
-                return aMaterial;
+            Material revitMaterial = pushSettings.FindRefObject<Material>(document, material.BHoM_Guid);
+            if (revitMaterial != null)
+                return revitMaterial;
 
             pushSettings.DefaultIfNull();
 
-            aMaterial = document.GetElement(Material.Create(document, material.Name)) as Material;
+            revitMaterial = document.GetElement(Material.Create(document, material.Name)) as Material;
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(material, aMaterial);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(material, revitMaterial);
 
-            return aMaterial;
+            return revitMaterial;
         }
 
         /***************************************************/

@@ -40,34 +40,34 @@ namespace BH.UI.Revit.Engine
             if (construction == null || document == null)
                 return null;
 
-            HostObjAttributes aElementType = pushSettings.FindRefObject<HostObjAttributes>(document, construction.BHoM_Guid);
-            if (aElementType != null)
-                return aElementType;
+            HostObjAttributes elementType = pushSettings.FindRefObject<HostObjAttributes>(document, construction.BHoM_Guid);
+            if (elementType != null)
+                return elementType;
 
             pushSettings.DefaultIfNull();
 
-            List<BuiltInCategory> aBuiltInCategoryList = null;
-            BuiltInCategory aBuiltInCategory = Query.BuiltInCategory(construction, document);
-            if (aBuiltInCategory == BuiltInCategory.INVALID)
-                aBuiltInCategoryList = new List<BuiltInCategory>() { BuiltInCategory.OST_Walls, BuiltInCategory.OST_Floors, BuiltInCategory.OST_Roofs };
+            List<BuiltInCategory> builtInCategoryList = null;
+            BuiltInCategory buildInCategory = Query.BuiltInCategory(construction, document);
+            if (buildInCategory == BuiltInCategory.INVALID)
+                builtInCategoryList = new List<BuiltInCategory>() { BuiltInCategory.OST_Walls, BuiltInCategory.OST_Floors, BuiltInCategory.OST_Roofs };
             else
-                aBuiltInCategoryList = new List<BuiltInCategory>() { aBuiltInCategory };
+                builtInCategoryList = new List<BuiltInCategory>() { buildInCategory };
 
-            if (aBuiltInCategoryList == null || aBuiltInCategoryList.Count == 0)
+            if (builtInCategoryList == null || builtInCategoryList.Count == 0)
                 return null;
 
-            aElementType = construction.ElementType(document, aBuiltInCategoryList, pushSettings.FamilyLoadSettings, true) as HostObjAttributes;
+            elementType = construction.ElementType(document, builtInCategoryList, pushSettings.FamilyLoadSettings, true) as HostObjAttributes;
 
-            aElementType.CheckIfNullPush(construction);
-            if (aElementType == null)
+            elementType.CheckIfNullPush(construction);
+            if (elementType == null)
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aElementType, construction, null);
+                Modify.SetParameters(elementType, construction, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(construction, aElementType);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(construction, elementType);
 
-            return aElementType;
+            return elementType;
         }
 
         /***************************************************/

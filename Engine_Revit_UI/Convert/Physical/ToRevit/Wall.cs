@@ -39,90 +39,92 @@ namespace BH.UI.Revit.Engine
             if (wall == null || wall.Location == null || document == null)
                 return null;
 
-            PlanarSurface aPlanarSurface = wall.Location as PlanarSurface;
-            if (aPlanarSurface == null)
+            PlanarSurface planarSurface = wall.Location as PlanarSurface;
+            if (planarSurface == null)
                 return null;
 
-            Wall aWall = pushSettings.FindRefObject<Wall>(document, wall.BHoM_Guid);
-            if (aWall != null)
-                return aWall;
+            Wall revitWall = pushSettings.FindRefObject<Wall>(document, wall.BHoM_Guid);
+            if (revitWall != null)
+                return revitWall;
 
             pushSettings.DefaultIfNull();
 
-            WallType aWallType = null;
+            WallType wallType = null;
 
             if (wall.Construction!= null)
-                aWallType = wall.Construction.ToRevitHostObjAttributes(document, pushSettings) as WallType;
+                wallType = wall.Construction.ToRevitHostObjAttributes(document, pushSettings) as WallType;
 
-            if (aWallType == null)
+            if (wallType == null)
             {
-                string aFamilyTypeName = BH.Engine.Adapters.Revit.Query.FamilyTypeName(wall);
-                if (!string.IsNullOrEmpty(aFamilyTypeName))
+                string familyTypeName = BH.Engine.Adapters.Revit.Query.FamilyTypeName(wall);
+                if (!string.IsNullOrEmpty(familyTypeName))
                 {
-                    List<WallType> aWallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).Cast<WallType>().ToList().FindAll(x => x.Name == aFamilyTypeName);
-                    if (aWallTypeList != null || aWallTypeList.Count() != 0)
-                        aWallType = aWallTypeList.First();
+                    List<WallType> wallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).Cast<WallType>().ToList().FindAll(x => x.Name == familyTypeName);
+                    if (wallTypeList != null || wallTypeList.Count() != 0)
+                        wallType = wallTypeList.First();
                 }
             }
 
-            if (aWallType == null)
+            if (wallType == null)
             {
-                string aFamilyTypeName = wall.Name;
+                string familyTypeName = wall.Name;
 
-                if (!string.IsNullOrEmpty(aFamilyTypeName))
+                if (!string.IsNullOrEmpty(familyTypeName))
                 {
-                    List < WallType> aWallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).Cast<WallType>().ToList().FindAll(x => x.Name == aFamilyTypeName);
-                    if (aWallTypeList != null || aWallTypeList.Count() != 0)
-                        aWallType = aWallTypeList.First();
+                    List < WallType> wallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).Cast<WallType>().ToList().FindAll(x => x.Name == familyTypeName);
+                    if (wallTypeList != null || wallTypeList.Count() != 0)
+                        wallType = wallTypeList.First();
                 }
             }
 
-            if (aWallType == null)
+            if (wallType == null)
                 return null;
 
-            double aLowElevation = wall.LowElevation();
-            if (double.IsNaN(aLowElevation))
+            double lowElevation = wall.LowElevation();
+            if (double.IsNaN(lowElevation))
                 return null;
 
-            Level aLevel = document.LowLevel(aLowElevation);
-            if (aLevel == null)
+            Level level = document.LowLevel(lowElevation);
+            if (level == null)
                 return null;
 
-            aWall = Wall.Create(document, aPlanarSurface.ExternalBoundary.ToRevitCurveList(), aWallType.Id, aLevel.Id, false);
+            revitWall = Wall.Create(document, Convert.ToRevitCurveList(planarSurface.ExternalBoundary), wallType.Id, level.Id, false);
 
-            Parameter aParameter = null;
+            Parameter parameter = null;
 
-            aParameter = aWall.get_Parameter(BuiltInParameter.WALL_HEIGHT_TYPE);
-            if (aParameter != null)
-                aParameter.Set(ElementId.InvalidElementId);
-            aParameter = aWall.get_Parameter(BuiltInParameter.WALL_USER_HEIGHT_PARAM);
-            if (aParameter != null)
+            parameter = revitWall.get_Parameter(BuiltInParameter.WALL_HEIGHT_TYPE);
+            if (parameter != null)
+                parameter.Set(ElementId.InvalidElementId);
+            parameter = revitWall.get_Parameter(BuiltInParameter.WALL_USER_HEIGHT_PARAM);
+            if (parameter != null)
             {
-                double aHeight = (wall.HighElevation() - aLowElevation).FromSI(UnitType.UT_Length);
-                aParameter.Set(aHeight);
+                double aHeight = (wall.HighElevation() - lowElevation).FromSI(UnitType.UT_Length);
+                parameter.Set(aHeight);
             }
 
-            double aElevation_Level = aLevel.Elevation.ToSI(UnitType.UT_Length);
-            if (System.Math.Abs(aLowElevation - aElevation_Level) > Tolerance.MacroDistance)
+            double levelElevation = level.Elevation.ToSI(UnitType.UT_Length);
+
+            if (System.Math.Abs(lowElevation - levelElevation) > Tolerance.MacroDistance)
             {
-                aParameter = aWall.get_Parameter(BuiltInParameter.WALL_BASE_OFFSET);
-                if (aParameter != null)
+                parameter = revitWall.get_Parameter(BuiltInParameter.WALL_BASE_OFFSET);
+                if (parameter != null)
                 {
-                    double aOffset = (aLowElevation - aElevation_Level).FromSI(UnitType.UT_Length);
-                    aParameter.Set(aOffset);
+                    double offset = (lowElevation - levelElevation).FromSI(UnitType.UT_Length);
+
+                    parameter.Set(offset);
                 }
             }
 
-            aWall.CheckIfNullPush(wall);
-            if (aWall == null)
+            revitWall.CheckIfNullPush(wall);
+            if (revitWall == null)
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aWall, wall, new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT, BuiltInParameter.WALL_BASE_OFFSET, BuiltInParameter.WALL_HEIGHT_TYPE, BuiltInParameter.WALL_USER_HEIGHT_PARAM });
+                Modify.SetParameters(revitWall, wall, new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT, BuiltInParameter.WALL_BASE_OFFSET, BuiltInParameter.WALL_HEIGHT_TYPE, BuiltInParameter.WALL_USER_HEIGHT_PARAM });
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(wall, aWall);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(wall, revitWall);
 
-            return aWall;
+            return revitWall;
         }
 
         /***************************************************/
