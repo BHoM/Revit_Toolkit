@@ -35,7 +35,7 @@ namespace BH.UI.Revit
 
         public void Execute(UIApplication app)
         {
-            lock (RevitListener.Listener.m_packageLock)
+            lock (RevitListener.Listener.gPackageLock)
             {
                 try
                 {

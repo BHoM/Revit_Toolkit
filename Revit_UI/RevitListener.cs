@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -83,10 +83,10 @@ namespace BH.UI.Revit
         {
             RevitUIAdapter adapter;
 
-            if (!m_adapters.TryGetValue(document, out adapter))
+            if (!gAdapters.TryGetValue(document, out adapter))
             {
                 adapter = new RevitUIAdapter(UIControlledApplication, document);
-                m_adapters[document] = adapter;
+                gAdapters[document] = adapter;
             }
 
             if (AdapterSettings != null)
@@ -107,7 +107,7 @@ namespace BH.UI.Revit
                 Tag = ""
             };
 
-            m_linkOut.SendData(package);
+            gLinkOut.SendData(package);
         }
 
         /***************************************************/
@@ -115,12 +115,12 @@ namespace BH.UI.Revit
         public void SetPorts(int inputPort, int outputPort)
         {
             //Not sure if needed
-            m_linkIn.DataObservers -= M_linkIn_DataObservers;
+            gLinkIn.DataObservers -= M_linkIn_DataObservers;
 
-            m_linkIn = new SocketLink_Tcp(inputPort);
-            m_linkIn.DataObservers += M_linkIn_DataObservers;
+            gLinkIn = new SocketLink_Tcp(inputPort);
+            gLinkIn.DataObservers += M_linkIn_DataObservers;
 
-            m_linkOut = new SocketLink_Tcp(outputPort);
+            gLinkOut = new SocketLink_Tcp(outputPort);
         }
 
 
@@ -131,7 +131,7 @@ namespace BH.UI.Revit
         public Result OnShutdown(UIControlledApplication application)
         {
             //Not sure if needed
-            m_linkIn.DataObservers -= M_linkIn_DataObservers;
+            gLinkIn.DataObservers -= M_linkIn_DataObservers;
 
             return Result.Succeeded;
         }
@@ -153,19 +153,19 @@ namespace BH.UI.Revit
 
             //Define push and pull events
             PushEvent pushEvent = new PushEvent();
-            m_pushEvent = ExternalEvent.Create(pushEvent);
+            gPushEvent = ExternalEvent.Create(pushEvent);
 
             PullEvent pullEvent = new PullEvent();
-            m_pullEvent = ExternalEvent.Create(pullEvent);
+            gPullEvent = ExternalEvent.Create(pullEvent);
 
             //empty list for package holding
             LatestPackage = new List<IObject>();
 
             //Socket link for listening and sending data
-            m_linkIn = new SocketLink_Tcp(14128);
-            m_linkIn.DataObservers += M_linkIn_DataObservers;
+            gLinkIn = new SocketLink_Tcp(14128);
+            gLinkIn.DataObservers += M_linkIn_DataObservers;
 
-            m_linkOut = new SocketLink_Tcp(14129);
+            gLinkOut = new SocketLink_Tcp(14129);
 
             uIControlledApplication.ViewActivated += Application_ViewActivated;
 
@@ -199,7 +199,7 @@ namespace BH.UI.Revit
 
             ExternalEvent eve = null;
 
-            lock (m_packageLock)
+            lock (gPackageLock)
             {
                 if (package.Data.Count < 1)
                 {
@@ -226,7 +226,7 @@ namespace BH.UI.Revit
                         return;
                     case PackageType.Push:
                         if (!CheckPackageSize(package)) return;
-                        eve = m_pushEvent;  //Set the event to raise
+                        eve = gPushEvent;  //Set the event to raise
                         LatestPackage = new List<IObject>();    //Clear the previous package list
                         //Add all objects to the list
                         foreach (object obj in package.Data[1] as IEnumerable<object>)
@@ -237,12 +237,12 @@ namespace BH.UI.Revit
                         break;
                     case PackageType.Pull:
                         if (!CheckPackageSize(package)) return;
-                        eve = m_pullEvent;
+                        eve = gPullEvent;
                         LatestRequest = package.Data[1] as IRequest;
                         break;
                     case PackageType.UpdateProperty:
                         if (!CheckPackageSize(package)) return;
-                        eve = m_updatePropertyEvent;
+                        eve = gUpdatePropertyEvent;
                         var tuple = package.Data[1] as Tuple<FilterRequest, string, object>;
                         LatestRequest = tuple.Item1;
                         LatestKeyValuePair = new KeyValuePair<string, object>(tuple.Item2, tuple.Item3);
@@ -277,14 +277,14 @@ namespace BH.UI.Revit
         /****             Private fields                ****/
         /***************************************************/
 
-        private SocketLink_Tcp m_linkIn;
-        private SocketLink_Tcp m_linkOut;
-        private ExternalEvent m_pushEvent;
-        private ExternalEvent m_pullEvent;
-        private ExternalEvent m_updatePropertyEvent;
-        private Dictionary<Document, RevitUIAdapter> m_adapters = new Dictionary<Document, RevitUIAdapter>();
+        private SocketLink_Tcp gLinkIn;
+        private SocketLink_Tcp gLinkOut;
+        private ExternalEvent gPushEvent;
+        private ExternalEvent gPullEvent;
+        private ExternalEvent gUpdatePropertyEvent;
+        private Dictionary<Document, RevitUIAdapter> gAdapters = new Dictionary<Document, RevitUIAdapter>();
         
-        public object m_packageLock = new object();
+        public object gPackageLock = new object();
 
         /***************************************************/
     }
