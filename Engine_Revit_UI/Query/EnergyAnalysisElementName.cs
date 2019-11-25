@@ -32,28 +32,14 @@ namespace BH.UI.Revit.Engine
 
         public static string EnergyAnalysisElementName(this Element element)
         {
-            if (element == null)
-                return null;
+            if (element == null) return null;
 
-            return EnergyAnalysisElementName(element.FamilyTypeFullName());
+            string name = element.FamilyTypeFullName();
+            if (name == null) return null;
+
+            if (name == string.Empty) return string.Empty;
+
+            return name;
         }
-
-        /***************************************************/
-
-        public static string EnergyAnalysisElementName(this string Name)
-        {
-            if (Name == null)
-                return null;
-
-            if (Name == string.Empty)
-                return string.Empty;
-
-            //string aName = Name.Replace(":", "_");
-            //aName = aName.Replace(" ", string.Empty);
-
-            return Name;
-        }
-
-        /***************************************************/
     }
 }
