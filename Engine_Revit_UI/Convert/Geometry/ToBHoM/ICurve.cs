@@ -46,11 +46,11 @@ namespace BH.UI.Revit.Engine
 
             if (curve is Arc)
             {
-                Arc aArc = curve as Arc;
-                double radius = aArc.Radius.ToSI(UnitType.UT_Length);
-                Plane plane = Plane.CreateByOriginAndBasis(aArc.Center, aArc.XDirection, aArc.YDirection);
-                double startAngle = aArc.XDirection.AngleOnPlaneTo(aArc.GetEndPoint(0) - aArc.Center, aArc.Normal);
-                double endAngle = aArc.XDirection.AngleOnPlaneTo(aArc.GetEndPoint(1) - aArc.Center, aArc.Normal);
+                Arc arc = curve as Arc;
+                double radius = arc.Radius.ToSI(UnitType.UT_Length);
+                Plane plane = Plane.CreateByOriginAndBasis(arc.Center, arc.XDirection, arc.YDirection);
+                double startAngle = arc.XDirection.AngleOnPlaneTo(arc.GetEndPoint(0) - arc.Center, arc.Normal);
+                double endAngle = arc.XDirection.AngleOnPlaneTo(arc.GetEndPoint(1) - arc.Center, arc.Normal);
                 if (startAngle > endAngle)
                 {
                     startAngle -= 2 * Math.PI;
@@ -70,15 +70,14 @@ namespace BH.UI.Revit.Engine
                     ControlPoints = nurbs.CtrlPoints.Select(x => x.ToBHoM()).ToList(),
                     Knots = knots,
                     Weights = nurbs.Weights.Cast<double>().ToList()
-
                 };
             }
 
-            IList<XYZ> aXYZs = curve.Tessellate();
-            if (aXYZs == null || aXYZs.Count < 2)
+            IList<XYZ> xyzList = curve.Tessellate();
+            if (xyzList == null || xyzList.Count < 2)
                 return null;
 
-            return BH.Engine.Geometry.Create.Polyline(aXYZs.ToList().ConvertAll(x => x.ToBHoM()));
+            return BH.Engine.Geometry.Create.Polyline(xyzList.ToList().ConvertAll(x => ToBHoM(x)));
         }
 
         /***************************************************/

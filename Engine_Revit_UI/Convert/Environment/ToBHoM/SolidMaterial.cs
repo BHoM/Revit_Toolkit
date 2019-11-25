@@ -40,22 +40,23 @@ namespace BH.UI.Revit.Engine
 
             pullSettings = pullSettings.DefaultIfNull();
 
-            SolidMaterial aResult = pullSettings.FindRefObject<SolidMaterial>(material.Id.IntegerValue);
-            if (aResult != null)
-                return aResult;
+            SolidMaterial result = pullSettings.FindRefObject<SolidMaterial>(material.Id.IntegerValue);
+            if (result != null)
+                return result;
             else
-                aResult = new SolidMaterial();
+                result = new SolidMaterial();
 
-            aResult.Name = material.Name;
-            Parameter aParameter = material.get_Parameter(BuiltInParameter.ALL_MODEL_DESCRIPTION);
-            if (aParameter != null)
-                aResult.Description = aParameter.AsString();
+            result.Name = material.Name;
+            Parameter parameter = material.get_Parameter(BuiltInParameter.ALL_MODEL_DESCRIPTION);
+            if (parameter != null)
+                result.Description = parameter.AsString();
 
-            Update(aResult, material, pullSettings);
-            aResult = aResult.UpdateValues(pullSettings, material) as SolidMaterial;
+            Update(result, material, pullSettings);
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult);
-            return aResult;
+            result = result.UpdateValues(pullSettings, material) as SolidMaterial;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(result);
+            return result;
         }
 
         /***************************************************/
@@ -70,16 +71,16 @@ namespace BH.UI.Revit.Engine
                 return;
             }
 
-            ElementId aElementId = material.ThermalAssetId;
-            if (aElementId == null || aElementId == ElementId.InvalidElementId)
+            ElementId elementID = material.ThermalAssetId;
+            if (elementID == null || elementID == ElementId.InvalidElementId)
             {
                 Compute.NullThermalAssetWarning(solidMaterial);
                 return;
             }
 
-            Document aDocument = material.Document;
+            Document document = material.Document;
 
-            PropertySetElement aPropertySetElement = aDocument.GetElement(aElementId) as PropertySetElement;
+            PropertySetElement aPropertySetElement = document.GetElement(elementID) as PropertySetElement;
             solidMaterial.Update(aPropertySetElement.GetThermalAsset(), pullSettings);
         }
 

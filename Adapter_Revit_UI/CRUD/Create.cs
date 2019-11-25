@@ -357,16 +357,16 @@ namespace BH.UI.Revit.Adapter
 
         private class FamilyLoadOptions : IFamilyLoadOptions
         {
-            private bool Update;
+            private bool gUpdate;
 
             public FamilyLoadOptions(bool update)
             {
-                this.Update = update;
+                this.gUpdate = update;
             }
 
             public bool OnFamilyFound(bool familyInUse, out bool overwriteParameterValues)
             {
-                if (Update)
+                if (gUpdate)
                 {
                     overwriteParameterValues = false;
                     return false;
@@ -379,7 +379,7 @@ namespace BH.UI.Revit.Adapter
 
             public bool OnSharedFamilyFound(Family sharedFamily, bool familyInUse, out FamilySource source, out bool overwriteParameterValues)
             {
-                if (Update)
+                if (gUpdate)
                 {
                     overwriteParameterValues = false;
                     source = FamilySource.Project;

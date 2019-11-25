@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -36,23 +36,23 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Family LoadFamily(this FamilyLoadSettings FamilyLoadSettings, Document document, string categoryName, string familyName)
+        public static Family LoadFamily(this FamilyLoadSettings familyLoadSettings, Document document, string categoryName, string familyName)
         {
-            if (FamilyLoadSettings == null || FamilyLoadSettings.FamilyLibrary == null || document == null)
+            if (familyLoadSettings == null || familyLoadSettings.FamilyLibrary == null || document == null)
                 return null;
 
-            FamilyLibrary aFamilyLibrary = FamilyLoadSettings.FamilyLibrary;
+            FamilyLibrary familyLibrary = familyLoadSettings.FamilyLibrary;
 
-            IEnumerable<string> aPaths = BH.Engine.Adapters.Revit.Query.Paths(aFamilyLibrary, categoryName, familyName, null);
-            if (aPaths == null || aPaths.Count() == 0)
+            IEnumerable<string> paths = BH.Engine.Adapters.Revit.Query.Paths(familyLibrary, categoryName, familyName, null);
+            if (paths == null || paths.Count() == 0)
                 return null;
 
-            string aPath = aPaths.First();
+            string path = paths.First();
 
-            Family aFamily= null;
+            Family family = null;
 
-            if (document.LoadFamily(aPath, new FamilyLoadOptions(FamilyLoadSettings), out aFamily))
-                return aFamily;
+            if (document.LoadFamily(path, new FamilyLoadOptions(familyLoadSettings), out family))
+                return family;
 
             return null;
         }

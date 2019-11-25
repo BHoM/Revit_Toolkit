@@ -43,54 +43,54 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Environment.Elements.Panel aPanel = pullSettings.FindRefObject<oM.Environment.Elements.Panel>(element.Id.IntegerValue);
-            if (aPanel != null)
-                return aPanel;
+            oM.Environment.Elements.Panel panel = pullSettings.FindRefObject<oM.Environment.Elements.Panel>(element.Id.IntegerValue);
+            if (panel != null)
+                return panel;
 
-            ElementType aElementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
+            ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
 
-            aPanel = Create.Panel(externalEdges: crv.ToEdges());
-            aPanel.Name = Query.FamilyTypeFullName(element);
+            panel = Create.Panel(externalEdges: crv.ToEdges());
+            panel.Name = Query.FamilyTypeFullName(element);
 
             //Set ExtendedProperties
-            OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-            aOriginContextFragment.ElementID = element.Id.IntegerValue.ToString();
-            aOriginContextFragment.TypeName = Query.FamilyTypeFullName(element);
-            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, element) as OriginContextFragment;
-            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aElementType) as OriginContextFragment;
-            aPanel.Fragments.Add(aOriginContextFragment);
+            OriginContextFragment originContext = new OriginContextFragment();
+            originContext.ElementID = element.Id.IntegerValue.ToString();
+            originContext.TypeName = Query.FamilyTypeFullName(element);
+            originContext = originContext.UpdateValues(pullSettings, element) as OriginContextFragment;
+            originContext = originContext.UpdateValues(pullSettings, elementType) as OriginContextFragment;
+            panel.Fragments.Add(originContext);
 
-            PanelAnalyticalFragment aBuildingElementAnalyticalProperties = new PanelAnalyticalFragment();
-            aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, element) as PanelAnalyticalFragment;
-            aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, aElementType) as PanelAnalyticalFragment;
-            aPanel.Fragments.Add(aBuildingElementAnalyticalProperties);
+            PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
+            panelAnalytical = panelAnalytical.UpdateValues(pullSettings, element) as PanelAnalyticalFragment;
+            panelAnalytical = panelAnalytical.UpdateValues(pullSettings, elementType) as PanelAnalyticalFragment;
+            panel.Fragments.Add(panelAnalytical);
 
-            PanelContextFragment aBuildingElementContextProperties = new PanelContextFragment();
-            aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, element) as PanelContextFragment;
-            aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, aElementType) as PanelContextFragment;
-            aPanel.Fragments.Add(aBuildingElementContextProperties);
+            PanelContextFragment panelContext = new PanelContextFragment();
+            panelContext = panelContext.UpdateValues(pullSettings, element) as PanelContextFragment;
+            panelContext = panelContext.UpdateValues(pullSettings, elementType) as PanelContextFragment;
+            panel.Fragments.Add(panelContext);
 
-            BuildingResultFragment aBuildingResultsProperties = new BuildingResultFragment();
-            aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, element) as BuildingResultFragment;
-            aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, aElementType) as BuildingResultFragment;
-            aPanel.Fragments.Add(aBuildingResultsProperties);
+            BuildingResultFragment buildingResults = new BuildingResultFragment();
+            buildingResults = buildingResults.UpdateValues(pullSettings, element) as BuildingResultFragment;
+            buildingResults = buildingResults.UpdateValues(pullSettings, elementType) as BuildingResultFragment;
+            panel.Fragments.Add(buildingResults);
 
-            oM.Environment.Elements.PanelType? aBuildingElementType = Query.PanelType(element.Category);
-            if (aBuildingElementType.HasValue)
-                aPanel.Type = aBuildingElementType.Value;
+            oM.Environment.Elements.PanelType? panelType = Query.PanelType(element.Category);
+            if (panelType.HasValue)
+                panel.Type = panelType.Value;
             else
-                aPanel.Type = oM.Environment.Elements.PanelType.Undefined;
+                panel.Type = oM.Environment.Elements.PanelType.Undefined;
 
-            aPanel = Modify.SetIdentifiers(aPanel, element) as oM.Environment.Elements.Panel;
+            panel = Modify.SetIdentifiers(panel, element) as oM.Environment.Elements.Panel;
             if (pullSettings.CopyCustomData)
-                aPanel = Modify.SetCustomData(aPanel, element) as oM.Environment.Elements.Panel;
+                panel = Modify.SetCustomData(panel, element) as oM.Environment.Elements.Panel;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(panel);
 
-            aPanel = aPanel.UpdateBuildingElementTypeByCustomData();
-            aPanel = aPanel.UpdateValues(pullSettings, element) as oM.Environment.Elements.Panel;
-            aPanel = aPanel.UpdateValues(pullSettings, aElementType) as oM.Environment.Elements.Panel;
-            return aPanel;
+            panel = panel.UpdateBuildingElementTypeByCustomData();
+            panel = panel.UpdateValues(pullSettings, element) as oM.Environment.Elements.Panel;
+            panel = panel.UpdateValues(pullSettings, elementType) as oM.Environment.Elements.Panel;
+            return panel;
         }
 
         /***************************************************/
@@ -100,56 +100,56 @@ namespace BH.UI.Revit.Engine
             //Create a BuildingElement from the familyInstance geometry
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Environment.Elements.Panel aPanel = pullSettings.FindRefObject<oM.Environment.Elements.Panel>(familyInstance.Id.IntegerValue);
-            if (aPanel != null)
-                return aPanel;
+            oM.Environment.Elements.Panel panel = pullSettings.FindRefObject<oM.Environment.Elements.Panel>(familyInstance.Id.IntegerValue);
+            if (panel != null)
+                return panel;
 
-            PolyCurve aPolyCurve = Query.PolyCurve(familyInstance, pullSettings);
-            if (aPolyCurve == null)
+            PolyCurve polycurve = Query.PolyCurve(familyInstance, pullSettings);
+            if (polycurve == null)
                 return null;
 
-            aPanel = Create.Panel(externalEdges: aPolyCurve.ToEdges());
-            aPanel.Name = Query.FamilyTypeFullName(familyInstance);
+            panel = Create.Panel(externalEdges: polycurve.ToEdges());
+            panel.Name = Query.FamilyTypeFullName(familyInstance);
 
             //Set ExtendedProperties
-            OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-            aOriginContextFragment.ElementID = familyInstance.Id.IntegerValue.ToString();
-            aOriginContextFragment.TypeName = Query.FamilyTypeFullName(familyInstance);
-            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, familyInstance.Symbol) as OriginContextFragment;
-            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, familyInstance) as OriginContextFragment;
-            aPanel.Fragments.Add(aOriginContextFragment);
+            OriginContextFragment originContext = new OriginContextFragment();
+            originContext.ElementID = familyInstance.Id.IntegerValue.ToString();
+            originContext.TypeName = Query.FamilyTypeFullName(familyInstance);
+            originContext = originContext.UpdateValues(pullSettings, familyInstance.Symbol) as OriginContextFragment;
+            originContext = originContext.UpdateValues(pullSettings, familyInstance) as OriginContextFragment;
+            panel.Fragments.Add(originContext);
 
-            PanelAnalyticalFragment aBuildingElementAnalyticalProperties = new PanelAnalyticalFragment();
-            aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, familyInstance.Symbol) as PanelAnalyticalFragment;
-            aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, familyInstance) as PanelAnalyticalFragment;
-            aPanel.Fragments.Add(aBuildingElementAnalyticalProperties);
+            PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
+            panelAnalytical = panelAnalytical.UpdateValues(pullSettings, familyInstance.Symbol) as PanelAnalyticalFragment;
+            panelAnalytical = panelAnalytical.UpdateValues(pullSettings, familyInstance) as PanelAnalyticalFragment;
+            panel.Fragments.Add(panelAnalytical);
 
-            PanelContextFragment aBuildingElementContextProperties = new PanelContextFragment();
-            aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, familyInstance.Symbol) as PanelContextFragment;
-            aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, familyInstance) as PanelContextFragment;
-            aPanel.Fragments.Add(aBuildingElementContextProperties);
+            PanelContextFragment panelContext = new PanelContextFragment();
+            panelContext = panelContext.UpdateValues(pullSettings, familyInstance.Symbol) as PanelContextFragment;
+            panelContext = panelContext.UpdateValues(pullSettings, familyInstance) as PanelContextFragment;
+            panel.Fragments.Add(panelContext);
 
-            BuildingResultFragment aBuildingResultsProperties = new BuildingResultFragment();
-            aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, familyInstance.Symbol) as BuildingResultFragment;
-            aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, familyInstance) as BuildingResultFragment;
-            aPanel.Fragments.Add(aBuildingResultsProperties);
+            BuildingResultFragment buildingResults = new BuildingResultFragment();
+            buildingResults = buildingResults.UpdateValues(pullSettings, familyInstance.Symbol) as BuildingResultFragment;
+            buildingResults = buildingResults.UpdateValues(pullSettings, familyInstance) as BuildingResultFragment;
+            panel.Fragments.Add(buildingResults);
 
-            oM.Environment.Elements.PanelType? aBuildingElementType = Query.PanelType(familyInstance.Category);
-            if (aBuildingElementType.HasValue)
-                aPanel.Type = aBuildingElementType.Value;
+            oM.Environment.Elements.PanelType? panelType = Query.PanelType(familyInstance.Category);
+            if (panelType.HasValue)
+                panel.Type = panelType.Value;
             else
-                aPanel.Type = oM.Environment.Elements.PanelType.Undefined;
+                panel.Type = oM.Environment.Elements.PanelType.Undefined;
 
-            aPanel = Modify.SetIdentifiers(aPanel, familyInstance) as oM.Environment.Elements.Panel;
+            panel = Modify.SetIdentifiers(panel, familyInstance) as oM.Environment.Elements.Panel;
             if (pullSettings.CopyCustomData)
-                aPanel = Modify.SetCustomData(aPanel, familyInstance) as oM.Environment.Elements.Panel;
+                panel = Modify.SetCustomData(panel, familyInstance) as oM.Environment.Elements.Panel;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(panel);
 
-            aPanel = aPanel.UpdateBuildingElementTypeByCustomData();
-            aPanel = aPanel.UpdateValues(pullSettings, familyInstance.Symbol) as oM.Environment.Elements.Panel;
-            aPanel = aPanel.UpdateValues(pullSettings, familyInstance) as oM.Environment.Elements.Panel;
-            return aPanel;
+            panel = panel.UpdateBuildingElementTypeByCustomData();
+            panel = panel.UpdateValues(pullSettings, familyInstance.Symbol) as oM.Environment.Elements.Panel;
+            panel = panel.UpdateValues(pullSettings, familyInstance) as oM.Environment.Elements.Panel;
+            return panel;
         }
 
         /***************************************************/
@@ -158,107 +158,107 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            oM.Environment.Elements.Panel aPanel = pullSettings.FindRefObject<oM.Environment.Elements.Panel>(energyAnalysisSurface.Id.IntegerValue);
-            if (aPanel != null)
-                return aPanel;
+            oM.Environment.Elements.Panel panel = pullSettings.FindRefObject<oM.Environment.Elements.Panel>(energyAnalysisSurface.Id.IntegerValue);
+            if (panel != null)
+                return panel;
 
             //Get the geometry Curve
-            ICurve aCurve = null;
+            ICurve curve = null;
             if (energyAnalysisSurface != null)
-                aCurve = energyAnalysisSurface.GetPolyloop().ToBHoM();
+                curve = energyAnalysisSurface.GetPolyloop().ToBHoM();
 
             //Get the name and element type
-            Element aElement = Query.Element(energyAnalysisSurface.Document, energyAnalysisSurface.CADObjectUniqueId, energyAnalysisSurface.CADLinkUniqueId);
-            ElementType aElementType = null;
-            if (aElement != null)
+            Element element = Query.Element(energyAnalysisSurface.Document, energyAnalysisSurface.CADObjectUniqueId, energyAnalysisSurface.CADLinkUniqueId);
+            ElementType elementType = null;
+            if (element != null)
             {
-                aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
-                aPanel = Create.Panel(name: Query.FamilyTypeFullName(aElement), externalEdges: aCurve.ToEdges());
+                elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
+                panel = Create.Panel(name: Query.FamilyTypeFullName(element), externalEdges: curve.ToEdges());
             }
 
             //Set ExtendedProperties
-            OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-            aOriginContextFragment.ElementID = aElement.Id.IntegerValue.ToString();
-            aOriginContextFragment.TypeName = Query.FamilyTypeFullName(aElement);
-            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aElement) as OriginContextFragment;
-            aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aElementType) as OriginContextFragment;
-            aPanel.AddFragment(aOriginContextFragment);
+            OriginContextFragment originContext = new OriginContextFragment();
+            originContext.ElementID = element.Id.IntegerValue.ToString();
+            originContext.TypeName = Query.FamilyTypeFullName(element);
+            originContext = originContext.UpdateValues(pullSettings, element) as OriginContextFragment;
+            originContext = originContext.UpdateValues(pullSettings, elementType) as OriginContextFragment;
+            panel.AddFragment(originContext);
 
-            PanelAnalyticalFragment aBuildingElementAnalyticalProperties = new PanelAnalyticalFragment();
-            aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, aElementType) as PanelAnalyticalFragment;
-            aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, aElement) as PanelAnalyticalFragment;
-            aPanel.AddFragment(aBuildingElementAnalyticalProperties);
+            PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
+            panelAnalytical = panelAnalytical.UpdateValues(pullSettings, elementType) as PanelAnalyticalFragment;
+            panelAnalytical = panelAnalytical.UpdateValues(pullSettings, element) as PanelAnalyticalFragment;
+            panel.AddFragment(panelAnalytical);
 
-            PanelContextFragment aBuildingElementContextProperties = new PanelContextFragment();
+            PanelContextFragment panelContext = new PanelContextFragment();
 
-            List<string> aConnectedSpaces = new List<string>();
-            EnergyAnalysisSpace aEnergyAnalysisSpace = null;
-            aEnergyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
-            if (aEnergyAnalysisSpace != null)
+            List<string> connectedSpaces = new List<string>();
+            EnergyAnalysisSpace energyAnalysisSpace = null;
+            energyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
+            if (energyAnalysisSpace != null)
             {
-                SpatialElement aSpatialElement = Query.Element(aEnergyAnalysisSpace.Document, aEnergyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
-                aConnectedSpaces.Add(Query.Name(aSpatialElement));
+                SpatialElement spatialElement = Query.Element(energyAnalysisSpace.Document, energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
+                connectedSpaces.Add(Query.Name(spatialElement));
             }
 
-            aEnergyAnalysisSpace = energyAnalysisSurface.GetAdjacentAnalyticalSpace();
-            if (aEnergyAnalysisSpace != null)
+            energyAnalysisSpace = energyAnalysisSurface.GetAdjacentAnalyticalSpace();
+            if (energyAnalysisSpace != null)
             {
-                SpatialElement aSpatialElement = Query.Element(aEnergyAnalysisSpace.Document, aEnergyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
-                if (aSpatialElement != null)
+                SpatialElement spatialElement = Query.Element(energyAnalysisSpace.Document, energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
+                if (spatialElement != null)
                 {
-                    aConnectedSpaces.Add(Query.Name(aSpatialElement));
+                    connectedSpaces.Add(Query.Name(spatialElement));
 
-                    if (aSpatialElement is Autodesk.Revit.DB.Mechanical.Space)
+                    if (spatialElement is Autodesk.Revit.DB.Mechanical.Space)
                     {
-                        Autodesk.Revit.DB.Mechanical.Space aSpace = (Autodesk.Revit.DB.Mechanical.Space)aSpatialElement;
+                        Autodesk.Revit.DB.Mechanical.Space space = (Autodesk.Revit.DB.Mechanical.Space)spatialElement;
 
                         BuildingResultFragment aBuildingResultsProperties = new BuildingResultFragment();
-                        aBuildingResultsProperties.PeakCooling = aSpace.DesignCoolingLoad.ToSI(UnitType.UT_HVAC_Cooling_Load);
-                        aBuildingResultsProperties.PeakHeating = aSpace.DesignHeatingLoad.ToSI(UnitType.UT_HVAC_Heating_Load);
-                        aPanel.AddFragment(aBuildingResultsProperties);
+                        aBuildingResultsProperties.PeakCooling = space.DesignCoolingLoad.ToSI(UnitType.UT_HVAC_Cooling_Load);
+                        aBuildingResultsProperties.PeakHeating = space.DesignHeatingLoad.ToSI(UnitType.UT_HVAC_Heating_Load);
+                        panel.AddFragment(aBuildingResultsProperties);
                     }
                 }
             }
 
-            aPanel.ConnectedSpaces = aConnectedSpaces;
-            aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, aElementType) as PanelContextFragment;
-            aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, aElement) as PanelContextFragment;
-            aPanel.AddFragment(aBuildingElementContextProperties);
+            panel.ConnectedSpaces = connectedSpaces;
+            panelContext = panelContext.UpdateValues(pullSettings, elementType) as PanelContextFragment;
+            panelContext = panelContext.UpdateValues(pullSettings, element) as PanelContextFragment;
+            panel.AddFragment(panelContext);
 
-            oM.Environment.Elements.PanelType? aBuildingElementType = Query.PanelType(aElement.Category);
-            if (aBuildingElementType.HasValue)
-                aPanel.Type = aBuildingElementType.Value;
+            oM.Environment.Elements.PanelType? panelType = Query.PanelType(element.Category);
+            if (panelType.HasValue)
+                panel.Type = panelType.Value;
             else
-                aPanel.Type = oM.Environment.Elements.PanelType.Undefined;
+                panel.Type = oM.Environment.Elements.PanelType.Undefined;
 
-            aPanel.Construction = Convert.ToBHoMConstruction(aElementType as dynamic, pullSettings);
+            panel.Construction = Convert.ToBHoMConstruction(elementType as dynamic, pullSettings);
 
             //Set some custom data properties
-            aPanel = Modify.SetIdentifiers(aPanel, aElement) as oM.Environment.Elements.Panel;
+            panel = Modify.SetIdentifiers(panel, element) as oM.Environment.Elements.Panel;
             if (pullSettings.CopyCustomData)
             {
-                aPanel = Modify.SetCustomData(aPanel, aElement) as oM.Environment.Elements.Panel;
-                double aHeight = energyAnalysisSurface.Height.ToSI(UnitType.UT_Length);
-                double aWidth = energyAnalysisSurface.Width.ToSI(UnitType.UT_Length);
-                double aAzimuth = energyAnalysisSurface.Azimuth;
+                panel = Modify.SetCustomData(panel, element) as oM.Environment.Elements.Panel;
+                double heigh = energyAnalysisSurface.Height.ToSI(UnitType.UT_Length);
+                double width = energyAnalysisSurface.Width.ToSI(UnitType.UT_Length);
+                double azimuth = energyAnalysisSurface.Azimuth;
 
-                aPanel = Modify.SetCustomData(aPanel, "Height", aHeight) as oM.Environment.Elements.Panel;
-                aPanel = Modify.SetCustomData(aPanel, "Width", aWidth) as oM.Environment.Elements.Panel;
-                aPanel = Modify.SetCustomData(aPanel, "Azimuth", aAzimuth) as oM.Environment.Elements.Panel;
-                aPanel = Modify.SetCustomData(aPanel, aElementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME) as oM.Environment.Elements.Panel;
-                aPanel = Modify.AddSpaceId(aPanel, energyAnalysisSurface);
-                aPanel = Modify.AddAdjacentSpaceId(aPanel, energyAnalysisSurface);
+                panel = Modify.SetCustomData(panel, "Height", heigh) as oM.Environment.Elements.Panel;
+                panel = Modify.SetCustomData(panel, "Width", width) as oM.Environment.Elements.Panel;
+                panel = Modify.SetCustomData(panel, "Azimuth", azimuth) as oM.Environment.Elements.Panel;
+                panel = Modify.SetCustomData(panel, elementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME) as oM.Environment.Elements.Panel;
+                panel = Modify.AddSpaceId(panel, energyAnalysisSurface);
+                panel = Modify.AddAdjacentSpaceId(panel, energyAnalysisSurface);
 
-                if (aElementType != null)
-                    aPanel = Modify.SetCustomData(aPanel, aElementType, "Type ") as oM.Environment.Elements.Panel;
+                if (elementType != null)
+                    panel = Modify.SetCustomData(panel, elementType, "Type ") as oM.Environment.Elements.Panel;
             }
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(panel);
 
-            aPanel = aPanel.UpdateBuildingElementTypeByCustomData();
-            aPanel = aPanel.UpdateValues(pullSettings, aElementType) as oM.Environment.Elements.Panel;
-            aPanel = aPanel.UpdateValues(pullSettings, aElement) as oM.Environment.Elements.Panel;
-            return aPanel;
+            panel = panel.UpdateBuildingElementTypeByCustomData();
+            panel = panel.UpdateValues(pullSettings, elementType) as oM.Environment.Elements.Panel;
+            panel = panel.UpdateValues(pullSettings, element) as oM.Environment.Elements.Panel;
+            return panel;
         }
 
         /***************************************************/
@@ -267,65 +267,65 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Environment.Elements.Panel> aPanels = pullSettings.FindRefObjects<oM.Environment.Elements.Panel>(ceiling.Id.IntegerValue);
-            if (aPanels != null && aPanels.Count > 0)
-                return aPanels;
+            List<oM.Environment.Elements.Panel> panels = pullSettings.FindRefObjects<oM.Environment.Elements.Panel>(ceiling.Id.IntegerValue);
+            if (panels != null && panels.Count > 0)
+                return panels;
 
-            List<PolyCurve> aPolyCurveList = Query.Profiles(ceiling, pullSettings);
-            if (aPolyCurveList == null)
-                return aPanels;
+            List<PolyCurve> polycurves = Query.Profiles(ceiling, pullSettings);
+            if (polycurves == null)
+                return panels;
 
-            aPanels = new List<oM.Environment.Elements.Panel>();
+            panels = new List<oM.Environment.Elements.Panel>();
 
-            CeilingType aCeilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
-            BH.oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(aCeilingType, pullSettings);
+            CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
+            BH.oM.Physical.Constructions.Construction construction = ToBHoMConstruction(ceilingType, pullSettings);
 
-            List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
-            foreach (ICurve aCurve in aPolyCurveList_Outer)
+            List<PolyCurve> polycurveListOuter = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(polycurves);
+            foreach (ICurve curve in polycurveListOuter)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel aPanel = Create.Panel(externalEdges: aCurve.ToEdges());
-                aPanel.Name = Query.FamilyTypeFullName(ceiling);
+                oM.Environment.Elements.Panel panel = Create.Panel(externalEdges: curve.ToEdges());
+                panel.Name = Query.FamilyTypeFullName(ceiling);
 
                 //Set ExtendedProperties
-                OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-                aOriginContextFragment.ElementID = ceiling.Id.IntegerValue.ToString();
-                aOriginContextFragment.TypeName = Query.FamilyTypeFullName(ceiling);
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aCeilingType) as OriginContextFragment;
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, ceiling) as OriginContextFragment;
-                aPanel.AddFragment(aOriginContextFragment);
+                OriginContextFragment originContext = new OriginContextFragment();
+                originContext.ElementID = ceiling.Id.IntegerValue.ToString();
+                originContext.TypeName = Query.FamilyTypeFullName(ceiling);
+                originContext = originContext.UpdateValues(pullSettings, ceilingType) as OriginContextFragment;
+                originContext = originContext.UpdateValues(pullSettings, ceiling) as OriginContextFragment;
+                panel.AddFragment(originContext);
 
-                PanelAnalyticalFragment aBuildingElementAnalyticalProperties = new PanelAnalyticalFragment();
-                aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, aCeilingType) as PanelAnalyticalFragment;
-                aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, ceiling) as PanelAnalyticalFragment;
-                aPanel.AddFragment(aBuildingElementAnalyticalProperties);
+                PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
+                panelAnalytical = panelAnalytical.UpdateValues(pullSettings, ceilingType) as PanelAnalyticalFragment;
+                panelAnalytical = panelAnalytical.UpdateValues(pullSettings, ceiling) as PanelAnalyticalFragment;
+                panel.AddFragment(panelAnalytical);
 
-                PanelContextFragment aBuildingElementContextProperties = new PanelContextFragment();
-                aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, aCeilingType) as PanelContextFragment;
-                aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, ceiling) as PanelContextFragment;
-                aPanel.AddFragment(aBuildingElementContextProperties);
+                PanelContextFragment panelContext = new PanelContextFragment();
+                panelContext = panelContext.UpdateValues(pullSettings, ceilingType) as PanelContextFragment;
+                panelContext = panelContext.UpdateValues(pullSettings, ceiling) as PanelContextFragment;
+                panel.AddFragment(panelContext);
 
-                BuildingResultFragment aBuildingResultsProperties = new BuildingResultFragment();
-                aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, aCeilingType) as BuildingResultFragment;
-                aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, ceiling) as BuildingResultFragment;
-                aPanel.AddFragment(aBuildingResultsProperties);
+                BuildingResultFragment buildingResults = new BuildingResultFragment();
+                buildingResults = buildingResults.UpdateValues(pullSettings, ceilingType) as BuildingResultFragment;
+                buildingResults = buildingResults.UpdateValues(pullSettings, ceiling) as BuildingResultFragment;
+                panel.AddFragment(buildingResults);
 
-                aPanel.Construction = aConstruction;
-                aPanel.Type = oM.Environment.Elements.PanelType.Ceiling;
+                panel.Construction = construction;
+                panel.Type = oM.Environment.Elements.PanelType.Ceiling;
 
                 //Assign custom data
-                aPanel = Modify.SetIdentifiers(aPanel, ceiling) as oM.Environment.Elements.Panel;
+                panel = Modify.SetIdentifiers(panel, ceiling) as oM.Environment.Elements.Panel;
                 if (pullSettings.CopyCustomData)
-                    aPanel = Modify.SetCustomData(aPanel, ceiling) as oM.Environment.Elements.Panel;
+                    panel = Modify.SetCustomData(panel, ceiling) as oM.Environment.Elements.Panel;
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
-                aPanel = aPanel.UpdateValues(pullSettings, aCeilingType) as oM.Environment.Elements.Panel;
-                aPanel = aPanel.UpdateValues(pullSettings, ceiling) as oM.Environment.Elements.Panel;
-                aPanels.Add(aPanel);
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(panel);
+                panel = panel.UpdateValues(pullSettings, ceilingType) as oM.Environment.Elements.Panel;
+                panel = panel.UpdateValues(pullSettings, ceiling) as oM.Environment.Elements.Panel;
+                panels.Add(panel);
             }
 
-            aPanels = aPanels.UpdateBuildingElementTypeByCustomData();
-            return aPanels;
+            panels = panels.UpdateBuildingElementTypeByCustomData();
+            return panels;
         }
 
         /***************************************************/
@@ -334,67 +334,67 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Environment.Elements.Panel> aPanels = pullSettings.FindRefObjects<oM.Environment.Elements.Panel>(floor.Id.IntegerValue);
-            if (aPanels != null && aPanels.Count > 0)
-                return aPanels;
+            List<oM.Environment.Elements.Panel> panels = pullSettings.FindRefObjects<oM.Environment.Elements.Panel>(floor.Id.IntegerValue);
+            if (panels != null && panels.Count > 0)
+                return panels;
 
-            List<PolyCurve> aPolyCurveList = Query.Profiles(floor, pullSettings);
-            if (aPolyCurveList == null)
-                return aPanels;
+            List<PolyCurve> polycurves = Query.Profiles(floor, pullSettings);
+            if (polycurves == null)
+                return panels;
 
-            aPanels = new List<oM.Environment.Elements.Panel>();
+            panels = new List<oM.Environment.Elements.Panel>();
 
-            BH.oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(floor.FloorType, pullSettings);
+            BH.oM.Physical.Constructions.Construction construction = ToBHoMConstruction(floor.FloorType, pullSettings);
 
-            FloorType aFloorType = floor.Document.GetElement(floor.GetTypeId()) as FloorType;
+            FloorType floorType = floor.Document.GetElement(floor.GetTypeId()) as FloorType;
 
-            List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
-            foreach (ICurve aCurve in aPolyCurveList_Outer)
+            List<PolyCurve> polycurveListOuter = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(polycurves);
+            foreach (ICurve curve in polycurveListOuter)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel aPanel = Create.Panel(externalEdges: aCurve.ToEdges());
-                aPanel.Name = Query.FamilyTypeFullName(floor);
+                oM.Environment.Elements.Panel panel = Create.Panel(externalEdges: curve.ToEdges());
+                panel.Name = Query.FamilyTypeFullName(floor);
 
                 //Set ExtendedProperties
-                OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-                aOriginContextFragment.ElementID = floor.Id.IntegerValue.ToString();
-                aOriginContextFragment.TypeName = Query.FamilyTypeFullName(floor);
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aFloorType) as OriginContextFragment;
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, floor) as OriginContextFragment;
-                aPanel.AddFragment(aOriginContextFragment);
+                OriginContextFragment originContext = new OriginContextFragment();
+                originContext.ElementID = floor.Id.IntegerValue.ToString();
+                originContext.TypeName = Query.FamilyTypeFullName(floor);
+                originContext = originContext.UpdateValues(pullSettings, floorType) as OriginContextFragment;
+                originContext = originContext.UpdateValues(pullSettings, floor) as OriginContextFragment;
+                panel.AddFragment(originContext);
 
-                PanelAnalyticalFragment aBuildingElementAnalyticalProperties = new PanelAnalyticalFragment();
-                aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, aFloorType) as PanelAnalyticalFragment;
-                aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, floor) as PanelAnalyticalFragment;
-                aPanel.AddFragment(aBuildingElementAnalyticalProperties);
+                PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
+                panelAnalytical = panelAnalytical.UpdateValues(pullSettings, floorType) as PanelAnalyticalFragment;
+                panelAnalytical = panelAnalytical.UpdateValues(pullSettings, floor) as PanelAnalyticalFragment;
+                panel.AddFragment(panelAnalytical);
 
-                PanelContextFragment aBuildingElementContextProperties = new PanelContextFragment();
-                aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, aFloorType) as PanelContextFragment;
-                aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, floor) as PanelContextFragment;
-                aPanel.AddFragment(aBuildingElementContextProperties);
+                PanelContextFragment panelContext = new PanelContextFragment();
+                panelContext = panelContext.UpdateValues(pullSettings, floorType) as PanelContextFragment;
+                panelContext = panelContext.UpdateValues(pullSettings, floor) as PanelContextFragment;
+                panel.AddFragment(panelContext);
 
-                BuildingResultFragment aBuildingResultsProperties = new BuildingResultFragment();
-                aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, aFloorType) as BuildingResultFragment;
-                aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, floor) as BuildingResultFragment;
-                aPanel.AddFragment(aBuildingResultsProperties);
+                BuildingResultFragment buildingResults = new BuildingResultFragment();
+                buildingResults = buildingResults.UpdateValues(pullSettings, floorType) as BuildingResultFragment;
+                buildingResults = buildingResults.UpdateValues(pullSettings, floor) as BuildingResultFragment;
+                panel.AddFragment(buildingResults);
 
-                aPanel.Construction = aConstruction;
-                aPanel.Type = oM.Environment.Elements.PanelType.Floor;
+                panel.Construction = construction;
+                panel.Type = oM.Environment.Elements.PanelType.Floor;
 
                 //Assign custom data
-                aPanel = Modify.SetIdentifiers(aPanel, floor) as oM.Environment.Elements.Panel;
+                panel = Modify.SetIdentifiers(panel, floor) as oM.Environment.Elements.Panel;
                 if (pullSettings.CopyCustomData)
-                    aPanel = Modify.SetCustomData(aPanel, floor) as oM.Environment.Elements.Panel;
+                    panel = Modify.SetCustomData(panel, floor) as oM.Environment.Elements.Panel;
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(panel);
 
-                aPanel = aPanel.UpdateValues(pullSettings, aFloorType) as oM.Environment.Elements.Panel;
-                aPanel = aPanel.UpdateValues(pullSettings, floor) as oM.Environment.Elements.Panel;
-                aPanels.Add(aPanel);
+                panel = panel.UpdateValues(pullSettings, floorType) as oM.Environment.Elements.Panel;
+                panel = panel.UpdateValues(pullSettings, floor) as oM.Environment.Elements.Panel;
+                panels.Add(panel);
             }
 
-            aPanels = aPanels.UpdateBuildingElementTypeByCustomData();
-            return aPanels;
+            panels = panels.UpdateBuildingElementTypeByCustomData();
+            return panels;
         }
 
         /***************************************************/
@@ -403,65 +403,65 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Environment.Elements.Panel> aPanels = pullSettings.FindRefObjects<oM.Environment.Elements.Panel>(roofBase.Id.IntegerValue);
-            if (aPanels != null && aPanels.Count > 0)
-                return aPanels;
+            List<oM.Environment.Elements.Panel> panels = pullSettings.FindRefObjects<oM.Environment.Elements.Panel>(roofBase.Id.IntegerValue);
+            if (panels != null && panels.Count > 0)
+                return panels;
 
-            List<PolyCurve> aPolyCurveList = Query.Profiles(roofBase, pullSettings);
-            if (aPolyCurveList == null)
-                return aPanels;
+            List<PolyCurve> polycurves = Query.Profiles(roofBase, pullSettings);
+            if (polycurves == null)
+                return panels;
 
-            aPanels = new List<oM.Environment.Elements.Panel>();
+            panels = new List<oM.Environment.Elements.Panel>();
 
-            BH.oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(roofBase.RoofType, pullSettings);
+            BH.oM.Physical.Constructions.Construction construction = ToBHoMConstruction(roofBase.RoofType, pullSettings);
 
-            List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
-            foreach (ICurve aCurve in aPolyCurveList_Outer)
+            List<PolyCurve> polycurvesListOuter = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(polycurves);
+            foreach (ICurve curve in polycurvesListOuter)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel aPanel = Create.Panel(externalEdges: aCurve.ToEdges());
-                aPanel.Name = Query.FamilyTypeFullName(roofBase);
+                oM.Environment.Elements.Panel panel = Create.Panel(externalEdges: curve.ToEdges());
+                panel.Name = Query.FamilyTypeFullName(roofBase);
 
                 //Set ExtendedProperties
-                OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-                aOriginContextFragment.ElementID = roofBase.Id.IntegerValue.ToString();
-                aOriginContextFragment.TypeName = Query.FamilyTypeFullName(roofBase);
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, roofBase.RoofType) as OriginContextFragment;
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, roofBase) as OriginContextFragment;
-                aPanel.AddFragment(aOriginContextFragment);
+                OriginContextFragment originContext = new OriginContextFragment();
+                originContext.ElementID = roofBase.Id.IntegerValue.ToString();
+                originContext.TypeName = Query.FamilyTypeFullName(roofBase);
+                originContext = originContext.UpdateValues(pullSettings, roofBase.RoofType) as OriginContextFragment;
+                originContext = originContext.UpdateValues(pullSettings, roofBase) as OriginContextFragment;
+                panel.AddFragment(originContext);
 
-                PanelAnalyticalFragment aBuildingElementAnalyticalProperties = new PanelAnalyticalFragment();
-                aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, roofBase.RoofType) as PanelAnalyticalFragment;
-                aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, roofBase) as PanelAnalyticalFragment;
-                aPanel.AddFragment(aBuildingElementAnalyticalProperties);
+                PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
+                panelAnalytical = panelAnalytical.UpdateValues(pullSettings, roofBase.RoofType) as PanelAnalyticalFragment;
+                panelAnalytical = panelAnalytical.UpdateValues(pullSettings, roofBase) as PanelAnalyticalFragment;
+                panel.AddFragment(panelAnalytical);
 
-                PanelContextFragment aBuildingElementContextProperties = new PanelContextFragment();
-                aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, roofBase.RoofType) as PanelContextFragment;
-                aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, roofBase) as PanelContextFragment;
-                aPanel.AddFragment(aBuildingElementContextProperties);
+                PanelContextFragment panelContext = new PanelContextFragment();
+                panelContext = panelContext.UpdateValues(pullSettings, roofBase.RoofType) as PanelContextFragment;
+                panelContext = panelContext.UpdateValues(pullSettings, roofBase) as PanelContextFragment;
+                panel.AddFragment(panelContext);
 
-                BuildingResultFragment aBuildingResultsProperties = new BuildingResultFragment();
-                aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, roofBase.RoofType) as BuildingResultFragment;
-                aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, roofBase) as BuildingResultFragment;
-                aPanel.AddFragment(aBuildingResultsProperties);
+                BuildingResultFragment buildingResults = new BuildingResultFragment();
+                buildingResults = buildingResults.UpdateValues(pullSettings, roofBase.RoofType) as BuildingResultFragment;
+                buildingResults = buildingResults.UpdateValues(pullSettings, roofBase) as BuildingResultFragment;
+                panel.AddFragment(buildingResults);
 
-                aPanel.Construction = aConstruction;
-                aPanel.Type = oM.Environment.Elements.PanelType.Roof;
+                panel.Construction = construction;
+                panel.Type = oM.Environment.Elements.PanelType.Roof;
 
                 //Assign custom data
-                aPanel = Modify.SetIdentifiers(aPanel, roofBase) as oM.Environment.Elements.Panel;
+                panel = Modify.SetIdentifiers(panel, roofBase) as oM.Environment.Elements.Panel;
                 if (pullSettings.CopyCustomData)
-                    aPanel = Modify.SetCustomData(aPanel, roofBase) as oM.Environment.Elements.Panel;
+                    panel = Modify.SetCustomData(panel, roofBase) as oM.Environment.Elements.Panel;
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(panel);
 
-                aPanel = aPanel.UpdateValues(pullSettings, roofBase.RoofType) as oM.Environment.Elements.Panel;
-                aPanel = aPanel.UpdateValues(pullSettings, roofBase) as oM.Environment.Elements.Panel;
-                aPanels.Add(aPanel);
+                panel = panel.UpdateValues(pullSettings, roofBase.RoofType) as oM.Environment.Elements.Panel;
+                panel = panel.UpdateValues(pullSettings, roofBase) as oM.Environment.Elements.Panel;
+                panels.Add(panel);
             }
 
-            aPanels = aPanels.UpdateBuildingElementTypeByCustomData();
-            return aPanels;
+            panels = panels.UpdateBuildingElementTypeByCustomData();
+            return panels;
         }
 
         /***************************************************/
@@ -470,63 +470,63 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Environment.Elements.Panel> aPanels = pullSettings.FindRefObjects<oM.Environment.Elements.Panel>(wall.Id.IntegerValue);
-            if (aPanels != null && aPanels.Count > 0)
-                return aPanels;
+            List<oM.Environment.Elements.Panel> panels = pullSettings.FindRefObjects<oM.Environment.Elements.Panel>(wall.Id.IntegerValue);
+            if (panels != null && panels.Count > 0)
+                return panels;
 
-            aPanels = new List<oM.Environment.Elements.Panel>();
+            panels = new List<oM.Environment.Elements.Panel>();
 
-            BH.oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(wall.WallType, pullSettings);
+            BH.oM.Physical.Constructions.Construction constrtuction = ToBHoMConstruction(wall.WallType, pullSettings);
 
-            List<PolyCurve> aPolyCurveList = Query.Profiles(wall, pullSettings);
-            List<PolyCurve> aPolyCurveList_Outer = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(aPolyCurveList);
+            List<PolyCurve> polycurves = Query.Profiles(wall, pullSettings);
+            List<PolyCurve> polycurveListOuter = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(polycurves);
 
-            foreach (ICurve aCurve in aPolyCurveList_Outer)
+            foreach (ICurve curve in polycurveListOuter)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel aPanel = Create.Panel(externalEdges: aCurve.ToEdges());
-                aPanel.Name = Query.FamilyTypeFullName(wall);
+                oM.Environment.Elements.Panel panel = Create.Panel(externalEdges: curve.ToEdges());
+                panel.Name = Query.FamilyTypeFullName(wall);
 
                 //Set ExtendedProperties
-                OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-                aOriginContextFragment.ElementID = wall.Id.IntegerValue.ToString();
-                aOriginContextFragment.TypeName = Query.FamilyTypeFullName(wall);
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, wall.WallType) as OriginContextFragment;
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, wall) as OriginContextFragment;
-                aPanel.AddFragment(aOriginContextFragment);
+                OriginContextFragment originContext = new OriginContextFragment();
+                originContext.ElementID = wall.Id.IntegerValue.ToString();
+                originContext.TypeName = Query.FamilyTypeFullName(wall);
+                originContext = originContext.UpdateValues(pullSettings, wall.WallType) as OriginContextFragment;
+                originContext = originContext.UpdateValues(pullSettings, wall) as OriginContextFragment;
+                panel.AddFragment(originContext);
 
-                PanelAnalyticalFragment aBuildingElementAnalyticalProperties = new PanelAnalyticalFragment();
-                aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, wall.WallType) as PanelAnalyticalFragment;
-                aBuildingElementAnalyticalProperties = aBuildingElementAnalyticalProperties.UpdateValues(pullSettings, wall) as PanelAnalyticalFragment;
-                aPanel.AddFragment(aBuildingElementAnalyticalProperties);
+                PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
+                panelAnalytical = panelAnalytical.UpdateValues(pullSettings, wall.WallType) as PanelAnalyticalFragment;
+                panelAnalytical = panelAnalytical.UpdateValues(pullSettings, wall) as PanelAnalyticalFragment;
+                panel.AddFragment(panelAnalytical);
 
-                PanelContextFragment aBuildingElementContextProperties = new PanelContextFragment();
-                aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, wall.WallType) as PanelContextFragment;
-                aBuildingElementContextProperties = aBuildingElementContextProperties.UpdateValues(pullSettings, wall) as PanelContextFragment;
-                aPanel.AddFragment(aBuildingElementContextProperties);
+                PanelContextFragment panelContext = new PanelContextFragment();
+                panelContext = panelContext.UpdateValues(pullSettings, wall.WallType) as PanelContextFragment;
+                panelContext = panelContext.UpdateValues(pullSettings, wall) as PanelContextFragment;
+                panel.AddFragment(panelContext);
 
-                BuildingResultFragment aBuildingResultsProperties = new BuildingResultFragment();
-                aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, wall.WallType) as BuildingResultFragment;
-                aBuildingResultsProperties = aBuildingResultsProperties.UpdateValues(pullSettings, wall) as BuildingResultFragment;
-                aPanel.AddFragment(aBuildingResultsProperties);
+                BuildingResultFragment buildingResults = new BuildingResultFragment();
+                buildingResults = buildingResults.UpdateValues(pullSettings, wall.WallType) as BuildingResultFragment;
+                buildingResults = buildingResults.UpdateValues(pullSettings, wall) as BuildingResultFragment;
+                panel.AddFragment(buildingResults);
 
-                aPanel.Construction = aConstruction;
-                aPanel.Type = oM.Environment.Elements.PanelType.Wall;
+                panel.Construction = constrtuction;
+                panel.Type = oM.Environment.Elements.PanelType.Wall;
 
                 //Assign custom data
-                aPanel = Modify.SetIdentifiers(aPanel, wall) as oM.Environment.Elements.Panel;
+                panel = Modify.SetIdentifiers(panel, wall) as oM.Environment.Elements.Panel;
                 if (pullSettings.CopyCustomData)
-                    aPanel = Modify.SetCustomData(aPanel, wall) as oM.Environment.Elements.Panel;
+                    panel = Modify.SetCustomData(panel, wall) as oM.Environment.Elements.Panel;
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aPanel);
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(panel);
 
-                aPanel = aPanel.UpdateValues(pullSettings, wall.WallType) as oM.Environment.Elements.Panel;
-                aPanel = aPanel.UpdateValues(pullSettings, wall) as oM.Environment.Elements.Panel;
-                aPanels.Add(aPanel);
+                panel = panel.UpdateValues(pullSettings, wall.WallType) as oM.Environment.Elements.Panel;
+                panel = panel.UpdateValues(pullSettings, wall) as oM.Environment.Elements.Panel;
+                panels.Add(panel);
             }
 
-            aPanels = aPanels.UpdateBuildingElementTypeByCustomData();
-            return aPanels;
+            panels = panels.UpdateBuildingElementTypeByCustomData();
+            return panels;
         }
 
         /***************************************************/

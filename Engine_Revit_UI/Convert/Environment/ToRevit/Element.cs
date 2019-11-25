@@ -61,82 +61,85 @@ namespace BH.UI.Revit.Engine
             if (panel == null || panel.ExternalEdges == null)
                 return null;
 
-            Wall aWall = pushSettings.FindRefObject<Wall>(document, panel.BHoM_Guid);
-            if (aWall != null)
-                return aWall;
+            Wall wall = pushSettings.FindRefObject<Wall>(document, panel.BHoM_Guid);
+            if (wall != null)
+                return wall;
 
             pushSettings.DefaultIfNull();
 
-            WallType aWallType = null;
-            if (aWallType == null)
+            WallType wallType = null;
+            if (wallType == null)
             {
-                string aFamilyTypeName = BH.Engine.Adapters.Revit.Query.FamilyTypeName(panel);
-                if (!string.IsNullOrEmpty(aFamilyTypeName))
+                string familyTypeName = BH.Engine.Adapters.Revit.Query.FamilyTypeName(panel);
+                if (!string.IsNullOrEmpty(familyTypeName))
                 {
-                    List<WallType> aWallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).Cast<WallType>().ToList().FindAll(x => x.Name == aFamilyTypeName);
-                    if (aWallTypeList != null || aWallTypeList.Count() != 0)
-                        aWallType = aWallTypeList.First();
+                    List<WallType> wallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).Cast<WallType>().ToList().FindAll(x => x.Name == familyTypeName);
+                    if (wallTypeList != null || wallTypeList.Count() != 0)
+                        wallType = wallTypeList.First();
                 }
             }
 
-            if (aWallType == null)
+            if (wallType == null)
             {
-                string aFamilyTypeName = panel.Name;
+                string familyTypeName = panel.Name;
 
-                if (!string.IsNullOrEmpty(aFamilyTypeName))
+                if (!string.IsNullOrEmpty(familyTypeName))
                 {
-                    List<WallType> aWallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).Cast<WallType>().ToList().FindAll(x => x.Name == aFamilyTypeName);
-                    if (aWallTypeList != null || aWallTypeList.Count() != 0)
-                        aWallType = aWallTypeList.First();
+                    List<WallType> wallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).Cast<WallType>().ToList().FindAll(x => x.Name == familyTypeName);
+                    if (wallTypeList != null || wallTypeList.Count() != 0)
+                        wallType = wallTypeList.First();
                 }
             }
 
-            if (aWallType == null)
+            if (wallType == null)
                 return null;
 
-            double aLowElevation = panel.LowElevation();
-            if (double.IsNaN(aLowElevation))
+            double lowElevation = panel.LowElevation();
+            if (double.IsNaN(lowElevation))
                 return null;
 
-            Level aLevel = document.LowLevel(aLowElevation);
-            if (aLevel == null)
+            Level level = document.LowLevel(lowElevation);
+            if (level == null)
                 return null;
 
-            aWall = Wall.Create(document, panel.ToRevitCurveList(), aWallType.Id, aLevel.Id, false);
+            wall = Wall.Create(document, Convert.ToRevitCurveList(panel), wallType.Id, level.Id, false);
 
-            Parameter aParameter = null;
+            Parameter parameter = null;
 
-            aParameter = aWall.get_Parameter(BuiltInParameter.WALL_HEIGHT_TYPE);
-            if (aParameter != null)
-                aParameter.Set(ElementId.InvalidElementId);
-            aParameter = aWall.get_Parameter(BuiltInParameter.WALL_USER_HEIGHT_PARAM);
-            if (aParameter != null)
+            parameter = wall.get_Parameter(BuiltInParameter.WALL_HEIGHT_TYPE);
+            if (parameter != null)
+                parameter.Set(ElementId.InvalidElementId);
+            parameter = wall.get_Parameter(BuiltInParameter.WALL_USER_HEIGHT_PARAM);
+            if (parameter != null)
             {
-                double aHeight = (panel.HighElevation() - aLowElevation).FromSI(UnitType.UT_Length);
-                aParameter.Set(aHeight);
+                double aHeight = (panel.HighElevation() - lowElevation).FromSI(UnitType.UT_Length);
+                parameter.Set(aHeight);
             }
 
-            double aElevation_Level = aLevel.Elevation.ToSI(UnitType.UT_Length);
-            if (System.Math.Abs(aLowElevation - aElevation_Level) > oM.Geometry.Tolerance.MacroDistance)
+            double levelElevation = level.Elevation.ToSI(UnitType.UT_Length);
+
+            if (System.Math.Abs(lowElevation - levelElevation) > oM.Geometry.Tolerance.MacroDistance)
             {
-                aParameter = aWall.get_Parameter(BuiltInParameter.WALL_BASE_OFFSET);
-                if (aParameter != null)
+                parameter = wall.get_Parameter(BuiltInParameter.WALL_BASE_OFFSET);
+                if (parameter != null)
                 {
-                    double aOffset = (aLowElevation - aElevation_Level).FromSI(UnitType.UT_Length);
-                    aParameter.Set(aOffset);
+                    double offset = (lowElevation - levelElevation).FromSI(UnitType.UT_Length);
+                    offset = offset.FromSI(UnitType.UT_Length);
+
+                    parameter.Set(offset);
                 }
             }
 
-            aWall.CheckIfNullPush(panel);
-            if (aWall == null)
+            wall.CheckIfNullPush(panel);
+            if (wall == null)
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aWall, panel, new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT, BuiltInParameter.WALL_BASE_OFFSET });
+                Modify.SetParameters(wall, panel, new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT, BuiltInParameter.WALL_BASE_OFFSET });
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(panel, aWall);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(panel, wall);
 
-            return aWall;
+            return wall;
         }
 
         /***************************************************/

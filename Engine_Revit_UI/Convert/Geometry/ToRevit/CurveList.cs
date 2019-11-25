@@ -39,14 +39,14 @@ namespace BH.UI.Revit.Engine
             if (panel == null || panel.ExternalEdges == null)
                 return null;
 
-            List<Curve> aResult = new List<Curve>();
-            foreach (oM.Environment.Elements.Edge aEdge in panel.ExternalEdges)
+            List<Curve> result = new List<Curve>();
+            foreach (oM.Environment.Elements.Edge edge in panel.ExternalEdges)
             {
-                List<Curve> aCurveList = aEdge.Curve.ToRevitCurveList();
-                if (aCurveList != null && aCurveList.Count > 0)
-                    aResult.AddRange(aCurveList);
+                List<Curve> curveList = ToRevitCurveList(edge.Curve);
+                if (curveList != null && curveList.Count > 0)
+                    result.AddRange(curveList);
             }
-            return aResult;
+            return result;
         }
 
         /***************************************************/
@@ -56,42 +56,42 @@ namespace BH.UI.Revit.Engine
             if (curve == null)
                 return null;
 
-            List<Curve> aResult = new List<Curve>();
+            List<Curve> result = new List<Curve>();
             if (curve is oM.Geometry.Arc)
-                aResult.Add(curve.ToRevit());
+                result.Add(curve.ToRevit());
             if (curve is oM.Geometry.Ellipse)
-                aResult.Add(curve.ToRevit());
+                result.Add(curve.ToRevit());
             else if (curve is Circle)
-                aResult.Add(curve.ToRevit());
+                result.Add(curve.ToRevit());
             else if (curve is oM.Geometry.Line)
-                aResult.Add(curve.ToRevit());
+                result.Add(curve.ToRevit());
             else if (curve is NurbsCurve)
-                aResult.Add(curve.ToRevit());
+                result.Add(curve.ToRevit());
             else if (curve is Polyline)
             {
-                List<ICurve> aCureList = Query.Curves((Polyline)curve);
-                if (aCureList == null)
+                List<ICurve> curves = Query.Curves((Polyline)curve);
+                if (curves == null)
                     return null;
 
-                aCureList.ForEach(x => aResult.Add(x.ToRevit()));
+                curves.ForEach(x => result.Add(x.ToRevit()));
             }
             else if (curve is PolyCurve)
             {
-                PolyCurve aPolyCurve = (PolyCurve)curve;
-                if (aPolyCurve.Curves == null)
+                PolyCurve polycurve = (PolyCurve)curve;
+                if (polycurve.Curves == null)
                     return null;
 
-                foreach (ICurve aCurve in aPolyCurve.Curves)
+                foreach (ICurve crv in polycurve.Curves)
                 {
-                    List<Curve> aCurveList = aCurve.ToRevitCurveList();
-                    if (aCurveList != null && aCurveList.Count > 0)
+                    List<Curve> curves = crv.ToRevitCurveList();
+                    if (curves != null && curves.Count > 0)
                     {
-                        aResult.AddRange(aCurveList);
+                        result.AddRange(curves);
                     }
                 }
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

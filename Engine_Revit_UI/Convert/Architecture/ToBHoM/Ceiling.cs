@@ -40,48 +40,48 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Architecture.Elements.Ceiling> aCeilingList = pullSettings.FindRefObjects<oM.Architecture.Elements.Ceiling>(ceiling.Id.IntegerValue);
-            if (aCeilingList != null && aCeilingList.Count > 0)
-                return aCeilingList;
+            List<oM.Architecture.Elements.Ceiling> ceilingList = pullSettings.FindRefObjects<oM.Architecture.Elements.Ceiling>(ceiling.Id.IntegerValue);
+            if (ceilingList != null && ceilingList.Count > 0)
+                return ceilingList;
 
-            oM.Physical.Constructions.Construction aConstruction = ToBHoMConstruction(ceiling.Document.GetElement(ceiling.GetTypeId()) as HostObjAttributes, pullSettings);
+            oM.Physical.Constructions.Construction construction = ToBHoMConstruction(ceiling.Document.GetElement(ceiling.GetTypeId()) as HostObjAttributes, pullSettings);
 
-            Dictionary<PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> aDictionary = Query.PlanarSurfaceDictionary(ceiling, false, pullSettings);
-            if (aDictionary == null)
+            Dictionary<PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> disctionary = Query.PlanarSurfaceDictionary(ceiling, false, pullSettings);
+            if (disctionary == null)
                 return null;
 
-            aCeilingList = new List<oM.Architecture.Elements.Ceiling>();
-            foreach (PlanarSurface aPlanarSurface in aDictionary.Keys)
+            ceilingList = new List<oM.Architecture.Elements.Ceiling>();
+            foreach (PlanarSurface planarSurface in disctionary.Keys)
             {
-                oM.Architecture.Elements.Ceiling aCeiling = new oM.Architecture.Elements.Ceiling()
+                oM.Architecture.Elements.Ceiling newCeiling = new oM.Architecture.Elements.Ceiling()
                 {
                     Name = Query.FamilyTypeFullName(ceiling),
-                    Construction = aConstruction,
-                    Surface = aPlanarSurface
+                    Construction = construction,
+                    Surface = planarSurface
                 };
 
-                ElementType aElementType = ceiling.Document.GetElement(ceiling.GetTypeId()) as ElementType;
+                ElementType elementType = ceiling.Document.GetElement(ceiling.GetTypeId()) as ElementType;
                 //Set ExtendedProperties
-                OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-                aOriginContextFragment.ElementID = ceiling.Id.IntegerValue.ToString();
-                aOriginContextFragment.TypeName = Query.FamilyTypeFullName(ceiling);
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, ceiling) as OriginContextFragment;
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aElementType) as OriginContextFragment;
-                aCeiling.Fragments.Add(aOriginContextFragment);
+                OriginContextFragment originContext = new OriginContextFragment();
+                originContext.ElementID = ceiling.Id.IntegerValue.ToString();
+                originContext.TypeName = Query.FamilyTypeFullName(ceiling);
+                originContext = originContext.UpdateValues(pullSettings, ceiling) as OriginContextFragment;
+                originContext = originContext.UpdateValues(pullSettings, elementType) as OriginContextFragment;
+                newCeiling.Fragments.Add(originContext);
 
-                aCeiling = Modify.SetIdentifiers(aCeiling, ceiling) as oM.Architecture.Elements.Ceiling;
+                newCeiling = Modify.SetIdentifiers(newCeiling, ceiling) as oM.Architecture.Elements.Ceiling;
                 if (pullSettings.CopyCustomData)
-                    aCeiling = Modify.SetCustomData(aCeiling, ceiling) as oM.Architecture.Elements.Ceiling;
+                    newCeiling = Modify.SetCustomData(newCeiling, ceiling) as oM.Architecture.Elements.Ceiling;
 
-                aCeiling = aCeiling.UpdateValues(pullSettings, ceiling) as oM.Architecture.Elements.Ceiling;
+                newCeiling = newCeiling.UpdateValues(pullSettings, ceiling) as oM.Architecture.Elements.Ceiling;
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aCeiling);
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(newCeiling);
 
-                aCeilingList.Add(aCeiling);
+                ceilingList.Add(newCeiling);
 
             }
 
-            return aCeilingList;
+            return ceilingList;
         }
 
         /***************************************************/

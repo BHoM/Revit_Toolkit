@@ -37,47 +37,41 @@ namespace BH.UI.Revit.Engine
 
         public static List<PolyCurve> ToBHoM(this Sketch sketch)
         {
-            SketchPlane aSketchPlane = sketch.SketchPlane;
-            //oM.Geometry.CoordinateSystem.Cartesian aCartesian = ToBHoM(aSketchPlane.GetPlane(), pullSettings);
+            SketchPlane sketchPlane = sketch.SketchPlane;
 
-            Location aLocation = sketch.Location;
+            Location location = sketch.Location;
 
-            //Vector aVector = BH.Engine.Geometry.Create.Vector(aCartesian.Origin);
-
-            List<PolyCurve> aResult = new List<PolyCurve>();
-            foreach (CurveArray aCurveArray in sketch.Profile)
+            List<PolyCurve> result = new List<PolyCurve>();
+            foreach (CurveArray curveArray in sketch.Profile)
             {
-                PolyCurve aPolyCurve = BH.Engine.Geometry.Create.PolyCurve(aCurveArray.ToBHoM());
-
-               //aPolyCurve = BH.Engine.Geometry.Modify.Translate(aPolyCurve, -aVector);
-
-                aResult.Add(aPolyCurve);
+                PolyCurve polycurve = BH.Engine.Geometry.Create.PolyCurve(ToBHoM(curveArray));
+                result.Add(polycurve);
             }
                 
-            return aResult;
+            return result;
         }
 
         /***************************************************/
 
         public static List<PolyCurve> ToBHoM(this CurveArrArray curveArrArray)
         {
-            List<PolyCurve> aResult = new List<PolyCurve>();
-            foreach (CurveArray aCurveArray in curveArrArray)
-                aResult.Add(BH.Engine.Geometry.Create.PolyCurve(aCurveArray.ToBHoM()));
+            List<PolyCurve> result = new List<PolyCurve>();
+            foreach (CurveArray curveArray in curveArrArray)
+                result.Add(BH.Engine.Geometry.Create.PolyCurve(ToBHoM(curveArray)));
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/
 
         public static List<PolyCurve> ToBHoM(this EdgeArrayArray edgeArray)
         {
-            List<PolyCurve> aResult = new List<PolyCurve>();
+            List<PolyCurve> result = new List<PolyCurve>();
             foreach (EdgeArray ea in edgeArray)
             {
-                aResult.Add(BH.Engine.Geometry.Create.PolyCurve(ea.ToBHoM()));
+                result.Add(BH.Engine.Geometry.Create.PolyCurve(ea.ToBHoM()));
             }
-            return aResult;
+            return result;
         }
 
         /***************************************************/

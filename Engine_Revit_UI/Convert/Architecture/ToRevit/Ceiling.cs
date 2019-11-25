@@ -41,7 +41,7 @@ namespace BH.UI.Revit.Engine
             BH.Engine.Reflection.Compute.RecordError("Revit API does not allow creation of Ceiling: This is a known limitation, currently, Revit API doesn't support the new ceiling creation.");
             return null;
 
-            if (ceiling == null || ceiling.Construction == null || document == null)
+            /*if (ceiling == null || ceiling.Construction == null || document == null)
                 return null;
 
             PlanarSurface aPlanarSurface = ceiling.Surface as PlanarSurface;
@@ -114,7 +114,7 @@ namespace BH.UI.Revit.Engine
 
             pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(ceiling, aCeiling);
 
-            return aCeiling;
+            return aCeiling;*/
         }
 
         /***************************************************/

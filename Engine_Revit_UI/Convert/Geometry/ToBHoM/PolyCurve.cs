@@ -41,11 +41,11 @@ namespace BH.UI.Revit.Engine
             if (curveLoop == null)
                 return null;
 
-            List<oM.Geometry.ICurve> aICurveList = new List<oM.Geometry.ICurve>();
-            foreach (Curve aCurve in curveLoop)
-                aICurveList.Add(aCurve.ToBHoM());
+            List<oM.Geometry.ICurve> curveList = new List<oM.Geometry.ICurve>();
+            foreach (Curve crv in curveLoop)
+                curveList.Add(crv.ToBHoM());
 
-            return BH.Engine.Geometry.Create.PolyCurve(aICurveList);
+            return BH.Engine.Geometry.Create.PolyCurve(curveList);
         }
 
         /***************************************************/

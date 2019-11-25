@@ -41,73 +41,71 @@ namespace BH.UI.Revit.Engine
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            Element aElement = energyAnalysisOpening.Element();
-            if (aElement == null)
+            Element element = energyAnalysisOpening.Element();
+            if (element == null)
             {
-                oM.Environment.Elements.Opening aResult = pullSettings.FindRefObject<oM.Environment.Elements.Opening>(energyAnalysisOpening.Id.IntegerValue);
-                if (aResult != null)
-                    return aResult;
+                oM.Environment.Elements.Opening result = pullSettings.FindRefObject<oM.Environment.Elements.Opening>(energyAnalysisOpening.Id.IntegerValue);
+                if (result != null)
+                    return result;
 
-                ICurve aCurve = energyAnalysisOpening.GetPolyloop().ToBHoM();
-                aResult = Create.Opening(externalEdges: aCurve.ToEdges());
+                ICurve curve = energyAnalysisOpening.GetPolyloop().ToBHoM();
+                result = Create.Opening(externalEdges: curve.ToEdges());
 
-                OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-                aOriginContextFragment.ElementID = energyAnalysisOpening.Id.IntegerValue.ToString();
-                aOriginContextFragment.TypeName = energyAnalysisOpening.OpeningName;
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, energyAnalysisOpening) as OriginContextFragment;
-                aResult.AddFragment(aOriginContextFragment);
+                OriginContextFragment originContext = new OriginContextFragment();
+                originContext.ElementID = energyAnalysisOpening.Id.IntegerValue.ToString();
+                originContext.TypeName = energyAnalysisOpening.OpeningName;
+                originContext = originContext.UpdateValues(pullSettings, energyAnalysisOpening) as OriginContextFragment;
+                result.AddFragment(originContext);
 
-                aResult.OpeningConstruction = Query.Construction(energyAnalysisOpening, pullSettings);
-                aResult.Type = OpeningType.Undefined;
+                result.OpeningConstruction = Query.Construction(energyAnalysisOpening, pullSettings);
+                result.Type = OpeningType.Undefined;
 
-                aResult = Modify.SetIdentifiers(aResult, energyAnalysisOpening) as oM.Environment.Elements.Opening;
+                result = Modify.SetIdentifiers(result, energyAnalysisOpening) as oM.Environment.Elements.Opening;
                 if (pullSettings.CopyCustomData)
-                    aResult = Modify.SetCustomData(aResult, energyAnalysisOpening) as oM.Environment.Elements.Opening;
+                    result = Modify.SetCustomData(result, energyAnalysisOpening) as oM.Environment.Elements.Opening;
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult);
-                aResult = aResult.UpdateValues(pullSettings, energyAnalysisOpening) as oM.Environment.Elements.Opening;
-                return aResult;
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(result);
+                result = result.UpdateValues(pullSettings, energyAnalysisOpening) as oM.Environment.Elements.Opening;
+                return result;
             }
             else
             {
-                oM.Environment.Elements.Opening aResult = pullSettings.FindRefObject<oM.Environment.Elements.Opening>(energyAnalysisOpening.Id.IntegerValue);
-                if (aResult != null)
-                    return aResult;
+                oM.Environment.Elements.Opening result = pullSettings.FindRefObject<oM.Environment.Elements.Opening>(energyAnalysisOpening.Id.IntegerValue);
+                if (result != null)
+                    return result;
 
-                ElementType aElementType = aElement.Document.GetElement(aElement.GetTypeId()) as ElementType;
+                ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
 
-                ICurve aCurve = energyAnalysisOpening.GetPolyloop().ToBHoM();
-                aResult = Create.Opening(externalEdges: aCurve.ToEdges());
-                aResult.Name = Query.FamilyTypeFullName(aElement);
+                ICurve curve = energyAnalysisOpening.GetPolyloop().ToBHoM();
+                result = Create.Opening(externalEdges: curve.ToEdges());
+                result .Name = Query.FamilyTypeFullName(element);
 
-                OriginContextFragment aOriginContextFragment = new OriginContextFragment();
-                aOriginContextFragment.ElementID = aElement.Id.IntegerValue.ToString();
-                aOriginContextFragment.TypeName = Query.FamilyTypeFullName(aElement);
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aElement) as OriginContextFragment;
-                aOriginContextFragment = aOriginContextFragment.UpdateValues(pullSettings, aElementType) as OriginContextFragment;
-                aResult.AddFragment(aOriginContextFragment);
+                OriginContextFragment originContext = new OriginContextFragment();
+                originContext.ElementID = element.Id.IntegerValue.ToString();
+                originContext.TypeName = Query.FamilyTypeFullName(element);
+                originContext = originContext.UpdateValues(pullSettings, element) as OriginContextFragment;
+                originContext = originContext.UpdateValues(pullSettings, elementType) as OriginContextFragment;
+                result.AddFragment(originContext);
 
-                aResult.OpeningConstruction = Query.Construction(energyAnalysisOpening, pullSettings);
+                result.OpeningConstruction = Query.Construction(energyAnalysisOpening, pullSettings);
 
-                OpeningType? aBuildingElementType = Query.OpeningType(aElement.Category);
-                if (aBuildingElementType.HasValue)
-                    aResult.Type = aBuildingElementType.Value;
+                OpeningType? openingType = Query.OpeningType(element.Category);
+                if (openingType.HasValue)
+                    result.Type = openingType.Value;
                 else
-                    aResult.Type = OpeningType.Undefined;
+                    result.Type = OpeningType.Undefined;
 
-                aResult = Modify.SetIdentifiers(aResult, aElement) as oM.Environment.Elements.Opening;
+                result = Modify.SetIdentifiers(result, element) as oM.Environment.Elements.Opening;
                 if (pullSettings.CopyCustomData)
-                    aResult = Modify.SetCustomData(aResult, aElement) as oM.Environment.Elements.Opening;
+                    result = Modify.SetCustomData(result, element) as oM.Environment.Elements.Opening;
 
-                if (aElementType != null)
-                    aResult = Modify.SetCustomData(aResult, aElementType, "Type ") as oM.Environment.Elements.Opening;
+                if (elementType != null)
+                    result = Modify.SetCustomData(result, elementType, "Type ") as oM.Environment.Elements.Opening;
 
-
-
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(aResult, energyAnalysisOpening.Id.IntegerValue);
-                aResult = aResult.UpdateValues(pullSettings, aElement) as oM.Environment.Elements.Opening;
-                aResult = aResult.UpdateValues(pullSettings, aElementType) as oM.Environment.Elements.Opening;
-                return aResult;
+                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(result, energyAnalysisOpening.Id.IntegerValue);
+                result = result.UpdateValues(pullSettings, element) as oM.Environment.Elements.Opening;
+                result = result.UpdateValues(pullSettings, elementType) as oM.Environment.Elements.Opening;
+                return result;
             }
         }
 

@@ -37,20 +37,20 @@ namespace BH.UI.Revit.Engine
 
         public static oM.Geometry.Polyline ToBHoM(this Polyloop polyloop)
         {
-            IList<XYZ> aXYZs = polyloop.GetPoints();
-            if (aXYZs == null)
+            IList<XYZ> xyzList = polyloop.GetPoints();
+            if (xyzList == null)
                 return null;
 
-            List<oM.Geometry.Point> aPointList = new List<oM.Geometry.Point>();
-            if (aXYZs.Count > 0)
+            List<oM.Geometry.Point> points = new List<oM.Geometry.Point>();
+            if (xyzList.Count > 0)
             {
-                foreach (XYZ aXYZ in aXYZs)
-                    aPointList.Add(aXYZ.ToBHoM());
+                foreach (XYZ xyz in xyzList)
+                    points.Add(xyz.ToBHoM());
 
-                aPointList.Add(aXYZs[0].ToBHoM());
+                points.Add(xyzList[0].ToBHoM());
             }
 
-            return BH.Engine.Geometry.Create.Polyline(aPointList);
+            return BH.Engine.Geometry.Create.Polyline(points);
         }
 
         /***************************************************/

@@ -38,17 +38,17 @@ namespace BH.UI.Revit.Engine
             if (polyCurve == null)
                 return null;
 
-            CurveArray aCurveArray = new CurveArray();
-            foreach (ICurve aICurve in polyCurve.Curves)
+            CurveArray curveArray = new CurveArray();
+            foreach (ICurve curve in polyCurve.Curves)
             {
-                List<Curve> aCurveList = aICurve.ToRevitCurveList();
-                if (aCurveList == null || aCurveList.Count == 0)
+                List<Curve> curves = curve.ToRevitCurveList();
+                if (curves == null || curves.Count == 0)
                     continue;
 
-                aCurveList.ForEach(x => aCurveArray.Append(x));
+                curves.ForEach(x => curveArray.Append(x));
             } 
 
-            return aCurveArray;
+            return curveArray;
         }
 
         /***************************************************/
@@ -58,13 +58,13 @@ namespace BH.UI.Revit.Engine
             if (polyline == null)
                 return null;
 
-            List<ICurve> aCureList = Query.Curves(polyline);
-            if (aCureList == null)
+            List<ICurve> curveList = Query.Curves(polyline);
+            if (curveList == null)
                 return null;
 
-            CurveArray aCurveArray = new CurveArray();
-            aCureList.ForEach(x => aCurveArray.Append(x.ToRevit()));
-            return aCurveArray;
+            CurveArray curveArray = new CurveArray();
+            curveList.ForEach(x => curveArray.Append(x.ToRevit()));
+            return curveArray;
         }
 
         /***************************************************/

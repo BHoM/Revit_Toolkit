@@ -40,47 +40,47 @@ namespace BH.UI.Revit.Engine
         {
             if (curve is oM.Geometry.Line)
             {
-                oM.Geometry.Line aLine = curve as oM.Geometry.Line;
-                return Autodesk.Revit.DB.Line.CreateBound(aLine.Start.ToRevit(), aLine.End.ToRevit());
+                oM.Geometry.Line line = curve as oM.Geometry.Line;
+                return Autodesk.Revit.DB.Line.CreateBound(ToRevit(line.Start), ToRevit(line.End));
             }
 
             if (curve is oM.Geometry.Arc)
             {
-                oM.Geometry.Arc aArc = curve as oM.Geometry.Arc;
-                double radius = aArc.Radius.FromSI(UnitType.UT_Length);
-                return Autodesk.Revit.DB.Arc.Create(aArc.CoordinateSystem.ToRevit(), radius, aArc.StartAngle, aArc.EndAngle);
-                //return Autodesk.Revit.DB.Arc.Create(aArc.CoordinateSystem.Origin.ToRevitXYZ(pushSettings), radius, aArc.StartAngle, aArc.EndAngle, aArc.CoordinateSystem.X.ToRevitXYZ(pushSettings).Normalize(), aArc.CoordinateSystem.Y.ToRevitXYZ(pushSettings).Normalize());
+                oM.Geometry.Arc arc = curve as oM.Geometry.Arc;
+                double radius = arc.Radius.FromSI(UnitType.UT_Length);
+                return Autodesk.Revit.DB.Arc.Create(arc.CoordinateSystem.ToRevit(), radius, arc.StartAngle, arc.EndAngle);
             }
 
             if (curve is NurbsCurve)
             {
-                NurbsCurve aNurbCurve = curve as NurbsCurve;
-                List<double> knots = aNurbCurve.Knots.ToList();
+                NurbsCurve nurbCurve = curve as NurbsCurve;
+                List<double> knots = nurbCurve.Knots.ToList();
                 knots.Insert(0, knots[0]);
                 knots.Add(knots[knots.Count - 1]);
-                List<XYZ> controlPoints = aNurbCurve.ControlPoints.Select(x => x.ToRevit()).ToList();
+                List<XYZ> controlPoints = nurbCurve.ControlPoints.Select(x => x.ToRevit()).ToList();
+
                 try
                 {
-                    return NurbSpline.CreateCurve(aNurbCurve.Degree(), knots, controlPoints, aNurbCurve.Weights);
+                    return NurbSpline.CreateCurve(nurbCurve.Degree(), knots, controlPoints, nurbCurve.Weights);
                 }
                 catch
                 {
                     BH.Engine.Reflection.Compute.RecordWarning("Conversion of BHoM nurbs curve to Revit curve based on degree and knot vector failed. A simplified (possibly different) spline has been created.");
-                    return NurbSpline.CreateCurve(controlPoints, aNurbCurve.Weights);
+                    return NurbSpline.CreateCurve(controlPoints, nurbCurve.Weights);
                 }
             }
 
             if (curve is oM.Geometry.Ellipse)
             {
-                oM.Geometry.Ellipse aEllipse = curve as oM.Geometry.Ellipse;
-                return Autodesk.Revit.DB.Ellipse.CreateCurve(aEllipse.Centre.ToRevit(), aEllipse.Radius1, aEllipse.Radius2, aEllipse.Axis1.ToRevit(), aEllipse.Axis2.ToRevit(), 0, 1);
+                oM.Geometry.Ellipse ellipse = curve as oM.Geometry.Ellipse;
+                return Autodesk.Revit.DB.Ellipse.CreateCurve(ToRevit(ellipse.Centre), ellipse.Radius1, ellipse.Radius2, ToRevit(ellipse.Axis1), ToRevit(ellipse.Axis2), 0, 1);
             }
 
             if (curve is Polyline)
             {
-                Polyline aPolyline = curve as Polyline;
-                if (aPolyline.ControlPoints.Count == 2)
-                    return Autodesk.Revit.DB.Line.CreateBound(aPolyline.ControlPoints[0].ToRevit(), aPolyline.ControlPoints[1].ToRevit());
+                Polyline polyline = curve as Polyline;
+                if (polyline.ControlPoints.Count == 2)
+                    return Autodesk.Revit.DB.Line.CreateBound(ToRevit(polyline.ControlPoints[0]), ToRevit(polyline.ControlPoints[1]));
             }
 
             return null;

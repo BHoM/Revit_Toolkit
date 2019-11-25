@@ -34,37 +34,38 @@ namespace BH.UI.Revit.Engine
 
         public static Level ToRevitLevel(this oM.Geometry.SettingOut.Level level, Document document, PushSettings pushSettings = null)
         {
-            Level aLevel = pushSettings.FindRefObject<Level>(document, level.BHoM_Guid);
-            if (aLevel != null)
-                return aLevel;
+            Level revitLevel = pushSettings.FindRefObject<Level>(document, level.BHoM_Guid);
+            if (revitLevel != null)
+                return revitLevel;
 
             pushSettings.DefaultIfNull();
 
-            ElementId aElementId = level.ElementId();
+            ElementId elementID = level.ElementId();
 
-            if (aElementId != null && aElementId != ElementId.InvalidElementId)
-                aLevel = document.GetElement(aElementId) as Level;
+            if (elementID != null && elementID != ElementId.InvalidElementId)
+                revitLevel = document.GetElement(elementID) as Level;
 
-            if (aLevel == null)
-                aLevel = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList().Find(x => x.Name == level.Name);
+            if (revitLevel == null)
+                revitLevel = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList().Find(x => x.Name == level.Name);
 
-            if (aLevel == null)
+            if (revitLevel == null)
             {
-                double aElevation = level.Elevation.FromSI(UnitType.UT_Length);
-                aLevel = Level.Create(document, aElevation);
-                aLevel.Name = level.Name;
+                double elevation = level.Elevation.FromSI(UnitType.UT_Length);
+
+                revitLevel = Level.Create(document, elevation);
+                revitLevel.Name = level.Name;
             }
 
-            aLevel.CheckIfNullPush(level);
-            if (aLevel == null)
+            revitLevel.CheckIfNullPush(level);
+            if (revitLevel == null)
                 return null;
 
             if (pushSettings.CopyCustomData)
-                Modify.SetParameters(aLevel, level, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
+                Modify.SetParameters(revitLevel, level, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(level, aLevel);
+            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(level, revitLevel);
 
-            return aLevel;
+            return revitLevel;
         }
 
         /***************************************************/
