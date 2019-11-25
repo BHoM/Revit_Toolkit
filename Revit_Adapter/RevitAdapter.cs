@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -64,15 +64,15 @@ namespace BH.Adapter.Revit
             if (RevitSettings.ConnectionSettings == null)
                 RevitSettings.ConnectionSettings = new ConnectionSettings();
 
-            m_linkIn = new SocketLink_Tcp(RevitSettings.ConnectionSettings.PushPort);
-            m_linkOut = new SocketLink_Tcp(RevitSettings.ConnectionSettings.PullPort);
-            m_linkOut.DataObservers += M_linkOut_DataObservers;
+            gLinkIn = new SocketLink_Tcp(RevitSettings.ConnectionSettings.PushPort);
+            gLinkOut = new SocketLink_Tcp(RevitSettings.ConnectionSettings.PullPort);
+            gLinkOut.DataObservers += M_linkOut_DataObservers;
 
-            m_waitEvent = new ManualResetEvent(false);
-            m_returnPackage = new List<object>();
-            m_returnEvents = new List<Event>();
+            gWaitEvent = new ManualResetEvent(false);
+            gReturnPackage = new List<object>();
+            gReturnEvents = new List<Event>();
 
-            m_waitTime = RevitSettings.ConnectionSettings.MaxMinutesToWait;
+            gWaitTime = RevitSettings.ConnectionSettings.MaxMinutesToWait;
         } 
 
 
@@ -88,10 +88,9 @@ namespace BH.Adapter.Revit
                 InternalAdapter.RevitSettings = RevitSettings;
                 return InternalAdapter.Push(objects, tag, config);
             }
-                
-
+            
             //Reset the wait event
-            m_waitEvent.Reset();
+            gWaitEvent.Reset();
 
             if (!CheckConnection())
                 return new List<IObject>();
@@ -99,17 +98,17 @@ namespace BH.Adapter.Revit
             config = config == null ? new Dictionary<string, object>() : null;
 
             //Send data through the socket link
-            m_linkIn.SendData(new List<object>() { PackageType.Push, objects.ToList(), config, RevitSettings }, tag);
+            gLinkIn.SendData(new List<object>() { PackageType.Push, objects.ToList(), config, RevitSettings }, tag);
 
             //Wait until the return message has been recieved
-            if (!m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime)))
+            if (!gWaitEvent.WaitOne(TimeSpan.FromMinutes(gWaitTime)))
                 BH.Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
 
             //Grab the return objects from the latest package
-            List<IObject> returnObjs = m_returnPackage.Cast<IObject>().ToList();
+            List<IObject> returnObjs = gReturnPackage.Cast<IObject>().ToList();
 
             //Clear the return list
-            m_returnPackage.Clear();
+            gReturnPackage.Clear();
 
             RaiseEvents();
 
@@ -130,8 +129,7 @@ namespace BH.Adapter.Revit
             }  
 
             //Reset the wait event
-            m_waitEvent.Reset();
-
+            gWaitEvent.Reset();
 
             if (!CheckConnection())
                 return new List<object>();
@@ -142,17 +140,17 @@ namespace BH.Adapter.Revit
                 return new List<object>();
 
             //Send data through the socket link
-            m_linkIn.SendData(new List<object>() { PackageType.Pull, request as FilterRequest, config, RevitSettings });
+            gLinkIn.SendData(new List<object>() { PackageType.Pull, request as FilterRequest, config, RevitSettings });
 
             //Wait until the return message has been recieved
-            if (!m_waitEvent.WaitOne(TimeSpan.FromMinutes(m_waitTime)))
+            if (!gWaitEvent.WaitOne(TimeSpan.FromMinutes(gWaitTime)))
                 Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
 
             //Grab the return objects from the latest package
-            List<object> returnObjs = new List<object>(m_returnPackage);
+            List<object> returnObjs = new List<object>(gReturnPackage);
 
             //Clear the return list
-            m_returnPackage.Clear();
+            gReturnPackage.Clear();
 
             //Raise returned events
             RaiseEvents();
@@ -180,7 +178,7 @@ namespace BH.Adapter.Revit
 
         public bool IsValid()
         {
-            if (m_linkIn == null || m_linkOut == null)
+            if (gLinkIn == null || gLinkOut == null)
                 return false;
 
             return true;
@@ -191,13 +189,13 @@ namespace BH.Adapter.Revit
         /****              Private  Fields              ****/
         /***************************************************/
 
-        private SocketLink_Tcp m_linkIn;
-        private SocketLink_Tcp m_linkOut;
+        private SocketLink_Tcp gLinkIn;
+        private SocketLink_Tcp gLinkOut;
 
-        private ManualResetEvent m_waitEvent;
-        private List<object> m_returnPackage;
-        private List<Event> m_returnEvents;
-        private double m_waitTime;
+        private ManualResetEvent gWaitEvent;
+        private List<object> gReturnPackage;
+        private List<Event> gReturnEvents;
+        private double gWaitTime;
 
 
         /***************************************************/
@@ -207,24 +205,24 @@ namespace BH.Adapter.Revit
         private void M_linkOut_DataObservers(oM.Socket.DataPackage package)
         {
             //Store the return data
-            m_returnPackage = package.Data;
+            gReturnPackage = package.Data;
 
             //Store the events
-            m_returnEvents = package.Events;
+            gReturnEvents = package.Events;
 
             //Set the wait event to allow methods to continue
-            m_waitEvent.Set();
+            gWaitEvent.Set();
         }
 
         /***************************************************/
 
         private bool CheckConnection()
         {
-            m_linkIn.SendData(new List<object> { PackageType.ConnectionCheck });
+            gLinkIn.SendData(new List<object> { PackageType.ConnectionCheck });
 
-            bool returned = m_waitEvent.WaitOne(TimeSpan.FromSeconds(5));
+            bool returned = gWaitEvent.WaitOne(TimeSpan.FromSeconds(5));
             RaiseEvents();
-            m_waitEvent.Reset();
+            gWaitEvent.Reset();
 
             if (!returned)
                 Engine.Reflection.Compute.RecordError("Failed to connect to Revit");
@@ -236,13 +234,13 @@ namespace BH.Adapter.Revit
 
         private void RaiseEvents()
         {
-            if (m_returnEvents == null)
+            if (gReturnEvents == null)
                 return;
 
-            Engine.Reflection.Query.CurrentEvents().AddRange(m_returnEvents);
-            Engine.Reflection.Query.AllEvents().AddRange(m_returnEvents);
+            Engine.Reflection.Query.CurrentEvents().AddRange(gReturnEvents);
+            Engine.Reflection.Query.AllEvents().AddRange(gReturnEvents);
 
-            m_returnEvents = new List<Event>();
+            gReturnEvents = new List<Event>();
         }
 
 
