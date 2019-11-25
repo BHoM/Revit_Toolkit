@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -48,15 +48,15 @@ namespace BH.UI.Revit.Engine
             if (currentSet == null || currentSet.Count() == 0)
                 return new List<BuiltInCategory>(newItems);
 
-            List<BuiltInCategory> aBuiltInCategoryList = new List<BuiltInCategory>(newItems);
+            List<BuiltInCategory> builtInCategoryList = new List<BuiltInCategory>(newItems);
 
-            foreach (BuiltInCategory aBuiltInCategory in currentSet)
+            foreach (BuiltInCategory builtInCategory in currentSet)
             {
-                if (allowDuplicates || !aBuiltInCategoryList.Contains(aBuiltInCategory))
-                    aBuiltInCategoryList.Add(aBuiltInCategory);
+                if (allowDuplicates || !builtInCategoryList.Contains(builtInCategory))
+                    builtInCategoryList.Add(builtInCategory);
             }
 
-            return aBuiltInCategoryList;
+            return builtInCategoryList;
         }
 
         /***************************************************/
@@ -72,26 +72,26 @@ namespace BH.UI.Revit.Engine
             if (newItems == null || newItems.Count == 0)
                 return new Dictionary<FilterRequest, List<Element>>(currentSet);
 
-            Dictionary<FilterRequest, List<Element>> aResult = new Dictionary<FilterRequest, List<Element>>(currentSet);
-            foreach (KeyValuePair<FilterRequest, List<Element>> aKeyValuePair in newItems)
+            Dictionary<FilterRequest, List<Element>> result = new Dictionary<FilterRequest, List<Element>>(currentSet);
+            foreach (KeyValuePair<FilterRequest, List<Element>> kvp in newItems)
             {
-                if (aKeyValuePair.Value == null)
+                if (kvp.Value == null)
                     continue;
 
-                List<Element> aElementList = null;
-                if (!aResult.TryGetValue(aKeyValuePair.Key, out aElementList))
+                List<Element> elements = null;
+                if (!result.TryGetValue(kvp.Key, out elements))
                 {
-                    aResult.Add(aKeyValuePair.Key, aKeyValuePair.Value);
+                    result.Add(kvp.Key, kvp.Value);
                 }
                 else
                 {
-                    foreach (Element aElement in aKeyValuePair.Value)
-                        if (aElementList.Find(x => x.Id == aElement.Id) == null)
-                            aElementList.Add(aElement);
+                    foreach (Element aElement in kvp.Value)
+                        if (elements.Find(x => x.Id == aElement.Id) == null)
+                            elements.Add(aElement);
                 }
             }
 
-            return aResult;
+            return result;
         }
 
 

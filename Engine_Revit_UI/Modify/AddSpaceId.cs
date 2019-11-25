@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -38,23 +38,23 @@ namespace BH.UI.Revit.Engine
             if (panel == null)
                 return null;
 
-            oM.Environment.Elements.Panel aPanel = panel.GetShallowClone() as oM.Environment.Elements.Panel;
-            aPanel.CustomData.Add(BH.Engine.Adapters.Revit.Convert.SpaceId, -1);
+            oM.Environment.Elements.Panel returnPanel = panel.GetShallowClone() as oM.Environment.Elements.Panel;
+            returnPanel.CustomData.Add(BH.Engine.Adapters.Revit.Convert.SpaceId, -1);
 
             if (energyAnalysisSurface == null)
-                return aPanel;
+                return returnPanel;
 
-            EnergyAnalysisSpace aEnergyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
-            if (aEnergyAnalysisSpace == null)
-                return aPanel;
+            EnergyAnalysisSpace energyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
+            if (energyAnalysisSpace == null)
+                return returnPanel;
 
-            SpatialElement aSpatialElement = Query.Element(aEnergyAnalysisSpace.Document, aEnergyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
-            if (aSpatialElement == null)
-                return aPanel;
+            SpatialElement spatialElement = Query.Element(energyAnalysisSpace.Document, energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
+            if (spatialElement == null)
+                return returnPanel;
 
-            aPanel.CustomData[BH.Engine.Adapters.Revit.Convert.SpaceId] = aSpatialElement.Id.IntegerValue;
+            returnPanel.CustomData[BH.Engine.Adapters.Revit.Convert.SpaceId] = spatialElement.Id.IntegerValue;
 
-            return aPanel;
+            return returnPanel;
         }
 
         /***************************************************/

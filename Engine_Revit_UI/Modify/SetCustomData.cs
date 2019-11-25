@@ -36,12 +36,12 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null || element == null)
                 return bHoMObject;
 
-            IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
+            IBHoMObject obj = bHoMObject.GetShallowClone() as IBHoMObject;
 
             foreach (Parameter aParameter in element.ParametersMap)
-                aBHoMObject = SetCustomData(aBHoMObject, aParameter, namePrefix);
+                obj = SetCustomData(obj, aParameter, namePrefix);
 
-            return aBHoMObject;
+            return obj;
         }
 
         /***************************************************/
@@ -51,12 +51,11 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null || element == null)
                 return bHoMObject;
 
-            IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
+            IBHoMObject obj = bHoMObject.GetShallowClone() as IBHoMObject;
 
-            aBHoMObject = SetCustomData(aBHoMObject, element.get_Parameter(builtInParameter));
-                
+            obj = SetCustomData(obj, element.get_Parameter(builtInParameter));
 
-            return aBHoMObject;
+            return obj;
         }
 
         /***************************************************/
@@ -66,40 +65,40 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null || parameter == null)
                 return bHoMObject;
 
-            IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
+            IBHoMObject obj = bHoMObject.GetShallowClone() as IBHoMObject;
 
-            object aValue = null;
+            object value = null;
             switch (parameter.StorageType)
             {
                 case StorageType.Double:
-                    aValue = parameter.AsDouble();
+                    value = parameter.AsDouble();
                     break;
                 case StorageType.ElementId:
-                    ElementId aElementId = parameter.AsElementId();
-                    if (aElementId != null)
-                        aValue = aElementId.IntegerValue;
+                    ElementId elementID = parameter.AsElementId();
+                    if (elementID != null)
+                        value = elementID.IntegerValue;
                     break;
                 case StorageType.Integer:
                     if (parameter.Definition.ParameterType == ParameterType.YesNo)
-                        aValue = parameter.AsInteger() == 1;
+                        value = parameter.AsInteger() == 1;
                     else
-                        aValue = parameter.AsInteger();
+                        value = parameter.AsInteger();
                     break;
                 case StorageType.String:
-                    aValue = parameter.AsString();
+                    value = parameter.AsString();
                     break;
                 case StorageType.None:
-                    aValue = parameter.AsValueString();
+                    value = parameter.AsValueString();
                     break;
             }
 
-            string aName = parameter.Definition.Name;
+            string name = parameter.Definition.Name;
             if (!string.IsNullOrEmpty(namePrefix))
-                aName = namePrefix + aName;
+                name = namePrefix + name;
 
-            aBHoMObject.CustomData[aName] = aValue;
+            obj.CustomData[name] = value;
 
-            return aBHoMObject;
+            return obj;
         }
 
         /***************************************************/
@@ -109,14 +108,14 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null || string.IsNullOrEmpty(customDataName))
                 return bHoMObject;
 
-            IBHoMObject aBHoMObject = bHoMObject.GetShallowClone() as IBHoMObject;
+            IBHoMObject obj = bHoMObject.GetShallowClone() as IBHoMObject;
 
-            if (aBHoMObject.CustomData.ContainsKey(customDataName))
-                aBHoMObject.CustomData[customDataName] = value;
+            if (obj.CustomData.ContainsKey(customDataName))
+                obj.CustomData[customDataName] = value;
             else
-                aBHoMObject.CustomData.Add(customDataName, value);
+                obj.CustomData.Add(customDataName, value);
 
-            return aBHoMObject;
+            return obj;
         }
 
         /***************************************************/

@@ -38,21 +38,21 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null || element == null)
                 return null;
 
-            foreach (KeyValuePair<string, object> aKeyValuePair in bHoMObject.CustomData)
+            foreach (KeyValuePair<string, object> kvp in bHoMObject.CustomData)
             {
-                IList<Parameter> aParameters = element.GetParameters(aKeyValuePair.Key);
-                if (aParameters == null || aParameters.Count == 0)
+                IList<Parameter> parameters = element.GetParameters(kvp.Key);
+                if (parameters == null || parameters.Count == 0)
                     continue;
 
-                foreach(Parameter aParameter in aParameters)
+                foreach(Parameter parameter in parameters)
                 {
-                    if (aParameter == null && aParameter.IsReadOnly)
+                    if (parameter == null && parameter.IsReadOnly)
                         continue;
 
-                    if (builtInParametersIgnore != null && aParameter.Id.IntegerValue < 0 && builtInParametersIgnore.Contains((BuiltInParameter)aParameter.Id.IntegerValue))
+                    if (builtInParametersIgnore != null && parameter.Id.IntegerValue < 0 && builtInParametersIgnore.Contains((BuiltInParameter)parameter.Id.IntegerValue))
                         continue;
 
-                    SetParameter(aParameter, aKeyValuePair.Value, element.Document);
+                    SetParameter(parameter, kvp.Value, element.Document);
                 }
             }
 

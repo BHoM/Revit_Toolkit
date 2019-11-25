@@ -43,11 +43,11 @@ namespace BH.UI.Revit.Engine
             if (location.IsReadOnly)
                 return null;
 
-            XYZ aXYZ = vector.ToRevit();
-            if (aXYZ.GetLength() < Tolerance.MicroDistance)
+            XYZ xyz = vector.ToRevit();
+            if (xyz.GetLength() < Tolerance.MicroDistance)
                 return location;
 
-            if (location.Move(aXYZ))
+            if (location.Move(xyz))
                 return location;
             else
                 return null;
@@ -63,12 +63,12 @@ namespace BH.UI.Revit.Engine
             if (locationPoint.IsReadOnly)
                 return null;
 
-            XYZ aXYZ = point.ToRevit(pushSettings);
+            XYZ xyz = point.ToRevit(pushSettings);
 
-            if (aXYZ.IsAlmostEqualTo(locationPoint.Point, Tolerance.MicroDistance))
+            if (xyz.IsAlmostEqualTo(locationPoint.Point, Tolerance.MicroDistance))
                 return locationPoint;
 
-            locationPoint.Point = aXYZ;
+            locationPoint.Point = xyz;
             return locationPoint;
         }
 
@@ -82,20 +82,20 @@ namespace BH.UI.Revit.Engine
             if (locationCurve.IsReadOnly)
                 return null;
 
-            Curve aCurve = iCurve.ToRevitCurve();
-            if (Query.IsSimilar(aCurve, locationCurve.Curve))
+            Curve curve = iCurve.ToRevitCurve();
+            if (Query.IsSimilar(curve, locationCurve.Curve))
                 return locationCurve;
 
             try
             {
-                locationCurve.Curve = aCurve;
+                locationCurve.Curve = curve;
             }
             catch
             {
 
             }
 
-            if (Query.IsSimilar(aCurve, locationCurve.Curve))
+            if (Query.IsSimilar(curve, locationCurve.Curve))
                 return locationCurve;
             else
                 return null;
@@ -135,15 +135,15 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Location Move(this Element element, oM.Base.IBHoMObject BHoMObject, PushSettings pullSettings = null)
+        public static Location Move(this Element element, oM.Base.IBHoMObject bhomObject, PushSettings pullSettings = null)
         {
             if (element.Location == null)
                 return null;
 
-            if (BHoMObject is BH.oM.Environment.Elements.Space)
-                return Move(element, (BH.oM.Environment.Elements.Space)BHoMObject, pullSettings);
+            if (bhomObject is BH.oM.Environment.Elements.Space)
+                return Move(element, (BH.oM.Environment.Elements.Space)bhomObject, pullSettings);
 
-            return Move(element.Location, BHoMObject as dynamic, pullSettings);
+            return Move(element.Location, bhomObject as dynamic, pullSettings);
         }
 
         public static Location Move(this Element element, BH.oM.Environment.Elements.Space space, PushSettings pullSettings = null)
@@ -151,13 +151,13 @@ namespace BH.UI.Revit.Engine
             if (element == null || space == null)
                 return null;
 
-            Level aLevel = Query.BottomLevel(space.Location.Z, element.Document);
-            if (aLevel == null)
+            Level level = Query.BottomLevel(space.Location.Z, element.Document);
+            if (level == null)
                 return null;
 
-            oM.Geometry.Point aPoint = BH.Engine.Geometry.Create.Point(space.Location.X, space.Location.Y, aLevel.Elevation);
+            oM.Geometry.Point point = BH.Engine.Geometry.Create.Point(space.Location.X, space.Location.Y, level.Elevation);
 
-            return Move(element.Location, aPoint, pullSettings);
+            return Move(element.Location, point);
         }
 
         /***************************************************/
