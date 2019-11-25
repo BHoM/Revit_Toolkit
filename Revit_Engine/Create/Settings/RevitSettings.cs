@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -40,18 +40,18 @@ namespace BH.Engine.Adapters.Revit
         [Output("RevitSettings")]
         public static RevitSettings RevitSettings(ConnectionSettings connectionSettings = null, FamilyLoadSettings familyLoadSettings = null, GeneralSettings generalSettings = null)
         {
-            RevitSettings aRevitSettings = new RevitSettings();
+            RevitSettings settings = new RevitSettings();
 
             if (connectionSettings != null)
-                aRevitSettings.ConnectionSettings = connectionSettings;
+                settings.ConnectionSettings = connectionSettings;
 
             if (familyLoadSettings != null)
-                aRevitSettings.FamilyLoadSettings = familyLoadSettings;
+                settings.FamilyLoadSettings = familyLoadSettings;
 
             if (generalSettings != null)
-                aRevitSettings.GeneralSettings = generalSettings;
+                settings.GeneralSettings = generalSettings;
 
-            return aRevitSettings;
+            return settings;
         }
 
         /***************************************************/
