@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -36,11 +36,11 @@ namespace BH.Engine.Adapters.Revit
         [Output("FilterRequest")]
         public static FilterRequest SelectionSetFilterRequest(string slectionSetName)
         {
-            FilterRequest aFilterRequest = new FilterRequest();
-            aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.SelectionSet;
-            aFilterRequest.Equalities[Convert.FilterRequest.SelectionSetName] = slectionSetName;
-            return aFilterRequest;
+            FilterRequest filterRequest = new FilterRequest();
+            filterRequest.Type = typeof(BHoMObject);
+            filterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.SelectionSet;
+            filterRequest.Equalities[Convert.FilterRequest.SelectionSetName] = slectionSetName;
+            return filterRequest;
         }
     }
 }

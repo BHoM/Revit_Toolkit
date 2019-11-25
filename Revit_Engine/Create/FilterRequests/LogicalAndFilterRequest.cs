@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -37,24 +37,24 @@ namespace BH.Engine.Adapters.Revit
         [Output("FilterRequest")]
         public static FilterRequest LogicalAndFilterRequest(IEnumerable<FilterRequest> filterRequests)
         {
-            FilterRequest aFilterRequest = new FilterRequest();
-            aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.LogicalAnd;
-            aFilterRequest.Equalities[Convert.FilterRequest.FilterRequests] = filterRequests;
-            return aFilterRequest;
+            FilterRequest filterRequest = new FilterRequest();
+            filterRequest.Type = typeof(BHoMObject);
+            filterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.LogicalAnd;
+            filterRequest.Equalities[Convert.FilterRequest.FilterRequests] = filterRequests;
+            return filterRequest;
         }
 
         [Description("Creates FilterRequest which combines two FilterRequests by logical and operator.")]
-        [Input("filterRequest_1", "First FilterRequest to be combined")]
-        [Input("filterRequest_2", "Second FilterRequest to be combined")]
+        [Input("filterRequest1", "First FilterRequest to be combined")]
+        [Input("filterRequest2", "Second FilterRequest to be combined")]
         [Output("FilterRequest")]
-        public static FilterRequest LogicalAndFilterRequest(FilterRequest filterRequest_1, FilterRequest filterRequest_2)
+        public static FilterRequest LogicalAndFilterRequest(FilterRequest filterRequest1, FilterRequest filterRequest2)
         {
-            FilterRequest aFilterRequest = new FilterRequest();
-            aFilterRequest.Type = typeof(BHoMObject);
-            aFilterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.LogicalAnd;
-            aFilterRequest.Equalities[Convert.FilterRequest.FilterRequests] = new List<FilterRequest>() { filterRequest_1, filterRequest_2 };
-            return aFilterRequest;
+            FilterRequest filterRequest = new FilterRequest();
+            filterRequest.Type = typeof(BHoMObject);
+            filterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.LogicalAnd;
+            filterRequest.Equalities[Convert.FilterRequest.FilterRequests] = new List<FilterRequest>() { filterRequest1, filterRequest2 };
+            return filterRequest;
         }
     }
 }
