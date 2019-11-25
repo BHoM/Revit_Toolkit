@@ -66,19 +66,19 @@ namespace BH.UI.Revit.Engine
             if (parameter == null)
                 return false;
 
-            Type aType = BH.Engine.Adapters.Revit.Query.Type(comparisonRule);
-            if (aType == null)
+            Type type = BH.Engine.Adapters.Revit.Query.Type(comparisonRule);
+            if (type == null)
                 return false;
 
-            object aValue = null;
-            if (aType == typeof(string))
+            object val = null;
+            if (type == typeof(string))
             {
                 if (parameter.StorageType == StorageType.String)
-                    aValue = parameter.AsString();
+                    val = parameter.AsString();
                 else
-                    aValue = parameter.AsValueString();
+                    val = parameter.AsValueString();
             }
-            else if (aType == typeof(double))
+            else if (type == typeof(double))
             {
                 if (!parameter.HasValue)
                     return false;
@@ -86,10 +86,16 @@ namespace BH.UI.Revit.Engine
                 switch (parameter.StorageType)
                 {
                     case StorageType.Double:
+<<<<<<< HEAD
                         aValue = Convert.ToSI(parameter.AsDouble(), parameter.Definition.UnitType);
+=======
+                        val = parameter.AsDouble();
+                        if (convertUnits)
+                            val = Convert.ToSI((double)val, parameter.Definition.UnitType);
+>>>>>>> #438 Engine_Revit_UI Query tidied save point
                         break;
                     case StorageType.Integer:
-                        aValue = parameter.AsInteger();
+                        val = parameter.AsInteger();
                         break;
                     default:
                         return false;
@@ -100,7 +106,7 @@ namespace BH.UI.Revit.Engine
                 return false;
             }
 
-            return comparisonRule.IsValid(aValue, value, true);
+            return comparisonRule.IsValid(val, value, true);
         }
 
         /***************************************************/

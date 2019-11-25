@@ -42,93 +42,93 @@ namespace BH.UI.Revit.Engine
             if (type == null)
                 return null;
 
-            List<BuiltInCategory> aBuiltInCategoryList = new List<BuiltInCategory>();
+            List<BuiltInCategory> builtInCategories = new List<BuiltInCategory>();
 
             if (type == typeof(BH.oM.Architecture.Elements.Room))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Rooms);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Rooms);
             }
 
             if (type == typeof(BH.oM.Environment.Elements.Space))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_MEPSpaces);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_MEPSpaces);
             }
 
             if (type == typeof(BH.oM.Physical.Elements.Wall))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Walls);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Walls);
             }
             if (type == typeof(BH.oM.Physical.Elements.Floor))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Floors);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Floors);
             }
             if (type == typeof(BH.oM.Physical.Elements.Roof))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Roofs);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Roofs);
             }
             if (type == typeof(BH.oM.Physical.Elements.Window))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Windows);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Windows);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels);
             }
             if (type == typeof(BH.oM.Physical.Elements.Door))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Doors);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Doors);
             }
             if (type == typeof(BH.oM.Physical.Elements.ISurface))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Roofs);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Floors);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Walls);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Roofs);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Floors);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Walls);
             }
 
             if (type == typeof(BH.oM.Physical.Elements.IFramingElement))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming);
                 //aBuiltInCategoryList.Add(BuiltInCategory.OST_StructuralFoundation);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Columns);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_VerticalBracing);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Truss);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralTruss);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_HorizontalBracing);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Purlin);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Joist);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Girder);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Columns);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_VerticalBracing);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Truss);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralTruss);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_HorizontalBracing);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Purlin);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Joist);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Girder);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther);
             }
             if (type == typeof(BH.oM.Structure.Elements.Bar))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming);
                 //aBuiltInCategoryList.Add(BuiltInCategory.OST_StructuralFoundation);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Columns);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_VerticalBracing);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Truss);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralTruss);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_HorizontalBracing);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Purlin);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Joist);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Girder);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Columns);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_VerticalBracing);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Truss);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralTruss);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_HorizontalBracing);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Purlin);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Joist);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Girder);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther);
             }
             if (type == typeof(BH.oM.Structure.Elements.Panel))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Floors);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Walls);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Floors);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Walls);
             }
             if (type == typeof(BH.oM.Physical.Elements.Column))
             {
 
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Columns);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Columns);
             }
             if (type == typeof(BH.oM.Physical.Elements.Bracing))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_VerticalBracing);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_HorizontalBracing);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_VerticalBracing);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_HorizontalBracing);
             }
             if (type == typeof(BH.oM.Physical.Elements.Pile))
             {
@@ -140,54 +140,54 @@ namespace BH.UI.Revit.Engine
             }
             if (type == typeof(BH.oM.Physical.Elements.Beam))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Truss);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralTruss);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Purlin);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Joist);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Girder);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Truss);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralTruss);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Purlin);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Joist);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Girder);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther);
             }
             if (type == typeof(oM.Environment.Elements.Panel))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Doors);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Windows);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Walls);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Floors);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Ceilings);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Roofs);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Doors);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Windows);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Walls);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Floors);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Ceilings);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Roofs);
             }
             if(type == typeof(oM.Adapters.Revit.Elements.Sheet))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Sheets);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Sheets);
             }
             if (type == typeof(oM.Adapters.Revit.Elements.Viewport))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Viewports);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Viewports);
             }
             if (type == typeof(oM.Adapters.Revit.Elements.ViewPlan))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Views);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Views);
             }
             if (type == typeof(oM.Architecture.Elements.Ceiling))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Ceilings);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Ceilings);
             }
             if (type == typeof(oM.Geometry.ShapeProfiles.ISectionProfile))
             {
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_VerticalBracing);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_HorizontalBracing);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Purlin);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Joist);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Girder);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener);
-                aBuiltInCategoryList.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_VerticalBracing);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_HorizontalBracing);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Purlin);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Joist);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Girder);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther);
             }
 
-            return aBuiltInCategoryList;
+            return builtInCategories;
         }
 
         /***************************************************/
@@ -197,16 +197,16 @@ namespace BH.UI.Revit.Engine
             if (elements == null)
                 return null;
 
-            List<BuiltInCategory> aBuiltInCategoryList = new List<BuiltInCategory>();
-            foreach (Element aElement in elements)
-                if (aElement.Category != null)
+            List<BuiltInCategory> builtInCategories = new List<BuiltInCategory>();
+            foreach (Element element in elements)
+                if (element.Category != null)
                 {
-                    BuiltInCategory aBuiltInCategory = (BuiltInCategory)aElement.Category.Id.IntegerValue;
-                    if (!aBuiltInCategoryList.Contains(aBuiltInCategory))
-                        aBuiltInCategoryList.Add(aBuiltInCategory);
+                    BuiltInCategory builtInCategory = (BuiltInCategory)element.Category.Id.IntegerValue;
+                    if (!builtInCategories.Contains(builtInCategory))
+                        builtInCategories.Add(builtInCategory);
                 }
 
-            return aBuiltInCategoryList;
+            return builtInCategories;
         }
 
         /***************************************************/
@@ -216,14 +216,14 @@ namespace BH.UI.Revit.Engine
             if (filterRequests == null || document == null)
                 return null;
 
-            List<BuiltInCategory> aBuiltInCategories = new List<BuiltInCategory>();
-            foreach (FilterRequest aFilterRequest in filterRequests)
+            List<BuiltInCategory> builtInCategories = new List<BuiltInCategory>();
+            foreach (FilterRequest filterRequest in filterRequests)
             {
-                BuiltInCategory aBuiltInCategory = Query.BuiltInCategory(aFilterRequest, document);
-                if (aBuiltInCategory != Autodesk.Revit.DB.BuiltInCategory.INVALID)
-                    aBuiltInCategories.Add(aBuiltInCategory);
+                BuiltInCategory builtInCategory = Query.BuiltInCategory(filterRequest, document);
+                if (builtInCategory != Autodesk.Revit.DB.BuiltInCategory.INVALID)
+                    builtInCategories.Add(builtInCategory);
             }
-            return aBuiltInCategories;
+            return builtInCategories;
         }
 
         /***************************************************/

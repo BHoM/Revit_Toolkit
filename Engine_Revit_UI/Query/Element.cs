@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -36,23 +36,23 @@ namespace BH.UI.Revit.Engine
             if (document == null)
                 return null;
 
-            Document aDocument = null;
+            Document revitDocument = null;
 
             if (!string.IsNullOrEmpty(linkUniqueId))
             {
-                RevitLinkInstance aRevitLinkInstance = document.GetElement(linkUniqueId) as RevitLinkInstance;
-                if (aRevitLinkInstance != null)
-                    aDocument = aRevitLinkInstance.GetLinkDocument();
+                RevitLinkInstance revitLinkInstance = document.GetElement(linkUniqueId) as RevitLinkInstance;
+                if (revitLinkInstance != null)
+                    revitDocument = revitLinkInstance.GetLinkDocument();
             }
             else
             {
-                aDocument = document;
+                revitDocument = document;
             }
 
-            if (aDocument == null)
+            if (revitDocument == null)
                 return null;
 
-            return aDocument.GetElement(uniqueId);
+            return revitDocument.GetElement(uniqueId);
         }
 
         /***************************************************/
@@ -62,27 +62,27 @@ namespace BH.UI.Revit.Engine
             if (document == null || linkElementId == null)
                 return null;
 
-            Document aDocument = null;
+            Document revitDocument = null;
             if (linkElementId.LinkInstanceId != Autodesk.Revit.DB.ElementId.InvalidElementId)
-                aDocument = (document.GetElement(linkElementId.LinkInstanceId) as RevitLinkInstance).GetLinkDocument();
+                revitDocument = (document.GetElement(linkElementId.LinkInstanceId) as RevitLinkInstance).GetLinkDocument();
             else
-                aDocument = document;
+                revitDocument = document;
 
             if (linkElementId.LinkedElementId != Autodesk.Revit.DB.ElementId.InvalidElementId)
-                return aDocument.GetElement(linkElementId.LinkedElementId);
+                return revitDocument.GetElement(linkElementId.LinkedElementId);
             else
-                return aDocument.GetElement(linkElementId.HostElementId);
+                return revitDocument.GetElement(linkElementId.HostElementId);
         }
 
         /***************************************************/
 
         public static Element Element(this EnergyAnalysisOpening energyAnalysisOpening)
         {
-            ElementId aElementId = Query.ElementId(energyAnalysisOpening.OriginatingElementDescription);
-            if (aElementId == null || aElementId == Autodesk.Revit.DB.ElementId.InvalidElementId)
+            ElementId elementID = Query.ElementId(energyAnalysisOpening.OriginatingElementDescription);
+            if (elementID == null || elementID == Autodesk.Revit.DB.ElementId.InvalidElementId)
                 return null;
 
-            return energyAnalysisOpening.Document.GetElement(aElementId);
+            return energyAnalysisOpening.Document.GetElement(elementID);
         }
 
         /***************************************************/

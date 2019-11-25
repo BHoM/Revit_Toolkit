@@ -37,46 +37,64 @@ namespace BH.UI.Revit.Engine
 
         public static Level HighLevel(this Document document, double elevation)
         {
-            List<Level> aLevelList = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
-            if (aLevelList == null || aLevelList.Count == 0)
+            List<Level> levels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
+            if (levels == null || levels.Count == 0)
                 return null;
 
-            aLevelList.Sort((x, y) => x.Elevation.CompareTo(y.Elevation));
+            levels.Sort((x, y) => x.Elevation.CompareTo(y.Elevation));
 
+<<<<<<< HEAD
             double aElevation = aLevelList.First().Elevation.ToSI(UnitType.UT_Length);
+=======
+            double levelElevation = levels.First().Elevation;
+            if (convertUnits)
+                levelElevation = levelElevation.ToSI(UnitType.UT_Length);
+>>>>>>> #438 Engine_Revit_UI Query tidied save point
 
-            if (Math.Abs(elevation - aElevation) < oM.Geometry.Tolerance.MacroDistance)
-                return aLevelList.First();
+            if (Math.Abs(elevation - levelElevation) < oM.Geometry.Tolerance.MacroDistance)
+                return levels.First();
 
-            for (int i = 1; i < aLevelList.Count; i++)
+            for (int i = 1; i < levels.Count; i++)
             {
+<<<<<<< HEAD
                 aElevation = aLevelList[i].Elevation.ToSI(UnitType.UT_Length);
+=======
+                levelElevation = levels[i].Elevation;
+                if (convertUnits)
+                    levelElevation = levelElevation.ToSI(UnitType.UT_Length);
+>>>>>>> #438 Engine_Revit_UI Query tidied save point
 
-                //if (Elevation) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
-                if (Math.Round(elevation, 3, MidpointRounding.AwayFromZero) <= Math.Round(aElevation, 3, MidpointRounding.AwayFromZero))
-                    return aLevelList[i];
+                if (Math.Round(elevation, 3, MidpointRounding.AwayFromZero) <= Math.Round(levelElevation, 3, MidpointRounding.AwayFromZero))
+                    return levels[i];
             }
 
-
-            return aLevelList.Last();
+            return levels.Last();
         }
 
         /***************************************************/
 
         public static Level HighLevel(this Document document, oM.Geometry.ICurve curve)
         {
-            double aElevation = HighElevation(curve);
+            double elevation = HighElevation(curve);
 
+<<<<<<< HEAD
             return HighLevel(document, aElevation);
+=======
+            return HighLevel(document, elevation, convertUnits);
+>>>>>>> #438 Engine_Revit_UI Query tidied save point
         }
 
         /***************************************************/
 
         public static Level HighLevel(this Document document, IObject2D object2D)
         {
-            double aElevation = HighElevation(object2D);
+            double elevation = HighElevation(object2D);
 
+<<<<<<< HEAD
             return HighLevel(document, aElevation);
+=======
+            return HighLevel(document, elevation, convertUnits);
+>>>>>>> #438 Engine_Revit_UI Query tidied save point
         }
 
         /***************************************************/

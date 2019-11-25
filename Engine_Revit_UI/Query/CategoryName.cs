@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -39,9 +39,9 @@ namespace BH.UI.Revit.Engine
             if (document == null || document.Settings == null || document.Settings.Categories == null)
                 return null;
 
-            foreach (Category aCategory in document.Settings.Categories)
-                if (aCategory.Id.IntegerValue == (int)builtInCategory)
-                    return aCategory.Name;
+            foreach (Category category in document.Settings.Categories)
+                if (category.Id.IntegerValue == (int)builtInCategory)
+                    return category.Name;
 
             return null;
         }
@@ -53,14 +53,14 @@ namespace BH.UI.Revit.Engine
             if (document == null || string.IsNullOrEmpty(familyName))
                 return null;
 
-            List<ElementType> aElementTypeList = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>().ToList();
+            List<ElementType> elementTypes = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>().ToList();
 
-            ElementType aElementType = aElementTypeList.Find(x => x.FamilyName == familyName && x.Category != null);
+            ElementType elementType = elementTypes.Find(x => x.FamilyName == familyName && x.Category != null);
 
-            if (aElementType == null)
+            if (elementType == null)
                 return null;
 
-            return aElementType.Category.Name;
+            return elementType.Category.Name;
         }
 
         /***************************************************/

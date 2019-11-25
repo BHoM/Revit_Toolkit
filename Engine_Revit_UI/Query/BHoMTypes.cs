@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -42,35 +42,34 @@ namespace BH.UI.Revit.Engine
     {
         public static IEnumerable<Type> BHoMTypes(this Element element)
         {
-            List<Type> aResult = new List<Type>();
+            List<Type> result = new List<Type>();
 
             if (element is FamilyInstance)
             {
                 switch(element.Category.CategoryType)
                 {
                     case CategoryType.Model:
-                        aResult.Add(typeof(ModelInstance));
+                        result.Add(typeof(ModelInstance));
                         break;
                     case CategoryType.Annotation:
-                        aResult.Add(typeof(DraftingInstance));
+                        result.Add(typeof(DraftingInstance));
                         break;
                 }
                 
                 //Structural framing
                 switch ((BuiltInCategory)element.Category.Id.IntegerValue)
                 {
-
                     //case BuiltInCategory.OST_StructuralFoundation:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Columns:
-                        aResult.Add(typeof(BH.oM.Physical.Elements.IFramingElement));
-                        aResult.Add(typeof(BH.oM.Physical.Elements.Column));
-                        return aResult;
+                        result.Add(typeof(BH.oM.Physical.Elements.IFramingElement));
+                        result.Add(typeof(BH.oM.Physical.Elements.Column));
+                        return result;
                     case Autodesk.Revit.DB.BuiltInCategory.OST_VerticalBracing:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_HorizontalBracing:
-                        aResult.Add(typeof(BH.oM.Physical.Elements.IFramingElement));
-                        aResult.Add(typeof(BH.oM.Physical.Elements.Bracing));
-                        return aResult;
+                        result.Add(typeof(BH.oM.Physical.Elements.IFramingElement));
+                        result.Add(typeof(BH.oM.Physical.Elements.Bracing));
+                        return result;
                     case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Truss:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralTruss:
@@ -79,22 +78,22 @@ namespace BH.UI.Revit.Engine
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Girder:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther:
-                        aResult.Add(typeof(BH.oM.Physical.Elements.IFramingElement));
-                        aResult.Add(typeof(BH.oM.Physical.Elements.Beam));
-                        return aResult;
+                        result.Add(typeof(BH.oM.Physical.Elements.IFramingElement));
+                        result.Add(typeof(BH.oM.Physical.Elements.Beam));
+                        return result;
                 }
 
                 //Environmental Windows and Doors
                 switch ((BuiltInCategory)element.Category.Id.IntegerValue)
                 {
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Windows:
-                        aResult.Add(typeof(oM.Environment.Elements.Panel));
-                        aResult.Add(typeof(oM.Physical.Elements.Window));
-                        return aResult;
+                        result.Add(typeof(oM.Environment.Elements.Panel));
+                        result.Add(typeof(oM.Physical.Elements.Window));
+                        return result;
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Doors:
-                        aResult.Add(typeof(oM.Environment.Elements.Panel));
-                        aResult.Add(typeof(oM.Physical.Elements.Door));
-                        return aResult;
+                        result.Add(typeof(oM.Environment.Elements.Panel));
+                        result.Add(typeof(oM.Physical.Elements.Door));
+                        return result;
                 }
             }
 
@@ -105,162 +104,162 @@ namespace BH.UI.Revit.Engine
                 {
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Windows:
                     case Autodesk.Revit.DB.BuiltInCategory.OST_Doors:
-                        return aResult;
+                        return result;
                 }
             }
 
             if (element is CeilingType)
             {
-                aResult.Add(typeof(BH.oM.Common.Properties.Object2DProperties));
-                return aResult;
+                result.Add(typeof(BH.oM.Common.Properties.Object2DProperties));
+                return result;
             }
 
             if (element is Ceiling)
             {
-                aResult.Add(typeof(oM.Architecture.Elements.Ceiling));
-                return aResult;
+                result.Add(typeof(oM.Architecture.Elements.Ceiling));
+                return result;
             }
 
             if (element is Autodesk.Revit.DB.Panel)
             {
-                aResult.Add(typeof(oM.Physical.Elements.Window));
-                return aResult;
+                result.Add(typeof(oM.Physical.Elements.Window));
+                return result;
             }
 
             if (element is WallType)
             {
-                aResult.Add(typeof(ISurfaceProperty));
-                aResult.Add(typeof(oM.Common.Properties.Object2DProperties));
-                return aResult;
+                result.Add(typeof(ISurfaceProperty));
+                result.Add(typeof(oM.Common.Properties.Object2DProperties));
+                return result;
             }
 
             if(element is Material)
             {
-                aResult.Add(typeof(oM.Common.Materials.Material));
-                return aResult;
+                result.Add(typeof(oM.Common.Materials.Material));
+                return result;
             }
 
             if (element is FloorType)
             {
-                aResult.Add(typeof(ISurfaceProperty));
-                aResult.Add(typeof(oM.Common.Properties.Object2DProperties));
-                return aResult;
+                result.Add(typeof(ISurfaceProperty));
+                result.Add(typeof(oM.Common.Properties.Object2DProperties));
+                return result;
             }
 
             if (element is RoofType)
             {
-                aResult.Add(typeof(ISurfaceProperty));
-                aResult.Add(typeof(oM.Common.Properties.Object2DProperties));
-                return aResult;
+                result.Add(typeof(ISurfaceProperty));
+                result.Add(typeof(oM.Common.Properties.Object2DProperties));
+                return result;
             }
 
             if(element is ElementType)
             {
-                aResult.Add(typeof(oM.Adapters.Revit.Properties.InstanceProperties));
-                return aResult;
+                result.Add(typeof(oM.Adapters.Revit.Properties.InstanceProperties));
+                return result;
             }
 
             if (BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(element.GetType(), typeof(SpatialElement)))
             {
                 if(element is Autodesk.Revit.DB.Mechanical.Space)
                 {
-                    aResult.Add(typeof(Space));
-                    return aResult;
+                    result.Add(typeof(Space));
+                    return result;
                 }
             }
 
             if (element is Wall)
             {
-                aResult.Add(typeof(oM.Environment.Elements.Panel));
-                aResult.Add(typeof(oM.Structure.Elements.Panel));
-                aResult.Add(typeof(oM.Architecture.Elements.Wall));
-                aResult.Add(typeof(oM.Physical.Elements.Wall));
-                return aResult;
+                result.Add(typeof(oM.Environment.Elements.Panel));
+                result.Add(typeof(oM.Structure.Elements.Panel));
+                result.Add(typeof(oM.Architecture.Elements.Wall));
+                result.Add(typeof(oM.Physical.Elements.Wall));
+                return result;
             }
 
             if (element is Ceiling)
             {
-                aResult.Add(typeof(oM.Environment.Elements.Panel));
-                return aResult;
+                result.Add(typeof(oM.Environment.Elements.Panel));
+                return result;
             }
 
 
             if (BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(element.GetType(), typeof(RoofBase)))
             {
-                aResult.Add(typeof(oM.Environment.Elements.Panel));
-                aResult.Add(typeof(oM.Architecture.Elements.Roof));
-                aResult.Add(typeof(oM.Physical.Elements.Roof));
-                return aResult;
+                result.Add(typeof(oM.Environment.Elements.Panel));
+                result.Add(typeof(oM.Architecture.Elements.Roof));
+                result.Add(typeof(oM.Physical.Elements.Roof));
+                return result;
             }
 
             if (element is Floor)
             {
-                aResult.Add(typeof(oM.Environment.Elements.Panel));
-                aResult.Add(typeof(oM.Structure.Elements.Panel));
-                aResult.Add(typeof(oM.Architecture.Elements.Floor));
-                aResult.Add(typeof(oM.Physical.Elements.Floor));
-                return aResult;
+                result.Add(typeof(oM.Environment.Elements.Panel));
+                result.Add(typeof(oM.Structure.Elements.Panel));
+                result.Add(typeof(oM.Architecture.Elements.Floor));
+                result.Add(typeof(oM.Physical.Elements.Floor));
+                return result;
             }
 
             if (element is Level)
             {
-                aResult.Add(typeof(Level));
-                return aResult;
+                result.Add(typeof(Level));
+                return result;
             }
 
             if (element is Grid)
             {
-                aResult.Add(typeof(oM.Geometry.SettingOut.Grid));
-                return aResult;
+                result.Add(typeof(oM.Geometry.SettingOut.Grid));
+                return result;
             }
 
             if(element is ViewSheet)
             {
-                aResult.Add(typeof(Sheet));
-                return aResult;
+                result.Add(typeof(Sheet));
+                return result;
             }
 
             if (element is Autodesk.Revit.DB.Viewport)
             {
-                aResult.Add(typeof(oM.Adapters.Revit.Elements.Viewport));
-                return aResult;
+                result.Add(typeof(oM.Adapters.Revit.Elements.Viewport));
+                return result;
             }
 
             if (element is Autodesk.Revit.DB.ViewPlan)
             {
-                aResult.Add(typeof(oM.Adapters.Revit.Elements.ViewPlan));
-                return aResult;
+                result.Add(typeof(oM.Adapters.Revit.Elements.ViewPlan));
+                return result;
             }
 
             if (element is ProjectInfo)
             {
-                aResult.Add(typeof(Building));
-                return aResult;
+                result.Add(typeof(Building));
+                return result;
             }
 
             if(element is CurveElement)
             {
-                aResult.Add(typeof(ModelInstance));
-                aResult.Add(typeof(DraftingInstance));
-                return aResult;
+                result.Add(typeof(ModelInstance));
+                result.Add(typeof(DraftingInstance));
+                return result;
             }
 
             if(element is GraphicsStyle)
             {
-                aResult.Add(typeof(oM.Adapters.Revit.Properties.InstanceProperties));
-                return aResult;
+                result.Add(typeof(oM.Adapters.Revit.Properties.InstanceProperties));
+                return result;
             }
 
             if (element is Autodesk.Revit.DB.Mechanical.Space)
             {
-                aResult.Add(typeof(oM.Environment.Elements.Space));
-                return aResult;
+                result.Add(typeof(oM.Environment.Elements.Space));
+                return result;
             }
 
             if (element is Autodesk.Revit.DB.Architecture.Room)
             {
-                aResult.Add(typeof(oM.Architecture.Elements.Room));
-                return aResult;
+                result.Add(typeof(oM.Architecture.Elements.Room));
+                return result;
             }
                         
             return null; //TODO: shouldn't it be aResult?
@@ -271,768 +270,768 @@ namespace BH.UI.Revit.Engine
         public static IEnumerable<Type> BHoMTypes(this StructuralSectionShape sectionShape)
         {
             int shapeNum = (int)sectionShape;
-            List<Type> aResult = new List<Type>();
+            List<Type> result = new List<Type>();
 
             if (shapeNum == 2)
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (shapeNum == 5)
             {
-                aResult.Add(typeof(TubeProfile));
-                return aResult;
+                result.Add(typeof(TubeProfile));
+                return result;
             }
 
             if (shapeNum == 6)
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (shapeNum == 8)
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (shapeNum == 9)
             {
-                aResult.Add(typeof(ChannelProfile));
-                return aResult;
+                result.Add(typeof(ChannelProfile));
+                return result;
             }
 
             if (shapeNum == 11)
             {
-                aResult.Add(typeof(AngleProfile));
-                return aResult;
+                result.Add(typeof(AngleProfile));
+                return result;
             }
 
             if (shapeNum == 12)
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (shapeNum == 13)
             {
-                aResult.Add(typeof(CircleProfile));
-                return aResult;
+                result.Add(typeof(CircleProfile));
+                return result;
             }
 
             if (shapeNum == 14)
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (shapeNum == 15)
             {
-                aResult.Add(typeof(TubeProfile));
-                return aResult;
+                result.Add(typeof(TubeProfile));
+                return result;
             }
 
             if (shapeNum == 16)
             {
-                aResult.Add(typeof(FabricatedISectionProfile));
-                return aResult;
+                result.Add(typeof(FabricatedISectionProfile));
+                return result;
             }
 
             if (shapeNum == 17)
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (shapeNum == 19)
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (shapeNum == 20)
             {
-                aResult.Add(typeof(ChannelProfile));
-                return aResult;
+                result.Add(typeof(ChannelProfile));
+                return result;
             }
 
             if (shapeNum == 23)
             {
-                aResult.Add(typeof(AngleProfile));
-                return aResult;
+                result.Add(typeof(AngleProfile));
+                return result;
             }
 
             if (shapeNum == 25)
             {
-                aResult.Add(typeof(ZSectionProfile));
-                return aResult;
+                result.Add(typeof(ZSectionProfile));
+                return result;
             }
 
             if (shapeNum == 31)
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (shapeNum == 33)
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (shapeNum == 35)
             {
-                aResult.Add(typeof(CircleProfile));
-                return aResult;
+                result.Add(typeof(CircleProfile));
+                return result;
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/
 
         public static IEnumerable<Type> BHoMTypes(this string familyName)
         {
-            List<Type> aResult = new List<Type>();
+            List<Type> result = new List<Type>();
 
             if (familyName.EndsWith("_Concrete-RectangularBeam"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_ConcreteRectangular"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_ConcreteRectangularWithCL"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_ConcreteSquare"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_ConcreteSquareWithCL"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_Precast-RectangularBeam"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_Precast-RectangularColumn"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_ConcreteRectangular-PrecastWithCL"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_ConcreteRectangular-Precast"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_Precast-SquareColumnWithCL"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_Precast-SquareColumn"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_Precast-RectangularColumnWithCL"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName == "BHm_StructuralFraming_Timber")
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName == "BHm_StructuralColumns_Timber")
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_LaminatedVeneerLumber"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_ParallelStrandLumberWithCL"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_ParallelStrandLumber"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_Glulam(1)"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_Glulam(1)WithCL"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_Glulam(2)"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_Glulam(2)WithCL"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_DimensionLumber"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_DimensionLumberWithCL"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_TimberWithCL"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_Plate"))
             {
-                aResult.Add(typeof(RectangleProfile));
-                return aResult;
+                result.Add(typeof(RectangleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_RSJ-RolledSteelJoists"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UC-UniversalColumns"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UC-UniversalColumns-Column"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UB-UniversalBeams"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UB-UniversalBeams-Column"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UBP-UniversalBearingPile"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UBP-UniversalBearingPile-Column"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_ASB-Beams"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UKC-UKColumns"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UKC-UKColumns-Column"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UKB-UKBeams"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UKB-UKBeams-Column"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UKBP-UKBearingPiles"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UKBP-UKBearingPiles-Column"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_IPN-Beams"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_IPN-Column"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_IPE-Beams"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_IPE-Column"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_H-WideFlangeBeams"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_H-WideFlange-Column"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_M-MiscellaneousWideFlange-Column"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_W-WideFlange-Column"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_HP-BearingPile-Column"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_RSJ-RolledSteelJoists-Column"))
             {
-                aResult.Add(typeof(ISectionProfile));
-                return aResult;
+                result.Add(typeof(ISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_RoundBar"))
             {
-                aResult.Add(typeof(CircleProfile));
-                return aResult;
+                result.Add(typeof(CircleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_ConcreteRound"))
             {
-                aResult.Add(typeof(CircleProfile));
-                return aResult;
+                result.Add(typeof(CircleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_ConcreteRoundWithCL"))
             {
-                aResult.Add(typeof(CircleProfile));
-                return aResult;
+                result.Add(typeof(CircleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_PlateGirder"))
             {
-                aResult.Add(typeof(FabricatedISectionProfile));
-                return aResult;
+                result.Add(typeof(FabricatedISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_WeldedWideFlange"))
             {
-                aResult.Add(typeof(FabricatedISectionProfile));
-                return aResult;
+                result.Add(typeof(FabricatedISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_WeldedReducedFlange"))
             {
-                aResult.Add(typeof(FabricatedISectionProfile));
-                return aResult;
+                result.Add(typeof(FabricatedISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_Plate-Column"))
             {
-                aResult.Add(typeof(FabricatedISectionProfile));
-                return aResult;
+                result.Add(typeof(FabricatedISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_WWF-WeldedWideFlange-Column"))
             {
-                aResult.Add(typeof(FabricatedISectionProfile));
-                return aResult;
+                result.Add(typeof(FabricatedISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_WRF-WeldedReducedFlange-Column"))
             {
-                aResult.Add(typeof(FabricatedISectionProfile));
-                return aResult;
+                result.Add(typeof(FabricatedISectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_L-Angles"))
             {
-                aResult.Add(typeof(AngleProfile));
-                return aResult;
+                result.Add(typeof(AngleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_L-EqualLegAngles"))
             {
-                aResult.Add(typeof(AngleProfile));
-                return aResult;
+                result.Add(typeof(AngleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_L-EqualLegAngles-Column"))
             {
-                aResult.Add(typeof(AngleProfile));
-                return aResult;
+                result.Add(typeof(AngleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_L-UnequalLegAngles"))
             {
-                aResult.Add(typeof(AngleProfile));
-                return aResult;
+                result.Add(typeof(AngleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_L-UnequalLegAngles-Column"))
             {
-                aResult.Add(typeof(AngleProfile));
-                return aResult;
+                result.Add(typeof(AngleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UKA-UKAngles"))
             {
-                aResult.Add(typeof(AngleProfile));
-                return aResult;
+                result.Add(typeof(AngleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UKA-UKAngles-Column"))
             {
-                aResult.Add(typeof(AngleProfile));
-                return aResult;
+                result.Add(typeof(AngleProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_C-Channels"))
             {
-                aResult.Add(typeof(ChannelProfile));
-                return aResult;
+                result.Add(typeof(ChannelProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UKPFC-ParallelFlangeChannels"))
             {
-                aResult.Add(typeof(ChannelProfile));
-                return aResult;
+                result.Add(typeof(ChannelProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UKPFC-ParallelFlangeChannels-Column"))
             {
-                aResult.Add(typeof(ChannelProfile));
-                return aResult;
+                result.Add(typeof(ChannelProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_PFC-ParallelFlangeChannels"))
             {
-                aResult.Add(typeof(ChannelProfile));
-                return aResult;
+                result.Add(typeof(ChannelProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_PFC-ParallelFlangeChannels-Column"))
             {
-                aResult.Add(typeof(ChannelProfile));
-                return aResult;
+                result.Add(typeof(ChannelProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_U-ParallelFlangeChannels"))
             {
-                aResult.Add(typeof(ChannelProfile));
-                return aResult;
+                result.Add(typeof(ChannelProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_U-Channels"))
             {
-                aResult.Add(typeof(ChannelProfile));
-                return aResult;
+                result.Add(typeof(ChannelProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_Precast-SingleTee"))
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UKT-UKTeesSplitfromUKC"))
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UKT-UKTeesSplitfromUKC-Column"))
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UKT-UKTeesSplitfromUKB"))
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_UKT-UKTeesSplitfromUKB-Column"))
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_T-TeesfromUniversalColumns"))
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_T-TeesfromUniversalColumns-Column"))
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_T-TeesfromUniversalBeams"))
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_T-TeesfromUniversalBeams-Column"))
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_MH-TeesfromH-Beams"))
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_T-Tees"))
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_MIPE-TeesfromIPE"))
             {
-                aResult.Add(typeof(TSectionProfile));
-                return aResult;
+                result.Add(typeof(TSectionProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_SquareHollowSections"))
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_SquareHollowSections-Column"))
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_RectangularHollowSections"))
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_RectangularHollowSections-Column"))
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_SHS-SquareHollowSections(Cold)"))
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_SHS-SquareHollowSections-Column(Cold)"))
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_SHS-SquareHollowSections"))
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_SHS-SquareHollowSections-Column"))
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_RHS-RectangularHollowSections(Cold)"))
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_RHS-RectangularHollowSections-Column(Cold)"))
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_RHS-RectangularHollowSections"))
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_RHS-RectangularHollowSections-Column"))
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_RectangularandSquareHollowSections"))
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_RectangularandSquareHollowSections-Column"))
             {
-                aResult.Add(typeof(BoxProfile));
-                return aResult;
+                result.Add(typeof(BoxProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_CircularHollowSections"))
             {
-                aResult.Add(typeof(TubeProfile));
-                return aResult;
+                result.Add(typeof(TubeProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_CircularHollowSections-Column"))
             {
-                aResult.Add(typeof(TubeProfile));
-                return aResult;
+                result.Add(typeof(TubeProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_CHS-CircularHollowSections(Cold)"))
             {
-                aResult.Add(typeof(TubeProfile));
-                return aResult;
+                result.Add(typeof(TubeProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_CHS-CircularHollowSections-Column(Cold)"))
             {
-                aResult.Add(typeof(TubeProfile));
-                return aResult;
+                result.Add(typeof(TubeProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_CHS-CircularHollowSections"))
             {
-                aResult.Add(typeof(TubeProfile));
-                return aResult;
+                result.Add(typeof(TubeProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_CHS-CircularHollowSections-Column"))
             {
-                aResult.Add(typeof(TubeProfile));
-                return aResult;
+                result.Add(typeof(TubeProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_CircularHollowSections"))
             {
-                aResult.Add(typeof(TubeProfile));
-                return aResult;
+                result.Add(typeof(TubeProfile));
+                return result;
             }
 
             if (familyName.EndsWith("_Pipe-Column"))
             {
-                aResult.Add(typeof(TubeProfile));
-                return aResult;
+                result.Add(typeof(TubeProfile));
+                return result;
             }
 
-            return aResult;
+            return result;
         }
 
         /***************************************************/

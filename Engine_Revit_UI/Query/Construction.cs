@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -41,11 +41,11 @@ namespace BH.UI.Revit.Engine
             if (energyAnalysisOpening == null)
                 return null;
 
-            Element aElement = Query.Element(energyAnalysisOpening);
-            if (aElement == null)
+            Element element = Query.Element(energyAnalysisOpening);
+            if (element == null)
                 return null;
 
-            return Construction(aElement.EnergyAnalysisElementName(), energyAnalysisOpening.OpeningType.ToString());
+            return Construction(element.EnergyAnalysisElementName(), energyAnalysisOpening.OpeningType.ToString());
         }
 
         /***************************************************/
@@ -55,27 +55,27 @@ namespace BH.UI.Revit.Engine
             if (string.IsNullOrEmpty(constructionName) || string.IsNullOrEmpty(materialName))
                 return null;
 
-            string aMaterialName = null;
+            string matName = null;
             if (!string.IsNullOrEmpty(materialName))
-                aMaterialName = string.Format("Default {0} Material", materialName);
+                matName = string.Format("Default {0} Material", materialName);
             else
-                aMaterialName = "Default Material";
+                matName = "Default Material";
 
-            SolidMaterial aMaterialPropertiesTransparent = new SolidMaterial();
-            aMaterialPropertiesTransparent.Name = aMaterialName;
+            SolidMaterial transparentMaterialProperties = new SolidMaterial();
+            transparentMaterialProperties.Name = matName;
 
-            oM.Physical.Materials.Material aMaterial = new oM.Physical.Materials.Material();
-            aMaterial.Properties.Add(aMaterialPropertiesTransparent);
+            oM.Physical.Materials.Material material = new oM.Physical.Materials.Material();
+            material.Properties.Add(transparentMaterialProperties);
 
-            oM.Physical.Constructions.Construction aConstruction = new oM.Physical.Constructions.Construction();
-            aConstruction.Name = constructionName;
+            oM.Physical.Constructions.Construction construction = new oM.Physical.Constructions.Construction();
+            construction.Name = constructionName;
 
-            oM.Physical.Constructions.Layer aLayer = new oM.Physical.Constructions.Layer();
-            aLayer.Material = aMaterial;
+            oM.Physical.Constructions.Layer layer = new oM.Physical.Constructions.Layer();
+            layer.Material = material;
 
-            aConstruction.Layers.Add(aLayer);
+            construction.Layers.Add(layer);
 
-            return aConstruction;
+            return construction;
         }
 
         /***************************************************/

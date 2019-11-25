@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -41,10 +41,10 @@ namespace BH.UI.Revit.Engine
             if (pullSettings.RefObjects == null)
                 return null;
 
-            List<IBHoMObject> aBHoMObjectList = null;
-            if (pullSettings.RefObjects.TryGetValue(elementId, out aBHoMObjectList))
-                if (aBHoMObjectList != null)
-                    return aBHoMObjectList.FindAll(x => x is T).Cast<T>().ToList();
+            List<IBHoMObject> bhomObjects = null;
+            if (pullSettings.RefObjects.TryGetValue(elementId, out bhomObjects))
+                if (bhomObjects != null)
+                    return bhomObjects.FindAll(x => x is T).Cast<T>().ToList();
 
             return null;
         }
@@ -56,32 +56,32 @@ namespace BH.UI.Revit.Engine
             if (pushSettings.RefObjects == null)
                 return null;
 
-            List<int> aBHoMObjectList = null;
-            if (pushSettings.RefObjects.TryGetValue(guid, out aBHoMObjectList))
-                return aBHoMObjectList;
+            List<int> bhomObjects = null;
+            if (pushSettings.RefObjects.TryGetValue(guid, out bhomObjects))
+                return bhomObjects;
 
             return null;
         }
 
         /***************************************************/
 
-        public static List<T> FindRefObjects<T>(this PushSettings pushSettings, Document Document, Guid guid) where T : Element
+        public static List<T> FindRefObjects<T>(this PushSettings pushSettings, Document document, Guid guid) where T : Element
         {
             if (pushSettings.RefObjects == null)
                 return null;
 
-            List<int> aBHoMObjectList = null;
-            if (!pushSettings.RefObjects.TryGetValue(guid, out aBHoMObjectList))
+            List<int> bhomObjects = null;
+            if (!pushSettings.RefObjects.TryGetValue(guid, out bhomObjects))
                 return null;
 
-            if (aBHoMObjectList == null)
+            if (bhomObjects == null)
                 return null;
 
-            List<T> aResult = new List<T>();
-            if (aBHoMObjectList.Count == 0)
-                return aResult;
+            List<T> result = new List<T>();
+            if (bhomObjects.Count == 0)
+                return result;
 
-            return aBHoMObjectList.ConvertAll(x => Document.GetElement(new ElementId(x))).FindAll(x => x is T).Cast<T>().ToList();
+            return bhomObjects.ConvertAll(x => document.GetElement(new ElementId(x))).FindAll(x => x is T).Cast<T>().ToList();
         }
 
         /***************************************************/

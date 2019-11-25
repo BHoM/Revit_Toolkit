@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -36,18 +36,18 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null)
                 return null;
 
-            object aValue = null;
-            if (bHoMObject.CustomData.TryGetValue(BH.Engine.Adapters.Revit.Convert.ElementId, out aValue))
+            object value = null;
+            if (bHoMObject.CustomData.TryGetValue(BH.Engine.Adapters.Revit.Convert.ElementId, out value))
             {
-                if (aValue is string)
+                if (value is string)
                 {
                     int aInt = -1;
-                    if (int.TryParse((string)aValue, out aInt))
+                    if (int.TryParse((string)value, out aInt))
                         return new ElementId(aInt);
                 }
-                else if (aValue is int)
+                else if (value is int)
                 {
-                    return new ElementId((int)aValue);
+                    return new ElementId((int)value);
                 }
                 else
                 {
@@ -65,21 +65,21 @@ namespace BH.UI.Revit.Engine
             if (string.IsNullOrEmpty(originatingElementDescription))
                 return null;
 
-            int aIndex_Start = originatingElementDescription.LastIndexOf("[");
-            if (aIndex_Start == -1)
+            int startIndex = originatingElementDescription.LastIndexOf("[");
+            if (startIndex == -1)
                 return null;
 
-            int aIndex_End = originatingElementDescription.IndexOf("]", aIndex_Start);
-            if (aIndex_End == -1)
+            int endIndex = originatingElementDescription.IndexOf("]", startIndex);
+            if (endIndex == -1)
                 return null;
 
-            string aElementIdString = originatingElementDescription.Substring(aIndex_Start + 1, aIndex_End - aIndex_Start - 1);
+            string elementID = originatingElementDescription.Substring(startIndex + 1, endIndex - startIndex - 1);
 
-            int aElementIdInt;
-            if (!int.TryParse(aElementIdString, out aElementIdInt))
+            int id;
+            if (!int.TryParse(elementID, out id))
                 return null;
 
-            return new ElementId(aElementIdInt);
+            return new ElementId(id);
         }
 
         /***************************************************/

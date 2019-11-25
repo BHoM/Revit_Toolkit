@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -40,15 +40,15 @@ namespace BH.UI.Revit.Engine
             if (document == null || bHoMObject == null)
                 return null;
 
-            string aFamilyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject);
-            if (string.IsNullOrEmpty(aFamilyName) && !string.IsNullOrEmpty(bHoMObject.Name) && bHoMObject.Name.Contains(":"))
-                aFamilyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject.Name);
+            string familyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject);
+            if (string.IsNullOrEmpty(familyName) && !string.IsNullOrEmpty(bHoMObject.Name) && bHoMObject.Name.Contains(":"))
+                familyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject.Name);
 
-            if (string.IsNullOrWhiteSpace(aFamilyName))
+            if (string.IsNullOrWhiteSpace(familyName))
                 return null;
 
-            List<Family> aFamilyList = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>().ToList();
-            return aFamilyList.Find(x => x.Name == aFamilyName);
+            List<Family> familyList = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>().ToList();
+            return familyList.Find(x => x.Name == familyName);
         }
 
         /***************************************************/
@@ -58,16 +58,18 @@ namespace BH.UI.Revit.Engine
             if (families == null || bHoMObject == null)
                 return null;
 
-            string aFamilyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject);
-            if (string.IsNullOrEmpty(aFamilyName) && !string.IsNullOrEmpty(bHoMObject.Name) && bHoMObject.Name.Contains(":"))
-                aFamilyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject.Name);
+            string familyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject);
+            if (string.IsNullOrEmpty(familyName) && !string.IsNullOrEmpty(bHoMObject.Name) && bHoMObject.Name.Contains(":"))
+                familyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject.Name);
 
-            if (string.IsNullOrWhiteSpace(aFamilyName))
+            if (string.IsNullOrWhiteSpace(familyName))
                 return null;
 
-            foreach (Family aFamily in families)
-                if (aFamily.Name == aFamilyName)
-                    return aFamily;
+            foreach (Family family in families)
+            {
+                if (family.Name == familyName)
+                    return family;
+            }
 
             return null;
         }
@@ -82,34 +84,34 @@ namespace BH.UI.Revit.Engine
             //Find Existing Family in Document
             foreach (BuiltInCategory builtInCategory in builtInCategories)
             {
-                List<Family> aFamilyList;
+                List<Family> familyList;
                 if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
-                    aFamilyList = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>().ToList();
+                    familyList = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>().ToList();
                 else
-                    aFamilyList = new FilteredElementCollector(document).OfClass(typeof(Family)).OfCategory(builtInCategory).Cast<Family>().ToList();
+                    familyList = new FilteredElementCollector(document).OfClass(typeof(Family)).OfCategory(builtInCategory).Cast<Family>().ToList();
 
-                Family aFamily = Family(family, aFamilyList);
-                if (aFamily != null)
-                    return aFamily;
+                Family revitFamily = Family(family, familyList);
+                if (revitFamily != null)
+                    return revitFamily;
             }
 
-            string aFamilyName = family.FamilyName();
+            string familyName = family.FamilyName();
 
             //Find ElementType in FamilyLibrary
-            if (familyLoadSettings != null && !string.IsNullOrWhiteSpace(aFamilyName))
+            if (familyLoadSettings != null && !string.IsNullOrWhiteSpace(familyName))
             {
                 foreach (BuiltInCategory builtInCategory in builtInCategories)
                 {
                     if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
                         continue;
 
-                    string aCategoryName = builtInCategory.CategoryName(document);
-                    if (string.IsNullOrEmpty(aCategoryName))
-                        aCategoryName = family.CategoryName();
+                    string categoryName = builtInCategory.CategoryName(document);
+                    if (string.IsNullOrEmpty(categoryName))
+                        categoryName = family.CategoryName();
 
-                    Family aFamily = familyLoadSettings.LoadFamily(document, aCategoryName, aFamilyName);
-                    if (aFamily != null)
-                        return aFamily;
+                    Family revitFamily = familyLoadSettings.LoadFamily(document, categoryName, familyName);
+                    if (revitFamily != null)
+                        return revitFamily;
                 }
             }
 

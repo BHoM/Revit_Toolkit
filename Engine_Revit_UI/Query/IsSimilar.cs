@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -33,38 +33,38 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
         
-        public static bool IsSimilar(this Curve curve_1, Curve curve_2, double tolerance = oM.Geometry.Tolerance.MicroDistance)
+        public static bool IsSimilar(this Curve curve1, Curve curve2, double tolerance = oM.Geometry.Tolerance.MicroDistance)
         {
-            if (curve_1 == null && curve_2 == null)
+            if (curve1 == null && curve2 == null)
                 return true;
 
-            if (curve_2 == null || curve_1 == null)
+            if (curve2 == null || curve1 == null)
                 return false;
 
-            if (curve_1.GetType() != curve_2.GetType())
+            if (curve1.GetType() != curve2.GetType())
                 return false;
 
-            if (curve_1.IsBound != curve_2.IsBound)
+            if (curve1.IsBound != curve2.IsBound)
                 return false;
 
-            if (Math.Abs(curve_1.ApproximateLength - curve_2.ApproximateLength) > tolerance)
+            if (Math.Abs(curve1.ApproximateLength - curve2.ApproximateLength) > tolerance)
                 return false;
 
-            if(curve_1 is Line && curve_2 is Line)
+            if(curve1 is Line && curve2 is Line)
             {
-                if (curve_1.GetEndPoint(0).IsAlmostEqualTo(curve_2.GetEndPoint(0), tolerance) && curve_1.GetEndPoint(1).IsAlmostEqualTo(curve_2.GetEndPoint(1), tolerance))
+                if (curve1.GetEndPoint(0).IsAlmostEqualTo(curve2.GetEndPoint(0), tolerance) && curve1.GetEndPoint(1).IsAlmostEqualTo(curve2.GetEndPoint(1), tolerance))
                     return true;
                 else
                     return false;
             }
 
-            IList<XYZ> aIList_1 = curve_1.Tessellate();
-            IList<XYZ> aIList_2 = curve_2.Tessellate();
-            if (aIList_1.Count != aIList_2.Count)
+            IList<XYZ> xyz1 = curve1.Tessellate();
+            IList<XYZ> xyz2 = curve2.Tessellate();
+            if (xyz1.Count != xyz2.Count)
                 return false;
 
-            for (int i = 0; i < aIList_1.Count; i++)
-                if (!aIList_1[i].IsAlmostEqualTo(aIList_2[i], tolerance))
+            for (int i = 0; i < xyz1.Count; i++)
+                if (!xyz1[i].IsAlmostEqualTo(xyz2[i], tolerance))
                     return false;
 
             return true;

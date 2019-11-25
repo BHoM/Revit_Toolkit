@@ -41,60 +41,61 @@ namespace BH.UI.Revit.Engine
             if (hostObject == null)
                 return null;
 
-            IList<ElementId> aElementIdList = hostObject.FindInserts(false, false, false, false);
-            if (aElementIdList == null || aElementIdList.Count < 1)
+            IList<ElementId> elementIDs = hostObject.FindInserts(false, false, false, false);
+            if (elementIDs == null || elementIDs.Count < 1)
                 return null;
 
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Environment.Elements.Panel> aPanelList = new List<oM.Environment.Elements.Panel>();
-            foreach (ElementId aElementId in aElementIdList)
+            List<oM.Environment.Elements.Panel> panels = new List<oM.Environment.Elements.Panel>();
+            foreach (ElementId id in elementIDs)
             {
-                Element aElement_Hosted = hostObject.Document.GetElement(aElementId);
-                if ((BuiltInCategory)aElement_Hosted.Category.Id.IntegerValue == Autodesk.Revit.DB.BuiltInCategory.OST_Windows || (BuiltInCategory)aElement_Hosted.Category.Id.IntegerValue == Autodesk.Revit.DB.BuiltInCategory.OST_Doors)
+                Element hostedElement = hostObject.Document.GetElement(id);
+                if ((BuiltInCategory)hostedElement.Category.Id.IntegerValue == Autodesk.Revit.DB.BuiltInCategory.OST_Windows || (BuiltInCategory)hostedElement.Category.Id.IntegerValue == Autodesk.Revit.DB.BuiltInCategory.OST_Doors)
                 {
-                    IntersectionResult aIntersectionResult = null;
+                    IntersectionResult intersectionResult = null;
 
-                    BoundingBoxXYZ aBoundingBoxXYZ = aElement_Hosted.get_BoundingBox(null);
+                    BoundingBoxXYZ bboxXYZ = hostedElement.get_BoundingBox(null);
 
-                    aIntersectionResult = face.Project(aBoundingBoxXYZ.Max);
-                    if (aIntersectionResult == null)
+                    intersectionResult = face.Project(bboxXYZ.Max);
+                    if (intersectionResult == null)
                         continue;
 
-                    XYZ aXYZ_Max = aIntersectionResult.XYZPoint;
-                    UV aUV_Max = aIntersectionResult.UVPoint;
+                    XYZ maxXYZ = intersectionResult.XYZPoint;
+                    UV maxUV = intersectionResult.UVPoint;
 
-                    aIntersectionResult = face.Project(aBoundingBoxXYZ.Min);
-                    if (aIntersectionResult == null)
+                    intersectionResult = face.Project(bboxXYZ.Min);
+                    if (intersectionResult == null)
                         continue;
 
-                    XYZ aXYZ_Min = aIntersectionResult.XYZPoint;
-                    UV aUV_Min = aIntersectionResult.UVPoint;
+                    XYZ minXYZ = intersectionResult.XYZPoint;
+                    UV minUV = intersectionResult.UVPoint;
 
-                    double aU = aUV_Max.U - aUV_Min.U;
-                    double aV = aUV_Max.V - aUV_Min.V;
+                    double aU = maxUV.U - minUV.U;
+                    double aV = maxUV.V - minUV.V;
 
-                    XYZ aXYZ_V = face.Evaluate(new UV(aUV_Max.U, aUV_Max.V - aV));
-                    if (aXYZ_V == null)
+                    XYZ vXYZ = face.Evaluate(new UV(maxUV.U, maxUV.V - aV));
+                    if (vXYZ == null)
                         continue;
 
-                    XYZ aXYZ_U = face.Evaluate(new UV(aUV_Max.U - aU, aUV_Max.V));
-                    if (aXYZ_U == null)
+                    XYZ uXYZ = face.Evaluate(new UV(maxUV.U - aU, maxUV.V));
+                    if (uXYZ == null)
                         continue;
 
-                    List<oM.Geometry.Point> aPointList = new List<oM.Geometry.Point>();
-                    aPointList.Add(aXYZ_Max.ToBHoM());
-                    aPointList.Add(aXYZ_U.ToBHoM());
-                    aPointList.Add(aXYZ_Min.ToBHoM());
-                    aPointList.Add(aXYZ_V.ToBHoM());
-                    aPointList.Add(aXYZ_Max.ToBHoM());
+                    List<oM.Geometry.Point> points = new List<oM.Geometry.Point>();
+                    points.Add(maxXYZ.ToBHoM());
+                    points.Add(uXYZ.ToBHoM());
+                    points.Add(minXYZ.ToBHoM());
+                    points.Add(vXYZ.ToBHoM());
+                    points.Add(maxXYZ.ToBHoM());
 
-                    oM.Environment.Elements.Panel aPanel = Convert.ToBHoMEnvironmentPanel(aElement_Hosted, BH.Engine.Geometry.Create.Polyline(aPointList), pullSettings);
-                    if (aPanel != null)
-                        aPanelList.Add(aPanel);
+                    oM.Environment.Elements.Panel panel = Convert.ToBHoMEnvironmentPanel(hostedElement, BH.Engine.Geometry.Create.Polyline(points), pullSettings);
+                    if (panel != null)
+                        panels.Add(panel);
                 }
             }
-            return aPanelList;
+
+            return panels;
         }
 
         /***************************************************/

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -39,19 +39,19 @@ namespace BH.UI.Revit.Engine
         [Deprecated("3.0", "The method has been moved to BH.Engine.Adapters.Revit.Query", typeof(BH.Engine.Adapters.Revit.Query), "Discipline")]
         public static Discipline Discipline(this FilterRequest filterRequest, RevitSettings revitSettings)
         {
-            Discipline? aDiscipline = null;
+            Discipline? discipline = null;
 
-            aDiscipline = BH.Engine.Adapters.Revit.Query.Discipline(filterRequest);
-            if (aDiscipline != null && aDiscipline.HasValue)
-                return aDiscipline.Value;
+            discipline = BH.Engine.Adapters.Revit.Query.Discipline(filterRequest);
+            if (discipline != null && discipline.HasValue)
+                return discipline.Value;
 
-            aDiscipline = BH.Engine.Adapters.Revit.Query.DefaultDiscipline(filterRequest);
-            if (aDiscipline != null && aDiscipline.HasValue)
-                return aDiscipline.Value;
+            discipline = BH.Engine.Adapters.Revit.Query.DefaultDiscipline(filterRequest);
+            if (discipline != null && discipline.HasValue)
+                return discipline.Value;
 
-            aDiscipline = BH.Engine.Adapters.Revit.Query.DefaultDiscipline(revitSettings);
-            if (aDiscipline != null && aDiscipline.HasValue)
-                return aDiscipline.Value;
+            discipline = BH.Engine.Adapters.Revit.Query.DefaultDiscipline(revitSettings);
+            if (discipline != null && discipline.HasValue)
+                return discipline.Value;
 
             return oM.Adapters.Revit.Enums.Discipline.Undefined;
         }
@@ -64,27 +64,27 @@ namespace BH.UI.Revit.Engine
             if (filterRequest == null || filterRequest.Count() == 0)
                 return oM.Adapters.Revit.Enums.Discipline.Undefined;
 
-            Discipline? aDiscipline = null;
+            Discipline? discipline = null;
 
-            foreach (FilterRequest aFilterRequest in filterRequest)
+            foreach (FilterRequest request in filterRequest)
             {
-                aDiscipline = BH.Engine.Adapters.Revit.Query.Discipline(aFilterRequest);
-                if (aDiscipline != null && aDiscipline.HasValue)
-                    return aDiscipline.Value;
+                discipline = BH.Engine.Adapters.Revit.Query.Discipline(request);
+                if (discipline != null && discipline.HasValue)
+                    return discipline.Value;
             }
 
-            foreach (FilterRequest aFilterRequest in filterRequest)
+            foreach (FilterRequest request in filterRequest)
             {
-                aDiscipline = BH.Engine.Adapters.Revit.Query.DefaultDiscipline(aFilterRequest);
-                if (aDiscipline != null && aDiscipline.HasValue)
-                    return aDiscipline.Value;
+                discipline = BH.Engine.Adapters.Revit.Query.DefaultDiscipline(request);
+                if (discipline != null && discipline.HasValue)
+                    return discipline.Value;
             }
 
-            aDiscipline = BH.Engine.Adapters.Revit.Query.DefaultDiscipline(revitSettings);
-            if (aDiscipline != null && aDiscipline.HasValue)
-                return aDiscipline.Value;
+            discipline = BH.Engine.Adapters.Revit.Query.DefaultDiscipline(revitSettings);
+            if (discipline != null && discipline.HasValue)
+                return discipline.Value;
 
-            return oM.Adapters.Revit.Enums.Discipline.Undefined;
+            return oM.Adapters.Revit.Enums.Discipline.Undefined;           
         }
 
         /***************************************************/
