@@ -83,10 +83,10 @@ namespace BH.UI.Revit
         {
             RevitUIAdapter adapter;
 
-            if (!gAdapters.TryGetValue(document, out adapter))
+            if (!m_Adapters.TryGetValue(document, out adapter))
             {
                 adapter = new RevitUIAdapter(UIControlledApplication, document);
-                gAdapters[document] = adapter;
+                m_Adapters[document] = adapter;
             }
 
             if (AdapterSettings != null)
@@ -107,7 +107,7 @@ namespace BH.UI.Revit
                 Tag = ""
             };
 
-            gLinkOut.SendData(package);
+            m_LinkOut.SendData(package);
         }
 
         /***************************************************/
@@ -115,12 +115,12 @@ namespace BH.UI.Revit
         public void SetPorts(int inputPort, int outputPort)
         {
             //Not sure if needed
-            gLinkIn.DataObservers -= M_linkIn_DataObservers;
+            m_LinkIn.DataObservers -= M_linkIn_DataObservers;
 
-            gLinkIn = new SocketLink_Tcp(inputPort);
-            gLinkIn.DataObservers += M_linkIn_DataObservers;
+            m_LinkIn = new SocketLink_Tcp(inputPort);
+            m_LinkIn.DataObservers += M_linkIn_DataObservers;
 
-            gLinkOut = new SocketLink_Tcp(outputPort);
+            m_LinkOut = new SocketLink_Tcp(outputPort);
         }
 
 
@@ -131,7 +131,7 @@ namespace BH.UI.Revit
         public Result OnShutdown(UIControlledApplication application)
         {
             //Not sure if needed
-            gLinkIn.DataObservers -= M_linkIn_DataObservers;
+            m_LinkIn.DataObservers -= M_linkIn_DataObservers;
 
             return Result.Succeeded;
         }
@@ -153,19 +153,19 @@ namespace BH.UI.Revit
 
             //Define push and pull events
             PushEvent pushEvent = new PushEvent();
-            gPushEvent = ExternalEvent.Create(pushEvent);
+            m_PushEvent = ExternalEvent.Create(pushEvent);
 
             PullEvent pullEvent = new PullEvent();
-            gPullEvent = ExternalEvent.Create(pullEvent);
+            m_PullEvent = ExternalEvent.Create(pullEvent);
 
             //empty list for package holding
             LatestPackage = new List<IObject>();
 
             //Socket link for listening and sending data
-            gLinkIn = new SocketLink_Tcp(14128);
-            gLinkIn.DataObservers += M_linkIn_DataObservers;
+            m_LinkIn = new SocketLink_Tcp(14128);
+            m_LinkIn.DataObservers += M_linkIn_DataObservers;
 
-            gLinkOut = new SocketLink_Tcp(14129);
+            m_LinkOut = new SocketLink_Tcp(14129);
 
             uIControlledApplication.ViewActivated += Application_ViewActivated;
 
@@ -199,7 +199,7 @@ namespace BH.UI.Revit
 
             ExternalEvent eve = null;
 
-            lock (gPackageLock)
+            lock (m_PackageLock)
             {
                 if (package.Data.Count < 1)
                 {
@@ -226,7 +226,7 @@ namespace BH.UI.Revit
                         return;
                     case PackageType.Push:
                         if (!CheckPackageSize(package)) return;
-                        eve = gPushEvent;  //Set the event to raise
+                        eve = m_PushEvent;  //Set the event to raise
                         LatestPackage = new List<IObject>();    //Clear the previous package list
                         //Add all objects to the list
                         foreach (object obj in package.Data[1] as IEnumerable<object>)
@@ -237,12 +237,12 @@ namespace BH.UI.Revit
                         break;
                     case PackageType.Pull:
                         if (!CheckPackageSize(package)) return;
-                        eve = gPullEvent;
+                        eve = m_PullEvent;
                         LatestRequest = package.Data[1] as IRequest;
                         break;
                     case PackageType.UpdateProperty:
                         if (!CheckPackageSize(package)) return;
-                        eve = gUpdatePropertyEvent;
+                        eve = m_UpdatePropertyEvent;
                         var tuple = package.Data[1] as Tuple<FilterRequest, string, object>;
                         LatestRequest = tuple.Item1;
                         LatestKeyValuePair = new KeyValuePair<string, object>(tuple.Item2, tuple.Item3);
@@ -277,14 +277,14 @@ namespace BH.UI.Revit
         /****             Private fields                ****/
         /***************************************************/
 
-        private SocketLink_Tcp gLinkIn;
-        private SocketLink_Tcp gLinkOut;
-        private ExternalEvent gPushEvent;
-        private ExternalEvent gPullEvent;
-        private ExternalEvent gUpdatePropertyEvent;
-        private Dictionary<Document, RevitUIAdapter> gAdapters = new Dictionary<Document, RevitUIAdapter>();
+        private SocketLink_Tcp m_LinkIn;
+        private SocketLink_Tcp m_LinkOut;
+        private ExternalEvent m_PushEvent;
+        private ExternalEvent m_PullEvent;
+        private ExternalEvent m_UpdatePropertyEvent;
+        private Dictionary<Document, RevitUIAdapter> m_Adapters = new Dictionary<Document, RevitUIAdapter>();
         
-        public object gPackageLock = new object();
+        public object m_PackageLock = new object();
 
         /***************************************************/
     }
