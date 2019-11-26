@@ -84,25 +84,25 @@ namespace BH.UI.Revit.Engine
 
         private class FamilyLoadOptions : IFamilyLoadOptions
         {
-            private bool gOverwriteParameterValues;
-            private bool gOverwriteFamily;
+            private bool m_OverwriteParameterValues;
+            private bool m_OverwriteFamily;
 
             public FamilyLoadOptions(FamilyLoadSettings familyLoadSettings)
             {
-                gOverwriteParameterValues = familyLoadSettings.OverwriteParameterValues;
-                gOverwriteFamily = familyLoadSettings.OverwriteFamily;
+                m_OverwriteParameterValues = familyLoadSettings.OverwriteParameterValues;
+                m_OverwriteFamily = familyLoadSettings.OverwriteFamily;
             }
 
             public bool OnFamilyFound(bool familyInUse, out bool overwriteParameterValues)
             {
-                overwriteParameterValues = gOverwriteParameterValues;
-                return gOverwriteFamily;
+                overwriteParameterValues = m_OverwriteParameterValues;
+                return m_OverwriteFamily;
             }
 
             public bool OnSharedFamilyFound(Family sharedFamily, bool familyInUse, out FamilySource source, out bool overwriteParameterValues)
             {
-                overwriteParameterValues = gOverwriteParameterValues;
-                if(gOverwriteFamily)
+                overwriteParameterValues = m_OverwriteParameterValues;
+                if(m_OverwriteFamily)
                 {
                     source = FamilySource.Family;
                     return true;
