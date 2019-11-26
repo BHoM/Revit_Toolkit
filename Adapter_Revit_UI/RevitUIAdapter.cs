@@ -33,11 +33,11 @@ namespace BH.UI.Revit.Adapter
         /****             Private Properties            ****/
         /***************************************************/
 
-        private UIControlledApplication gUIControlledApplication;
+        private UIControlledApplication m_UIControlledApplication;
 
         /***************************************************/
 
-        private Document gDocument;
+        private Document m_Document;
 
 
         /***************************************************/
@@ -50,8 +50,8 @@ namespace BH.UI.Revit.Adapter
             AdapterId = BH.Engine.Adapters.Revit.Convert.AdapterId;
             Config.UseAdapterId = false;
 
-            gDocument = document;
-            gUIControlledApplication = uIControlledApplication;
+            m_Document = document;
+            m_UIControlledApplication = uIControlledApplication;
         }
 
 
@@ -63,7 +63,7 @@ namespace BH.UI.Revit.Adapter
         {
             get
             {
-                return gDocument;
+                return m_Document;
             }
         }
 
@@ -73,10 +73,10 @@ namespace BH.UI.Revit.Adapter
         {
             get
             {
-                if (gDocument == null)
+                if (m_Document == null)
                     return null;
 
-                return new UIDocument(gDocument);
+                return new UIDocument(m_Document);
             }
         }
 
@@ -86,7 +86,7 @@ namespace BH.UI.Revit.Adapter
         {
             get
             {
-                return gUIControlledApplication;
+                return m_UIControlledApplication;
             }
         }
 
