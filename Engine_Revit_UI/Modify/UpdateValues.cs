@@ -39,12 +39,12 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IObject UpdateValues(this IObject iObject, PullSettings pullSettings, Element Element)
+        public static IObject UpdateValues(this IObject iObject, PullSettings pullSettings, Element element)
         {
             if (iObject == null)
                 return null;
 
-            if (pullSettings == null || pullSettings.MapSettings == null || Element == null)
+            if (pullSettings == null || pullSettings.MapSettings == null || element == null)
                 return iObject;
 
             Type type = iObject.GetType();
@@ -57,7 +57,7 @@ namespace BH.UI.Revit.Engine
 
             foreach (PropertyInfo pInfo in propertyInfos)
             {
-                Parameter parameter = Element.LookupParameter(mapSettings, type, pInfo.Name, false);
+                Parameter parameter = element.LookupParameter(mapSettings, type, pInfo.Name, false);
                 if (parameter == null)
                     continue;
 

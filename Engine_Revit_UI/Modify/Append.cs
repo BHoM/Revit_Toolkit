@@ -100,9 +100,9 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
 
         [DeprecatedAttribute("3.0", "AppendBuiltInCategories had been renamed to Append", null, "Append")]
-        public static IEnumerable<BuiltInCategory> AppendBuiltInCategories(this IEnumerable<BuiltInCategory> builtInCategories_ToBeAppended, IEnumerable<BuiltInCategory> builtInCategories, bool AllowDuplicates = false)
+        public static IEnumerable<BuiltInCategory> AppendBuiltInCategories(this IEnumerable<BuiltInCategory> builtInCategories_ToBeAppended, IEnumerable<BuiltInCategory> builtInCategories, bool allowDuplicates = false)
         {
-            return Append(builtInCategories, builtInCategories_ToBeAppended, AllowDuplicates);
+            return Append(builtInCategories, builtInCategories_ToBeAppended, allowDuplicates);
         }
 
         /***************************************************/

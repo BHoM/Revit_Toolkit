@@ -34,12 +34,12 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates FilterRequest which filters all elements by given Revit Selection Set Name.")]
         [Input("slectionSetName", "Revit Slection Set Name")]
         [Output("FilterRequest")]
-        public static FilterRequest SelectionSetFilterRequest(string slectionSetName)
+        public static FilterRequest SelectionSetFilterRequest(string selectionSetName)
         {
             FilterRequest filterRequest = new FilterRequest();
             filterRequest.Type = typeof(BHoMObject);
             filterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.SelectionSet;
-            filterRequest.Equalities[Convert.FilterRequest.SelectionSetName] = slectionSetName;
+            filterRequest.Equalities[Convert.FilterRequest.SelectionSetName] = selectionSetName;
             return filterRequest;
         }
     }
