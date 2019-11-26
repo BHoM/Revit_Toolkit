@@ -68,18 +68,18 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
 
         [DeprecatedAttribute("3.0", "BH.UI.Revit.Engine.Query.MaterialType method is not supported any more")]
-        public static MaterialType? MaterialType(this StructuralMaterialType StructuralMaterialType)
+        public static MaterialType? MaterialType(this StructuralMaterialType structuralMaterialType)
         {
-            switch (StructuralMaterialType)
+            switch (structuralMaterialType)
             {
-                case StructuralMaterialType.Aluminum:
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Aluminum:
                     return oM.Common.Materials.MaterialType.Aluminium;
-                case StructuralMaterialType.PrecastConcrete:
-                case StructuralMaterialType.Concrete:
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.PrecastConcrete:
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete:
                     return oM.Common.Materials.MaterialType.Concrete;
-                case StructuralMaterialType.Steel:
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
                     return oM.Common.Materials.MaterialType.Steel;
-                case StructuralMaterialType.Wood:
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood:
                     return oM.Common.Materials.MaterialType.Timber;
             }
 

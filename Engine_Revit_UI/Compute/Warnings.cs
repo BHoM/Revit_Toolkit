@@ -427,7 +427,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void AnalyticalObjectConversionWarning(this IObject iObject, Type Type = null)
+        internal static void AnalyticalObjectConversionWarning(this IObject iObject, Type type = null)
         {
             string message = "Analytical object cannot be converted to Revit.";
 
@@ -436,8 +436,8 @@ namespace BH.UI.Revit.Engine
             else
                 message = string.Format("{0} Type: {1}.", message, iObject.GetType().FullName);
 
-            if (Type != null)
-                message = string.Format("{0} Use {1} instead", message, Type.FullName);
+            if (type != null)
+                message = string.Format("{0} Use {1} instead", message, type.FullName);
 
             BH.Engine.Reflection.Compute.RecordError(message);
         }

@@ -30,12 +30,12 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static double FromSI(this double Value, UnitType UnitType)
+        public static double FromSI(this double value, UnitType unitType)
         {
-            if (double.IsNaN(Value) || Value == double.MaxValue || Value == double.MinValue || double.IsNegativeInfinity(Value) || double.IsPositiveInfinity(Value))
-                return Value;
+            if (double.IsNaN(value) || value == double.MaxValue || value == double.MinValue || double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value))
+                return value;
 
-            return UnitUtils.ConvertToInternalUnits(Value, UnitType.BHoMUnitType());
+            return UnitUtils.ConvertToInternalUnits(value, unitType.BHoMUnitType());
         }
 
         /***************************************************/
