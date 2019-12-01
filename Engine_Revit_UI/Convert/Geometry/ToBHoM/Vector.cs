@@ -22,7 +22,7 @@
 
 using Autodesk.Revit.DB;
 
-using BH.Engine.Geometry;
+using BH.oM.Geometry;
 
 using BH.oM.Adapters.Revit.Settings;
 
@@ -39,7 +39,7 @@ namespace BH.UI.Revit.Engine
             if (xyz == null)
                 return null;
 
-            return Create.Vector(xyz.X.ToSI(UnitType.UT_Length), xyz.Y.ToSI(UnitType.UT_Length), xyz.Z.ToSI(UnitType.UT_Length));
+            return new Vector { X = xyz.X.ToSI(UnitType.UT_Length), Y = xyz.Y.ToSI(UnitType.UT_Length), Z = xyz.Z.ToSI(UnitType.UT_Length) };
         }
 
         /***************************************************/

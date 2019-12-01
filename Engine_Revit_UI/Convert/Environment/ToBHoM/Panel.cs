@@ -49,7 +49,7 @@ namespace BH.UI.Revit.Engine
 
             ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
 
-            panel = Create.Panel(externalEdges: crv.ToEdges());
+            panel = BH.Engine.Environment.Create.Panel(externalEdges: crv.ToEdges());
             panel.Name = Query.FamilyTypeFullName(element);
 
             //Set ExtendedProperties
@@ -108,7 +108,7 @@ namespace BH.UI.Revit.Engine
             if (polycurve == null)
                 return null;
 
-            panel = Create.Panel(externalEdges: polycurve.ToEdges());
+            panel = BH.Engine.Environment.Create.Panel(externalEdges: polycurve.ToEdges());
             panel.Name = Query.FamilyTypeFullName(familyInstance);
 
             //Set ExtendedProperties
@@ -173,7 +173,7 @@ namespace BH.UI.Revit.Engine
             if (element != null)
             {
                 elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-                panel = Create.Panel(name: Query.FamilyTypeFullName(element), externalEdges: curve.ToEdges());
+                panel = BH.Engine.Environment.Create.Panel(name: Query.FamilyTypeFullName(element), externalEdges: curve.ToEdges());
             }
 
             //Set ExtendedProperties
@@ -284,7 +284,7 @@ namespace BH.UI.Revit.Engine
             foreach (ICurve curve in polycurveListOuter)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = Create.Panel(externalEdges: curve.ToEdges());
+                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: curve.ToEdges());
                 panel.Name = Query.FamilyTypeFullName(ceiling);
 
                 //Set ExtendedProperties
@@ -352,7 +352,7 @@ namespace BH.UI.Revit.Engine
             foreach (ICurve curve in polycurveListOuter)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = Create.Panel(externalEdges: curve.ToEdges());
+                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: curve.ToEdges());
                 panel.Name = Query.FamilyTypeFullName(floor);
 
                 //Set ExtendedProperties
@@ -419,7 +419,7 @@ namespace BH.UI.Revit.Engine
             foreach (ICurve curve in polycurvesListOuter)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = Create.Panel(externalEdges: curve.ToEdges());
+                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: curve.ToEdges());
                 panel.Name = Query.FamilyTypeFullName(roofBase);
 
                 //Set ExtendedProperties
@@ -484,7 +484,7 @@ namespace BH.UI.Revit.Engine
             foreach (ICurve curve in polycurveListOuter)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = Create.Panel(externalEdges: curve.ToEdges());
+                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: curve.ToEdges());
                 panel.Name = Query.FamilyTypeFullName(wall);
 
                 //Set ExtendedProperties

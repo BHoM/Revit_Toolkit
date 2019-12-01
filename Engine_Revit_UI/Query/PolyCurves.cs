@@ -51,13 +51,13 @@ namespace BH.UI.Revit.Engine
                     ICurve crv = null;
 
                     if (transform != null)
-                        crv = Convert.ToBHoM(curve.CreateTransformed(transform));
+                        crv = curve.CreateTransformed(transform).IToBHoM();
                     else
-                        crv = Convert.ToBHoM(curve);
+                        crv = curve.IToBHoM();
 
                     curves.Add(crv);
                 }
-                result.Add(Create.PolyCurve(curves));
+                result.Add(new oM.Geometry.PolyCurve { Curves = curves });
             }
 
             return result;

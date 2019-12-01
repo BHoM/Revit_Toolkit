@@ -55,7 +55,7 @@ namespace BH.UI.Revit.Engine
             {
                 //Look for first available type name if type name not provided
 
-                RevitFilePreview revitFilePreview = Create.RevitFilePreview(path);
+                RevitFilePreview revitFilePreview = BH.Engine.Adapters.Revit.Create.RevitFilePreview(path);
                 if (revitFilePreview == null)
                     return null;
 

@@ -72,7 +72,7 @@ namespace BH.UI.Revit.Engine
                 }
                 else if(geometryObject is Curve)
                 {
-                    oM.Geometry.ICurve curve = ((Curve)geometryObject).ToBHoM();
+                    oM.Geometry.ICurve curve = ((Curve)geometryObject).IToBHoM();
                     if (curve != null)
                         result.Add(curve);
                 }
@@ -92,27 +92,6 @@ namespace BH.UI.Revit.Engine
                 transform = ((FamilyInstance)element).GetTotalTransform();
 
             return Curves(geometryElement, transform, pullSettings);
-        }
-
-        /***************************************************/
-
-        public static List<oM.Geometry.ICurve> Curves(this oM.Geometry.Polyline polyline)
-        {
-            if (polyline == null)
-                return null;
-
-            if (polyline.ControlPoints == null || polyline.ControlPoints.Count < 2)
-                return null;
-
-            List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
-
-            for (int i = 1; i < polyline.ControlPoints.Count; i++)
-                result.Add(BH.Engine.Geometry.Create.Line(polyline.ControlPoints[i - 1], polyline.ControlPoints[i]));
-
-            if (BH.Engine.Geometry.Query.Distance(polyline.ControlPoints[polyline.ControlPoints.Count - 1], polyline.ControlPoints[0]) > oM.Geometry.Tolerance.MicroDistance)
-                result.Add(BH.Engine.Geometry.Create.Line(polyline.ControlPoints[polyline.ControlPoints.Count - 1], polyline.ControlPoints[0]));
-
-            return result;
         }
 
         /***************************************************/

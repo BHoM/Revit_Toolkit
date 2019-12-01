@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Plane ToRevitPlane(this Cartesian coordinateSystem)
+        public static Plane ToRevit(this Cartesian coordinateSystem)
         {
             XYZ origin = coordinateSystem.Origin.ToRevit();
             XYZ X = coordinateSystem.X.ToRevit().Normalize();

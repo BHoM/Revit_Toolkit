@@ -70,7 +70,7 @@ namespace BH.UI.Revit.Engine
             if (viewSheet == null)
                 return null;
 
-            revitViewPort = Viewport.Create(document, viewSheet.Id, view.Id, ToRevit(viewport.Location, pushSettings));
+            revitViewPort = Viewport.Create(document, viewSheet.Id, view.Id, viewport.Location.ToRevit());
 
             if (pushSettings.CopyCustomData)
                 Modify.SetParameters(revitViewPort, viewport, null);

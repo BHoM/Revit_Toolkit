@@ -28,6 +28,7 @@ using BH.oM.Geometry;
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace BH.UI.Revit.Engine
 {
     public static partial class Convert
@@ -36,71 +37,42 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static CurveElement ToCurveElement(this ModelInstance modelInstance, Document document, PushSettings pushSettings = null)
+        public static Element ToCurveElement(this ModelInstance modelInstance, Document document, PushSettings pushSettings = null)
         {
             CurveElement curveElement = pushSettings.FindRefObject<CurveElement>(document, modelInstance.BHoM_Guid);
             if (curveElement != null)
                 return curveElement;
-
+            
             pushSettings.DefaultIfNull();
 
-            if (!(modelInstance.Location is ICurve))
+            ICurve curve = modelInstance.Location as ICurve;
+            if (curve == null)
                 return null;
 
-            ICurve curve = (ICurve)modelInstance.Location;
+            if (!curve.IIsPlanar(BH.oM.Geometry.Tolerance.Distance))
+            {
+                modelInstance.NonPlanarCurveError();
+                return null;
+            }
 
-            Curve revitCurve = curve.ToRevit(pushSettings);
+            Curve revitCurve = curve.IToRevit();
             if (revitCurve == null)
                 return null;
 
-            if (!BH.Engine.Geometry.Query.IsPlanar(curve as dynamic))
-                return null;
-
-            List<oM.Geometry.Point> points = BH.Engine.Geometry.Query.ControlPoints(curve as dynamic);
-            if (points == null || points.Count <= 1)
-                return null;
-
-            XYZ point1 = null;
-            XYZ point2 = null;
-            XYZ point3 = null;
-
-            if (points.IsCollinear(BH.oM.Geometry.Tolerance.Distance))
+            if ((revitCurve is NurbSpline || revitCurve is HermiteSpline) && curve.IIsClosed(BH.oM.Geometry.Tolerance.Distance))
             {
-                point1 = points[0].ToRevit(pushSettings);
-                point2 = points[1].ToRevit(pushSettings);
-
-                XYZ vector = point2 - point1;
-                double length = vector.GetLength();
-                vector = vector.Normalize();
-                XYZ parallelVector = null;
-                if (vector.X == 1)
-                    parallelVector = new XYZ(0, 1, 0);
-                else if (vector.Y == 1)
-                    parallelVector = new XYZ(1, 0, 0);
-                else if (vector.Z == 1)
-                    parallelVector = new XYZ(0, 1, 0);
-                else if (vector.X != 0)
-                    parallelVector = new XYZ(-vector.X, vector.Y, vector.Z);
-                else if (vector.Y != 0)
-                    parallelVector = new XYZ(vector.X, -vector.Y, vector.Z);
-                else if (vector.Z != 0)
-                    parallelVector = new XYZ(vector.X, vector.Y, -vector.Z);
-                else
-                    parallelVector = XYZ.Zero;
-
-                vector = parallelVector * length;
-
-                point3 = point1 + vector;
+                modelInstance.ClosedNurbsCurveError();
+                return null;
             }
+
+            Autodesk.Revit.DB.Plane revitPlane;
+            BH.oM.Geometry.Plane plane = curve.IFitPlane();
+            if (plane == null)
+                revitPlane = revitCurve.ArbitraryPlane();
             else
-            {
-                point1 = points[0].ToRevit(pushSettings);
-                point2 = points[1].ToRevit(pushSettings);
-                point3 = points[2].ToRevit(pushSettings);
-            }
+                revitPlane = plane.ToRevit();
 
-            SketchPlane sketchPlane = SketchPlane.Create(document, Autodesk.Revit.DB.Plane.CreateByThreePoints(point1, point2, point3));
-
+            SketchPlane sketchPlane = SketchPlane.Create(document, revitPlane);
             curveElement = document.Create.NewModelCurve(revitCurve, sketchPlane);
 
             if (modelInstance.Properties != null)
@@ -134,7 +106,7 @@ namespace BH.UI.Revit.Engine
 
             ICurve curve = (ICurve)draftingInstance.Location;
 
-            Curve revitCurve = curve.ToRevit(pushSettings);
+            Curve revitCurve = curve.IToRevit();
             if (revitCurve == null)
                 return null;
 

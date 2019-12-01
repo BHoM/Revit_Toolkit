@@ -76,7 +76,7 @@ namespace BH.UI.Revit.Engine
             string name = Query.Name(spatialElement);
 
             //Create the Space
-            space = Create.Space(name);
+            space = BH.Engine.Environment.Create.Space(name);
 
             if(spatialElement.Location != null && spatialElement.Location is LocationPoint)
                 space.Location = ((LocationPoint)spatialElement.Location).ToBHoM();
@@ -123,7 +123,7 @@ namespace BH.UI.Revit.Engine
             SpatialElement spatialElement = Query.Element(energyAnalysisSpace.Document, energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
 
             string name = Query.Name(spatialElement);
-            space = Create.Space(name);
+            space = BH.Engine.Environment.Create.Space(name);
 
             if (spatialElement != null && spatialElement.Location != null)
                 space.Location = (spatialElement.Location as LocationPoint).ToBHoM();

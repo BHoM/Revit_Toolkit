@@ -39,7 +39,7 @@ namespace BH.UI.Revit.Engine
 
             pushSettings.DefaultIfNull();
 
-            Curve curve = grid.Curve.ToRevitCurve();
+            Curve curve = grid.Curve.IToRevit();
 
             if (curve is Line)
                 revitGrid = Grid.Create(document, (Line)curve);

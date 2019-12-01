@@ -29,9 +29,7 @@ using BHP = BH.oM.Physical.Materials;
 using BHC = BH.oM.Physical.Constructions;
 using BH.oM.Geometry;
 using BH.oM.Geometry.CoordinateSystem;
-using BH.oM.Environment.Elements;
 using System.Collections.Generic;
-using BH.oM.Environment.Fragments;
 
 namespace BH.UI.Revit.Engine
 {
@@ -163,15 +161,6 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Environment.Elements.Panel panel, Document document, PushSettings pushSettings = null)
-        {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitElement(panel, document, pushSettings);
-        }
-
-        /***************************************************/
-
         public static Element ToRevit(this BH.oM.Physical.Elements.IFramingElement framingElement, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
@@ -181,56 +170,11 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Autodesk.Revit.DB.Plane ToRevit(this Cartesian coordinateSystem, PushSettings pushSettings = null)
-        {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return coordinateSystem.ToRevitPlane();
-        }
-
-        /***************************************************/
-
-        public static Curve ToRevit(this ICurve curve, PushSettings pushSettings = null)
-        {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return curve.ToRevitCurve();
-        }
-
-        /***************************************************/
-
-        public static CurveArray ToRevit(this PolyCurve polyCurve, PushSettings pushSettings = null)
-        {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return polyCurve.ToRevitCurveArray();
-        }
-
-        /***************************************************/
-
-        public static XYZ ToRevit(this oM.Geometry.Point point, PushSettings pushSettings = null)
-        {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return point.ToRevitXYZ();
-        }
-
-        /***************************************************/
-
         public static Autodesk.Revit.DB.Family ToRevit(this oM.Adapters.Revit.Elements.Family family, Document document, PushSettings pushSettings = null)
         {
             pushSettings = pushSettings.DefaultIfNull();
 
             return ToRevitFamily(family, document, pushSettings);
-        }
-
-        /***************************************************/
-
-        public static CompoundStructureLayer ToRevit(this BHC.Construction constructionLayer, Document document, PushSettings pushSettings = null)
-        {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitCompoundStructureLayer(constructionLayer, document, pushSettings);
         }
 
         /***************************************************/

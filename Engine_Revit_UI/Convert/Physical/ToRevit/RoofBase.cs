@@ -27,6 +27,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using BH.Engine.Geometry;
 
 namespace BH.UI.Revit.Engine
 {
@@ -95,15 +96,7 @@ namespace BH.UI.Revit.Engine
             oM.Geometry.Plane plane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, elevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
 
             ICurve curve = BH.Engine.Geometry.Modify.Project(planarSurface.ExternalBoundary as dynamic, plane) as ICurve;
-
-            CurveArray curveArray = null;
-            if (curve is PolyCurve)
-                curveArray = ((PolyCurve)curve).ToRevitCurveArray();
-            else if (curve is Polyline)
-                curveArray = ((Polyline)curve).ToRevitCurveArray();
-
-            if (curveArray == null)
-                return null;
+            CurveArray curveArray = Create.CurveArray(curve.IToRevitCurves());
 
             ModelCurveArray modelCurveArray = new ModelCurveArray();
             roofBase = document.Create.NewFootPrintRoof(curveArray, level, roofType, out modelCurveArray);
@@ -113,12 +106,7 @@ namespace BH.UI.Revit.Engine
                 if (parameter != null)
                     parameter.Set(ElementId.InvalidElementId);
 
-                List<ICurve> curveList = null;
-
-                if (planarSurface.ExternalBoundary is PolyCurve)
-                    curveList = ((PolyCurve)planarSurface.ExternalBoundary).Curves;
-                else if (planarSurface.ExternalBoundary is Polyline)
-                    curveList = Query.Curves((Polyline)planarSurface.ExternalBoundary);
+                List<ICurve> curveList = planarSurface.ExternalBoundary.ISubParts().ToList();
 
                 if (curveList != null && curveList.Count > 2)
                 {
@@ -130,7 +118,7 @@ namespace BH.UI.Revit.Engine
                         oM.Geometry.Point point = BH.Engine.Geometry.Query.IStartPoint(tempCurve);
                         if (System.Math.Abs(point.Z - plane.Origin.Z) > Tolerance.MicroDistance)
                         {
-                            XYZ xyz = point.ToRevit(pushSettings);
+                            XYZ xyz = point.ToRevit();
                             slabShapeEditor.DrawPoint(xyz);
                         }
                             

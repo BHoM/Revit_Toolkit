@@ -21,10 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Geometry;
-using BH.oM.Adapters.Revit.Settings;
+using BH.Engine.Geometry;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace BH.UI.Revit.Engine
 {
@@ -34,64 +34,108 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<Curve> ToRevitCurveList(this oM.Environment.Elements.Panel panel)
+        public static List<Curve> ToRevitCurves(this BH.oM.Geometry.Line curve)
         {
-            if (panel == null || panel.ExternalEdges == null)
+            return new List<Curve> { curve.ToRevit() };
+        }
+
+        /***************************************************/
+
+        public static List<Curve> ToRevitCurves(this BH.oM.Geometry.Arc curve)
+        {
+            if (Math.Abs(2 * Math.PI) - curve.EndAngle + curve.StartAngle < BH.oM.Geometry.Tolerance.Angle)
+            {
+                double r = curve.Radius.FromSI(UnitType.UT_Length);
+                XYZ centre = curve.CoordinateSystem.Origin.ToRevit();
+                XYZ xAxis = curve.CoordinateSystem.X.ToRevit().Normalize();
+                XYZ yAxis = curve.CoordinateSystem.Y.ToRevit().Normalize();
+
+                Arc arc1 = Arc.Create(centre, r, 0, Math.PI, xAxis, yAxis);
+                Arc arc2 = Arc.Create(centre, r, 0, Math.PI, -xAxis, -yAxis);
+                return new List<Curve> { arc1, arc2 };
+            }
+            else
+                return new List<Curve> { curve.ToRevit() };
+        }
+
+        /***************************************************/
+
+        public static List<Curve> ToRevitCurves(this BH.oM.Geometry.Circle curve)
+        {
+            double r = curve.Radius.FromSI(UnitType.UT_Length);
+
+            XYZ centre = curve.Centre.ToRevit();
+            XYZ normal = curve.Normal.ToRevit().Normalize();
+            Plane p = Plane.CreateByNormalAndOrigin(normal, centre);
+
+            Arc arc1 = Arc.Create(p, r, 0, Math.PI);
+            Arc arc2 = Arc.Create(centre, r, 0, Math.PI, -arc1.XDirection, -arc1.YDirection);
+            return new List<Curve> { arc1, arc2 };
+        }
+
+        /***************************************************/
+
+        public static List<Curve> ToRevitCurves(this BH.oM.Geometry.Ellipse curve)
+        {
+            XYZ centre = curve.Centre.ToRevit();
+            double radius1 = curve.Radius1.FromSI(UnitType.UT_Length);
+            double radius2 = curve.Radius2.FromSI(UnitType.UT_Length);
+            XYZ axis1 = curve.Axis1.ToRevit();
+            XYZ axis2 = curve.Axis2.ToRevit();
+            return new List<Curve> { Ellipse.CreateCurve(centre, radius1, radius2, axis1, axis2, 0, Math.PI), Ellipse.CreateCurve(centre, radius1, radius2, axis1, axis2, Math.PI, Math.PI * 2) };
+        }
+
+        /***************************************************/
+
+        public static List<Curve> ToRevitCurves(this BH.oM.Geometry.NurbsCurve curve)
+        {
+            Curve nc = curve.ToRevit();
+            if (nc == null)
                 return null;
 
-            List<Curve> result = new List<Curve>();
-            foreach (oM.Environment.Elements.Edge edge in panel.ExternalEdges)
+            //Split the curve in half when it is closed.
+            if (nc.GetEndPoint(0).DistanceTo(nc.GetEndPoint(1)) <= BH.oM.Geometry.Tolerance.Distance)
             {
-                List<Curve> curveList = ToRevitCurveList(edge.Curve);
-                if (curveList != null && curveList.Count > 0)
-                    result.AddRange(curveList);
+                double param1 = nc.GetEndParameter(0);
+                double param2 = nc.GetEndParameter(1);
+                Curve c1 = nc.Clone();
+                Curve c2 = nc.Clone();
+                c1.MakeBound(param1, (param1 + param2) * 0.5);
+                c2.MakeBound((param1 + param2) * 0.5, param2);
+                return new List<Curve> { c1, c2 };
             }
+            else
+                return new List<Curve> { nc };
+        }
+
+        /***************************************************/
+
+        public static List<Curve> ToRevitCurves(this BH.oM.Geometry.PolyCurve curve)
+        {
+            List<Curve> result = new List<Curve>();
+            foreach (BH.oM.Geometry.ICurve cc in curve.SubParts())
+            {
+                result.AddRange(cc.IToRevitCurves());
+            }
+
             return result;
         }
 
         /***************************************************/
 
-        public static List<Curve> ToRevitCurveList(this ICurve curve)
+        public static List<Curve> ToRevitCurves(this BH.oM.Geometry.Polyline curve)
         {
-            if (curve == null)
-                return null;
+            return curve.SubParts().Select(x => x.ToRevit() as Curve).ToList();
+        }
 
-            List<Curve> result = new List<Curve>();
-            if (curve is oM.Geometry.Arc)
-                result.Add(curve.ToRevit());
-            if (curve is oM.Geometry.Ellipse)
-                result.Add(curve.ToRevit());
-            else if (curve is Circle)
-                result.Add(curve.ToRevit());
-            else if (curve is oM.Geometry.Line)
-                result.Add(curve.ToRevit());
-            else if (curve is NurbsCurve)
-                result.Add(curve.ToRevit());
-            else if (curve is Polyline)
-            {
-                List<ICurve> curves = Query.Curves((Polyline)curve);
-                if (curves == null)
-                    return null;
 
-                curves.ForEach(x => result.Add(x.ToRevit()));
-            }
-            else if (curve is PolyCurve)
-            {
-                PolyCurve polycurve = (PolyCurve)curve;
-                if (polycurve.Curves == null)
-                    return null;
+        /***************************************************/
+        /****             Interface Methods             ****/
+        /***************************************************/
 
-                foreach (ICurve crv in polycurve.Curves)
-                {
-                    List<Curve> curves = crv.ToRevitCurveList();
-                    if (curves != null && curves.Count > 0)
-                    {
-                        result.AddRange(curves);
-                    }
-                }
-            }
-
-            return result;
+        public static List<Curve> IToRevitCurves(this BH.oM.Geometry.ICurve curve)
+        {
+            return ToRevitCurves(curve as dynamic);
         }
 
         /***************************************************/

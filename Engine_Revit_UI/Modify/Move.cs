@@ -63,7 +63,7 @@ namespace BH.UI.Revit.Engine
             if (locationPoint.IsReadOnly)
                 return null;
 
-            XYZ xyz = point.ToRevit(pushSettings);
+            XYZ xyz = point.ToRevit();
 
             if (xyz.IsAlmostEqualTo(locationPoint.Point, Tolerance.MicroDistance))
                 return locationPoint;
@@ -82,7 +82,7 @@ namespace BH.UI.Revit.Engine
             if (locationCurve.IsReadOnly)
                 return null;
 
-            Curve curve = iCurve.ToRevitCurve();
+            Curve curve = iCurve.IToRevit();
             if (Query.IsSimilar(curve, locationCurve.Curve))
                 return locationCurve;
 

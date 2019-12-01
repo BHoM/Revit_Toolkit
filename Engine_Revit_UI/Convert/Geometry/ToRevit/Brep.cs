@@ -36,20 +36,25 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static BRepBuilder ToRevitBrep(this ISurface surface)
+        public static Solid ToRevit(this ISurface surface)
         {
+            //TODO: conversion of ISurface to Solid is weird (but it works?)
             BRepBuilder brep = new BRepBuilder(BRepType.OpenShell);
 
             if (!TryAddSurface(brep, surface as dynamic))
                 return null;
 
             brep.Finish();
-            return brep;
+
+            if (!brep.IsResultAvailable())
+                return null;
+            else
+                return brep.GetResult();
         }
 
         /***************************************************/
 
-        public static BRepBuilder ToRevitBrep(this BoundaryRepresentation boundaryRepresentation)
+        public static Solid ToRevit(this BoundaryRepresentation boundaryRepresentation)
         {
             //TODO: allow creating void and solid?
             BRepBuilder brep = new BRepBuilder(BRepType.OpenShell);
@@ -60,7 +65,11 @@ namespace BH.UI.Revit.Engine
             }
 
             brep.Finish();
-            return brep;
+
+            if (!brep.IsResultAvailable())
+                return null;
+            else
+                return brep.GetResult();
         }
 
 
@@ -86,7 +95,7 @@ namespace BH.UI.Revit.Engine
             try
             {
                 BH.oM.Geometry.Plane p = ps.ExternalBoundary.IFitPlane();
-                Autodesk.Revit.DB.Plane rp = p.ToRevitPlane();
+                Autodesk.Revit.DB.Plane rp = p.ToRevit();
 
                 BRepBuilderSurfaceGeometry bbsg = BRepBuilderSurfaceGeometry.Create(rp, null);
                 BRepBuilderGeometryId face = brep.AddFace(bbsg, false);
@@ -139,7 +148,7 @@ namespace BH.UI.Revit.Engine
                     weights[i] = new double[uvCount[1]];
                     for (int j = 0; j < uvCount[1]; j++)
                     {
-                        points[i][j] = ns.ControlPoints[j + (uvCount[1] * i)].ToRevitXYZ();
+                        points[i][j] = ns.ControlPoints[j + (uvCount[1] * i)].ToRevit();
                         weights[i][j] = ns.Weights[j + (uvCount[1] * i)];
                     }
                 }
@@ -164,7 +173,7 @@ namespace BH.UI.Revit.Engine
                     BRepBuilderGeometryId loop = brep.AddLoop(face);
                     foreach (ICurve sp in trim.Curve3d.ISubParts())
                     {
-                        List<Curve> ccs = sp.ToRevitCurves();
+                        List<Curve> ccs = sp.IToRevitCurves();
                         foreach (Curve cc in ccs)
                         {
                             BRepBuilderGeometryId edge = brep.AddEdge(BRepBuilderEdgeGeometry.Create(cc));
@@ -179,7 +188,7 @@ namespace BH.UI.Revit.Engine
                     BRepBuilderGeometryId loop = brep.AddLoop(face);
                     foreach (ICurve sp in trim.Curve3d.ISubParts())
                     {
-                        List<Curve> ccs = sp.ToRevitCurves();
+                        List<Curve> ccs = sp.IToRevitCurves();
                         foreach (Curve cc in ccs)
                         {
                             BRepBuilderGeometryId edge = brep.AddEdge(BRepBuilderEdgeGeometry.Create(cc));
@@ -208,7 +217,7 @@ namespace BH.UI.Revit.Engine
             CurveLoop cl = new CurveLoop();
             foreach (ICurve sp in curve.ISubParts())
             {
-                foreach (Curve cc in sp.ToRevitCurves())
+                foreach (Curve cc in sp.IToRevitCurves())
                 {
                     cl.Append(cc);
                 }

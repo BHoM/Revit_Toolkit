@@ -21,8 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Geometry;
-using BH.oM.Adapters.Revit.Settings;
 using BH.Engine.Geometry;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,121 +34,87 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Curve ToRevitCurve(this ICurve curve)
+        public static Line ToRevit(this BH.oM.Geometry.Line curve)
         {
-            if (curve is oM.Geometry.Line)
+            return Line.CreateBound(curve.Start.ToRevit(), curve.End.ToRevit());
+        }
+
+        /***************************************************/
+
+        public static Arc ToRevit(this BH.oM.Geometry.Arc curve)
+        {
+            double radius = curve.Radius.FromSI(UnitType.UT_Length);
+            return Arc.Create(curve.CoordinateSystem.ToRevit(), radius, curve.StartAngle, curve.EndAngle);
+        }
+
+        /***************************************************/
+
+        public static Curve ToRevit(this oM.Geometry.Circle curve)
+        {
+            double radius = curve.Radius.FromSI(UnitType.UT_Length);
+            Plane plane = Plane.CreateByNormalAndOrigin(curve.Normal.ToRevit().Normalize(), curve.Centre.ToRevit());
+            return Arc.Create(plane, radius, 0, Math.PI * 2);
+        }
+
+        /***************************************************/
+
+        public static Ellipse ToRevit(this oM.Geometry.Ellipse curve)
+        {
+            return Ellipse.CreateCurve(curve.Centre.ToRevit(), curve.Radius1.FromSI(UnitType.UT_Length), curve.Radius2.FromSI(UnitType.UT_Length), curve.Axis1.ToRevit().Normalize(), curve.Axis2.ToRevit().Normalize(), 0, Math.PI * 2) as Ellipse;
+        }
+
+        /***************************************************/
+
+        public static Curve ToRevit(this oM.Geometry.NurbsCurve curve)
+        {
+            if (curve.IsPeriodic())
             {
-                oM.Geometry.Line line = curve as oM.Geometry.Line;
-                return Autodesk.Revit.DB.Line.CreateBound(ToRevit(line.Start), ToRevit(line.End));
+                BH.Engine.Reflection.Compute.RecordError("Conversion of BHoM nurbs curve to Revit failed as Revit does not support periodic nurbs curves.");
+                return null;
             }
 
-            if (curve is oM.Geometry.Arc)
+            List<double> knots = curve.Knots.ToList();
+            knots.Insert(0, knots[0]);
+            knots.Add(knots[knots.Count - 1]);
+            List<XYZ> controlPoints = curve.ControlPoints.Select(x => x.ToRevit()).ToList();
+            
+            try
             {
-                oM.Geometry.Arc arc = curve as oM.Geometry.Arc;
-                double radius = arc.Radius.FromSI(UnitType.UT_Length);
-                return Autodesk.Revit.DB.Arc.Create(arc.CoordinateSystem.ToRevit(), radius, arc.StartAngle, arc.EndAngle);
+                return NurbSpline.CreateCurve(curve.Degree(), knots, controlPoints, curve.Weights);
             }
-
-            if (curve is NurbsCurve)
+            catch
             {
-                NurbsCurve nurbCurve = curve as NurbsCurve;
-                List<double> knots = nurbCurve.Knots.ToList();
-                knots.Insert(0, knots[0]);
-                knots.Add(knots[knots.Count - 1]);
-                List<XYZ> controlPoints = nurbCurve.ControlPoints.Select(x => x.ToRevit()).ToList();
-
-                try
-                {
-                    return NurbSpline.CreateCurve(nurbCurve.Degree(), knots, controlPoints, nurbCurve.Weights);
-                }
-                catch
-                {
-                    BH.Engine.Reflection.Compute.RecordWarning("Conversion of BHoM nurbs curve to Revit curve based on degree and knot vector failed. A simplified (possibly different) spline has been created.");
-                    return NurbSpline.CreateCurve(controlPoints, nurbCurve.Weights);
-                }
+                BH.Engine.Reflection.Compute.RecordWarning("Conversion of BHoM nurbs curve to Revit based on degree and knot vector failed. A simplified (possibly different) spline has been created.");
+                return NurbSpline.CreateCurve(controlPoints, curve.Weights);
             }
+        }
 
-            if (curve is oM.Geometry.Ellipse)
-            {
-                oM.Geometry.Ellipse ellipse = curve as oM.Geometry.Ellipse;
-                return Autodesk.Revit.DB.Ellipse.CreateCurve(ToRevit(ellipse.Centre), ellipse.Radius1, ellipse.Radius2, ToRevit(ellipse.Axis1), ToRevit(ellipse.Axis2), 0, 1);
-            }
+        /***************************************************/
 
-            if (curve is Polyline)
-            {
-                Polyline polyline = curve as Polyline;
-                if (polyline.ControlPoints.Count == 2)
-                    return Autodesk.Revit.DB.Line.CreateBound(ToRevit(polyline.ControlPoints[0]), ToRevit(polyline.ControlPoints[1]));
-            }
-
+        public static Curve ToRevit(this oM.Geometry.Polyline curve)
+        {
+            Compute.MultiSegmentCurveError();
             return null;
         }
 
         /***************************************************/
 
-        public static List<Curve> ToRevitCurves(this ICurve curve)
+        public static Curve ToRevit(this oM.Geometry.PolyCurve curve)
         {
-            if (curve is Polyline || curve is PolyCurve)
-            {
-                List<Curve> result = new List<Curve>();
-                foreach (ICurve cc in curve.ISubParts())
-                {
-                    result.AddRange(cc.ToRevitCurves());
-                }
-
-                return result;
-            }
-            else if (curve is BH.oM.Geometry.Arc)
-            {
-                BH.oM.Geometry.Arc arc = curve as BH.oM.Geometry.Arc;
-                if (arc.Radius < Tolerance.Distance)
-                    return new List<Curve>();
-                
-                if (Math.Abs(2 * Math.PI) - arc.EndAngle + arc.StartAngle < BH.oM.Geometry.Tolerance.Angle)
-                {
-                    double r = arc.Radius.FromSI(UnitType.UT_Length);
-                    XYZ centre = arc.CoordinateSystem.Origin.ToRevitXYZ();
-                    XYZ xAxis = arc.CoordinateSystem.X.ToRevitXYZ().Normalize();
-                    XYZ yAxis = arc.CoordinateSystem.Y.ToRevitXYZ().Normalize();
-
-                    Autodesk.Revit.DB.Arc arc1 = Autodesk.Revit.DB.Arc.Create(centre, r, 0, Math.PI, xAxis, yAxis);
-                    Autodesk.Revit.DB.Arc arc2 = Autodesk.Revit.DB.Arc.Create(centre, r, 0, Math.PI, -xAxis, -yAxis);
-                    return new List<Curve> { arc1, arc2 };
-                }
-            }
-            else if (curve is Circle)
-            {
-                Circle circle = curve as Circle;
-                double r = circle.Radius.FromSI(UnitType.UT_Length);
-                
-                XYZ centre = circle.Centre.ToRevitXYZ();
-                XYZ normal = circle.Normal.ToRevitXYZ().Normalize();
-                Autodesk.Revit.DB.Plane p = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(normal, centre);
-
-                Autodesk.Revit.DB.Arc arc1 = Autodesk.Revit.DB.Arc.Create(p, r, 0, Math.PI);
-                Autodesk.Revit.DB.Arc arc2 = Autodesk.Revit.DB.Arc.Create(centre, r, 0, Math.PI, -arc1.XDirection, -arc1.YDirection);
-                return new List<Curve> { arc1, arc2 };
-            }
-            else if (curve is NurbsCurve)
-            {
-                Curve nc = curve.ToRevitCurve();
-                if (nc.GetEndPoint(0).DistanceTo(nc.GetEndPoint(1)) <= BH.oM.Geometry.Tolerance.Distance)
-                {
-                    double param1 = nc.GetEndParameter(0);
-                    double param2 = nc.GetEndParameter(1);
-                    Curve c1 = nc.Clone();
-                    Curve c2 = nc.Clone();
-                    c1.MakeBound(param1, (param1 + param2) * 0.5);
-                    c2.MakeBound((param1 + param2) * 0.5, param2);
-                    return new List<Curve> { c1, c2 };
-                }
-                else
-                    return new List<Curve> { nc };
-            }
-
-            return new List<Curve> { curve.ToRevitCurve() };
+            Compute.MultiSegmentCurveError();
+            return null;
         }
 
+
+        /***************************************************/
+        /****             Interface Methods             ****/
+        /***************************************************/
+
+        public static Curve IToRevit(this oM.Geometry.ICurve curve)
+        {
+            return ToRevit(curve as dynamic);
+        }
+        
         /***************************************************/
     }
 }

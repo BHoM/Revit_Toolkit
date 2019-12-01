@@ -41,19 +41,34 @@ namespace BH.UI.Revit.Engine
 
         public static IGeometry ToBHoM(this Location location, PullSettings pullSettings = null)
         {
-            if (location == null) return null;
+            if (location == null)
+                return null;
 
             switch (pullSettings.Discipline)
             {
                 default:
-                    if (location is LocationPoint)
-                        return ToBHoM((LocationPoint)location, pullSettings);
-                    else if (location is LocationCurve)
-                        return ToBHoM((LocationCurve)location, pullSettings);
-                    break;
+                    return ToBHoM(location as dynamic, pullSettings);
             }
+        }
 
-            return null;
+        /***************************************************/
+
+        public static BH.oM.Geometry.Point ToBHoM(this LocationPoint location, PullSettings pullSettings = null)
+        {
+            if (location == null || location.Point == null)
+                return null;
+
+            return location.Point.ToBHoM();
+        }
+
+        /***************************************************/
+
+        public static ICurve ToBHoM(this LocationCurve location, PullSettings pullSettings = null)
+        {
+            if (location == null || location.Curve == null)
+                return null;
+
+            return location.Curve.IToBHoM();
         }
 
         /***************************************************/

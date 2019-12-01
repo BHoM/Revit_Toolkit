@@ -535,7 +535,7 @@ namespace BH.UI.Revit.Engine
             {
                 foreach (Edge c in curveArray)
                 {
-                    BH.oM.Geometry.ICurve curve = c.AsCurve().ToBHoM();
+                    BH.oM.Geometry.ICurve curve = c.AsCurve().IToBHoM();
                     if (curve == null)
                     {
                         BH.Engine.Reflection.Compute.RecordWarning("The profile of an element could not be converted due to curve conversion issues. ElementId: " + familyInstance.Id.IntegerValue.ToString());

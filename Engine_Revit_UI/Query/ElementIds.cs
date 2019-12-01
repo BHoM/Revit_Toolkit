@@ -85,35 +85,83 @@ namespace BH.UI.Revit.Engine
                 builtInCategories = BuiltInCategories(type);
             }
 
-            if (types == null || types.Count() == 0)
-                return null;
-
-            types = types.ToList().FindAll(x => BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(x, typeof(Element)));
-            if (types.Count() == 0)
-                return null;
-
             IEnumerable<ElementId> elementIDs = null;
-            if (types.Count() == 1)
-            {
-                if (builtInCategories == null || builtInCategories.Count() == 0)
-                    elementIDs = new FilteredElementCollector(document).OfClass(types.First()).ToElementIds();
-                else
+            if (types != null)
+                types = types.ToList().FindAll(x => BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(x, typeof(Element)));
 
-                elementIDs = new FilteredElementCollector(document).OfClass(types.First()).WherePasses(new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
-            }
-            else
+            if (types == null || types.Count() == 0)
             {
-                if ((builtInCategories == null || builtInCategories.Count() == 0) && (types != null && types.Count() > 0))
-                    elementIDs = new FilteredElementCollector(document).WherePasses(new LogicalOrFilter(types.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter))).ToElementIds();
-                else if ((types == null || types.Count() == 0) && (builtInCategories != null && builtInCategories.Count() > 0))
+                if ((builtInCategories != null && builtInCategories.Count() > 0))
                     elementIDs = new FilteredElementCollector(document).WherePasses(new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
                 else
-                    elementIDs = new FilteredElementCollector(document).WherePasses(new LogicalAndFilter(new LogicalOrFilter(types.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter)), new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)))).ToElementIds();
+                    return null;
+            }
+
+            //Some of the Revit API types do not exist in the object model of Revit - they cannot be filtered...
+            List<Type> supportedAPITypes = new List<Type>();
+            List<Tuple<Type, Type>> unsupportedAPITypes = new List<Tuple<Type, Type>>();
+            foreach (Type t in types)
+            {
+                Type supportedAPIType = t.SupportedAPIType();
+                if (supportedAPIType != t)
+                    unsupportedAPITypes.Add(new Tuple<Type, Type>(t, supportedAPIType));
+                else
+                    supportedAPITypes.Add(t);
+            }
+
+            if (supportedAPITypes.Count != 0)
+            {
+                if ((builtInCategories == null || builtInCategories.Count() == 0))
+                    elementIDs = new FilteredElementCollector(document).WherePasses(new LogicalOrFilter(supportedAPITypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter))).ToElementIds();
+                else
+                    elementIDs = new FilteredElementCollector(document).WherePasses(new LogicalAndFilter(new LogicalOrFilter(supportedAPITypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter)), new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)))).ToElementIds();
+            }
+
+            if (unsupportedAPITypes.Count != 0)
+            {
+                HashSet<ElementId> extraElementIds = new HashSet<ElementId>();
+                foreach (Tuple<Type, Type> unsupportedAPIType in unsupportedAPITypes)
+                {
+                    IEnumerable<ElementId> elementIds;
+                    if ((builtInCategories == null || builtInCategories.Count() == 0))
+                        elementIds = new FilteredElementCollector(document).WherePasses(new ElementClassFilter(unsupportedAPIType.Item2)).ToElementIds();
+                    else
+                        elementIds = new FilteredElementCollector(document).WherePasses(new LogicalAndFilter(new ElementClassFilter(unsupportedAPIType.Item2), new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)))).ToElementIds();
+
+                    foreach (ElementId e in elementIds)
+                    {
+                        if (unsupportedAPIType.Item1.IsAssignableFrom(document.GetElement(e).GetType()))
+                            extraElementIds.Add(e);
+                    }
+                }
+
+                foreach(ElementId e in elementIDs)
+                {
+                    extraElementIds.Add(e);
+                }
+
+                elementIDs = extraElementIds;
             }
 
             //Special Cases
             if (elementIDs != null && elementIDs.Count() > 0)
             {
+                if (type == typeof(BH.oM.Adapters.Revit.Elements.ModelInstance))
+                {
+                    //OST_DetailComponents BuiltInCategory is wrongly set to CategoryType.Model.
+                    int detailComponentsCategoryId = Category.GetCategory(document, Autodesk.Revit.DB.BuiltInCategory.OST_DetailComponents).Id.IntegerValue;
+
+                    List<ElementId> newElementIds = new List<Autodesk.Revit.DB.ElementId>();
+                    foreach (ElementId e in elementIDs)
+                    {
+                        Category category = document.GetElement(e).Category;
+                        if ((category.CategoryType == CategoryType.AnalyticalModel || category.CategoryType == CategoryType.Model) && category.Id.IntegerValue != detailComponentsCategoryId)
+                            newElementIds.Add(e);
+                    }
+
+                    elementIDs = newElementIds;
+                }
+
                 if (type == typeof(oM.Physical.Elements.Window))
                 {
                     //Revit returns additional "parent" Autodesk.Revit.DB.Panel with no geometry when pulling all panels from model. This part of the code filter them out

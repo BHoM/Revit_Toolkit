@@ -28,6 +28,7 @@ using BH.oM.Structure.Elements;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -460,10 +461,44 @@ namespace BH.UI.Revit.Engine
             if (elementType != null)
                 message = string.Format("{0} Element Id : {1}", message, elementType.Id.IntegerValue);
 
+        }
+
+        /***************************************************/
+
+        internal static void CurveToBHoMNotImplemented(this Curve curve)
+        {
+            BH.Engine.Reflection.Compute.RecordError(string.Format("Conversion of curve type {0} to BHoM is not implemented, an approximated Polyline is returned instead.", curve.GetType().ToString().Split('.').Last()));
+        }
+
+        /***************************************************/
+
+        internal static void MultiSegmentCurveError()
+        {
+            BH.Engine.Reflection.Compute.RecordWarning("Revit does not suppport conversion of multi-segment BHoM curves (Polyline, PolyCurve). Please consider exploding the curve into its SubParts.");
+        }
+
+        /***************************************************/
+
+        internal static void NonPlanarCurveError(this IBHoMObject iBHoMObject)
+        {
+            string message = "Revit accepts curve-based ModelInstances only when the curve is planar.";
+            if (iBHoMObject != null)
+                message = string.Format("{0} BHoM Guid: {1}", message, iBHoMObject.BHoM_Guid);
+
             BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
 
+        internal static void ClosedNurbsCurveError(this IBHoMObject iBHoMObject)
+        {
+            string message = "Revit does not support closed nurbs curves.";
+            if (iBHoMObject != null)
+                message = string.Format("{0} BHoM Guid: {1}", message, iBHoMObject.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordWarning(message);
+        }
+
+        /***************************************************/
     }
 }

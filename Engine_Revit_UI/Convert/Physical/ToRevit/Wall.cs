@@ -88,7 +88,7 @@ namespace BH.UI.Revit.Engine
             if (level == null)
                 return null;
 
-            revitWall = Wall.Create(document, Convert.ToRevitCurveList(planarSurface.ExternalBoundary), wallType.Id, level.Id, false);
+            revitWall = Wall.Create(document, planarSurface.ExternalBoundary.IToRevitCurves(), wallType.Id, level.Id, false);
 
             Parameter parameter = null;
 

@@ -31,9 +31,9 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Plane ToRevitPlane(this oM.Geometry.Plane plane)
+        public static Plane ToRevit(this oM.Geometry.Plane plane)
         {
-            return Plane.CreateByNormalAndOrigin(plane.Normal.ToRevitXYZ(), plane.Origin.ToRevitXYZ());
+            return Plane.CreateByNormalAndOrigin(plane.Normal.ToRevit(), plane.Origin.ToRevit());
         }
 
         /***************************************************/

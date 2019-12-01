@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
@@ -20,58 +20,24 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
+using System;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public static List<PolyCurve> ToBHoM(this Sketch sketch)
+        public static Plane ArbitraryPlane(this Curve curve)
         {
-            SketchPlane sketchPlane = sketch.SketchPlane;
-
-            Location location = sketch.Location;
-
-            List<PolyCurve> result = new List<PolyCurve>();
-            foreach (CurveArray curveArray in sketch.Profile)
-            {
-                PolyCurve polycurve = BH.Engine.Geometry.Create.PolyCurve(ToBHoM(curveArray));
-                result.Add(polycurve);
-            }
-                
-            return result;
-        }
-
-        /***************************************************/
-
-        public static List<PolyCurve> ToBHoM(this CurveArrArray curveArrArray)
-        {
-            List<PolyCurve> result = new List<PolyCurve>();
-            foreach (CurveArray curveArray in curveArrArray)
-                result.Add(BH.Engine.Geometry.Create.PolyCurve(ToBHoM(curveArray)));
-
-            return result;
-        }
-
-        /***************************************************/
-
-        public static List<PolyCurve> ToBHoM(this EdgeArrayArray edgeArray)
-        {
-            List<PolyCurve> result = new List<PolyCurve>();
-            foreach (EdgeArray ea in edgeArray)
-            {
-                result.Add(BH.Engine.Geometry.Create.PolyCurve(ea.ToBHoM()));
-            }
-            return result;
+            XYZ origin = curve.GetEndPoint(0);
+            XYZ x = (curve.GetEndPoint(1) - origin).Normalize();
+            XYZ helper = 1 - Math.Abs(x.DotProduct(XYZ.BasisZ)) > BH.oM.Geometry.Tolerance.Distance ? XYZ.BasisZ : XYZ.BasisX;
+            XYZ y = x.CrossProduct(helper).Normalize();
+            return Plane.CreateByOriginAndBasis(origin, x, y);
         }
 
         /***************************************************/
