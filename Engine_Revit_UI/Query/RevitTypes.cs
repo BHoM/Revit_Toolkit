@@ -167,14 +167,16 @@ namespace BH.UI.Revit.Engine
             if (type == typeof(DraftingInstance))
             {
                 result.Add(typeof(FamilyInstance));
-                result.Add(typeof(CurveElement));
+                result.Add(typeof(DetailCurve));
+                result.Add(typeof(SymbolicCurve));
                 return result;
             }
 
             if (type == typeof(ModelInstance))
             {
                 result.Add(typeof(FamilyInstance));
-                result.Add(typeof(CurveElement));
+                result.Add(typeof(ModelCurve));
+                result.Add(typeof(CurveByPoints));
                 return result;
             }
 

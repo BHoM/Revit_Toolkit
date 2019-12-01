@@ -86,7 +86,7 @@ namespace BH.UI.Revit.Engine
             if (!CheckLocationCurveColumns(framingElement))
                 return null;
             
-            Line columnLine = framingElement.Location.ToRevitCurve() as Line;
+            Line columnLine = framingElement.Location.IToRevit() as Line;
             Level level = null;
 
             customDataValue = framingElement.CustomDataValue("Base Level");
@@ -257,7 +257,7 @@ namespace BH.UI.Revit.Engine
             //Update justification based on custom data
             BH.oM.Geometry.ICurve adjustedLocation;
             bool adjusted = framingElement.AdjustLocation(out adjustedLocation);
-            Curve revitCurve = adjustedLocation.ToRevitCurve();
+            Curve revitCurve = adjustedLocation.IToRevit();
 
             bool isVertical, isLinear;
             //Check if curve is planar, and if so, if it is vertical. This is used to determine if the orientation angle needs

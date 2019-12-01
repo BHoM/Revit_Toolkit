@@ -25,8 +25,10 @@ using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using BH.Engine.Geometry;
 
-using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -54,15 +56,15 @@ namespace BH.UI.Revit.Engine
 
             if (modelInstance.Location is ISurface || modelInstance.Location is ISolid)
             {
-                BRepBuilder brep = ToRevitBrep(modelInstance.Location as dynamic);
-                if (brep == null || !brep.IsResultAvailable())
+                Solid brep = ToRevit(modelInstance.Location as dynamic);
+                if (brep == null)
                 {
                     Compute.GeometryConvertFailed(modelInstance);
                     return null;
                 }
 
                 DirectShape directShape = DirectShape.CreateElement(document, new ElementId((int)builtInCategory));
-                directShape.AppendShape(brep);
+                directShape.AppendShape(new List<GeometryObject> { brep });
                 element = directShape;
             }
             else
@@ -176,7 +178,7 @@ namespace BH.UI.Revit.Engine
                         case FamilyPlacementType.ViewBased:
                             if (geometry is oM.Geometry.Point)
                             {
-                                XYZ xyz = ToRevit((oM.Geometry.Point)geometry, pushSettings);
+                                XYZ xyz = ((oM.Geometry.Point)geometry).ToRevit();
                                 element = document.Create.NewFamilyInstance(xyz, familySymbol, view);
                             }
                             break;
@@ -219,7 +221,10 @@ namespace BH.UI.Revit.Engine
             if (level == null)
                 return null;
 
-            Curve revitCurve = ToRevitCurve(curve);
+            Curve revitCurve = curve.IToRevit();
+            if (revitCurve == null)
+                return null;
+
             return document.Create.NewFamilyInstance(revitCurve, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
         }
 
@@ -244,7 +249,7 @@ namespace BH.UI.Revit.Engine
             if (level == null)
                 return null;
 
-            XYZ xyz = ToRevitXYZ(point);
+            XYZ xyz = ToRevit(point);
             return document.Create.NewFamilyInstance(xyz, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
         }
 
@@ -285,7 +290,7 @@ namespace BH.UI.Revit.Engine
             if (level == null)
                 return null;
 
-            Curve revitCurve = ToRevitCurve(curve);
+            Curve revitCurve = curve.IToRevit();
             return document.Create.NewFamilyInstance(revitCurve, familySymbol, level, structuralType);
         }
 
@@ -322,7 +327,7 @@ namespace BH.UI.Revit.Engine
                 if (level == null)
                     return null;
 
-                XYZ xyz = ToRevitXYZ(point);
+                XYZ xyz = ToRevit(point);
                 return document.Create.NewFamilyInstance(xyz, familySymbol, level, structuralType);
             }
             else if (modelInstance.Location is oM.Geometry.Line)
@@ -338,7 +343,7 @@ namespace BH.UI.Revit.Engine
                 if (level == null)
                     return null;
 
-                Curve curve = line.ToRevitCurve();
+                Curve curve = line.ToRevit();
                 return document.Create.NewFamilyInstance(curve, familySymbol, level, structuralType);
             }
             else
@@ -369,7 +374,7 @@ namespace BH.UI.Revit.Engine
             if (level == null)
                 return null;
 
-            Curve revitCurve = ToRevitCurve(curve);
+            Curve revitCurve = curve.IToRevit();
             return Wall.Create(document, revitCurve, level.Id, false);
         }
 

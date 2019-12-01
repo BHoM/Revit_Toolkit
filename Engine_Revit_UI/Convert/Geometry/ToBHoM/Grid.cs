@@ -41,7 +41,7 @@ namespace BH.UI.Revit.Engine
             if (grid != null)
                 return grid;
 
-            grid = BH.Engine.Geometry.SettingOut.Create.Grid(revitGrid.Curve.ToBHoM());
+            grid = BH.Engine.Geometry.SettingOut.Create.Grid(revitGrid.Curve.IToBHoM());
             grid.Name = revitGrid.Name;
 
             grid = Modify.SetIdentifiers(grid, revitGrid) as oM.Geometry.SettingOut.Grid;

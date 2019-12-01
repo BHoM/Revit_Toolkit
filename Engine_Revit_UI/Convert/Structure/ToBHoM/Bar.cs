@@ -219,7 +219,7 @@ namespace BH.UI.Revit.Engine
             if (curve == null)
                 return;
 
-            locationCurve = curve.ToBHoM();
+            locationCurve = curve.IToBHoM();
         }
 
         /***************************************************/

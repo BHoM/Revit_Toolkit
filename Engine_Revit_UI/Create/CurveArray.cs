@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
@@ -20,58 +20,27 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
 
-using BH.oM.Adapters.Revit.Settings;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Convert
+    public static partial class Create
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public static List<oM.Geometry.ICurve> ToBHoM(this List<Curve> curves)
+        public static CurveArray CurveArray(this IEnumerable<Curve> curves)
         {
-            if (curves == null)
-                return null;
-
-            return curves.Select(c => c.ToBHoM()).ToList();
-        }
-
-        /***************************************************/
-
-        public static List<oM.Geometry.ICurve> ToBHoM(this CurveArray curveArray)
-        {
-            if (curveArray == null)
-                return null;
-
-            List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
-            for (int i = 0; i < curveArray.Size; i++)
+            CurveArray ca = new CurveArray();
+            foreach (Curve c in curves)
             {
-                result.Add(curveArray.get_Item(i).ToBHoM());
-            }
-            return result;
-        }
-
-        /***************************************************/
-
-        public static List<oM.Geometry.ICurve> ToBHoM(this EdgeArray edgeArray)
-        {
-            List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
-            foreach (Edge edge in edgeArray)
-            {
-                result.Add(edge.ToBHoM());
+                ca.Append(c);
             }
 
-            return result;
+            return ca;
         }
-
-        /***************************************************/
     }
 }

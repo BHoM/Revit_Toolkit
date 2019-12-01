@@ -143,7 +143,7 @@ namespace BH.UI.Revit.Engine
                 List<BH.oM.Geometry.ICurve> curves = new List<ICurve>();
                 foreach (BoundarySegment boundarySegment in boundarySegmentList)
                 {
-                    curves.Add(Convert.ToBHoM(boundarySegment.GetCurve()));
+                    curves.Add(boundarySegment.GetCurve().IToBHoM());
                 }
                 results.Add(BH.Engine.Geometry.Create.PolyCurve(curves));
             }

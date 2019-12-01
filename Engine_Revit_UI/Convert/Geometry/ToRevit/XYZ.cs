@@ -31,14 +31,14 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static XYZ ToRevitXYZ(this oM.Geometry.Point point)
+        public static XYZ ToRevit(this oM.Geometry.Point point)
         {
             return new XYZ(point.X.FromSI(UnitType.UT_Length), point.Y.FromSI(UnitType.UT_Length), point.Z.FromSI(UnitType.UT_Length));
         }
 
         /***************************************************/
 
-        public static XYZ ToRevitXYZ(this oM.Geometry.Vector vector)
+        public static XYZ ToRevit(this oM.Geometry.Vector vector)
         {
             return new XYZ(vector.X.FromSI(UnitType.UT_Length), vector.Y.FromSI(UnitType.UT_Length), vector.Z.FromSI(UnitType.UT_Length));
         }

@@ -84,7 +84,7 @@ namespace BH.UI.Revit.Engine
                     }
                 }
 
-                building = Create.Building(elevation: elevation, latitude: latitude, longitude: longitude);
+                building = BH.Engine.Environment.Create.Building(elevation: elevation, latitude: latitude, longitude: longitude);
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment();

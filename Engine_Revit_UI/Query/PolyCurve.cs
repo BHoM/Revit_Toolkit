@@ -47,7 +47,7 @@ namespace BH.UI.Revit.Engine
             oM.Geometry.Point point2 = meshTriangle.get_Vertex(1).ToBHoM();
             oM.Geometry.Point point3 = meshTriangle.get_Vertex(2).ToBHoM();
 
-            return Create.PolyCurve(new ICurve[] { Create.Line(point1, point2), Create.Line(point2, point3), Create.Line(point3, point1) });
+            return new PolyCurve { Curves = new List<ICurve> { new BH.oM.Geometry.Line { Start = point1, End = point2 }, new BH.oM.Geometry.Line { Start = point2, End = point3 }, new BH.oM.Geometry.Line { Start = point3, End = point1 } } };
         }
 
         /***************************************************/
@@ -152,7 +152,7 @@ namespace BH.UI.Revit.Engine
             }
 
             XYZ handOrientation = familyInstance.HandOrientation;
-            Vector handDirection = Create.Vector(handOrientation.X, handOrientation.Y, handOrientation.Z);
+            Vector handDirection = new Vector { X = handOrientation.X, Y = handOrientation.Y, Z = handOrientation.Z };
             handDirection = BH.Engine.Geometry.Modify.Project(handDirection, plane).Normalise();
 
             Vector upDirection = BH.Engine.Geometry.Query.CrossProduct(handDirection, plane.Normal).Normalise();
@@ -166,7 +166,7 @@ namespace BH.UI.Revit.Engine
                 {
                     double dotProduct;
 
-                    Vector vector = Create.Vector(points[i].X - points[j].X, points[i].Y - points[j].Y, points[i].Z - points[j].Z);
+                    Vector vector = new Vector { X = points[i].X - points[j].X, Y = points[i].Y - points[j].Y, Z = points[i].Z - points[j].Z };
 
                     dotProduct = BH.Engine.Geometry.Query.DotProduct(vector, handDirection);
                     if (dotProduct > 0)
@@ -208,7 +208,7 @@ namespace BH.UI.Revit.Engine
             oM.Geometry.Point point4 = BH.Engine.Geometry.Modify.Translate(centre, -upDirection);
             point4 = BH.Engine.Geometry.Modify.Translate(point4, handDirection);
 
-            return Create.PolyCurve(new oM.Geometry.Line[] { Create.Line(point1, point2), Create.Line(point2, point3), Create.Line(point3, point4), Create.Line(point4, point1) });
+            return new PolyCurve { Curves = new List<ICurve> { new BH.oM.Geometry.Line { Start = point1, End = point2 }, new BH.oM.Geometry.Line { Start = point2, End = point3 }, new BH.oM.Geometry.Line { Start = point3, End = point4 }, new BH.oM.Geometry.Line { Start = point4, End = point1 } } };
         }
 
         /***************************************************/
@@ -252,11 +252,11 @@ namespace BH.UI.Revit.Engine
                 if (plane == null)
                     continue;
 
-                Autodesk.Revit.DB.Plane revitPlane = Convert.ToRevitPlane(plane);
+                Autodesk.Revit.DB.Plane revitPlane = Convert.ToRevit(plane);
                 if (revitPlane == null)
                     continue;
 
-                XYZ tempNormal = plane.Normal.ToRevitXYZ();
+                XYZ tempNormal = plane.Normal.ToRevit();
                 tempNormal = tempNormal.Normalize();
 
                 BoundingBoxXYZ bboxXYZ = familyInstance.get_BoundingBox(null);
@@ -294,7 +294,7 @@ namespace BH.UI.Revit.Engine
                                     continue;
 
                                 if (IsContaining(bboxXYZ, curve.GetEndPoint(0), true) && IsContaining(bboxXYZ, curve.GetEndPoint(1), true))
-                                    tempCurves.Add(curve.ToBHoM());
+                                    tempCurves.Add(curve.IToBHoM());
                             }
                         }
                     }
@@ -315,7 +315,7 @@ namespace BH.UI.Revit.Engine
                     {
                         List<oM.Geometry.Point> points = pcurve.ControlPoints();
                         if (points != null && points.Count > 2)
-                            pcurve.Curves.Add(Create.Line(points.Last(), points.First()));
+                            pcurve.Curves.Add(new BH.oM.Geometry.Line { Start = points.Last(), End = points.First() });
                     }
 
                     return pcurve;

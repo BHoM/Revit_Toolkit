@@ -90,15 +90,7 @@ namespace BH.UI.Revit.Engine
 
             oM.Geometry.Plane plane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, lowElevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
             ICurve curve = BH.Engine.Geometry.Modify.Project(planarSurface.ExternalBoundary as dynamic, plane) as ICurve;
-
-            CurveArray curveArray = null;
-            if (curve is PolyCurve)
-                curveArray = ((PolyCurve)curve).ToRevitCurveArray();
-            else if (curve is Polyline)
-                curveArray = ((Polyline)curve).ToRevitCurveArray();
-
-            if (curveArray == null)
-                return null;
+            CurveArray curveArray = Create.CurveArray(curve.IToRevitCurves());
 
             revitFloor = document.Create.NewFloor(curveArray, floorType, level, false);
 

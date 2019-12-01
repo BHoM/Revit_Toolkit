@@ -43,7 +43,7 @@ namespace BH.UI.Revit.Engine
 
             oM.Adapters.Revit.Properties.InstanceProperties instanceProperties = ToBHoMInstanceProperties(curveElement.LineStyle as GraphicsStyle, pullSettings) as oM.Adapters.Revit.Properties.InstanceProperties;
 
-            draftingInstance = BH.Engine.Adapters.Revit.Create.DraftingInstance(instanceProperties, view.Name, curveElement.GeometryCurve.ToBHoM());
+            draftingInstance = BH.Engine.Adapters.Revit.Create.DraftingInstance(instanceProperties, view.Name, curveElement.GeometryCurve.IToBHoM());
 
             draftingInstance.Name = curveElement.Name;
             draftingInstance = Modify.SetIdentifiers(draftingInstance, curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;

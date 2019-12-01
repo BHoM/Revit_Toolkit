@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
@@ -20,37 +20,28 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Analysis;
-
-using BH.oM.Adapters.Revit.Settings;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public static oM.Geometry.Polyline ToBHoM(this Polyloop polyloop)
+        public static Type SupportedAPIType(this Type type)
         {
-            IList<XYZ> xyzList = polyloop.GetPoints();
-            if (xyzList == null)
-                return null;
-
-            List<oM.Geometry.Point> points = new List<oM.Geometry.Point>();
-            if (xyzList.Count > 0)
+            foreach (KeyValuePair<Type, Type[]> kvp in UnsupportedAPITypes)
             {
-                foreach (XYZ xyz in xyzList)
-                    points.Add(xyz.ToBHoM());
-
-                points.Add(xyzList[0].ToBHoM());
+                if (kvp.Value.Any(x => x == type))
+                    return kvp.Key;
             }
 
-            return BH.Engine.Geometry.Create.Polyline(points);
+            return type;
         }
 
         /***************************************************/
