@@ -19,13 +19,14 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-using System;
-using System.Linq;
-using System.Collections.Generic;
 
-using Autodesk.Revit.DB;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using BH.oM.Adapters.Revit.Settings;
+
+using Autodesk.Revit.DB;
 
 
 namespace BH.UI.Revit.Engine
@@ -36,14 +37,117 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Parameter LookupParameter(this Element element, IEnumerable<string> parameterNames)
+        public static double LookupParameterDouble(this Element element, string parameterName, bool convertUnits = true)
         {
-            foreach (string s in parameterNames)
+            double value = double.NaN;
+
+            Parameter p = element.LookupParameter(parameterName);
+            if (p != null && p.HasValue)
             {
-                Parameter p = element.LookupParameter(s);
-                if (p != null && p.HasValue) return p;
+                value = p.AsDouble();
+                if (convertUnits)
+                    value = value.ToSI(p.Definition.UnitType);
             }
-            return null;
+
+            return value;
+        }
+
+        /***************************************************/
+
+        public static double LookupParameterDouble(this Element element, IEnumerable<string> parameterNames, bool convertUnits = true)
+        {
+            double value = double.NaN;
+            foreach(string name in parameterNames)
+            {
+                value = element.LookupParameterDouble(name, convertUnits);
+                if (!double.IsNaN(value))
+                    return value;
+            }
+
+            return value;
+        }
+
+        /***************************************************/
+
+        public static double LookupParameterDouble(this Element element, BuiltInParameter builtInParameter, bool convertUnits = true)
+        {
+            double value = double.NaN;
+
+            Parameter p = element.get_Parameter(builtInParameter);
+            if (p != null && p.HasValue)
+            {
+                value = p.AsDouble();
+                if (convertUnits)
+                    value = value.ToSI(p.Definition.UnitType);
+            }
+
+            return value;
+        }
+
+        /***************************************************/
+
+        public static int LookupParameterInteger(this Element element, string parameterName)
+        {
+            int value = -1;
+
+            Parameter p = element.LookupParameter(parameterName);
+            if (p != null && p.HasValue)
+                value = p.AsInteger();
+
+            return value;
+        }
+
+        /***************************************************/
+
+        public static int LookupParameterInteger(this Element element, BuiltInParameter builtInParameter)
+        {
+            int value = -1;
+
+            Parameter p = element.get_Parameter(builtInParameter);
+            if (p != null && p.HasValue)
+                value = p.AsInteger();
+
+            return value;
+        }
+
+        /***************************************************/
+
+        public static ElementId LookupParameterElementId(this Element element, string parameterName)
+        {
+            ElementId value = new ElementId(-1);
+
+            Parameter p = element.LookupParameter(parameterName);
+            if (p != null && p.HasValue)
+                value = p.AsElementId();
+
+            return value;
+        }
+
+        /***************************************************/
+
+        public static ElementId LookupParameterElementId(this Element element, BuiltInParameter builtInParameter)
+        {
+            ElementId value = new ElementId(-1);
+
+            Parameter p = element.get_Parameter(builtInParameter);
+            if (p != null && p.HasValue)
+                value = p.AsElementId();
+
+            return value;
+        }
+
+        /***************************************************/
+
+        public static string LookupParameterString(this Element element, string parameterName)
+        {
+            return element.LookupParameter(parameterName).StringValue();
+        }
+
+        /***************************************************/
+
+        public static string LookupParameterString(this Element element, BuiltInParameter builtInParameter)
+        {
+            return element.get_Parameter(builtInParameter).StringValue();
         }
 
         /***************************************************/
@@ -67,7 +171,7 @@ namespace BH.UI.Revit.Engine
                 if (!hasValue && !parameter.HasValue)
                     continue;
 
-                if(result == null)
+                if (result == null)
                     result = parameter;
 
                 if (parameter.HasValue)
