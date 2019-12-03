@@ -311,6 +311,7 @@
     <Compile Include="Query\IsValid.cs" />
     <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\OpeningType.cs" />
+    <Compile Include="Query\StringValue.cs" />
     <Compile Include="Query\SupportedAPIType.cs" />
     <Compile Include="Query\TopFacesPolyCurves.cs" />
     <Compile Include="Query\BHoMUnitType.cs" />
@@ -319,7 +320,6 @@
     <Compile Include="Query\UpdatePanelTypeByCustomData.cs" />
     <Compile Include="Query\LowElevation.cs" />
     <Compile Include="Query\ViewType.cs" />
-    <Compile Include="Query\LookupDouble.cs" />
     <Compile Include="Query\Name.cs" />
     <Compile Include="Query\LowLevel.cs" />
     <Compile Include="Query\HighLevel.cs" />
@@ -345,7 +345,6 @@
     <Compile Include="Modify\SetCustomData.cs" />
     <Compile Include="Modify\SetIdentifiers.cs" />
     <Compile Include="Modify\Append.cs" />
-    <Compile Include="Modify\SetParameters.cs" />
     <Compile Include="Modify\SetParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\BottomLevel.cs" />

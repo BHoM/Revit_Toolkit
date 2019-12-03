@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
@@ -19,44 +19,36 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-
+ 
 using Autodesk.Revit.DB;
-using BH.oM.Base;
-using System.Collections.Generic;
-using System.Linq;
+
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        public static Element SetParameters(this Element element, IBHoMObject bHoMObject, IEnumerable<BuiltInParameter> builtInParametersIgnore = null)
+
+        public static string StringValue(this Parameter parameter)
         {
-            if (bHoMObject == null || element == null)
-                return null;
-
-            foreach (KeyValuePair<string, object> kvp in bHoMObject.CustomData)
+            if (parameter != null && parameter.HasValue)
             {
-                IList<Parameter> parameters = element.GetParameters(kvp.Key);
-                if (parameters == null || parameters.Count == 0)
-                    continue;
-
-                foreach(Parameter parameter in parameters)
+                switch (parameter.StorageType)
                 {
-                    if (parameter == null && parameter.IsReadOnly)
-                        continue;
-
-                    if (builtInParametersIgnore != null && parameter.Id.IntegerValue < 0 && builtInParametersIgnore.Contains((BuiltInParameter)parameter.Id.IntegerValue))
-                        continue;
-
-                    SetParameter(parameter, kvp.Value, element.Document);
+                    case (StorageType.Double):
+                        return UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), parameter.DisplayUnitType).ToString();
+                    case (StorageType.Integer):
+                        return parameter.AsInteger().ToString();
+                    case (StorageType.String):
+                        return parameter.AsString();
+                    case (StorageType.ElementId):
+                        return parameter.AsValueString();
                 }
             }
 
-            return element;
+            return null;
         }
 
         /***************************************************/

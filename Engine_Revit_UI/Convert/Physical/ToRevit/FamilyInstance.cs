@@ -151,17 +151,17 @@ namespace BH.UI.Revit.Engine
             if (1 - Math.Abs(columnLine.Direction.DotProduct(XYZ.BasisZ)) < BH.oM.Geometry.Tolerance.Angle)
             {
                 document.Regenerate();
-                familyInstance.TrySetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 0);
+                familyInstance.SetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 0);
 
-                familyInstance.TrySetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM, columnLine.Origin.Z - level.Elevation);
-                familyInstance.TrySetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.Origin.Z + columnLine.Length - level.Elevation);
+                familyInstance.SetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM, columnLine.Origin.Z - level.Elevation, false);
+                familyInstance.SetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.Origin.Z + columnLine.Length - level.Elevation, false);
                 document.Regenerate();
             }
 
-            familyInstance.TrySetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_PARAM, level.Id);
-            familyInstance.TrySetParameter(BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM, level.Id);
-            familyInstance.TrySetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_PARAM, level.Id);
-            familyInstance.TrySetParameter(BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM, level.Id);
+            familyInstance.SetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_PARAM, level.Id);
+            familyInstance.SetParameter(BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM, level.Id);
+            familyInstance.SetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_PARAM, level.Id);
+            familyInstance.SetParameter(BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM, level.Id);
 
             if (pushSettings.CopyCustomData)
             {

@@ -21,6 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Base;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -30,261 +33,251 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Parameter SetParameter(this Parameter parameter, object value, Document document = null)
+        public static bool SetParameter(this Element element, string parameterName, double value, bool convertUnits = true)
+        {
+            Parameter parameter = element.LookupParameter(parameterName);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Double)
+            {
+                if (convertUnits)
+                    value = value.FromSI(parameter.Definition.UnitType);
+
+                return parameter.Set(value);
+            }
+
+            return false;
+        }
+
+        /***************************************************/
+
+        public static bool SetParameter(this Element element, BuiltInParameter builtInParam, double value, bool convertUnits = true)
+        {
+            Parameter parameter = element.get_Parameter(builtInParam);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Double)
+            {
+                if (convertUnits)
+                    value = value.FromSI(parameter.Definition.UnitType);
+
+                return parameter.Set(value);
+            }
+
+            return false;
+        }
+
+        /***************************************************/
+
+        public static bool SetParameter(this Element element, string parameterName, int value)
+        {
+            Parameter parameter = element.LookupParameter(parameterName);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Integer)
+                return parameter.Set(value);
+
+            return false;
+        }
+
+        /***************************************************/
+
+        public static bool SetParameter(this Element element, BuiltInParameter builtInParam, int value)
+        {
+            Parameter parameter = element.get_Parameter(builtInParam);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Integer)
+                return parameter.Set(value);
+
+            return false;
+        }
+
+        /***************************************************/
+
+        public static bool SetParameter(this Element element, string parameterName, string value)
+        {
+            Parameter parameter = element.LookupParameter(parameterName);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.String)
+                return parameter.Set(value);
+
+            return false;
+        }
+
+        /***************************************************/
+
+        public static bool SetParameter(this Element element, BuiltInParameter builtInParam, string value)
+        {
+            Parameter parameter = element.get_Parameter(builtInParam);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.String)
+                return parameter.Set(value);
+
+            return false;
+        }
+
+        /***************************************************/
+
+        public static bool SetParameter(this Element element, string parameterName, ElementId value)
+        {
+            Parameter parameter = element.LookupParameter(parameterName);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.ElementId)
+                return parameter.Set(value);
+
+            return false;
+        }
+
+        /***************************************************/
+
+        public static bool SetParameter(this Element element, BuiltInParameter builtInParam, ElementId value)
+        {
+            Parameter parameter = element.get_Parameter(builtInParam);
+            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.ElementId)
+                return parameter.Set(value);
+
+            return false;
+        }
+
+        /***************************************************/
+
+        public static bool SetParameter(this Parameter parameter, object value, Document document = null)
         {
             if (parameter == null || parameter.IsReadOnly)
-                return null;
+                return false;
 
             switch (parameter.StorageType)
             {
                 case StorageType.Double:
-                    double dbl = double.NaN;
-                    if (value is double)
                     {
-                        dbl = (double)value;
-                    }
-                    else if(value is int || value is byte || value is float|| value is long)
-                    {
-                        dbl = System.Convert.ToDouble(value);
-                    }
-                    else if (value is bool)
-                    {
-                        if ((bool)value)
-                            dbl = 1.0;
-                        else
-                            dbl = 0.0;
-                    }
-                    else if (value is string)
-                    {
-                        if (!double.TryParse((string)value, out dbl))
-                            dbl = double.NaN;
-                    }
+                        double dbl = double.NaN;
 
-                    if (!double.IsNaN(dbl))
-                    {
-                        try
+                        if (value is double)
+                            dbl = (double)value;
+                        else if (value is int || value is byte || value is float || value is long)
+                            dbl = System.Convert.ToDouble(value);
+                        else if (value is bool)
                         {
-                            dbl = Convert.FromSI(dbl, parameter.Definition.UnitType);
+                            if ((bool)value)
+                                dbl = 1.0;
+                            else
+                                dbl = 0.0;
                         }
-                        catch
+                        else if (value is string)
                         {
-                            dbl = double.NaN;
+                            if (!double.TryParse((string)value, out dbl))
+                                dbl = double.NaN;
                         }
 
                         if (!double.IsNaN(dbl))
                         {
-                            parameter.Set(dbl);
-                            return parameter;
+                            try
+                            {
+                                dbl = Convert.FromSI(dbl, parameter.Definition.UnitType);
+                            }
+                            catch
+                            {
+                                dbl = double.NaN;
+                            }
+
+                            if (!double.IsNaN(dbl))
+                                return parameter.Set(dbl);
                         }
+                        break;
                     }
-                    break;
                 case StorageType.ElementId:
-                    ElementId elementID = null;
-                    if (value is int)
                     {
-                        elementID = new ElementId((int)value);
-                    }
-                    else if (value is string)
-                    {
-                        int num;
-                        if (int.TryParse((string)value, out num))
-                            elementID = new ElementId(num);
-                    }
-                    else if(value != null)
-                    {
-                        int num;
-                        if (int.TryParse(value.ToString(), out num))
-                            elementID = new ElementId(num);
-                    }
+                        ElementId elementID = null;
 
-                    if(elementID != null)
-                    {
-                        bool exists = false;
-                        if (elementID == ElementId.InvalidElementId)
-                            exists = true;
-
-                        if(!exists)
+                        if (value is int)
+                            elementID = new ElementId((int)value);
+                        else if (value is string)
                         {
-                            if (document == null)
-                            {
+                            int num;
+                            if (int.TryParse((string)value, out num))
+                                elementID = new ElementId(num);
+                        }
+                        else if (value != null)
+                        {
+                            int num;
+                            if (int.TryParse(value.ToString(), out num))
+                                elementID = new ElementId(num);
+                        }
+
+                        if (elementID != null)
+                        {
+                            bool exists = false;
+                            if (elementID == ElementId.InvalidElementId)
                                 exists = true;
-                            }
-                            else
+
+                            if (!exists)
                             {
-                                Element element = document.GetElement(elementID);
-                                exists = element != null;
+                                if (document == null)
+                                    exists = true;
+                                else
+                                {
+                                    Element element = document.GetElement(elementID);
+                                    exists = element != null;
+                                }
+
                             }
-                                
-                        }
 
-                        if(exists)
-                        {
-                            parameter.Set(elementID);
-                            return parameter;
+                            if (exists)
+                                return parameter.Set(elementID);
                         }
+                        break;
                     }
-                    break;
                 case StorageType.Integer:
-                    if (value is int)
                     {
-                        parameter.Set((int)value);
-                        return parameter;
-                    }
-                    else if(value is sbyte || value is byte || value is short || value is ushort || value is int || value is uint || value is long || value is ulong || value is float || value is double || value is decimal)
-                    {
-                        parameter.Set(System.Convert.ToInt32(value));
-                    }
-                    else if (value is bool)
-                    {
-                        if ((bool)value)
-                            parameter.Set(1);
-                        else
-                            parameter.Set(0);
-
-                        return parameter;
-                    }
-                    else if (value is string)
-                    {
-                        int num = 0;
-                        if (int.TryParse((string)value, out num))
+                        if (value is int)
+                            return parameter.Set((int)value);
+                        else if (value is sbyte || value is byte || value is short || value is ushort || value is int || value is uint || value is long || value is ulong || value is float || value is double || value is decimal)
+                            parameter.Set(System.Convert.ToInt32(value));
+                        else if (value is bool)
                         {
-                            parameter.Set(num);
-                            return parameter;
-                        }  
+                            if ((bool)value)
+                                return parameter.Set(1);
+                            else
+                                return parameter.Set(0);
+                        }
+                        else if (value is string)
+                        {
+                            int num = 0;
+                            if (int.TryParse((string)value, out num))
+                                return parameter.Set(num);
+                        }
+                        break;
                     }
-                    break;
                 case StorageType.String:
-                    if (value == null)
                     {
-                        string val = null;
-                        parameter.Set(val);
-                        return parameter;
-                    }
-                    else if (value is string)
-                    {
-                        parameter.Set((string)value);
-                        return parameter;
-                    }
-                    else
-                    {
-                        parameter.Set(value.ToString());
-                        return parameter;
+                        if (value == null)
+                            return parameter.Set(value as string);
+                        else if (value is string)
+                            return parameter.Set((string)value);
+                        else
+                            return parameter.Set(value.ToString());
                     }
             }
 
-            return null;
-        }
-
-        /***************************************************/
-
-        public static bool TrySetParameter(this Element familyInstance, string parameterName, double value)
-        {
-            Parameter parameter = familyInstance.LookupParameter(parameterName);
-            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Double)
-            {
-                parameter.Set(value);
-                return true;
-            }
-
             return false;
         }
 
         /***************************************************/
 
-        public static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, double value)
+        public static Element SetParameters(this Element element, IBHoMObject bHoMObject, IEnumerable<BuiltInParameter> builtInParametersIgnore = null)
         {
-            Parameter parameter = familyInstance.get_Parameter(builtInParam);
-            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Double)
+            if (bHoMObject == null || element == null)
+                return null;
+
+            foreach (KeyValuePair<string, object> kvp in bHoMObject.CustomData)
             {
-                parameter.Set(value);
-                return true;
+                IList<Parameter> parameters = element.GetParameters(kvp.Key);
+                if (parameters == null || parameters.Count == 0)
+                    continue;
+
+                foreach (Parameter parameter in parameters)
+                {
+                    if (parameter == null || parameter.IsReadOnly)
+                        continue;
+
+                    if (builtInParametersIgnore != null && parameter.Id.IntegerValue < 0 && builtInParametersIgnore.Contains((BuiltInParameter)parameter.Id.IntegerValue))
+                        continue;
+
+                    SetParameter(parameter, kvp.Value, element.Document);
+                }
             }
 
-            return false;
-        }
-
-        /***************************************************/
-
-        public static bool TrySetParameter(this Element familyInstance, string parameterName, int value)
-        {
-            Parameter parameter = familyInstance.LookupParameter(parameterName);
-            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Integer)
-            {
-                parameter.Set(value);
-                return true;
-            }
-
-            return false;
-        }
-
-        /***************************************************/
-
-        public static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, int value)
-        {
-            Parameter parameter = familyInstance.get_Parameter(builtInParam);
-            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Integer)
-            {
-                parameter.Set(value);
-                return true;
-            }
-
-            return false;
-        }
-
-        /***************************************************/
-
-        public static bool TrySetParameter(this Element familyInstance, string parameterName, string value)
-        {
-            Parameter parameter = familyInstance.LookupParameter(parameterName);
-            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.String)
-            {
-                parameter.Set(value);
-                return true;
-            }
-
-            return false;
-        }
-
-        /***************************************************/
-
-        public static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, string value)
-        {
-            Parameter parameter = familyInstance.get_Parameter(builtInParam);
-            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.String)
-            {
-                parameter.Set(value);
-                return true;
-            }
-
-            return false;
-        }
-
-        /***************************************************/
-
-        public static bool TrySetParameter(this Element familyInstance, string parameterName, ElementId value)
-        {
-            Parameter parameter = familyInstance.LookupParameter(parameterName);
-            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.ElementId)
-            {
-                parameter.Set(value);
-                return true;
-            }
-
-            return false;
-        }
-
-        /***************************************************/
-
-        public static bool TrySetParameter(this Element familyInstance, BuiltInParameter builtInParam, ElementId value)
-        {
-            Parameter parameter = familyInstance.get_Parameter(builtInParam);
-            if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.ElementId)
-            {
-                parameter.Set(value);
-                return true;
-            }
-
-            return false;
+            return element;
         }
 
         /***************************************************/

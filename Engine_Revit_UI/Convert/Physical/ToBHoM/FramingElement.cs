@@ -96,7 +96,7 @@ namespace BH.UI.Revit.Engine
             // Check if an instance or type Structural Material parameter exists.
             ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
             if (structuralMaterialId.IntegerValue < 0)
-                structuralMaterialId = familyInstance.Symbol.LookupElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
+                structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
 
             Autodesk.Revit.DB.Material revitMaterial = familyInstance.Document.GetElement(structuralMaterialId) as Autodesk.Revit.DB.Material;
             BH.oM.Physical.Materials.Material material = pullSettings.FindRefObject<oM.Physical.Materials.Material>(structuralMaterialId.IntegerValue);
@@ -176,9 +176,9 @@ namespace BH.UI.Revit.Engine
                 else
                 {
                     if (IsVerticalNonLinearCurve((location as LocationCurve).Curve))
-                        rotation = Math.PI * 0.5 - familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+                        rotation = Math.PI * 0.5 - familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
                     else
-                        rotation = -familyInstance.LookupDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+                        rotation = -familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
 
                     if (familyInstance.Mirrored)
                         rotation *= -1;
@@ -233,20 +233,20 @@ namespace BH.UI.Revit.Engine
                         BH.oM.Geometry.Vector direction = BH.Engine.Geometry.Query.Direction(locationLine);
                         double angle = BH.Engine.Geometry.Query.Angle(direction, BH.oM.Geometry.Vector.ZAxis);
 
-                        int attachedBase = familyInstance.LookupInteger(BuiltInParameter.COLUMN_BASE_ATTACHED_PARAM);
-                        int attachedTop = familyInstance.LookupInteger(BuiltInParameter.COLUMN_TOP_ATTACHED_PARAM);
+                        int attachedBase = familyInstance.LookupParameterInteger(BuiltInParameter.COLUMN_BASE_ATTACHED_PARAM);
+                        int attachedTop = familyInstance.LookupParameterInteger(BuiltInParameter.COLUMN_TOP_ATTACHED_PARAM);
 
                         if (attachedBase == 1 || attachedTop == 1)
                             BH.Engine.Reflection.Compute.RecordWarning(string.Format("A slanted column is attached at base or top, this may cause wrong length on pull to BHoM. Element Id: {0}", familyInstance.Id.IntegerValue));
 
                         if (attachedBase == 1)
-                            startExtension = -familyInstance.LookupDouble(BuiltInParameter.COLUMN_BASE_ATTACHMENT_OFFSET_PARAM);
+                            startExtension = -familyInstance.LookupParameterDouble(BuiltInParameter.COLUMN_BASE_ATTACHMENT_OFFSET_PARAM);
                         else
                         {
-                            double baseExtensionValue = familyInstance.LookupDouble(BuiltInParameter.SLANTED_COLUMN_BASE_EXTENSION);
+                            double baseExtensionValue = familyInstance.LookupParameterDouble(BuiltInParameter.SLANTED_COLUMN_BASE_EXTENSION);
                             if (!double.IsNaN(baseExtensionValue) && Math.Abs(baseExtensionValue) > BH.oM.Geometry.Tolerance.Distance)
                             {
-                                int baseCutStyle = familyInstance.LookupInteger(BuiltInParameter.SLANTED_COLUMN_BASE_CUT_STYLE);
+                                int baseCutStyle = familyInstance.LookupParameterInteger(BuiltInParameter.SLANTED_COLUMN_BASE_CUT_STYLE);
                                 switch (baseCutStyle)
                                 {
                                     case 0:
@@ -263,13 +263,13 @@ namespace BH.UI.Revit.Engine
                         }
 
                         if (attachedTop == 1)
-                            endExtension = -familyInstance.LookupDouble(BuiltInParameter.COLUMN_TOP_ATTACHMENT_OFFSET_PARAM);
+                            endExtension = -familyInstance.LookupParameterDouble(BuiltInParameter.COLUMN_TOP_ATTACHMENT_OFFSET_PARAM);
                         else
                         {
-                            double topExtensionValue = familyInstance.LookupDouble(BuiltInParameter.SLANTED_COLUMN_TOP_EXTENSION);
+                            double topExtensionValue = familyInstance.LookupParameterDouble(BuiltInParameter.SLANTED_COLUMN_TOP_EXTENSION);
                             if (!double.IsNaN(topExtensionValue) && Math.Abs(topExtensionValue) > BH.oM.Geometry.Tolerance.Distance)
                             {
-                                int topCutStyle = familyInstance.LookupInteger(BuiltInParameter.SLANTED_COLUMN_TOP_CUT_STYLE);
+                                int topCutStyle = familyInstance.LookupParameterInteger(BuiltInParameter.SLANTED_COLUMN_TOP_CUT_STYLE);
                                 switch (topCutStyle)
                                 {
                                     case 0:
@@ -293,18 +293,18 @@ namespace BH.UI.Revit.Engine
                         BH.Engine.Reflection.Compute.RecordWarning(string.Format("A nonlinear slanted column has been detected. Attachment properties are lost. Element Id: {0}", familyInstance.Id.IntegerValue));
                 }
                 
-                int yzJustification = familyInstance.LookupInteger(BuiltInParameter.YZ_JUSTIFICATION);
+                int yzJustification = familyInstance.LookupParameterInteger(BuiltInParameter.YZ_JUSTIFICATION);
                 if (yzJustification == 0)
                 {
-                    double yOffset = familyInstance.LookupDouble(BuiltInParameter.Y_OFFSET_VALUE);
-                    double zOffset = -familyInstance.LookupDouble(BuiltInParameter.Z_OFFSET_VALUE);
+                    double yOffset = familyInstance.LookupParameterDouble(BuiltInParameter.Y_OFFSET_VALUE);
+                    double zOffset = -familyInstance.LookupParameterDouble(BuiltInParameter.Z_OFFSET_VALUE);
                     if (double.IsNaN(yOffset))
                         yOffset = 0;
                     if (double.IsNaN(zOffset))
                         zOffset = 0;
 
-                    int yJustification = familyInstance.LookupInteger(BuiltInParameter.Y_JUSTIFICATION);
-                    int zJustification = familyInstance.LookupInteger(BuiltInParameter.Z_JUSTIFICATION);
+                    int yJustification = familyInstance.LookupParameterInteger(BuiltInParameter.Y_JUSTIFICATION);
+                    int zJustification = familyInstance.LookupParameterInteger(BuiltInParameter.Z_JUSTIFICATION);
 
                     if (yJustification == 0 || yJustification == 3 || zJustification == 0 || zJustification == 3)
                     {
@@ -328,10 +328,10 @@ namespace BH.UI.Revit.Engine
                 }
                 else if (yzJustification == 1)
                 {
-                    double yOffsetStart = familyInstance.LookupDouble(BuiltInParameter.START_Y_OFFSET_VALUE);
-                    double yOffsetEnd = familyInstance.LookupDouble(BuiltInParameter.END_Y_OFFSET_VALUE);
-                    double zOffsetStart = -familyInstance.LookupDouble(BuiltInParameter.START_Z_OFFSET_VALUE);
-                    double zOffsetEnd = -familyInstance.LookupDouble(BuiltInParameter.END_Z_OFFSET_VALUE);
+                    double yOffsetStart = familyInstance.LookupParameterDouble(BuiltInParameter.START_Y_OFFSET_VALUE);
+                    double yOffsetEnd = familyInstance.LookupParameterDouble(BuiltInParameter.END_Y_OFFSET_VALUE);
+                    double zOffsetStart = -familyInstance.LookupParameterDouble(BuiltInParameter.START_Z_OFFSET_VALUE);
+                    double zOffsetEnd = -familyInstance.LookupParameterDouble(BuiltInParameter.END_Z_OFFSET_VALUE);
                     if (double.IsNaN(yOffsetStart))
                         yOffsetStart = 0;
                     if (double.IsNaN(yOffsetEnd))
@@ -341,10 +341,10 @@ namespace BH.UI.Revit.Engine
                     if (double.IsNaN(zOffsetEnd))
                         zOffsetEnd = 0;
 
-                    int yJustificationStart = familyInstance.LookupInteger(BuiltInParameter.START_Y_JUSTIFICATION);
-                    int yJustificationEnd = familyInstance.LookupInteger(BuiltInParameter.END_Y_JUSTIFICATION);
-                    int zJustificationStart = familyInstance.LookupInteger(BuiltInParameter.START_Z_JUSTIFICATION);
-                    int zJustificationEnd = familyInstance.LookupInteger(BuiltInParameter.END_Z_JUSTIFICATION);
+                    int yJustificationStart = familyInstance.LookupParameterInteger(BuiltInParameter.START_Y_JUSTIFICATION);
+                    int yJustificationEnd = familyInstance.LookupParameterInteger(BuiltInParameter.END_Y_JUSTIFICATION);
+                    int zJustificationStart = familyInstance.LookupParameterInteger(BuiltInParameter.START_Z_JUSTIFICATION);
+                    int zJustificationEnd = familyInstance.LookupParameterInteger(BuiltInParameter.END_Z_JUSTIFICATION);
 
                     if (yJustificationStart == 0 || yJustificationStart == 3 || yJustificationEnd == 0 || yJustificationEnd == 3 || zJustificationStart == 0 || zJustificationStart == 3 || zJustificationEnd == 0 || zJustificationEnd == 3)
                     {

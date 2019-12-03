@@ -109,7 +109,7 @@ namespace BH.UI.Revit.Engine
                 // Check if an instance or type Structural Material parameter exists.
                 ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
                 if (structuralMaterialId.IntegerValue < 0)
-                    structuralMaterialId = familyInstance.Symbol.LookupElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
+                    structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
 
                 materialFragment = (familyInstance.Document.GetElement(structuralMaterialId) as Autodesk.Revit.DB.Material).ToBHoMMaterialFragment(pullSettings);
             }
