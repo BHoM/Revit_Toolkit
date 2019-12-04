@@ -458,9 +458,10 @@ namespace BH.UI.Revit.Engine
         private static bool AdjustLocation(this IFramingElement framingElement, out BH.oM.Geometry.ICurve adjustedLocation)
         {
             adjustedLocation = framingElement.Location;
-            if (framingElement.Location == null || framingElement.Location.ILength() < BH.oM.Geometry.Tolerance.Distance)
+            
+            if (framingElement.Location == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element has zero length or no curve assigned. BHoM Guid: {0}", framingElement.BHoM_Guid));
+                BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element has no curve assigned. BHoM Guid: {0}", framingElement.BHoM_Guid));
                 return false;
             }
 
@@ -471,6 +472,12 @@ namespace BH.UI.Revit.Engine
             if (locationLine == null)
             {
                 BH.Engine.Reflection.Compute.RecordWarning(string.Format("Offset/justification of nonlinear bars is currently not supported. Revit justification and offset has been ignored. BHoM Guid: {0}", framingElement.BHoM_Guid));
+                return false;
+            }
+
+            if (locationLine.Length() < BH.oM.Geometry.Tolerance.Distance)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element has zero length. BHoM Guid: {0}", framingElement.BHoM_Guid));
                 return false;
             }
 
