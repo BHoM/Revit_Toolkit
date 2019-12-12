@@ -187,8 +187,7 @@ namespace BH.UI.Revit.Adapter
                         options.ComputeReferences = false;
                         options.DetailLevel = ViewDetailLevel.Fine;
                         options.IncludeNonVisibleObjects = BH.Engine.Adapters.Revit.Query.IncludeNonVisibleObjects(filterRequests);
-
-                        //TODO: this should be taken out only once for element, not for each iBHoMObject?
+                        
                         foreach(IBHoMObject iBHoMObject in iBHoMObjects)
                         {
                             ElementId elementId = iBHoMObject.ElementId();
@@ -206,6 +205,7 @@ namespace BH.UI.Revit.Adapter
                     result.AddRange(iBHoMObjects);
                     elementIDList.Add(element.Id.IntegerValue);
 
+                    //TODO: atm it has been glued to the existing code, should be done in a more structured way
                     if (element is MultiSegmentGrid)
                     {
                         foreach (ElementId elementId in (element as MultiSegmentGrid).GetGridIds())
