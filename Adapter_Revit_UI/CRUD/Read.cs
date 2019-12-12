@@ -156,11 +156,11 @@ namespace BH.UI.Revit.Adapter
             if (mapSettings.TypeMaps == null || mapSettings.TypeMaps.Count == 0)
                 mapSettings = BH.Engine.Adapters.Revit.Query.DefaultMapSettings();
 
-            List <ElementId> elementIDList = new List<ElementId>();
+            List <int> elementIDList = new List<int>();
             foreach (KeyValuePair<ElementId, List<FilterRequest>> kvp in filterRequestDictionary)
             {
                 Element element = document.GetElement(kvp.Key);
-                if (element == null || elementIDList.Contains(element.Id))
+                if (element == null || elementIDList.Contains(element.Id.IntegerValue))
                     continue;
 
                 IEnumerable<FilterRequest> filterRequests = Query.FilterRequests(filterRequestDictionary, element.Id);
@@ -188,6 +188,7 @@ namespace BH.UI.Revit.Adapter
                         options.DetailLevel = ViewDetailLevel.Fine;
                         options.IncludeNonVisibleObjects = BH.Engine.Adapters.Revit.Query.IncludeNonVisibleObjects(filterRequests);
 
+                        //TODO: this should be taken out only once for element, not for each iBHoMObject?
                         foreach(IBHoMObject iBHoMObject in iBHoMObjects)
                         {
                             ElementId elementId = iBHoMObject.ElementId();
@@ -203,7 +204,18 @@ namespace BH.UI.Revit.Adapter
                     }
 
                     result.AddRange(iBHoMObjects);
-                    elementIDList.Add(element.Id);
+                    elementIDList.Add(element.Id.IntegerValue);
+
+                    if (element is MultiSegmentGrid)
+                    {
+                        foreach (ElementId elementId in (element as MultiSegmentGrid).GetGridIds())
+                        {
+                            if (elementIDList.Contains(elementId.IntegerValue))
+                                result.RemoveAll(x => x.CustomData.ContainsKey(BH.Engine.Adapters.Revit.Convert.ElementId) && (int)x.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId] != elementId.IntegerValue);
+                            else
+                                elementIDList.Add(elementId.IntegerValue);
+                        }
+                    }
                 }
             }
 

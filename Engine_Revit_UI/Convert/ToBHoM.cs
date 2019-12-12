@@ -413,6 +413,27 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static IBHoMObject ToBHoM(this MultiSegmentGrid grid, PullSettings pullSettings = null)
+        {
+            grid.CheckIfNullPull();
+
+            pullSettings = pullSettings.DefaultIfNull();
+
+            switch (pullSettings.Discipline)
+            {
+                case Discipline.Architecture:
+                case Discipline.Environmental:
+                case Discipline.Structural:
+                case Discipline.Physical:
+                    return grid.ToBHoMGrid(pullSettings);
+            }
+
+            grid.NotConvertedWarning();
+            return null;
+        }
+
+        /***************************************************/
+
         public static IBHoMObject ToBHoM(this ElementType elementType, PullSettings pullSettings = null)
         {
             elementType.CheckIfNullPull();

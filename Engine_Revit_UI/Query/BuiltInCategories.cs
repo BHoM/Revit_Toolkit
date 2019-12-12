@@ -186,6 +186,11 @@ namespace BH.UI.Revit.Engine
                 builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener);
                 builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther);
             }
+            if (type == typeof(oM.Geometry.SettingOut.Grid))
+            {
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_Grids);
+                builtInCategories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_GridChains);
+            }
 
             return builtInCategories;
         }

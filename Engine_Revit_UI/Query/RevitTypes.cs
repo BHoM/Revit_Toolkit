@@ -149,6 +149,7 @@ namespace BH.UI.Revit.Engine
             if (type == typeof(oM.Geometry.SettingOut.Grid))
             {
                 result.Add(typeof(Grid));
+                result.Add(typeof(MultiSegmentGrid));
                 return result;
             }
 
@@ -210,7 +211,7 @@ namespace BH.UI.Revit.Engine
                 result.Add(typeof(FamilySymbol));
                 return result;
             }
-
+            
             return null;
         }
 
