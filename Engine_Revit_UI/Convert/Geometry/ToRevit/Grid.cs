@@ -23,6 +23,10 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace BH.UI.Revit.Engine
 {
     public static partial class Convert
@@ -31,20 +35,77 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Grid ToRevitGrid(this oM.Geometry.SettingOut.Grid grid, Document document, PushSettings pushSettings = null)
+        public static Element ToRevitGrid(this oM.Geometry.SettingOut.Grid grid, Document document, PushSettings pushSettings = null)
         {
-            Grid revitGrid = pushSettings.FindRefObject<Grid>(document, grid.BHoM_Guid);
+            Element revitGrid = pushSettings.FindRefObject<Grid>(document, grid.BHoM_Guid);
             if (revitGrid != null)
                 return revitGrid;
 
             pushSettings.DefaultIfNull();
 
-            Curve curve = grid.Curve.IToRevit();
+            if (BH.Engine.Geometry.Query.IIsClosed(grid.Curve))
+            {
+                BH.Engine.Reflection.Compute.RecordError("Element could not be created: Revit allows only open curve-based grids. BHoM_Guid: " + grid.BHoM_Guid);
+                return null;
+            }
 
-            if (curve is Line)
-                revitGrid = Grid.Create(document, (Line)curve);
-            if (curve is Arc)
-                revitGrid = Grid.Create(document, (Arc)curve);
+            List<BH.oM.Geometry.ICurve> gridCurves = BH.Engine.Geometry.Query.ISubParts(grid.Curve).ToList();
+            if (gridCurves.Count == 0)
+                return null;
+            else if (gridCurves.Count == 1)
+            {
+                Curve curve = grid.Curve.IToRevit();
+
+                if (curve is Line)
+                    revitGrid = Grid.Create(document, (Line)curve);
+                else  if (curve is Arc)
+                    revitGrid = Grid.Create(document, (Arc)curve);
+                else
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Element could not be created: Revit allows only line- and arc-based grids. BHoM_Guid: " + grid.BHoM_Guid);
+                    return null;
+                }
+            }
+            else
+            {
+                CurveLoop loop = new CurveLoop();
+                foreach (BH.oM.Geometry.ICurve curve in gridCurves)
+                {
+                    Curve revitCurve = curve.IToRevit();
+                    if (revitCurve is Line || revitCurve is Arc)
+                        loop.Append(revitCurve);
+                    else
+                    {
+                        BH.Engine.Reflection.Compute.RecordError("Element could not be created: Revit allows only line- and arc-based grids. BHoM_Guid: " + grid.BHoM_Guid);
+                        return null;
+                    }
+                }
+                
+                Plane plane;
+                try
+                {
+                    plane = loop.GetPlane();
+                }
+                catch
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Grid curves need to be coplanar. BHoM_Guid: " + grid.BHoM_Guid);
+                    return null;
+                }
+
+                SketchPlane sketchPlane = SketchPlane.Create(document, plane);
+                ElementId gridTypeId = document.GetDefaultElementTypeId(ElementTypeGroup.GridType);
+                ElementId gridId = MultiSegmentGrid.Create(document, gridTypeId, loop, sketchPlane.Id);
+                revitGrid = document.GetElement(gridId);
+            }
+
+            try
+            {
+                revitGrid.Name = grid.Name;
+            }
+            catch
+            {
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Grid name '{0}' was not unique, name '{1}' has been assigned instead. BHoM_Guid: {2}", grid.Name, revitGrid.Name, grid.BHoM_Guid));
+            }
 
             revitGrid.CheckIfNullPush(grid);
             if (revitGrid == null)

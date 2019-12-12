@@ -213,7 +213,13 @@ namespace BH.UI.Revit.Engine
                 return result;
             }
 
-            if(element is ViewSheet)
+            if (element is MultiSegmentGrid)
+            {
+                result.Add(typeof(oM.Geometry.SettingOut.Grid));
+                return result;
+            }
+
+            if (element is ViewSheet)
             {
                 result.Add(typeof(Sheet));
                 return result;

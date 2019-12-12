@@ -25,6 +25,9 @@ using Autodesk.Revit.DB;
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
 
+using System.Collections.Generic;
+using System.Linq;
+
 namespace BH.UI.Revit.Engine
 {
     public static partial class Convert
@@ -44,6 +47,36 @@ namespace BH.UI.Revit.Engine
             grid = BH.Engine.Geometry.SettingOut.Create.Grid(revitGrid.Curve.IToBHoM());
             grid.Name = revitGrid.Name;
 
+            grid = Modify.SetIdentifiers(grid, revitGrid) as oM.Geometry.SettingOut.Grid;
+            if (pullSettings.CopyCustomData)
+                grid = Modify.SetCustomData(grid, revitGrid) as oM.Geometry.SettingOut.Grid;
+
+            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(grid);
+
+            return grid;
+        }
+
+        /***************************************************/
+
+        public static BH.oM.Geometry.SettingOut.Grid ToBHoMGrid(this MultiSegmentGrid revitGrid, PullSettings pullSettings = null)
+        {
+            pullSettings = pullSettings.DefaultIfNull();
+
+            oM.Geometry.SettingOut.Grid grid = pullSettings.FindRefObject<oM.Geometry.SettingOut.Grid>(revitGrid.Id.IntegerValue);
+            if (grid != null)
+                return grid;
+
+            List<Grid> gridSegments = revitGrid.GetGridIds().Select(x => revitGrid.Document.GetElement(x) as Grid).ToList();
+            if (gridSegments.Count == 0)
+                return null;
+            else if (gridSegments.Count == 1)
+                return gridSegments[0].ToBHoMGrid(pullSettings);
+            else
+            {
+                grid = BH.Engine.Geometry.SettingOut.Create.Grid(new BH.oM.Geometry.PolyCurve { Curves = gridSegments.Select(x => x.Curve.IToBHoM()).ToList() });
+                grid.Name = revitGrid.Name;
+            }
+            
             grid = Modify.SetIdentifiers(grid, revitGrid) as oM.Geometry.SettingOut.Grid;
             if (pullSettings.CopyCustomData)
                 grid = Modify.SetCustomData(grid, revitGrid) as oM.Geometry.SettingOut.Grid;
