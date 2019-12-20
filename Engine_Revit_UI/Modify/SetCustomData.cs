@@ -71,7 +71,7 @@ namespace BH.UI.Revit.Engine
             switch (parameter.StorageType)
             {
                 case StorageType.Double:
-                    value = parameter.AsDouble();
+                    value = parameter.AsDouble().ToSI(parameter.Definition.UnitType);
                     break;
                 case StorageType.ElementId:
                     ElementId elementID = parameter.AsElementId();
