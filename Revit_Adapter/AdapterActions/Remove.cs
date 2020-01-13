@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,55 +20,43 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapter;
+using BH.Adapter.Socket;
+using BH.oM.Base;
+using BH.oM.Data.Requests;
+using BH.oM.Reflection.Debugging;
+using BH.oM.Adapters.Revit.Settings;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
+using BH.oM.Adapters.Revit;
 
-using BH.oM.Adapters.Revit.Elements;
-
-namespace BH.UI.Revit.Adapter
+namespace BH.Adapter.Revit
 {
-    public partial class RevitUIAdapter
+    public partial class RevitAdapter : BHoMAdapter
     {
         /***************************************************/
-        /****           BHoM Adapter Interface          ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        protected override List<Type> DependencyTypes<T>()
+        public override int Remove(IRequest request, ActionConfig actionConfig = null)
         {
-            Type type = typeof(T);
+            //Initialize Revit config
+            RevitConfig revitConfig = actionConfig as RevitConfig;
 
-            if (m_DependencyTypes.ContainsKey(type))
-                return m_DependencyTypes[type];
-
-            else if (m_DependencyTypes.ContainsKey(type.BaseType))
-                return m_DependencyTypes[type.BaseType];
-
-            else
+            //If internal adapter is loaded call it directly
+            if (InternalAdapter != null)
             {
-                foreach (Type interType in type.GetInterfaces())
-                {
-                    if (m_DependencyTypes.ContainsKey(interType))
-                        return m_DependencyTypes[interType];
-                }
+                InternalAdapter.RevitSettings = RevitSettings;
+                return InternalAdapter.Remove(request, revitConfig);
             }
 
-
-            return new List<Type>();
+            throw new NotImplementedException();
         }
-
-
-        /***************************************************/
-        /****               Private Fields              ****/
-        /***************************************************/
-
-        private static Dictionary<Type, List<Type>> m_DependencyTypes = new Dictionary<Type, List<Type>>
-        {
-            {typeof(Viewport), new List<Type> { typeof(Sheet), typeof(ViewPlan) } },
-            {typeof(Sheet), new List<Type> { typeof(ViewPlan)} }
-            //{typeof(ISectionProperty), new List<Type> { typeof(Material), typeof(IProfile) } },
-            //{typeof(PanelPlanar), new List<Type> { typeof(ISurfaceProperty), typeof(Level) } },
-            //{typeof(ISurfaceProperty), new List<Type> { typeof(Material) } }
-        };
 
         /***************************************************/
     }

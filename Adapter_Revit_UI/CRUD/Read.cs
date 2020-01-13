@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -35,6 +35,7 @@ using BH.oM.Adapters.Revit.Elements;
 using BH.UI.Revit.Engine;
 using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Properties;
+using BH.oM.Adapter;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -44,7 +45,7 @@ namespace BH.UI.Revit.Adapter
         /****             Protected Methods             ****/
         /***************************************************/
         
-        protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
+        protected override IEnumerable<IBHoMObject> IRead(Type type, IList ids, ActionConfig actionConfig = null)
         {
             if (Document == null)
             {
@@ -116,7 +117,7 @@ namespace BH.UI.Revit.Adapter
 
         /***************************************************/
 
-        protected override IEnumerable<IBHoMObject> Read(FilterRequest filterRequest)
+        protected override IEnumerable<IBHoMObject> Read(FilterRequest filterRequest, ActionConfig actionConfig = null)
         {
             Document document = Document;
 

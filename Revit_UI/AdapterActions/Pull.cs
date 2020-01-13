@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -49,7 +49,7 @@ namespace BH.UI.Revit
                     RevitUIAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
 
                     //Push the data
-                    IEnumerable<object> objs = adapter.Pull(listener.LatestRequest, listener.LatestConfig);
+                    IEnumerable<object> objs = adapter.Pull(listener.LatestRequest, oM.Adapter.PullType.AdapterDefault, listener.LatestConfig);
 
                     //Clear the previous data
                     listener.LatestConfig = null;

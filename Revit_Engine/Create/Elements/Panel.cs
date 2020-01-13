@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -65,7 +65,7 @@ namespace BH.Engine.Adapters.Revit
             PolyCurve polycurve = Geometry.Create.PolyCurve(new ICurve[] { curve, Geometry.Create.Line(minPoint1, maxPoint1) , crv, Geometry.Create.Line(maxPoint2, minPoint2) });
 
             OriginContextFragment originContext = new OriginContextFragment();
-            originContext.Origin = Convert.AdapterId;
+            originContext.Origin = Convert.AdapterIdName;
             originContext.TypeName = familyTypeName;
 
             Panel panel = Environment.Create.Panel(type: PanelType.Wall, externalEdges: polycurve.ToEdges());

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -34,6 +34,7 @@ using BH.oM.Structure.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Adapters.Revit.Properties;
+using BH.oM.Adapter;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -43,7 +44,7 @@ namespace BH.UI.Revit.Adapter
         /****             Protected Methods             ****/
         /***************************************************/
 
-        protected override bool Create<T>(IEnumerable<T> objects)
+        protected override bool ICreate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
         {
             if (Document == null)
             {
@@ -288,7 +289,7 @@ namespace BH.UI.Revit.Adapter
                 return;
 
             SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.ElementId, element.Id.IntegerValue);
-            SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.AdapterId, element.UniqueId);
+            SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.AdapterIdName, element.UniqueId);
 
             if (element is Family)
             {
@@ -350,6 +351,7 @@ namespace BH.UI.Revit.Adapter
 
             bHoMObject.CustomData[customDataName] = value;
         }
+
 
         /***************************************************/
         /****              Private Classes              ****/

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -42,7 +42,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             object value = null;
-            if (bHoMObject.CustomData.TryGetValue(Convert.AdapterId, out value))
+            if (bHoMObject.CustomData.TryGetValue(Convert.AdapterIdName, out value))
             {
                 if (value is string)
                     return (string)value;

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Duplicates given BHoMObject and removes its identity data (ElementId, AdapterId).")]
+        [Description("Duplicates given BHoMObject and removes its identity data (ElementId, AdapterIdName).")]
         [Input("bHoMObject", "BHoMObject")]
         [Output("BHoMObject")]
         public static IBHoMObject Duplicate(this IBHoMObject bHoMObject)
@@ -45,7 +45,7 @@ namespace BH.Engine.Adapters.Revit
             IBHoMObject obj = bHoMObject.GetShallowClone();
 
             obj.CustomData.Remove(Convert.ElementId);
-            obj.CustomData.Remove(Convert.AdapterId);
+            obj.CustomData.Remove(Convert.AdapterIdName);
 
 
             return obj;
