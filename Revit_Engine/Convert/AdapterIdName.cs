@@ -20,34 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
-using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
-
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Modify
+    public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
-
-        [Description("Removes Revit Identifiers from BHoM object.")]
-        [Input("bHoMObject", "BHoMObject")]
-        [Output("IBHoMObject")]
-        public static IBHoMObject RemoveIdentifiers(this IBHoMObject bHoMObject)
-        {
-            if (bHoMObject == null)
-                return null;
-
-            IBHoMObject obj = bHoMObject.GetShallowClone();
-
-            obj.CustomData.Remove(Convert.AdapterIdName);
-            obj.CustomData.Remove(Convert.ElementId);
-
-            return obj;
-        }
+        
+        public const string AdapterIdName = "Revit_id";
+        public const string ElementId = "Revit_elementId";
+        public const string WorksetId = "Revit_worksetId";
+        public const string SpaceId = "SpaceID"; //FG Change per #191 - ongoing discussion on best use of this still ongoing
+        public const string AdjacentSpaceId = "AdjacentSpaceID"; //FG Change per #191 - ongoing discussion on best use of this still ongoing
+        public const string FamilyName = "Revit_familyName";
+        public const string FamilyTypeName = "Revit_familyTypeName";
+        public const string CategoryName = "Revit_categoryName";
+        public const string ViewName = "Revit_viewName";
+        public const string Edges = "Revit_edges";
+        public const string ViewTemplate = "View Template";
+        public const string FamilyPlacementTypeName = "Revit_familyPlacementTypeName";
 
         /***************************************************/
     }

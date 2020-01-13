@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -32,6 +32,7 @@ using System.Linq;
 using System.Threading;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
+using BH.oM.Adapter;
 
 namespace BH.Adapter.Revit
 {
@@ -78,102 +79,6 @@ namespace BH.Adapter.Revit
 
         /***************************************************/
         /****              Public methods               ****/
-        /***************************************************/
-
-        public override List<IObject> Push(IEnumerable<IObject> objects, string tag = "", Dictionary<string, object> config = null)
-        {
-            //If internal adapter is loaded call it directly
-            if (InternalAdapter != null)
-            {
-                InternalAdapter.RevitSettings = RevitSettings;
-                return InternalAdapter.Push(objects, tag, config);
-            }
-            
-            //Reset the wait event
-            m_WaitEvent.Reset();
-
-            if (!CheckConnection())
-                return new List<IObject>();
-
-            config = config == null ? new Dictionary<string, object>() : null;
-
-            //Send data through the socket link
-            m_LinkIn.SendData(new List<object>() { PackageType.Push, objects.ToList(), config, RevitSettings }, tag);
-
-            //Wait until the return message has been recieved
-            if (!m_WaitEvent.WaitOne(TimeSpan.FromMinutes(m_WaitTime)))
-                BH.Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
-
-            //Grab the return objects from the latest package
-            List<IObject> returnObjs = m_ReturnPackage.Cast<IObject>().ToList();
-
-            //Clear the return list
-            m_ReturnPackage.Clear();
-
-            RaiseEvents();
-
-            //Return the package
-            return returnObjs;
-
-        }
-
-        /***************************************************/
-
-        public override IEnumerable<object> Pull(IRequest request, Dictionary<string, object> config = null)
-        {
-            //If internal adapter is loaded call it directly
-            if (InternalAdapter != null)
-            {
-                InternalAdapter.RevitSettings = RevitSettings;
-                return InternalAdapter.Pull(request, config);
-            }  
-
-            //Reset the wait event
-            m_WaitEvent.Reset();
-
-            if (!CheckConnection())
-                return new List<object>();
-
-            config = config == null ? new Dictionary<string, object>() : null;
-
-            if (!(request is FilterRequest))
-                return new List<object>();
-
-            //Send data through the socket link
-            m_LinkIn.SendData(new List<object>() { PackageType.Pull, request as FilterRequest, config, RevitSettings });
-
-            //Wait until the return message has been recieved
-            if (!m_WaitEvent.WaitOne(TimeSpan.FromMinutes(m_WaitTime)))
-                Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
-
-            //Grab the return objects from the latest package
-            List<object> returnObjs = new List<object>(m_ReturnPackage);
-
-            //Clear the return list
-            m_ReturnPackage.Clear();
-
-            //Raise returned events
-            RaiseEvents();
-
-            //Return the package
-            return returnObjs;
-
-        }
-
-        /***************************************************/
-
-        public override int Delete(IRequest request, Dictionary<string, object> config = null)
-        {
-            //If internal adapter is loaded call it directly
-            if (InternalAdapter != null)
-            {
-                InternalAdapter.RevitSettings = RevitSettings;
-                return InternalAdapter.Delete(request, config);
-            }
-
-            throw new NotImplementedException();
-        }
-
         /***************************************************/
 
         public bool IsValid()
@@ -241,23 +146,6 @@ namespace BH.Adapter.Revit
             Engine.Reflection.Query.AllEvents().AddRange(m_ReturnEvents);
 
             m_ReturnEvents = new List<Event>();
-        }
-
-
-        /***************************************************/
-        /****             Protected  Methods            ****/
-        /***************************************************/
-
-        protected override bool Create<T>(IEnumerable<T> objects)
-        {
-            throw new NotImplementedException();
-        }
-
-        /***************************************************/
-
-        protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
-        {
-            throw new NotImplementedException();
         }
 
         /***************************************************/

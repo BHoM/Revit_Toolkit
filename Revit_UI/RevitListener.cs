@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -27,6 +27,7 @@ using System.Linq;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 
+using BH.oM.Adapters.Revit;
 using BH.Adapter.Revit;
 using BH.Adapter.Socket;
 using BH.oM.Base;
@@ -53,7 +54,7 @@ namespace BH.UI.Revit
 
         /***************************************************/
 
-        public Dictionary<string, object> LatestConfig { get; set; } = null;
+        public RevitConfig LatestConfig { get; set; } = null;
 
         /***************************************************/
 
@@ -240,9 +241,9 @@ namespace BH.UI.Revit
                         eve = m_PullEvent;
                         LatestRequest = package.Data[1] as IRequest;
                         break;
-                    case PackageType.UpdateProperty:
+                    case PackageType.UpdateTags:
                         if (!CheckPackageSize(package)) return;
-                        eve = m_UpdatePropertyEvent;
+                        eve = m_UpdateTagsEvent;
                         var tuple = package.Data[1] as Tuple<FilterRequest, string, object>;
                         LatestRequest = tuple.Item1;
                         LatestKeyValuePair = new KeyValuePair<string, object>(tuple.Item2, tuple.Item3);
@@ -253,7 +254,11 @@ namespace BH.UI.Revit
                 }
 
                 LatestTag = package.Tag;
-                LatestConfig = package.Data[2] as Dictionary<string,object>;
+                RevitConfig revitConfig = new RevitConfig();
+                revitConfig.MockUpData = package.Data[2];
+                LatestConfig = revitConfig;
+
+                //TODO: make sure this works
                 AdapterSettings = package.Data[3] as RevitSettings;
             }
 
@@ -281,7 +286,7 @@ namespace BH.UI.Revit
         private SocketLink_Tcp m_LinkOut;
         private ExternalEvent m_PushEvent;
         private ExternalEvent m_PullEvent;
-        private ExternalEvent m_UpdatePropertyEvent;
+        private ExternalEvent m_UpdateTagsEvent;
         private Dictionary<Document, RevitUIAdapter> m_Adapters = new Dictionary<Document, RevitUIAdapter>();
         
         public object m_PackageLock = new object();

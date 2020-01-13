@@ -20,34 +20,19 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Settings
 {
-    public static partial class Modify
+    public class UpdateTagsSettings : BHoMObject
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****            Public Properties              ****/
         /***************************************************/
 
-        [Description("Removes Revit Identifiers from BHoM object.")]
-        [Input("bHoMObject", "BHoMObject")]
-        [Output("IBHoMObject")]
-        public static IBHoMObject RemoveIdentifiers(this IBHoMObject bHoMObject)
-        {
-            if (bHoMObject == null)
-                return null;
-
-            IBHoMObject obj = bHoMObject.GetShallowClone();
-
-            obj.CustomData.Remove(Convert.AdapterIdName);
-            obj.CustomData.Remove(Convert.ElementId);
-
-            return obj;
-        }
+        public string ParameterName { get; set; } = null;
+        public object Value { get; set; } = null;
+        public static UpdateTagsSettings Default = new UpdateTagsSettings();
 
         /***************************************************/
     }

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -24,6 +24,11 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 
 using BH.Adapter.Revit;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Structure.Elements;
+using BH.oM.Structure.SectionProperties;
+using System;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -47,11 +52,30 @@ namespace BH.UI.Revit.Adapter
         public RevitUIAdapter(UIControlledApplication uIControlledApplication, Document document)
             : base()
         {
-            AdapterId = BH.Engine.Adapters.Revit.Convert.AdapterId;
-            Config.UseAdapterId = false;
+            AdapterIdName = BH.Engine.Adapters.Revit.Convert.AdapterIdName;
+            m_AdapterSettings.UseAdapterId = false;
 
             m_Document = document;
             m_UIControlledApplication = uIControlledApplication;
+
+
+            AdapterComparers = new Dictionary<Type, object>
+            {
+                //{typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
+                //{typeof(IProfile), new BHoMObjectNameOrToStringComparer() },
+                //{typeof(ISurfaceProperty), new BHoMObjectNameOrToStringComparer() },
+                //{typeof(Material), new BHoMObjectNameComparer() },
+                //{typeof(Level), new BHoMObjectNameComparer() },
+            };
+
+            DependencyTypes = new Dictionary<Type, List<Type>>
+            {
+                {typeof(oM.Adapters.Revit.Elements.Viewport), new List<Type> { typeof(oM.Adapters.Revit.Elements.Sheet), typeof(oM.Adapters.Revit.Elements.ViewPlan) } },
+                {typeof(oM.Adapters.Revit.Elements.Sheet), new List<Type> { typeof(oM.Adapters.Revit.Elements.ViewPlan)} }
+                //{typeof(ISectionProperty), new List<Type> { typeof(Material), typeof(IProfile) } },
+                //{typeof(PanelPlanar), new List<Type> { typeof(ISurfaceProperty), typeof(Level) } },
+                //{typeof(ISurfaceProperty), new List<Type> { typeof(Material) } }
+            };
         }
 
 

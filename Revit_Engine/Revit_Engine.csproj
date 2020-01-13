@@ -92,7 +92,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Convert\AdapterID.cs" />
+    <Compile Include="Convert\AdapterIdName.cs" />
     <Compile Include="Convert\FilterRequest.cs" />
     <Compile Include="Create\Elements\Panel.cs" />
     <Compile Include="Create\Elements\BHoMObject.cs" />
