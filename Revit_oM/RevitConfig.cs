@@ -36,7 +36,7 @@ namespace BH.oM.Adapters.Revit
         /****             Public Properties             ****/
         /***************************************************/
 
-        public object MockUpData { get; set; } = null;
+
 
         /***************************************************/
     }

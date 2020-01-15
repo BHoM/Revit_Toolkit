@@ -254,11 +254,11 @@ namespace BH.UI.Revit
                 }
 
                 LatestTag = package.Tag;
-                RevitConfig revitConfig = new RevitConfig();
-                revitConfig.MockUpData = package.Data[2];
-                LatestConfig = revitConfig;
 
-                //TODO: make sure this works
+                //TODO: package.Data[2] is useless at the moment
+                RevitConfig revitConfig = new RevitConfig();
+                LatestConfig = revitConfig;
+                
                 AdapterSettings = package.Data[3] as RevitSettings;
             }
 
