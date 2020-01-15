@@ -22,6 +22,7 @@
 
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
+using BH.oM.Reflection;
 using System.Collections.Generic;
 
 namespace BH.Adapter.Revit
@@ -32,7 +33,7 @@ namespace BH.Adapter.Revit
         /****              Public Methods               ****/
         /***************************************************/
 
-        public override bool Execute(string command, Dictionary<string, object> parameters = null, ActionConfig actionConfig = null)
+        public override Output<object, bool> Execute(IExecuteCommand command, ActionConfig actionConfig = null)
         {
             //Initialize Revit config
             RevitConfig revitConfig = actionConfig as RevitConfig;
@@ -40,10 +41,10 @@ namespace BH.Adapter.Revit
             if (InternalAdapter != null)
             {
                 InternalAdapter.RevitSettings = RevitSettings;
-                return InternalAdapter.Execute(command, parameters, revitConfig);
+                return InternalAdapter.Execute(command, revitConfig);
             }
 
-            return false;
+            return null;
         }
 
         /***************************************************/
