@@ -21,6 +21,7 @@
  */
 
 using BH.oM.Adapter;
+using BH.oM.Reflection;
 using System.Collections.Generic;
 
 namespace BH.UI.Revit.Adapter
@@ -31,23 +32,10 @@ namespace BH.UI.Revit.Adapter
         /**** IAdapter Interface                        ****/
         /***************************************************/
 
-        public override bool Execute(string command, Dictionary<string, object> parameters = null, ActionConfig actionConfig = null)
+        public override Output<object,bool> Execute(IExecuteCommand command, ActionConfig actionConfig = null)
         {
-            string commandUpper = command.ToUpper();
-
-            if (commandUpper == "DONOTHING")
-                return DoNothing();
-
-            return false;
+            return null;
         }
         
-        /***************************************************/
-
-        public bool DoNothing()
-        {
-            return true;
-        }
-
-        /***************************************************/
     }
 }
