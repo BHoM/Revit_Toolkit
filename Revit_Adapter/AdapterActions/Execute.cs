@@ -33,7 +33,7 @@ namespace BH.Adapter.Revit
         /****              Public Methods               ****/
         /***************************************************/
 
-        public override Output<object, bool> Execute(IExecuteCommand command, ActionConfig actionConfig = null)
+        public override Output<List<object>, bool> Execute(IExecuteCommand command, ActionConfig actionConfig = null)
         {
             //Initialize Revit config
             RevitConfig revitConfig = actionConfig as RevitConfig;
