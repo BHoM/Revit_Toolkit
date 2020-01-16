@@ -214,7 +214,6 @@
   <ItemGroup>
     <Compile Include="CRUD\Create.cs" />
     <Compile Include="CRUD\Delete.cs" />
-    <Compile Include="AdapterActions\Execute.cs" />
     <Compile Include="AdapterActions\Push.cs" />
     <Compile Include="CRUD\Read.cs" />
     <Compile Include="CRUD\Update.cs" />
