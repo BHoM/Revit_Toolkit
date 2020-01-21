@@ -49,6 +49,7 @@ namespace BH.UI.Revit.Engine
                 case UnitType.UT_DecSheetLength:
                 case UnitType.UT_Electrical_CableTraySize:
                 case UnitType.UT_Electrical_ConduitSize:
+                case UnitType.UT_Reinforcement_Spacing:
                 case UnitType.UT_Reinforcement_Length:
                     return DisplayUnitType.DUT_METERS;
                 case UnitType.UT_Electrical_Current:
