@@ -29,7 +29,6 @@ using BH.oM.Physical.Elements;
 using BH.oM.Physical.FramingProperties;
 using BH.oM.Geometry.ShapeProfiles;
 using BHG = BH.Engine.Geometry;
-using BHS = BH.Engine.Structure;
 using BH.oM.Structure.MaterialFragments;
 
 using System;
@@ -158,7 +157,7 @@ namespace BH.UI.Revit.Engine
                 if (locationCurve is BH.oM.Geometry.Line)
                 {
                     Transform transform = familyInstance.GetTotalTransform();
-                    if (BHS.Query.IsVertical(locationCurve as BH.oM.Geometry.Line))
+                    if (BHG.Query.IsVertical(locationCurve as BH.oM.Geometry.Line))
                     {
                         if (familyInstance.IsSlantedColumn)
                             rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisX, transform.BasisZ);
