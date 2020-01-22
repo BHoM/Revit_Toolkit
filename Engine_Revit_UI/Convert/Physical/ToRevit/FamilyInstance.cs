@@ -25,7 +25,6 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Physical.Elements;
 
-using BH.Engine.Structure;
 using BH.Engine.Geometry;
 
 using System;
@@ -229,7 +228,7 @@ namespace BH.UI.Revit.Engine
         private static double ToRevitOrientationAngleColumn(double bhomOrientationAngle, BH.oM.Geometry.Line centreLine)
         {
             //For vertical columns orientation angles are following similar rules between Revit and BHoM but flipped 90 degrees
-            if (BH.Engine.Structure.Query.IsVertical(centreLine))
+            if (centreLine.IsVertical())
             {
                 return CheckOrientationAngleDomain((Math.PI * 0.5 - bhomOrientationAngle));
             }
@@ -403,7 +402,7 @@ namespace BH.UI.Revit.Engine
             //Line-based elements are handled slightly differently for orientation angles check used later
             if (isLinear)
             {
-                isVertical = BH.Engine.Structure.Query.IsVertical(framingElement.Location as BH.oM.Geometry.Line);
+                isVertical = (framingElement.Location as BH.oM.Geometry.Line).IsVertical();
                 return true;
             }
             else
