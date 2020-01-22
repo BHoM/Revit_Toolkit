@@ -114,6 +114,8 @@ namespace BH.UI.Revit.Engine
                 }
                 else if (elementType is WallType)
                     element = ToRevitElement_Wall(modelInstance, (WallType)elementType, pushSettings);
+                else if (elementType is MEPCurveType)
+                    element = ToRevitMEPElement(modelInstance, elementType as MEPCurveType, pushSettings);
             }
 
             element.CheckIfNullPush(modelInstance);
@@ -229,6 +231,50 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        private static Element ToRevitMEPElement(this ModelInstance modelInstance, MEPCurveType MEPType, PushSettings pushSettings = null)
+        {
+            if (MEPType == null || modelInstance == null)
+                return null;
+
+            if (!(modelInstance.Location is ICurve))
+            {
+                Compute.InvalidFamilyPlacementTypeWarning(modelInstance, MEPType);
+                return null;
+            }
+
+            Document document = MEPType.Document;
+
+            BH.oM.Geometry.Line line = modelInstance.Location as BH.oM.Geometry.Line;
+
+            Level level = line.BottomLevel(document);
+            if (level == null)
+                return null;
+
+            Autodesk.Revit.DB.Line revitLine = line.ToRevit();
+            if (revitLine == null)
+                return null;
+
+            XYZ startPoint = revitLine.GetEndPoint(0);
+            XYZ endPoint = revitLine.GetEndPoint(1);
+
+            if (MEPType is Autodesk.Revit.DB.Electrical.CableTrayType)
+                return Autodesk.Revit.DB.Electrical.CableTray.Create(document, MEPType.Id, startPoint, endPoint, level.Id);
+            else if (MEPType is Autodesk.Revit.DB.Electrical.ConduitType)
+                return Autodesk.Revit.DB.Electrical.Conduit.Create(document, MEPType.Id, startPoint, endPoint, level.Id);
+            else if (MEPType is Autodesk.Revit.DB.Plumbing.PipeType)
+            {
+                Autodesk.Revit.DB.Plumbing.PipingSystemType pst = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipingSystemType)).OfType<Autodesk.Revit.DB.Plumbing.PipingSystemType>().FirstOrDefault();
+                return Autodesk.Revit.DB.Plumbing.Pipe.Create(document, pst.Id, MEPType.Id, level.Id, startPoint, endPoint);
+            }
+            else if (MEPType is Autodesk.Revit.DB.Mechanical.DuctType)
+            {
+                Autodesk.Revit.DB.Mechanical.MechanicalSystemType mst = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Mechanical.MechanicalSystemType)).OfType<Autodesk.Revit.DB.Mechanical.MechanicalSystemType>().FirstOrDefault();
+                return Autodesk.Revit.DB.Mechanical.Duct.Create(document, mst.Id, MEPType.Id, level.Id, startPoint, endPoint);
+            }
+            else
+                return null;
+        }
 
         private static Element ToRevitElement_OneLevelBased(this ModelInstance modelInstance, FamilySymbol familySymbol, PushSettings pushSettings = null)
         {
