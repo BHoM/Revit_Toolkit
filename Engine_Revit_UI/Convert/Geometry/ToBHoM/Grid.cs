@@ -25,6 +25,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -73,7 +74,14 @@ namespace BH.UI.Revit.Engine
                 return gridSegments[0].ToBHoMGrid(pullSettings);
             else
             {
-                grid = BH.Engine.Geometry.SettingOut.Create.Grid(new BH.oM.Geometry.PolyCurve { Curves = gridSegments.Select(x => x.Curve.IToBHoM()).ToList() });
+                List<BH.oM.Geometry.PolyCurve> joinedGridCurves = BH.Engine.Geometry.Compute.IJoin(gridSegments.Select(x => x.Curve.IToBHoM()).ToList());
+                if (joinedGridCurves.Count != 1)
+                {
+                    BH.Engine.Reflection.Compute.RecordError(String.Format("Revit grid consists of disjoint segments. Element id: {0}", revitGrid.Id));
+                    return null;
+                }
+
+                grid = BH.Engine.Geometry.SettingOut.Create.Grid(joinedGridCurves[0]);
                 grid.Name = revitGrid.Name;
             }
             
