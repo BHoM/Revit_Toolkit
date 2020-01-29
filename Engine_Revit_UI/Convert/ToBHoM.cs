@@ -647,5 +647,20 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+
+        public static IBHoMObject ToBHoM(this FilledRegion filledRegion, PullSettings pullSettings = null)
+        {
+            filledRegion.CheckIfNullPull();
+
+            pullSettings = pullSettings.DefaultIfNull();
+
+            switch (pullSettings.Discipline)
+            {
+                default:
+                    return filledRegion.ToBHoMDraftingInstance(pullSettings);
+            }
+        }
+
+        /***************************************************/
     }
 }

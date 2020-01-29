@@ -267,7 +267,13 @@ namespace BH.UI.Revit.Engine
                 result.Add(typeof(oM.Architecture.Elements.Room));
                 return result;
             }
-                        
+
+            if (element is Autodesk.Revit.DB.FilledRegion)
+            {
+                result.Add(typeof(DraftingInstance));
+                return result;
+            }
+
             return null; //TODO: shouldn't it be result?
         }
 
