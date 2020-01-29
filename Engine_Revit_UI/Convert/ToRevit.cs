@@ -101,6 +101,9 @@ namespace BH.UI.Revit.Engine
 
         public static Element ToRevit(this DraftingInstance draftingInstance, Document document, PushSettings pushSettings = null)
         {
+            if (draftingInstance == null)
+                return null;
+
             pushSettings = pushSettings.DefaultIfNull();
 
             switch (draftingInstance.BuiltInCategory(document))

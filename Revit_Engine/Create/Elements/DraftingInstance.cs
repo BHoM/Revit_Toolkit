@@ -21,11 +21,13 @@
  */
 
 using System.ComponentModel;
+using System;
 
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Properties;
+using BH.Engine.Geometry;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -145,6 +147,51 @@ namespace BH.Engine.Adapters.Revit
                 Location = location
             };
             draftingInstance.CustomData.Add(Convert.CategoryName, "Lines");
+
+            return draftingInstance;
+        }
+
+        /***************************************************/
+
+        public static DraftingInstance DraftingInstance(string familyName, string familyTypeName, string viewName, ICurve location)
+        {
+            if (string.IsNullOrWhiteSpace(familyName) || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(viewName) || location == null)
+                return null;
+
+            return DraftingInstance(Create.InstanceProperties(familyName, familyTypeName), viewName, location);
+        }
+
+        /***************************************************/
+
+        public static DraftingInstance DraftingInstance(string name, string viewName, PlanarSurface location)
+        {
+            InstanceProperties instanceProperties = new InstanceProperties();
+            instanceProperties.Name = name;
+
+            return Create.DraftingInstance(instanceProperties, viewName, location);
+        }
+
+        /***************************************************/
+
+        public static DraftingInstance DraftingInstance(InstanceProperties properties, string viewName, PlanarSurface location)
+        {
+            if (properties == null || string.IsNullOrWhiteSpace(viewName) || !(location is PlanarSurface))
+                return null;
+
+            Vector normal = (location as PlanarSurface).Normal();
+            if (normal == null || 1 - Math.Abs(normal.DotProduct(Vector.ZAxis)) > Tolerance.Angle)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Normal of the surface is not parallel to the global Z axis.");
+                return null;
+            }
+            
+            DraftingInstance draftingInstance = new DraftingInstance()
+            {
+                Properties = properties,
+                Name = properties.Name,
+                ViewName = viewName,
+                Location = location
+            };
 
             return draftingInstance;
         }

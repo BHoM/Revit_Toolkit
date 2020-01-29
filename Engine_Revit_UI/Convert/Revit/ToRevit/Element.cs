@@ -184,8 +184,32 @@ namespace BH.UI.Revit.Engine
                                 element = document.Create.NewFamilyInstance(xyz, familySymbol, view);
                             }
                             break;
+                        case FamilyPlacementType.CurveBasedDetail:
+                            if (geometry is oM.Geometry.Line)
+                            {
+                                Autodesk.Revit.DB.Line revitLine = (geometry as oM.Geometry.Line).ToRevit();
+                                element = document.Create.NewFamilyInstance(revitLine, familySymbol, view);
+                            }
+                            break;
                         case FamilyPlacementType.OneLevelBased:
                             break;
+                    }
+                }
+                else if (elementType is FilledRegionType)
+                {
+                    FilledRegionType regionType = elementType as FilledRegionType;
+
+                    PlanarSurface surface = draftingInstance.Location as PlanarSurface;
+                    if (surface != null)
+                    {
+                        List<CurveLoop> loops = new List<CurveLoop>();
+                        foreach (ICurve curve in surface.Edges())
+                        {
+                            loops.Add(curve.ToRevitCurveLoop());
+                        }
+
+                        if (loops.Count != 0)
+                            element = FilledRegion.Create(document, regionType.Id, view.Id, loops);
                     }
                 }
             }
