@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,36 +20,38 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+using Autodesk.Revit.DB;
+using System;
+using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Adapters.Revit.Enums;
 
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Adapters.Revit;
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.UI.Revit.Engine
 {
     public static partial class Query
     {
         /***************************************************/
-        /****            Deprecated methods             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Returns ComparisonRule of given FilterRequest")]
-        //[Input("filterRequest", "FilterRequest")]
-        //[Output("IComparisonRule")]
-        //public static IComparisonRule ComparisonRule(this FilterRequest filterRequest)
-        //{
-        //    if (filterRequest == null)
-        //        return null;
-
-        //    if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.ComparisonRule))
-        //        return null;
-
-        //    return filterRequest.Equalities[Convert.FilterRequest.ComparisonRule] as IComparisonRule;
-        //}
+        public static FilterStringRuleEvaluator FilterStringRuleEvaluator(this TextComparisonType textComparisonType)
+        {
+            switch (textComparisonType)
+            {
+                case TextComparisonType.Contains:
+                    return new FilterStringContains();
+                case TextComparisonType.EndsWith:
+                    return new FilterStringEndsWith();
+                case TextComparisonType.Equal:
+                    return new FilterStringEquals();
+                case TextComparisonType.NotEqual:
+                    return new FilterStringEquals();
+                case TextComparisonType.StartsWith:
+                    return new FilterStringBeginsWith();
+                default:
+                    return null;
+            }
+        }
 
         /***************************************************/
     }
 }
-

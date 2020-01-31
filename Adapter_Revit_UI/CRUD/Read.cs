@@ -134,8 +134,8 @@ namespace BH.UI.Revit.Adapter
             Autodesk.Revit.UI.UIDocument uiDocument = UIDocument;
             List<IBHoMObject> result = new List<IBHoMObject>();
 
-            Dictionary<ElementId, List<IRequest>> requestDictionary = Query.RequestDictionary(request, uiDocument);
-            if (requestDictionary == null)
+            HashSet<ElementId> elementIds = request.ElementIds(uiDocument);
+            if (elementIds == null)
                 return null;
 
             Dictionary<Discipline, PullSettings> dictionaryPullSettings = new Dictionary<Discipline, PullSettings>();
@@ -147,21 +147,19 @@ namespace BH.UI.Revit.Adapter
                 mapSettings = BH.Engine.Adapters.Revit.Query.DefaultMapSettings();
 
             List <int> elementIDList = new List<int>();
-            foreach (KeyValuePair<ElementId, List<IRequest>> kvp in requestDictionary)
+            foreach (ElementId id in elementIds)
             {
-                if (elementIDList.Contains(kvp.Key.IntegerValue))
+                if (elementIDList.Contains(id.IntegerValue))
                     continue;
                 
-                Element element = document.GetElement(kvp.Key);
+                Element element = document.GetElement(id);
                 if (element == null)
                     continue;
                 
-                List<IRequest> requests;
-                if (!requestDictionary.TryGetValue(element.Id, out requests))
-                    continue;
-
                 //TODO: move this to actionConfig?
-                Discipline discipline = BH.Engine.Adapters.Revit.Query.Discipline(requests, revitSettings);
+                Discipline discipline = actionConfig.Discipline;
+                bool pullEdges = actionConfig.PullEdges;
+                bool includeNonVisible = actionConfig.IncludeNonVisible;
 
                 PullSettings pullSettings = null;
                 if (!dictionaryPullSettings.TryGetValue(discipline, out pullSettings))
@@ -175,12 +173,12 @@ namespace BH.UI.Revit.Adapter
                 if (iBHoMObjects != null && iBHoMObjects.Count() > 0)
                 { 
                     //Pull Element Edges
-                    if (BH.Engine.Adapters.Revit.Query.PullEdges(requests))
+                    if (pullEdges)
                     {
                         Options options = new Options();
                         options.ComputeReferences = false;
                         options.DetailLevel = ViewDetailLevel.Fine;
-                        options.IncludeNonVisibleObjects = BH.Engine.Adapters.Revit.Query.IncludeNonVisibleObjects(requests);
+                        options.IncludeNonVisibleObjects = includeNonVisible;
                         
                         foreach(IBHoMObject iBHoMObject in iBHoMObjects)
                         {

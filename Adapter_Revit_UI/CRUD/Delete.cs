@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Fragments;
@@ -54,7 +55,7 @@ namespace BH.UI.Revit.Adapter
             if (bHoMObjects.Count() < 1)
                 return false;
 
-            List<ElementId> elementIDList = Query.ElementIds(document, BH.Engine.Adapters.Revit.Query.UniqueIds(bHoMObjects, true), true);
+            List<ElementId> elementIDList = document.ElementIds(bHoMObjects.UniqueIds(true));
 
             if (elementIDList == null || elementIDList.Count < 1)
                 return false;

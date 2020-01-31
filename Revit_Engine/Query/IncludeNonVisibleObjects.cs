@@ -35,36 +35,36 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns true if FilterRequest should include non visible objects when pulling edges")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("IncludeNonVisibleObjects")]
-        public static bool IncludeNonVisibleObjects(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return false;
+        //[Description("Returns true if FilterRequest should include non visible objects when pulling edges")]
+        //[Input("filterRequest", "FilterRequest")]
+        //[Output("IncludeNonVisibleObjects")]
+        //public static bool IncludeNonVisibleObjects(this FilterRequest filterRequest)
+        //{
+        //    if (filterRequest == null)
+        //        return false;
 
-            if (filterRequest.Equalities.ContainsKey(Convert.FilterRequest.IncludeNonVisibleObjects))
-            {
-                object obj = filterRequest.Equalities[Convert.FilterRequest.IncludeNonVisibleObjects];
-                if (obj is bool)
-                    return (bool)obj;
-            }
+        //    if (filterRequest.Equalities.ContainsKey(Convert.FilterRequest.IncludeNonVisibleObjects))
+        //    {
+        //        object obj = filterRequest.Equalities[Convert.FilterRequest.IncludeNonVisibleObjects];
+        //        if (obj is bool)
+        //            return (bool)obj;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
         /***************************************************/
 
-        [Description("Returns true if at least one FilterRequest on list should include non visible objects when pulling edges")]
-        [Input("filterRequests", "FilterRequest")]
-        [Output("IncludeNonVisibleObjects")]
-        public static bool IncludeNonVisibleObjects(this IEnumerable<FilterRequest> filterRequests)
-        {
-            if (filterRequests == null)
-                return false;
+        //[Description("Returns true if at least one FilterRequest on list should include non visible objects when pulling edges")]
+        //[Input("filterRequests", "FilterRequest")]
+        //[Output("IncludeNonVisibleObjects")]
+        //public static bool IncludeNonVisibleObjects(this IEnumerable<FilterRequest> filterRequests)
+        //{
+        //    if (filterRequests == null)
+        //        return false;
 
-            return filterRequests.ToList().Any(x => x.IncludeNonVisibleObjects());
-        }
+        //    return filterRequests.ToList().Any(x => x.IncludeNonVisibleObjects());
+        //}
 
         /***************************************************/
     }

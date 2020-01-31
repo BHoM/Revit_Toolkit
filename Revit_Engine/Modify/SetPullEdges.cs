@@ -33,38 +33,38 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Sets Pull Edges option for FilterRequest.")]
-        [Input("filterRequest", "FilterRequest")]
-        [Input("pullEdges", "Set to true if include geometry edges of Revit Element in CustomData of BHoMObject")]
-        [Input("includeNonVisibleObjects", "Set to true if include non visible objects of Revit Element in geometry")]
-        [Output("FilterRequest")]
-        public static FilterRequest SetPullEdges(this FilterRequest filterRequest, bool pullEdges = true, bool includeNonVisibleObjects = false)
-        {
-            if (filterRequest == null)
-                return null;
+        //[Description("Sets Pull Edges option for FilterRequest.")]
+        //[Input("filterRequest", "FilterRequest")]
+        //[Input("pullEdges", "Set to true if include geometry edges of Revit Element in CustomData of BHoMObject")]
+        //[Input("includeNonVisibleObjects", "Set to true if include non visible objects of Revit Element in geometry")]
+        //[Output("FilterRequest")]
+        //public static FilterRequest SetPullEdges(this FilterRequest filterRequest, bool pullEdges = true, bool includeNonVisibleObjects = false)
+        //{
+        //    if (filterRequest == null)
+        //        return null;
 
-            FilterRequest request = Query.Duplicate(filterRequest);
+        //    FilterRequest request = Query.Duplicate(filterRequest);
 
-            request.Equalities[Convert.FilterRequest.PullEdges] = pullEdges;
-            request.Equalities[Convert.FilterRequest.IncludeNonVisibleObjects] = includeNonVisibleObjects;
+        //    request.Equalities[Convert.FilterRequest.PullEdges] = pullEdges;
+        //    request.Equalities[Convert.FilterRequest.IncludeNonVisibleObjects] = includeNonVisibleObjects;
 
-            return request;
-        }
+        //    return request;
+        //}
 
 
         /***************************************************/
         /**** Deprecated Methods                        ****/
         /***************************************************/
 
-        [Deprecated("2.2")]
-        [Description("Sets Pull Edges option for FilterRequest.")]
-        [Input("filterRequest", "FilterRequest")]
-        [Input("pullEdges", "Set to true if include geometry edges of Revit Element in CustomData of BHoMObject")]
-        [Output("FilterRequest")]
-        public static FilterRequest SetPullEdges(this FilterRequest filterRequest, bool pullEdges)
-        {
-            return SetPullEdges(filterRequest, pullEdges, false);
-        }
+        //[Deprecated("2.2")]
+        //[Description("Sets Pull Edges option for FilterRequest.")]
+        //[Input("filterRequest", "FilterRequest")]
+        //[Input("pullEdges", "Set to true if include geometry edges of Revit Element in CustomData of BHoMObject")]
+        //[Output("FilterRequest")]
+        //public static FilterRequest SetPullEdges(this FilterRequest filterRequest, bool pullEdges)
+        //{
+        //    return SetPullEdges(filterRequest, pullEdges, false);
+        //}
 
         /***************************************************/
     }

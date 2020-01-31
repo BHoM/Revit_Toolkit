@@ -38,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Returns Revit UniqueIds of given BHoMObjects (stored in CustomData).")]
         [Input("bHoMObjects", "Collection of BHoMObjects")]
         [Output("UniqueIds")]
-        public static List<string> UniqueIds(IEnumerable<IBHoMObject> bHoMObjects, bool removeNulls = true)
+        public static List<string> UniqueIds(this IEnumerable<IBHoMObject> bHoMObjects, bool removeNulls = true)
         {
             if (bHoMObjects == null)
                 return null;
@@ -58,19 +58,19 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns Revit UniqueIds for given FilterRequest (Example: SelectionFilterRequest).")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("UniqueIds")]
-        public static IEnumerable<string> UniqueIds(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return null;
+        //[Description("Returns Revit UniqueIds for given FilterRequest (Example: SelectionFilterRequest).")]
+        //[Input("filterRequest", "FilterRequest")]
+        //[Output("UniqueIds")]
+        //public static IEnumerable<string> UniqueIds(this FilterRequest filterRequest)
+        //{
+        //    if (filterRequest == null)
+        //        return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.UniqueIds))
-                return null;
+        //    if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.UniqueIds))
+        //        return null;
 
-            return filterRequest.Equalities[Convert.FilterRequest.UniqueIds] as IEnumerable<string>;
-        }
+        //    return filterRequest.Equalities[Convert.FilterRequest.UniqueIds] as IEnumerable<string>;
+        //}
 
         /***************************************************/
     }

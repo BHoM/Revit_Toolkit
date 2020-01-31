@@ -181,15 +181,15 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static BuiltInCategory BuiltInCategory(this FilterRequest filterRequest, Document document)
-        {
-            if (document == null || document.Settings == null || document.Settings.Categories == null || filterRequest == null)
-                return Autodesk.Revit.DB.BuiltInCategory.INVALID;
+        //public static BuiltInCategory BuiltInCategory(this FilterRequest filterRequest, Document document)
+        //{
+        //    if (document == null || document.Settings == null || document.Settings.Categories == null || filterRequest == null)
+        //        return Autodesk.Revit.DB.BuiltInCategory.INVALID;
 
-            string categoryName = BH.Engine.Adapters.Revit.Query.CategoryName(filterRequest);
+        //    string categoryName = BH.Engine.Adapters.Revit.Query.CategoryName(filterRequest);
 
-            return BuiltInCategory(document, categoryName);
-        }
+        //    return BuiltInCategory(document, categoryName);
+        //}
 
         /***************************************************/
     }
