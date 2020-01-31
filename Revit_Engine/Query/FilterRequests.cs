@@ -32,32 +32,32 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Query
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****            Deprecated methods             ****/
         /***************************************************/
 
-        [Description("Gets child FilterRequests for given FiletrRequest (FilterRequest can be combined by logical operation - LogicalAndSelectionFilterRequest, LogicalOrSelectionFilterRequest).")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("FilterRequests")]
-        public static IEnumerable<FilterRequest> FilterRequests(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return null;
+        //[Description("Gets child FilterRequests for given FiletrRequest (FilterRequest can be combined by logical operation - LogicalAndSelectionFilterRequest, LogicalOrSelectionFilterRequest).")]
+        //[Input("filterRequest", "FilterRequest")]
+        //[Output("FilterRequests")]
+        //public static IEnumerable<FilterRequest> FilterRequests(this FilterRequest filterRequest)
+        //{
+        //    if (filterRequest == null)
+        //        return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.FilterRequests))
-                return null;
+        //    if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.FilterRequests))
+        //        return null;
 
-            if (filterRequest.Equalities[Convert.FilterRequest.FilterRequests] is IEnumerable<FilterRequest>)
-                return (IEnumerable<FilterRequest>)filterRequest.Equalities[Convert.FilterRequest.FilterRequests];
+        //    if (filterRequest.Equalities[Convert.FilterRequest.FilterRequests] is IEnumerable<FilterRequest>)
+        //        return (IEnumerable<FilterRequest>)filterRequest.Equalities[Convert.FilterRequest.FilterRequests];
 
-            if (filterRequest.Equalities[Convert.FilterRequest.FilterRequests] is IEnumerable<object>)
-            {
-                IEnumerable<object> objs = filterRequest.Equalities[Convert.FilterRequest.FilterRequests] as IEnumerable<object>;
-                if (objs != null)
-                    return objs.Cast<FilterRequest>();
-            }
+        //    if (filterRequest.Equalities[Convert.FilterRequest.FilterRequests] is IEnumerable<object>)
+        //    {
+        //        IEnumerable<object> objs = filterRequest.Equalities[Convert.FilterRequest.FilterRequests] as IEnumerable<object>;
+        //        if (objs != null)
+        //            return objs.Cast<FilterRequest>();
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         /***************************************************/
     }

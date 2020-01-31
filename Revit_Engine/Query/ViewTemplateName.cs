@@ -24,6 +24,7 @@ using System.ComponentModel;
 
 using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -33,19 +34,35 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns View Template Name for given FilterRequest.")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("ViewTemplateName")]
-        public static string ViewTemplateName(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return null;
+        //[Description("Returns View Template Name for given FilterRequest.")]
+        //[Input("filterRequest", "FilterRequest")]
+        //[Output("ViewTemplateName")]
+        //public static string ViewTemplateName(this ViewByTemplateRequest request)
+        //{
+        //    if (request == null)
+        //        return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.ViewTemplateName))
-                return null;
+        //    return request.TemplateName;
+        //}
 
-            return filterRequest.Equalities[Convert.FilterRequest.ViewTemplateName] as string;
-        }
+
+        /***************************************************/
+        /****            Deprecated methods             ****/
+        /***************************************************/
+
+        //[Description("Returns View Template Name for given FilterRequest.")]
+        //[Input("filterRequest", "FilterRequest")]
+        //[Output("ViewTemplateName")]
+        //public static string ViewTemplateName(this FilterRequest filterRequest)
+        //{
+        //    if (filterRequest == null)
+        //        return null;
+
+        //    if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.ViewTemplateName))
+        //        return null;
+
+        //    return filterRequest.Equalities[Convert.FilterRequest.ViewTemplateName] as string;
+        //}
 
         /***************************************************/
     }

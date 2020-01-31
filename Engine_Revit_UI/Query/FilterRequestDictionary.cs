@@ -37,56 +37,106 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Dictionary<ElementId, List<FilterRequest>> FilterRequestDictionary(this FilterRequest filterRequest, UIDocument uIDocument)
-        {
-            if (uIDocument == null || filterRequest == null)
-                return null;
+        //public static Dictionary<ElementId, List<IRequest>> RequestDictionary(this IRequest request, UIDocument uIDocument)
+        //{
+        //    if (uIDocument == null || request == null)
+        //        return null;
 
-            Dictionary<ElementId, List<FilterRequest>> result = new Dictionary<ElementId, List<FilterRequest>>();
+        //    Dictionary<ElementId, List<IRequest>> result = new Dictionary<ElementId, List<IRequest>>();
+        //    if (request is ILogicalRequest)
+        //    {
+        //        Dictionary<ElementId, List<IRequest>> requestDictionary = null;
+        //        foreach (IRequest logicalRequest in (request as ILogicalRequest).Requests)
+        //        {
+        //            Dictionary<ElementId, List<IRequest>> tempDictionary = RequestDictionary(logicalRequest, uIDocument);
+        //            if (requestDictionary == null)
+        //                requestDictionary = tempDictionary;
+        //            else
+        //            {
+        //                if (logicalRequest is LogicalAndRequest)
+        //                    requestDictionary = Query.LogicalAnd(requestDictionary, tempDictionary);
+        //                else if (logicalRequest is LogicalOrRequest)
+        //                    requestDictionary = Query.LogicalOr(requestDictionary, tempDictionary);
+        //            }
+        //        }
+        //        result = requestDictionary;
+        //    }
+        //    else
+        //    {
+        //        IEnumerable<ElementId> elementIDs = ElementIds(request, uIDocument);
+        //        if (elementIDs != null)
+        //        {
+        //            foreach (ElementId id in elementIDs)
+        //            {
+        //                List<IRequest> requestList = null;
+        //                if (!result.TryGetValue(id, out requestList))
+        //                {
+        //                    requestList = new List<IRequest>();
+        //                    result.Add(id, requestList);
+        //                }
+        //                requestList.Add(request);
+        //            }
+        //        }
+        //    }
 
-            IEnumerable<FilterRequest> requests = BH.Engine.Adapters.Revit.Query.FilterRequests(filterRequest);
-            if (requests != null && requests.Count() > 0)
-            {
-                RequestType queryType = BH.Engine.Adapters.Revit.Query.RequestType(filterRequest);
+        //    return result;
+        //}
 
-                Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary = null;
-                foreach (FilterRequest request in requests)
-                {
-                    Dictionary<ElementId, List<FilterRequest>> tempDictionary = FilterRequestDictionary(request, uIDocument);
-                    if (filterRequestDictionary == null)
-                    {
-                        filterRequestDictionary = tempDictionary;
-                    }
-                    else
-                    {
-                        if (queryType == RequestType.LogicalAnd)
-                            filterRequestDictionary = Query.LogicalAnd(filterRequestDictionary, tempDictionary);
-                        else
-                            filterRequestDictionary = Query.LogicalOr(filterRequestDictionary, tempDictionary);
-                    }
-                }
-                result = filterRequestDictionary;
-            }
-            else
-            {
-                IEnumerable<ElementId> elementIDs = ElementIds(filterRequest, uIDocument);
-                if (elementIDs != null)
-                {
-                    foreach(ElementId id in elementIDs)
-                    {
-                        List<FilterRequest> requestList = null;
-                        if (!result.TryGetValue(id, out requestList))
-                        {
-                            requestList = new List<FilterRequest>();
-                            result.Add(id, requestList);
-                        }
-                        requestList.Add(filterRequest);
-                    }
-                }
-            }
 
-            return result;
-        }
+        /***************************************************/
+        /****            Deprecated methods             ****/
+        /***************************************************/
+
+        //public static Dictionary<ElementId, List<FilterRequest>> FilterRequestDictionary(this FilterRequest filterRequest, UIDocument uIDocument)
+        //{
+        //    if (uIDocument == null || filterRequest == null)
+        //        return null;
+
+        //    Dictionary<ElementId, List<FilterRequest>> result = new Dictionary<ElementId, List<FilterRequest>>();
+
+        //    IEnumerable<FilterRequest> requests = BH.Engine.Adapters.Revit.Query.FilterRequests(filterRequest);
+        //    if (requests != null && requests.Count() > 0)
+        //    {
+        //        RequestType queryType = BH.Engine.Adapters.Revit.Query.RequestType(filterRequest);
+
+        //        Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary = null;
+        //        foreach (FilterRequest request in requests)
+        //        {
+        //            Dictionary<ElementId, List<FilterRequest>> tempDictionary = FilterRequestDictionary(request, uIDocument);
+        //            if (filterRequestDictionary == null)
+        //            {
+        //                filterRequestDictionary = tempDictionary;
+        //            }
+        //            else
+        //            {
+        //                if (queryType == RequestType.LogicalAnd)
+        //                    filterRequestDictionary = Query.LogicalAnd(filterRequestDictionary, tempDictionary);
+        //                else
+        //                    filterRequestDictionary = Query.LogicalOr(filterRequestDictionary, tempDictionary);
+        //            }
+        //        }
+        //        result = filterRequestDictionary;
+        //    }
+        //    else
+        //    {
+        //        IEnumerable<ElementId> elementIDs = ElementIds(filterRequest, uIDocument);
+        //        if (elementIDs != null)
+        //        {
+        //            foreach (ElementId id in elementIDs)
+        //            {
+        //                List<FilterRequest> requestList = null;
+        //                if (!result.TryGetValue(id, out requestList))
+        //                {
+        //                    requestList = new List<FilterRequest>();
+        //                    result.Add(id, requestList);
+        //                }
+        //                requestList.Add(filterRequest);
+        //            }
+        //        }
+        //    }
+
+        //    return result;
+        //}
 
         /***************************************************/
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -22,8 +22,8 @@
 
 using System.ComponentModel;
 
-using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 
@@ -31,15 +31,18 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterRequest which filters all elements on Revit Active workset.")]
-        [Output("FilterRequest")]
-        public static FilterRequest ActiveWorksetFilterRequest()
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        [Description("Creates an IRequest that filters all elements of given Autodesk.Revit.DB type.")]
+        [Input("typeName", "Revit DB Type Name")]
+        [Output("DBTypeNameRequest")]
+        public static DBTypeNameRequest DBTypeNameRequest(string typeName)
         {
-            FilterRequest filterRequest = new FilterRequest();
-            filterRequest.Type = typeof(BHoMObject);
-            filterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.ActiveWorkset;
-            return filterRequest;
+            return new DBTypeNameRequest { TypeName = typeName };
         }
+
+        /***************************************************/
     }
 }
-

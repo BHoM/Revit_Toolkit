@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -22,36 +22,29 @@
 
 using System.ComponentModel;
 
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit;
+using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Create
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Returns Request Type of given FilterRequest")]
-        //[Input("filterRequest", "FilterRequest")]
-        //[Output("RequestType")]
-        //public static oM.Adapters.Revit.Enums.RequestType RequestType(this FilterRequest filterRequest)
-        //{
-        //    if (filterRequest == null)
-        //        return oM.Adapters.Revit.Enums.RequestType.Undefined;
-
-        //    if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.RequestType))
-        //        return oM.Adapters.Revit.Enums.RequestType.Undefined;
-
-        //    if (filterRequest.Equalities[Convert.FilterRequest.RequestType] is oM.Adapters.Revit.Enums.RequestType || filterRequest.Equalities[Convert.FilterRequest.RequestType] is int)
-        //        return (oM.Adapters.Revit.Enums.RequestType)filterRequest.Equalities[Convert.FilterRequest.RequestType];
-
-        //    return oM.Adapters.Revit.Enums.RequestType.Undefined;
-        //}
+        [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
+        [Input("parameterName", "Parameter name to be queried")]
+        [Input("numberComparisonType", "NumberComparisonType")]
+        [Input("value", "Parameter Value. If Revit parameter include units then this value shall be expressed in SI Units")]
+        [Output("ParameterNumberRequest")]
+        public static ParameterNumberRequest ParameterNumberRequest(string parameterName, NumberComparisonType numberComparisonType, double value)
+        {
+            return new ParameterNumberRequest { ParameterName = parameterName, NumberComparisonType = numberComparisonType, Value = value };
+        }
 
         /***************************************************/
     }
 }
-
-

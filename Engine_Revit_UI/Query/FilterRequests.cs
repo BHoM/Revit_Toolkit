@@ -20,34 +20,33 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
+//using System.Collections.Generic;
 
-using Autodesk.Revit.DB;
+//using Autodesk.Revit.DB;
 
-using BH.oM.Data.Requests;
+//using BH.oM.Data.Requests;
 
 
-namespace BH.UI.Revit.Engine
-{
-    public static partial class Query
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+//namespace BH.UI.Revit.Engine
+//{
+//    public static partial class Query
+//    {
+//        /***************************************************/
+//        /****            Deprecated methods             ****/
+//        /***************************************************/
 
-        public static IEnumerable<FilterRequest> FilterRequests(this Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary, ElementId elementID)
-        {
-            if (filterRequestDictionary == null)
-                return null;
+//        public static IEnumerable<FilterRequest> FilterRequests(this Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary, ElementId elementID)
+//        {
+//            if (filterRequestDictionary == null)
+//                return null;
 
-            List<FilterRequest> requests = null;
-            if (!filterRequestDictionary.TryGetValue(elementID, out requests))
-                return null;
+//            List<FilterRequest> requests = null;
+//            if (!filterRequestDictionary.TryGetValue(elementID, out requests))
+//                return null;
 
-            return requests;
-        }
+//            return requests;
+//        }
 
-        /***************************************************/
-    }
-}
-
+//        /***************************************************/
+//    }
+//}

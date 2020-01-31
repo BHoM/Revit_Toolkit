@@ -20,52 +20,69 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Linq;
-using System.Collections.Generic;
+//using System.Linq;
+//using System.Collections.Generic;
 
-using Autodesk.Revit.DB;
+//using Autodesk.Revit.DB;
 
-using BH.oM.Data.Requests;
+//using BH.oM.Data.Requests;
 
 
-namespace BH.UI.Revit.Engine
-{
-    public static partial class Query
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+//namespace BH.UI.Revit.Engine
+//{
+//    public static partial class Query
+//    {
+//        /***************************************************/
+//        /****              Public methods               ****/
+//        /***************************************************/
 
-        public static Dictionary<ElementId, List<FilterRequest>> LogicalAnd(this Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary1, Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary2)
-        {
-            if (filterRequestDictionary1 == null || filterRequestDictionary2 == null)
-                return null;
+//        public static HashSet<ElementId> LogicalAnd(this HashSet<ElementId> set1, HashSet<ElementId> set2)
+//        {
+//            if (set1 == null || set2 == null)
+//                return null;
+//            else
+//            {
+//                HashSet<ElementId> result = new HashSet<ElementId>(set1);
+//                result.IntersectWith(set2);
+//                return result;
+//            }
+//        }
 
-            Dictionary<ElementId, List<FilterRequest>> result = new Dictionary<ElementId, List<FilterRequest>>();
 
-            if (filterRequestDictionary1.Count() == 0 || filterRequestDictionary2.Count() == 0)
-                return result;
+//        /***************************************************/
+//        /****            Deprecated methods             ****/
+//        /***************************************************/
 
-            foreach(KeyValuePair<ElementId, List<FilterRequest>> kvp in filterRequestDictionary1)
-            {
-                if (kvp.Value == null || kvp.Value.Count == 0)
-                    continue;
+//        //public static Dictionary<ElementId, List<FilterRequest>> LogicalAnd(this Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary1, Dictionary<ElementId, List<FilterRequest>> filterRequestDictionary2)
+//        //{
+//        //    if (filterRequestDictionary1 == null || filterRequestDictionary2 == null)
+//        //        return null;
 
-                List<FilterRequest> requests = null;
-                if (filterRequestDictionary2.TryGetValue(kvp.Key, out requests))
-                {
-                    if (requests == null || requests.Count == 0)
-                        continue;
+//        //    Dictionary<ElementId, List<FilterRequest>> result = new Dictionary<ElementId, List<FilterRequest>>();
 
-                    List<FilterRequest> requestsTemp = new List<FilterRequest>(kvp.Value);
-                    requestsTemp.AddRange(requests);
-                    result.Add(kvp.Key, requestsTemp);
-                }
-            }
+//        //    if (filterRequestDictionary1.Count() == 0 || filterRequestDictionary2.Count() == 0)
+//        //        return result;
 
-            return result;
-        }
+//        //    foreach (KeyValuePair<ElementId, List<FilterRequest>> kvp in filterRequestDictionary1)
+//        //    {
+//        //        if (kvp.Value == null || kvp.Value.Count == 0)
+//        //            continue;
 
-        /***************************************************/
-    }
-}
+//        //        List<FilterRequest> requests = null;
+//        //        if (filterRequestDictionary2.TryGetValue(kvp.Key, out requests))
+//        //        {
+//        //            if (requests == null || requests.Count == 0)
+//        //                continue;
+
+//        //            List<FilterRequest> requestsTemp = new List<FilterRequest>(kvp.Value);
+//        //            requestsTemp.AddRange(requests);
+//        //            result.Add(kvp.Key, requestsTemp);
+//        //        }
+//        //    }
+
+//        //    return result;
+//        //}
+
+//        /***************************************************/
+//    }
+//}

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,28 +20,24 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
-using BH.oM.Data.Requests;
-using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Data.Requests;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Create
+    public class SelectionRequest : IRequest
     {
-        [Description("Creates FilterRequest which filters all by given Revit Category Name.")]
-        [Input("categoryName", "Revit Category Name")]
-        [Output("FilterRequest")]
-        public static FilterRequest CategoryFilterRequest(string categoryName)
-        {
-            FilterRequest filterRequest = new FilterRequest();
-            filterRequest.Type = typeof(BHoMObject);
-            filterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Category;
-            filterRequest.Equalities[Convert.FilterRequest.CategoryName] = categoryName;
-            return filterRequest;
-        }
+        /***************************************************/
+        /****                Properties                 ****/
+        /***************************************************/
+
+
+
+        /***************************************************/
     }
 }
-

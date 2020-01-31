@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -22,38 +22,29 @@
 
 using System.ComponentModel;
 
-using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
+
+using System.Collections.Generic;
 
 namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterRequest which filters specified views")]
-        [Input("revitViewType", "Revit View Type")]
-        [Output("FilterRequest")]
-        public static FilterRequest ViewFilterRequest(RevitViewType revitViewType)
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        [Description("Creates an IRequest that filters elements by their UniqueIds.")]
+        [Input("uniqueIds", "UniqueIds of elements to be filtered")]
+        [Output("UniqueIdsRequest")]
+        public static UniqueIdsRequest UniqueIdsRequest(List<string> uniqueIds)
         {
-            FilterRequest filterReqeust = new FilterRequest();
-            filterReqeust.Type = typeof(BHoMObject);
-            filterReqeust.Equalities[Convert.FilterRequest.RequestType] = RequestType.View;
-            filterReqeust.Equalities[Convert.FilterRequest.RevitViewType] = revitViewType;
-            return filterReqeust;
+            return new UniqueIdsRequest { UniqueIds = uniqueIds };
         }
 
-        [Description("Creates FilterRequest which filters specified views")]
-        [Input("viewTemplateName", "Revit View Template Name applied to the views to be pulled")]
-        [Output("FilterRequest")]
-        public static FilterRequest ViewFilterRequest(string viewTemplateName)
-        {
-            FilterRequest filterRequest = new FilterRequest();
-            filterRequest.Type = typeof(BHoMObject);
-            filterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.View;
-            filterRequest.Equalities[Convert.FilterRequest.ViewTemplateName] = viewTemplateName;
-            return filterRequest;
-        }
+        /***************************************************/
     }
 }
-

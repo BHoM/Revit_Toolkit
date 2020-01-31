@@ -38,6 +38,11 @@
     <Reference Include="BHoM">
       <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
     </Reference>
+    <Reference Include="Data_oM, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Geometry_oM">
       <HintPath>..\..\BHoM\Build\Geometry_oM.dll</HintPath>
     </Reference>
@@ -70,6 +75,22 @@
     <Compile Include="Interface\IInstance.cs" />
     <Compile Include="Interface\IComparisonRule.cs" />
     <Compile Include="Properties\InstanceProperties.cs" />
+    <Compile Include="Requests\CategoryRequest.cs" />
+    <Compile Include="Requests\FamilyRequest.cs" />
+    <Compile Include="Requests\ActiveWorksetRequest.cs" />
+    <Compile Include="Requests\OpenWorksetsRequest.cs" />
+    <Compile Include="Requests\ParameterExistsRequest.cs" />
+    <Compile Include="Requests\ParameterNumberRequest.cs" />
+    <Compile Include="Requests\ParameterTextRequest.cs" />
+    <Compile Include="Requests\ElementIdsRequest.cs" />
+    <Compile Include="Requests\UniqueIdsRequest.cs" />
+    <Compile Include="Requests\SelectionRequest.cs" />
+    <Compile Include="Requests\SelectionSetRequest.cs" />
+    <Compile Include="Requests\DBTypeNameRequest.cs" />
+    <Compile Include="Requests\ViewByTemplateRequest.cs" />
+    <Compile Include="Requests\ViewByTypeRequest.cs" />
+    <Compile Include="Requests\ViewTemplateRequest.cs" />
+    <Compile Include="Requests\WorksetRequest.cs" />
     <Compile Include="RevitConfig.cs" />
     <Compile Include="_Properties\AssemblyInfo.cs" />
     <Compile Include="Generic\RevitFilePreview.cs" />

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -22,8 +22,8 @@
 
 using System.ComponentModel;
 
-using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 
@@ -31,17 +31,18 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Create
     {
-        [Description("Creates FilterRequest which filters all elements by given Revit Type/Class name.")]
-        [Input("typeName", "Revit Type/Class name")]
-        [Output("FilterRequest")]
-        public static FilterRequest TypeNameFilterRequest(string typeName)
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        [Description("Creates an IRequest that filters elements contained in a given Selection Set.")]
+        [Input("selectionSetName", "Revit Selection Set Name")]
+        [Output("SelectionSetRequest")]
+        public static SelectionSetRequest SelectionSetRequest(string selectionSetName)
         {
-            FilterRequest filterRequest = new FilterRequest();
-            filterRequest.Type = typeof(BHoMObject);
-            filterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.TypeName;
-            filterRequest.Equalities[Convert.FilterRequest.TypeName] = typeName;
-            return filterRequest;
+            return new SelectionSetRequest { SelectionSetName = selectionSetName };
         }
+
+        /***************************************************/
     }
 }
-

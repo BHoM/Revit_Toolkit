@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,28 +20,24 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
-using BH.oM.Data.Requests;
-using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Data.Requests;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Create
+    public class UniqueIdsRequest : IRequest
     {
-        [Description("Creates FilterRequest which filters elements by given Workset Name.")]
-        [Input("worksetName", "Revit Workset Name")]
-        [Output("FilterRequest")]
-        public static FilterRequest WorksetFilterRequest(string worksetName)
-        {
-            FilterRequest filterRequest = new FilterRequest();
-            filterRequest.Type = typeof(BHoMObject);
-            filterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Workset;
-            filterRequest.Equalities[Convert.FilterRequest.WorksetName] = worksetName;
-            return filterRequest;
-        }
+        /***************************************************/
+        /****                Properties                 ****/
+        /***************************************************/
+
+        public List<string> UniqueIds { get; set; } = new List<string>();
+
+        /***************************************************/
     }
 }
-
