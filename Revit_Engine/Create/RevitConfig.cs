@@ -1,6 +1,6 @@
 ﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,36 +20,24 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using System;
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Adapters.Revit.Enums;
+using System.ComponentModel;
 
-namespace BH.UI.Revit.Engine
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit;
+using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
+
+namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Create
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        public static FilterStringRuleEvaluator FilterStringRuleEvaluator(this TextComparisonType textComparisonType)
+        public static RevitConfig RevitConfig(Discipline discipline, bool pullEdges, bool includeNonVisible)
         {
-            switch (textComparisonType)
-            {
-                case TextComparisonType.Contains:
-                    return new FilterStringContains();
-                case TextComparisonType.EndsWith:
-                    return new FilterStringEndsWith();
-                case TextComparisonType.Equal:
-                    return new FilterStringEquals();
-                case TextComparisonType.NotEqual:
-                    return new FilterStringEquals();
-                case TextComparisonType.StartsWith:
-                    return new FilterStringBeginsWith();
-                default:
-                    return null;
-            }
+            return new RevitConfig { Discipline = discipline, PullEdges = pullEdges, IncludeNonVisible = includeNonVisible };
         }
 
         /***************************************************/
