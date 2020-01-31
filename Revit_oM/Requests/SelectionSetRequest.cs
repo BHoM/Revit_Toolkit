@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,37 +20,24 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
+using BH.oM.Base;
 using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Query
+    public class SelectionSetRequest : IRequest
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****                Properties                 ****/
         /***************************************************/
 
-        //[Description("Returns Request Type of given FilterRequest")]
-        //[Input("filterRequest", "FilterRequest")]
-        //[Output("RequestType")]
-        //public static oM.Adapters.Revit.Enums.RequestType RequestType(this FilterRequest filterRequest)
-        //{
-        //    if (filterRequest == null)
-        //        return oM.Adapters.Revit.Enums.RequestType.Undefined;
-
-        //    if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.RequestType))
-        //        return oM.Adapters.Revit.Enums.RequestType.Undefined;
-
-        //    if (filterRequest.Equalities[Convert.FilterRequest.RequestType] is oM.Adapters.Revit.Enums.RequestType || filterRequest.Equalities[Convert.FilterRequest.RequestType] is int)
-        //        return (oM.Adapters.Revit.Enums.RequestType)filterRequest.Equalities[Convert.FilterRequest.RequestType];
-
-        //    return oM.Adapters.Revit.Enums.RequestType.Undefined;
-        //}
+        public string SelectionSetName { get; set; } = "";
 
         /***************************************************/
     }
 }
-
