@@ -138,6 +138,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
     </Reference>
+    <Reference Include="Data_Engine, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM_Engine\Build\Data_Engine.dll</HintPath>
+    </Reference>
     <Reference Include="Data_oM">
       <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
     </Reference>

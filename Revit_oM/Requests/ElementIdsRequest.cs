@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,30 +20,24 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
-using BH.oM.Data.Requests;
-using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Data.Requests;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Create
+    public class ElementIdsRequest : IRequest
     {
-        [Description("Creates FilterRequest which filters all elements by given Family Name or/and Family sType Name.")]
-        [Input("familyName", "Family Name. Keep default value (null) to seek through all Family Type Names.")]
-        [Input("familyTypeName", "Family Type Name")]
-        [Output("FilterRequest")]
-        public static FilterRequest FamilyFilterRequest(string familyName = null, string familyTypeName = null)
-        {
-            FilterRequest filterRequest = new FilterRequest();
-            filterRequest.Type = typeof(BHoMObject);
-            filterRequest.Equalities[Convert.FilterRequest.RequestType] = RequestType.Family;
-            filterRequest.Equalities[Convert.FilterRequest.FamilyName] = familyName;
-            filterRequest.Equalities[Convert.FilterRequest.FamilyTypeName] = familyTypeName;
-            return filterRequest;
-        }
+        /***************************************************/
+        /****                Properties                 ****/
+        /***************************************************/
+
+        public List<int> ElementIds { get; set; } = new List<int>();
+
+        /***************************************************/
     }
 }
-

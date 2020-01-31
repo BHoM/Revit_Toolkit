@@ -72,7 +72,7 @@ namespace BH.Engine.Adapters.Revit
                 return oM.Adapters.Revit.Enums.Discipline.Undefined;
 
             Discipline discipline = oM.Adapters.Revit.Enums.Discipline.Undefined;
-            IEnumerable<FilterRequest> filterRequests = filterRequest.FilterRequests();
+            IEnumerable<FilterRequest> filterRequests = filterRequest.LogicalRequests();
             if (filterRequests != null)
             {
                 foreach (FilterRequest fr in filterRequests)

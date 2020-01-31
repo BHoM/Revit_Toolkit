@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -22,36 +22,28 @@
 
 using System.ComponentModel;
 
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit;
+using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Create
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Returns Request Type of given FilterRequest")]
-        //[Input("filterRequest", "FilterRequest")]
-        //[Output("RequestType")]
-        //public static oM.Adapters.Revit.Enums.RequestType RequestType(this FilterRequest filterRequest)
-        //{
-        //    if (filterRequest == null)
-        //        return oM.Adapters.Revit.Enums.RequestType.Undefined;
-
-        //    if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.RequestType))
-        //        return oM.Adapters.Revit.Enums.RequestType.Undefined;
-
-        //    if (filterRequest.Equalities[Convert.FilterRequest.RequestType] is oM.Adapters.Revit.Enums.RequestType || filterRequest.Equalities[Convert.FilterRequest.RequestType] is int)
-        //        return (oM.Adapters.Revit.Enums.RequestType)filterRequest.Equalities[Convert.FilterRequest.RequestType];
-
-        //    return oM.Adapters.Revit.Enums.RequestType.Undefined;
-        //}
+        [Description("Creates an IRequest that filters all elements of given family and type.")]
+        [Input("familyName", "Family Name. Keep default value (null) to seek through all Family Type Names.")]
+        [Input("familyTypeName", "Family Type Name")]
+        [Output("FamilyRequest")]
+        public static FamilyRequest FamilyRequest(string familyName, string familyTypeName)
+        {
+            return new FamilyRequest { FamilyName = familyName, FamilyTypeName = familyTypeName };
+        }
 
         /***************************************************/
     }
 }
-
-

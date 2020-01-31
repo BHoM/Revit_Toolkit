@@ -20,39 +20,38 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-namespace BH.Engine.Adapters.Revit
-{
-    public static partial class Convert
-    {
-        public static class FilterRequest
-        {
-            /***************************************************/
-            /****             Public Properties             ****/
-            /***************************************************/
+//namespace BH.Engine.Adapters.Revit
+//{
+//    public static partial class Convert
+//    {
+//        public static class FilterRequest
+//        {
+//            /***************************************************/
+//            /****             Public Properties             ****/
+//            /***************************************************/
 
-            public const string RequestType = "RequestType";
-            public const string FilterRequests = "FilterRequests";
-            public const string CategoryName = "CategoryName";
-            public const string ElementIds = "ElementIds";
-            public const string UniqueIds = "UniqueIds";
-            public const string WorksetName = "WorksetName";
-            public const string IncludeSelected = "IncludeSelected";
-            public const string DefaultDiscipline = "DefaultDiscipline";
-            public const string ViewTemplateName = "ViewTemplateName";
-            public const string TypeName = "TypeName";
-            public const string FamilyName = "FamilyName";
-            public const string FamilyTypeName = "FamilyTypeName";
-            public const string SelectionSetName = "SelectionSetName";
-            public const string PullEdges = "PullEdges";
-            public const string IncludeNonVisibleObjects = "IncludeNonVisibleObjects";
-            public const string RevitViewType = "RevitViewType";
-            public const string ParameterName = "ParameterName";
-            public const string Value = "Value";
-            public const string ComparisonRule = "ComparisonRule";
-            public const string RelatedFilterRequest = "RelatedFilterRequest";
+//            public const string RequestType = "RequestType";
+//            public const string FilterRequests = "FilterRequests";
+//            public const string CategoryName = "CategoryName";
+//            public const string ElementIds = "ElementIds";
+//            public const string UniqueIds = "UniqueIds";
+//            public const string WorksetName = "WorksetName";
+//            public const string IncludeSelected = "IncludeSelected";
+//            public const string DefaultDiscipline = "DefaultDiscipline";
+//            public const string ViewTemplateName = "ViewTemplateName";
+//            public const string TypeName = "TypeName";
+//            public const string FamilyName = "FamilyName";
+//            public const string FamilyTypeName = "FamilyTypeName";
+//            public const string SelectionSetName = "SelectionSetName";
+//            public const string PullEdges = "PullEdges";
+//            public const string IncludeNonVisibleObjects = "IncludeNonVisibleObjects";
+//            public const string RevitViewType = "RevitViewType";
+//            public const string ParameterName = "ParameterName";
+//            public const string Value = "Value";
+//            public const string ComparisonRule = "ComparisonRule";
+//            public const string RelatedFilterRequest = "RelatedFilterRequest";
 
-            /***************************************************/
-        }
-    }
-}
-
+//            /***************************************************/
+//        }
+//    }
+//}
