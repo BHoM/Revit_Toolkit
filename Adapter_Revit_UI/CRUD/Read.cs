@@ -29,6 +29,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Base;
 using BH.oM.Geometry;
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Elements;
@@ -117,6 +118,13 @@ namespace BH.UI.Revit.Adapter
 
         protected override IEnumerable<IBHoMObject> Read(IRequest request, ActionConfig actionConfig = null)
         {
+            RevitConfig config = actionConfig as RevitConfig;
+            if (config == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Action Config is not a Revit config.");
+                return null;
+            }
+
             Document document = this.Document;
 
             if (document == null)
@@ -157,9 +165,9 @@ namespace BH.UI.Revit.Adapter
                     continue;
                 
                 //TODO: move this to actionConfig?
-                Discipline discipline = actionConfig.Discipline;
-                bool pullEdges = actionConfig.PullEdges;
-                bool includeNonVisible = actionConfig.IncludeNonVisible;
+                Discipline discipline = config.Discipline;
+                bool pullEdges = config.PullEdges;
+                bool includeNonVisible = config.IncludeNonVisible;
 
                 PullSettings pullSettings = null;
                 if (!dictionaryPullSettings.TryGetValue(discipline, out pullSettings))

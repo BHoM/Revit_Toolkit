@@ -130,6 +130,7 @@
     <Compile Include="Create\Requests\ViewByTypeRequest.cs" />
     <Compile Include="Create\Requests\ViewTemplateRequest.cs" />
     <Compile Include="Create\Requests\WorksetRequest.cs" />
+    <Compile Include="Create\RevitConfig.cs" />
     <Compile Include="Create\Settings\MapSettings.cs" />
     <Compile Include="Create\Generic\FamilyLibrary.cs" />
     <Compile Include="Create\Generic\TypeMap.cs" />
