@@ -20,35 +20,35 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+//using System.ComponentModel;
 
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
+//using BH.oM.Data.Requests;
+//using BH.oM.Reflection.Attributes;
 
-namespace BH.Engine.Adapters.Revit
-{
-    public static partial class Query
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+//namespace BH.Engine.Adapters.Revit
+//{
+//    public static partial class Query
+//    {
+//        /***************************************************/
+//        /****              Public methods               ****/
+//        /***************************************************/
 
-        [Description("Returns Value for given FilterRequest")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("Value")]
-        public static object Value(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return null;
+//        [Description("Returns Value for given FilterRequest")]
+//        [Input("filterRequest", "FilterRequest")]
+//        [Output("Value")]
+//        public static object Value(this FilterRequest filterRequest)
+//        {
+//            if (filterRequest == null)
+//                return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.Value))
-                return null;
+//            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.Value))
+//                return null;
 
-            return filterRequest.Equalities[Convert.FilterRequest.Value];
-        }
+//            return filterRequest.Equalities[Convert.FilterRequest.Value];
+//        }
 
-        /***************************************************/
-    }
-}
+//        /***************************************************/
+//    }
+//}
 
 

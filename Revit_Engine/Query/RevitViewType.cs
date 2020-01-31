@@ -20,41 +20,40 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+//using System.ComponentModel;
 
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Enums;
+//using BH.oM.Data.Requests;
+//using BH.oM.Reflection.Attributes;
+//using BH.oM.Adapters.Revit.Enums;
 
-namespace BH.Engine.Adapters.Revit
-{
-    public static partial class Query
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+//namespace BH.Engine.Adapters.Revit
+//{
+//    public static partial class Query
+//    {
+//        /***************************************************/
+//        /****              Public methods               ****/
+//        /***************************************************/
 
-        [Description("Gets RevitViewType from FilterRequest.")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("RevitViewType")]
-        public static RevitViewType? RevitViewType(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return null;
+//        [Description("Gets RevitViewType from FilterRequest.")]
+//        [Input("filterRequest", "FilterRequest")]
+//        [Output("RevitViewType")]
+//        public static RevitViewType? RevitViewType(this FilterRequest filterRequest)
+//        {
+//            if (filterRequest == null)
+//                return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.RevitViewType))
-                return null;
+//            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.RevitViewType))
+//                return null;
 
-            object obj = filterRequest.Equalities[Convert.FilterRequest.RevitViewType];
-            if (obj is RevitViewType)
-                return (RevitViewType)obj;
-            else if (obj is int)
-                return (RevitViewType)(int)(obj);
+//            object obj = filterRequest.Equalities[Convert.FilterRequest.RevitViewType];
+//            if (obj is RevitViewType)
+//                return (RevitViewType)obj;
+//            else if (obj is int)
+//                return (RevitViewType)(int)(obj);
 
-            return null;
-        }
+//            return null;
+//        }
 
-        /***************************************************/
-    }
-}
-
+//        /***************************************************/
+//    }
+//}

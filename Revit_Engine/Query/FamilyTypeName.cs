@@ -33,19 +33,19 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets Revit Family Type name for given FilterRequest (Example: FamilyFilterRequest).")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("FamilyTypeName")]
-        public static string FamilyTypeName(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return null;
+        //[Description("Gets Revit Family Type name for given FilterRequest (Example: FamilyFilterRequest).")]
+        //[Input("filterRequest", "FilterRequest")]
+        //[Output("FamilyTypeName")]
+        //public static string FamilyTypeName(this FilterRequest filterRequest)
+        //{
+        //    if (filterRequest == null)
+        //        return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.FamilyTypeName))
-                return null;
+        //    if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.FamilyTypeName))
+        //        return null;
 
-            return filterRequest.Equalities[Convert.FilterRequest.FamilyTypeName] as string;
-        }
+        //    return filterRequest.Equalities[Convert.FilterRequest.FamilyTypeName] as string;
+        //}
 
         /***************************************************/
 

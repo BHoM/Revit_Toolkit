@@ -25,28 +25,29 @@ using System.ComponentModel;
 using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****            Deprecated methods             ****/
         /***************************************************/
 
-        [Description("Returns ComparisonRule of given FilterRequest")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("IComparisonRule")]
-        public static IComparisonRule ComparisonRule(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return null;
+        //[Description("Returns ComparisonRule of given FilterRequest")]
+        //[Input("filterRequest", "FilterRequest")]
+        //[Output("IComparisonRule")]
+        //public static IComparisonRule ComparisonRule(this FilterRequest filterRequest)
+        //{
+        //    if (filterRequest == null)
+        //        return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.ComparisonRule))
-                return null;
+        //    if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.ComparisonRule))
+        //        return null;
 
-            return filterRequest.Equalities[Convert.FilterRequest.ComparisonRule] as IComparisonRule;
-        }
+        //    return filterRequest.Equalities[Convert.FilterRequest.ComparisonRule] as IComparisonRule;
+        //}
 
         /***************************************************/
     }

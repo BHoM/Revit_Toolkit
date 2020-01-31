@@ -20,36 +20,36 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
+//using BH.oM.Adapters.Revit.Settings;
+//using BH.oM.Data.Requests;
+//using BH.oM.Reflection.Attributes;
+//using System.ComponentModel;
 
-namespace BH.Engine.Adapters.Revit
-{
-    public static partial class Query
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+//namespace BH.Engine.Adapters.Revit
+//{
+//    public static partial class Query
+//    {
+//        /***************************************************/
+//        /****              Public methods               ****/
+//        /***************************************************/
 
-        [Description("Gets Include Selected property of FilterRequest.")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("IncludeSelected")]
-        public static bool IncludeSelected(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return false;
+//        [Description("Gets Include Selected property of FilterRequest.")]
+//        [Input("filterRequest", "FilterRequest")]
+//        [Output("IncludeSelected")]
+//        public static bool IncludeSelected(this FilterRequest filterRequest)
+//        {
+//            if (filterRequest == null)
+//                return false;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.IncludeSelected))
-                return false;
+//            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.IncludeSelected))
+//                return false;
 
-            if (filterRequest.Equalities[Convert.FilterRequest.IncludeSelected] is bool)
-                return (bool)filterRequest.Equalities[Convert.FilterRequest.IncludeSelected];
-            else
-                return false;
-        }
+//            if (filterRequest.Equalities[Convert.FilterRequest.IncludeSelected] is bool)
+//                return (bool)filterRequest.Equalities[Convert.FilterRequest.IncludeSelected];
+//            else
+//                return false;
+//        }
 
-        /***************************************************/
-    }
-}
+//        /***************************************************/
+//    }
+//}

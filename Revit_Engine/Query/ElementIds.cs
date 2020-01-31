@@ -20,44 +20,44 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-using System.Collections.Generic;
+//using System.ComponentModel;
+//using System.Collections.Generic;
 
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
-using System.Linq;
+//using BH.oM.Data.Requests;
+//using BH.oM.Reflection.Attributes;
+//using System.Linq;
 
-namespace BH.Engine.Adapters.Revit
-{
-    public static partial class Query
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+//namespace BH.Engine.Adapters.Revit
+//{
+//    public static partial class Query
+//    {
+//        /***************************************************/
+//        /****              Public methods               ****/
+//        /***************************************************/
 
-        [Description("Gets integer representation of ElementIds for given FilterRequest (Example: SelectionFilterRequest).")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("ElementIds")]
-        public static IEnumerable<int> ElementIds(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return null;
+//        [Description("Gets integer representation of ElementIds for given FilterRequest (Example: SelectionFilterRequest).")]
+//        [Input("filterRequest", "FilterRequest")]
+//        [Output("ElementIds")]
+//        public static IEnumerable<int> ElementIds(this FilterRequest filterRequest)
+//        {
+//            if (filterRequest == null)
+//                return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.ElementIds))
-                return null;
+//            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.ElementIds))
+//                return null;
 
-            IEnumerable<int> result = filterRequest.Equalities[Convert.FilterRequest.ElementIds] as IEnumerable<int>;
+//            IEnumerable<int> result = filterRequest.Equalities[Convert.FilterRequest.ElementIds] as IEnumerable<int>;
 
-            if (result == null && filterRequest.Equalities[Convert.FilterRequest.ElementIds] is IEnumerable<object>)
-            {
-                IEnumerable<object> objects = filterRequest.Equalities[Convert.FilterRequest.ElementIds] as IEnumerable<object>;
-                if (objects != null)
-                    return objects.ToList().ConvertAll(x => System.Convert.ToInt32(x));
-            }
+//            if (result == null && filterRequest.Equalities[Convert.FilterRequest.ElementIds] is IEnumerable<object>)
+//            {
+//                IEnumerable<object> objects = filterRequest.Equalities[Convert.FilterRequest.ElementIds] as IEnumerable<object>;
+//                if (objects != null)
+//                    return objects.ToList().ConvertAll(x => System.Convert.ToInt32(x));
+//            }
 
-            return result;
-        }
+//            return result;
+//        }
 
-        /***************************************************/
-    }
-}
+//        /***************************************************/
+//    }
+//}
