@@ -35,36 +35,36 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns true if FilterRequest should pull edges from Revit Element")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("PullEdges")]
-        public static bool PullEdges(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return false;
+        //[Description("Returns true if FilterRequest should pull edges from Revit Element")]
+        //[Input("filterRequest", "FilterRequest")]
+        //[Output("PullEdges")]
+        //public static bool PullEdges(this FilterRequest filterRequest)
+        //{
+        //    if (filterRequest == null)
+        //        return false;
 
-            if (filterRequest.Equalities.ContainsKey(Convert.FilterRequest.PullEdges))
-            {
-                object obj = filterRequest.Equalities[Convert.FilterRequest.PullEdges];
-                if (obj is bool)
-                    return (bool)obj;
-            }
+        //    if (filterRequest.Equalities.ContainsKey(Convert.FilterRequest.PullEdges))
+        //    {
+        //        object obj = filterRequest.Equalities[Convert.FilterRequest.PullEdges];
+        //        if (obj is bool)
+        //            return (bool)obj;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
         /***************************************************/
 
-        [Description("Returns true if at least one FilterRequest on list should pull edges from Revit Element")]
-        [Input("filterRequests", "FilterRequests")]
-        [Output("PullEdges")]
-        public static bool PullEdges(this IEnumerable<FilterRequest> filterRequests)
-        {
-            if (filterRequests == null)
-                return false;
+        //[Description("Returns true if at least one FilterRequest on list should pull edges from Revit Element")]
+        //[Input("filterRequests", "FilterRequests")]
+        //[Output("PullEdges")]
+        //public static bool PullEdges(this IEnumerable<FilterRequest> filterRequests)
+        //{
+        //    if (filterRequests == null)
+        //        return false;
 
-            return filterRequests.ToList().Any(x => x.PullEdges());
-        }
+        //    return filterRequests.ToList().Any(x => x.PullEdges());
+        //}
 
         /***************************************************/
     }

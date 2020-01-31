@@ -303,6 +303,8 @@
     <Compile Include="Modify\UpdateValues.cs" />
     <Compile Include="Query\ArbitraryPlane.cs" />
     <Compile Include="Query\BoundingBox.cs" />
+    <Compile Include="Query\FilterNumericRuleEvaluator.cs" />
+    <Compile Include="Query\FilterStringRuleEvaluator.cs" />
     <Compile Include="Query\IsContaining.cs" />
     <Compile Include="Query\PlanarSurfaceDictionary.cs" />
     <Compile Include="Query\Solids.cs" />

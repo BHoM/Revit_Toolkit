@@ -20,34 +20,32 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+//using System.ComponentModel;
 
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
+//using BH.oM.Data.Requests;
+//using BH.oM.Reflection.Attributes;
 
-namespace BH.Engine.Adapters.Revit
-{
-    public static partial class Query
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+//namespace BH.Engine.Adapters.Revit
+//{
+//    public static partial class Query
+//    {
+//        /***************************************************/
+//        /****              Public methods               ****/
+//        /***************************************************/
 
-        [Description("Returns Revit SelectionSet Name for given FilterRequest")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("SelectionSetName")]
-        public static string SelectionSetName(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return null;
+//        [Description("Returns Revit SelectionSet Name for given FilterRequest")]
+//        [Input("filterRequest", "FilterRequest")]
+//        [Output("SelectionSetName")]
+//        public static string SelectionSetName(this FilterRequest filterRequest)
+//        {
+//            if (filterRequest == null)
+//                return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.SelectionSetName))
-                return null;
+//            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.SelectionSetName))
+//                return null;
 
-            return filterRequest.Equalities[Convert.FilterRequest.SelectionSetName] as string;
-        }
-
-        /***************************************************/
-    }
-}
-
+//            return filterRequest.Equalities[Convert.FilterRequest.SelectionSetName] as string;
+//        }
+//        /***************************************************/
+//    }
+//}

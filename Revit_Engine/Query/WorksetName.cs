@@ -20,33 +20,32 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
+//using BH.oM.Data.Requests;
+//using BH.oM.Reflection.Attributes;
+//using System.ComponentModel;
 
-namespace BH.Engine.Adapters.Revit
-{
-    public static partial class Query
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+//namespace BH.Engine.Adapters.Revit
+//{
+//    public static partial class Query
+//    {
+//        /***************************************************/
+//        /****              Public methods               ****/
+//        /***************************************************/
 
-        [Description("Returns WorksetName assigned to FilterRequest.")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("WorksetName")]
-        public static string WorksetName(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return null;
+//        [Description("Returns WorksetName assigned to FilterRequest.")]
+//        [Input("filterRequest", "FilterRequest")]
+//        [Output("WorksetName")]
+//        public static string WorksetName(this FilterRequest filterRequest)
+//        {
+//            if (filterRequest == null)
+//                return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.WorksetName))
-                return null;
+//            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.WorksetName))
+//                return null;
 
-            return filterRequest.Equalities[Convert.FilterRequest.WorksetName] as string;
-        }
+//            return filterRequest.Equalities[Convert.FilterRequest.WorksetName] as string;
+//        }
 
-        /***************************************************/
-    }
-}
-
+//        /***************************************************/
+//    }
+//}

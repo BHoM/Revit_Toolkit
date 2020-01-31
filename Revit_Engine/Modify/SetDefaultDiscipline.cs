@@ -20,40 +20,39 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+//using System.ComponentModel;
 
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
+//using BH.oM.Adapters.Revit.Enums;
+//using BH.oM.Data.Requests;
+//using BH.oM.Reflection.Attributes;
 
-namespace BH.Engine.Adapters.Revit
-{
-    public static partial class Modify
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+//namespace BH.Engine.Adapters.Revit
+//{
+//    public static partial class Modify
+//    {
+//        /***************************************************/
+//        /****              Public methods               ****/
+//        /***************************************************/
 
-        [Description("Sets Default Discipline for FilterRequest.")]
-        [Input("filterRequest", "FilterRequest")]
-        [Input("discipline", "Discipline to be set")]
-        [Output("FilterRequest")]
-        public static FilterRequest SetDefaultDiscipline(this FilterRequest filterRequest, Discipline discipline)
-        {
-            if (filterRequest == null)
-                return null;
+//        [Description("Sets Default Discipline for FilterRequest.")]
+//        [Input("filterRequest", "FilterRequest")]
+//        [Input("discipline", "Discipline to be set")]
+//        [Output("FilterRequest")]
+//        public static FilterRequest SetDefaultDiscipline(this FilterRequest filterRequest, Discipline discipline)
+//        {
+//            if (filterRequest == null)
+//                return null;
 
-            FilterRequest request = Query.Duplicate(filterRequest);
+//            FilterRequest request = Query.Duplicate(filterRequest);
 
-            if (request.Equalities.ContainsKey(Convert.FilterRequest.DefaultDiscipline))
-                request.Equalities[Convert.FilterRequest.DefaultDiscipline] = discipline;
-            else
-                request.Equalities.Add(Convert.FilterRequest.DefaultDiscipline, discipline);
+//            if (request.Equalities.ContainsKey(Convert.FilterRequest.DefaultDiscipline))
+//                request.Equalities[Convert.FilterRequest.DefaultDiscipline] = discipline;
+//            else
+//                request.Equalities.Add(Convert.FilterRequest.DefaultDiscipline, discipline);
 
-            return request;
-        }
+//            return request;
+//        }
 
-        /***************************************************/
-    }
-}
-
+//        /***************************************************/
+//    }
+//}

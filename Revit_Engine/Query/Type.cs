@@ -20,41 +20,41 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.ComponentModel;
+//using System;
+//using System.ComponentModel;
 
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Adapters.Revit.Generic;
+//using BH.oM.Reflection.Attributes;
+//using BH.oM.Adapters.Revit;
+//using BH.oM.Adapters.Revit.Generic;
 
-namespace BH.Engine.Adapters.Revit
-{
-    public static partial class Query
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+//namespace BH.Engine.Adapters.Revit
+//{
+//    public static partial class Query
+//    {
+//        /***************************************************/
+//        /****              Public methods               ****/
+//        /***************************************************/
 
-        [Description("Gets matching type of variable with comparison rule.")]
-        [Input("ComparisonRule", "Comparison Rule")]
-        [Output("Type")]
-        public static Type Type(IComparisonRule comparisonRule)
-        {
-            if (comparisonRule == null)
-                return null;
+//        [Description("Gets matching type of variable with comparison rule.")]
+//        [Input("ComparisonRule", "Comparison Rule")]
+//        [Output("Type")]
+//        public static Type Type(IComparisonRule comparisonRule)
+//        {
+//            if (comparisonRule == null)
+//                return null;
 
-            if (comparisonRule is TextComparisonRule)
-                return typeof(string);
+//            if (comparisonRule is TextComparisonRule)
+//                return typeof(string);
 
-            if (comparisonRule is NumberComparisonRule)
-                return typeof(double);
+//            if (comparisonRule is NumberComparisonRule)
+//                return typeof(double);
 
-            if (comparisonRule is ParameterExistsComparisonRule)
-                return typeof(string);
+//            if (comparisonRule is ParameterExistsComparisonRule)
+//                return typeof(string);
 
-            return null;
-        }
+//            return null;
+//        }
 
-        /***************************************************/
-    }
-}
+//        /***************************************************/
+//    }
+//}

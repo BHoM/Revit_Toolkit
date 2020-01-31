@@ -20,36 +20,35 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+//using System.ComponentModel;
 
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Interface;
+//using BH.oM.Data.Requests;
+//using BH.oM.Reflection.Attributes;
+//using BH.oM.Adapters.Revit.Interface;
 
-namespace BH.Engine.Adapters.Revit
-{
-    public static partial class Query
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+//namespace BH.Engine.Adapters.Revit
+//{
+//    public static partial class Query
+//    {
+//        /***************************************************/
+//        /****              Public methods               ****/
+//        /***************************************************/
 
-        [Description("Returns Parameter Name of given FilterRequest")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("ParameterName")]
-        public static string ParameterName(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return null;
+//        [Description("Returns Parameter Name of given FilterRequest")]
+//        [Input("filterRequest", "FilterRequest")]
+//        [Output("ParameterName")]
+//        public static string ParameterName(this FilterRequest filterRequest)
+//        {
+//            if (filterRequest == null)
+//                return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.ParameterName))
-                return null;
+//            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.ParameterName))
+//                return null;
 
-            return filterRequest.Equalities[Convert.FilterRequest.ParameterName] as string;
-        }
+//            return filterRequest.Equalities[Convert.FilterRequest.ParameterName] as string;
+//        }
 
-        /***************************************************/
-    }
-}
-
+//        /***************************************************/
+//    }
+//}
 

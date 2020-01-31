@@ -20,35 +20,35 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+//using System.ComponentModel;
 
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
+//using BH.oM.Data.Requests;
+//using BH.oM.Reflection.Attributes;
 
-namespace BH.Engine.Adapters.Revit
-{
-    public static partial class Query
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+//namespace BH.Engine.Adapters.Revit
+//{
+//    public static partial class Query
+//    {
+//        /***************************************************/
+//        /****              Public methods               ****/
+//        /***************************************************/
 
-        [Description("Returns Related Filter Request for given FilterRequest")]
-        [Input("filterRequest", "FilterRequest")]
-        [Output("FilterRequest")]
-        public static FilterRequest RelatedFilterRequest(this FilterRequest filterRequest)
-        {
-            if (filterRequest == null)
-                return null;
+//        [Description("Returns Related Filter Request for given FilterRequest")]
+//        [Input("filterRequest", "FilterRequest")]
+//        [Output("FilterRequest")]
+//        public static FilterRequest RelatedFilterRequest(this FilterRequest filterRequest)
+//        {
+//            if (filterRequest == null)
+//                return null;
 
-            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.RelatedFilterRequest))
-                return null;
+//            if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.RelatedFilterRequest))
+//                return null;
 
-            return filterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] as FilterRequest;
-        }
+//            return filterRequest.Equalities[Convert.FilterRequest.RelatedFilterRequest] as FilterRequest;
+//        }
 
-        /***************************************************/
-    }
-}
+//        /***************************************************/
+//    }
+//}
 
 

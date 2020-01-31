@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,14 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-using System.Collections.Generic;
+using Autodesk.Revit.DB;
+using System;
+using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Adapters.Revit.Enums;
 
-using BH.oM.Base;
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.UI.Revit.Engine
 {
     public static partial class Query
     {
@@ -35,44 +33,25 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns Revit UniqueIds of given BHoMObjects (stored in CustomData).")]
-        [Input("bHoMObjects", "Collection of BHoMObjects")]
-        [Output("UniqueIds")]
-        public static List<string> UniqueIds(this IEnumerable<IBHoMObject> bHoMObjects, bool removeNulls = true)
+        public static FilterStringRuleEvaluator FilterStringRuleEvaluator(this TextComparisonType textComparisonType)
         {
-            if (bHoMObjects == null)
-                return null;
-
-            List<string> uniqueIDs = new List<string>();
-            foreach (IBHoMObject obj in bHoMObjects)
+            switch (textComparisonType)
             {
-                string id = UniqueId(obj);
-                if (string.IsNullOrEmpty(id) && removeNulls)
-                    continue;
-
-                uniqueIDs.Add(id);
+                case TextComparisonType.Contains:
+                    return new FilterStringContains();
+                case TextComparisonType.EndsWith:
+                    return new FilterStringEndsWith();
+                case TextComparisonType.Equal:
+                    return new FilterStringEquals();
+                case TextComparisonType.NotEqual:
+                    return new FilterStringEquals();
+                case TextComparisonType.StartsWith:
+                    return new FilterStringBeginsWith();
+                default:
+                    return null;
             }
-
-            return uniqueIDs;
         }
-
-        /***************************************************/
-
-        //[Description("Returns Revit UniqueIds for given FilterRequest (Example: SelectionFilterRequest).")]
-        //[Input("filterRequest", "FilterRequest")]
-        //[Output("UniqueIds")]
-        //public static IEnumerable<string> UniqueIds(this FilterRequest filterRequest)
-        //{
-        //    if (filterRequest == null)
-        //        return null;
-
-        //    if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.UniqueIds))
-        //        return null;
-
-        //    return filterRequest.Equalities[Convert.FilterRequest.UniqueIds] as IEnumerable<string>;
-        //}
 
         /***************************************************/
     }
 }
-

@@ -20,89 +20,89 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
+//using System;
 
-using Autodesk.Revit.DB;
+//using Autodesk.Revit.DB;
 
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Adapters.Revit.Interface;
-using BH.Engine.Adapters.Revit;
+//using BH.oM.Adapters.Revit.Generic;
+//using BH.oM.Adapters.Revit;
+//using BH.Engine.Adapters.Revit;
 
 
-namespace BH.UI.Revit.Engine
-{
-    public static partial class Query
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+//namespace BH.UI.Revit.Engine
+//{
+//    public static partial class Query
+//    {
+//        /***************************************************/
+//        /****              Public methods               ****/
+//        /***************************************************/
 
-        public static bool IsValid(this Element element, string parameterName, IComparisonRule comparisonRule, object value = null)
-        {
-            if (element == null || string.IsNullOrWhiteSpace(parameterName) || comparisonRule == null)
-                return false;
+//        public static bool IsValid(this Element element, string parameterName, IComparisonRule comparisonRule, object value = null)
+//        {
+//            if (element == null || string.IsNullOrWhiteSpace(parameterName) || comparisonRule == null)
+//                return false;
 
-            return IsValid(element.LookupParameter(parameterName), comparisonRule, value); 
-        }
+//            return IsValid(element.LookupParameter(parameterName), comparisonRule, value); 
+//        }
 
-        /***************************************************/
+//        /***************************************************/
 
-        public static bool IsValid(this Parameter parameter, IComparisonRule comparisonRule, object value)
-        {
-            if (comparisonRule == null)
-                return false;
+//        public static bool IsValid(this Parameter parameter, IComparisonRule comparisonRule, object value)
+//        {
+//            if (comparisonRule == null)
+//                return false;
 
-            if(comparisonRule is ParameterExistsComparisonRule)
-            {
-                if (parameter == null && ((ParameterExistsComparisonRule)comparisonRule).Inverted)
-                    return true;
+//            if(comparisonRule is ParameterExistsComparisonRule)
+//            {
+//                if (parameter == null && ((ParameterExistsComparisonRule)comparisonRule).Inverted)
+//                    return true;
 
-                if (parameter != null)
-                    return true;
+//                if (parameter != null)
+//                    return true;
 
-                return false;
-            }
+//                return false;
+//            }
 
-            if (parameter == null)
-                return false;
+//            if (parameter == null)
+//                return false;
 
-            Type type = BH.Engine.Adapters.Revit.Query.Type(comparisonRule);
-            if (type == null)
-                return false;
+//            Type type = BH.Engine.Adapters.Revit.Query.Type(comparisonRule);
+//            if (type == null)
+//                return false;
 
-            object val = null;
-            if (type == typeof(string))
-            {
-                if (parameter.StorageType == StorageType.String)
-                    val = parameter.AsString();
-                else
-                    val = parameter.AsValueString();
-            }
-            else if (type == typeof(double))
-            {
-                if (!parameter.HasValue)
-                    return false;
+//            object val = null;
+//            if (type == typeof(string))
+//            {
+//                if (parameter.StorageType == StorageType.String)
+//                    val = parameter.AsString();
+//                else
+//                    val = parameter.AsValueString();
+//            }
+//            else if (type == typeof(double))
+//            {
+//                if (!parameter.HasValue)
+//                    return false;
 
-                switch (parameter.StorageType)
-                {
-                    case StorageType.Double:
-                        val = Convert.ToSI(parameter.AsDouble(), parameter.Definition.UnitType);
-                        break;
-                    case StorageType.Integer:
-                        val = parameter.AsInteger();
-                        break;
-                    default:
-                        return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
+//                switch (parameter.StorageType)
+//                {
+//                    case StorageType.Double:
+//                        val = Convert.ToSI(parameter.AsDouble(), parameter.Definition.UnitType);
+//                        break;
+//                    case StorageType.Integer:
+//                        val = parameter.AsInteger();
+//                        break;
+//                    default:
+//                        return false;
+//                }
+//            }
+//            else
+//            {
+//                return false;
+//            }
 
-            return comparisonRule.IsValid(val, value, true);
-        }
+//            return comparisonRule.IsValid(val, value, true);
+//        }
 
-        /***************************************************/
-    }
-}
+//        /***************************************************/
+//    }
+//}

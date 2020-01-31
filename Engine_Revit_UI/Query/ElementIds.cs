@@ -41,7 +41,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****         Public methods - Requests         ****/
         /***************************************************/
 
         public static HashSet<ElementId> ElementIds(this IRequest request, UIDocument uIDocument)
@@ -80,7 +80,7 @@ namespace BH.UI.Revit.Engine
 
                 IEnumerable<ElementId> elementIDs = null;
                 if (request is SelectionRequest)
-                    elementIDs = request.ElementIds(uIDocument);
+                    elementIDs = (request as SelectionRequest).ElementIds(uIDocument);
                 else
                     elementIDs = request.IElementIds(document);
                 if (elementIDs != null)
@@ -92,7 +92,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> IElementIds(this SelectionRequest request, UIDocument uIDocument)
+        public static IEnumerable<ElementId> ElementIds(this SelectionRequest request, UIDocument uIDocument)
         {
             if (uIDocument.Selection == null)
                 return null;
@@ -102,109 +102,54 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> IElementIds(this IRequest request, Document document)
-        {
-            return ElementIds(request as dynamic, document);
-            
-            
-            //View
-            if (queryType == RequestType.View)
-            {
-                List<View> allViews = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().ToList();
-                if (allViews != null)
-                {
-                    List<View> viewList = allViews.FindAll(x => !x.IsTemplate);
-                    if (viewList.Count > 0)
-                    {
-                        RevitViewType? viewType = request.RevitViewType();
-                        if (viewType != null && viewType.HasValue)
-                        {
-                            ViewType type = Query.ViewType(viewType.Value);
-                            viewList.RemoveAll(x => x.ViewType != type);
-                        }
-
-                        string viewTemplateName = request.ViewTemplateName();
-                        if (!string.IsNullOrWhiteSpace(viewTemplateName))
-                        {
-                            View view = allViews.Find(x => x.IsTemplate && x.Name == viewTemplateName);
-                            if (view != null)
-                                viewList.RemoveAll(x => x.ViewTemplateId != view.Id);
-                        }
-                    }
-                    if (viewList != null && viewList.Count > 0)
-                        viewList.ForEach(x => result.Add(x.Id));
-                }
-            }
-            
-            
-
-            //Parameter
-            if (queryType == RequestType.Parameter)
-            {
-                FilterRequest request = request.RelatedFilterRequest();
-                if (request != null)
-                {
-                    string parameterName = BH.Engine.Adapters.Revit.Query.ParameterName(request);
-                    if (!string.IsNullOrWhiteSpace(parameterName))
-                    {
-                        IComparisonRule comparisonRule = BH.Engine.Adapters.Revit.Query.ComparisonRule(request);
-                        if (comparisonRule != null)
-                        {
-                            object value = BH.Engine.Adapters.Revit.Query.Value(request);
-
-                            Dictionary<ElementId, List<FilterRequest>> dictionary = request.RequestDictionary(document);
-                            if (dictionary != null && dictionary.Count > 0)
-                            {
-                                foreach (ElementId id in dictionary.Keys)
-                                {
-                                    Element element = document.GetElement(id);
-                                    if (Query.IsValid(element, parameterName, comparisonRule, value))
-                                        result.Add(id);
-                                }
-
-                            }
-                        }
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        public static IEnumerable<ElementId> ElementIds (this FilterRequest request, Document document)
+        public static IEnumerable<ElementId> ElementIds(this FilterRequest request, Document document)
         {
             return document.ElementIds(request.Type);
         }
 
+        /***************************************************/
+
         public static IEnumerable<ElementId> ElementIds(this DBTypeNameRequest request, Document document)
         {
-            return ElementIds(document, "RevitAPI.dll", request.TypeName);
+            return document.ElementIds("RevitAPI.dll", request.TypeName);
         }
+
+        /***************************************************/
 
         public static IEnumerable<ElementId> ElementIds(this CategoryRequest request, Document document)
         {
             return document.ElementIds(request.CategoryName);
         }
 
+        /***************************************************/
+
         public static IEnumerable<ElementId> ElementIds(this FamilyRequest request, Document document)
         {
             return document.ElementIds(request.FamilyName, request.FamilyTypeName, true);
         }
 
+        /***************************************************/
+
         public static IEnumerable<ElementId> ElementIds(this ActiveWorksetRequest request, Document document)
         {
-            return document.WorksetElementIds(new List<WorksetId> { document.ActiveWorksetId() });
+            return document.ElementIds(new List<WorksetId> { document.ActiveWorksetId() });
         }
+
+        /***************************************************/
 
         public static IEnumerable<ElementId> ElementIds(this OpenWorksetsRequest request, Document document)
         {
-            return document.WorksetElementIds(document.OpenWorksetIds().ToList());
+            return document.ElementIds(document.OpenWorksetIds().ToList());
         }
+
+        /***************************************************/
 
         public static IEnumerable<ElementId> ElementIds(this WorksetRequest request, Document document)
         {
-            return document.WorksetElementIds(new List<WorksetId> { document.WorksetId(request.WorksetName) });
+            return document.ElementIds(new List<WorksetId> { document.WorksetId(request.WorksetName) });
         }
+
+        /***************************************************/
 
         public static IEnumerable<ElementId> ElementIds(this ElementIdsRequest request, Document document)
         {
@@ -214,27 +159,21 @@ namespace BH.UI.Revit.Engine
                 return null;
         }
 
+        /***************************************************/
+
         public static IEnumerable<ElementId> ElementIds(this UniqueIdsRequest request, Document document)
         {
-            if (request.UniqueIds != null)
-            {
-                List<ElementId> result = new List<ElementId>();
-                foreach (string id in request.UniqueIds)
-                {
-                    Element element = document.GetElement(id);
-                    if (element != null)
-                        result.Add(element.Id);
-                }
-                return result;
-            }
-            else
-                return null;
+            return document.ElementIds(request.UniqueIds);
         }
+
+        /***************************************************/
 
         public static IEnumerable<ElementId> ElementIds(this SelectionSetRequest request, Document document)
         {
             return document.ElementIds(request.SelectionSetName, true);
         }
+
+        /***************************************************/
 
         public static IEnumerable<ElementId> ElementIds(this ViewByTemplateRequest request, Document document)
         {
@@ -245,38 +184,116 @@ namespace BH.UI.Revit.Engine
             return new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().Where(x => !x.IsTemplate).Where(x => x.ViewTemplateId == viewTemplate.Id).Select(x => x.Id);
         }
 
+        /***************************************************/
+
         public static IEnumerable<ElementId> ElementIds(this ViewByTypeRequest request, Document document)
         {
             return new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().Where(x => !x.IsTemplate).Where(x => x.ViewType == request.RevitViewType.ViewType()).Select(x => x.Id);
         }
+
+        /***************************************************/
 
         public static IEnumerable<ElementId> ElementIds(this ViewTemplateRequest request, Document document)
         {
             return new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Select(x => x.Id);
         }
 
+        /***************************************************/
+
         public static IEnumerable<ElementId> ElementIds(this ParameterExistsRequest request, Document document)
         {
-            throw new NotImplementedException();
-        }
+            HashSet<ElementId> result = new HashSet<ElementId>();
+            foreach (Parameter param in new FilteredElementCollector(document).OfClass(typeof(Parameter)).Where(x => x.Name == request.ParameterName).Cast<Parameter>())
+            {
+                if (request.ParameterExists)
+                {
+                    foreach (Element element in new FilteredElementCollector(document).Where(x => x.Parameters.Contains(param)))
+                    {
+                        result.Add(element.Id);
+                    }
+                }
+                else
+                {
+                    foreach (Element element in new FilteredElementCollector(document).Where(x => !x.Parameters.Contains(param)))
+                    {
+                        result.Add(element.Id);
+                    }
+                }
+            }
 
-        public static IEnumerable<ElementId> ElementIds(this ParameterNumberRequest request, Document document)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static IEnumerable<ElementId> ElementIds(this ParameterTextRequest request, Document document)
-        {
-            throw new NotImplementedException();
+            return result;
         }
 
         /***************************************************/
 
-        public static List<ElementId> ElementIds(this Document document, IEnumerable<string> uniqueIds, bool removeNulls)
+        public static IEnumerable<ElementId> ElementIds(this ParameterNumberRequest request, Document document)
+        {
+            HashSet<ElementId> result = new HashSet<ElementId>();
+            foreach (Parameter param in new FilteredElementCollector(document).OfClass(typeof(Parameter)).Where(x => x.Name == request.ParameterName).Cast<Parameter>())
+            {
+                if (param.StorageType != StorageType.Double)
+                    continue;
+
+                ParameterValueProvider pvp = new ParameterValueProvider(param.Id);
+                FilterNumericRuleEvaluator fnre = request.NumberComparisonType.FilterNumericRuleEvaluator();
+                
+                FilterRule rule = new FilterDoubleRule(pvp, fnre, request.Value.FromSI(UnitType.UT_Number), BH.oM.Geometry.Tolerance.Distance);
+                ElementParameterFilter filter = new ElementParameterFilter(rule, request.NumberComparisonType == NumberComparisonType.NotEqual);
+
+                foreach (Element element in new FilteredElementCollector(document).WherePasses(filter))
+                {
+                    result.Add(element.Id);
+                }
+            }
+
+            return result;
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this ParameterTextRequest request, Document document)
+        {
+            HashSet<ElementId> result = new HashSet<ElementId>();
+            foreach (Parameter param in new FilteredElementCollector(document).OfClass(typeof(Parameter)).Where(x => x.Name == request.ParameterName).Cast<Parameter>())
+            {
+                if (param.StorageType != StorageType.String)
+                    continue;
+
+                ParameterValueProvider pvp = new ParameterValueProvider(param.Id);
+                FilterStringRuleEvaluator fsre = new FilterStringEquals();
+
+                FilterRule rule = new FilterStringRule(pvp, fsre, request.Value, false);
+                ElementParameterFilter filter = new ElementParameterFilter(rule, request.TextComparisonType == TextComparisonType.NotEqual);
+
+                foreach (Element element in new FilteredElementCollector(document).WherePasses(filter))
+                {
+                    result.Add(element.Id);
+                }
+            }
+
+            return result;
+        }
+
+
+        /***************************************************/
+        /****        Interface methods - Requests       ****/
+        /***************************************************/
+
+        public static IEnumerable<ElementId> IElementIds(this IRequest request, Document document)
+        {
+            return ElementIds(request as dynamic, document);
+        }
+
+        /***************************************************/
+        /****          Public methods - Others          ****/
+        /***************************************************/
+
+        public static List<ElementId> ElementIds(this Document document, IEnumerable<string> uniqueIds)
         {
             if (document == null || uniqueIds == null)
                 return null;
 
+            List<string> corruptIds = new List<string>();
             List<ElementId> elementIDs = new List<ElementId>();
             foreach (string uniqueID in uniqueIds)
             {
@@ -284,15 +301,16 @@ namespace BH.UI.Revit.Engine
                 {
                     Element element = document.GetElement(uniqueID);
                     if (element != null)
-                    {
                         elementIDs.Add(element.Id);
-                        continue;
-                    }
+                    else
+                        corruptIds.Add(uniqueID);
                 }
-
-                if (!removeNulls)
-                    elementIDs.Add(null);
+                else
+                    BH.Engine.Reflection.Compute.RecordError("An attempt to use empty Unique Revit Id has been found.");
             }
+
+            if (corruptIds.Count != 0)
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Elements have not been found in the document. Unique Revit Ids: {0}", string.Join(", ", uniqueIds)));
 
             return elementIDs;
         }
@@ -306,9 +324,9 @@ namespace BH.UI.Revit.Engine
 
             IEnumerable<Type> types = null;
             IEnumerable<BuiltInCategory> builtInCategories = null;
-            if (BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(type, typeof(Element)))
+            if (type.IsAssignableFromByFullName(typeof(Element)))
                 types = new List<Type>() { type };
-            else if (typeof(IBHoMObject).IsAssignableFrom(type))//BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(type, typeof(IBHoMObject)))
+            else if (typeof(IBHoMObject).IsAssignableFrom(type))
             {
                 types = RevitTypes(type);
                 builtInCategories = BuiltInCategories(type);
@@ -316,7 +334,7 @@ namespace BH.UI.Revit.Engine
 
             IEnumerable<ElementId> elementIDs = null;
             if (types != null)
-                types = types.ToList().FindAll(x => BH.Engine.Adapters.Revit.Query.IsAssignableFromByFullName(x, typeof(Element)));
+                types = types.ToList().FindAll(x => x.IsAssignableFromByFullName(typeof(Element)));
 
             if (types == null || types.Count() == 0)
             {
@@ -416,6 +434,20 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static IEnumerable<ElementId> ElementIds(this Document document, string categoryName)
+        {
+            if (document == null || string.IsNullOrEmpty(categoryName))
+                return null;
+
+            BuiltInCategory builtInCategory = Query.BuiltInCategory(document, categoryName);
+            if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
+                return null;
+
+            return new FilteredElementCollector(document).OfCategory(builtInCategory).ToElementIds();
+        }
+
+        /***************************************************/
+
         public static IEnumerable<ElementId> ElementIds(this Document document, string familyName, string familyTypeName, bool caseSensitive)
         {
             if (document == null)
@@ -448,10 +480,7 @@ namespace BH.UI.Revit.Engine
             foreach (ElementType elementType in elementTypes)
             {
                 if (elementType is FamilySymbol)
-                {
-                    foreach (ElementId elementId in new FilteredElementCollector(document).WherePasses(new FamilyInstanceFilter(document, elementType.Id)).ToElementIds())
-                        result.Add(elementId);
-                }
+                    result.AddRange(new FilteredElementCollector(document).WherePasses(new FamilyInstanceFilter(document, elementType.Id)).ToElementIds());
                 else
                 {
                     Type type = null;
@@ -492,26 +521,11 @@ namespace BH.UI.Revit.Engine
                     if (elements == null || elements.Count == 0)
                         continue;
 
-                    foreach (Element element in elements)
-                        if (element != null && element.GetTypeId() == elementType.Id)
-                            result.Add(element.Id);
+                    result.AddRange(elements.Where(x => x.GetTypeId() == elementType.Id).Select(x => x.Id));
                 }
             }
+
             return result;
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this Document document, string categoryName)
-        {
-            if (document == null || string.IsNullOrEmpty(categoryName))
-                return null;
-
-            BuiltInCategory builtInCategory = Query.BuiltInCategory(document, categoryName);
-            if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
-                return null;
-
-            return new FilteredElementCollector(document).OfCategory(builtInCategory).ToElementIds();
         }
 
         /***************************************************/
@@ -587,7 +601,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> WorksetElementIds(this Document document, List<WorksetId> worksetIds)
+        public static IEnumerable<ElementId> ElementIds(this Document document, List<WorksetId> worksetIds)
         {
             if (document == null || worksetIds == null)
                 return null;
@@ -599,5 +613,7 @@ namespace BH.UI.Revit.Engine
             else
                 return new FilteredElementCollector(document).WherePasses(new LogicalOrFilter(worksetIds.ConvertAll(x => new ElementWorksetFilter(x, false) as ElementFilter))).ToElementIds();
         }
+
+        /***************************************************/
     }
 }
