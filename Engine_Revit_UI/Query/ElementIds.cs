@@ -235,11 +235,35 @@ namespace BH.UI.Revit.Engine
                     continue;
 
                 ParameterValueProvider pvp = new ParameterValueProvider(param.Id);
-                FilterNumericRuleEvaluator fnre = request.NumberComparisonType.FilterNumericRuleEvaluator();
-                
-                FilterRule rule = new FilterDoubleRule(pvp, fnre, request.Value.FromSI(UnitType.UT_Number), BH.oM.Geometry.Tolerance.Distance);
-                ElementParameterFilter filter = new ElementParameterFilter(rule, request.NumberComparisonType == NumberComparisonType.NotEqual);
+                FilterNumericRuleEvaluator fnre;
+                bool inverted = false;
+                switch (request.NumberComparisonType)
+                {
+                    case NumberComparisonType.Equal:
+                        fnre = new FilterNumericEquals();
+                        break;
+                    case NumberComparisonType.Greater:
+                        fnre = new FilterNumericGreater();
+                        break;
+                    case NumberComparisonType.GreaterOrEqual:
+                        fnre = new FilterNumericGreaterOrEqual();
+                        break;
+                    case NumberComparisonType.Less:
+                        fnre = new FilterNumericLess();
+                        break;
+                    case NumberComparisonType.LessOrEqual:
+                        fnre = new FilterNumericLessOrEqual();
+                        break;
+                    case NumberComparisonType.NotEqual:
+                        fnre = new FilterNumericEquals();
+                        inverted = true;
+                        break;
+                    default:
+                        continue;
+                }
 
+                FilterRule rule = new FilterDoubleRule(pvp, fnre, request.Value.FromSI(UnitType.UT_Number), BH.oM.Geometry.Tolerance.Distance);
+                ElementParameterFilter filter = new ElementParameterFilter(rule, inverted);
                 foreach (Element element in new FilteredElementCollector(document).WherePasses(filter))
                 {
                     result.Add(element.Id);
@@ -260,11 +284,32 @@ namespace BH.UI.Revit.Engine
                     continue;
 
                 ParameterValueProvider pvp = new ParameterValueProvider(param.Id);
-                FilterStringRuleEvaluator fsre = new FilterStringEquals();
+                FilterStringRuleEvaluator fsre;
+                bool inverted = false;
+                switch (request.TextComparisonType)
+                {
+                    case TextComparisonType.Contains:
+                        fsre = new FilterStringContains();
+                        break;
+                    case TextComparisonType.EndsWith:
+                        fsre = new FilterStringEndsWith();
+                        break;
+                    case TextComparisonType.Equal:
+                        fsre = new FilterStringEquals();
+                        break;
+                    case TextComparisonType.NotEqual:
+                        fsre = new FilterStringEquals();
+                        inverted = true;
+                        break;
+                    case TextComparisonType.StartsWith:
+                        fsre = new FilterStringBeginsWith();
+                        break;
+                    default:
+                        continue;
+                }
 
                 FilterRule rule = new FilterStringRule(pvp, fsre, request.Value, false);
-                ElementParameterFilter filter = new ElementParameterFilter(rule, request.TextComparisonType == TextComparisonType.NotEqual);
-
+                ElementParameterFilter filter = new ElementParameterFilter(rule, inverted);
                 foreach (Element element in new FilteredElementCollector(document).WherePasses(filter))
                 {
                     result.Add(element.Id);
@@ -283,6 +328,7 @@ namespace BH.UI.Revit.Engine
         {
             return ElementIds(request as dynamic, document);
         }
+
 
         /***************************************************/
         /****          Public methods - Others          ****/

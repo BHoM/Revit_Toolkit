@@ -27,6 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using BH.oM.Adapter;
+using BH.oM.Adapters.Revit.Enums;
 
 namespace BH.oM.Adapters.Revit
 {
@@ -36,7 +37,11 @@ namespace BH.oM.Adapters.Revit
         /****             Public Properties             ****/
         /***************************************************/
 
+        public Discipline Discipline { get; set; } = Discipline.Physical;
 
+        public bool PullEdges { get; set; } = false;
+
+        public bool IncludeNonVisible { get; set; } = false;
 
         /***************************************************/
     }
