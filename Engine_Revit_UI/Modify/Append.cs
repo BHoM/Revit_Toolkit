@@ -61,38 +61,38 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Dictionary<FilterRequest, List<Element>> Append(this Dictionary<FilterRequest, List<Element>> currentSet, Dictionary<FilterRequest, List<Element>> newItems)
-        {
-            if (currentSet == null && newItems == null)
-                return null;
+        //public static Dictionary<FilterRequest, List<Element>> Append(this Dictionary<FilterRequest, List<Element>> currentSet, Dictionary<FilterRequest, List<Element>> newItems)
+        //{
+        //    if (currentSet == null && newItems == null)
+        //        return null;
 
-            if (currentSet == null)
-                return new Dictionary<FilterRequest, List<Element>>(newItems);
+        //    if (currentSet == null)
+        //        return new Dictionary<FilterRequest, List<Element>>(newItems);
 
-            if (newItems == null || newItems.Count == 0)
-                return new Dictionary<FilterRequest, List<Element>>(currentSet);
+        //    if (newItems == null || newItems.Count == 0)
+        //        return new Dictionary<FilterRequest, List<Element>>(currentSet);
 
-            Dictionary<FilterRequest, List<Element>> result = new Dictionary<FilterRequest, List<Element>>(currentSet);
-            foreach (KeyValuePair<FilterRequest, List<Element>> kvp in newItems)
-            {
-                if (kvp.Value == null)
-                    continue;
+        //    Dictionary<FilterRequest, List<Element>> result = new Dictionary<FilterRequest, List<Element>>(currentSet);
+        //    foreach (KeyValuePair<FilterRequest, List<Element>> kvp in newItems)
+        //    {
+        //        if (kvp.Value == null)
+        //            continue;
 
-                List<Element> elements = null;
-                if (!result.TryGetValue(kvp.Key, out elements))
-                {
-                    result.Add(kvp.Key, kvp.Value);
-                }
-                else
-                {
-                    foreach (Element element in kvp.Value)
-                        if (elements.Find(x => x.Id == element.Id) == null)
-                            elements.Add(element);
-                }
-            }
+        //        List<Element> elements = null;
+        //        if (!result.TryGetValue(kvp.Key, out elements))
+        //        {
+        //            result.Add(kvp.Key, kvp.Value);
+        //        }
+        //        else
+        //        {
+        //            foreach (Element element in kvp.Value)
+        //                if (elements.Find(x => x.Id == element.Id) == null)
+        //                    elements.Add(element);
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
 
         /***************************************************/

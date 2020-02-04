@@ -53,6 +53,7 @@ namespace BH.UI.Revit.Engine
             if (document == null)
                 return null;
 
+            //TODO: Try making it work as general case
             HashSet<ElementId> result = new HashSet<ElementId>();
             if (request is ILogicalRequest)
             {
@@ -203,25 +204,87 @@ namespace BH.UI.Revit.Engine
         public static IEnumerable<ElementId> ElementIds(this ParameterExistsRequest request, Document document)
         {
             HashSet<ElementId> result = new HashSet<ElementId>();
-            foreach (Parameter param in new FilteredElementCollector(document).OfClass(typeof(Parameter)).Where(x => x.Name == request.ParameterName).Cast<Parameter>())
+            foreach (Element element in new FilteredElementCollector(document).WhereElementIsNotElementType())
             {
-                if (request.ParameterExists)
-                {
-                    foreach (Element element in new FilteredElementCollector(document).Where(x => x.Parameters.Contains(param)))
-                    {
-                        result.Add(element.Id);
-                    }
-                }
-                else
-                {
-                    foreach (Element element in new FilteredElementCollector(document).Where(x => !x.Parameters.Contains(param)))
-                    {
-                        result.Add(element.Id);
-                    }
-                }
+                if ((element.LookupParameter(request.ParameterName) != null) == request.ParameterExists)
+                    result.Add(element.Id);
             }
-
+            foreach (Element element in new FilteredElementCollector(document).WhereElementIsElementType())
+            {
+                if ((element.LookupParameter(request.ParameterName) != null) == request.ParameterExists)
+                    result.Add(element.Id);
+            }
             return result;
+            
+
+            //List<ElementId> parameterIds = new List<ElementId>();
+            //foreach (BuiltInParameter bip in Enum.GetValues(typeof(BuiltInParameter)))
+            //{
+            //    if (LabelUtils.GetLabelFor(bip) == request.ParameterName)
+            //        parameterIds.Add(new ElementId(bip));
+            //}
+
+
+            //TODO: check if captures shared params, if not then SharedParameterElement!
+            //parameterIds.AddRange(new FilteredElementCollector(document).OfClass(typeof(ParameterElement)).Where(x => x.Name == request.ParameterName).Select(x => x.Id));
+
+            //foreach (ElementId id in parameterIds)
+            //{
+            //    ParameterValueProvider pvp = new ParameterValueProvider(id);
+
+            //    FilterNumericGreater fgreater = new FilterNumericGreater();
+
+            //    FilterElementIdRule IdFilter = new FilterElementIdRule(pvp, fgreater, id);
+
+            //    ElementParameterFilter efilter = new ElementParameterFilter(IdFilter);
+
+
+            //    if (request.ParameterExists)
+            //    {
+            //        foreach (Element element in new FilteredElementCollector(document).WherePasses(efilter))
+            //        {
+            //            result.Add(element.Id);
+            //        }
+            //    }
+            //else
+            //{
+            //    foreach (Element element in new FilteredElementCollector(document).Where(x => !x.Parameters.Contains(param)))
+            //    {
+            //        result.Add(element.Id);
+            //    }
+            //}
+        //}
+            //ParameterValueProvider pvp_Demolished = new ParameterValueProvider(new ElementId((int)BuiltInParameter.PHASE_DEMOLISHED));
+            //FilterNumericGreater fgreater = new FilterNumericGreater();
+
+            //FilterElementIdRule IdFilter = new FilterElementIdRule(pvp_Demolished, fgreater, ElementId.InvalidElementId);
+
+            //ElementParameterFilter efilter = new ElementParameterFilter(IdFilter);
+
+            //FilteredElementCollector elems = new FilteredElementCollector(doc, doc.ActiveView.Id).WherePasses(efilter);
+
+            //foreach (Parameter param in new FilteredElementCollector(document).OfClass(typeof(Parameter)).Where(x => x.Name == request.ParameterName).Cast<Parameter>())
+            //{
+            //    if (request.ParameterExists)
+            //    {
+            //        foreach (Element element in new FilteredElementCollector(document).Where(x => x.Parameters.Contains(param)))
+            //        {
+            //            result.Add(element.Id);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        foreach (Element element in new FilteredElementCollector(document).Where(x => !x.Parameters.Contains(param)))
+            //        {
+            //            result.Add(element.Id);
+            //        }
+            //    }
+            //}
+
+            //return result;
+
+            //return new FilteredElementCollector(document).Where(x => (x.LookupParameter(request.ParameterName) != null) == request.ParameterExists).Select(x => x.Id);
+
         }
 
         /***************************************************/
@@ -229,12 +292,31 @@ namespace BH.UI.Revit.Engine
         public static IEnumerable<ElementId> ElementIds(this ParameterNumberRequest request, Document document)
         {
             HashSet<ElementId> result = new HashSet<ElementId>();
-            foreach (Parameter param in new FilteredElementCollector(document).OfClass(typeof(Parameter)).Where(x => x.Name == request.ParameterName).Cast<Parameter>())
-            {
-                if (param.StorageType != StorageType.Double)
-                    continue;
 
-                ParameterValueProvider pvp = new ParameterValueProvider(param.Id);
+            List<ElementId> parameterIds = new List<ElementId>();
+            foreach (BuiltInParameter bip in Enum.GetValues(typeof(BuiltInParameter)))
+            {
+                // Try/catch added because of the mess in Revit labels that crashes the code.
+                try
+                {
+                    if (LabelUtils.GetLabelFor(bip) == request.ParameterName && document.get_TypeOfStorage(bip) == StorageType.Double)
+                        parameterIds.Add(new ElementId(bip));
+                }
+                catch
+                {
+
+                }
+            }
+            
+
+            parameterIds.AddRange(new FilteredElementCollector(document).OfClass(typeof(ParameterElement)).Where(x => x.Name == request.ParameterName && (x as ParameterElement).GetDefinition().u).Select(x => x.Id));
+            foreach (ElementId id in parameterIds)
+            {
+                //if (param.StorageType != StorageType.Double)
+                //    continue;
+
+
+                ParameterValueProvider pvp = new ParameterValueProvider(id);
                 FilterNumericRuleEvaluator fnre;
                 bool inverted = false;
                 switch (request.NumberComparisonType)
@@ -262,7 +344,7 @@ namespace BH.UI.Revit.Engine
                         continue;
                 }
 
-                FilterRule rule = new FilterDoubleRule(pvp, fnre, request.Value.FromSI(UnitType.UT_Number), BH.oM.Geometry.Tolerance.Distance);
+                FilterRule rule = new FilterDoubleRule(pvp, fnre, request.Value/*.FromSI()*/, BH.oM.Geometry.Tolerance.Distance);
                 ElementParameterFilter filter = new ElementParameterFilter(rule, inverted);
                 foreach (Element element in new FilteredElementCollector(document).WherePasses(filter))
                 {

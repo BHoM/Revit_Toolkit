@@ -61,11 +61,11 @@ namespace BH.Adapter.Revit
             if (!CheckConnection())
                 return new List<object>();
             
-            if (!(request is FilterRequest))
+            if (!(request is IRequest))
                 return new List<object>();
 
             //Send data through the socket link
-            m_LinkIn.SendData(new List<object>() { PackageType.Pull, request as FilterRequest, revitConfig, RevitSettings });
+            m_LinkIn.SendData(new List<object>() { PackageType.Pull, request, revitConfig, RevitSettings });
 
             //Wait until the return message has been recieved
             if (!m_WaitEvent.WaitOne(TimeSpan.FromMinutes(m_WaitTime)))

@@ -244,7 +244,7 @@ namespace BH.UI.Revit
                     case PackageType.UpdateTags:
                         if (!CheckPackageSize(package)) return;
                         eve = m_UpdateTagsEvent;
-                        var tuple = package.Data[1] as Tuple<FilterRequest, string, object>;
+                        var tuple = package.Data[1] as Tuple<IRequest, string, object>;
                         LatestRequest = tuple.Item1;
                         LatestKeyValuePair = new KeyValuePair<string, object>(tuple.Item2, tuple.Item3);
                         break;
@@ -252,14 +252,13 @@ namespace BH.UI.Revit
                         ReturnData(new List<string> { "Unrecognized package type" });
                         return;
                 }
-
-                LatestTag = package.Tag;
-
-                //TODO: package.Data[2] is useless at the moment
-                RevitConfig revitConfig = new RevitConfig();
+                
+                RevitConfig revitConfig = package.Data[2] as RevitConfig;
                 LatestConfig = revitConfig;
                 
                 AdapterSettings = package.Data[3] as RevitSettings;
+
+                LatestTag = package.Tag;
             }
 
             eve.Raise();
