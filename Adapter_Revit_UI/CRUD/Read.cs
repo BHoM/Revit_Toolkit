@@ -118,8 +118,8 @@ namespace BH.UI.Revit.Adapter
 
         protected override IEnumerable<IBHoMObject> Read(IRequest request, ActionConfig actionConfig = null)
         {
-            RevitConfig config = actionConfig as RevitConfig;
-            if (config == null)
+            RevitConfig revitConfig = actionConfig as RevitConfig;
+            if (revitConfig == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Action Config is not a Revit config.");
                 return null;
@@ -165,9 +165,9 @@ namespace BH.UI.Revit.Adapter
                     continue;
                 
                 //TODO: move this to actionConfig?
-                Discipline discipline = config.Discipline;
-                bool pullEdges = config.PullEdges;
-                bool includeNonVisible = config.IncludeNonVisible;
+                Discipline discipline = revitConfig.Discipline;
+                bool pullEdges = revitConfig.PullEdges;
+                bool includeNonVisible = revitConfig.IncludeNonVisible;
 
                 PullSettings pullSettings = null;
                 if (!dictionaryPullSettings.TryGetValue(discipline, out pullSettings))
