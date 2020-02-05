@@ -20,33 +20,32 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+//using System.ComponentModel;
 
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Enums;
+//using BH.oM.Adapters.Revit.Generic;
+//using BH.oM.Reflection.Attributes;
+//using BH.oM.Adapters.Revit.Enums;
 
-namespace BH.Engine.Adapters.Revit
-{
-    public static partial class Create
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+//namespace BH.Engine.Adapters.Revit
+//{
+//    public static partial class Create
+//    {
+//        /***************************************************/
+//        /****              Public methods               ****/
+//        /***************************************************/
 
-        [Description("Creates NumberComparisonRule.")]
-        [Input("numberComparisonType", "NumberComparisonType")]
-        [Output("NumberComparisonType")]
-        public static NumberComparisonRule NumberComparisonRule(NumberComparisonType numberComparisonType, int roundDecimals = -1)
-        {
-            return new NumberComparisonRule()
-            {
-                RoundDecimals = roundDecimals,
-                NumberComparisonType = numberComparisonType
-            };
-        }
+//        [Description("Creates NumberComparisonRule.")]
+//        [Input("numberComparisonType", "NumberComparisonType")]
+//        [Output("NumberComparisonType")]
+//        public static NumberComparisonRule NumberComparisonRule(NumberComparisonType numberComparisonType, int roundDecimals = -1)
+//        {
+//            return new NumberComparisonRule()
+//            {
+//                RoundDecimals = roundDecimals,
+//                NumberComparisonType = numberComparisonType
+//            };
+//        }
 
-        /***************************************************/
-    }
-}
-
+//        /***************************************************/
+//    }
+//}

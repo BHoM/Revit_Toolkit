@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,30 +20,31 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-//using System.ComponentModel;
+using System.ComponentModel;
 
-//using BH.oM.Adapters.Revit.Generic;
-//using BH.oM.Reflection.Attributes;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit;
+using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 
-//namespace BH.Engine.Adapters.Revit
-//{
-//    public static partial class Create
-//    {
-//        /***************************************************/
-//        /****              Public methods               ****/
-//        /***************************************************/
+namespace BH.Engine.Adapters.Revit
+{
+    public static partial class Create
+    {
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
 
-//        [Description("Creates ParameterExistsComparisonRule.")]
-//        [Input("inverted", "Inverts IComparisonRule")]
-//        [Output("ParameterExistsComparisonRule")]
-//        public static ParameterExistsComparisonRule ParameterExistsComparisonRule(bool inverted = false)
-//        {
-//            return new ParameterExistsComparisonRule()
-//            {
-//                Inverted = inverted
-//            };
-//        }
+        [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
+        [Input("parameterName", "Parameter name to be queried")]
+        [Input("numberComparisonType", "NumberComparisonType")]
+        [Input("value", "Parameter Value.")]
+        [Output("ParameterIntegerRequest")]
+        public static ParameterIntegerRequest ParameterIntegerRequest(string parameterName, NumberComparisonType numberComparisonType, int value)
+        {
+            return new ParameterIntegerRequest { ParameterName = parameterName, NumberComparisonType = numberComparisonType, Value = value };
+        }
 
-//        /***************************************************/
-//    }
-//}
+        /***************************************************/
+    }
+}

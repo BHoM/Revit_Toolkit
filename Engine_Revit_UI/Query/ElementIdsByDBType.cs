@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,8 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Collections.Generic;
+
 using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+
 using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
 
 namespace BH.UI.Revit.Engine
 {
@@ -30,40 +42,57 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        public static ElementId ElementId(this IBHoMObject bHoMObject)
+
+        public static IEnumerable<ElementId> ElementIdsByDBType(this Document document, string currentDomainAssembly, string typeName, IEnumerable<ElementId> ids = null)
         {
-            int id = BH.Engine.Adapters.Revit.Query.ElementId(bHoMObject);
-            if (id == -1)
+            if (document == null || string.IsNullOrEmpty(currentDomainAssembly) || string.IsNullOrEmpty(typeName))
                 return null;
-            else
-                return new ElementId(id);
+
+            Assembly assembly = BH.Engine.Adapters.Revit.Query.CurrentDomainAssembly(currentDomainAssembly);
+            if (assembly == null)
+                return null;
+
+            string fullTypeName = null; ;
+
+            if (currentDomainAssembly == "RevitAPI.dll")
+            {
+                if (!typeName.StartsWith("Autodesk.Revit.DB."))
+                    fullTypeName = "Autodesk.Revit.DB." + typeName;
+                else
+                    fullTypeName = typeName;
+            }
+
+            if (string.IsNullOrEmpty(fullTypeName))
+                return null;
+
+            Type type = null;
+
+            try
+            {
+                type = assembly.GetType(fullTypeName, false, false);
+            }
+            catch
+            {
+
+            }
+
+            if (type == null)
+            {
+                foreach (TypeInfo typeInfo in assembly.DefinedTypes)
+                {
+                    if (typeInfo.Name == typeName)
+                    {
+                        type = typeInfo.AsType();
+                        break;
+                    }
+                }
+            }
+
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+            return collector.OfClass(type).ToElementIds();
         }
 
         /***************************************************/
 
-        public static ElementId ElementId(this string originatingElementDescription)
-        {
-            if (string.IsNullOrEmpty(originatingElementDescription))
-                return null;
-
-            int startIndex = originatingElementDescription.LastIndexOf("[");
-            if (startIndex == -1)
-                return null;
-
-            int endIndex = originatingElementDescription.IndexOf("]", startIndex);
-            if (endIndex == -1)
-                return null;
-
-            string elementID = originatingElementDescription.Substring(startIndex + 1, endIndex - startIndex - 1);
-
-            int id;
-            if (!int.TryParse(elementID, out id))
-                return null;
-
-            return new ElementId(id);
-        }
-
-        /***************************************************/
     }
 }

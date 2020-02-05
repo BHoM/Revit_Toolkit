@@ -20,19 +20,17 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
+//using BH.oM.Adapters.Revit.Interface;
 
-namespace BH.oM.Adapters.Revit.Generic
-{
-    public class ParameterExistsComparisonRule : IComparisonRule
-    {
-        /***************************************************/
-        /****             Public Properties             ****/
-        /***************************************************/
+//namespace BH.oM.Adapters.Revit.Generic
+//{
+//    public class ParameterExistsComparisonRule : IComparisonRule
+//    {
+//        /***************************************************/
+//        /****             Public Properties             ****/
+//        /***************************************************/
 
-        public bool Inverted { get; set; } = false;
-
-        /***************************************************/
-    }
-}
-
+//        public bool Inverted { get; set; } = false;
+//        /***************************************************/
+//    }
+//}

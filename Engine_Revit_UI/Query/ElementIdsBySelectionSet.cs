@@ -20,29 +20,53 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Base;
-using BH.oM.Data.Requests;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
+using System.Collections.Generic;
 
-namespace BH.oM.Adapters.Revit
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+
+using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
+
+namespace BH.UI.Revit.Engine
 {
-    public class ParameterTextRequest : IParameterRequest
+    public static partial class Query
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public string ParameterName { get; set; } = "";
+        public static IEnumerable<ElementId> ElementIdsBySelectionSet(this Document document, string selectionSetName, bool caseSensitive, IEnumerable<ElementId> ids = null)
+        {
+            if (document == null || string.IsNullOrEmpty(selectionSetName))
+                return null;
 
-        public Enums.TextComparisonType TextComparisonType { get; set; } = Enums.TextComparisonType.Equal;
+            List<SelectionFilterElement> selectionFilterElements = new FilteredElementCollector(document).OfClass(typeof(SelectionFilterElement)).Cast<SelectionFilterElement>().ToList();
 
-        public string Value { get; set; } = "";
+            SelectionFilterElement selectionFilterElement = null;
+            if (caseSensitive)
+                selectionFilterElement = selectionFilterElements.Find(x => x.Name == selectionSetName);
+            else
+                selectionFilterElement = selectionFilterElements.Find(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper() == selectionSetName.ToUpper());
+
+            if (selectionFilterElement == null)
+                return null;
+
+            HashSet<ElementId> result = new HashSet<ElementId>(selectionFilterElement.GetElementIds());
+            if (ids != null)
+                result.IntersectWith(ids);
+
+            return result;
+        }
 
         /***************************************************/
+
     }
 }

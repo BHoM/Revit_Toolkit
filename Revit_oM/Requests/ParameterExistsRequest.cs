@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Base;
 using BH.oM.Data.Requests;
 using System;
@@ -30,7 +31,7 @@ using System.Threading.Tasks;
 
 namespace BH.oM.Adapters.Revit
 {
-    public class ParameterExistsRequest : IRequest
+    public class ParameterExistsRequest : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/

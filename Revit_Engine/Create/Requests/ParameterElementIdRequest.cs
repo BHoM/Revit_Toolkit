@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System;
 using System.ComponentModel;
 
 using BH.oM.Adapters.Revit.Enums;
@@ -37,12 +38,29 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
         [Input("parameterName", "Parameter name to be queried")]
-        [Input("numberComparisonType", "NumberComparisonType")]
-        [Input("value", "Parameter Value. If Revit parameter include units then this value shall be expressed in SI Units")]
-        [Output("ParameterNumberRequest")]
-        public static ParameterNumberRequest ParameterNumberRequest(string parameterName, NumberComparisonType numberComparisonType, double value, double tolerance = BH.oM.Geometry.Tolerance.Distance)
+        [Input("elementId", "Sought ElementId.")]
+        [Output("ParameterElementIdRequest")]
+        public static ParameterElementIdRequest ParameterElementIdRequest(string parameterName, int elementId)
         {
-            return new ParameterNumberRequest { ParameterName = parameterName, NumberComparisonType = numberComparisonType, Value = value, Tolerance = tolerance };
+            return new ParameterElementIdRequest { ParameterName = parameterName, ElementId = elementId };
+        }
+
+        /***************************************************/
+
+        [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
+        [Input("parameterName", "Parameter name to be queried")]
+        [Input("bHoMObject", "BHoMObject pulled from Revit that has sought ElementId.")]
+        [Output("ParameterElementIdRequest")]
+        public static ParameterElementIdRequest ParameterElementIdRequest(string parameterName, BHoMObject bHoMObject)
+        {
+            int elementId = bHoMObject.ElementId();
+            if (elementId == -1)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
+                return null;
+            }
+            else
+                return new ParameterElementIdRequest { ParameterName = parameterName, ElementId = elementId };
         }
 
         /***************************************************/

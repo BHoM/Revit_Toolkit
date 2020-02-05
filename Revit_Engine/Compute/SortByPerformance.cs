@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,30 +20,43 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-//using System.ComponentModel;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Adapters.Revit;
+using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
+using BH.oM.Data.Requests;
+using System.Collections.Generic;
 
-//using BH.oM.Adapters.Revit.Generic;
-//using BH.oM.Reflection.Attributes;
+namespace BH.Engine.Adapters.Revit
+{
+    public static partial class Compute
+    {
+        /***************************************************/
+        /****              Public Methods               ****/
+        /***************************************************/
 
-//namespace BH.Engine.Adapters.Revit
-//{
-//    public static partial class Create
-//    {
-//        /***************************************************/
-//        /****              Public methods               ****/
-//        /***************************************************/
+        public static List<IRequest> SortByPerformance(this List<IRequest> requests)
+        {
+            List<IRequest> allRequests = new List<IRequest>();
+            List<IRequest> logicalRequests = new List<IRequest>();
+            List<IRequest> parameterRequests = new List<IRequest>();
 
-//        [Description("Creates ParameterExistsComparisonRule.")]
-//        [Input("inverted", "Inverts IComparisonRule")]
-//        [Output("ParameterExistsComparisonRule")]
-//        public static ParameterExistsComparisonRule ParameterExistsComparisonRule(bool inverted = false)
-//        {
-//            return new ParameterExistsComparisonRule()
-//            {
-//                Inverted = inverted
-//            };
-//        }
+            foreach (IRequest request in requests)
+            {
+                if (request is IParameterRequest)
+                    parameterRequests.Add(request);
+                else if (request is ILogicalRequest)
+                    logicalRequests.Add(request);
+                else
+                    allRequests.Add(request);
+            }
 
-//        /***************************************************/
-//    }
-//}
+            allRequests.AddRange(logicalRequests);
+            allRequests.AddRange(parameterRequests);
+
+            return allRequests;
+        }
+
+        /***************************************************/
+    }
+}
