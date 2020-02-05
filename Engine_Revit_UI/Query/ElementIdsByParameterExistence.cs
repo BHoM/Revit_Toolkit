@@ -20,28 +20,44 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Base;
-using BH.oM.Data.Requests;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
+using System.Collections.Generic;
 
-namespace BH.oM.Adapters.Revit
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+
+using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
+
+namespace BH.UI.Revit.Engine
 {
-    public class ParameterTextRequest : IParameterRequest
+    public static partial class Query
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public string ParameterName { get; set; } = "";
+        public static IEnumerable<ElementId> ElementIdsByParameterExistence(this Document document, string parameterName, bool parameterExists, IEnumerable<ElementId> ids = null)
+        {
+            if (document == null)
+                return null;
 
-        public Enums.TextComparisonType TextComparisonType { get; set; } = Enums.TextComparisonType.Equal;
+            HashSet<ElementId> result = new HashSet<ElementId>();
 
-        public string Value { get; set; } = "";
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+            foreach (Element element in collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))))
+            {
+                if ((element.LookupParameter(parameterName) != null) == parameterExists)
+                    result.Add(element.Id);
+            }
+            return result;
+        }
 
         /***************************************************/
     }

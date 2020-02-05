@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,30 +20,43 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-//using System.ComponentModel;
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Collections.Generic;
 
-//using BH.oM.Adapters.Revit.Generic;
-//using BH.oM.Reflection.Attributes;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 
-//namespace BH.Engine.Adapters.Revit
-//{
-//    public static partial class Create
-//    {
-//        /***************************************************/
-//        /****              Public methods               ****/
-//        /***************************************************/
+using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
 
-//        [Description("Creates ParameterExistsComparisonRule.")]
-//        [Input("inverted", "Inverts IComparisonRule")]
-//        [Output("ParameterExistsComparisonRule")]
-//        public static ParameterExistsComparisonRule ParameterExistsComparisonRule(bool inverted = false)
-//        {
-//            return new ParameterExistsComparisonRule()
-//            {
-//                Inverted = inverted
-//            };
-//        }
+namespace BH.UI.Revit.Engine
+{
+    public static partial class Query
+    {
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
 
-//        /***************************************************/
-//    }
-//}
+        public static IEnumerable<ElementId> ElementIdsByCategoryName(this Document document, string categoryName, IEnumerable<ElementId> ids = null)
+        {
+            if (document == null || string.IsNullOrEmpty(categoryName))
+                return null;
+
+            BuiltInCategory builtInCategory = document.BuiltInCategory(categoryName);
+            if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
+                return null;
+
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+            return collector.OfCategory(builtInCategory).ToElementIds();
+        }
+
+        /***************************************************/
+
+    }
+}

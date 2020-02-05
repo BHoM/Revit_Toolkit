@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,30 +20,27 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-//using System.ComponentModel;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Base;
+using BH.oM.Data.Requests;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-//using BH.oM.Adapters.Revit.Generic;
-//using BH.oM.Reflection.Attributes;
+namespace BH.oM.Adapters.Revit
+{
+    public class ParameterElementIdRequest : IParameterRequest
+    {
+        /***************************************************/
+        /****                Properties                 ****/
+        /***************************************************/
 
-//namespace BH.Engine.Adapters.Revit
-//{
-//    public static partial class Create
-//    {
-//        /***************************************************/
-//        /****              Public methods               ****/
-//        /***************************************************/
+        public string ParameterName { get; set; } = "";
 
-//        [Description("Creates ParameterExistsComparisonRule.")]
-//        [Input("inverted", "Inverts IComparisonRule")]
-//        [Output("ParameterExistsComparisonRule")]
-//        public static ParameterExistsComparisonRule ParameterExistsComparisonRule(bool inverted = false)
-//        {
-//            return new ParameterExistsComparisonRule()
-//            {
-//                Inverted = inverted
-//            };
-//        }
+        public int ElementId { get; set; } = -1;
 
-//        /***************************************************/
-//    }
-//}
+        /***************************************************/
+    }
+}

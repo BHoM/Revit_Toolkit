@@ -20,21 +20,19 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Adapters.Revit.Enums;
+//using BH.oM.Adapters.Revit.Interface;
+//using BH.oM.Adapters.Revit.Enums;
 
-namespace BH.oM.Adapters.Revit.Generic
-{
-    public class NumberComparisonRule : IComparisonRule
-    {
-        /***************************************************/
-        /****             Public Properties             ****/
-        /***************************************************/
+//namespace BH.oM.Adapters.Revit.Generic
+//{
+//    public class NumberComparisonRule : IComparisonRule
+//    {
+//        /***************************************************/
+//        /****             Public Properties             ****/
+//        /***************************************************/
 
-        public int RoundDecimals { get; set; } = -1;
-        public NumberComparisonType NumberComparisonType { get; set; } = NumberComparisonType.Equal;
-
-        /***************************************************/
-    }
-}
-
+//        public int RoundDecimals { get; set; } = -1;
+//        public NumberComparisonType NumberComparisonType { get; set; } = NumberComparisonType.Equal;
+//        /***************************************************/
+//    }
+//}

@@ -20,29 +20,58 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Base;
-using BH.oM.Data.Requests;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
+using System.Collections.Generic;
 
-namespace BH.oM.Adapters.Revit
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+
+using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
+
+namespace BH.UI.Revit.Engine
 {
-    public class ParameterTextRequest : IParameterRequest
+    public static partial class Query
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public string ParameterName { get; set; } = "";
+        public static IEnumerable<ElementId> ElementIdsByUniqueIds(this Document document, IEnumerable<string> uniqueIds, IEnumerable<ElementId> ids = null)
+        {
+            if (document == null || uniqueIds == null)
+                return null;
 
-        public Enums.TextComparisonType TextComparisonType { get; set; } = Enums.TextComparisonType.Equal;
+            List<string> corruptIds = new List<string>();
+            HashSet<ElementId> elementIDs = new HashSet<ElementId>();
+            foreach (string uniqueID in uniqueIds)
+            {
+                if (!string.IsNullOrEmpty(uniqueID))
+                {
+                    Element element = document.GetElement(uniqueID);
+                    if (element != null)
+                        elementIDs.Add(element.Id);
+                    else
+                        corruptIds.Add(uniqueID);
+                }
+                else
+                    BH.Engine.Reflection.Compute.RecordError("An attempt to use empty Unique Revit Id has been found.");
+            }
 
-        public string Value { get; set; } = "";
+            if (corruptIds.Count != 0)
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Elements have not been found in the document. Unique Revit Ids: {0}", string.Join(", ", uniqueIds)));
+
+            elementIDs.IntersectWith(ids);
+            return elementIDs;
+        }
 
         /***************************************************/
+
     }
 }

@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Base;
 using BH.oM.Data.Requests;
 using System;
@@ -30,7 +31,7 @@ using System.Threading.Tasks;
 
 namespace BH.oM.Adapters.Revit
 {
-    public class ParameterNumberRequest : IRequest
+    public class ParameterNumberRequest : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
@@ -41,6 +42,8 @@ namespace BH.oM.Adapters.Revit
         public Enums.NumberComparisonType NumberComparisonType { get; set; } = Enums.NumberComparisonType.Equal;
 
         public double Value { get; set; } = double.NaN;
+
+        public double Tolerance { get; set; } = BH.oM.Geometry.Tolerance.Distance;
 
         /***************************************************/
     }

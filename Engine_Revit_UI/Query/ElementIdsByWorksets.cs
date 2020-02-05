@@ -20,29 +20,44 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Base;
-using BH.oM.Data.Requests;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
+using System.Collections.Generic;
 
-namespace BH.oM.Adapters.Revit
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+
+using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
+
+namespace BH.UI.Revit.Engine
 {
-    public class ParameterTextRequest : IParameterRequest
+    public static partial class Query
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public string ParameterName { get; set; } = "";
+        public static IEnumerable<ElementId> ElementIdsByWorksets(this Document document, List<WorksetId> worksetIds, IEnumerable<ElementId> ids = null)
+        {
+            if (document == null || worksetIds == null)
+                return null;
 
-        public Enums.TextComparisonType TextComparisonType { get; set; } = Enums.TextComparisonType.Equal;
-
-        public string Value { get; set; } = "";
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+            if (worksetIds.Count == 0)
+                return new List<ElementId>();
+            else if (worksetIds.Count == 1)
+                return collector.WherePasses(new ElementWorksetFilter(worksetIds.First(), false)).ToElementIds();
+            else
+                return collector.WherePasses(new LogicalOrFilter(worksetIds.ConvertAll(x => new ElementWorksetFilter(x, false) as ElementFilter))).ToElementIds();
+        }
 
         /***************************************************/
+
     }
 }
