@@ -63,6 +63,33 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        public static Discipline? Discipline(this IRequest request, Discipline? defaultDiscipline)
+        {
+            Discipline? discipline = defaultDiscipline;
+            if (request is ILogicalRequest)
+            {
+                foreach (IRequest subRequest in (request as ILogicalRequest).Requests)
+                {
+                    discipline = subRequest.Discipline(discipline);
+                    if (discipline == null)
+                        return null;
+                }
+            }
+            else if (request is FilterRequest)
+            {
+                Discipline requestDiscipline = (request as FilterRequest).Type.Discipline();
+
+                if (discipline == oM.Adapters.Revit.Enums.Discipline.Undefined)
+                    discipline = requestDiscipline;
+                else if (discipline != requestDiscipline)
+                    return null;
+            }
+
+            return discipline;
+        }
+
+        /***************************************************/
+        
         //[Description("Gets Discipline for given FilterRequest.")]
         //[Input("filterRequest", "FilterRequest")]
         //[Output("Discipline")]
