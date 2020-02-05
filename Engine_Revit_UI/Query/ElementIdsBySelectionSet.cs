@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,8 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Collections.Generic;
+
 using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+
 using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
 
 namespace BH.UI.Revit.Engine
 {
@@ -30,40 +42,31 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        public static ElementId ElementId(this IBHoMObject bHoMObject)
+
+        public static IEnumerable<ElementId> ElementIdsBySelectionSet(this Document document, string selectionSetName, bool caseSensitive, IEnumerable<ElementId> ids = null)
         {
-            int id = BH.Engine.Adapters.Revit.Query.ElementId(bHoMObject);
-            if (id == -1)
+            if (document == null || string.IsNullOrEmpty(selectionSetName))
                 return null;
+
+            List<SelectionFilterElement> selectionFilterElements = new FilteredElementCollector(document).OfClass(typeof(SelectionFilterElement)).Cast<SelectionFilterElement>().ToList();
+
+            SelectionFilterElement selectionFilterElement = null;
+            if (caseSensitive)
+                selectionFilterElement = selectionFilterElements.Find(x => x.Name == selectionSetName);
             else
-                return new ElementId(id);
+                selectionFilterElement = selectionFilterElements.Find(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper() == selectionSetName.ToUpper());
+
+            if (selectionFilterElement == null)
+                return null;
+
+            HashSet<ElementId> result = new HashSet<ElementId>(selectionFilterElement.GetElementIds());
+            if (ids != null)
+                result.IntersectWith(ids);
+
+            return result;
         }
 
         /***************************************************/
 
-        public static ElementId ElementId(this string originatingElementDescription)
-        {
-            if (string.IsNullOrEmpty(originatingElementDescription))
-                return null;
-
-            int startIndex = originatingElementDescription.LastIndexOf("[");
-            if (startIndex == -1)
-                return null;
-
-            int endIndex = originatingElementDescription.IndexOf("]", startIndex);
-            if (endIndex == -1)
-                return null;
-
-            string elementID = originatingElementDescription.Substring(startIndex + 1, endIndex - startIndex - 1);
-
-            int id;
-            if (!int.TryParse(elementID, out id))
-                return null;
-
-            return new ElementId(id);
-        }
-
-        /***************************************************/
     }
 }

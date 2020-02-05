@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,49 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Base;
+using BH.oM.Data.Requests;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BH.UI.Revit.Engine
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Query
+    public class ParameterElementIdRequest : IParameterRequest
     {
         /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
-        
-        public static ElementId ElementId(this IBHoMObject bHoMObject)
-        {
-            int id = BH.Engine.Adapters.Revit.Query.ElementId(bHoMObject);
-            if (id == -1)
-                return null;
-            else
-                return new ElementId(id);
-        }
-
+        /****                Properties                 ****/
         /***************************************************/
 
-        public static ElementId ElementId(this string originatingElementDescription)
-        {
-            if (string.IsNullOrEmpty(originatingElementDescription))
-                return null;
+        public string ParameterName { get; set; } = "";
 
-            int startIndex = originatingElementDescription.LastIndexOf("[");
-            if (startIndex == -1)
-                return null;
-
-            int endIndex = originatingElementDescription.IndexOf("]", startIndex);
-            if (endIndex == -1)
-                return null;
-
-            string elementID = originatingElementDescription.Substring(startIndex + 1, endIndex - startIndex - 1);
-
-            int id;
-            if (!int.TryParse(elementID, out id))
-                return null;
-
-            return new ElementId(id);
-        }
+        public int ElementId { get; set; } = -1;
 
         /***************************************************/
     }

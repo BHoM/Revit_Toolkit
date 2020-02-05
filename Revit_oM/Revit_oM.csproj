@@ -71,6 +71,7 @@
     <Compile Include="Generic\ParameterExistsComparisonRule.cs" />
     <Compile Include="Generic\TextComparisonRule.cs" />
     <Compile Include="Generic\NumberComparisonRule.cs" />
+    <Compile Include="Interface\IParameterRequest.cs" />
     <Compile Include="Interface\IView.cs" />
     <Compile Include="Interface\IInstance.cs" />
     <Compile Include="Interface\IComparisonRule.cs" />
@@ -79,7 +80,10 @@
     <Compile Include="Requests\FamilyRequest.cs" />
     <Compile Include="Requests\ActiveWorksetRequest.cs" />
     <Compile Include="Requests\OpenWorksetsRequest.cs" />
+    <Compile Include="Requests\ParameterBoolRequest.cs" />
+    <Compile Include="Requests\ParameterElementIdRequest.cs" />
     <Compile Include="Requests\ParameterExistsRequest.cs" />
+    <Compile Include="Requests\ParameterIntegerRequest.cs" />
     <Compile Include="Requests\ParameterNumberRequest.cs" />
     <Compile Include="Requests\ParameterTextRequest.cs" />
     <Compile Include="Requests\ElementIdsRequest.cs" />

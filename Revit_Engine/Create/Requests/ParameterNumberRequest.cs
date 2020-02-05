@@ -40,9 +40,9 @@ namespace BH.Engine.Adapters.Revit
         [Input("numberComparisonType", "NumberComparisonType")]
         [Input("value", "Parameter Value. If Revit parameter include units then this value shall be expressed in SI Units")]
         [Output("ParameterNumberRequest")]
-        public static ParameterNumberRequest ParameterNumberRequest(string parameterName, NumberComparisonType numberComparisonType, double value)
+        public static ParameterNumberRequest ParameterNumberRequest(string parameterName, NumberComparisonType numberComparisonType, double value, double tolerance = BH.oM.Geometry.Tolerance.Distance)
         {
-            return new ParameterNumberRequest { ParameterName = parameterName, NumberComparisonType = numberComparisonType, Value = value };
+            return new ParameterNumberRequest { ParameterName = parameterName, NumberComparisonType = numberComparisonType, Value = value, Tolerance = tolerance };
         }
 
         /***************************************************/

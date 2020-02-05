@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,48 +20,28 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using BH.oM.Base;
+using System.ComponentModel;
 
-namespace BH.UI.Revit.Engine
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit;
+using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
+
+namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Create
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        public static ElementId ElementId(this IBHoMObject bHoMObject)
+
+        [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
+        [Input("parameterName", "Parameter name to be queried")]
+        [Input("value", "Sought Parameter Value.")]
+        [Output("ParameterBoolRequest")]
+        public static ParameterBoolRequest ParameterBoolRequest(string parameterName, bool value)
         {
-            int id = BH.Engine.Adapters.Revit.Query.ElementId(bHoMObject);
-            if (id == -1)
-                return null;
-            else
-                return new ElementId(id);
-        }
-
-        /***************************************************/
-
-        public static ElementId ElementId(this string originatingElementDescription)
-        {
-            if (string.IsNullOrEmpty(originatingElementDescription))
-                return null;
-
-            int startIndex = originatingElementDescription.LastIndexOf("[");
-            if (startIndex == -1)
-                return null;
-
-            int endIndex = originatingElementDescription.IndexOf("]", startIndex);
-            if (endIndex == -1)
-                return null;
-
-            string elementID = originatingElementDescription.Substring(startIndex + 1, endIndex - startIndex - 1);
-
-            int id;
-            if (!int.TryParse(elementID, out id))
-                return null;
-
-            return new ElementId(id);
+            return new ParameterBoolRequest { ParameterName = parameterName, Value = value };
         }
 
         /***************************************************/

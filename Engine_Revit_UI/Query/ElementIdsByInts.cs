@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,8 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Collections.Generic;
+
 using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+
 using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
 
 namespace BH.UI.Revit.Engine
 {
@@ -30,40 +42,16 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        public static ElementId ElementId(this IBHoMObject bHoMObject)
+
+        public static IEnumerable<ElementId> ElementIdsByInts(this Document document, List<int> elementIds, IEnumerable<ElementId> ids = null)
         {
-            int id = BH.Engine.Adapters.Revit.Query.ElementId(bHoMObject);
-            if (id == -1)
-                return null;
+            if (elementIds != null)
+                return (ids == null ? elementIds : elementIds.Intersect(ids.Select(x => x.IntegerValue))).Select(x => new ElementId(x));
             else
-                return new ElementId(id);
+                return null;
         }
 
         /***************************************************/
 
-        public static ElementId ElementId(this string originatingElementDescription)
-        {
-            if (string.IsNullOrEmpty(originatingElementDescription))
-                return null;
-
-            int startIndex = originatingElementDescription.LastIndexOf("[");
-            if (startIndex == -1)
-                return null;
-
-            int endIndex = originatingElementDescription.IndexOf("]", startIndex);
-            if (endIndex == -1)
-                return null;
-
-            string elementID = originatingElementDescription.Substring(startIndex + 1, endIndex - startIndex - 1);
-
-            int id;
-            if (!int.TryParse(elementID, out id))
-                return null;
-
-            return new ElementId(id);
-        }
-
-        /***************************************************/
     }
 }

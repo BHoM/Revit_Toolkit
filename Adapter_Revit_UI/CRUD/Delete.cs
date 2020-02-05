@@ -55,7 +55,7 @@ namespace BH.UI.Revit.Adapter
             if (bHoMObjects.Count() < 1)
                 return false;
 
-            List<ElementId> elementIDList = document.ElementIds(bHoMObjects.UniqueIds(true));
+            List<ElementId> elementIDList = document.ElementIdsByUniqueIds(bHoMObjects.UniqueIds(true)).ToList();
 
             if (elementIDList == null || elementIDList.Count < 1)
                 return false;

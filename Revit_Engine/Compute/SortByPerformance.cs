@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,48 +20,41 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
+using BH.oM.Data.Requests;
+using System.Collections.Generic;
 
-namespace BH.UI.Revit.Engine
+namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Compute
     {
         /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
-        
-        public static ElementId ElementId(this IBHoMObject bHoMObject)
-        {
-            int id = BH.Engine.Adapters.Revit.Query.ElementId(bHoMObject);
-            if (id == -1)
-                return null;
-            else
-                return new ElementId(id);
-        }
-
+        /****              Public Methods               ****/
         /***************************************************/
 
-        public static ElementId ElementId(this string originatingElementDescription)
+        public static List<IRequest> SortByPerformance(this List<IRequest> requests)
         {
-            if (string.IsNullOrEmpty(originatingElementDescription))
-                return null;
+            List<IRequest> allRequests = new List<IRequest>();
+            List<IRequest> logicalRequests = new List<IRequest>();
+            List<IRequest> parameterRequests = new List<IRequest>();
 
-            int startIndex = originatingElementDescription.LastIndexOf("[");
-            if (startIndex == -1)
-                return null;
+            foreach (IRequest request in requests)
+            {
+                if (request is IParameterRequest)
+                    parameterRequests.Add(request);
+                else if (request is ILogicalRequest)
+                    logicalRequests.Add(request);
+                else
+                    allRequests.Add(request);
+            }
 
-            int endIndex = originatingElementDescription.IndexOf("]", startIndex);
-            if (endIndex == -1)
-                return null;
+            allRequests.AddRange(logicalRequests);
+            allRequests.AddRange(parameterRequests);
 
-            string elementID = originatingElementDescription.Substring(startIndex + 1, endIndex - startIndex - 1);
-
-            int id;
-            if (!int.TryParse(elementID, out id))
-                return null;
-
-            return new ElementId(id);
+            return allRequests;
         }
 
         /***************************************************/

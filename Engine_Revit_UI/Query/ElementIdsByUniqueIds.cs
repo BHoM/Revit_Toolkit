@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,8 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Collections.Generic;
+
 using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+
 using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
 
 namespace BH.UI.Revit.Engine
 {
@@ -30,40 +42,36 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        public static ElementId ElementId(this IBHoMObject bHoMObject)
+
+        public static IEnumerable<ElementId> ElementIdsByUniqueIds(this Document document, IEnumerable<string> uniqueIds, IEnumerable<ElementId> ids = null)
         {
-            int id = BH.Engine.Adapters.Revit.Query.ElementId(bHoMObject);
-            if (id == -1)
+            if (document == null || uniqueIds == null)
                 return null;
-            else
-                return new ElementId(id);
+
+            List<string> corruptIds = new List<string>();
+            HashSet<ElementId> elementIDs = new HashSet<ElementId>();
+            foreach (string uniqueID in uniqueIds)
+            {
+                if (!string.IsNullOrEmpty(uniqueID))
+                {
+                    Element element = document.GetElement(uniqueID);
+                    if (element != null)
+                        elementIDs.Add(element.Id);
+                    else
+                        corruptIds.Add(uniqueID);
+                }
+                else
+                    BH.Engine.Reflection.Compute.RecordError("An attempt to use empty Unique Revit Id has been found.");
+            }
+
+            if (corruptIds.Count != 0)
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Elements have not been found in the document. Unique Revit Ids: {0}", string.Join(", ", uniqueIds)));
+
+            elementIDs.IntersectWith(ids);
+            return elementIDs;
         }
 
         /***************************************************/
 
-        public static ElementId ElementId(this string originatingElementDescription)
-        {
-            if (string.IsNullOrEmpty(originatingElementDescription))
-                return null;
-
-            int startIndex = originatingElementDescription.LastIndexOf("[");
-            if (startIndex == -1)
-                return null;
-
-            int endIndex = originatingElementDescription.IndexOf("]", startIndex);
-            if (endIndex == -1)
-                return null;
-
-            string elementID = originatingElementDescription.Substring(startIndex + 1, endIndex - startIndex - 1);
-
-            int id;
-            if (!int.TryParse(elementID, out id))
-                return null;
-
-            return new ElementId(id);
-        }
-
-        /***************************************************/
     }
 }

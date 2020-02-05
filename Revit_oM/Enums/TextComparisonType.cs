@@ -27,6 +27,7 @@ namespace BH.oM.Adapters.Revit.Enums
         Equal,
         NotEqual,
         Contains,
+        ContainsNot,
         StartsWith,
         EndsWith,
     }
