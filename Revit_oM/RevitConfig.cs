@@ -39,6 +39,8 @@ namespace BH.oM.Adapters.Revit
 
         public Discipline Discipline { get; set; } = Discipline.Undefined;
 
+        public bool IncludeClosedWorksets { get; set; } = false;
+
         public bool PullEdges { get; set; } = false;
 
         public bool IncludeNonVisible { get; set; } = false;

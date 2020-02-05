@@ -79,7 +79,6 @@
     <Compile Include="Requests\CategoryRequest.cs" />
     <Compile Include="Requests\FamilyRequest.cs" />
     <Compile Include="Requests\ActiveWorksetRequest.cs" />
-    <Compile Include="Requests\OpenWorksetsRequest.cs" />
     <Compile Include="Requests\ParameterBoolRequest.cs" />
     <Compile Include="Requests\ParameterElementIdRequest.cs" />
     <Compile Include="Requests\ParameterExistsRequest.cs" />
