@@ -35,9 +35,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        public static RevitConfig RevitConfig(Discipline discipline = Discipline.Physical, bool pullEdges = false, bool includeNonVisible = false)
+        public static RevitConfig RevitConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, bool pullEdges = false, bool includeNonVisible = false)
         {
-            return new RevitConfig { Discipline = discipline, PullEdges = pullEdges, IncludeNonVisible = includeNonVisible };
+            return new RevitConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, PullEdges = pullEdges, IncludeNonVisible = includeNonVisible };
         }
 
         /***************************************************/

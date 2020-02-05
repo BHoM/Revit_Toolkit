@@ -119,7 +119,6 @@
     <Compile Include="Create\Requests\CategoryRequest.cs" />
     <Compile Include="Create\Requests\DBTypeNameRequest.cs" />
     <Compile Include="Create\Requests\FamilyRequest.cs" />
-    <Compile Include="Create\Requests\OpenWorksetsRequest.cs" />
     <Compile Include="Create\Requests\ParameterBoolRequest.cs" />
     <Compile Include="Create\Requests\ParameterElementIdRequest.cs" />
     <Compile Include="Create\Requests\ParameterExistsRequest.cs" />

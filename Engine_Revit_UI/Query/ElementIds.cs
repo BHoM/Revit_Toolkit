@@ -145,13 +145,6 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this OpenWorksetsRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsByWorksets(uIDocument.Document.OpenWorksetIds().ToList(), ids);
-        }
-
-        /***************************************************/
-
         public static IEnumerable<ElementId> ElementIds(this WorksetRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             return uIDocument.Document.ElementIdsByWorksets(new List<WorksetId> { uIDocument.Document.WorksetId(request.WorksetName) }, ids);

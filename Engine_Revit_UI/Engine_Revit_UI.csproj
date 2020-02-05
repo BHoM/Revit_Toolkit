@@ -326,6 +326,7 @@
     <Compile Include="Query\OpeningType.cs" />
     <Compile Include="Query\StringValue.cs" />
     <Compile Include="Query\SupportedAPIType.cs" />
+    <Compile Include="Query\SystemWorksetIds.cs" />
     <Compile Include="Query\TopFacesPolyCurves.cs" />
     <Compile Include="Query\BHoMUnitType.cs" />
     <Compile Include="Query\UnsupportedAPITypes.cs" />

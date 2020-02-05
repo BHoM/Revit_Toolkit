@@ -65,9 +65,11 @@ namespace BH.UI.Revit.Engine
             }
 
             if (corruptIds.Count != 0)
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Elements have not been found in the document. Unique Revit Ids: {0}", string.Join(", ", uniqueIds)));
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Elements have not been found in the document. Unique Revit Ids: {0}", string.Join(", ", corruptIds)));
 
-            elementIDs.IntersectWith(ids);
+            if (ids != null)
+                elementIDs.IntersectWith(ids);
+
             return elementIDs;
         }
 
