@@ -37,7 +37,7 @@ namespace BH.oM.Adapters.Revit
         /****             Public Properties             ****/
         /***************************************************/
 
-        public Discipline Discipline { get; set; } = Discipline.Physical;
+        public Discipline Discipline { get; set; } = Discipline.Undefined;
 
         public bool PullEdges { get; set; } = false;
 
