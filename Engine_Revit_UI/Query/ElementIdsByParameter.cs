@@ -51,40 +51,35 @@ namespace BH.UI.Revit.Engine
             HashSet<ElementId> result = new HashSet<ElementId>();
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            Dictionary<ElementId, double> comparisonValues = new Dictionary<ElementId, double>();
             foreach (Element element in collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))))
             {
                 Parameter param = element.LookupParameter(parameterName);
                 if (param != null && param.HasValue && param.StorageType == StorageType.Double)
                 {
-                    double comparisonValue;
-                    if (!comparisonValues.TryGetValue(param.Id, out comparisonValue))
-                    {
-                        comparisonValue = value.FromSI(param.Definition.UnitType);
-                        comparisonValues.Add(param.Id, comparisonValue);
-                    }
+                    double comparisonValue = value.FromSI(param.Definition.UnitType);
+                    double comparisonTolerance = tolerance.FromSI(param.Definition.UnitType);
 
                     bool pass = false;
                     double paramValue = param.AsDouble();
                     switch (numberComparisonType)
                     {
                         case NumberComparisonType.Equal:
-                            pass = Math.Abs(paramValue - comparisonValue) <= tolerance;
+                            pass = Math.Abs(paramValue - comparisonValue) <= comparisonTolerance;
                             break;
                         case NumberComparisonType.Greater:
-                            pass = paramValue - comparisonValue > tolerance;
+                            pass = paramValue - comparisonValue > comparisonTolerance;
                             break;
                         case NumberComparisonType.GreaterOrEqual:
-                            pass = paramValue - comparisonValue > -tolerance;
+                            pass = paramValue - comparisonValue > -comparisonTolerance;
                             break;
                         case NumberComparisonType.Less:
-                            pass = paramValue - comparisonValue < -tolerance;
+                            pass = paramValue - comparisonValue < -comparisonTolerance;
                             break;
                         case NumberComparisonType.LessOrEqual:
-                            pass = paramValue - comparisonValue < tolerance;
+                            pass = paramValue - comparisonValue < comparisonTolerance;
                             break;
                         case NumberComparisonType.NotEqual:
-                            pass = Math.Abs(paramValue - comparisonValue) > tolerance;
+                            pass = Math.Abs(paramValue - comparisonValue) > comparisonTolerance;
                             break;
                     }
 

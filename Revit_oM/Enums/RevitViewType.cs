@@ -119,10 +119,14 @@ namespace BH.oM.Adapters.Revit.Enums
         Rendering = 125,
         //
         // Summary:
+        //     Systems analysis report view.
+        SystemsAnalysisReport = 126,
+        //
+        // Summary:
         //     Revit's internal type of view
         //
         // Remarks:
         //     Internal views are not available to API users
-        Internal = 214,
+        Internal = 214
     }
 }

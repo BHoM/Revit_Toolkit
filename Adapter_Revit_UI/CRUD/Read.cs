@@ -109,7 +109,11 @@ namespace BH.UI.Revit.Adapter
                 revitConfig = new RevitConfig();
             }
 
-            List<ElementId> elementIds = request.IElementIds(uiDocument).ToList();
+            IEnumerable<ElementId> worksetPrefilter = null;
+            if (!revitConfig.IncludeClosedWorksets)
+                worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
+
+            List<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).ToList();
             if (elementIds == null)
                 return null;
             
@@ -124,6 +128,8 @@ namespace BH.UI.Revit.Adapter
             }
 
             Discipline discipline = requestDiscipline.Value;
+            if (discipline == Discipline.Undefined)
+                discipline = Discipline.Physical;
 
             RevitSettings revitSettings = RevitSettings;
             MapSettings mapSettings = RevitSettings.MapSettings;
