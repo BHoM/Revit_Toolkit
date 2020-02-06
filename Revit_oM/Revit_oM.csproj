@@ -64,7 +64,6 @@
     <Compile Include="Enums\AdapterMode.cs" />
     <Compile Include="Enums\Discipline.cs" />
     <Compile Include="Enums\NumberComparisonType.cs" />
-    <Compile Include="Enums\RequestType.cs" />
     <Compile Include="Enums\RevitViewType.cs" />
     <Compile Include="Enums\TextComparisonType.cs" />
     <Compile Include="Generic\FamilyLibrary.cs" />
