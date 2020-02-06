@@ -94,7 +94,6 @@
   <ItemGroup>
     <Compile Include="Compute\SortByPerformance.cs" />
     <Compile Include="Convert\AdapterIdName.cs" />
-    <Compile Include="Convert\FilterRequest.cs" />
     <Compile Include="Create\Elements\Panel.cs" />
     <Compile Include="Create\Elements\BHoMObject.cs" />
     <Compile Include="Create\Elements\DraftingInstance.cs" />
@@ -103,9 +102,6 @@
     <Compile Include="Create\Elements\Wall.cs" />
     <Compile Include="Create\Elements\ViewPlan.cs" />
     <Compile Include="Create\Elements\ModelInstance.cs" />
-    <Compile Include="Create\Generic\ParameterExistsComparisonRule.cs" />
-    <Compile Include="Create\Generic\NumberComparisonRule.cs" />
-    <Compile Include="Create\Generic\TextComparisonRule.cs" />
     <Compile Include="Create\Properties\InstanceProperties.cs" />
     <Compile Include="Create\Requests\ActiveWorksetRequest.cs" />
     <Compile Include="Create\Requests\CategoryRequest.cs" />
@@ -143,7 +139,6 @@
     <Compile Include="Modify\AddMap.cs" />
     <Compile Include="Modify\SetFamilyTypeName.cs" />
     <Compile Include="Modify\SetFamilyName.cs" />
-    <Compile Include="Modify\SetDefaultDiscipline.cs" />
     <Compile Include="Modify\SetMapSettings.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
@@ -152,13 +147,7 @@
     <Compile Include="Query\Family.cs" />
     <Compile Include="Query\XDocument.cs" />
     <Compile Include="Query\RevitFilePreviews.cs" />
-    <Compile Include="Query\RelatedFilterRequest.cs" />
-    <Compile Include="Query\Value.cs" />
-    <Compile Include="Query\ParameterName.cs" />
     <Compile Include="Query\IsValid.cs" />
-    <Compile Include="Query\ComparisonRule.cs" />
-    <Compile Include="Query\Type.cs" />
-    <Compile Include="Query\RevitViewType.cs" />
     <Compile Include="Query\CurrentDomainAssembly.cs" />
     <Compile Include="Query\DefaultMapSettings.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
@@ -173,14 +162,12 @@
     <Compile Include="Query\FilterByType.cs" />
     <Compile Include="Query\AdjacentSpaceId.cs" />
     <Compile Include="Query\Plane.cs" />
-    <Compile Include="Query\IncludeNonVisibleObjects.cs" />
     <Compile Include="Query\SpaceId.cs" />
     <Compile Include="Query\PullEdges.cs" />
     <Compile Include="Query\Edges.cs" />
     <Compile Include="Query\FamilyTypeName.cs" />
     <Compile Include="Query\ViewTemplateName.cs" />
     <Compile Include="Query\Duplicate.cs" />
-    <Compile Include="Modify\SetPullEdges.cs" />
     <Compile Include="Modify\SetAdapterMode.cs" />
     <Compile Include="Modify\Append.cs" />
     <Compile Include="Modify\RemoveIdentifiers.cs" />
@@ -188,7 +175,6 @@
     <Compile Include="Modify\UpdateCustomDataValue.cs" />
     <Compile Include="_Properties\AssemblyInfo.cs" />
     <Compile Include="Query\CategoryNames.cs" />
-    <Compile Include="Query\ElementIds.cs" />
     <Compile Include="Query\FamilyName.cs" />
     <Compile Include="Query\CategoryName.cs" />
     <Compile Include="Query\DefaultDiscipline.cs" />
@@ -197,7 +183,6 @@
     <Compile Include="Query\Paths.cs" />
     <Compile Include="Query\CustomDataValue.cs" />
     <Compile Include="Query\FullNames.cs" />
-    <Compile Include="Query\IncludeSelected.cs" />
     <Compile Include="Query\IsAssignableFromByFullName.cs" />
     <Compile Include="Query\IsZero.cs" />
     <Compile Include="Query\Location.cs" />
@@ -205,15 +190,11 @@
     <Compile Include="Query\RequestType.cs" />
     <Compile Include="Query\SheetNumber.cs" />
     <Compile Include="Query\IsTemplate.cs" />
-    <Compile Include="Query\FilterRequests.cs" />
     <Compile Include="Query\ViewName.cs" />
-    <Compile Include="Query\TypeName.cs" />
     <Compile Include="Query\FamilyTypeNames.cs" />
     <Compile Include="Query\UniqueId.cs" />
     <Compile Include="Query\UniqueIds.cs" />
-    <Compile Include="Query\WorksetName.cs" />
     <Compile Include="Query\WorksetId.cs" />
-    <Compile Include="Query\SelectionSetName.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">

@@ -322,7 +322,6 @@
     <Compile Include="Query\FamilySymbols.cs" />
     <Compile Include="Query\FramingType.cs" />
     <Compile Include="Query\HighElevation.cs" />
-    <Compile Include="Query\IsValid.cs" />
     <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\OpeningType.cs" />
     <Compile Include="Query\StringValue.cs" />
@@ -344,7 +343,6 @@
     <Compile Include="Query\FamilyTypeFullName.cs" />
     <Compile Include="Query\FindRefObjects.cs" />
     <Compile Include="Query\FindRefObject.cs" />
-    <Compile Include="Query\FilterRequests.cs" />
     <Compile Include="Query\Construction.cs" />
     <Compile Include="Query\MaterialType.cs" />
     <Compile Include="Query\PolyCurve.cs" />
@@ -353,9 +351,7 @@
     <Compile Include="Query\Panels.cs" />
     <Compile Include="Query\Location.cs" />
     <Compile Include="Query\IsSimilar.cs" />
-    <Compile Include="Query\LogicalOr.cs" />
     <Compile Include="Query\OpenWorksetIds.cs" />
-    <Compile Include="Query\LogicalAnd.cs" />
     <Compile Include="Compute\LoadFamilySymbol.cs" />
     <Compile Include="Modify\SetCustomData.cs" />
     <Compile Include="Modify\SetIdentifiers.cs" />
@@ -369,7 +365,6 @@
     <Compile Include="Query\CategoryName.cs" />
     <Compile Include="Query\ElementType.cs" />
     <Compile Include="Query\Family.cs" />
-    <Compile Include="Query\FilterRequestDictionary.cs" />
     <Compile Include="Query\PolyCurves.cs" />
     <Compile Include="Query\SelectionBuiltInCategories.cs" />
     <Compile Include="Query\Element.cs" />
@@ -387,7 +382,6 @@
     <Compile Include="Query\Level.cs" />
     <Compile Include="Query\LookupParameter.cs" />
     <Compile Include="Query\RevitTypes.cs" />
-    <Compile Include="Query\Discipline.cs" />
     <Compile Include="Query\Profiles.cs" />
     <Compile Include="Query\Curves.cs" />
     <Compile Include="Query\LibraryMaterial.cs" />
