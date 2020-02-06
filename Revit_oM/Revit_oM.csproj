@@ -68,13 +68,9 @@
     <Compile Include="Enums\RevitViewType.cs" />
     <Compile Include="Enums\TextComparisonType.cs" />
     <Compile Include="Generic\FamilyLibrary.cs" />
-    <Compile Include="Generic\ParameterExistsComparisonRule.cs" />
-    <Compile Include="Generic\TextComparisonRule.cs" />
-    <Compile Include="Generic\NumberComparisonRule.cs" />
     <Compile Include="Interface\IParameterRequest.cs" />
     <Compile Include="Interface\IView.cs" />
     <Compile Include="Interface\IInstance.cs" />
-    <Compile Include="Interface\IComparisonRule.cs" />
     <Compile Include="Properties\InstanceProperties.cs" />
     <Compile Include="Requests\CategoryRequest.cs" />
     <Compile Include="Requests\FamilyRequest.cs" />
