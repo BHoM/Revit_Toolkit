@@ -38,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Checks if RevitAdapter is valid.")]
         [Input("revitAdapter", "Revit Adapter")]
-        [Output("IsValid")]
+        [Output("IsValid", "True if RevitAdapter is valid")]
         public static bool IsValid(this RevitAdapter revitAdapter)
         {
             if (revitAdapter == null)
