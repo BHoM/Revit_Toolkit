@@ -163,10 +163,8 @@
     <Compile Include="Query\AdjacentSpaceId.cs" />
     <Compile Include="Query\Plane.cs" />
     <Compile Include="Query\SpaceId.cs" />
-    <Compile Include="Query\PullEdges.cs" />
     <Compile Include="Query\Edges.cs" />
     <Compile Include="Query\FamilyTypeName.cs" />
-    <Compile Include="Query\ViewTemplateName.cs" />
     <Compile Include="Query\Duplicate.cs" />
     <Compile Include="Modify\SetAdapterMode.cs" />
     <Compile Include="Modify\Append.cs" />
@@ -187,7 +185,6 @@
     <Compile Include="Query\IsZero.cs" />
     <Compile Include="Query\Location.cs" />
     <Compile Include="Query\OmniClass.cs" />
-    <Compile Include="Query\RequestType.cs" />
     <Compile Include="Query\SheetNumber.cs" />
     <Compile Include="Query\IsTemplate.cs" />
     <Compile Include="Query\ViewName.cs" />
