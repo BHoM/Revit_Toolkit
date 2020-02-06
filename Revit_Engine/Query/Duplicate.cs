@@ -52,30 +52,5 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
-
-        //[Description("Duplicates FilterRequest.")]
-        //[Input("filterRequest", "FilterRequest")]
-        //[Output("FilterRequest")]
-        //public static FilterRequest Duplicate(this FilterRequest filterRequest)
-        //{
-        //    if (filterRequest == null)
-        //        return null;
-
-        //    FilterRequest request = new FilterRequest();
-
-        //    if (filterRequest.Equalities != null)
-        //        request.Equalities = new Dictionary<string, object>(filterRequest.Equalities);
-        //    else
-        //        request.Equalities = new Dictionary<string, object>();
-
-        //    request.Tag = filterRequest.Tag;
-
-        //    request.Type = filterRequest.Type;
-
-
-        //    return request;
-        //}
-
-        /***************************************************/
     }
 }

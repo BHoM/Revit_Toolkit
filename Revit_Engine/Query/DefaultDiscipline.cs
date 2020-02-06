@@ -47,18 +47,5 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
-
-        //[Description("Gets Default Discipline for given FilterRequest.")]
-        //[Input("filterRequest", "FilterRequest")]
-        //[Output("Discipline")]
-        //public static Discipline DefaultDiscipline(this FilterRequest filterRequest)
-        //{
-        //    if (filterRequest == null || !filterRequest.Equalities.ContainsKey(Convert.FilterRequest.DefaultDiscipline))
-        //        return oM.Adapters.Revit.Enums.Discipline.Undefined;
-        //    else
-        //        return (Discipline)filterRequest.Equalities[Convert.FilterRequest.DefaultDiscipline];
-        //}
-
-        /***************************************************/
     }
 }

@@ -215,22 +215,5 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-
-        //public static IEnumerable<BuiltInCategory> BuiltInCategories(IEnumerable<FilterRequest> filterRequests, Document document)
-        //{
-        //    if (filterRequests == null || document == null)
-        //        return null;
-
-        //    List<BuiltInCategory> builtInCategories = new List<BuiltInCategory>();
-        //    foreach (FilterRequest filterRequest in filterRequests)
-        //    {
-        //        BuiltInCategory builtInCategory = Query.BuiltInCategory(filterRequest, document);
-        //        if (builtInCategory != Autodesk.Revit.DB.BuiltInCategory.INVALID)
-        //            builtInCategories.Add(builtInCategory);
-        //    }
-        //    return builtInCategories;
-        //}
-
-        /***************************************************/
     }
 }

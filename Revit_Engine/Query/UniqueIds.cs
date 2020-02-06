@@ -57,21 +57,5 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
-
-        //[Description("Returns Revit UniqueIds for given FilterRequest (Example: SelectionFilterRequest).")]
-        //[Input("filterRequest", "FilterRequest")]
-        //[Output("UniqueIds")]
-        //public static IEnumerable<string> UniqueIds(this FilterRequest filterRequest)
-        //{
-        //    if (filterRequest == null)
-        //        return null;
-
-        //    if (!filterRequest.Equalities.ContainsKey(Convert.FilterRequest.UniqueIds))
-        //        return null;
-
-        //    return filterRequest.Equalities[Convert.FilterRequest.UniqueIds] as IEnumerable<string>;
-        //}
-
-        /***************************************************/
     }
 }
