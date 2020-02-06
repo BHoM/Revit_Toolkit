@@ -73,8 +73,8 @@ namespace BH.UI.Revit.Engine
                     materialFragment = new oM.Structure.MaterialFragments.Timber();
                     break;
                 default:
-                    //TODO: default steel warning
-                    materialFragment = new oM.Structure.MaterialFragments.Steel();
+                    //TODO: default generic material warning
+                    materialFragment = new oM.Structure.MaterialFragments.GenericIsotropicMaterial();
                     break;
             }
 
@@ -99,22 +99,16 @@ namespace BH.UI.Revit.Engine
             switch (structuralMaterialType)
             {
                 case StructuralMaterialType.Aluminum:
-                    {
-                        return new Aluminium() { Name = name };
-                    }
+                    return new Aluminium() { Name = name };
                 case StructuralMaterialType.Concrete:
                 case StructuralMaterialType.PrecastConcrete:
-                    {
-                        return new Concrete() { Name = name };
-                    }
+                    return new Concrete() { Name = name };
                 case StructuralMaterialType.Wood:
-                    {
-                        return new Timber() { Name = name };
-                    }
+                    return new Timber() { Name = name };
+                case StructuralMaterialType.Steel:
+                    return new Steel() { Name = name };
                 default:
-                    {
-                        return new Steel() { Name = name };
-                    }
+                    return new GenericIsotropicMaterial() { Name = name };
             }
         }
 
@@ -208,6 +202,14 @@ namespace BH.UI.Revit.Engine
                 material.YoungsModulus = youngsModulus;
                 material.ThermalExpansionCoeff = thermalExpansionCoeff;
                 material.PoissonsRatio = poissonsRatio;
+                materialFragment = material;
+            }
+            else if (materialFragment is BH.oM.Structure.MaterialFragments.GenericIsotropicMaterial)
+            {
+                BH.oM.Structure.MaterialFragments.GenericIsotropicMaterial material = materialFragment as BH.oM.Structure.MaterialFragments.GenericIsotropicMaterial;
+                material.YoungsModulus = youngsModulus.X;
+                material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
+                material.PoissonsRatio = poissonsRatio.X;
                 materialFragment = material;
             }
 
