@@ -125,8 +125,11 @@ namespace BH.UI.Revit.Engine
                     case StructuralMaterialType.Wood:
                         structuralProperty = new BH.oM.Structure.MaterialFragments.Timber();
                         break;
-                    default:
+                    case StructuralMaterialType.Steel:
                         structuralProperty = new BH.oM.Structure.MaterialFragments.Steel();
+                        break;
+                    default:
+                        structuralProperty = new BH.oM.Structure.MaterialFragments.GenericIsotropicMaterial();
                         break;
                 }
 
