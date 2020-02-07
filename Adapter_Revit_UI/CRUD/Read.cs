@@ -70,6 +70,7 @@ namespace BH.UI.Revit.Adapter
                     if (obj is int)
                         elementIds.Add((int)obj);
                     else if (obj is string)
+                        //add tryparse
                         uniqueIds.Add((string)obj);
                 }
             }

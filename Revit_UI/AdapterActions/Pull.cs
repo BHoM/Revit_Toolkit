@@ -48,14 +48,14 @@ namespace BH.UI.Revit
                     //Get the revit adapter
                     RevitUIAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
 
-                    //Push the data
+                    //Pull the data
                     IEnumerable<object> objs = adapter.Pull(listener.LatestRequest, oM.Adapter.PullType.AdapterDefault, listener.LatestConfig);
 
                     //Clear the previous data
                     listener.LatestConfig = null;
                     listener.LatestTag = "";
 
-                    //Return the pushed objects
+                    //Return the pulled objects
                     listener.ReturnData(objs);
                 }
                 catch(Exception e)
