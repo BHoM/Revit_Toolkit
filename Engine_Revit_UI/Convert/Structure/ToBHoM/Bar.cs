@@ -159,21 +159,8 @@ namespace BH.UI.Revit.Engine
 
                 if (profile.Edges.Count == 0)
                     familyInstance.Symbol.ConvertProfileFailedWarning();
-                
-                if (materialFragment is Concrete)
-                    property = BH.Engine.Structure.Create.ConcreteSectionFromProfile(profile, materialFragment as Concrete, profileName);
-                else if (materialFragment is Steel)
-                    property = BH.Engine.Structure.Create.SteelSectionFromProfile(profile, materialFragment as Steel, profileName);
-                else if (materialFragment is Timber)
-                    property = BH.Engine.Structure.Create.TimberSectionFromProfile(profile, materialFragment as Timber, profileName);
-                else if (materialFragment is Aluminium)
-                    property = BH.Engine.Structure.Create.AluminiumSectionFromProfile(profile, materialFragment as Aluminium, profileName);
-                else
-                {
-                    familyInstance.UnknownMaterialWarning();
-                    property = BH.Engine.Structure.Create.GenericSectionFromProfile(profile, materialFragment, profileName);
-                    property.Material = materialFragment;
-                }
+
+                property = BH.Engine.Structure.Create.SectionPropertyFromProfile(profile, materialFragment, profileName);
             }
             else
             {
