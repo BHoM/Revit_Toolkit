@@ -38,7 +38,7 @@ namespace BH.oM.Adapters.Revit
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Revit category name.")]
+        [Description("Revit category name, as shown in Revit user interface.")]
         public string CategoryName { get; set; } = "";
 
         /***************************************************/
