@@ -32,7 +32,7 @@ namespace BH.oM.Adapters.Revit
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Workset name.")]
+        [Description("Revit workset name.")]
         public string WorksetName { get; set; } = "";
 
         /***************************************************/
