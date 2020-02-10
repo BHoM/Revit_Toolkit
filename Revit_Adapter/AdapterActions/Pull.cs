@@ -60,9 +60,6 @@ namespace BH.Adapter.Revit
 
             if (!CheckConnection())
                 return new List<object>();
-            
-            if (!(request is IRequest))
-                return new List<object>();
 
             //Send data through the socket link
             m_LinkIn.SendData(new List<object>() { PackageType.Pull, request, revitConfig, RevitSettings });
