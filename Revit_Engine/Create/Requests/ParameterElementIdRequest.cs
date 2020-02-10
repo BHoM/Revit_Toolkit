@@ -38,17 +38,6 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
         [Input("parameterName", "Parameter name to be queried")]
-        [Input("elementId", "Sought ElementId.")]
-        [Output("ParameterElementIdRequest")]
-        public static ParameterElementIdRequest ParameterElementIdRequest(string parameterName, int elementId)
-        {
-            return new ParameterElementIdRequest { ParameterName = parameterName, ElementId = elementId };
-        }
-
-        /***************************************************/
-
-        [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
-        [Input("parameterName", "Parameter name to be queried")]
         [Input("bHoMObject", "BHoMObject pulled from Revit that has sought ElementId.")]
         [Output("ParameterElementIdRequest")]
         public static ParameterElementIdRequest ParameterElementIdRequest(string parameterName, BHoMObject bHoMObject)
