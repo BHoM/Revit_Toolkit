@@ -21,26 +21,24 @@
  */
 
 using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Base;
-using BH.oM.Data.Requests;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
+    [Description("IRequest that filters elements based on given text parameter value criterion.")]
     public class ParameterTextRequest : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
+        [Description("Name of the parameter to be used as filter criterion.")]
         public string ParameterName { get; set; } = "";
 
+        [Description("TextComparisonType enum representing comparison type, e.g. equality, contains, starts with etc.")]
         public Enums.TextComparisonType TextComparisonType { get; set; } = Enums.TextComparisonType.Equal;
 
+        [Description("Value to compare the parameter against.")]
         public string Value { get; set; } = "";
 
         /***************************************************/

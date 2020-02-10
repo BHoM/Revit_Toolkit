@@ -21,24 +21,21 @@
  */
 
 using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Base;
-using BH.oM.Data.Requests;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
+    [Description("IRequest that filters elements the have (or do not have) a parameter with given name.")]
     public class ParameterExistsRequest : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
-        
+
+        [Description("Name of the parameter to look for.")]
         public string ParameterName { get; set; } = "";
 
+        [Description("If true, elements with the given parameter will be filtered, if false - the opposite.")]
         public bool ParameterExists { get; set; } = false;
 
         /***************************************************/

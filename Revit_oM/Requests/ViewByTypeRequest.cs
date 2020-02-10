@@ -20,22 +20,19 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
 using BH.oM.Data.Requests;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
+    [Description("IRequest that filters all views of given type.")]
     public class ViewByTypeRequest : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
+        [Description("RevitViewType enum correspondent to Revit view type.")]
         public Revit.Enums.RevitViewType RevitViewType { get; set; } =  Enums.RevitViewType.Undefined;
 
         /***************************************************/

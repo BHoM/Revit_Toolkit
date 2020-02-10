@@ -20,24 +20,22 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
 using BH.oM.Data.Requests;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
+    [Description("IRequest that filters all elements of given Revit family and type.")]
     public class FamilyRequest : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
+        [Description("Name of Revit family.")]
         public string FamilyName { get; set; } = "";
 
+        [Description("Name of Revit family type.")]
         public string FamilyTypeName { get; set; } = "";
 
         /***************************************************/
