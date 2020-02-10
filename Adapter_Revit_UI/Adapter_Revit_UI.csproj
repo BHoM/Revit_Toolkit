@@ -103,12 +103,12 @@
     <AssemblyName>Adapter_Revit_UI_2020</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Adapter_Engine, Version=3.0.0.0">
+    <Reference Include="Adapter_Engine">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Adapter\Build\Adapter_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Adapter_oM, Version=3.0.0.0">
+    <Reference Include="Adapter_oM">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Adapter\Build\Adapter_oM.dll</HintPath>
       <Private>False</Private>
