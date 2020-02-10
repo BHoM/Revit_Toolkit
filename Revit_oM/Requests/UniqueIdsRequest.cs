@@ -20,22 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
 using BH.oM.Data.Requests;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
+    [Description("IRequest that filters elements by their UniqueIds.")]
     public class UniqueIdsRequest : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
+        [Description("List of Revit UniqueIds to be used to filter the elements.")]
         public List<string> UniqueIds { get; set; } = new List<string>();
 
         /***************************************************/

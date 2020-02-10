@@ -21,26 +21,24 @@
  */
 
 using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Base;
-using BH.oM.Data.Requests;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
+    [Description("IRequest that filters elements based on given floating point number parameter value criterion.")]
     public class ParameterNumberRequest : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
+        [Description("Name of the parameter to be used as filter criterion.")]
         public string ParameterName { get; set; } = "";
 
+        [Description("NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
         public Enums.NumberComparisonType NumberComparisonType { get; set; } = Enums.NumberComparisonType.Equal;
 
+        [Description("Value to compare the parameter against.")]
         public double Value { get; set; } = double.NaN;
 
         public double Tolerance { get; set; } = BH.oM.Geometry.Tolerance.Distance;

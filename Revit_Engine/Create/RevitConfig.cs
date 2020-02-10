@@ -20,12 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
-using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit;
-using BH.oM.Base;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -35,6 +33,12 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Creates an action-specific configuration used for adapter interaction with Revit.")]
+        [Input("discipline", "Discipline used on push/pull action. Default is Physical.")]
+        [Input("includeClosedWorksets", "Elements from closed worksets will be processed if true.")]
+        [Input("pullEdges", "If true, edges of elements will be pulled and stored under Revit_edges in CustomData.")]
+        [Input("includeNonVisible", "Invisible element edges will be pulled and passed to CustomData if true. PullEdges switched to true needed for this to activate.")]
+        [Output("RevitConfig")]
         public static RevitConfig RevitConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, bool pullEdges = false, bool includeNonVisible = false)
         {
             return new RevitConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, PullEdges = pullEdges, IncludeNonVisible = includeNonVisible };

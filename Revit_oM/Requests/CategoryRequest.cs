@@ -24,18 +24,21 @@ using BH.oM.Base;
 using BH.oM.Data.Requests;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BH.oM.Adapters.Revit
 {
+    [Description("IRequest that filters all elements of given category.")]
     public class CategoryRequest : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
+        [Description("Revit category name.")]
         public string CategoryName { get; set; } = "";
 
         /***************************************************/

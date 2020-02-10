@@ -20,29 +20,30 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit.Enums;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
+    [Description("Action-specific configuration used for adapter interaction with Revit.")]
     public class RevitConfig: ActionConfig
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
+        [Description("Discipline used on push/pull action. Default is Physical.")]
         public Discipline Discipline { get; set; } = Discipline.Undefined;
 
+        [Description("Elements from closed worksets will be processed if true.")]
         public bool IncludeClosedWorksets { get; set; } = false;
 
+        [Description("If true, edges of elements will be pulled and stored under Revit_edges in CustomData.")]
         public bool PullEdges { get; set; } = false;
 
+        [Description("Invisible element edges will be pulled and passed to CustomData if true. PullEdges switched to true needed for this to activate.")]
         public bool IncludeNonVisible { get; set; } = false;
 
         /***************************************************/
