@@ -131,10 +131,10 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this FamilyRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsByFamilyType(request.FamilyName, request.FamilyTypeName, true, ids);
-        }
+        //public static IEnumerable<ElementId> ElementIds(this FamilyRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        //{
+        //    return uIDocument.Document.ElementIdsByFamilyType(request.FamilyName, request.FamilyTypeName, true, ids);
+        //}
 
         /***************************************************/
 
@@ -166,10 +166,10 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this ViewTemplateRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsViewTemplate(ids);
-        }
+        //public static IEnumerable<ElementId> ElementIds(this ViewTemplateRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        //{
+        //    return uIDocument.Document.ElementIdsViewTemplate(ids);
+        //}
 
         /***************************************************/
 
