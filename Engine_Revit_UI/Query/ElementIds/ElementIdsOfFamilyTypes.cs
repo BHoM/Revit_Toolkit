@@ -45,19 +45,34 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get all Views that have the named View Template assigned")]
+        [Description("Get the ElementId of all Family Types of certain Families")]
         [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("templateName", "Name of View Template assigend to Views")]
-        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("ElementIdsByTemplate", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsByTemplate(this Document document, string templateName, IEnumerable<ElementId> ids = null)
+        [Input("familyIds", "Family ids to search for Family Type ids")]
+        [Output("elementIdsOfFamilies", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, IEnumerable<ElementId> familyIds)
         {
-            Element viewTemplate = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Where(x => x.Name == templateName).FirstOrDefault();
-            if (viewTemplate == null)
+            if (document == null || familyIds == null)
                 return null;
 
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            return collector.OfClass(typeof(View)).Cast<View>().Where(x => !x.IsTemplate).Where(x => x.ViewTemplateId == viewTemplate.Id).Select(x => x.Id);
+            List<ElementId> returned = new List<ElementId>();
+
+            foreach(ElementId id in familyIds)
+            {
+                Family family = document.GetElement(id) as Family;
+
+                if(family == null)
+                    BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family with the Id " + id.ToString() + ".");
+
+                ISet<ElementId> symbolId = family.GetFamilySymbolIds();
+
+                foreach(ElementId sId in symbolId)
+                {
+                    returned.Append(sId);
+                }
+            }
+
+            return returned;            
+            
         }
 
         /***************************************************/

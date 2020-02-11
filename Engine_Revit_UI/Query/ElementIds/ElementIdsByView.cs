@@ -37,6 +37,9 @@ using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
+
+
+
 namespace BH.UI.Revit.Engine
 {
     public static partial class Query
@@ -45,19 +48,17 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get all Views that have the named View Template assigned")]
-        [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("templateName", "Name of View Template assigend to Views")]
-        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("ElementIdsByTemplate", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsByTemplate(this Document document, string templateName, IEnumerable<ElementId> ids = null)
+        [Description("Get all Elements as ElementId that are visible in View")]
+        [Input("document", "Revit Document where views are collected")]
+        [Output("elementIdsByView", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsByView(this Document document, View view)
         {
-            Element viewTemplate = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Where(x => x.Name == templateName).FirstOrDefault();
-            if (viewTemplate == null)
+            if (document == null || view == null)
                 return null;
 
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            return collector.OfClass(typeof(View)).Cast<View>().Where(x => !x.IsTemplate).Where(x => x.ViewTemplateId == viewTemplate.Id).Select(x => x.Id);
+            FilteredElementCollector collector = new FilteredElementCollector(document, view.Id);
+
+            return collector.ToElementIds();            
         }
 
         /***************************************************/

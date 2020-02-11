@@ -45,22 +45,32 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get all Views that have the named View Template assigned")]
+        [Description("Get ElementIds of Views that are View Template")]
         [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("templateName", "Name of View Template assigend to Views")]
+        [Input("viewTemplateName", "Optional, allows the filter to narrow the search to a specific View Template name")]
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("ElementIdsByTemplate", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsByTemplate(this Document document, string templateName, IEnumerable<ElementId> ids = null)
+        [Output("elementsIdsViewTemplate", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsOfViewTemplates(this Document document, string viewTemplateName = null, IEnumerable < ElementId> ids = null)
         {
-            Element viewTemplate = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Where(x => x.Name == templateName).FirstOrDefault();
-            if (viewTemplate == null)
-                return null;
-
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            return collector.OfClass(typeof(View)).Cast<View>().Where(x => !x.IsTemplate).Where(x => x.ViewTemplateId == viewTemplate.Id).Select(x => x.Id);
+
+            if (viewTemplateName == null)
+            {
+                return collector.OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Select(x => x.Id);
+            }
+
+            else
+            {
+                IEnumerable<View> collected = collector.OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Where(x => x.Name == viewTemplateName);
+                if (collected.Count() == 0)
+                    BH.Engine.Reflection.Compute.RecordError("The View Template named " + viewTemplateName + " could not be found.");
+
+                return collected.Select(x => x.Id);
+            }
         }
-
-        /***************************************************/
-
     }
+
+    /***************************************************/
+
+}
 }

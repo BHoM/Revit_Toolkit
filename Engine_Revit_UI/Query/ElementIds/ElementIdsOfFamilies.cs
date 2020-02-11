@@ -45,19 +45,50 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get all Views that have the named View Template assigned")]
+        [Description("Get the ElementId of all Families, with option to narrow search by family name only")]
         [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("templateName", "Name of View Template assigend to Views")]
+        [Input("familyName", "Optional, narrows the seartch by a Family name")]        
+        [Input("caseSensitive", "Optional, sets the Family name and Family Type name to be case sensitive or not")]
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("ElementIdsByTemplate", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsByTemplate(this Document document, string templateName, IEnumerable<ElementId> ids = null)
+        [Output("elementIdsOfFamilies", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsOfFamilies(this Document document, string familyName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
-            Element viewTemplate = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Where(x => x.Name == templateName).FirstOrDefault();
-            if (viewTemplate == null)
+            if (document == null)
                 return null;
 
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            return collector.OfClass(typeof(View)).Cast<View>().Where(x => !x.IsTemplate).Where(x => x.ViewTemplateId == viewTemplate.Id).Select(x => x.Id);
+            if (!string.IsNullOrEmpty(familyName))
+            {
+
+                List<ElementId> returned = new List<ElementId>();
+
+                if (caseSensitive)
+                {
+                    Element element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name == familyName).FirstOrDefault();
+                    returned.Append(element.Id);
+                }
+                else
+                {
+                    Element element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name.ToUpper() == familyName.ToUpper()).FirstOrDefault();
+                    returned.Append(element.Id);
+                }
+
+                if (returned.Count > 0)
+                    return returned;
+
+                else
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");
+                    //why return null when using the above
+                    return null;
+                }                
+            }
+
+            else
+            {
+                FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+                return collector.OfClass(typeof(Family)).Select(x => x.Id);
+            }
+            
         }
 
         /***************************************************/

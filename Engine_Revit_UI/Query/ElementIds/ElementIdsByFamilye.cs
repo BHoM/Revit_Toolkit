@@ -24,6 +24,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
@@ -34,6 +35,7 @@ using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.UI.Revit.Engine
 {
@@ -43,7 +45,14 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIdsByFamilyType(this Document document, string familyName, string familyTypeName, bool caseSensitive, IEnumerable<ElementId> ids = null)
+        [Description("Get all Elements as ElementIds by Family name, optinally narrowing the search by Family Type name")]
+        [Input("document", "Revit Document where ElementIds are collected")]
+        [Input("familyName", "Name of the Family to look for the type")]
+        [Input("familyTypeName", "Optional, the name of Family Type to look for in the Family")]
+        [Input("caseSensitive", "Optional, sets the Family name and Family Type name to be case sensitive or not")]
+        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
+        [Output("elementIdsByFamilyType", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsByFamilye(this Document document, string familyName, string familyTypeName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
@@ -58,7 +67,7 @@ namespace BH.UI.Revit.Engine
             }
 
             if (elementTypes == null)
-                return null;
+                BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");            
 
             if (!string.IsNullOrEmpty(familyTypeName))
             {
@@ -69,7 +78,7 @@ namespace BH.UI.Revit.Engine
             }
 
             if (elementTypes == null)
-                return null;
+                BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family Type named " + familyTypeName + " in the Family " + familyName);
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             List<ElementId> result = new List<ElementId>();

@@ -24,6 +24,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
@@ -34,6 +35,9 @@ using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
+
+
 
 namespace BH.UI.Revit.Engine
 {
@@ -43,10 +47,35 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIdsViewTemplate(this Document document, IEnumerable<ElementId> ids = null)
+        [Description("Get Elements as ElementIds by Category name")]
+        [Input("document", "Revit Document where ElementIds are collected")]
+        [Input("categoryName", "List of Category names to be used as filter")]
+        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
+        [Output("elementIdsByCategoryNames", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsByCategoryNames(this Document document, List<string> categoryNames, IEnumerable<ElementId> ids = null)
         {
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            return collector.OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Select(x => x.Id);
+            IEnumerable<ElementId> returned = new List<ElementId>();
+
+            if (document == null || categoryNames.Count == 0)
+                return null;
+
+            foreach(string name in categoryNames)
+            {
+                BuiltInCategory builtInCategory = document.BuiltInCategory(name);
+                if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
+                    BH.Engine.Reflection.Compute.RecordError("Couldn't find a Category named " + name + ".");
+                
+                FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+                collector.OfCategory(builtInCategory).ToList();
+
+                foreach(Element e in collector)
+                {
+                    returned.Append(e.Id);
+                }                
+            }
+            
+            return returned;           
+            
         }
 
         /***************************************************/
