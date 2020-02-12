@@ -321,7 +321,7 @@
     <Compile Include="Query\ElementIds\ElementIdsByDBType.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfFamilyTypes.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfFamilies.cs" />
-    <Compile Include="Query\ElementIds\ElementIdsByFamilye.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsByFamily.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByInts.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByParameter.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByParameterExistence.cs" />

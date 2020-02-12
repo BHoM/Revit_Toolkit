@@ -64,12 +64,12 @@ namespace BH.UI.Revit.Engine
                 if (caseSensitive)
                 {
                     Element element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name == familyName).FirstOrDefault();
-                    returned.Append(element.Id);
+                    returned.Add(element.Id);
                 }
                 else
                 {
                     Element element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name.ToUpper() == familyName.ToUpper()).FirstOrDefault();
-                    returned.Append(element.Id);
+                    returned.Add(element.Id);
                 }
 
                 if (returned.Count > 0)
@@ -77,8 +77,7 @@ namespace BH.UI.Revit.Engine
 
                 else
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");
-                    //why return null when using the above
+                    BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");                    
                     return null;
                 }                
             }

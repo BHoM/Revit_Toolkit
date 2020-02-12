@@ -52,7 +52,7 @@ namespace BH.UI.Revit.Engine
         [Input("caseSensitive", "Optional, sets the Family name and Family Type name to be case sensitive or not")]
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
         [Output("elementIdsByFamilyType", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsByFamilye(this Document document, string familyName, string familyTypeName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsByFamily(this Document document, string familyName, string familyTypeName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;

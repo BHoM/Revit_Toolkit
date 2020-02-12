@@ -54,7 +54,7 @@ namespace BH.UI.Revit.Engine
         [Output("elementIdsByCategoryNames", "An enumerator for easy iteration of ElementIds collected")]
         public static IEnumerable<ElementId> ElementIdsByCategoryNames(this Document document, List<string> categoryNames, IEnumerable<ElementId> ids = null)
         {
-            IEnumerable<ElementId> returned = new List<ElementId>();
+            List<ElementId> returned = new List<ElementId>();
 
             if (document == null || categoryNames.Count == 0)
                 return null;
@@ -66,11 +66,11 @@ namespace BH.UI.Revit.Engine
                     BH.Engine.Reflection.Compute.RecordError("Couldn't find a Category named " + name + ".");
                 
                 FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-                collector.OfCategory(builtInCategory).ToList();
+                collector.OfCategory(builtInCategory).WhereElementIsNotElementType().ToList();
 
                 foreach(Element e in collector)
                 {
-                    returned.Append(e.Id);
+                    returned.Add(e.Id);
                 }                
             }
             

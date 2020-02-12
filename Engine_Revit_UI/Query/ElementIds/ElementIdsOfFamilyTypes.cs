@@ -67,7 +67,7 @@ namespace BH.UI.Revit.Engine
 
                 foreach(ElementId sId in symbolId)
                 {
-                    returned.Append(sId);
+                    returned.Add(sId);
                 }
             }
 
