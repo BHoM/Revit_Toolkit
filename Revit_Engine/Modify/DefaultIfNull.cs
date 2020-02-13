@@ -19,61 +19,35 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-
+using System.IO;
+using System.ComponentModel;
 using System.Collections.Generic;
 
-using BH.oM.Adapters.Revit;
-using BH.oM.Base;
-using System;
-using System.Linq;
-using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 
-namespace BH.UI.Revit.Engine
+namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Modify
     {
         /***************************************************/
-        /****             Internal Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        internal static List<T> GetValues<T>(this Dictionary<int, List<IBHoMObject>> refObjects, int key) where T : IBHoMObject
+        public static RevitSettings DefaultIfNull(this RevitSettings settings)
         {
-            if (refObjects == null)
-                return null;
+            if (settings == null)
+            {
+                BH.Engine.Reflection.Compute.RecordNote("Revit settings are not set. Default settings are used.");
+                return RevitSettings.Default;
+            }
 
-            List<IBHoMObject> bhomObjects = null;
-            if (refObjects.TryGetValue(key, out bhomObjects) && bhomObjects != null)
-                return bhomObjects.FindAll(x => x is T).Cast<T>().ToList();
-
-            return null;
-        }
-
-        /***************************************************/
-
-        internal static List<T> GetValues<T>(this Dictionary<int, List<IBHoMObject>> refObjects, ElementId key) where T : IBHoMObject
-        {
-            return refObjects.GetValues<T>(key.IntegerValue);
-        }
-
-        /***************************************************/
-
-        internal static T GetValue<T>(this Dictionary<int, List<IBHoMObject>> refObjects, int key) where T : IBHoMObject
-        {
-            List<T> values = refObjects.GetValues<T>(key);
-            if (values != null && values.Count == 1)
-                return values[0];
-            else
-                return default(T);
-        }
-
-        /***************************************************/
-
-        internal static T GetValue<T>(this Dictionary<int, List<IBHoMObject>> refObjects, ElementId key) where T : IBHoMObject
-        {
-            return refObjects.GetValue<T>(key.IntegerValue);
+            return settings;
         }
 
         /***************************************************/
     }
 }
+
+
 

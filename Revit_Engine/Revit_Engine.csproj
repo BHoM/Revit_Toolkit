@@ -133,6 +133,7 @@
     <Compile Include="Modify\AddRefObject.cs" />
     <Compile Include="Modify\AddRefObjects.cs" />
     <Compile Include="Modify\AddMap.cs" />
+    <Compile Include="Modify\DefaultIfNull.cs" />
     <Compile Include="Modify\SetFamilyTypeName.cs" />
     <Compile Include="Modify\SetFamilyName.cs" />
     <Compile Include="Modify\SetMapSettings.cs" />
