@@ -39,12 +39,12 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IObject UpdateValues(this IObject iObject, PullSettings pullSettings, Element element)
+        public static IObject UpdateValues(this IObject iObject, RevitSettings settings, Element element)
         {
             if (iObject == null)
                 return null;
 
-            if (pullSettings == null || pullSettings.MapSettings == null || element == null)
+            if (settings == null || settings.MapSettings == null || element == null)
                 return iObject;
 
             Type type = iObject.GetType();
@@ -53,7 +53,7 @@ namespace BH.UI.Revit.Engine
             if (propertyInfos == null || propertyInfos.Count() == 0)
                 return iObject;
 
-            MapSettings mapSettings = pullSettings.MapSettings;
+            MapSettings mapSettings = settings.MapSettings;
 
             foreach (PropertyInfo pInfo in propertyInfos)
             {

@@ -35,7 +35,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Location Move(this Location location, Vector vector, PushSettings pushSettings = null)
+        public static Location Move(this Location location, Vector vector)
         {
             if (location == null || vector == null)
                 return null;
@@ -55,7 +55,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static LocationPoint Move(this LocationPoint locationPoint, oM.Geometry.Point point, PushSettings pushSettings = null)
+        public static LocationPoint Move(this LocationPoint locationPoint, oM.Geometry.Point point)
         {
             if (locationPoint == null || point == null)
                 return null;
@@ -74,7 +74,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static LocationCurve Move(this LocationCurve locationCurve, ICurve iCurve, PushSettings pushSettings = null)
+        public static LocationCurve Move(this LocationCurve locationCurve, ICurve iCurve)
         {
             if (locationCurve == null || iCurve == null)
                 return null;
@@ -83,7 +83,7 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             Curve curve = iCurve.IToRevit();
-            if (Query.IsSimilar(curve, locationCurve.Curve))
+            if (curve.IsSimilar(locationCurve.Curve))
                 return locationCurve;
 
             try
@@ -95,7 +95,7 @@ namespace BH.UI.Revit.Engine
 
             }
 
-            if (Query.IsSimilar(curve, locationCurve.Curve))
+            if (curve.IsSimilar(locationCurve.Curve))
                 return locationCurve;
             else
                 return null;
@@ -103,7 +103,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Location Move(this Location location, IGeometry geometry, PushSettings pushSettings = null)
+        public static Location Move(this Location location, IGeometry geometry)
         {
             if (location == null || geometry == null)
                 return null;
@@ -112,62 +112,62 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             if (geometry is Vector)
-                return Move(location, (Vector)geometry, pushSettings);
+                return location.Move((Vector)geometry);
 
             if (location is LocationPoint && geometry is oM.Geometry.Point)
-                return Move((LocationPoint)location, (oM.Geometry.Point)geometry, pushSettings);
+                return ((LocationPoint)location).Move((oM.Geometry.Point)geometry);
 
             if (location is LocationCurve&& geometry is ICurve)
-                return Move((LocationCurve)location, (ICurve)geometry, pushSettings);
+                return ((LocationCurve)location).Move((ICurve)geometry);
 
             return null;
         }
 
         /***************************************************/
 
-        public static Location Move(this Location location, ModelInstance modelInstance, PushSettings pullSettings = null)
+        public static Location Move(this Location location, ModelInstance modelInstance)
         {
             if (location == null || modelInstance == null)
                 return null;
 
-            return Move(location, modelInstance.Location, pullSettings);
+            return location.Move(modelInstance.Location);
         }
 
         /***************************************************/
 
-        public static Location Move(this Element element, oM.Base.IBHoMObject bhomObject, PushSettings pullSettings = null)
+        public static Location Move(this Element element, oM.Base.IBHoMObject bhomObject)
         {
             if (element.Location == null)
                 return null;
 
             if (bhomObject is BH.oM.Environment.Elements.Space)
-                return Move(element, (BH.oM.Environment.Elements.Space)bhomObject, pullSettings);
+                return element.Move((BH.oM.Environment.Elements.Space)bhomObject);
 
-            return Move(element.Location, bhomObject as dynamic, pullSettings);
+            return element.Location.Move(bhomObject as dynamic);
         }
 
-        public static Location Move(this Element element, BH.oM.Environment.Elements.Space space, PushSettings pullSettings = null)
+        public static Location Move(this Element element, BH.oM.Environment.Elements.Space space)
         {
             if (element == null || space == null)
                 return null;
 
-            Level level = Query.BottomLevel(space.Location.Z, element.Document);
+            Level level = space.Location.Z.BottomLevel(element.Document);
             if (level == null)
                 return null;
 
             oM.Geometry.Point point = BH.Engine.Geometry.Create.Point(space.Location.X, space.Location.Y, level.Elevation);
 
-            return Move(element.Location, point);
+            return element.Location.Move(point);
         }
 
         /***************************************************/
 
-        public static Location Move(this Location location, BH.oM.Physical.Elements.IFramingElement framingElement, PushSettings pullSettings = null)
+        public static Location Move(this Location location, BH.oM.Physical.Elements.IFramingElement framingElement)
         {
             if (location == null || framingElement == null)
                 return null;
 
-            return Move(location, framingElement.Location, pullSettings);
+            return location.Move(framingElement.Location);
         }
 
         /***************************************************/ 

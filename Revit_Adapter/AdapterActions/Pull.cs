@@ -46,13 +46,13 @@ namespace BH.Adapter.Revit
         public override IEnumerable<object> Pull(IRequest request, PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null)
         {
             //Initialize Revit config
-            RevitConfig revitConfig = actionConfig as RevitConfig;
+            RevitPullConfig pullConfig = actionConfig as RevitPullConfig;
 
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)
             {
                 InternalAdapter.RevitSettings = RevitSettings;
-                return InternalAdapter.Pull(request, pullType, revitConfig);
+                return InternalAdapter.Pull(request, pullType, pullConfig);
             }
 
             //Reset the wait event
@@ -62,7 +62,7 @@ namespace BH.Adapter.Revit
                 return new List<object>();
 
             //Send data through the socket link
-            m_LinkIn.SendData(new List<object>() { PackageType.Pull, request, revitConfig, RevitSettings });
+            m_LinkIn.SendData(new List<object>() { PackageType.Pull, request, pullType, pullConfig, RevitSettings });
 
             //Wait until the return message has been recieved
             if (!m_WaitEvent.WaitOne(TimeSpan.FromMinutes(m_WaitTime)))
@@ -79,7 +79,6 @@ namespace BH.Adapter.Revit
 
             //Return the package
             return returnObjs;
-
         }
 
         /***************************************************/

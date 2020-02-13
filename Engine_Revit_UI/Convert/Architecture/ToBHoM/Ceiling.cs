@@ -21,9 +21,11 @@
  */
 
 using System.Collections.Generic;
+using System.Linq;
 
 using Autodesk.Revit.DB;
 
+using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 using BH.oM.Environment.Fragments;
@@ -36,17 +38,17 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static List<oM.Architecture.Elements.Ceiling> ToBHoMCeilings(this Ceiling ceiling, PullSettings pullSettings = null)
+        public static List<oM.Architecture.Elements.Ceiling> ToBHoMCeilings(this Ceiling ceiling, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
             pullSettings = pullSettings.DefaultIfNull();
 
-            List<oM.Architecture.Elements.Ceiling> ceilingList = pullSettings.FindRefObjects<oM.Architecture.Elements.Ceiling>(ceiling.Id.IntegerValue);
-            if (ceilingList != null && ceilingList.Count > 0)
+            List<oM.Architecture.Elements.Ceiling> ceilingList = refObjects.GetValues<oM.Architecture.Elements.Ceiling>(ceiling.Id);
+            if (ceilingList != null && ceilingList.Count != 0)
                 return ceilingList;
 
-            oM.Physical.Constructions.Construction construction = ToBHoMConstruction(ceiling.Document.GetElement(ceiling.GetTypeId()) as HostObjAttributes, pullSettings);
+            oM.Physical.Constructions.Construction construction = ToBHoMConstruction(ceiling.Document.GetElement(ceiling.GetTypeId()) as HostObjAttributes, settings, refObjects);
 
-            Dictionary<PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> disctionary = Query.PlanarSurfaceDictionary(ceiling, false, pullSettings);
+            Dictionary<PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> disctionary = Query.PlanarSurfaceDictionary(ceiling, false, settings, refObjects);
             if (disctionary == null)
                 return null;
 
@@ -65,22 +67,21 @@ namespace BH.UI.Revit.Engine
                 OriginContextFragment originContext = new OriginContextFragment();
                 originContext.ElementID = ceiling.Id.IntegerValue.ToString();
                 originContext.TypeName = Query.FamilyTypeFullName(ceiling);
-                originContext = originContext.UpdateValues(pullSettings, ceiling) as OriginContextFragment;
-                originContext = originContext.UpdateValues(pullSettings, elementType) as OriginContextFragment;
+                originContext = originContext.UpdateValues(settings, ceiling) as OriginContextFragment;
+                originContext = originContext.UpdateValues(settings, elementType) as OriginContextFragment;
                 newCeiling.Fragments.Add(originContext);
 
                 newCeiling = Modify.SetIdentifiers(newCeiling, ceiling) as oM.Architecture.Elements.Ceiling;
-                if (pullSettings.CopyCustomData)
-                    newCeiling = Modify.SetCustomData(newCeiling, ceiling) as oM.Architecture.Elements.Ceiling;
+                newCeiling = Modify.SetCustomData(newCeiling, ceiling) as oM.Architecture.Elements.Ceiling;
 
-                newCeiling = newCeiling.UpdateValues(pullSettings, ceiling) as oM.Architecture.Elements.Ceiling;
-
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(newCeiling);
+                newCeiling = newCeiling.UpdateValues(settings, ceiling) as oM.Architecture.Elements.Ceiling;
+                
 
                 ceilingList.Add(newCeiling);
 
             }
 
+            refObjects.Add(ceiling.Id.IntegerValue, ceilingList.Cast<IBHoMObject>().ToList());
             return ceilingList;
         }
 

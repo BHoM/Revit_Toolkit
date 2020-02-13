@@ -118,7 +118,6 @@
     <Compile Include="Create\Elements\ModelInstance.cs" />
     <Compile Include="Create\Properties\InstanceProperties.cs" />
     <Compile Include="Create\Requests\ParameterElementIdRequest.cs" />
-    <Compile Include="Create\RevitConfig.cs" />
     <Compile Include="Create\Settings\MapSettings.cs" />
     <Compile Include="Create\Generic\FamilyLibrary.cs" />
     <Compile Include="Create\Generic\TypeMap.cs" />

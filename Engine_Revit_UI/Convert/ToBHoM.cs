@@ -39,117 +39,65 @@ namespace BH.UI.Revit.Engine
         /****      Convert Revit elements to BHoM       ****/
         /***************************************************/
 
-        public static IGeometry ToBHoM(this Location location, PullSettings pullSettings = null)
-        {
-            if (location == null)
-                return null;
+        //public static List<IBHoMObject> ToBHoM(this PlanarFace planarFace, PullSettings pullSettings)
+        //{
+        //    if (planarFace == null)
+        //        return null;
 
-            switch (pullSettings.Discipline)
-            {
-                default:
-                    return ToBHoM(location as dynamic, pullSettings);
-            }
-        }
-
-        /***************************************************/
-
-        public static BH.oM.Geometry.Point ToBHoM(this LocationPoint location, PullSettings pullSettings = null)
-        {
-            if (location == null || location.Point == null)
-                return null;
-
-            return location.Point.ToBHoM();
-        }
-
-        /***************************************************/
-
-        public static ICurve ToBHoM(this LocationCurve location, PullSettings pullSettings = null)
-        {
-            if (location == null || location.Curve == null)
-                return null;
-
-            return location.Curve.IToBHoM();
-        }
-
-        /***************************************************/
-
-        public static List<IBHoMObject> ToBHoM(this PlanarFace planarFace, PullSettings pullSettings = null)
-        {
-            if (planarFace == null) return null;
-
-            switch (pullSettings.Discipline)
-            {
-                case Discipline.Environmental:
-                    return planarFace.Panels(pullSettings).ConvertAll(x => x as IBHoMObject);
-            }
+        //    switch (pullSettings.Discipline)
+        //    {
+        //        case Discipline.Environmental:
+        //            return planarFace.Panels(settings, refObjects).ConvertAll(x => x as IBHoMObject);
+        //    }
             
-            return null;
-        }
+        //    return null;
+        //}
 
         /***************************************************/
         
-        public static List<IBHoMObject> ToBHoM(this ProjectInfo projectInfo, PullSettings pullSettings = null)
+        public static List<IBHoMObject> ToBHoM(this ProjectInfo projectInfo, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            projectInfo.CheckIfNullPull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Environmental:
-                    return projectInfo.ToBHoMObjects(pullSettings);
- 
+                    return projectInfo.ToBHoMObjects(settings, refObjects);
+                default:
+                    return null;
             }
-
-            projectInfo.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this Panel panel, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this Panel panel, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            if (panel == null)
-            {
-                panel.NotConvertedWarning();
-                return null;
-            }
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Architecture:
                 case Discipline.Environmental:
                 case Discipline.Physical:
                 case Discipline.Structural:
-                    return ToBHoMWindow(panel, pullSettings);
+                    return panel.ToBHoMWindow(settings, refObjects);
+                default:
+                    return null;
             }
-
-            panel.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> ToBHoM(this FamilyInstance familyInstance, PullSettings pullSettings = null)
+        public static IEnumerable<IBHoMObject> ToBHoM(this FamilyInstance familyInstance, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            familyInstance.CheckIfNullPull();
-
-            if (familyInstance == null)
-            {
-                familyInstance.NotConvertedWarning();
-                return null;
-            }
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Structural:
-                    return familyInstance.ToBHoMBar(pullSettings).Cast<IBHoMObject>();
+                    return familyInstance.ToBHoMBar(settings, refObjects).Cast<IBHoMObject>();
                 case Discipline.Physical:
                 case Discipline.Architecture:
                     switch ((BuiltInCategory)familyInstance.Category.Id.IntegerValue)
                     {
                         case BuiltInCategory.OST_Windows:
-                            return new List<IBHoMObject> { familyInstance.ToBHoMWindow(pullSettings) };
+                            return new List<IBHoMObject> { familyInstance.ToBHoMWindow(settings, refObjects) };
                         case BuiltInCategory.OST_Doors:
-                            return new List<IBHoMObject> { familyInstance.ToBHoMDoor(pullSettings) };
+                            return new List<IBHoMObject> { familyInstance.ToBHoMDoor(settings, refObjects) };
                         case BuiltInCategory.OST_StructuralFraming:
                         case BuiltInCategory.OST_StructuralColumns:
                         case BuiltInCategory.OST_Columns:
@@ -162,503 +110,436 @@ namespace BH.UI.Revit.Engine
                         case BuiltInCategory.OST_Girder:
                         case BuiltInCategory.OST_StructuralStiffener:
                         case BuiltInCategory.OST_StructuralFramingOther:
-                            return new List<IBHoMObject> { familyInstance.ToBHoMFramingElement(pullSettings) };
-
+                            return new List<IBHoMObject> { familyInstance.ToBHoMFramingElement(settings, refObjects) };
+                        default:
+                            return null;
                     }
-                    break;
                 case Discipline.Environmental:
-                    return new List<IBHoMObject> { familyInstance.ToBHoMEnvironmentPanel(pullSettings) };
+                    return new List<IBHoMObject> { familyInstance.ToBHoMEnvironmentPanel(settings, refObjects) };
+                default:
+                    return null;
             }
-
-            familyInstance.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this Wall wall, PullSettings pullSettings = null)
+        public static List<IBHoMObject> ToBHoM(this Wall wall, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            wall.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Environmental:
                     if (wall.StackedWallOwnerId == null || wall.StackedWallOwnerId == ElementId.InvalidElementId)
-                        return wall.ToBHoMEnvironmentPanels(pullSettings).ConvertAll(x => x as IBHoMObject);
-                    break;
+                        return wall.ToBHoMEnvironmentPanels(settings, refObjects).ConvertAll(x => x as IBHoMObject);
+                    else
+                        return null;
                 case Discipline.Structural:
-                    return wall.ToBHoMPanel(pullSettings).ConvertAll(p => p as IBHoMObject);
+                    return wall.ToBHoMPanel(settings, refObjects).ConvertAll(p => p as IBHoMObject);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                     if (wall.StackedWallOwnerId == null || wall.StackedWallOwnerId == ElementId.InvalidElementId)
-                        return wall.ToBHoMISurfaces(pullSettings).ConvertAll(x => x as IBHoMObject);
-                    break;
+                        return wall.ToBHoMISurfaces(settings, refObjects).ConvertAll(x => x as IBHoMObject);
+                    else
+                        return null;
+                default:
+                    return null;
             }
-
-            wall.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this Ceiling ceiling, PullSettings pullSettings = null)
+        public static List<IBHoMObject> ToBHoM(this Ceiling ceiling, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            ceiling.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Environmental:
-                    return ceiling.ToBHoMEnvironmentPanels(pullSettings).ConvertAll(x => x as IBHoMObject);
+                    return ceiling.ToBHoMEnvironmentPanels(settings, refObjects).ConvertAll(x => x as IBHoMObject);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Structural:
-                    return ceiling.ToBHoMCeilings(pullSettings).ConvertAll(x => x as IBHoMObject);
+                    return ceiling.ToBHoMCeilings(settings, refObjects).ConvertAll(x => x as IBHoMObject);
+                default:
+                    return null;
             }
-
-            ceiling.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this Floor floor, PullSettings pullSettings = null)
+        public static List<IBHoMObject> ToBHoM(this Floor floor, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            floor.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch(pullSettings.Discipline)
+            switch(discipline)
             {
                 case Discipline.Environmental:
-                    return floor.ToBHoMEnvironmentPanels(pullSettings).ConvertAll(x => x as IBHoMObject);
+                    return floor.ToBHoMEnvironmentPanels(settings, refObjects).ConvertAll(x => x as IBHoMObject);
                 case Discipline.Structural:
-                    return floor.ToBHoMPanel(pullSettings).ConvertAll(p => p as IBHoMObject);
+                    return floor.ToBHoMPanel(settings, refObjects).ConvertAll(p => p as IBHoMObject);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return floor.ToBHoMISurfaces(pullSettings).ConvertAll(x => x as IBHoMObject);
+                    return floor.ToBHoMISurfaces(settings, refObjects).ConvertAll(x => x as IBHoMObject);
+                default:
+                    return null;
             }
-
-            floor.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this RoofBase roofBase, PullSettings pullSettings = null)
+        public static List<IBHoMObject> ToBHoM(this RoofBase roofBase, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            roofBase.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Environmental:
-                    return roofBase.ToBHoMEnvironmentPanels(pullSettings).ConvertAll(x => x as IBHoMObject);
+                    return roofBase.ToBHoMEnvironmentPanels(settings, refObjects).ConvertAll(x => x as IBHoMObject);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Structural:
-                    return roofBase.ToBHoMISurfaces(pullSettings).ConvertAll(x => x as IBHoMObject);
+                    return roofBase.ToBHoMISurfaces(settings, refObjects).ConvertAll(x => x as IBHoMObject);
+                default:
+                    return null;
             }
-
-            roofBase.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this WallType wallType, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this WallType wallType, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            wallType.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Structural:
-                    return wallType.ToBHoMSurfaceProperty(pullSettings) as IBHoMObject;
+                    return wallType.ToBHoMSurfaceProperty(settings, refObjects) as IBHoMObject;
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
-                    return wallType.ToBHoMConstruction(pullSettings);
+                    return wallType.ToBHoMConstruction(settings, refObjects);
+                default:
+                    return null;
             }
-
-            wallType.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this FloorType floorType, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this FloorType floorType, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            floorType.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Structural:
-                    return floorType.ToBHoMSurfaceProperty(pullSettings);
+                    return floorType.ToBHoMSurfaceProperty(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
-                    return floorType.ToBHoMConstruction(pullSettings);
+                    return floorType.ToBHoMConstruction(settings, refObjects);
+                default:
+                    return null;
             }
-
-            floorType.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this CeilingType ceilingType, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this CeilingType ceilingType, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            ceilingType.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
                 case Discipline.Structural:
-                    return ceilingType.ToBHoMConstruction(pullSettings);
+                    return ceilingType.ToBHoMConstruction(settings, refObjects);
+                default:
+                    return null;
             }
-
-            ceilingType.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this RoofType roofType, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this RoofType roofType, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            roofType.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
                 case Discipline.Structural:
-                    return roofType.ToBHoMConstruction(pullSettings);
+                    return roofType.ToBHoMConstruction(settings, refObjects);
+                default:
+                    return null;
             }
-
-            roofType.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this FamilySymbol familySymbol, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this FamilySymbol familySymbol, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            familySymbol.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 default:
-                    return familySymbol.ToBHoMProfile(pullSettings);
+                    return familySymbol.ToBHoMProfile(settings, refObjects);
             }
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this Level level, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this Level level, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            level.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch(pullSettings.Discipline)
+            switch(discipline)
             {
                 case Discipline.Architecture:
                 case Discipline.Environmental:
                 case Discipline.Structural:
                 case Discipline.Physical:
-                    return level.ToBHoMLevel(pullSettings);
+                    return level.ToBHoMLevel(settings, refObjects);
+                default:
+                    return null;
             }
-
-            level.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this Grid grid, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this Grid grid, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            grid.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Architecture:
                 case Discipline.Environmental:
                 case Discipline.Structural:
                 case Discipline.Physical:
-                    return grid.ToBHoMGrid(pullSettings);
+                    return grid.ToBHoMGrid(settings, refObjects);
+                default:
+                    return null;
             }
-
-            grid.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this MultiSegmentGrid grid, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this MultiSegmentGrid grid, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            grid.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Architecture:
                 case Discipline.Environmental:
                 case Discipline.Structural:
                 case Discipline.Physical:
-                    return grid.ToBHoMGrid(pullSettings);
+                    return grid.ToBHoMGrid(settings, refObjects);
+                default:
+                    return null;
             }
-
-            grid.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this ElementType elementType, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this ElementType elementType, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            elementType.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 default:
-                    return elementType.ToBHoMInstanceProperties(pullSettings);
+                    return elementType.ToBHoMInstanceProperties(settings, refObjects);
             }
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this GraphicsStyle graphicStyle, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this GraphicsStyle graphicStyle, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            graphicStyle.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 default:
-                    return graphicStyle.ToBHoMInstanceProperties(pullSettings);
+                    return graphicStyle.ToBHoMInstanceProperties(settings, refObjects);
             }
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this SpatialElement spatialElement, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this SpatialElement spatialElement, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            spatialElement.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Environmental:
-                    return spatialElement.ToBHoMSpace(pullSettings);
+                    return spatialElement.ToBHoMSpace(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Structural:
-                    return spatialElement.ToBHoMRoom(pullSettings);
+                    return spatialElement.ToBHoMRoom(settings, refObjects);
+                default:
+                    return null;
             }
-
-            spatialElement.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
         
-        public static IBHoMObject ToBHoM(this EnergyAnalysisSpace energyAnalysisSpace, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this EnergyAnalysisSpace energyAnalysisSpace, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            energyAnalysisSpace.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Environmental:
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Structural:
-                    return energyAnalysisSpace.ToBHoMSpace(pullSettings);
+                    return energyAnalysisSpace.ToBHoMSpace(settings, refObjects);
+                default:
+                    return null;
             }
-
-            energyAnalysisSpace.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this EnergyAnalysisSurface energyAnalysisSurface, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this EnergyAnalysisSurface energyAnalysisSurface, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            energyAnalysisSurface.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Environmental:
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Structural:
-                    return energyAnalysisSurface.ToBHoMEnvironmentPanel(pullSettings);
+                    return energyAnalysisSurface.ToBHoMEnvironmentPanel(settings, refObjects);
+                default:
+                    return null;
             }
-
-            energyAnalysisSurface.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this EnergyAnalysisOpening energyAnalysisOpening, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            energyAnalysisOpening.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Environmental:
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Structural:
-                    return energyAnalysisOpening.ToBHoMEnvironmentPanel(null, pullSettings);
+                    return energyAnalysisOpening.ToBHoMEnvironmentPanel(null, settings, refObjects);
+                default:
+                    return null;
             }
-
-            energyAnalysisOpening.NotConvertedWarning();
-            return null;
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this ViewSheet viewSheet, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this ViewSheet viewSheet, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            viewSheet.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 default:
-                    return ToBHoMSheet(viewSheet, pullSettings);
+                    return viewSheet.ToBHoMSheet(settings, refObjects);
             }
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this Viewport viewport, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this Viewport viewport, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            viewport.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 default:
-                    return ToBHoMViewport(viewport, pullSettings);
+                    return viewport.ToBHoMViewport(settings, refObjects);
             }
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this ViewPlan viewPlan, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this ViewPlan viewPlan, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            viewPlan.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 default:
-                    return ToBHoMViewPlan(viewPlan, pullSettings);
+                    return viewPlan.ToBHoMViewPlan(settings, refObjects);
             }
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this Material material, PullSettings pullSettings = null)
+        public static IBHoMObject ToBHoM(this Material material, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
         {
-            material.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
+            switch (discipline)
             {
                 case Discipline.Environmental:
-                    return ToBHoMSolidMaterial(material, pullSettings);
+                    return material.ToBHoMSolidMaterial(settings, refObjects);
                 case Discipline.Structural:
-                    return ToBHoMMaterialFragment(material, pullSettings);
+                    return material.ToBHoMMaterialFragment(settings, refObjects);
                 case Discipline.Physical:
-                    BH.oM.Physical.Materials.Material BHMaterial = material.ToBHoMEmptyMaterial(pullSettings);
-                    BHMaterial.Properties = material.ToBHoMMaterialProperties(pullSettings);
+                    BH.oM.Physical.Materials.Material BHMaterial = material.ToBHoMEmptyMaterial(settings, refObjects);
+                    BHMaterial.Properties = material.ToBHoMMaterialProperties(settings, refObjects);
                     return BHMaterial;
+                default:
+                    return null;
             }
+        }
 
-            material.NotConvertedWarning();
+        /***************************************************/
+
+        public static IBHoMObject ToBHoM(this Family family, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        {
+            switch (discipline)
+            {
+                default:
+                    return family.ToBHoMFamily(settings, refObjects);
+            }
+        }
+
+        /***************************************************/
+
+        public static IBHoMObject ToBHoM(this CurveElement curveElement, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        {
+            switch (discipline)
+            {
+                default:
+                    return curveElement.ToBHoMInstance(settings, refObjects);
+            }
+        }
+
+        /***************************************************/
+
+        public static IBHoMObject ToBHoM(this FilledRegion filledRegion, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        {
+            switch (discipline)
+            {
+                default:
+                    return filledRegion.ToBHoMDraftingInstance(settings, refObjects);
+            }
+        }
+
+
+        /***************************************************/
+        /****             Fallback Methods              ****/
+        /***************************************************/
+
+        public static IBHoMObject ToBHoM(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        {
             return null;
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this Family family, PullSettings pullSettings = null)
+        public static IGeometry ToBHoM(this Location location)
         {
-            family.CheckIfNullPull();
+            BH.Engine.Reflection.Compute.RecordError(string.Format("Conversion of Location type {0} is currently not supported by BHoM.", location.GetType()));
+            return null;
+        }
 
-            pullSettings = pullSettings.DefaultIfNull();
 
-            switch (pullSettings.Discipline)
+        /***************************************************/
+        /****             Interface Methods             ****/
+        /***************************************************/
+
+        public static IBHoMObject IToBHoM(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        {
+            if (element == null)
             {
-                default:
-                    return ToBHoMFamily(family, pullSettings);
+                BH.Engine.Reflection.Compute.RecordWarning("BHoM object could not be read because Revit element does not exist.");
+                return null;
             }
+
+            IBHoMObject result = ToBHoM(element as dynamic, discipline, settings, refObjects);
+            if (result == null)
+                element.NotConvertedWarning(discipline);
+
+            return result;
         }
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this CurveElement curveElement, PullSettings pullSettings = null)
+        public static IGeometry IToBHoM(this Location location)
         {
-            curveElement.CheckIfNullPull();
+            if (location == null)
+                return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
-            {
-                default:
-                    return curveElement.ToBHoMInstance(pullSettings);
-            }
-        }
-
-        /***************************************************/
-
-        public static IBHoMObject ToBHoM(this FilledRegion filledRegion, PullSettings pullSettings = null)
-        {
-            filledRegion.CheckIfNullPull();
-
-            pullSettings = pullSettings.DefaultIfNull();
-
-            switch (pullSettings.Discipline)
-            {
-                default:
-                    return filledRegion.ToBHoMDraftingInstance(pullSettings);
-            }
+            return ToBHoM(location as dynamic);
         }
 
         /***************************************************/

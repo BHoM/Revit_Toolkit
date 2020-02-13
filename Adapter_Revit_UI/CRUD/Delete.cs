@@ -52,21 +52,22 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            if (bHoMObjects.Count() < 1)
+            if (bHoMObjects.Count() == 0)
                 return false;
 
             List<ElementId> elementIDList = document.ElementIdsByUniqueIds(bHoMObjects.UniqueIds(true)).ToList();
 
-            if (elementIDList == null || elementIDList.Count < 1)
+            if (elementIDList == null || elementIDList.Count == 0)
                 return false;
 
             bool result = false;
-            using (Transaction transaction = new Transaction(document, "Create"))
+            using (Transaction transaction = new Transaction(document, "Delete"))
             {
                 transaction.Start();
                 result = Delete(elementIDList, document);
                 transaction.Commit();
             }
+
             return result;
         }
 
@@ -87,7 +88,7 @@ namespace BH.UI.Revit.Adapter
             }
 
             bool result = false;
-            using (Transaction transaction = new Transaction(document, "Create"))
+            using (Transaction transaction = new Transaction(document, "Delete"))
             {
                 transaction.Start();
                 result = DeleteByUniqueId(bHoMObject, document);
@@ -95,6 +96,7 @@ namespace BH.UI.Revit.Adapter
             }
             return result;
         }
+
 
         /***************************************************/
         /****              Private Methods              ****/
@@ -135,7 +137,7 @@ namespace BH.UI.Revit.Adapter
             }
 
             List<Element> elementList = new FilteredElementCollector(document).OfClass(type).ToList();
-            if (elementList == null || elementList.Count < 1)
+            if (elementList == null || elementList.Count == 0)
                 return false;
 
             Element element = elementList.Find(x => x.Name == bHoMObject.Name);
@@ -158,11 +160,11 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            if (bHoMObjects.Count() < 1)
+            if (bHoMObjects.Count() == 0)
                 return false;
 
             List<Element> elementList = new FilteredElementCollector(document).OfClass(type).ToList();
-            if (elementList == null || elementList.Count < 1)
+            if (elementList == null || elementList.Count == 0)
                 return false;
 
             List<ElementId> elementIDList = new List<ElementId>();
@@ -192,7 +194,7 @@ namespace BH.UI.Revit.Adapter
             }
 
             ICollection<ElementId> elementIDs = element.Document.Delete(element.Id);
-            if (elementIDs != null && elementIDs.Count > 0)
+            if (elementIDs != null && elementIDs.Count != 0)
                 return true;
 
             return false;
@@ -208,7 +210,7 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            if (elementIds.Count() < 1)
+            if (elementIds.Count() == 0)
                 return false;
 
             List<ElementId> elementIDList = new List<ElementId>();
@@ -217,7 +219,7 @@ namespace BH.UI.Revit.Adapter
                 elementIDList.Add(elementId);
 
             ICollection<ElementId> elementIDs = document.Delete(elementIDList);
-            if (elementIDs != null && elementIDs.Count > 0)
+            if (elementIDs != null && elementIDs.Count != 0)
                 return true;
 
             return false;

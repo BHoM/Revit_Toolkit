@@ -36,7 +36,7 @@ namespace BH.Adapter.Revit
         public override Output<List<object>, bool> Execute(IExecuteCommand command, ActionConfig actionConfig = null)
         {
             //Initialize Revit config
-            RevitConfig revitConfig = actionConfig as RevitConfig;
+            RevitPullConfig revitConfig = actionConfig as RevitPullConfig;
 
             if (InternalAdapter != null)
             {
