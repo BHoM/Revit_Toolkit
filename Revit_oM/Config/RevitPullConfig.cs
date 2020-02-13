@@ -20,29 +20,43 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
+using BH.oM.Base;
+using BH.oM.Adapter;
 using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Create
+    [Description("Configuration used for adapter interaction with Revit on Pull action.")]
+    public class RevitPullConfig: ActionConfig
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Creates an action-specific configuration used for adapter interaction with Revit.")]
-        [Input("discipline", "Discipline used on push/pull action. Default is Physical.")]
-        [Input("includeClosedWorksets", "Elements from closed worksets will be processed if true.")]
-        [Input("pullEdges", "If true, edges of elements will be pulled and stored under Revit_edges in CustomData.")]
-        [Input("includeNonVisible", "Invisible element edges will be pulled and passed to CustomData if true. PullEdges switched to true needed for this to activate.")]
-        [Output("RevitConfig")]
-        public static RevitConfig RevitConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, bool pullEdges = false, bool includeNonVisible = false)
-        {
-            return new RevitConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, PullEdges = pullEdges, IncludeNonVisible = includeNonVisible };
-        }
+        [Description("Discipline used on pull action. Default is Physical.")]
+        public Discipline Discipline { get; set; } = Discipline.Undefined;
+
+        [Description("Elements from closed worksets will be processed if true.")]
+        public bool IncludeClosedWorksets { get; set; } = false;
+
+        [Description("If true, edges of elements will be pulled and stored under Revit_edges in CustomData.")]
+        public bool PullEdges { get; set; } = false;
+
+        [Description("Invisible element edges will be pulled and passed to CustomData if true. PullEdges switched to true needed for this to activate.")]
+        public bool IncludeNonVisible { get; set; } = false;
+
+        //[Description("Copy Revit parameter values to resultant BHoM object's CustomData if true.")]
+        //public bool CopyCustomData { get; set; } = true;
+
+
+        /***************************************************/
+        /****                  Default                  ****/
+        /***************************************************/
+
+        [Description("Default config, used if not set by the user.")]
+        public static readonly RevitPullConfig Default = new RevitPullConfig();
 
         /***************************************************/
     }

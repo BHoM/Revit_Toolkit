@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
 using System;
@@ -38,12 +39,12 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static void NotConvertedWarning(this Element element)
+        internal static void NotConvertedWarning(this Element element, Discipline discipline)
         {
-            string message = "Revit element could not be converted because conversion method does not exist.";
+            string message = String.Format("Revit element could not be converted because conversion method does not exist for discipline {0}.", discipline);
 
             if (element != null)
-                message = string.Format("{0} Element Id: {1}, Element Name: {2}", message, element.Id.IntegerValue, element.Name);
+                message += string.Format(" Element Type: {0}, Element Id: {1}, Element Name: {2}", element.GetType(), element.Id.IntegerValue, element.Name);
 
             BH.Engine.Reflection.Compute.RecordWarning(message);
         }
@@ -64,11 +65,11 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void CheckIfNullPull(this Element element)
-        {
-            if (element == null)
-                BH.Engine.Reflection.Compute.RecordWarning("BHoM object could not be read because Revit element does not exist.");
-        }
+        //internal static void CheckIfNullPull(this Element element)
+        //{
+        //    if (element == null)
+        //        BH.Engine.Reflection.Compute.RecordWarning("BHoM object could not be read because Revit element does not exist.");
+        //}
 
         /***************************************************/
 

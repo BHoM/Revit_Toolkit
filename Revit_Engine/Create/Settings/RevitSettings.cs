@@ -38,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("familyLoadSettings", "FamilyLoad Settings for Revit Adapter")]
         [Input("generalSettings", "General Settings for Revit Adapter")]
         [Output("RevitSettings")]
-        public static RevitSettings RevitSettings(ConnectionSettings connectionSettings = null, FamilyLoadSettings familyLoadSettings = null, GeneralSettings generalSettings = null)
+        public static RevitSettings RevitSettings(ConnectionSettings connectionSettings = null, FamilyLoadSettings familyLoadSettings = null, MapSettings mapSettings = null, string tagsParameterName = null, double tolerance = double.NaN)
         {
             RevitSettings settings = new RevitSettings();
 
@@ -48,8 +48,14 @@ namespace BH.Engine.Adapters.Revit
             if (familyLoadSettings != null)
                 settings.FamilyLoadSettings = familyLoadSettings;
 
-            if (generalSettings != null)
-                settings.GeneralSettings = generalSettings;
+            if (mapSettings != null)
+                settings.MapSettings = mapSettings;
+
+            if (!string.IsNullOrWhiteSpace(tagsParameterName))
+                settings.TagsParameterName = tagsParameterName;
+
+            if (!double.IsNaN(tolerance))
+                settings.DistanceTolerance = tolerance;
 
             return settings;
         }

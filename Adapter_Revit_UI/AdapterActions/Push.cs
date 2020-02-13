@@ -51,10 +51,10 @@ namespace BH.UI.Revit.Adapter
                 pushType = m_AdapterSettings.DefaultPushType;
 
             //Initialize Revit config
-            RevitConfig revitConfig = actionConfig as RevitConfig;
+            RevitPushConfig pushConfig = actionConfig as RevitPushConfig;
 
             // Process the objects (verify they are valid; DeepClone them, wrap them, etc).
-            IEnumerable<IBHoMObject> objectsToPush = ProcessObjectsForPush(objects, revitConfig); // Note: default Push only supports IBHoMObjects.
+            IEnumerable<IBHoMObject> objectsToPush = ProcessObjectsForPush(objects, pushConfig); // Note: default Push only supports IBHoMObjects.
 
             if (objectsToPush.Count() == 0)
             {
@@ -76,7 +76,7 @@ namespace BH.UI.Revit.Adapter
                 var list = miListObject.Invoke(typeGroup, new object[] { typeGroup });
 
                 if (iBHoMObjectType.IsAssignableFrom(typeGroup.Key))
-                    success &= ICreate(list as dynamic);                    
+                    success &= ICreate(list as dynamic, pushConfig);                    
             }
 
             return success ? objectsToPush.Cast<object>().ToList() : new List<object>();

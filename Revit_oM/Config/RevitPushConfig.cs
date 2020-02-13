@@ -20,31 +20,36 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-
 using BH.oM.Adapter;
-using BH.oM.Adapters.Revit.Enums;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("Action-specific configuration used for adapter interaction with Revit.")]
-    public class RevitConfig: ActionConfig
+    [Description("Configuration used for adapter interaction with Revit on Push action.")]
+    public class RevitPushConfig: ActionConfig
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Discipline used on push/pull action. Default is Physical.")]
-        public Discipline Discipline { get; set; } = Discipline.Undefined;
+        //[Description("Copy BHoM object's CustomData to resultant Revit Element's parameter values if true.")]
+        //public bool CopyCustomData { get; set; } = true;
 
-        [Description("Elements from closed worksets will be processed if true.")]
-        public bool IncludeClosedWorksets { get; set; } = false;
+        //[Description("A dictionary of BHoM Guids and Revit ElementIds that represent them - if certain BHoM Guid is found in the keys, Revit Element that carries correspondent ElementId will be returned on push instead of standard convert.")]
+        //public Dictionary<Guid, List<int>> RefObjects = null;
 
-        [Description("If true, edges of elements will be pulled and stored under Revit_edges in CustomData.")]
-        public bool PullEdges { get; set; } = false;
+        [Description("If true, Revit warnings and failure messages will be suppressed (not shown to the user). Whilst this option may speed the pushing process up in case of multiple warnings, it may lead to important issues.")]
+        public bool SuppressFailureMessages { get; set; } = false;
 
-        [Description("Invisible element edges will be pulled and passed to CustomData if true. PullEdges switched to true needed for this to activate.")]
-        public bool IncludeNonVisible { get; set; } = false;
+
+        /***************************************************/
+        /****                  Default                  ****/
+        /***************************************************/
+
+        [Description("Default config, used if not set by the user.")]
+        public static readonly RevitPushConfig Default = new RevitPushConfig();
 
         /***************************************************/
     }

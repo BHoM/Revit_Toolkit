@@ -109,25 +109,25 @@ namespace BH.UI.Revit.Adapter
                 return null;
             }
 
-            RevitConfig revitConfig = actionConfig as RevitConfig;
-            if (revitConfig == null)
+            RevitPullConfig pullConfig = actionConfig as RevitPullConfig;
+            if (pullConfig == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("Revit Config has not been specified. Default Revit Config is used.");
-                revitConfig = new RevitConfig();
+                BH.Engine.Reflection.Compute.RecordWarning("Revit Pull Config has not been specified. Default Revit Pull Config is used.");
+                pullConfig = RevitPullConfig.Default;
             }
 
             IEnumerable<ElementId> worksetPrefilter = null;
-            if (!revitConfig.IncludeClosedWorksets)
+            if (!pullConfig.IncludeClosedWorksets)
                 worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
 
             List<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).ToList();
             if (elementIds == null)
                 return null;
             
-            bool pullEdges = revitConfig.PullEdges;
-            bool includeNonVisible = revitConfig.IncludeNonVisible;
+            bool pullEdges = pullConfig.PullEdges;
+            bool includeNonVisible = pullConfig.IncludeNonVisible;
 
-            Discipline? requestDiscipline = request.Discipline(revitConfig.Discipline);
+            Discipline? requestDiscipline = request.Discipline(pullConfig.Discipline);
             if (requestDiscipline == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Conflicting disciplines have been detected.");
@@ -139,22 +139,25 @@ namespace BH.UI.Revit.Adapter
                 discipline = Discipline.Physical;
 
             RevitSettings revitSettings = RevitSettings;
+
+            //TODO: this should happen somewhere else!
             MapSettings mapSettings = RevitSettings.MapSettings;
             if (mapSettings.TypeMaps == null || mapSettings.TypeMaps.Count == 0)
                 mapSettings = BH.Engine.Adapters.Revit.Query.DefaultMapSettings();
             
             List<IBHoMObject> result = new List<IBHoMObject>();
             List <int> elementIDList = new List<int>();
+
+            Dictionary<int, List<IBHoMObject>> refObjects = null;
+
             foreach (ElementId id in elementIds)
             {
                 Element element = document.GetElement(id);
                 if (element == null)
                     continue;
-                
-                PullSettings pullSettings = BH.Engine.Adapters.Revit.Create.PullSettings(discipline, mapSettings);
 
-                //TODO: PullEdges to happen here based on ActionConfig?
-                IEnumerable<IBHoMObject> iBHoMObjects = Read(element, revitSettings, pullSettings);
+                //TODO: PullEdges to happen here based on ActionConfig not to call objects twice?
+                IEnumerable<IBHoMObject> iBHoMObjects = Read(element, discipline, revitSettings, refObjects);
 
                 if (iBHoMObjects != null && iBHoMObjects.Count() != 0)
                 { 
@@ -165,7 +168,7 @@ namespace BH.UI.Revit.Adapter
                         options.ComputeReferences = false;
                         options.DetailLevel = ViewDetailLevel.Fine;
                         options.IncludeNonVisibleObjects = includeNonVisible;
-                        List<ICurve> edges = element.Curves(options, pullSettings);
+                        List<ICurve> edges = element.Curves(options);
                         
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
@@ -198,68 +201,35 @@ namespace BH.UI.Revit.Adapter
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static IEnumerable<IBHoMObject> Read(Element element, RevitSettings revitSettings, PullSettings pullSettings = null)
+        private static IEnumerable<IBHoMObject> Read(Element element, Discipline discipline, RevitSettings revitSettings, Dictionary<int, List<IBHoMObject>> refObjects)
         {
             if (element == null || !element.IsValidObject)
                 return new List<IBHoMObject>();
 
             object obj = null;
-            bool converted = true;
-
-            IEnumerable<Type> types = element.BHoMTypes();
-            if (types != null && types.Count() > 0)
+            try
             {
-                try
-                {
-                    obj = Engine.Convert.ToBHoM(element as dynamic, pullSettings);
-                }
-                catch (Exception exception)
-                {
-                    BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted becasue of missing ToBHoM method. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, exception.Message));
-                    converted = false;
-                }
-            }
+                obj = element.IToBHoM(discipline, revitSettings, refObjects);
 
-            if (obj == null)
-            {
-                try
+                if (obj == null)
                 {
                     IBHoMObject iBHoMObject = null;
-
-                    if (element.Location is LocationPoint || element.Location is LocationCurve)
+                    IGeometry iGeometry = element.Location.IToBHoM();
+                    if (iGeometry != null)
                     {
-                        IGeometry iGeometry = null;
-                        try
+                        ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
+                        if (elementType != null)
                         {
-                            iGeometry = element.Location.ToBHoM(pullSettings);
-                        }
-                        catch (Exception exception)
-                        {
-                            BH.Engine.Reflection.Compute.RecordWarning(string.Format("Location of BHoM object could not be converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, exception.Message));
-                        }
-
-                        if (iGeometry != null)
-                        {
-                            ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-                            if (elementType != null)
+                            InstanceProperties objectProperties = elementType.ToBHoM(discipline, revitSettings, refObjects) as InstanceProperties;
+                            if (objectProperties != null)
                             {
-                                InstanceProperties objectProperties = Engine.Convert.ToBHoM(elementType, pullSettings) as InstanceProperties;
-                                if (objectProperties != null)
-                                {
-                                    if (element.ViewSpecific)
-                                        iBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingInstance(objectProperties, element.Document.GetElement(element.OwnerViewId).Name, iGeometry as dynamic);
-                                    else
-                                        iBHoMObject = BH.Engine.Adapters.Revit.Create.ModelInstance(objectProperties, iGeometry as dynamic);
-                                }
+                                if (element.ViewSpecific)
+                                    iBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingInstance(objectProperties, element.Document.GetElement(element.OwnerViewId).Name, iGeometry as dynamic);
+                                else
+                                    iBHoMObject = BH.Engine.Adapters.Revit.Create.ModelInstance(objectProperties, iGeometry as dynamic);
                             }
                         }
                     }
-
-                    if (iBHoMObject == null && element is ElementType)
-                        iBHoMObject = ((ElementType)element).ToBHoM(pullSettings);
-
-                    if (iBHoMObject == null && element is Autodesk.Revit.DB.Family)
-                        iBHoMObject = ((Autodesk.Revit.DB.Family)element).ToBHoM(pullSettings);
 
                     if (iBHoMObject == null)
                         iBHoMObject = new BHoMObject();
@@ -272,11 +242,10 @@ namespace BH.UI.Revit.Adapter
                     iBHoMObject = iBHoMObject.SetCustomData(element);
                     obj = iBHoMObject;
                 }
-                catch (Exception exception)
-                {
-                    if (converted)
-                        BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, exception.Message));
-                }
+            }
+            catch (Exception exception)
+            {
+                BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, exception.Message));
             }
 
             List<IBHoMObject> result = new List<IBHoMObject>();
@@ -290,8 +259,8 @@ namespace BH.UI.Revit.Adapter
 
             //Assign Tags
             string tagsParameterName = null;
-            if (revitSettings != null && revitSettings.GeneralSettings != null)
-                tagsParameterName = revitSettings.GeneralSettings.TagsParameterName;
+            if (revitSettings != null)
+                tagsParameterName = revitSettings.TagsParameterName;
 
             if (!string.IsNullOrEmpty(tagsParameterName))
             {

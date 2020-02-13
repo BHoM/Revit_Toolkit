@@ -23,11 +23,14 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 
+using BH.oM.Base;
 using BH.Engine.Environment;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 using BH.oM.Environment.Fragments;
 using BH.oM.Environment.Elements;
+
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -37,14 +40,14 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Environment.Elements.Opening ToBHoMOpening(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
+        public static oM.Environment.Elements.Opening ToBHoMOpening(this EnergyAnalysisOpening energyAnalysisOpening, RevitSettings settings = null, Dictionary<int, List<BHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            //pullSettings = pullSettings.DefaultIfNull();
 
             Element element = energyAnalysisOpening.Element();
             if (element == null)
             {
-                oM.Environment.Elements.Opening result = pullSettings.FindRefObject<oM.Environment.Elements.Opening>(energyAnalysisOpening.Id.IntegerValue);
+                oM.Environment.Elements.Opening result = pullConfig.FindRefObject<oM.Environment.Elements.Opening>(energyAnalysisOpening.Id.IntegerValue);
                 if (result != null)
                     return result;
 
@@ -54,23 +57,23 @@ namespace BH.UI.Revit.Engine
                 OriginContextFragment originContext = new OriginContextFragment();
                 originContext.ElementID = energyAnalysisOpening.Id.IntegerValue.ToString();
                 originContext.TypeName = energyAnalysisOpening.OpeningName;
-                originContext = originContext.UpdateValues(pullSettings, energyAnalysisOpening) as OriginContextFragment;
+                originContext = originContext.UpdateValues(pullConfig, energyAnalysisOpening) as OriginContextFragment;
                 result.AddFragment(originContext);
 
-                result.OpeningConstruction = Query.Construction(energyAnalysisOpening, pullSettings);
+                result.OpeningConstruction = Query.Construction(energyAnalysisOpening, pullConfig);
                 result.Type = OpeningType.Undefined;
 
                 result = Modify.SetIdentifiers(result, energyAnalysisOpening) as oM.Environment.Elements.Opening;
-                if (pullSettings.CopyCustomData)
+                if (pullConfig.CopyCustomData)
                     result = Modify.SetCustomData(result, energyAnalysisOpening) as oM.Environment.Elements.Opening;
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(result);
-                result = result.UpdateValues(pullSettings, energyAnalysisOpening) as oM.Environment.Elements.Opening;
+                pullConfig.RefObjects = pullConfig.RefObjects.AppendRefObjects(result);
+                result = result.UpdateValues(pullConfig, energyAnalysisOpening) as oM.Environment.Elements.Opening;
                 return result;
             }
             else
             {
-                oM.Environment.Elements.Opening result = pullSettings.FindRefObject<oM.Environment.Elements.Opening>(energyAnalysisOpening.Id.IntegerValue);
+                oM.Environment.Elements.Opening result = pullConfig.FindRefObject<oM.Environment.Elements.Opening>(energyAnalysisOpening.Id.IntegerValue);
                 if (result != null)
                     return result;
 
@@ -83,11 +86,11 @@ namespace BH.UI.Revit.Engine
                 OriginContextFragment originContext = new OriginContextFragment();
                 originContext.ElementID = element.Id.IntegerValue.ToString();
                 originContext.TypeName = Query.FamilyTypeFullName(element);
-                originContext = originContext.UpdateValues(pullSettings, element) as OriginContextFragment;
-                originContext = originContext.UpdateValues(pullSettings, elementType) as OriginContextFragment;
+                originContext = originContext.UpdateValues(pullConfig, element) as OriginContextFragment;
+                originContext = originContext.UpdateValues(pullConfig, elementType) as OriginContextFragment;
                 result.AddFragment(originContext);
 
-                result.OpeningConstruction = Query.Construction(energyAnalysisOpening, pullSettings);
+                result.OpeningConstruction = Query.Construction(energyAnalysisOpening, pullConfig);
 
                 OpeningType? openingType = Query.OpeningType(element.Category);
                 if (openingType.HasValue)
@@ -96,15 +99,15 @@ namespace BH.UI.Revit.Engine
                     result.Type = OpeningType.Undefined;
 
                 result = Modify.SetIdentifiers(result, element) as oM.Environment.Elements.Opening;
-                if (pullSettings.CopyCustomData)
+                if (pullConfig.CopyCustomData)
                     result = Modify.SetCustomData(result, element) as oM.Environment.Elements.Opening;
 
                 if (elementType != null)
                     result = Modify.SetCustomData(result, elementType, "Type ") as oM.Environment.Elements.Opening;
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(result, energyAnalysisOpening.Id.IntegerValue);
-                result = result.UpdateValues(pullSettings, element) as oM.Environment.Elements.Opening;
-                result = result.UpdateValues(pullSettings, elementType) as oM.Environment.Elements.Opening;
+                pullConfig.RefObjects = pullConfig.RefObjects.AppendRefObjects(result, energyAnalysisOpening.Id.IntegerValue);
+                result = result.UpdateValues(pullConfig, element) as oM.Environment.Elements.Opening;
+                result = result.UpdateValues(pullConfig, elementType) as oM.Environment.Elements.Opening;
                 return result;
             }
         }

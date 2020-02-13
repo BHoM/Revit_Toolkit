@@ -46,7 +46,7 @@ namespace BH.Adapter.Revit
         public override int Remove(IRequest request, ActionConfig actionConfig = null)
         {
             //Initialize Revit config
-            RevitConfig revitConfig = actionConfig as RevitConfig;
+            RevitPullConfig revitConfig = actionConfig as RevitPullConfig;
 
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)

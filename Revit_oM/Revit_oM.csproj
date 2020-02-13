@@ -92,7 +92,8 @@
     <Compile Include="Requests\ViewByTypeRequest.cs" />
     <Compile Include="Requests\ViewTemplateRequest.cs" />
     <Compile Include="Requests\WorksetRequest.cs" />
-    <Compile Include="RevitConfig.cs" />
+    <Compile Include="Config\RevitPushConfig.cs" />
+    <Compile Include="Config\RevitPullConfig.cs" />
     <Compile Include="_Properties\AssemblyInfo.cs" />
     <Compile Include="Generic\RevitFilePreview.cs" />
     <Compile Include="Settings\FamilyLoadSettings.cs" />

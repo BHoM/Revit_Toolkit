@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-
+using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Base;
 
 namespace BH.oM.Adapters.Revit.Settings
@@ -31,7 +31,7 @@ namespace BH.oM.Adapters.Revit.Settings
         /****             Public Properties             ****/
         /***************************************************/
 
-        public Generic.FamilyLibrary FamilyLibrary { get; set; } = new Generic.FamilyLibrary();
+        public FamilyLibrary FamilyLibrary { get; set; } = new FamilyLibrary();
         public bool OverwriteFamily { get; set; } = true;
         public bool OverwriteParameterValues { get; set; } = true;
 

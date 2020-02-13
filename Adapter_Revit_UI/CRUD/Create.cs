@@ -31,6 +31,7 @@ using BH.UI.Revit.Engine;
 
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Adapters.Revit.Properties;
@@ -58,8 +59,17 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            if (objects.Count() < 1)
+            if (objects.Count() == 0)
                 return false;
+            
+            RevitPushConfig pushConfig = actionConfig as RevitPushConfig;
+            if (pushConfig == null)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("Revit Push Config has not been specified. Default Revit Push Config is used.");
+                pushConfig = RevitPushConfig.Default;
+            }
+            
+            bool suppressFailureMessages = pushConfig.SuppressFailureMessages;
 
             Document document = Document;
 
@@ -67,17 +77,17 @@ namespace BH.UI.Revit.Adapter
             if (!document.IsModifiable && !document.IsReadOnly)
             {
                 //Transaction has to be opened
-                using (Transaction transaction = new Transaction(document, "Create"))
+                using (Transaction transaction = new Transaction(document, "BHoM Push"))
                 {
                     transaction.Start();
-                    result = Create(objects, UIControlledApplication, document, RevitSettings);
+                    result = Create(objects, UIControlledApplication, document, RevitSettings, suppressFailureMessages);
                     transaction.Commit();
                 }
             }
             else
             {
                 //Transaction is already opened
-                result = Create(objects, UIControlledApplication, document, RevitSettings);
+                result = Create(objects, UIControlledApplication, document, RevitSettings, suppressFailureMessages);
             }
 
             return result; ;
@@ -88,20 +98,14 @@ namespace BH.UI.Revit.Adapter
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static bool Create<T>(IEnumerable<T> objects, UIControlledApplication UIContralledApplication, Document document, RevitSettings revitSettings) where T : IObject
+        private static bool Create<T>(IEnumerable<T> objects, UIControlledApplication UIContralledApplication, Document document, RevitSettings revitSettings, bool suppressFailureMessages) where T : IObject
         {
-            string tagsParameterName = revitSettings.GeneralSettings.TagsParameterName;
+            string tagsParameterName = revitSettings.TagsParameterName;
 
-            if (UIContralledApplication != null && revitSettings.GeneralSettings.SuppressFailureMessages)
+            if (UIContralledApplication != null && suppressFailureMessages)
                 UIContralledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
 
-            PushSettings pushSettings = new PushSettings()
-            {
-                AdapterMode = revitSettings.GeneralSettings.AdapterMode,
-                CopyCustomData = true,
-                FamilyLoadSettings = revitSettings.FamilyLoadSettings
-
-            };
+            Dictionary<Guid, List<int>> refObjects = new Dictionary<Guid, List<int>>();
 
             for (int i = 0; i < objects.Count(); i++)
             {
@@ -113,6 +117,7 @@ namespace BH.UI.Revit.Adapter
                     continue;
                 }
 
+                //TODO: allow physical/settingout/instances only instead of this!
                 if (bhomObject is Bar)
                 {
                     ConvertBeforePushError(bhomObject, typeof(BH.oM.Physical.Elements.IFramingElement));
@@ -134,33 +139,37 @@ namespace BH.UI.Revit.Adapter
 
                         Family family = null;
 
-                        if(revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
-                        {
-                            IEnumerable<FamilySymbol> familySymbols = Query.FamilySymbols(revitFilePreview, document);
-                            if (familySymbols != null)
-                            {
-                                if (familySymbols.Count() > 0)
-                                    family = familySymbols.First().Family;
+                        //TODO: this should not be covered here, rather on Push level
+                        //if(revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
+                        //{
+                        //    IEnumerable<FamilySymbol> familySymbols = Query.FamilySymbols(revitFilePreview, document);
+                        //    if (familySymbols != null)
+                        //    {
+                        //        if (familySymbols.Count() > 0)
+                        //            family = familySymbols.First().Family;
 
-                                foreach (FamilySymbol familySymbol in familySymbols)
-                                    document.Delete(familySymbol.Id);
-                            }
+                        //        foreach (FamilySymbol familySymbol in familySymbols)
+                        //            document.Delete(familySymbol.Id);
+                        //    }
 
-                            SetIdentifiers(bhomObject, family);
+                        //    SetIdentifiers(bhomObject, family);
 
-                            IEnumerable<ElementId> elementIDs = family.GetFamilySymbolIds();
-                            if (elementIDs == null || elementIDs.Count() == 0)
-                                document.Delete(family.Id);
-                        }
-                        else
-                        {
-                            FamilyLoadOptions familyLoadOptions = new FamilyLoadOptions(revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Update);
+                        //    IEnumerable<ElementId> elementIDs = family.GetFamilySymbolIds();
+                        //    if (elementIDs == null || elementIDs.Count() == 0)
+                        //        document.Delete(family.Id);
+                        //}
+                        //else
+                        //{
+
+                        //TODO: this value should come from adapter PushType?
+                        bool updateFamilies = true;
+                            FamilyLoadOptions familyLoadOptions = new FamilyLoadOptions(updateFamilies);
                             if (document.LoadFamily(revitFilePreview.Path, out family))
                             {
                                 SetIdentifiers(bhomObject, family);
                                 element = family;
                             }
-                        }
+                        //}
                     }
                     else
                     {
@@ -175,10 +184,12 @@ namespace BH.UI.Revit.Adapter
                                 element = document.GetElement(new ElementId(id));
                         }
 
+                        //WARNING: THE ELEMENTS WILL GET DELETED AT ALL CASES ATM!
+                        //TODO: default is replace and that is what people usually use (the lines below to be handled by adapter PushType
                         if (element != null)
                         {
-                            if (revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Replace || revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
-                            {
+                            //if (revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Replace || revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
+                            //{
                                 if (element.Pinned)
                                 {
                                     DeletePinnedElementError(element);
@@ -187,11 +198,8 @@ namespace BH.UI.Revit.Adapter
 
                                 document.Delete(element.Id);
                                 element = null;
-                            }
+                            //}
                         }
-
-                        if (revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
-                            continue;
 
                         if (element == null)
                         {
@@ -199,7 +207,7 @@ namespace BH.UI.Revit.Adapter
 
                             if (type != typeof(BHoMObject))
                             {
-                                element = BH.UI.Revit.Engine.Convert.ToRevit(bhomObject as dynamic, document, pushSettings);
+                                element = BH.UI.Revit.Engine.Convert.ToRevit(bhomObject as dynamic, document, revitSettings, refObjects);
                                 SetIdentifiers(bhomObject, element);
                             }
 
@@ -211,13 +219,12 @@ namespace BH.UI.Revit.Adapter
                             {
                                 try
                                 {
-                                    Location location = Modify.Move(element, bhomObject, pushSettings);
+                                    Location location = element.Move(bhomObject);
                                 }
                                 catch
                                 {
                                     ObjectNotMovedWarning(bhomObject);
                                 }
-
                             }
 
                             if (bhomObject is IView || bhomObject is oM.Adapters.Revit.Elements.Family || bhomObject is InstanceProperties)
