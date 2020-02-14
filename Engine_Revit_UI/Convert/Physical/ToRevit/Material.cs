@@ -21,8 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
-using BHP = BH.oM.Physical.Materials;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using System;
+using System.Collections.Generic;
+using BHP = BH.oM.Physical.Materials;
 
 namespace BH.UI.Revit.Engine
 {
@@ -32,18 +35,17 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static Material ToRevitMaterial(this BHP.Material material, Document document, PushSettings pushSettings = null)
+        public static Material ToRevitMaterial(this BHP.Material material, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            Material revitMaterial = pushSettings.FindRefObject<Material>(document, material.BHoM_Guid);
+            Material revitMaterial = refObjects.GetValue<Material>(document, material.BHoM_Guid);
             if (revitMaterial != null)
                 return revitMaterial;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             revitMaterial = document.GetElement(Material.Create(document, material.Name)) as Material;
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(material, revitMaterial);
-
+            refObjects.AddOrReplace(material, revitMaterial);
             return revitMaterial;
         }
 

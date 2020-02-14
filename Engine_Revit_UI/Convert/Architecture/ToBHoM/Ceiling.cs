@@ -47,7 +47,7 @@ namespace BH.UI.Revit.Engine
 
             oM.Physical.Constructions.Construction construction = (ceiling.Document.GetElement(ceiling.GetTypeId()) as HostObjAttributes).ToBHoMConstruction(settings, refObjects);
 
-            Dictionary<PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> disctionary = ceiling.PlanarSurfaceDictionary(false, settings, refObjects);
+            Dictionary<PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> disctionary = ceiling.PlanarSurfaceDictionary(false, settings);
             if (disctionary == null)
                 return null;
 

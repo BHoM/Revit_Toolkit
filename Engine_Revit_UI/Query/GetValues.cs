@@ -20,13 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-
-using BH.oM.Adapters.Revit;
+using Autodesk.Revit.DB;
 using BH.oM.Base;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using Autodesk.Revit.DB;
 
 namespace BH.UI.Revit.Engine
 {
@@ -85,6 +83,32 @@ namespace BH.UI.Revit.Engine
         internal static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key) where T : IBHoMObject
         {
             return refObjects.GetValue<T>(key.ToString());
+        }
+
+        /***************************************************/
+
+        internal static List<T> GetValues<T>(this Dictionary<Guid, List<int>> refObjects, Document document, Guid key) where T : Element
+        {
+            if (refObjects == null || document == null)
+                return null;
+
+            if (refObjects.ContainsKey(key))
+                return refObjects[key].Select(x => document.GetElement(new ElementId(x))).Cast<T>().ToList();
+            else
+                return null;
+        }
+
+        /***************************************************/
+
+        internal static T GetValue<T>(this Dictionary<Guid, List<int>> refObjects, Document document, Guid key) where T : Element
+        {
+            if (refObjects == null || document == null)
+                return null;
+
+            if (refObjects.ContainsKey(key) && refObjects[key].Count == 1)
+                return document.GetElement(new ElementId(refObjects[key][0])) as T;
+            else
+                return null;
         }
 
         /***************************************************/

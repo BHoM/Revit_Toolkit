@@ -106,13 +106,13 @@ namespace BH.UI.Revit.Engine
                 if (structuralMaterialId.IntegerValue < 0)
                     structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
 
-                materialFragment = (familyInstance.Document.GetElement(structuralMaterialId) as Autodesk.Revit.DB.Material).ToBHoMMaterialFragment(settings, refObjects);
+                materialFragment = (familyInstance.Document.GetElement(structuralMaterialId) as Autodesk.Revit.DB.Material).ToBHoMMaterialFragment(null, settings, refObjects);
             }
 
             if (materialFragment == null)
             {
                 Compute.InvalidDataMaterialWarning(familyInstance);
-                materialFragment = familyInstance.StructuralMaterialType.BHoMEmptyMaterialFragment(settings, refObjects);
+                materialFragment = familyInstance.StructuralMaterialType.BHoMEmptyMaterialFragment(settings);
             }
 
             //TODO: this probably should be deleted - the Physical material in RefObjects has no properties by definition (it gets updated after being set to RefObjects)

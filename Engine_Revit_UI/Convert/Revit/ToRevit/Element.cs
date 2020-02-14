@@ -21,12 +21,12 @@
  */
 
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
-using BH.Engine.Geometry;
-
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -38,9 +38,9 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static Element ToRevitElement(this ModelInstance modelInstance, Document document, PushSettings pushSettings = null)
+        public static Element ToRevitElement(this ModelInstance modelInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            Element element = pushSettings.FindRefObject<Element>(document, modelInstance.BHoM_Guid);
+            Element element = refObjects.GetValue<Element>(document, modelInstance.BHoM_Guid);
             if (element != null)
                 return element;
 
@@ -50,9 +50,9 @@ namespace BH.UI.Revit.Engine
                 return null;
             }
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            BuiltInCategory builtInCategory = modelInstance.Properties.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
+            BuiltInCategory builtInCategory = modelInstance.Properties.BuiltInCategory(document, settings.FamilyLoadSettings);
 
             if (modelInstance.Location is ISurface || modelInstance.Location is ISolid)
             {
@@ -69,7 +69,7 @@ namespace BH.UI.Revit.Engine
             }
             else
             {
-                ElementType elementType = modelInstance.Properties.ElementType(document, builtInCategory, pushSettings.FamilyLoadSettings);
+                ElementType elementType = modelInstance.Properties.ElementType(document, builtInCategory, settings.FamilyLoadSettings);
                 if (elementType == null)
                 {
                     Compute.ElementTypeNotFoundWarning(modelInstance);
@@ -96,16 +96,16 @@ namespace BH.UI.Revit.Engine
                     {
                         //TODO: Implement rest of the cases
                         case FamilyPlacementType.CurveBased:
-                            element = ToRevitElement_CurveBased(modelInstance, familySymbol, pushSettings);
+                            element = modelInstance.ToRevitElement_CurveBased(familySymbol);
                             break;
                         case FamilyPlacementType.OneLevelBased:
-                            element = ToRevitElement_OneLevelBased(modelInstance, familySymbol, pushSettings);
+                            element = modelInstance.ToRevitElement_OneLevelBased(familySymbol);
                             break;
                         case FamilyPlacementType.CurveDrivenStructural:
-                            element = ToRevitElement_CurveDrivenStructural(modelInstance, familySymbol, pushSettings);
+                            element = modelInstance.ToRevitElement_CurveDrivenStructural(familySymbol);
                             break;
                         case FamilyPlacementType.TwoLevelsBased:
-                            element = ToRevitElement_TwoLevelsBased(modelInstance, familySymbol, pushSettings);
+                            element = modelInstance.ToRevitElement_TwoLevelsBased(familySymbol);
                             break;
                         default:
                             Compute.FamilyPlacementTypeNotSupportedWarning(modelInstance, elementType);
@@ -113,29 +113,25 @@ namespace BH.UI.Revit.Engine
                     }
                 }
                 else if (elementType is WallType)
-                    element = ToRevitElement_Wall(modelInstance, (WallType)elementType, pushSettings);
+                    element = modelInstance.ToRevitElement_Wall((WallType)elementType);
                 else if (elementType is MEPCurveType)
-                    element = ToRevitMEPElement(modelInstance, elementType as MEPCurveType, pushSettings);
+                    element = modelInstance.ToRevitMEPElement(elementType as MEPCurveType);
             }
 
             element.CheckIfNullPush(modelInstance);
             if (element == null)
                 return null;
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(element, modelInstance, null);
+            // Copy custom data and set parameters
+            element.SetParameters(modelInstance, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(modelInstance, element);
-
+            refObjects.AddOrReplace(modelInstance, element);
             return element;
         }
-
-
-        /***************************************************/
-        /****              Private Methods              ****/
+        
         /***************************************************/
 
-        private static Element ToRevitElement(this DraftingInstance draftingInstance, Document document, PushSettings pushSettings = null)
+        public static Element ToRevitElement(this DraftingInstance draftingInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (draftingInstance == null || string.IsNullOrEmpty(draftingInstance.ViewName) || document == null)
                 return null;
@@ -143,7 +139,7 @@ namespace BH.UI.Revit.Engine
             if (string.IsNullOrWhiteSpace(draftingInstance.ViewName))
                 return null;
 
-            Element element = pushSettings.FindRefObject<Element>(document, draftingInstance.BHoM_Guid);
+            Element element = refObjects.GetValue<Element>(document, draftingInstance.BHoM_Guid);
             if (element != null)
                 return element;
 
@@ -158,11 +154,11 @@ namespace BH.UI.Revit.Engine
             if (view == null)
                 return null;
 
-            pushSettings = pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            BuiltInCategory builtInCategory = draftingInstance.Properties.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
+            BuiltInCategory builtInCategory = draftingInstance.Properties.BuiltInCategory(document, settings.FamilyLoadSettings);
 
-            ElementType elementType = draftingInstance.Properties.ElementType(document, builtInCategory, pushSettings.FamilyLoadSettings);
+            ElementType elementType = draftingInstance.Properties.ElementType(document, builtInCategory, settings.FamilyLoadSettings);
 
             if (elementType != null)
             {
@@ -218,17 +214,19 @@ namespace BH.UI.Revit.Engine
             if (element == null)
                 return null;
 
-            if (element != null && pushSettings.CopyCustomData)
-                Modify.SetParameters(element, draftingInstance, null);
+            // Copy custom data and set parameters
+            element.SetParameters(draftingInstance, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(draftingInstance, element);
-
+            refObjects.AddOrReplace(draftingInstance, element);
             return element;
         }
+        
 
         /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
 
-        private static Element ToRevitElement_CurveBased(this ModelInstance modelInstance, FamilySymbol familySymbol, PushSettings pushSettings = null)
+        private static Element ToRevitElement_CurveBased(this ModelInstance modelInstance, FamilySymbol familySymbol)
         {
             if (familySymbol == null || modelInstance == null)
                 return null;
@@ -256,7 +254,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static Element ToRevitMEPElement(this ModelInstance modelInstance, MEPCurveType MEPType, PushSettings pushSettings = null)
+        private static Element ToRevitMEPElement(this ModelInstance modelInstance, MEPCurveType MEPType)
         {
             if (MEPType == null || modelInstance == null)
                 return null;
@@ -300,7 +298,9 @@ namespace BH.UI.Revit.Engine
                 return null;
         }
 
-        private static Element ToRevitElement_OneLevelBased(this ModelInstance modelInstance, FamilySymbol familySymbol, PushSettings pushSettings = null)
+        /***************************************************/
+
+        private static Element ToRevitElement_OneLevelBased(this ModelInstance modelInstance, FamilySymbol familySymbol)
         {
             if (familySymbol == null || modelInstance == null)
                 return null;
@@ -325,7 +325,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static Element ToRevitElement_CurveDrivenStructural(this ModelInstance modelInstance, FamilySymbol familySymbol, PushSettings pushSettings = null)
+        private static Element ToRevitElement_CurveDrivenStructural(this ModelInstance modelInstance, FamilySymbol familySymbol)
         {
             if (familySymbol == null || modelInstance == null)
                 return null;
@@ -366,7 +366,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static Element ToRevitElement_TwoLevelsBased(this ModelInstance modelInstance, FamilySymbol familySymbol, PushSettings pushSettings = null)
+        private static Element ToRevitElement_TwoLevelsBased(this ModelInstance modelInstance, FamilySymbol familySymbol)
         {
             if (familySymbol == null || modelInstance == null)
                 return null;
@@ -425,7 +425,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static Element ToRevitElement_Wall(this ModelInstance modelInstance, WallType wallType, PushSettings pushSettings = null)
+        private static Element ToRevitElement_Wall(this ModelInstance modelInstance, WallType wallType)
         {
             if (wallType == null || modelInstance == null)
                 return null;

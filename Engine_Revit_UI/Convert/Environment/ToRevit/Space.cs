@@ -21,9 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
-
-using BH.oM.Environment.Elements;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Environment.Elements;
+using System;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -33,14 +35,16 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Autodesk.Revit.DB.Mechanical.Space ToRevitSpace(this Space space, Document document, PushSettings pushSettings = null)
+        public static Autodesk.Revit.DB.Mechanical.Space ToRevitSpace(this Space space, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (space == null)
                 return null;
 
-            Autodesk.Revit.DB.Mechanical.Space revitSpace = pushSettings.FindRefObject<Autodesk.Revit.DB.Mechanical.Space>(document, space.BHoM_Guid);
+            Autodesk.Revit.DB.Mechanical.Space revitSpace = refObjects.GetValue<Autodesk.Revit.DB.Mechanical.Space>(document, space.BHoM_Guid);
             if (revitSpace != null)
                 return revitSpace;
+
+            settings = settings.DefaultIfNull();
 
             Level level = Query.BottomLevel(space.Location.Z, document);
             if (level == null)
@@ -56,11 +60,10 @@ namespace BH.UI.Revit.Engine
 
             revitSpace.Name = space.Name;
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(revitSpace, space, null);
+            // Copy custom data and set parameters
+            revitSpace.SetParameters(space, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(space, revitSpace);
-
+            refObjects.AddOrReplace(space, revitSpace);
             return revitSpace;
         }
 

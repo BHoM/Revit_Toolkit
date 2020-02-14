@@ -20,13 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Linq;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -36,22 +35,22 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static Viewport ToRevitViewport(this oM.Adapters.Revit.Elements.Viewport viewport, Document document, PushSettings pushSettings = null)
+        public static Viewport ToRevitViewport(this oM.Adapters.Revit.Elements.Viewport viewport, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (viewport == null || viewport.Location == null)
                 return null;
 
-            Viewport revitViewPort = pushSettings.FindRefObject<Viewport>(document, viewport.BHoM_Guid);
+            Viewport revitViewPort = refObjects.GetValue<Viewport>(document, viewport.BHoM_Guid);
             if (revitViewPort != null)
                 return revitViewPort;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            string viewName = BH.Engine.Adapters.Revit.Query.ViewName(viewport);
+            string viewName = viewport.ViewName();
             if (string.IsNullOrEmpty(viewName))
                 return null;
 
-            string sheetNumber = BH.Engine.Adapters.Revit.Query.SheetNumber(viewport);
+            string sheetNumber = viewport.SheetNumber();
             if (string.IsNullOrEmpty(sheetNumber))
                 return null;
 
@@ -72,11 +71,10 @@ namespace BH.UI.Revit.Engine
 
             revitViewPort = Viewport.Create(document, viewSheet.Id, view.Id, viewport.Location.ToRevit());
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(revitViewPort, viewport, null);
+            // Copy custom data and set parameters
+            revitViewPort.SetParameters(viewport, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(viewport, revitViewPort);
-
+            refObjects.AddOrReplace(viewport, revitViewPort);
             return revitViewPort;
         }
 
