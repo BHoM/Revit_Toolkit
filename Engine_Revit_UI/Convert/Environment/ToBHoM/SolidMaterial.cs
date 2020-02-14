@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.MaterialFragments;
@@ -42,7 +42,7 @@ namespace BH.UI.Revit.Engine
 
             settings = settings.DefaultIfNull();
 
-            SolidMaterial result = pullSettings.FindRefObject<SolidMaterial>(material.Id.IntegerValue);
+            SolidMaterial result = refObjects.GetValue<SolidMaterial>(material.Id.IntegerValue);
             if (result != null)
                 return result;
             else
@@ -53,19 +53,20 @@ namespace BH.UI.Revit.Engine
             if (parameter != null)
                 result.Description = parameter.AsString();
 
-            Update(result, material, pullSettings);
+            result.Update(material, settings);
 
-            result = result.UpdateValues(pullSettings, material) as SolidMaterial;
+            result = result.UpdateValues(settings, material) as SolidMaterial;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(result);
+            refObjects.AddOrReplace(material.Id, result);
             return result;
         }
+
 
         /***************************************************/
         /****             Private methods               ****/
         /***************************************************/
 
-        private static void Update(this SolidMaterial solidMaterial, Material material, PullSettings pullSettings = null)
+        private static void Update(this SolidMaterial solidMaterial, Material material, RevitSettings settings)
         {
             if (material == null)
             {
@@ -83,19 +84,19 @@ namespace BH.UI.Revit.Engine
             Document document = material.Document;
 
             PropertySetElement propertySetElement = document.GetElement(elementID) as PropertySetElement;
-            solidMaterial.Update(propertySetElement.GetThermalAsset(), pullSettings);
+            solidMaterial.Update(propertySetElement.GetThermalAsset(), settings);
         }
 
         /***************************************************/
 
-        private static void Update(this SolidMaterial solidMaterial, StructuralAsset structuralAsset, PullSettings pullSettings = null)
+        private static void Update(this SolidMaterial solidMaterial, StructuralAsset structuralAsset, RevitSettings settings = null)
         {
 
         }
 
         /***************************************************/
 
-        private static void Update(this SolidMaterial solidMaterial, ThermalAsset thermalAsset, PullSettings pullSettings = null)
+        private static void Update(this SolidMaterial solidMaterial, ThermalAsset thermalAsset, RevitSettings settings = null)
         {
             solidMaterial.Conductivity = thermalAsset.ThermalConductivity;
             solidMaterial.SpecificHeat = thermalAsset.SpecificHeat;

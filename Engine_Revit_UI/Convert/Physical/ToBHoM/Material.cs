@@ -20,15 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using System.Collections.Generic;
-using System.Linq;
-using System;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Environment.MaterialFragments;
+using BH.oM.Base;
 using BH.oM.Physical.Materials;
-using BH.oM.Structure.MaterialFragments;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -38,25 +34,24 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Physical.Materials.Material ToBHoMEmptyMaterial(this Autodesk.Revit.DB.Material revitMaterial, PullSettings pullSettings = null)
+        public static Material ToBHoMEmptyMaterial(this Autodesk.Revit.DB.Material revitMaterial, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (revitMaterial == null)
-                return new oM.Physical.Materials.Material { Name = "Unknown Material" };
+                return new Material { Name = "Unknown Material" };
 
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            oM.Physical.Materials.Material material = pullSettings.FindRefObject<oM.Physical.Materials.Material>(revitMaterial.Id.IntegerValue);
+            Material material = refObjects.GetValue<Material>(revitMaterial.Id);
             if (material != null)
                 return material;
 
-            material = new oM.Physical.Materials.Material { Properties = new System.Collections.Generic.List<IMaterialProperties>(), Name = revitMaterial.Name };
-            
-            material = Modify.SetIdentifiers(material, revitMaterial) as oM.Physical.Materials.Material;
-            if (pullSettings.CopyCustomData)
-                material = Modify.SetCustomData(material, revitMaterial) as oM.Physical.Materials.Material;
+            material = new Material { Properties = new List<IMaterialProperties>(), Name = revitMaterial.Name };
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(material);
+            //Set identifiers & custom data
+            material = material.SetIdentifiers(revitMaterial) as Material;
+            material = material.SetCustomData(revitMaterial) as Material;
 
+            refObjects.AddOrReplace(revitMaterial.Id, material);
             return material;
         }
 

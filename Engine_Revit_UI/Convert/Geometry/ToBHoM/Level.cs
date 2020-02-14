@@ -21,9 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-
-using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -33,23 +34,22 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static BH.oM.Geometry.SettingOut.Level ToBHoMLevel(this Level revitLevel, PullSettings pullSettings = null)
+        public static BH.oM.Geometry.SettingOut.Level ToBHoMLevel(this Level revitLevel, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            oM.Geometry.SettingOut.Level level = pullSettings.FindRefObject<oM.Geometry.SettingOut.Level>(revitLevel.Id.IntegerValue);
+            oM.Geometry.SettingOut.Level level = refObjects.GetValue<oM.Geometry.SettingOut.Level>(revitLevel.Id);
             if (level != null)
                 return level;
 
             level = BH.Engine.Geometry.Create.Level(revitLevel.ProjectElevation.ToSI(UnitType.UT_Length));
             level.Name = revitLevel.Name;
 
-            level = Modify.SetIdentifiers(level, revitLevel) as oM.Geometry.SettingOut.Level;
-            if (pullSettings.CopyCustomData)
-                level = Modify.SetCustomData(level, revitLevel) as oM.Geometry.SettingOut.Level;
+            //Set identifiers & custom data
+            level = level.SetIdentifiers(revitLevel) as oM.Geometry.SettingOut.Level;
+            level = level.SetCustomData(revitLevel) as oM.Geometry.SettingOut.Level;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(level);
-
+            refObjects.AddOrReplace(revitLevel.Id, level);
             return level;
         }
 

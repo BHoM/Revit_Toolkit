@@ -20,18 +20,16 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure.StructuralSections;
-
-using BH.oM.Structure.SectionProperties;
-using BH.oM.Geometry.ShapeProfiles;
-using BHS = BH.Engine.Structure;
-using BHG = BH.Engine.Geometry;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Geometry.ShapeProfiles;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using BHG = BH.Engine.Geometry;
 
 namespace BH.UI.Revit.Engine
 {
@@ -41,11 +39,11 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static IProfile ToBHoMProfile(this FamilySymbol familySymbol, PullSettings pullSettings = null)
+        public static IProfile ToBHoMProfile(this FamilySymbol familySymbol, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            IProfile profile = pullSettings.FindRefObject<IProfile>(familySymbol.Id.IntegerValue);
+            IProfile profile = refObjects.GetValue<IProfile>(familySymbol.Id);
             if (profile != null)
                 return profile;
 
@@ -53,9 +51,9 @@ namespace BH.UI.Revit.Engine
             Parameter sectionShapeParam = familySymbol.get_Parameter(BuiltInParameter.STRUCTURAL_SECTION_SHAPE);
             StructuralSectionShape sectionShape = sectionShapeParam == null ? sectionShape = StructuralSectionShape.NotDefined : (StructuralSectionShape)sectionShapeParam.AsInteger();
             
-            List<Type> types = Query.BHoMTypes(sectionShape).ToList();
+            List<Type> types = sectionShape.BHoMTypes().ToList();
             if (types.Count == 0)
-                types.AddRange(Query.BHoMTypes(familyName));
+                types.AddRange(familyName.BHoMTypes());
 
             if (types.Contains(typeof(CircleProfile)))
             {
@@ -444,24 +442,24 @@ namespace BH.UI.Revit.Engine
             if (profile == null)
                 return null;
 
-            profile = Modify.SetIdentifiers(profile, familySymbol) as IProfile;
-            if (pullSettings.CopyCustomData)
-                profile = Modify.SetCustomData(profile, familySymbol) as IProfile;
+            //Set identifiers & custom data
+            profile = profile.SetIdentifiers(familySymbol) as IProfile;
+            profile = profile.SetCustomData(familySymbol) as IProfile;
 
             profile.Name = familySymbol.Name;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(profile);
+            refObjects.AddOrReplace(familySymbol.Id, profile);
 
             return profile;
         }
 
         /***************************************************/
 
-        public static IProfile BHoMFreeFormProfile(this FamilyInstance familyInstance, PullSettings pullSettings)
+        public static IProfile BHoMFreeFormProfile(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            IProfile profile = pullSettings.FindRefObject<IProfile>(familyInstance.Symbol.Id.IntegerValue);
+            IProfile profile = refObjects.GetValue<IProfile>(familyInstance.Symbol.Id.IntegerValue);
             if (profile != null)
                 return profile;
 
@@ -569,12 +567,11 @@ namespace BH.UI.Revit.Engine
 
             profile = new FreeFormProfile(profileCurves);
 
-            profile = Modify.SetIdentifiers(profile, familyInstance.Symbol) as IProfile;
-            if (pullSettings.CopyCustomData)
-                profile = Modify.SetCustomData(profile, familyInstance.Symbol) as IProfile;
+            //Set identifiers & custom data
+            profile = profile.SetIdentifiers(familyInstance.Symbol) as IProfile;
+            profile = profile.SetCustomData(familyInstance.Symbol) as IProfile;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(profile);
-
+            refObjects.AddOrReplace(familyInstance.Symbol.Id, profile);
             return profile;
         }
 

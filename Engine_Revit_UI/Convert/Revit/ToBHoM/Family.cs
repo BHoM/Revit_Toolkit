@@ -27,7 +27,8 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
-
+using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
 
 namespace BH.UI.Revit.Engine
 {
@@ -37,11 +38,11 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Adapters.Revit.Elements.Family ToBHoMFamily(this Family revitFamily, PullSettings pullSettings = null)
+        public static oM.Adapters.Revit.Elements.Family ToBHoMFamily(this Family revitFamily, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            oM.Adapters.Revit.Elements.Family family = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.Family>(revitFamily.Id.IntegerValue);
+            oM.Adapters.Revit.Elements.Family family = refObjects.GetValue<oM.Adapters.Revit.Elements.Family>(revitFamily.Id);
             if (family != null)
                 return family;
 
@@ -49,7 +50,7 @@ namespace BH.UI.Revit.Engine
             family.Name = revitFamily.Name;
 
             IEnumerable<ElementId> elementIDs = revitFamily.GetFamilySymbolIds();
-            if(elementIDs != null && elementIDs.Count() > 0 )
+            if(elementIDs != null && elementIDs.Count() != 0 )
             {
                 if (family.PropertiesList == null)
                     family.PropertiesList = new List<InstanceProperties>();
@@ -63,7 +64,7 @@ namespace BH.UI.Revit.Engine
                     if (elementType == null)
                         continue;
 
-                    InstanceProperties instanceProperties = ToBHoMInstanceProperties(elementType, pullSettings);
+                    InstanceProperties instanceProperties = elementType.ToBHoMInstanceProperties(settings, refObjects);
                     if (instanceProperties == null)
                         continue;
 
@@ -71,14 +72,13 @@ namespace BH.UI.Revit.Engine
                 }
             }
 
-            family = Modify.SetIdentifiers(family, revitFamily) as oM.Adapters.Revit.Elements.Family;
-            if (pullSettings.CopyCustomData)
-                family = Modify.SetCustomData(family, revitFamily) as oM.Adapters.Revit.Elements.Family;
+            //Set identifiers & custom data
+            family = family.SetIdentifiers(revitFamily) as oM.Adapters.Revit.Elements.Family;
+            family = family.SetCustomData(revitFamily) as oM.Adapters.Revit.Elements.Family;
 
-            family = family.UpdateValues(pullSettings, revitFamily) as oM.Adapters.Revit.Elements.Family;
+            family = family.UpdateValues(settings, revitFamily) as oM.Adapters.Revit.Elements.Family;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(family);
-
+            refObjects.AddOrReplace(revitFamily.Id, family);
             return family;
         }
 
