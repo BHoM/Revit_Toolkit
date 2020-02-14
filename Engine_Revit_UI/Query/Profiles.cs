@@ -28,6 +28,7 @@ using System.Linq;
 using Autodesk.Revit.DB.IFC;
 using BH.oM.Geometry;
 using System;
+using BH.Engine.Geometry;
 
 namespace BH.UI.Revit.Engine
 {
@@ -37,20 +38,19 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<PolyCurve> Profiles(this HostObject hostObject, PullSettings pullSettings = null)
+        public static List<PolyCurve> Profiles(this HostObject hostObject, RevitSettings settings = null)
         {
             if (hostObject == null || hostObject.Document == null)
                 return null;
 
             if (hostObject is Floor)
-                return Profiles_Floor((Floor)hostObject, pullSettings);
+                return ((Floor)hostObject).Profiles_Floor(settings);
 
             if (hostObject is RoofBase)
-                return Profiles_RoofBase((RoofBase)hostObject, pullSettings);
-
-
+                return ((RoofBase)hostObject).Profiles_RoofBase(settings);
+            
             if (hostObject is Ceiling)
-                return Profiles_Ceiling((Ceiling)hostObject, pullSettings);
+                return ((Ceiling)hostObject).Profiles_Ceiling(settings);
 
             Document document = hostObject.Document;
 
@@ -77,7 +77,7 @@ namespace BH.UI.Revit.Engine
                 try
                 {
                     IList<ElementId> insertElementIDs = hostObject.FindInserts(true, true, true, true);
-                    if (insertElementIDs != null && insertElementIDs.Count > 0)
+                    if (insertElementIDs != null && insertElementIDs.Count != 0)
                     {
                         IEnumerable<ElementId> tempElementIDs = document.Delete(insertElementIDs);
                         if (tempElementIDs != null && tempElementIDs.Count() != 0)
@@ -92,7 +92,7 @@ namespace BH.UI.Revit.Engine
             }
 
             List<PolyCurve> result = new List<PolyCurve>();
-            if (elementIDs != null && elementIDs.Count() > 0)
+            if (elementIDs != null && elementIDs.Count() != 0)
             {
                 Level level = document.GetElement(hostObject.LevelId) as Level;
 
@@ -109,7 +109,7 @@ namespace BH.UI.Revit.Engine
                         if (sketch.Profile == null)
                             continue;
 
-                        List<PolyCurve> polycurves = Convert.ToBHoM(sketch);
+                        List<PolyCurve> polycurves = sketch.ToBHoM();
                         if (polycurves == null)
                             continue;
 
@@ -121,15 +121,16 @@ namespace BH.UI.Revit.Engine
             }
 
             if (hostObject is Wall && result.Count == 0)
-                return Profiles_Wall((Wall)hostObject, pullSettings);
+                return ((Wall)hostObject).Profiles_Wall(settings);
 
             return result;
         }
 
-        public static List<PolyCurve> Profiles(this SpatialElement spatialElement, PullSettings pullSettings = null)
+        public static List<PolyCurve> Profiles(this SpatialElement spatialElement, RevitSettings settings = null)
         {
             if (spatialElement == null)
                 return null;
+
             IList<IList<BoundarySegment>> boundarySegments = spatialElement.GetBoundarySegments(new SpatialElementBoundaryOptions());
             if (boundarySegments == null)
                 return null;
@@ -140,11 +141,13 @@ namespace BH.UI.Revit.Engine
             {
                 if (boundarySegmentList == null)
                     continue;
+
                 List<BH.oM.Geometry.ICurve> curves = new List<ICurve>();
                 foreach (BoundarySegment boundarySegment in boundarySegmentList)
                 {
                     curves.Add(boundarySegment.GetCurve().IToBHoM());
                 }
+
                 results.Add(BH.Engine.Geometry.Create.PolyCurve(curves));
             }
 
@@ -156,7 +159,7 @@ namespace BH.UI.Revit.Engine
         /****              Private Methods              ****/
         /***************************************************/
 
-        public static List<PolyCurve> Profiles_Wall(this Wall wall, PullSettings pullSettings = null)
+        public static List<PolyCurve> Profiles_Wall(this Wall wall, RevitSettings settings = null)
         {
             List<PolyCurve> polycurves = null;
 
@@ -166,7 +169,7 @@ namespace BH.UI.Revit.Engine
                 LocationCurve locationCurve = wall.Location as LocationCurve;
                 if (locationCurve != null)
                 {
-                    ICurve curve = Convert.ToBHoM(locationCurve);
+                    ICurve curve = locationCurve.ToBHoM();
                     if (curve != null)
                     {
                         oM.Geometry.Plane plane = null;
@@ -183,20 +186,19 @@ namespace BH.UI.Revit.Engine
                         oM.Geometry.Point point2;
                         oM.Geometry.Point point3;
 
-                        point1 = BH.Engine.Geometry.Query.IEndPoint(minCurve);
-                        point2 = BH.Engine.Geometry.Query.IStartPoint(maxCurve);
-                        point3 = BH.Engine.Geometry.Query.IEndPoint(maxCurve);
-                        if (BH.Engine.Geometry.Query.Distance(point1, point3) < BH.Engine.Geometry.Query.Distance(point1, point2))
+                        point1 = minCurve.IEndPoint();
+                        point2 = maxCurve.IStartPoint();
+                        point3 = maxCurve.IEndPoint();
+                        if (point1.Distance(point3) < point1.Distance(point2))
                         {
                             oM.Geometry.Point tempPoint = point2;
-
-                            maxCurve = BH.Engine.Geometry.Modify.IFlip(maxCurve);
+                            maxCurve = maxCurve.IFlip();
                             point2 = point3;
                             point3 = tempPoint;
                         }
 
                         oM.Geometry.Line line1 = BH.Engine.Geometry.Create.Line(point1, point2);
-                        oM.Geometry.Line line2 = BH.Engine.Geometry.Create.Line(point3, BH.Engine.Geometry.Query.IStartPoint(minCurve));
+                        oM.Geometry.Line line2 = BH.Engine.Geometry.Create.Line(point3, minCurve.IStartPoint());
 
                         polycurves = new List<PolyCurve>();
                         polycurves.Add(BH.Engine.Geometry.Create.PolyCurve(new ICurve[] { minCurve, line1, maxCurve, line2 }));
@@ -215,7 +217,7 @@ namespace BH.UI.Revit.Engine
             polycurves = new List<PolyCurve>();
             foreach (CurveLoop curveLoop in curveLoops)
             {
-                PolyCurve polycurve = Convert.ToBHoM(curveLoop);
+                PolyCurve polycurve = curveLoop.ToBHoM();
                 if (polycurve != null)
                     polycurves.Add(polycurve);
             }
@@ -225,23 +227,23 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static List<PolyCurve> Profiles_Floor(this Floor floor, PullSettings pullSettings = null)
+        private static List<PolyCurve> Profiles_Floor(this Floor floor, RevitSettings settings = null)
         {
-            return TopFacesPolyCurves(floor, pullSettings);
+            return TopFacesPolyCurves(floor, settings);
         }
 
         /***************************************************/
 
-        private static List<PolyCurve> Profiles_RoofBase(this RoofBase roofBase, PullSettings pullSettings = null)
+        private static List<PolyCurve> Profiles_RoofBase(this RoofBase roofBase, RevitSettings settings = null)
         {
-            return TopFacesPolyCurves(roofBase, pullSettings);
+            return TopFacesPolyCurves(roofBase, settings);
         }
 
         /***************************************************/
 
-        private static List<PolyCurve> Profiles_Ceiling(this Ceiling ceiling, PullSettings pullSettings = null)
+        private static List<PolyCurve> Profiles_Ceiling(this Ceiling ceiling, RevitSettings settings = null)
         {
-            return BottomFacesPolyCurves(ceiling, pullSettings);
+            return BottomFacesPolyCurves(ceiling, settings);
         }
 
         /***************************************************/

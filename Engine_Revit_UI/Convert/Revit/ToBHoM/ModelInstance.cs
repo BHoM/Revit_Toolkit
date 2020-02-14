@@ -21,7 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -31,25 +34,26 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Adapters.Revit.Elements.ModelInstance ToBHoMModelInstance(this CurveElement curveElement, PullSettings pullSettings = null)
+        public static oM.Adapters.Revit.Elements.ModelInstance ToBHoMModelInstance(this CurveElement curveElement, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            oM.Adapters.Revit.Elements.ModelInstance modelInstance = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.ModelInstance>(curveElement.Id.IntegerValue);
+            settings = settings.DefaultIfNull();
+
+            oM.Adapters.Revit.Elements.ModelInstance modelInstance = refObjects.GetValue<oM.Adapters.Revit.Elements.ModelInstance>(curveElement.Id);
             if (modelInstance != null)
                 return modelInstance;
 
-            oM.Adapters.Revit.Properties.InstanceProperties instanceProperties = ToBHoMInstanceProperties(curveElement.LineStyle as GraphicsStyle, pullSettings) as oM.Adapters.Revit.Properties.InstanceProperties;
-
+            oM.Adapters.Revit.Properties.InstanceProperties instanceProperties = (curveElement.LineStyle as GraphicsStyle).ToBHoMInstanceProperties(settings, refObjects) as oM.Adapters.Revit.Properties.InstanceProperties;
             modelInstance = BH.Engine.Adapters.Revit.Create.ModelInstance(instanceProperties, curveElement.GeometryCurve.IToBHoM());
 
             modelInstance.Name = curveElement.Name;
-            modelInstance = Modify.SetIdentifiers(modelInstance, curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
-            if (pullSettings.CopyCustomData)
-                modelInstance = Modify.SetCustomData(modelInstance, curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
 
-            modelInstance = modelInstance.UpdateValues(pullSettings, curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
+            //Set identifiers & custom data
+            modelInstance = modelInstance.SetIdentifiers(curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
+            modelInstance = modelInstance.SetCustomData(curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(modelInstance);
+            modelInstance = modelInstance.UpdateValues(settings, curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
 
+            refObjects.AddOrReplace(curveElement.Id, modelInstance);
             return modelInstance;
         }
 

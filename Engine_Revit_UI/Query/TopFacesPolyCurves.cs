@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
         
-        public static List<PolyCurve> TopFacesPolyCurves(this HostObject hostObject, PullSettings pullSettings = null)
+        public static List<PolyCurve> TopFacesPolyCurves(this HostObject hostObject, RevitSettings settings = null)
         {
             if (hostObject == null)
                 return null;
@@ -43,7 +43,7 @@ namespace BH.UI.Revit.Engine
             if (refs == null || refs.Count() == 0)
                 return null;
 
-            return Query.PolyCurves(hostObject, refs, pullSettings);
+            return hostObject.PolyCurves(refs, settings);
         }
 
         /***************************************************/

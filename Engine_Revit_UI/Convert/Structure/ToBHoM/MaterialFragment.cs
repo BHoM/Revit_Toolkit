@@ -22,14 +22,12 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Common.Materials;
-using BH.Engine.Structure;
-using System.Collections.Generic;
-using System.Linq;
-using System;
+using BH.oM.Base;
 using BH.oM.Structure.MaterialFragments;
+using System;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -39,7 +37,7 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Structure.MaterialFragments.IMaterialFragment ToBHoMMaterialFragment(this Autodesk.Revit.DB.Material material, PullSettings pullSettings = null, string materialGrade = null)
+        public static IMaterialFragment ToBHoMMaterialFragment(this Autodesk.Revit.DB.Material material, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (material == null)
             {
@@ -48,8 +46,8 @@ namespace BH.UI.Revit.Engine
                 return null;
             }
 
-            pullSettings = pullSettings.DefaultIfNull();
-            
+            settings = settings.DefaultIfNull();
+
             StructuralMaterialType structuralMaterialType = Query.StructuralMaterialType(material.MaterialClass);
             IMaterialFragment materialFragment = Query.LibraryMaterial(structuralMaterialType, materialGrade);
             if (materialFragment != null)
@@ -82,14 +80,15 @@ namespace BH.UI.Revit.Engine
             materialFragment = materialFragment.Update(material);
 
             materialFragment.Name = material.Name;
-
             return materialFragment;
         }
 
         /***************************************************/
 
-        public static oM.Structure.MaterialFragments.IMaterialFragment BHoMEmptyMaterialFragment(this Autodesk.Revit.DB.Structure.StructuralMaterialType structuralMaterialType, PullSettings pullSettings = null)
+        public static IMaterialFragment BHoMEmptyMaterialFragment(this StructuralMaterialType structuralMaterialType, RevitSettings settings = null)
         {
+            settings = settings.DefaultIfNull();
+
             string name;
             if (structuralMaterialType == StructuralMaterialType.Undefined)
                 name = "Unknown Material";

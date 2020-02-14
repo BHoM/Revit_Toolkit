@@ -20,15 +20,13 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Linq;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
+using BH.oM.Base;
 using BH.oM.Environment.Fragments;
-
+using BH.oM.Geometry;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -38,21 +36,21 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static List<oM.Physical.Elements.ISurface> ToBHoMISurfaces(this HostObject hostObject, PullSettings pullSettings = null)
+        public static List<oM.Physical.Elements.ISurface> ToBHoMISurfaces(this HostObject hostObject, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            List<oM.Physical.Elements.ISurface> surfaces = pullSettings.FindRefObjects<oM.Physical.Elements.ISurface>(hostObject.Id.IntegerValue);
+            List<oM.Physical.Elements.ISurface> surfaces = refObjects.GetValuess<oM.Physical.Elements.ISurface>(hostObject.Id);
             if (surfaces != null && surfaces.Count > 0)
                 return surfaces;
 
             //TODO: check if the attributes != null
             HostObjAttributes hostObjAttributes = hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes;
-            oM.Physical.Constructions.Construction construction = ToBHoMConstruction(hostObjAttributes, pullSettings);
+            oM.Physical.Constructions.Construction construction = hostObjAttributes.ToBHoMConstruction(settings, refObjects);
             string materialGrade = hostObject.MaterialGrade();
-            construction = construction.UpdateMaterialProperties(hostObjAttributes, materialGrade, pullSettings);
+            construction = construction.UpdateMaterialProperties(hostObjAttributes, materialGrade, settings, refObjects);
 
-            Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> dictionary = Query.PlanarSurfaceDictionary(hostObject, true, pullSettings);
+            Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> dictionary = hostObject.PlanarSurfaceDictionary(true, settings);
             if (dictionary == null)
                 return null;
 
@@ -92,25 +90,24 @@ namespace BH.UI.Revit.Engine
                 if (kvp.Value != null)
                     iSurface.Openings = kvp.Value;
          
-                iSurface.Name = Query.FamilyTypeFullName(hostObject);
+                iSurface.Name = hostObject.FamilyTypeFullName();
 
                 ElementType elementType = hostObject.Document.GetElement(hostObject.GetTypeId()) as ElementType;
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment();
                 originContext.ElementID = hostObject.Id.IntegerValue.ToString();
-                originContext.TypeName = Query.FamilyTypeFullName(hostObject);
-                originContext = originContext.UpdateValues(pullSettings, hostObject) as OriginContextFragment;
-                originContext = originContext.UpdateValues(pullSettings, elementType) as OriginContextFragment;
+                originContext.TypeName = hostObject.FamilyTypeFullName();
+                originContext = originContext.UpdateValues(settings, hostObject) as OriginContextFragment;
+                originContext = originContext.UpdateValues(settings, elementType) as OriginContextFragment;
                 iSurface.Fragments.Add(originContext);
 
-                iSurface = Modify.SetIdentifiers(iSurface, hostObject) as oM.Physical.Elements.ISurface;
-                if (pullSettings.CopyCustomData)
-                    iSurface = Modify.SetCustomData(iSurface, hostObject) as oM.Physical.Elements.ISurface;
+                //Set identifiers & custom data
+                iSurface = iSurface.SetIdentifiers(hostObject) as oM.Physical.Elements.ISurface;
+                iSurface = iSurface.SetCustomData(hostObject) as oM.Physical.Elements.ISurface;
 
-                iSurface = iSurface.UpdateValues(pullSettings, hostObject) as oM.Physical.Elements.ISurface;
+                iSurface = iSurface.UpdateValues(settings, hostObject) as oM.Physical.Elements.ISurface;
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(iSurface);
-
+                refObjects.AddOrReplace(hostObject.Id, iSurface);
                 surfaces.Add(iSurface);
             }
 

@@ -20,8 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -31,53 +34,49 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static InstanceProperties ToBHoMInstanceProperties(this Autodesk.Revit.DB.ElementType elementType, PullSettings pullSettings = null)
+        public static InstanceProperties ToBHoMInstanceProperties(this Autodesk.Revit.DB.ElementType elementType, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            InstanceProperties instanceProperties = pullSettings.FindRefObject<InstanceProperties>(elementType.Id.IntegerValue);
+            InstanceProperties instanceProperties = refObjects.GetValue<InstanceProperties>(elementType.Id);
             if (instanceProperties != null)
                 return instanceProperties;
 
             instanceProperties = BH.Engine.Adapters.Revit.Create.InstanceProperties(elementType.FamilyName, elementType.Name);
 
-            instanceProperties = Modify.SetIdentifiers(instanceProperties, elementType) as InstanceProperties;
-            if (pullSettings.CopyCustomData)
-                instanceProperties = Modify.SetCustomData(instanceProperties, elementType) as InstanceProperties;
-
+            //Set identifiers & custom data
+            instanceProperties = instanceProperties.SetIdentifiers(elementType) as InstanceProperties;
+            instanceProperties = instanceProperties.SetCustomData(elementType) as InstanceProperties;
             instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = elementType.FamilyName;
             instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = elementType.Name;
 
-            instanceProperties = instanceProperties.UpdateValues(pullSettings, elementType) as InstanceProperties;
+            instanceProperties = instanceProperties.UpdateValues(settings, elementType) as InstanceProperties;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(instanceProperties);
-
+            refObjects.AddOrReplace(elementType.Id, instanceProperties);
             return instanceProperties;
         }
 
         /***************************************************/
 
-        public static InstanceProperties ToBHoMInstanceProperties(this Autodesk.Revit.DB.GraphicsStyle graphicStyle, PullSettings pullSettings = null)
+        public static InstanceProperties ToBHoMInstanceProperties(this Autodesk.Revit.DB.GraphicsStyle graphicStyle, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            InstanceProperties instanceProperties = pullSettings.FindRefObject<InstanceProperties>(graphicStyle.Id.IntegerValue);
+            InstanceProperties instanceProperties = refObjects.GetValue<InstanceProperties>(graphicStyle.Id);
             if (instanceProperties != null)
                 return instanceProperties;
 
             instanceProperties = BH.Engine.Adapters.Revit.Create.InstanceProperties(null, null);
             instanceProperties.Name = graphicStyle.Name;
 
-            instanceProperties = Modify.SetIdentifiers(instanceProperties, graphicStyle) as InstanceProperties;
-            if (pullSettings.CopyCustomData)
-                instanceProperties = Modify.SetCustomData(instanceProperties, graphicStyle) as InstanceProperties;
-
+            //Set identifiers & custom data
+            instanceProperties = instanceProperties.SetIdentifiers(graphicStyle) as InstanceProperties;
+            instanceProperties = instanceProperties.SetCustomData(graphicStyle) as InstanceProperties;
             instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = graphicStyle.GraphicsStyleCategory.Parent.Name;
 
-            instanceProperties = instanceProperties.UpdateValues(pullSettings, graphicStyle) as InstanceProperties;
+            instanceProperties = instanceProperties.UpdateValues(settings, graphicStyle) as InstanceProperties;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(instanceProperties);
-
+            refObjects.AddOrReplace(graphicStyle.Id, instanceProperties);
             return instanceProperties;
         }
 

@@ -21,7 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -31,19 +34,19 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Adapters.Revit.Interface.IInstance ToBHoMInstance(this CurveElement curveElement, PullSettings pullSettings = null)
+        public static oM.Adapters.Revit.Interface.IInstance ToBHoMInstance(this CurveElement curveElement, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (curveElement == null)
                 return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            switch(curveElement.CurveElementType)
+            switch (curveElement.CurveElementType)
             {
                 case CurveElementType.DetailCurve:
-                    return ToBHoMDraftingInstance(curveElement, pullSettings);
+                    return curveElement.ToBHoMDraftingInstance(settings, refObjects);
                 case CurveElementType.ModelCurve:
-                    return ToBHoMModelInstance(curveElement, pullSettings);
+                    return curveElement.ToBHoMModelInstance(settings, refObjects);
                 default:
                     return null;
             }

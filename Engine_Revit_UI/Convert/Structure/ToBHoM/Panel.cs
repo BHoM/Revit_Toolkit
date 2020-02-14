@@ -20,15 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
-
-using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Structure.Elements;
+using BH.oM.Base;
 using BH.oM.Structure.SurfaceProperties;
+using System.Collections.Generic;
 using BHS = BH.Engine.Structure;
 
 namespace BH.UI.Revit.Engine
@@ -39,20 +36,20 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static List<oM.Structure.Elements.Panel> ToBHoMPanel(this HostObject hostObject, PullSettings pullSettings = null)
+        public static List<oM.Structure.Elements.Panel> ToBHoMPanel(this HostObject hostObject, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            List<oM.Structure.Elements.Panel> result = pullSettings.FindRefObjects<oM.Structure.Elements.Panel>(hostObject.Id.IntegerValue);
+            List<oM.Structure.Elements.Panel> result = refObjects.GetValues<oM.Structure.Elements.Panel>(hostObject.Id);
             if (result != null && result.Count > 0)
                 return result;
 
             //TODO: check if the attributes != null
             HostObjAttributes hostObjAttributes = hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes;
             string materialGrade = hostObject.MaterialGrade();
-            ISurfaceProperty property2D = hostObjAttributes.ToBHoMSurfaceProperty(pullSettings, materialGrade);
+            ISurfaceProperty property2D = hostObjAttributes.ToBHoMSurfaceProperty(materialGrade, settings, refObjects);
 
-            List<oM.Geometry.ICurve> outlines = hostObject.Outlines(pullSettings);
+            List<oM.Geometry.ICurve> outlines = hostObject.Outlines(settings);
             if (outlines != null && outlines.Count != 0)
             {
                 hostObject.AnalyticalPullWarning();
@@ -61,7 +58,7 @@ namespace BH.UI.Revit.Engine
             else
             {
                 result = new List<oM.Structure.Elements.Panel>();
-                Dictionary<BH.oM.Geometry.PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> dictionary = Query.PlanarSurfaceDictionary(hostObject, true, pullSettings);
+                Dictionary<BH.oM.Geometry.PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> dictionary = hostObject.PlanarSurfaceDictionary(true, settings);
                 if (dictionary != null)
                 {
                     foreach (BH.oM.Geometry.PlanarSurface planarSurface in dictionary.Keys)
@@ -90,12 +87,11 @@ namespace BH.UI.Revit.Engine
                 oM.Structure.Elements.Panel panel = result[i] as oM.Structure.Elements.Panel;
                 panel.Property = property2D;
 
-                panel = Modify.SetIdentifiers(panel, hostObject) as oM.Structure.Elements.Panel;
-                if (pullSettings.CopyCustomData)
-                    panel = Modify.SetCustomData(panel, hostObject) as oM.Structure.Elements.Panel;
+                //Set identifiers & custom data
+                panel = panel.SetIdentifiers(hostObject) as oM.Structure.Elements.Panel;
+                panel = panel.SetCustomData(hostObject) as oM.Structure.Elements.Panel;
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(panel);
-
+                refObjects.AddOrReplace(hostObject.Id, panel);
                 result[i] = panel;
             }
 
