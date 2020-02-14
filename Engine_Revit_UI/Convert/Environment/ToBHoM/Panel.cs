@@ -30,6 +30,8 @@ using BH.oM.Environment.Elements;
 using BH.oM.Environment.Fragments;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
 
 namespace BH.UI.Revit.Engine
 {
@@ -39,11 +41,11 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this Element element, ICurve crv, PullSettings pullSettings = null)
+        public static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this Element element, ICurve crv, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            oM.Environment.Elements.Panel panel = pullSettings.FindRefObject<oM.Environment.Elements.Panel>(element.Id.IntegerValue);
+            oM.Environment.Elements.Panel panel = refObjects.GetValue<oM.Environment.Elements.Panel>(element.Id);
             if (panel != null)
                 return panel;
 
@@ -81,6 +83,7 @@ namespace BH.UI.Revit.Engine
             else
                 panel.Type = oM.Environment.Elements.PanelType.Undefined;
 
+            //Set identifiers & custom data
             panel = Modify.SetIdentifiers(panel, element) as oM.Environment.Elements.Panel;
             if (pullSettings.CopyCustomData)
                 panel = Modify.SetCustomData(panel, element) as oM.Environment.Elements.Panel;
@@ -95,10 +98,10 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this FamilyInstance familyInstance, PullSettings pullSettings = null)
+        public static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             //Create a BuildingElement from the familyInstance geometry
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             oM.Environment.Elements.Panel panel = pullSettings.FindRefObject<oM.Environment.Elements.Panel>(familyInstance.Id.IntegerValue);
             if (panel != null)
@@ -140,6 +143,7 @@ namespace BH.UI.Revit.Engine
             else
                 panel.Type = oM.Environment.Elements.PanelType.Undefined;
 
+            //Set identifiers & custom data
             panel = Modify.SetIdentifiers(panel, familyInstance) as oM.Environment.Elements.Panel;
             if (pullSettings.CopyCustomData)
                 panel = Modify.SetCustomData(panel, familyInstance) as oM.Environment.Elements.Panel;
@@ -154,9 +158,9 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this EnergyAnalysisSurface energyAnalysisSurface, PullSettings pullSettings = null)
+        public static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this EnergyAnalysisSurface energyAnalysisSurface, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             oM.Environment.Elements.Panel panel = pullSettings.FindRefObject<oM.Environment.Elements.Panel>(energyAnalysisSurface.Id.IntegerValue);
             if (panel != null)
@@ -233,7 +237,7 @@ namespace BH.UI.Revit.Engine
 
             panel.Construction = Convert.ToBHoMConstruction(elementType as dynamic, pullSettings);
 
-            //Set some custom data properties
+            //Set identifiers & custom data
             panel = Modify.SetIdentifiers(panel, element) as oM.Environment.Elements.Panel;
             if (pullSettings.CopyCustomData)
             {
@@ -263,9 +267,9 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this Ceiling ceiling, PullSettings pullSettings = null)
+        public static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this Ceiling ceiling, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             List<oM.Environment.Elements.Panel> panels = pullSettings.FindRefObjects<oM.Environment.Elements.Panel>(ceiling.Id.IntegerValue);
             if (panels != null && panels.Count > 0)
@@ -313,7 +317,7 @@ namespace BH.UI.Revit.Engine
                 panel.Construction = construction;
                 panel.Type = oM.Environment.Elements.PanelType.Ceiling;
 
-                //Assign custom data
+                //Set identifiers & custom data
                 panel = Modify.SetIdentifiers(panel, ceiling) as oM.Environment.Elements.Panel;
                 if (pullSettings.CopyCustomData)
                     panel = Modify.SetCustomData(panel, ceiling) as oM.Environment.Elements.Panel;
@@ -330,9 +334,9 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this Floor floor, PullSettings pullSettings = null)
+        public static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this Floor floor, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             List<oM.Environment.Elements.Panel> panels = pullSettings.FindRefObjects<oM.Environment.Elements.Panel>(floor.Id.IntegerValue);
             if (panels != null && panels.Count > 0)
@@ -381,7 +385,7 @@ namespace BH.UI.Revit.Engine
                 panel.Construction = construction;
                 panel.Type = oM.Environment.Elements.PanelType.Floor;
 
-                //Assign custom data
+                //Set identifiers & custom data
                 panel = Modify.SetIdentifiers(panel, floor) as oM.Environment.Elements.Panel;
                 if (pullSettings.CopyCustomData)
                     panel = Modify.SetCustomData(panel, floor) as oM.Environment.Elements.Panel;
@@ -399,9 +403,9 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this RoofBase roofBase, PullSettings pullSettings = null)
+        public static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this RoofBase roofBase, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             List<oM.Environment.Elements.Panel> panels = pullSettings.FindRefObjects<oM.Environment.Elements.Panel>(roofBase.Id.IntegerValue);
             if (panels != null && panels.Count > 0)
@@ -448,7 +452,7 @@ namespace BH.UI.Revit.Engine
                 panel.Construction = construction;
                 panel.Type = oM.Environment.Elements.PanelType.Roof;
 
-                //Assign custom data
+                //Set identifiers & custom data
                 panel = Modify.SetIdentifiers(panel, roofBase) as oM.Environment.Elements.Panel;
                 if (pullSettings.CopyCustomData)
                     panel = Modify.SetCustomData(panel, roofBase) as oM.Environment.Elements.Panel;
@@ -466,9 +470,9 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this Wall wall, PullSettings pullSettings = null)
+        public static List<oM.Environment.Elements.Panel> ToBHoMEnvironmentPanels(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             List<oM.Environment.Elements.Panel> panels = pullSettings.FindRefObjects<oM.Environment.Elements.Panel>(wall.Id.IntegerValue);
             if (panels != null && panels.Count > 0)
@@ -513,7 +517,7 @@ namespace BH.UI.Revit.Engine
                 panel.Construction = constrtuction;
                 panel.Type = oM.Environment.Elements.PanelType.Wall;
 
-                //Assign custom data
+                //Set identifiers & custom data
                 panel = Modify.SetIdentifiers(panel, wall) as oM.Environment.Elements.Panel;
                 if (pullSettings.CopyCustomData)
                     panel = Modify.SetCustomData(panel, wall) as oM.Environment.Elements.Panel;

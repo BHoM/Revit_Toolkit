@@ -20,16 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Environment.Fragments;
+using BH.oM.Geometry;
 using System.Collections.Generic;
 using System.Linq;
-
-using Autodesk.Revit.DB;
-
-using BH.oM.Base;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
-using BH.oM.Environment.Fragments;
-using BH.Engine.Adapters.Revit;
 
 namespace BH.UI.Revit.Engine
 {
@@ -39,7 +37,7 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static List<oM.Architecture.Elements.Ceiling> ToBHoMCeilings(this Ceiling ceiling, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static List<oM.Architecture.Elements.Ceiling> ToBHoMCeilings(this Ceiling ceiling, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
@@ -73,13 +71,15 @@ namespace BH.UI.Revit.Engine
                 originContext = originContext.UpdateValues(settings, elementType) as OriginContextFragment;
                 newCeiling.Fragments.Add(originContext);
 
+                //Set identifiers & custom data
                 newCeiling = newCeiling.SetIdentifiers(ceiling) as oM.Architecture.Elements.Ceiling;
                 newCeiling = newCeiling.SetCustomData(ceiling) as oM.Architecture.Elements.Ceiling;
+
                 newCeiling = newCeiling.UpdateValues(settings, ceiling) as oM.Architecture.Elements.Ceiling;
                 ceilingList.Add(newCeiling);
             }
 
-            refObjects.Add(ceiling.Id.IntegerValue, ceilingList.Cast<IBHoMObject>().ToList());
+            refObjects.AddOrReplace(ceiling.Id, ceilingList);
             return ceilingList;
         }
 

@@ -23,7 +23,9 @@
 using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
 using BH.oM.Environment.MaterialFragments;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -33,12 +35,12 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static SolidMaterial ToBHoMSolidMaterial(this Material material, PullSettings pullSettings = null)
+        public static SolidMaterial ToBHoMSolidMaterial(this Material material, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (material == null)
                 return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             SolidMaterial result = pullSettings.FindRefObject<SolidMaterial>(material.Id.IntegerValue);
             if (result != null)

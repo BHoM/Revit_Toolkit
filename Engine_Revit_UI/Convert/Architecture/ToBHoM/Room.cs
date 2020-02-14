@@ -21,15 +21,12 @@
  */
 
 using Autodesk.Revit.DB;
-
-using BH.oM.Base;
-using BH.oM.Adapters.Revit.Settings;
-using System.Linq;
-using BH.oM.Environment.Fragments;
-using BH.Engine.Environment;
-using BH.oM.Environment.Elements;
-using System.Collections.Generic;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Environment.Fragments;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -39,7 +36,7 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static BHoMObject ToBHoMRoom(this SpatialElement spatialElement, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static BHoMObject ToBHoMRoom(this SpatialElement spatialElement, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
@@ -53,9 +50,9 @@ namespace BH.UI.Revit.Engine
             };
             room.Name = spatialElement.Name;
 
-            //Set custom data
+            //Set identifiers & custom data
             room = room.SetIdentifiers(spatialElement) as oM.Architecture.Elements.Room;
-            room = Modify.SetCustomData(room, spatialElement) as oM.Architecture.Elements.Room;
+            room = room.SetCustomData(spatialElement) as oM.Architecture.Elements.Room;
 
             //Set location
             if (spatialElement.Location != null && spatialElement.Location is LocationPoint)
@@ -68,11 +65,12 @@ namespace BH.UI.Revit.Engine
             originContext = originContext.UpdateValues(settings, spatialElement) as OriginContextFragment;
             room.Fragments.Add(originContext);
 
+            //Set identifiers & custom data
             //TODO: is customData added twice?
-            room = Modify.SetIdentifiers(room, spatialElement) as oM.Architecture.Elements.Room;
-            room = Modify.SetCustomData(room, spatialElement) as oM.Architecture.Elements.Room;
-
-            refObjects.Add(spatialElement.Id.IntegerValue, new List<IBHoMObject> { room });
+            room = room.SetIdentifiers(spatialElement) as oM.Architecture.Elements.Room;
+            room = room.SetCustomData(spatialElement) as oM.Architecture.Elements.Room;
+            
+            refObjects.AddOrReplace(spatialElement.Id, room);
             return room;
         }
 
