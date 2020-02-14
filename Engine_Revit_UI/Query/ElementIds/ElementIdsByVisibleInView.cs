@@ -45,17 +45,25 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get all Elements as ElementId that are visible in View")]
+        [Description("Get all Elements as ElementId that are visible in a list of Views")]
         [Input("document", "Revit Document where views are collected")]
+        [Input("view", "Revit view where visible elements are collected")]
         [Output("elementIdsByView", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsByView(this Document document, View view)
+        public static IEnumerable<ElementId> ElementIdsByVisibleInView(this Document document, View view, IEnumerable<ElementId> ids = null)
         {
             if (document == null || view == null)
                 return null;
 
             FilteredElementCollector collector = new FilteredElementCollector(document, view.Id);
-
-            return collector.ToElementIds();            
+            if (ids == null)
+            {
+                return collector.ToElementIds();
+            }
+            else
+            {
+                collector.Where(x => ids.Contains(x.Id)).ToList();
+                return collector.ToElementIds();
+            }
         }
 
         /***************************************************/

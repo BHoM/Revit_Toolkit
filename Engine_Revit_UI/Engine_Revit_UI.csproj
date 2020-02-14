@@ -316,7 +316,7 @@
     <Compile Include="Query\ArbitraryPlane.cs" />
     <Compile Include="Query\BoundingBox.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByBHoMType.cs" />
-    <Compile Include="Query\ElementIds\ElementIdsByCategoryName.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsByInstancesOnly.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByCategoryNames.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByDBType.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfFamilyTypes.cs" />
@@ -328,7 +328,7 @@
     <Compile Include="Query\ElementIds\ElementIdsBySelectionSet.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByTemplate.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByUniqueIds.cs" />
-    <Compile Include="Query\ElementIds\ElementIdsByView.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsByVisibleInView.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByViewType.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByWorksets.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfViewTemplates.cs" />

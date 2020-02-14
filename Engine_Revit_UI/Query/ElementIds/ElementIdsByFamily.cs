@@ -45,7 +45,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get all Elements as ElementIds by Family name, optinally narrowing the search by Family Type name")]
+        [Description("Get all Elements as ElementIds by Family name, optionally narrowing the search by Family Type name")]
         [Input("document", "Revit Document where ElementIds are collected")]
         [Input("familyName", "Name of the Family to look for the type")]
         [Input("familyTypeName", "Optional, the name of Family Type to look for in the Family")]
@@ -67,7 +67,10 @@ namespace BH.UI.Revit.Engine
             }
 
             if (elementTypes == null)
-                BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");            
+            {
+                BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");
+                return null;
+            }
 
             if (!string.IsNullOrEmpty(familyTypeName))
             {
@@ -78,7 +81,10 @@ namespace BH.UI.Revit.Engine
             }
 
             if (elementTypes == null)
+            {
                 BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family Type named " + familyTypeName + " in the Family " + familyName);
+                return null;
+            }
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             List<ElementId> result = new List<ElementId>();

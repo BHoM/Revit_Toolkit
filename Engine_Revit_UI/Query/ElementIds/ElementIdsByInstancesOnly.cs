@@ -24,6 +24,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
@@ -34,6 +35,9 @@ using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
+
+
 
 namespace BH.UI.Revit.Engine
 {
@@ -43,17 +47,17 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIdsByCategoryName(this Document document, string categoryName, IEnumerable<ElementId> ids = null)
+        [Description("Get Elements as ElementIds that are Family Instances only")]
+        [Input("document", "Revit Document where ElementIds are collected")]        
+        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
+        [Output("elementIdsByInstancesOnly", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsByInstancesOnly(this Document document, IEnumerable<ElementId> ids = null)
         {
-            if (document == null || string.IsNullOrEmpty(categoryName))
-                return null;
-
-            BuiltInCategory builtInCategory = document.BuiltInCategory(categoryName);
-            if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
+            if (document == null)
                 return null;
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            return collector.OfCategory(builtInCategory).ToElementIds();
+            return collector.WhereElementIsNotElementType().ToElementIds().ToList();
         }
 
         /***************************************************/

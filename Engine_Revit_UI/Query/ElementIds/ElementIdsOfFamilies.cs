@@ -45,9 +45,9 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get the ElementId of all Families, with option to narrow search by family name only")]
+        [Description("Get the ElementId of all Families, with option to narrow search by Family name only")]
         [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("familyName", "Optional, narrows the seartch by a Family name")]        
+        [Input("familyName", "Optional, narrows the search by a Family name")]        
         [Input("caseSensitive", "Optional, sets the Family name and Family Type name to be case sensitive or not")]
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
         [Output("elementIdsOfFamilies", "An enumerator for easy iteration of ElementIds collected")]
@@ -58,30 +58,30 @@ namespace BH.UI.Revit.Engine
 
             if (!string.IsNullOrEmpty(familyName))
             {
+                HashSet<ElementId> result = new HashSet<ElementId>();
 
-                List<ElementId> returned = new List<ElementId>();
+                Element element = null;
 
                 if (caseSensitive)
                 {
-                    Element element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name == familyName).FirstOrDefault();
-                    returned.Add(element.Id);
+                    element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name == familyName).FirstOrDefault();                    
                 }
                 else
                 {
-                    Element element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name.ToUpper() == familyName.ToUpper()).FirstOrDefault();
-                    returned.Add(element.Id);
+                    element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name.ToUpper() == familyName.ToUpper()).FirstOrDefault();
+                    
                 }
 
-                if (returned.Count > 0)
-                    return returned;
+                result.Add(element.Id);
 
+                if (result.Any())
+                    return result;
                 else
                 {
                     BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");                    
                     return null;
                 }                
             }
-
             else
             {
                 FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());

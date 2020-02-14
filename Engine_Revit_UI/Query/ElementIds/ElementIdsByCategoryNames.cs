@@ -47,33 +47,36 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get Elements as ElementIds by Category name")]
+        [Description("Get Elements as ElementIds by Category name, including Family Instances and Family Types")]
         [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("categoryName", "List of Category names to be used as filter")]
+        [Input("categoryNames", "List of Category names to be used as filter")]
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
         [Output("elementIdsByCategoryNames", "An enumerator for easy iteration of ElementIds collected")]
         public static IEnumerable<ElementId> ElementIdsByCategoryNames(this Document document, List<string> categoryNames, IEnumerable<ElementId> ids = null)
         {
-            List<ElementId> returned = new List<ElementId>();
-
             if (document == null || categoryNames.Count == 0)
                 return null;
 
-            foreach(string name in categoryNames)
+            HashSet<ElementId> result = new HashSet<ElementId>();            
+
+            foreach (string name in categoryNames)
             {
                 BuiltInCategory builtInCategory = document.BuiltInCategory(name);
                 if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
+                {
                     BH.Engine.Reflection.Compute.RecordError("Couldn't find a Category named " + name + ".");
-                
+                    continue;
+                }
+
                 FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-                collector.OfCategory(builtInCategory).WhereElementIsNotElementType().ToList();
+                collector.OfCategory(builtInCategory).ToList();
 
                 foreach(Element e in collector)
                 {
-                    returned.Add(e.Id);
+                    result.Add(e.Id);
                 }                
             }
-            return returned;       
+            return result;       
         }
 
         /***************************************************/

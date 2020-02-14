@@ -31,15 +31,15 @@ using System.Threading.Tasks;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters all elements of given category.")]
+    [Description("IRequest that filters all elements of a list categories.")]
     public class CategoryRequest : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Revit category name, as shown in Revit user interface.")]
-        public string CategoryName { get; set; } = "";
+        [Description("Revit category names, as shown in Revit user interface.")]
+        public List<string> CategoryName { get; set; } = new List<string>();
 
         /***************************************************/
     }

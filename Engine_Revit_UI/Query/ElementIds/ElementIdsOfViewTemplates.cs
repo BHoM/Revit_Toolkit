@@ -49,7 +49,7 @@ namespace BH.UI.Revit.Engine
         [Input("document", "Revit Document where ElementIds are collected")]
         [Input("viewTemplateName", "Optional, allows the filter to narrow the search to a specific View Template name")]
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("elementsIdsViewTemplate", "An enumerator for easy iteration of ElementIds collected")]
+        [Output("elementsIdsOfViewTemplate", "An enumerator for easy iteration of ElementIds collected")]
         public static IEnumerable<ElementId> ElementIdsOfViewTemplates(this Document document, string viewTemplateName = null, IEnumerable < ElementId> ids = null)
         {
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());

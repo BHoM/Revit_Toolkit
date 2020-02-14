@@ -32,7 +32,8 @@ namespace BH.oM.Adapters.Revit
         /****                Properties                 ****/
         /***************************************************/
 
-
+        [Description("Revit view template name.")]
+        public string TemplateName { get; set; } = "";
 
         /***************************************************/
     }
