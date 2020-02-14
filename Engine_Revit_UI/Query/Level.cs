@@ -20,14 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
 
 using Autodesk.Revit.DB;
-
-using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using System;
 
 namespace BH.UI.Revit.Engine
 {
@@ -37,9 +33,9 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
         
-        public static oM.Geometry.SettingOut.Level Level(this Element element, PullSettings pullSettings = null)
+        public static oM.Geometry.SettingOut.Level Level(this Element element, RevitSettings settings = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             if (element == null || element.LevelId == null || element.LevelId == Autodesk.Revit.DB.ElementId.InvalidElementId)
                 return null;
@@ -48,7 +44,7 @@ namespace BH.UI.Revit.Engine
             if (level == null)
                 return null;
 
-            return Convert.ToBHoMLevel(level, pullSettings) as oM.Geometry.SettingOut.Level;
+            return level.ToBHoMLevel(settings) as oM.Geometry.SettingOut.Level;
         }
 
         /***************************************************/

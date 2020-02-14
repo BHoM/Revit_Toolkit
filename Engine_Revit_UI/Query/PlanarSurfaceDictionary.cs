@@ -20,13 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -37,14 +35,14 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> PlanarSurfaceDictionary(this HostObject hostObject, bool pullOpenings = true, PullSettings pullSettings = null)
+        public static Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> PlanarSurfaceDictionary(this HostObject hostObject, bool pullOpenings = true, RevitSettings settings = null)
         {
-            List<PolyCurve> polycurves = Query.Profiles(hostObject, pullSettings);
+            List<PolyCurve> polycurves = hostObject.Profiles(settings);
 
             List<PolyCurve> outerPolycurves = null;
             try
             {
-                outerPolycurves = BH.Engine.Adapters.Revit.Query.OuterPolyCurves(polycurves);
+                outerPolycurves = polycurves.OuterPolyCurves();
             }
             catch
             {
@@ -120,13 +118,13 @@ namespace BH.UI.Revit.Engine
                             switch ((BuiltInCategory)(familyInstance.Category.Id.IntegerValue))
                             {
                                 case Autodesk.Revit.DB.BuiltInCategory.OST_Windows:
-                                    openings.Add(familyInstance.ToBHoMWindow(pullSettings));
+                                    openings.Add(familyInstance.ToBHoMWindow(settings));
                                     break;
                                 case Autodesk.Revit.DB.BuiltInCategory.OST_Doors:
-                                    openings.Add(familyInstance.ToBHoMDoor(pullSettings));
+                                    openings.Add(familyInstance.ToBHoMDoor(settings));
                                     break;
                                 default:
-                                    PolyCurve pcurve = familyInstance.PolyCurve(hostObject, pullSettings);
+                                    PolyCurve pcurve = familyInstance.PolyCurve(hostObject, settings);
                                     if (pcurve != null)
                                         internalPolycurves.Add(pcurve);
                                     break;

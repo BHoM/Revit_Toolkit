@@ -168,7 +168,7 @@ namespace BH.UI.Revit.Adapter
                         options.ComputeReferences = false;
                         options.DetailLevel = ViewDetailLevel.Fine;
                         options.IncludeNonVisibleObjects = includeNonVisible;
-                        List<ICurve> edges = element.Curves(options);
+                        List<ICurve> edges = element.Curves(options, revitSettings);
                         
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {

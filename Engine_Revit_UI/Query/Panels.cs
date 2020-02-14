@@ -20,13 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.Engine.Environment;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -36,9 +35,9 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<oM.Environment.Elements.Panel> Panels(this GeometryElement geometryElement, PullSettings pullSettings = null)
+        public static List<oM.Environment.Elements.Panel> Panels(this GeometryElement geometryElement, RevitSettings settings = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             List<oM.Environment.Elements.Panel> result = new List<oM.Environment.Elements.Panel>();
             foreach (GeometryObject geomObject in geometryElement)
@@ -51,7 +50,7 @@ namespace BH.UI.Revit.Engine
                 if (planarFace == null)
                     continue;
 
-                List<BH.oM.Environment.Elements.Panel> panels = planarFace.Panels(pullSettings);
+                List<BH.oM.Environment.Elements.Panel> panels = planarFace.Panels(settings);
                 if (panels == null || panels.Count < 1)
                     continue;
 
@@ -63,13 +62,13 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<oM.Environment.Elements.Panel> Panels(this PlanarFace planarFace, PullSettings pullSettings = null)
+        public static List<oM.Environment.Elements.Panel> Panels(this PlanarFace planarFace, RevitSettings settings = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             List<oM.Environment.Elements.Panel> result = new List<oM.Environment.Elements.Panel>();
 
-            List<PolyCurve> polycurves = Query.PolyCurves(planarFace, null, pullSettings);
+            List<PolyCurve> polycurves = planarFace.PolyCurves(null, settings);
 
             foreach (PolyCurve polycurve in polycurves)
             {
