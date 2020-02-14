@@ -21,10 +21,12 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -37,13 +39,13 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static Element ToCurveElement(this ModelInstance modelInstance, Document document, PushSettings pushSettings = null)
+        public static Element ToCurveElement(this ModelInstance modelInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            CurveElement curveElement = pushSettings.FindRefObject<CurveElement>(document, modelInstance.BHoM_Guid);
+            CurveElement curveElement = refObjects.GetValue<CurveElement>(document, modelInstance.BHoM_Guid);
             if (curveElement != null)
                 return curveElement;
-            
-            pushSettings.DefaultIfNull();
+
+            settings = settings.DefaultIfNull();
 
             ICurve curve = modelInstance.Location as ICurve;
             if (curve == null)
@@ -86,20 +88,19 @@ namespace BH.UI.Revit.Engine
                 }
             }
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(modelInstance, curveElement);
-
+            refObjects.AddOrReplace(modelInstance, curveElement);
             return curveElement;
         }
 
         /***************************************************/
 
-        public static CurveElement ToCurveElement(this DraftingInstance draftingInstance, Document document, PushSettings pushSettings = null)
+        public static CurveElement ToCurveElement(this DraftingInstance draftingInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            CurveElement curveElement = pushSettings.FindRefObject<CurveElement>(document, draftingInstance.BHoM_Guid);
+            CurveElement curveElement = refObjects.GetValue<CurveElement>(document, draftingInstance.BHoM_Guid);
             if (curveElement != null)
                 return curveElement;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             if (!(draftingInstance.Location is ICurve))
                 return null;
@@ -132,8 +133,7 @@ namespace BH.UI.Revit.Engine
                 } 
             }
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(draftingInstance, curveElement);
-
+            refObjects.AddOrReplace(draftingInstance, curveElement);
             return curveElement;
         }
 

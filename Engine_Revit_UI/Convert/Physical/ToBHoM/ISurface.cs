@@ -40,7 +40,7 @@ namespace BH.UI.Revit.Engine
         {
             settings = settings.DefaultIfNull();
 
-            List<oM.Physical.Elements.ISurface> surfaces = refObjects.GetValuess<oM.Physical.Elements.ISurface>(hostObject.Id);
+            List<oM.Physical.Elements.ISurface> surfaces = refObjects.GetValues<oM.Physical.Elements.ISurface>(hostObject.Id);
             if (surfaces != null && surfaces.Count > 0)
                 return surfaces;
 

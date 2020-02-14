@@ -204,7 +204,7 @@ namespace BH.UI.Revit.Engine
             switch (discipline)
             {
                 case Discipline.Structural:
-                    return wallType.ToBHoMSurfaceProperty(settings, refObjects) as IBHoMObject;
+                    return wallType.ToBHoMSurfaceProperty(null, settings, refObjects) as IBHoMObject;
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
@@ -221,7 +221,7 @@ namespace BH.UI.Revit.Engine
             switch (discipline)
             {
                 case Discipline.Structural:
-                    return floorType.ToBHoMSurfaceProperty(settings, refObjects);
+                    return floorType.ToBHoMSurfaceProperty(null, settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
@@ -451,10 +451,10 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Environmental:
                     return material.ToBHoMSolidMaterial(settings, refObjects);
                 case Discipline.Structural:
-                    return material.ToBHoMMaterialFragment(settings, refObjects);
+                    return material.ToBHoMMaterialFragment(null, settings, refObjects);
                 case Discipline.Physical:
                     BH.oM.Physical.Materials.Material BHMaterial = material.ToBHoMEmptyMaterial(settings, refObjects);
-                    BHMaterial.Properties = material.ToBHoMMaterialProperties(settings, refObjects);
+                    BHMaterial.Properties = material.ToBHoMMaterialProperties(null, settings, refObjects);
                     return BHMaterial;
                 default:
                     return null;

@@ -21,9 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
+using System;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -33,27 +35,26 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static ElementType ToRevitElementType(this InstanceProperties instanceProperties, Document document, PushSettings pushSettings = null)
+        public static ElementType ToRevitElementType(this InstanceProperties instanceProperties, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            ElementType elementType = pushSettings.FindRefObject<ElementType>(document, instanceProperties.BHoM_Guid);
+            ElementType elementType = refObjects.GetValue<ElementType>(document, instanceProperties.BHoM_Guid);
             if (elementType != null)
                 return elementType;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            BuiltInCategory builtInCategory = instanceProperties.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
+            BuiltInCategory builtInCategory = instanceProperties.BuiltInCategory(document, settings.FamilyLoadSettings);
 
-            elementType = instanceProperties.ElementType(document, builtInCategory, pushSettings.FamilyLoadSettings, true);
+            elementType = instanceProperties.ElementType(document, builtInCategory, settings.FamilyLoadSettings, true);
 
             elementType.CheckIfNullPush(instanceProperties);
             if (elementType == null)
                 return null;
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(elementType, instanceProperties, null);
+            // Copy custom data and set parameters
+            elementType.SetParameters(instanceProperties, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(instanceProperties, elementType);
-
+            refObjects.AddOrReplace(instanceProperties, elementType);
             return elementType;
         }
 

@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -85,6 +86,74 @@ namespace BH.UI.Revit.Engine
         internal static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key, IBHoMObject value)
         {
             refObjects.AddOrReplace(key.ToString(), value);
+        }
+
+        /***************************************************/
+
+        internal static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, Guid key, IEnumerable<int> values)
+        {
+            if (refObjects == null || key == Guid.Empty || values == null)
+                return;
+
+            List<int> valueList = values.ToList();
+            if (refObjects.ContainsKey(key))
+                refObjects[key] = valueList;
+            else
+                refObjects.Add(key, valueList);
+        }
+
+        /***************************************************/
+
+        internal static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, Guid key, int value)
+        {
+            if (refObjects == null || key == Guid.Empty)
+                return;
+
+            List<int> valueList = new List<int> { value };
+            if (refObjects.ContainsKey(key))
+                refObjects[key] = valueList;
+            else
+                refObjects.Add(key, valueList);
+        }
+
+        /***************************************************/
+
+        internal static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, IBHoMObject obj, IEnumerable<int> values)
+        {
+            if (obj == null)
+                return;
+
+            refObjects.AddOrReplace(obj.BHoM_Guid, values);
+        }
+
+        /***************************************************/
+
+        internal static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, IBHoMObject obj, int value)
+        {
+            if (obj == null)
+                return;
+
+            refObjects.AddOrReplace(obj.BHoM_Guid, value);
+        }
+
+        /***************************************************/
+
+        internal static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, IBHoMObject obj, IEnumerable<Element> values)
+        {
+            if (obj == null)
+                return;
+
+            refObjects.AddOrReplace(obj.BHoM_Guid, values.Select(x => x.Id.IntegerValue));
+        }
+
+        /***************************************************/
+
+        internal static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, IBHoMObject obj, Element value)
+        {
+            if (obj == null)
+                return;
+
+            refObjects.AddOrReplace(obj.BHoM_Guid, value.Id.IntegerValue);
         }
 
         /***************************************************/

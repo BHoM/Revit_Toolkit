@@ -21,10 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
-
-using BH.oM.Adapters.Revit.Settings;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
-
+using BH.oM.Adapters.Revit.Settings;
+using System;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -34,24 +35,23 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static ViewSheet ToRevitViewSheet(this Sheet sheet, Document document, PushSettings pushSettings = null)
+        public static ViewSheet ToRevitViewSheet(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (sheet == null)
                 return null;
 
-            ViewSheet viewSheet = pushSettings.FindRefObject<ViewSheet>(document, sheet.BHoM_Guid);
+            ViewSheet viewSheet = refObjects.GetValue<ViewSheet>(document, sheet.BHoM_Guid);
             if (viewSheet != null)
                 return viewSheet;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             viewSheet = ViewSheet.Create(document, ElementId.InvalidElementId);
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(viewSheet, sheet, null);
+            // Copy custom data and set parameters
+            viewSheet.SetParameters(sheet, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(sheet, viewSheet);
-
+            refObjects.AddOrReplace(sheet, viewSheet);
             return viewSheet;
         }
 

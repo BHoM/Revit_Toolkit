@@ -20,13 +20,13 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -36,7 +36,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Floor ToRevitFloor(this oM.Physical.Elements.Floor floor, Document document, PushSettings pushSettings = null)
+        public static Floor ToRevitFloor(this oM.Physical.Elements.Floor floor, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (floor == null || floor.Construction == null || document == null)
                 return null;
@@ -45,20 +45,20 @@ namespace BH.UI.Revit.Engine
             if (planarSurface == null)
                 return null;
 
-            Floor revitFloor = pushSettings.FindRefObject<Floor>(document, floor.BHoM_Guid);
+            Floor revitFloor = refObjects.GetValue<Floor>(document, floor.BHoM_Guid);
             if (revitFloor != null)
                 return revitFloor;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             FloorType floorType = null;
 
             if (floor.Construction != null)
-                floorType = ToRevitHostObjAttributes(floor.Construction, document, pushSettings) as FloorType;
+                floorType = floor.Construction.ToRevitHostObjAttributes(document, settings, refObjects) as FloorType;
 
             if (floorType == null)
             {
-                string familyTypeName = BH.Engine.Adapters.Revit.Query.FamilyTypeName(floor);
+                string familyTypeName = floor.FamilyTypeName();
                 if (!string.IsNullOrEmpty(familyTypeName))
                 {
                     List<FloorType> floorTypeList = new FilteredElementCollector(document).OfClass(typeof(FloorType)).Cast<FloorType>().ToList().FindAll(x => x.Name == familyTypeName);
@@ -98,11 +98,10 @@ namespace BH.UI.Revit.Engine
             if (revitFloor == null)
                 return null;
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(revitFloor, floor, new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM });
+            // Copy custom data and set parameters
+            revitFloor.SetParameters(floor, new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM });
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(floor, revitFloor);
-
+            refObjects.AddOrReplace(floor, revitFloor);
             return revitFloor;
         }
 

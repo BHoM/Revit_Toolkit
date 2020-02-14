@@ -39,9 +39,19 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
+        internal static void NotConvertedWarning(this IBHoMObject obj)
+        {
+            string message = String.Format("BHoM object conversion to Revit failed.");
+
+            if (obj != null)
+                message += string.Format(" BHoM object type: {0}, BHoM Guid: {1}", obj.GetType(), obj.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordWarning(message);
+        }
+
         internal static void NotConvertedWarning(this Element element, Discipline discipline)
         {
-            string message = String.Format("Revit element could not be converted because conversion method does not exist for discipline {0}.", discipline);
+            string message = String.Format("Revit element conversion to BHoM failed for discipline {0}.", discipline);
 
             if (element != null)
                 message += string.Format(" Element Type: {0}, Element Id: {1}, Element Name: {2}", element.GetType(), element.Id.IntegerValue, element.Name);
