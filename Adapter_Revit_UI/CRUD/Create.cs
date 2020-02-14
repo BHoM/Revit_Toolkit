@@ -36,6 +36,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapter;
+using BH.Engine.Adapters.Revit;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -68,9 +69,9 @@ namespace BH.UI.Revit.Adapter
                 BH.Engine.Reflection.Compute.RecordWarning("Revit Push Config has not been specified. Default Revit Push Config is used.");
                 pushConfig = RevitPushConfig.Default;
             }
-            
             bool suppressFailureMessages = pushConfig.SuppressFailureMessages;
 
+            RevitSettings revitSettings = RevitSettings.DefaultIfNull();
             Document document = Document;
 
             bool result = false;
@@ -80,17 +81,17 @@ namespace BH.UI.Revit.Adapter
                 using (Transaction transaction = new Transaction(document, "BHoM Push"))
                 {
                     transaction.Start();
-                    result = Create(objects, UIControlledApplication, document, RevitSettings, suppressFailureMessages);
+                    result = Create(objects, UIControlledApplication, document, revitSettings, suppressFailureMessages);
                     transaction.Commit();
                 }
             }
             else
             {
                 //Transaction is already opened
-                result = Create(objects, UIControlledApplication, document, RevitSettings, suppressFailureMessages);
+                result = Create(objects, UIControlledApplication, document, revitSettings, suppressFailureMessages);
             }
 
-            return result; ;
+            return result;
         }
 
 

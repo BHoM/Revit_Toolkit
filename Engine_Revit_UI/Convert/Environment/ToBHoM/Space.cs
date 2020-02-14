@@ -22,10 +22,10 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
-
 using BH.Engine.Environment;
-using BH.oM.Environment.Elements;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Environment.Elements;
 using BH.oM.Environment.Fragments;
 using System.Collections.Generic;
 
@@ -37,9 +37,9 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static Space ToBHoMSpace(this SpatialElement spatialElement, PullSettings pullSettings = null)
+        public static Space ToBHoMSpace(this SpatialElement spatialElement, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             SpatialElementBoundaryOptions spatialElementBoundaryOptions = new SpatialElementBoundaryOptions();
             spatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
@@ -50,7 +50,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, PullSettings pullSettings = null)
+        public static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (spatialElement == null || spatialElementBoundaryOptions == null)
                 return new Space();
@@ -62,12 +62,12 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, PullSettings pullSettings = null)
+        public static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (spatialElement == null || spatialElementGeometryCalculator == null)
                 return new Space();
 
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             Space space = pullSettings.FindRefObject<Space>(spatialElement.Id.IntegerValue);
             if (space != null)
@@ -109,12 +109,12 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Space ToBHoMSpace(this EnergyAnalysisSpace energyAnalysisSpace, PullSettings pullSettings = null)
+        public static Space ToBHoMSpace(this EnergyAnalysisSpace energyAnalysisSpace, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (energyAnalysisSpace == null)
                 return new Space();
 
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             Space space = pullSettings.FindRefObject<Space>(energyAnalysisSpace.Id.IntegerValue);
             if (space != null)

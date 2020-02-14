@@ -279,6 +279,7 @@
     <Compile Include="Create\CurveArray.cs" />
     <Compile Include="Modify\AddAdjacentSpaceId.cs" />
     <Compile Include="Compute\LoadFamily.cs" />
+    <Compile Include="Modify\AddOrReplace.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Ceiling.cs" />
     <Compile Include="Convert\Revit\ToBHoM\ViewPlan.cs" />

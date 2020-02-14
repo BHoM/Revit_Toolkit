@@ -55,7 +55,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
         
-        public static List<IBHoMObject> ToBHoM(this ProjectInfo projectInfo, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> ToBHoM(this ProjectInfo projectInfo, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -68,7 +68,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this Panel panel, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this Panel panel, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -84,7 +84,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> ToBHoM(this FamilyInstance familyInstance, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> ToBHoM(this FamilyInstance familyInstance, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -123,7 +123,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this Wall wall, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> ToBHoM(this Wall wall, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -147,7 +147,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this Ceiling ceiling, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> ToBHoM(this Ceiling ceiling, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -164,7 +164,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this Floor floor, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> ToBHoM(this Floor floor, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch(discipline)
             {
@@ -182,7 +182,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this RoofBase roofBase, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> ToBHoM(this RoofBase roofBase, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -199,7 +199,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this WallType wallType, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this WallType wallType, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -216,7 +216,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this FloorType floorType, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this FloorType floorType, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -233,7 +233,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this CeilingType ceilingType, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this CeilingType ceilingType, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -249,7 +249,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this RoofType roofType, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this RoofType roofType, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -265,7 +265,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this FamilySymbol familySymbol, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this FamilySymbol familySymbol, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -276,7 +276,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this Level level, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this Level level, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch(discipline)
             {
@@ -292,7 +292,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this Grid grid, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this Grid grid, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -308,7 +308,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this MultiSegmentGrid grid, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this MultiSegmentGrid grid, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -324,7 +324,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this ElementType elementType, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this ElementType elementType, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -335,7 +335,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this GraphicsStyle graphicStyle, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this GraphicsStyle graphicStyle, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -346,7 +346,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this SpatialElement spatialElement, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this SpatialElement spatialElement, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -363,7 +363,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
         
-        public static IBHoMObject ToBHoM(this EnergyAnalysisSpace energyAnalysisSpace, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this EnergyAnalysisSpace energyAnalysisSpace, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -379,7 +379,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this EnergyAnalysisSurface energyAnalysisSurface, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this EnergyAnalysisSurface energyAnalysisSurface, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -395,7 +395,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this EnergyAnalysisOpening energyAnalysisOpening, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this EnergyAnalysisOpening energyAnalysisOpening, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -411,7 +411,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this ViewSheet viewSheet, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this ViewSheet viewSheet, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -422,7 +422,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this Viewport viewport, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this Viewport viewport, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -433,7 +433,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this ViewPlan viewPlan, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this ViewPlan viewPlan, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -444,7 +444,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this Material material, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this Material material, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -463,7 +463,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this Family family, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this Family family, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -474,7 +474,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this CurveElement curveElement, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this CurveElement curveElement, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -485,7 +485,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this FilledRegion filledRegion, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this FilledRegion filledRegion, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -499,7 +499,7 @@ namespace BH.UI.Revit.Engine
         /****             Fallback Methods              ****/
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             return null;
         }
@@ -517,7 +517,7 @@ namespace BH.UI.Revit.Engine
         /****             Interface Methods             ****/
         /***************************************************/
 
-        public static IBHoMObject IToBHoM(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<int, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject IToBHoM(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (element == null)
             {

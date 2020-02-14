@@ -20,74 +20,73 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-
-using BH.oM.Adapters.Revit;
-using BH.oM.Base;
-using System;
-using System.Linq;
 using Autodesk.Revit.DB;
+using BH.oM.Base;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Query
+    public static partial class Modify
     {
         /***************************************************/
         /****             Internal Methods              ****/
         /***************************************************/
 
-        internal static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, string key) where T : IBHoMObject
+        internal static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, string key, IEnumerable<IBHoMObject> values)
         {
-            if (refObjects == null || string.IsNullOrWhiteSpace(key))
-                return null;
+            if (refObjects == null || string.IsNullOrWhiteSpace(key) || values == null)
+                return;
 
-            List<IBHoMObject> bhomObjects = null;
-            if (refObjects.TryGetValue(key, out bhomObjects) && bhomObjects != null)
-                return bhomObjects.FindAll(x => x is T).Cast<T>().ToList();
-
-            return null;
-        }
-
-        /***************************************************/
-
-        internal static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, int key) where T : IBHoMObject
-        {
-            return refObjects.GetValues<T>(key.ToString());
-        }
-
-        /***************************************************/
-
-        internal static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key) where T : IBHoMObject
-        {
-            return refObjects.GetValues<T>(key.ToString());
-        }
-
-        /***************************************************/
-
-        internal static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, string key) where T : IBHoMObject
-        {
-            List<T> values = refObjects.GetValues<T>(key);
-            if (values != null && values.Count == 1)
-                return values[0];
+            List<IBHoMObject> valueList = values.ToList();
+            if (refObjects.ContainsKey(key))
+                refObjects[key] = valueList;
             else
-                return default(T);
+                refObjects.Add(key, valueList);
         }
 
         /***************************************************/
 
-        internal static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, int key) where T : IBHoMObject
+        internal static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, int key, IEnumerable<IBHoMObject> values)
         {
-            return refObjects.GetValue<T>(key.ToString());
+            refObjects.AddOrReplace(key.ToString(), values);
         }
 
         /***************************************************/
 
-        internal static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key) where T : IBHoMObject
+        internal static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key, IEnumerable<IBHoMObject> values)
         {
-            return refObjects.GetValue<T>(key.ToString());
+            refObjects.AddOrReplace(key.ToString(), values);
+        }
+
+        /***************************************************/
+
+        internal static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, string key, IBHoMObject value)
+        {
+            if (refObjects == null || string.IsNullOrWhiteSpace(key) || value == null)
+                return;
+
+            List<IBHoMObject> valueList = new List<IBHoMObject> { value };
+            if (refObjects.ContainsKey(key))
+                refObjects[key] = valueList;
+            else
+                refObjects.Add(key, valueList);
+        }
+
+        /***************************************************/
+
+        internal static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, int key, IBHoMObject value)
+        {
+            refObjects.AddOrReplace(key.ToString(), value);
+        }
+
+        /***************************************************/
+
+        internal static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key, IBHoMObject value)
+        {
+            refObjects.AddOrReplace(key.ToString(), value);
         }
 
         /***************************************************/
     }
 }
-

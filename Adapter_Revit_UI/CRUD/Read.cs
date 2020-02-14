@@ -138,7 +138,7 @@ namespace BH.UI.Revit.Adapter
             if (discipline == Discipline.Undefined)
                 discipline = Discipline.Physical;
 
-            RevitSettings revitSettings = RevitSettings;
+            RevitSettings revitSettings = RevitSettings.DefaultIfNull();
 
             //TODO: this should happen somewhere else!
             MapSettings mapSettings = RevitSettings.MapSettings;
@@ -148,7 +148,7 @@ namespace BH.UI.Revit.Adapter
             List<IBHoMObject> result = new List<IBHoMObject>();
             List <int> elementIDList = new List<int>();
 
-            Dictionary<int, List<IBHoMObject>> refObjects = null;
+            Dictionary<string, List<IBHoMObject>> refObjects = null;
 
             foreach (ElementId id in elementIds)
             {
@@ -201,7 +201,7 @@ namespace BH.UI.Revit.Adapter
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static IEnumerable<IBHoMObject> Read(Element element, Discipline discipline, RevitSettings revitSettings, Dictionary<int, List<IBHoMObject>> refObjects)
+        private static IEnumerable<IBHoMObject> Read(Element element, Discipline discipline, RevitSettings revitSettings, Dictionary<string, List<IBHoMObject>> refObjects)
         {
             if (element == null || !element.IsValidObject)
                 return new List<IBHoMObject>();

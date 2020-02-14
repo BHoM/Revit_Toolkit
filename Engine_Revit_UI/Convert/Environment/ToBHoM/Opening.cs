@@ -31,6 +31,7 @@ using BH.oM.Environment.Fragments;
 using BH.oM.Environment.Elements;
 
 using System.Collections.Generic;
+using BH.Engine.Adapters.Revit;
 
 namespace BH.UI.Revit.Engine
 {
@@ -42,7 +43,7 @@ namespace BH.UI.Revit.Engine
 
         public static oM.Environment.Elements.Opening ToBHoMOpening(this EnergyAnalysisOpening energyAnalysisOpening, RevitSettings settings = null, Dictionary<int, List<BHoMObject>> refObjects = null)
         {
-            //pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             Element element = energyAnalysisOpening.Element();
             if (element == null)

@@ -29,6 +29,7 @@ using BH.oM.Environment.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Environment.Fragments;
 using BH.Engine.Environment;
+using BH.Engine.Adapters.Revit;
 
 namespace BH.UI.Revit.Engine
 {
@@ -38,14 +39,12 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
         
-        public static List<IBHoMObject> ToBHoMObjects(this ProjectInfo projectInfo, PullSettings pullSettings = null)
+        public static List<IBHoMObject> ToBHoMObjects(this ProjectInfo projectInfo, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
-
+            settings = settings.DefaultIfNull();
             Document document = projectInfo.Document;
 
-            Building building = pullSettings.FindRefObject<Building>(projectInfo.Id.IntegerValue);
-
+            Building building = refObjects.GetValue<Building>(projectInfo.Id);
             if (building == null)
             {
                 double elevation = 0;
@@ -103,26 +102,23 @@ namespace BH.UI.Revit.Engine
                 buildingContext.WeatherStation = weatherStationName;
                 building.AddFragment(buildingContext);
 
-                building = Modify.SetIdentifiers(building, document.ProjectInformation) as Building;
-                if (pullSettings.CopyCustomData)
-                {
-                    building = Modify.SetCustomData(building, "Time Zone", timeZone) as Building;
-                    building = Modify.SetCustomData(building, "Place Name", placeName) as Building;
-                    building = Modify.SetCustomData(building, "Weather Station Name", weatherStationName) as Building;
+                //Set identifiers & custom data
+                building = building.SetIdentifiers(document.ProjectInformation) as Building;
+                building = building.SetCustomData("Time Zone", timeZone) as Building;
+                building = building.SetCustomData("Place Name", placeName) as Building;
+                building = building.SetCustomData("Weather Station Name", weatherStationName) as Building;
 
-                    building = Modify.SetCustomData(building, "Project Angle", projectAngle) as Building;
-                    building = Modify.SetCustomData(building, "Project East/West Offset", projectEastWestOffset) as Building;
-                    building = Modify.SetCustomData(building, "Project North/South Offset", projectNorthSouthOffset) as Building;
-                    building = Modify.SetCustomData(building, "Project Elevation", projectElevation) as Building;
+                building = building.SetCustomData("Project Angle", projectAngle) as Building;
+                building = building.SetCustomData("Project East/West Offset", projectEastWestOffset) as Building;
+                building = building.SetCustomData("Project North/South Offset", projectNorthSouthOffset) as Building;
+                building = building.SetCustomData("Project Elevation", projectElevation) as Building;
 
-                    building = Modify.SetCustomData(building, document.ProjectInformation) as Building;
-                }
+                building = building.SetCustomData(document.ProjectInformation) as Building;
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(building);
+                refObjects.AddOrReplace(projectInfo.Id, building);
             }
 
-            List<IBHoMObject> bhomObjectList = Query.GetEnergyAnalysisModel(document, pullSettings);
-
+            List<IBHoMObject> bhomObjectList = document.GetEnergyAnalysisModel(settings);
             return bhomObjectList;
         }
 
