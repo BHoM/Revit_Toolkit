@@ -70,9 +70,7 @@ namespace BH.UI.Revit.Engine
                     returned.Add(sId);
                 }
             }
-
-            return returned;            
-            
+            return returned; 
         }
 
         /***************************************************/

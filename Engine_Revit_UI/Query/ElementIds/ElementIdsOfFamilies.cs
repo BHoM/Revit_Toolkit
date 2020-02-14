@@ -86,8 +86,7 @@ namespace BH.UI.Revit.Engine
             {
                 FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
                 return collector.OfClass(typeof(Family)).Select(x => x.Id);
-            }
-            
+            }            
         }
 
         /***************************************************/

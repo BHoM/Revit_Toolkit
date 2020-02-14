@@ -37,9 +37,6 @@ using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
-
-
-
 namespace BH.UI.Revit.Engine
 {
     public static partial class Query

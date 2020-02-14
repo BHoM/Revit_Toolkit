@@ -58,7 +58,6 @@ namespace BH.UI.Revit.Engine
             {
                 return collector.OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Select(x => x.Id);
             }
-
             else
             {
                 IEnumerable<View> collected = collector.OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Where(x => x.Name == viewTemplateName);
