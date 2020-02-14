@@ -68,18 +68,18 @@ namespace BH.UI.Revit.Engine
                 }
                 else
                 {
-                    element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name.ToUpper() == familyName.ToUpper()).FirstOrDefault();
-                    
+                    element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name.ToUpper() == familyName.ToUpper()).FirstOrDefault();                    
                 }
 
-                result.Add(element.Id);
-
-                if (result.Any())
-                    return result;
+                if(element == null)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");
+                    return null;
+                }
                 else
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");                    
-                    return null;
+                    result.Add(element.Id);
+                    return result;
                 }                
             }
             else

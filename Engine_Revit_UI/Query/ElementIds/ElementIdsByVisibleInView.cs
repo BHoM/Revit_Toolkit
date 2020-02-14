@@ -61,8 +61,9 @@ namespace BH.UI.Revit.Engine
             }
             else
             {
-                collector.Where(x => ids.Contains(x.Id)).ToList();
-                return collector.ToElementIds();
+                HashSet<ElementId> result = new HashSet<ElementId>(collector.ToElementIds());                
+                result.IntersectWith(ids);
+                return result;
             }
         }
 
