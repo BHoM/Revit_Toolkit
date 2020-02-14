@@ -20,17 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
-
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Environment.Fragments;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -40,12 +37,12 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<IBHoMObject> GetEnergyAnalysisModel(this Document document, PullSettings pullSettings = null)
+        public static List<IBHoMObject> GetEnergyAnalysisModel(this Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
-                
-            if(pullSettings.RefObjects == null)
-                pullSettings.RefObjects = new Dictionary<int, List<IBHoMObject>>();
+            settings = settings.DefaultIfNull();
+
+            if (refObjects == null)
+                refObjects = new Dictionary<string, List<IBHoMObject>>();
 
             using (Transaction transaction = new Transaction(document, "GetAnalyticalModel"))
             {
@@ -119,7 +116,7 @@ namespace BH.UI.Revit.Engine
                 {
                     try
                     {
-                        Space space = energyAnalysisSpace.ToBHoMSpace(pullSettings);
+                        Space space = energyAnalysisSpace.ToBHoMSpace(settings);
 
                         foreach (EnergyAnalysisSurface energyAnalysisSurface in energyAnalysisSpace.GetAnalyticalSurfaces())
                         {
@@ -138,12 +135,12 @@ namespace BH.UI.Revit.Engine
                 {
                     try
                     {
-                        oM.Environment.Elements.Panel panel = kvp.Value.ToBHoMEnvironmentPanel(pullSettings);
+                        oM.Environment.Elements.Panel panel = kvp.Value.ToBHoMEnvironmentPanel(settings);
 
                         List<IBHoMObject> hostedBHoMObjects = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening energyAnalysisOpening in kvp.Value.GetAnalyticalOpenings())
                         {
-                            oM.Environment.Elements.Opening opening = energyAnalysisOpening.ToBHoMOpening(pullSettings);
+                            oM.Environment.Elements.Opening opening = energyAnalysisOpening.ToBHoMOpening(settings);
                             panel.Openings.Add(opening);
                         }
                     }
@@ -159,12 +156,12 @@ namespace BH.UI.Revit.Engine
                 {
                     try
                     {
-                        oM.Environment.Elements.Panel panel = energyAnalysisSurface.ToBHoMEnvironmentPanel(pullSettings);
+                        oM.Environment.Elements.Panel panel = energyAnalysisSurface.ToBHoMEnvironmentPanel(settings);
 
                         List<IBHoMObject> hostedBHoMObjects = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening energyOpening in energyAnalysisSurface.GetAnalyticalOpenings())
                         {
-                            oM.Environment.Elements.Opening opening = energyOpening.ToBHoMOpening(pullSettings);
+                            oM.Environment.Elements.Opening opening = energyOpening.ToBHoMOpening(settings);
                             panel.Openings.Add(opening);
                         }
                     }
@@ -181,10 +178,10 @@ namespace BH.UI.Revit.Engine
             //Levels
             IEnumerable<Level> levels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>();
             foreach (Level level in levels)
-                Convert.ToBHoMLevel(level, pullSettings);
+                Convert.ToBHoMLevel(level, settings);
 
             List<IBHoMObject> result = new List<IBHoMObject>();
-            foreach (List<IBHoMObject> bhomObjects in pullSettings.RefObjects.Values)
+            foreach (List<IBHoMObject> bhomObjects in refObjects.Values)
                 if (bhomObjects != null)
                     result.AddRange(bhomObjects);
 

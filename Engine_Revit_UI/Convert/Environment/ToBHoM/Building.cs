@@ -118,7 +118,7 @@ namespace BH.UI.Revit.Engine
                 refObjects.AddOrReplace(projectInfo.Id, building);
             }
 
-            List<IBHoMObject> bhomObjectList = document.GetEnergyAnalysisModel(settings);
+            List<IBHoMObject> bhomObjectList = document.GetEnergyAnalysisModel(settings, refObjects);
             return bhomObjectList;
         }
 

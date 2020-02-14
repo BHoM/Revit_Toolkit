@@ -36,7 +36,7 @@ namespace BH.UI.Revit.Engine
 
         public static BoundingBox BoundingBox(this Element element, Options options, RevitSettings settings = null)
         {
-            List<ICurve> curves = element.Curves(options);
+            List<ICurve> curves = element.Curves(options, settings);
 
             if (curves == null || curves.Count == 0)
                 return null;

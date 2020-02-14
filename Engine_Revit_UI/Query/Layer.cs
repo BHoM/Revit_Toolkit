@@ -21,9 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Environment.MaterialFragments;
 
 namespace BH.UI.Revit.Engine
 {
@@ -33,18 +32,18 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static oM.Physical.Constructions.Layer Layer(this CompoundStructureLayer compoundStructureLayer, Document doc, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, PullSettings pullSettings = null)
+        public static oM.Physical.Constructions.Layer Layer(this CompoundStructureLayer compoundStructureLayer, Document doc, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, RevitSettings settings = null)
         {
             if (compoundStructureLayer == null)
                 return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             oM.Physical.Constructions.Layer layer = new oM.Physical.Constructions.Layer();
             layer.Thickness = compoundStructureLayer.Width.ToSI(UnitType.UT_Length);
 
-            Autodesk.Revit.DB.Material revitMaterial = doc.GetElement(compoundStructureLayer.MaterialId) as Autodesk.Revit.DB.Material;
-            layer.Material = revitMaterial.ToBHoMEmptyMaterial(pullSettings);
+            Material revitMaterial = doc.GetElement(compoundStructureLayer.MaterialId) as Material;
+            layer.Material = revitMaterial.ToBHoMEmptyMaterial(settings);
             return layer;
         }
 

@@ -215,7 +215,7 @@ namespace BH.UI.Revit.Adapter
                         }
                         else
                         {
-                            element = Modify.SetParameters(element, bhomObject);
+                            element = element.SetParameters(bhomObject);
                             if (element != null && element.Location != null)
                             {
                                 try
@@ -241,7 +241,7 @@ namespace BH.UI.Revit.Adapter
 
                 //Assign Tags
                 if (element != null && !string.IsNullOrEmpty(tagsParameterName))
-                    Modify.SetTags(element, bhomObject, tagsParameterName);
+                    element.SetTags(bhomObject, tagsParameterName);
             }
 
             if (UIContralledApplication != null)
@@ -303,7 +303,7 @@ namespace BH.UI.Revit.Adapter
             {
                 Family family = (Family)element;
 
-                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName, Query.FamilyPlacementTypeName(family));
+                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName, family.FamilyPlacementTypeName());
                 SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyName, family.Name);
                 if (family.FamilyCategory != null)
                     SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.CategoryName, family.FamilyCategory.Name);
