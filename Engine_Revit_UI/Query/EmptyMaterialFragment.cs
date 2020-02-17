@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,55 +20,43 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using BH.oM.Base;
-using BH.oM.Adapters.Revit;
-
+using Autodesk.Revit.DB.Structure;
+using BH.oM.Structure.MaterialFragments;
+using System;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Compute
+    public static partial class Query
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        internal static void NonIsotopicStructuralAssetNote(this oM.Physical.Materials.Material material)
+        public static IMaterialFragment EmptyMaterialFragment(this StructuralMaterialType structuralMaterialType)
         {
-            string message = "Revit Structural Asset is Non-Isotopic.";
+            string name;
+            if (structuralMaterialType == Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined)
+                name = "Unknown Material";
+            else
+                name = String.Format("Unknown {0} Material", structuralMaterialType);
 
-            if (material != null)
-                message = string.Format("{0} BHoM Guid: {1}", message, material.BHoM_Guid);
-
-            BH.Engine.Reflection.Compute.RecordNote(message);
+            switch (structuralMaterialType)
+            {
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Aluminum:
+                    return new Aluminium() { Name = name };
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete:
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.PrecastConcrete:
+                    return new Concrete() { Name = name };
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood:
+                    return new Timber() { Name = name };
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
+                    return new Steel() { Name = name };
+                default:
+                    return new GenericIsotropicMaterial() { Name = name };
+            }
         }
 
         /***************************************************/
-
-        internal static void MaterialNotInLibraryNote(this Material material)
-        {
-            string message = "Material could not be found in BHoM Libary.";
-
-            if (material != null)
-                message = string.Format("{0} Material Id: {1}", message, material.Id.IntegerValue);
-
-            BH.Engine.Reflection.Compute.RecordNote(message);
-        }
-
-        /***************************************************/
-
-        internal static void MaterialNotInLibraryNote(this Element element)
-        {
-            string message = "Material could not be found in BHoM Libary.";
-
-            if (element != null)
-                message = string.Format("{0} Element Id: {1}", message, element.Id.IntegerValue);
-
-            BH.Engine.Reflection.Compute.RecordNote(message);
-        }
-
-        /***************************************************/
-
-
     }
 }
+

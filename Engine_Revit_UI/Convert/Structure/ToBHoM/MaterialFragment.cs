@@ -37,7 +37,7 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static IMaterialFragment ToBHoMMaterialFragment(this Autodesk.Revit.DB.Material material, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IMaterialFragment ToBHoMMaterialFragment(this Material material, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (material == null)
             {
@@ -48,8 +48,8 @@ namespace BH.UI.Revit.Engine
 
             settings = settings.DefaultIfNull();
 
-            StructuralMaterialType structuralMaterialType = Query.StructuralMaterialType(material.MaterialClass);
-            IMaterialFragment materialFragment = Query.LibraryMaterial(structuralMaterialType, materialGrade);
+            StructuralMaterialType structuralMaterialType = material.MaterialClass.StructuralMaterialType();
+            IMaterialFragment materialFragment = structuralMaterialType.LibraryMaterial(materialGrade);
             if (materialFragment != null)
                 return materialFragment;
 
@@ -59,20 +59,20 @@ namespace BH.UI.Revit.Engine
             {
                 case StructuralMaterialType.Concrete:
                 case StructuralMaterialType.PrecastConcrete:
-                    materialFragment = new oM.Structure.MaterialFragments.Concrete();
+                    materialFragment = new Concrete();
                     break;
                 case StructuralMaterialType.Aluminum:
-                    materialFragment = new oM.Structure.MaterialFragments.Aluminium();
+                    materialFragment = new Aluminium();
                     break;
                 case StructuralMaterialType.Steel:
-                    materialFragment = new oM.Structure.MaterialFragments.Steel();
+                    materialFragment = new Steel();
                     break;
                 case StructuralMaterialType.Wood:
-                    materialFragment = new oM.Structure.MaterialFragments.Timber();
+                    materialFragment = new Timber();
                     break;
                 default:
                     //TODO: default generic material warning
-                    materialFragment = new oM.Structure.MaterialFragments.GenericIsotropicMaterial();
+                    materialFragment = new GenericIsotropicMaterial();
                     break;
             }
 
@@ -83,39 +83,12 @@ namespace BH.UI.Revit.Engine
             return materialFragment;
         }
 
-        /***************************************************/
-
-        public static IMaterialFragment BHoMEmptyMaterialFragment(this StructuralMaterialType structuralMaterialType, RevitSettings settings = null)
-        {
-            settings = settings.DefaultIfNull();
-
-            string name;
-            if (structuralMaterialType == StructuralMaterialType.Undefined)
-                name = "Unknown Material";
-            else
-                name = String.Format("Unknown {0} Material", structuralMaterialType);
-
-            switch (structuralMaterialType)
-            {
-                case StructuralMaterialType.Aluminum:
-                    return new Aluminium() { Name = name };
-                case StructuralMaterialType.Concrete:
-                case StructuralMaterialType.PrecastConcrete:
-                    return new Concrete() { Name = name };
-                case StructuralMaterialType.Wood:
-                    return new Timber() { Name = name };
-                case StructuralMaterialType.Steel:
-                    return new Steel() { Name = name };
-                default:
-                    return new GenericIsotropicMaterial() { Name = name };
-            }
-        }
 
         /***************************************************/
         /****             Private methods               ****/
         /***************************************************/
 
-        private static IMaterialFragment Update(this IMaterialFragment materialDestination, Autodesk.Revit.DB.Material materialSource)
+        private static IMaterialFragment Update(this IMaterialFragment materialDestination, Material materialSource)
         {
             if (materialSource == null)
             {
@@ -168,17 +141,17 @@ namespace BH.UI.Revit.Engine
 #endif
 
 
-            if (materialFragment is BH.oM.Structure.MaterialFragments.Aluminium)
+            if (materialFragment is Aluminium)
             {
-                BH.oM.Structure.MaterialFragments.Aluminium material = materialFragment as BH.oM.Structure.MaterialFragments.Aluminium;
+                Aluminium material = materialFragment as Aluminium;
                 material.YoungsModulus = youngsModulus.X;
                 material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
                 material.PoissonsRatio = poissonsRatio.X;
                 materialFragment = material;
             }
-            else if (materialFragment is BH.oM.Structure.MaterialFragments.Concrete)
+            else if (materialFragment is Concrete)
             {
-                BH.oM.Structure.MaterialFragments.Concrete material = materialFragment as BH.oM.Structure.MaterialFragments.Concrete;
+                Concrete material = materialFragment as Concrete;
                 material.YoungsModulus = youngsModulus.X;
                 material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
                 material.PoissonsRatio = poissonsRatio.X;
@@ -187,25 +160,25 @@ namespace BH.UI.Revit.Engine
                 material.CustomData["Concrete Shear Strength Reduction"] = structuralAsset.ConcreteShearStrengthReduction;
                 materialFragment = material;
             }
-            else if (materialFragment is BH.oM.Structure.MaterialFragments.Steel)
+            else if (materialFragment is Steel)
             {
-                BH.oM.Structure.MaterialFragments.Steel material = materialFragment as BH.oM.Structure.MaterialFragments.Steel;
+                Steel material = materialFragment as Steel;
                 material.YoungsModulus = youngsModulus.X;
                 material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
                 material.PoissonsRatio = poissonsRatio.X;
                 materialFragment = material;
             }
-            else if (materialFragment is BH.oM.Structure.MaterialFragments.Timber)
+            else if (materialFragment is Timber)
             {
-                BH.oM.Structure.MaterialFragments.Timber material = materialFragment as BH.oM.Structure.MaterialFragments.Timber;
+                Timber material = materialFragment as Timber;
                 material.YoungsModulus = youngsModulus;
                 material.ThermalExpansionCoeff = thermalExpansionCoeff;
                 material.PoissonsRatio = poissonsRatio;
                 materialFragment = material;
             }
-            else if (materialFragment is BH.oM.Structure.MaterialFragments.GenericIsotropicMaterial)
+            else if (materialFragment is GenericIsotropicMaterial)
             {
-                BH.oM.Structure.MaterialFragments.GenericIsotropicMaterial material = materialFragment as BH.oM.Structure.MaterialFragments.GenericIsotropicMaterial;
+                GenericIsotropicMaterial material = materialFragment as GenericIsotropicMaterial;
                 material.YoungsModulus = youngsModulus.X;
                 material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
                 material.PoissonsRatio = poissonsRatio.X;
@@ -214,6 +187,8 @@ namespace BH.UI.Revit.Engine
 
             return materialFragment;
         }
+
+        /***************************************************/
     }
 }
 

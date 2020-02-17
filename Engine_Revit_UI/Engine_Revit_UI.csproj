@@ -329,6 +329,7 @@
     <Compile Include="Query\ElementIds\ElementIdsByViewType.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByWorksets.cs" />
     <Compile Include="Query\ElementIds\ElementIdsViewTemplate.cs" />
+    <Compile Include="Query\EmptyMaterialFragment.cs" />
     <Compile Include="Query\GetValues.cs" />
     <Compile Include="Query\IsContaining.cs" />
     <Compile Include="Query\PlanarSurfaceDictionary.cs" />
