@@ -43,7 +43,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIdsByInts(this Document document, List<int> elementIds, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsByInts(this Document document, IEnumerable<int> elementIds, IEnumerable<ElementId> ids = null)
         {
             if (elementIds != null)
             {

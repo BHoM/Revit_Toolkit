@@ -93,7 +93,7 @@ namespace BH.UI.Revit.Engine
                 }
             }
 
-            construction = BH.Engine.Physical.Create.Construction(Query.FamilyTypeFullName(hostObjAttributes), layers);
+            construction = BH.Engine.Physical.Create.Construction(hostObjAttributes.FamilyTypeFullName(), layers);
 
             //Set identifiers & custom data
             construction = construction.SetIdentifiers(hostObjAttributes) as oM.Physical.Constructions.Construction;

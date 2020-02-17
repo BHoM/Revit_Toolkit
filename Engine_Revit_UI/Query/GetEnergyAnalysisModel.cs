@@ -116,7 +116,7 @@ namespace BH.UI.Revit.Engine
                 {
                     try
                     {
-                        Space space = energyAnalysisSpace.ToBHoMSpace(settings);
+                        Space space = energyAnalysisSpace.ToBHoMSpace(settings, refObjects);
 
                         foreach (EnergyAnalysisSurface energyAnalysisSurface in energyAnalysisSpace.GetAnalyticalSurfaces())
                         {
@@ -135,12 +135,12 @@ namespace BH.UI.Revit.Engine
                 {
                     try
                     {
-                        oM.Environment.Elements.Panel panel = kvp.Value.ToBHoMEnvironmentPanel(settings);
+                        oM.Environment.Elements.Panel panel = kvp.Value.ToBHoMEnvironmentPanel(settings, refObjects);
 
                         List<IBHoMObject> hostedBHoMObjects = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening energyAnalysisOpening in kvp.Value.GetAnalyticalOpenings())
                         {
-                            oM.Environment.Elements.Opening opening = energyAnalysisOpening.ToBHoMOpening(settings);
+                            oM.Environment.Elements.Opening opening = energyAnalysisOpening.ToBHoMOpening(settings, refObjects);
                             panel.Openings.Add(opening);
                         }
                     }
@@ -156,12 +156,12 @@ namespace BH.UI.Revit.Engine
                 {
                     try
                     {
-                        oM.Environment.Elements.Panel panel = energyAnalysisSurface.ToBHoMEnvironmentPanel(settings);
+                        oM.Environment.Elements.Panel panel = energyAnalysisSurface.ToBHoMEnvironmentPanel(settings, refObjects);
 
                         List<IBHoMObject> hostedBHoMObjects = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening energyOpening in energyAnalysisSurface.GetAnalyticalOpenings())
                         {
-                            oM.Environment.Elements.Opening opening = energyOpening.ToBHoMOpening(settings);
+                            oM.Environment.Elements.Opening opening = energyOpening.ToBHoMOpening(settings, refObjects);
                             panel.Openings.Add(opening);
                         }
                     }
@@ -178,7 +178,7 @@ namespace BH.UI.Revit.Engine
             //Levels
             IEnumerable<Level> levels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>();
             foreach (Level level in levels)
-                Convert.ToBHoMLevel(level, settings);
+                level.ToBHoMLevel(settings, refObjects);
 
             List<IBHoMObject> result = new List<IBHoMObject>();
             foreach (List<IBHoMObject> bhomObjects in refObjects.Values)

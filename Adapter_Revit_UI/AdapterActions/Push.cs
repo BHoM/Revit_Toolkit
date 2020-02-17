@@ -48,7 +48,7 @@ namespace BH.UI.Revit.Adapter
 
             // If unset, set the pushType to AdapterSettings' value (base AdapterSettings default is FullCRUD).
             if (pushType == PushType.AdapterDefault)
-                pushType = m_AdapterSettings.DefaultPushType;
+                pushType = PushType.DeleteThenCreate;
 
             //Initialize Revit config
             RevitPushConfig pushConfig = actionConfig as RevitPushConfig;
@@ -66,17 +66,34 @@ namespace BH.UI.Revit.Adapter
             //               ACTUAL PUSH               //
             // ----------------------------------------//
 
-            Type iBHoMObjectType = typeof(IBHoMObject);
+            // Group the objects by their specific type.
+            var typeGroups = objectsToPush.GroupBy(x => x.GetType());
+            
             MethodInfo miToList = typeof(Enumerable).GetMethod("Cast");
-            List<IObject> result = new List<IObject>();
-            foreach (var typeGroup in objectsToPush.GroupBy(x => x.GetType()))
+            foreach (var typeGroup in typeGroups)
             {
+                // Cast the objects to their specific types
                 MethodInfo miListObject = miToList.MakeGenericMethod(new[] { typeGroup.Key });
-
                 var list = miListObject.Invoke(typeGroup, new object[] { typeGroup });
 
-                if (iBHoMObjectType.IsAssignableFrom(typeGroup.Key))
-                    success &= ICreate(list as dynamic, pushConfig);                    
+                if (pushType == PushType.CreateOnly)
+                    success &= ICreate(list as dynamic, pushConfig);
+                else if (pushType == PushType.DeleteThenCreate)
+                {
+                    //TODO: get the list of not deleted elements and do not recreate them, return error!
+                    success &= Delete(list as dynamic, Document);
+                    success &= ICreate(list as dynamic, pushConfig);
+                }
+                else if (pushType == PushType.UpdateOnly)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Update is currently not supported by Revit_Toolkit, please use DeleteThenCreate instead.");
+                    success = false;
+                }
+                else if (pushType == PushType.FullCRUD)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Full CRUD is currently not supported by Revit_Toolkit, please use DeleteThenCreate instead.");
+                    success = false;
+                }
             }
 
             return success ? objectsToPush.Cast<object>().ToList() : new List<object>();

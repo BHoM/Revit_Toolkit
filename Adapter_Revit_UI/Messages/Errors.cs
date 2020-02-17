@@ -75,13 +75,6 @@ namespace BH.UI.Revit.Adapter
 
         /***************************************************/
 
-        private static void ConvertBeforePushError(IBHoMObject iBHoMObject, Type typeToConvert)
-        {
-            BH.Engine.Reflection.Compute.RecordError(string.Format("{0} has to be converted to {1} before pushing. BHoM object Guid: {2}", iBHoMObject.GetType().Name, typeToConvert.Name, iBHoMObject.BHoM_Guid));
-        }
-
-        /***************************************************/
-
         
     }
 }

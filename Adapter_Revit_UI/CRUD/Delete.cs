@@ -38,7 +38,7 @@ namespace BH.UI.Revit.Adapter
         /****              Public methods               ****/
         /***************************************************/
         
-        public static bool Delete(IEnumerable<BHoMObject> bHoMObjects, Document document)
+        public static bool Delete(IEnumerable<IBHoMObject> bHoMObjects, Document document)
         {
             if (document == null)
             {
@@ -51,13 +51,12 @@ namespace BH.UI.Revit.Adapter
                 BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because BHoM objects are null.");
                 return false;
             }
+            
+            // Collect both UniqueIds as well as ElementIds
+            HashSet<ElementId> elementIDList = new HashSet<ElementId>(document.ElementIdsByUniqueIds(bHoMObjects.UniqueIds(true)));
+            elementIDList.UnionWith(document.ElementIdsByInts(bHoMObjects.Select(x => BH.Engine.Adapters.Revit.Query.ElementId(x)).Where(x => x != -1)));
 
-            if (bHoMObjects.Count() == 0)
-                return false;
-
-            List<ElementId> elementIDList = document.ElementIdsByUniqueIds(bHoMObjects.UniqueIds(true)).ToList();
-
-            if (elementIDList == null || elementIDList.Count == 0)
+            if (elementIDList == null)
                 return false;
 
             bool result = false;
@@ -67,7 +66,7 @@ namespace BH.UI.Revit.Adapter
                 result = Delete(elementIDList, document);
                 transaction.Commit();
             }
-
+            
             return result;
         }
 
