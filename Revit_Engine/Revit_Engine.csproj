@@ -122,16 +122,12 @@
     <Compile Include="Create\Generic\FamilyLibrary.cs" />
     <Compile Include="Create\Generic\TypeMap.cs" />
     <Compile Include="Create\Generic\RevitFilePreview.cs" />
-    <Compile Include="Create\Settings\GeneralSettings.cs" />
     <Compile Include="Create\Settings\FamilyLoadSettings.cs" />
     <Compile Include="Create\Settings\ConnectionSettings.cs" />
     <Compile Include="Create\Settings\RevitSettings.cs" />
-    <Compile Include="Create\Settings\PullSettings.cs" />
     <Compile Include="Create\Elements\Viewport.cs" />
     <Compile Include="Create\Elements\Sheet.cs" />
     <Compile Include="Modify\AddTypeMap.cs" />
-    <Compile Include="Modify\AddRefObject.cs" />
-    <Compile Include="Modify\AddRefObjects.cs" />
     <Compile Include="Modify\AddMap.cs" />
     <Compile Include="Modify\DefaultIfNull.cs" />
     <Compile Include="Modify\SetFamilyTypeName.cs" />
@@ -163,7 +159,6 @@
     <Compile Include="Query\Edges.cs" />
     <Compile Include="Query\FamilyTypeName.cs" />
     <Compile Include="Query\Duplicate.cs" />
-    <Compile Include="Modify\SetAdapterMode.cs" />
     <Compile Include="Modify\Append.cs" />
     <Compile Include="Modify\RemoveIdentifiers.cs" />
     <Compile Include="Modify\SetFamilyLibrary.cs" />
@@ -172,7 +167,6 @@
     <Compile Include="Query\CategoryNames.cs" />
     <Compile Include="Query\FamilyName.cs" />
     <Compile Include="Query\CategoryName.cs" />
-    <Compile Include="Query\DefaultDiscipline.cs" />
     <Compile Include="Query\ElementId.cs" />
     <Compile Include="Query\Discipline.cs" />
     <Compile Include="Query\Paths.cs" />

@@ -98,13 +98,9 @@
     <Compile Include="Generic\RevitFilePreview.cs" />
     <Compile Include="Settings\FamilyLoadSettings.cs" />
     <Compile Include="Settings\ConnectionSettings.cs" />
-    <Compile Include="Settings\GeneralSettings.cs" />
     <Compile Include="Generic\TypeMap.cs" />
     <Compile Include="Settings\MapSettings.cs" />
-    <Compile Include="Settings\UpdateTagsSettings.cs" />
-    <Compile Include="Settings\PullSettings.cs" />
     <Compile Include="Settings\RevitSettings.cs" />
-    <Compile Include="Settings\PushSettings.cs" />
     <Compile Include="Elements\Sheet.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

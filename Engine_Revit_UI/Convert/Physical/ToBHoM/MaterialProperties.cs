@@ -39,15 +39,8 @@ namespace BH.UI.Revit.Engine
         {
             settings = settings.DefaultIfNull();
 
+            // Add material fragment per discipline.
             List<IMaterialProperties> result = new List<IMaterialProperties>();
-            //List<Type> types = settings.Discipline.MaterialTypes();
-            //foreach (Type type in types)
-            //{
-            //    IMaterialProperties properties = material.ToBHoMMaterialProperties(type, materialGrade, settings, refObjects);
-            //    if (properties != null)
-            //        result.Add(properties);
-            //}
-
             result.Add(material.ToBHoMSolidMaterial(settings, refObjects));
             result.Add(material.ToBHoMMaterialFragment(materialGrade, settings, refObjects));
 
