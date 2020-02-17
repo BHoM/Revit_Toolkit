@@ -140,16 +140,43 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Autodesk.Revit.DB.Family ToRevit(this oM.Adapters.Revit.Elements.Family family, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this oM.Adapters.Revit.Elements.Family family, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             return family.ToRevitFamily(document, settings, refObjects);
         }
 
         /***************************************************/
 
-        public static ElementType ToRevit(this oM.Adapters.Revit.Properties.InstanceProperties instanceProperties, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this oM.Adapters.Revit.Properties.InstanceProperties instanceProperties, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             return instanceProperties.ToRevitElementType(document, settings, refObjects);
+        }
+
+
+        /***************************************************/
+        /****             Disallowed Types              ****/
+        /***************************************************/
+
+        public static Element ToRevit(this oM.Structure.Elements.Bar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            bar.ConvertBeforePushError(typeof(oM.Physical.Elements.IFramingElement));
+            return null;
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this oM.Structure.Elements.Panel panel, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            panel.ConvertBeforePushError(typeof(oM.Physical.Elements.ISurface));
+            return null;
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this oM.Environment.Elements.Panel panel, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            panel.ConvertBeforePushError(typeof(oM.Physical.Elements.ISurface));
+            return null;
         }
 
 

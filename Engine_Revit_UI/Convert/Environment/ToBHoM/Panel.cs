@@ -172,7 +172,7 @@ namespace BH.UI.Revit.Engine
             if (element != null)
             {
                 elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-                panel = BH.Engine.Environment.Create.Panel(name: Query.FamilyTypeFullName(element), externalEdges: curve.ToEdges());
+                panel = BH.Engine.Environment.Create.Panel(name: element.FamilyTypeFullName(), externalEdges: curve.ToEdges());
             }
 
             //Set ExtendedProperties
@@ -230,7 +230,7 @@ namespace BH.UI.Revit.Engine
             else
                 panel.Type = oM.Environment.Elements.PanelType.Undefined;
 
-            panel.Construction = Convert.ToBHoMConstruction(elementType as dynamic, settings);
+            panel.Construction = Convert.ToBHoMConstruction(elementType as dynamic, settings, refObjects);
 
             //Set identifiers & custom data
             panel = panel.SetIdentifiers(element) as oM.Environment.Elements.Panel;
@@ -414,7 +414,7 @@ namespace BH.UI.Revit.Engine
             {
                 //Create the BuildingElement
                 oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: curve.ToEdges());
-                panel.Name = Query.FamilyTypeFullName(roofBase);
+                panel.Name = roofBase.FamilyTypeFullName();
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment();
@@ -478,7 +478,7 @@ namespace BH.UI.Revit.Engine
             {
                 //Create the BuildingElement
                 oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: curve.ToEdges());
-                panel.Name = Query.FamilyTypeFullName(wall);
+                panel.Name = wall.FamilyTypeFullName();
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment();

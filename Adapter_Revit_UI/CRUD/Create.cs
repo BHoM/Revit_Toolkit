@@ -20,23 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
-using Autodesk.Revit.UI;
 using Autodesk.Revit.DB;
-
-using BH.UI.Revit.Engine;
-
-using BH.oM.Base;
-using BH.oM.Structure.Elements;
+using Autodesk.Revit.UI;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Adapters.Revit.Properties;
-using BH.oM.Adapter;
-using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Structure.Elements;
+using BH.UI.Revit.Engine;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -69,6 +66,7 @@ namespace BH.UI.Revit.Adapter
                 BH.Engine.Reflection.Compute.RecordWarning("Revit Push Config has not been specified. Default Revit Push Config is used.");
                 pushConfig = RevitPushConfig.Default;
             }
+
             bool suppressFailureMessages = pushConfig.SuppressFailureMessages;
 
             RevitSettings revitSettings = RevitSettings.DefaultIfNull();
@@ -117,19 +115,7 @@ namespace BH.UI.Revit.Adapter
                     NullObjectCreateError(typeof(IBHoMObject));
                     continue;
                 }
-
-                //TODO: allow physical/settingout/instances only instead of this!
-                if (bhomObject is Bar)
-                {
-                    ConvertBeforePushError(bhomObject, typeof(BH.oM.Physical.Elements.IFramingElement));
-                    continue;
-                }
-                else if (bhomObject is BH.oM.Structure.Elements.Panel || bhomObject is BH.oM.Environment.Elements.Panel)
-                {
-                    ConvertBeforePushError(bhomObject, typeof(BH.oM.Physical.Elements.ISurface));
-                    continue;
-                }
-
+                
                 Element element = null;
 
                 try
@@ -164,73 +150,18 @@ namespace BH.UI.Revit.Adapter
 
                         //TODO: this value should come from adapter PushType?
                         bool updateFamilies = true;
-                            FamilyLoadOptions familyLoadOptions = new FamilyLoadOptions(updateFamilies);
-                            if (document.LoadFamily(revitFilePreview.Path, out family))
-                            {
-                                SetIdentifiers(bhomObject, family);
-                                element = family;
-                            }
+                        FamilyLoadOptions familyLoadOptions = new FamilyLoadOptions(updateFamilies);
+                        if (document.LoadFamily(revitFilePreview.Path, out family))
+                        {
+                            SetIdentifiers(bhomObject, family);
+                            element = family;
+                        }
                         //}
                     }
                     else
                     {
-                        string uniqueID = BH.Engine.Adapters.Revit.Query.UniqueId(bhomObject);
-                        if (!string.IsNullOrEmpty(uniqueID))
-                            element = document.GetElement(uniqueID);
-
-                        if (element == null)
-                        {
-                            int id = BH.Engine.Adapters.Revit.Query.ElementId(bhomObject);
-                            if (id != -1)
-                                element = document.GetElement(new ElementId(id));
-                        }
-
-                        //WARNING: THE ELEMENTS WILL GET DELETED AT ALL CASES ATM!
-                        //TODO: default is replace and that is what people usually use (the lines below to be handled by adapter PushType
-                        if (element != null)
-                        {
-                            //if (revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Replace || revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
-                            //{
-                                if (element.Pinned)
-                                {
-                                    DeletePinnedElementError(element);
-                                    continue;
-                                }
-
-                                document.Delete(element.Id);
-                                element = null;
-                            //}
-                        }
-
-                        if (element == null)
-                        {
-                            Type type = bhomObject.GetType();
-
-                            if (type != typeof(BHoMObject))
-                            {
-                                element = BH.UI.Revit.Engine.Convert.IToRevit(bhomObject as dynamic, document, revitSettings, refObjects);
-                                SetIdentifiers(bhomObject, element);
-                            }
-
-                        }
-                        else
-                        {
-                            element = element.SetParameters(bhomObject);
-                            if (element != null && element.Location != null)
-                            {
-                                try
-                                {
-                                    Location location = element.Move(bhomObject);
-                                }
-                                catch
-                                {
-                                    ObjectNotMovedWarning(bhomObject);
-                                }
-                            }
-
-                            if (bhomObject is IView || bhomObject is oM.Adapters.Revit.Elements.Family || bhomObject is InstanceProperties)
-                                element.Name = bhomObject.Name;
-                        }
+                        element = BH.UI.Revit.Engine.Convert.IToRevit(bhomObject as dynamic, document, revitSettings, refObjects);
+                        SetIdentifiers(bhomObject, element);
                     }
                 }
                 catch

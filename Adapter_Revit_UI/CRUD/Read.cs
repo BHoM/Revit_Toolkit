@@ -20,24 +20,22 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapter;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Properties;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Data.Requests;
+using BH.oM.Geometry;
+using BH.UI.Revit.Engine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
-using Autodesk.Revit.DB;
-
-using BH.oM.Base;
-using BH.oM.Geometry;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Adapters.Revit.Elements;
-using BH.UI.Revit.Engine;
-using BH.oM.Data.Requests;
-using BH.oM.Adapters.Revit.Properties;
-using BH.oM.Adapter;
-using BH.Engine.Adapters.Revit;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -148,7 +146,7 @@ namespace BH.UI.Revit.Adapter
             List<IBHoMObject> result = new List<IBHoMObject>();
             List <int> elementIDList = new List<int>();
 
-            Dictionary<string, List<IBHoMObject>> refObjects = null;
+            Dictionary<string, List<IBHoMObject>> refObjects = new Dictionary<string, List<IBHoMObject>>();
 
             foreach (ElementId id in elementIds)
             {

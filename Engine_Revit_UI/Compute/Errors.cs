@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
+using System;
 
 namespace BH.UI.Revit.Engine
 {
@@ -34,6 +35,13 @@ namespace BH.UI.Revit.Engine
         internal static void NullDocumentError()
         {
             BH.Engine.Reflection.Compute.RecordError("BHoM object could not be read because Revit document does not exist.");
+        }
+
+        /***************************************************/
+
+        internal static void ConvertBeforePushError(this IBHoMObject iBHoMObject, Type typeToConvert)
+        {
+            BH.Engine.Reflection.Compute.RecordError(string.Format("{0} has to be converted to {1} before pushing. BHoM object Guid: {2}", iBHoMObject.GetType().Name, typeToConvert.Name, iBHoMObject.BHoM_Guid));
         }
 
         /***************************************************/
