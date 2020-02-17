@@ -256,6 +256,7 @@
     <Compile Include="Convert\Physical\ToBHoM\Construction.cs" />
     <Compile Include="Convert\Physical\ToBHoM\ISurface.cs" />
     <Compile Include="Convert\Physical\ToBHoM\Material.cs" />
+    <Compile Include="Convert\Physical\ToBHoM\MaterialProperties.cs" />
     <Compile Include="Convert\Physical\ToBHoM\Window.cs" />
     <Compile Include="Convert\Physical\ToRevit\HostObjAttributes.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilyInstance.cs" />
