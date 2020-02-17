@@ -21,20 +21,15 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Analysis;
 using Autodesk.Revit.DB.Structure;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Physical.Constructions;
+using BH.oM.Structure.MaterialFragments;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Physical.Constructions;
-using BH.oM.Physical;
-using BH.oM.Physical.Materials;
-using BH.oM.Environment.MaterialFragments;
-using BH.oM.Structure.MaterialFragments;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Base;
 
 namespace BH.UI.Revit.Engine
 {
@@ -144,58 +139,6 @@ namespace BH.UI.Revit.Engine
                 structuralProperty.Name = String.Format("Unknown {0} Material", structuralMaterialType);
                 material.Properties.Add(structuralProperty);
                 return false;
-            }
-        }
-
-        /***************************************************/
-
-        public static List<IMaterialProperties> ToBHoMMaterialProperties(this Autodesk.Revit.DB.Material material, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            settings = settings.DefaultIfNull();
-
-            List<IMaterialProperties> result = new List<IMaterialProperties>();
-            List<Type> types = settings.Discipline.MaterialTypes();
-            foreach (Type type in types)
-            {
-                IMaterialProperties properties = material.ToBHoMMaterialProperties(type, materialGrade, settings, refObjects);
-                if (properties != null)
-                    result.Add(properties);
-            }
-
-            return result;
-        }
-
-
-        /***************************************************/
-        /****              Private Methods              ****/
-        /***************************************************/
-
-        private static IMaterialProperties ToBHoMMaterialProperties(this Autodesk.Revit.DB.Material material, Type type, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            settings = settings.DefaultIfNull();
-
-            if (type == typeof(SolidMaterial))
-                return material.ToBHoMSolidMaterial(settings, refObjects);
-            else if (type == typeof(IMaterialFragment))
-                return material.ToBHoMMaterialFragment(materialGrade, settings, refObjects);
-            else
-                return null;
-        }
-
-        /***************************************************/
-
-        private static List<Type> MaterialTypes(this oM.Adapters.Revit.Enums.Discipline discipline)
-        {
-            switch (discipline)
-            {
-                case oM.Adapters.Revit.Enums.Discipline.Physical:
-                    return new List<Type> { typeof(SolidMaterial), typeof(IMaterialFragment) };
-                case oM.Adapters.Revit.Enums.Discipline.Structural:
-                    return new List<Type> { typeof(IMaterialFragment) };
-                case oM.Adapters.Revit.Enums.Discipline.Environmental:
-                    return new List<Type> { typeof(SolidMaterial) };
-                default:
-                    return new List<Type>();
             }
         }
 
