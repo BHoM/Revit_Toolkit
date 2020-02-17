@@ -39,22 +39,19 @@ namespace BH.UI.Revit.Engine
         /****      Convert Revit elements to BHoM       ****/
         /***************************************************/
 
-        //public static List<IBHoMObject> ToBHoM(this PlanarFace planarFace, PullSettings pullSettings)
-        //{
-        //    if (planarFace == null)
-        //        return null;
-
-        //    switch (pullSettings.Discipline)
-        //    {
-        //        case Discipline.Environmental:
-        //            return planarFace.Panels(settings, refObjects).ConvertAll(x => x as IBHoMObject);
-        //    }
-            
-        //    return null;
-        //}
+        public static List<IBHoMObject> ToBHoM(this PlanarFace planarFace, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            switch (discipline)
+            {
+                case Discipline.Environmental:
+                    return planarFace.Panels(settings).ConvertAll(x => x as IBHoMObject);
+                default:
+                    return null;
+            }
+        }
 
         /***************************************************/
-        
+
         public static List<IBHoMObject> ToBHoM(this ProjectInfo projectInfo, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)

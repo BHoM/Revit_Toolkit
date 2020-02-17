@@ -75,14 +75,6 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        //internal static void CheckIfNullPull(this Element element)
-        //{
-        //    if (element == null)
-        //        BH.Engine.Reflection.Compute.RecordWarning("BHoM object could not be read because Revit element does not exist.");
-        //}
-
-        /***************************************************/
-
         internal static void CheckIfNullPush(this Element element, IBHoMObject bhomObject)
         {
             if (element == null)

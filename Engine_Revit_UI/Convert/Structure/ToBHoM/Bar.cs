@@ -112,7 +112,7 @@ namespace BH.UI.Revit.Engine
             if (materialFragment == null)
             {
                 Compute.InvalidDataMaterialWarning(familyInstance);
-                materialFragment = familyInstance.StructuralMaterialType.BHoMEmptyMaterialFragment(settings);
+                materialFragment = familyInstance.StructuralMaterialType.EmptyMaterialFragment();
             }
 
             //TODO: this probably should be deleted - the Physical material in RefObjects has no properties by definition (it gets updated after being set to RefObjects)

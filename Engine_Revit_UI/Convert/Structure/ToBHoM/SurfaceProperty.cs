@@ -67,12 +67,12 @@ namespace BH.UI.Revit.Engine
                     if (revitMaterial == null)
                     {
                         BH.Engine.Reflection.Compute.RecordWarning("There is a structural layer in wall/floor type without material assigned. A default empty material is returned. ElementId: " + hostObjAttributes.Id.IntegerValue.ToString());
-                        materialFragment = Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined.BHoMEmptyMaterialFragment(settings);
+                        materialFragment = Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined.EmptyMaterialFragment();
                     }
                     else
                     {
                         Autodesk.Revit.DB.Structure.StructuralMaterialType structuralMaterialType = revitMaterial.MaterialClass.StructuralMaterialType();
-                        materialFragment = Query.LibraryMaterial(structuralMaterialType, materialGrade);
+                        materialFragment = structuralMaterialType.LibraryMaterial(materialGrade);
                         
                         if (materialFragment == null)
                         {
@@ -83,7 +83,7 @@ namespace BH.UI.Revit.Engine
                         if (materialFragment == null)
                         {
                             Compute.InvalidDataMaterialWarning(hostObjAttributes);
-                            materialFragment = BHoMEmptyMaterialFragment(structuralMaterialType, settings);
+                            materialFragment = structuralMaterialType.EmptyMaterialFragment();
                         }
                     }
 
