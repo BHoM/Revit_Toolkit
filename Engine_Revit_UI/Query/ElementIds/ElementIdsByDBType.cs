@@ -47,7 +47,7 @@ namespace BH.UI.Revit.Engine
         {
             if (document == null || string.IsNullOrEmpty(currentDomainAssembly) || string.IsNullOrEmpty(typeName))
                 return null;
-
+            
             Assembly assembly = BH.Engine.Adapters.Revit.Query.CurrentDomainAssembly(currentDomainAssembly);
             if (assembly == null)
                 return null;
@@ -87,6 +87,9 @@ namespace BH.UI.Revit.Engine
                     }
                 }
             }
+
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             return collector.OfClass(type).ToElementIds();
