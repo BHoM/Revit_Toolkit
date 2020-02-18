@@ -514,7 +514,7 @@ namespace BH.UI.Revit.Engine
         /****             Interface Methods             ****/
         /***************************************************/
 
-        public static IBHoMObject IToBHoM(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static object IToBHoM(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (element == null)
             {
@@ -522,7 +522,7 @@ namespace BH.UI.Revit.Engine
                 return null;
             }
 
-            IBHoMObject result = ToBHoM(element as dynamic, discipline, settings, refObjects);
+            var result = ToBHoM(element as dynamic, discipline, settings, refObjects);
             if (result == null)
                 element.NotConvertedWarning(discipline);
 
