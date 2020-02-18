@@ -108,6 +108,8 @@
   <ItemGroup>
     <Compile Include="Compute\SortByPerformance.cs" />
     <Compile Include="Convert\AdapterIdName.cs" />
+    <Compile Include="Create\Config\RevitPushConfig.cs" />
+    <Compile Include="Create\Config\RevitPullConfig.cs" />
     <Compile Include="Create\Elements\Panel.cs" />
     <Compile Include="Create\Elements\BHoMObject.cs" />
     <Compile Include="Create\Elements\DraftingInstance.cs" />
