@@ -34,12 +34,6 @@ namespace BH.oM.Adapters.Revit
         /****             Public Properties             ****/
         /***************************************************/
 
-        //[Description("Copy BHoM object's CustomData to resultant Revit Element's parameter values if true.")]
-        //public bool CopyCustomData { get; set; } = true;
-
-        //[Description("A dictionary of BHoM Guids and Revit ElementIds that represent them - if certain BHoM Guid is found in the keys, Revit Element that carries correspondent ElementId will be returned on push instead of standard convert.")]
-        //public Dictionary<Guid, List<int>> RefObjects = null;
-
         [Description("If true, Revit warnings and failure messages will be suppressed (not shown to the user). Whilst this option may speed the pushing process up in case of multiple warnings, it may lead to important issues.")]
         public bool SuppressFailureMessages { get; set; } = false;
 

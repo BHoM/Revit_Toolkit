@@ -47,9 +47,6 @@ namespace BH.oM.Adapters.Revit
         [Description("Invisible element edges will be pulled and passed to CustomData if true. PullEdges switched to true needed for this to activate.")]
         public bool IncludeNonVisible { get; set; } = false;
 
-        //[Description("Copy Revit parameter values to resultant BHoM object's CustomData if true.")]
-        //public bool CopyCustomData { get; set; } = true;
-
 
         /***************************************************/
         /****                  Default                  ****/
