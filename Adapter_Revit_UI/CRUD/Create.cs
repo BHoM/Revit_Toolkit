@@ -122,11 +122,12 @@ namespace BH.UI.Revit.Adapter
                 {
                     if (bhomObject is oM.Adapters.Revit.Generic.RevitFilePreview)
                     {
+                        //TODO: This should be handled by each adapter action separately
                         oM.Adapters.Revit.Generic.RevitFilePreview revitFilePreview = (oM.Adapters.Revit.Generic.RevitFilePreview)bhomObject;
 
-                        Family family = null;
+                        //Family family = null;
 
-                        //TODO: this should not be covered here, rather on Push level
+                        //TODO: this is deleting a family based on a .rfa file - is it ever useful? Would rather pull the families and choose which to delete.
                         //if(revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
                         //{
                         //    IEnumerable<FamilySymbol> familySymbols = Query.FamilySymbols(revitFilePreview, document);
@@ -149,13 +150,13 @@ namespace BH.UI.Revit.Adapter
                         //{
 
                         //TODO: this value should come from adapter PushType?
-                        bool updateFamilies = true;
-                        FamilyLoadOptions familyLoadOptions = new FamilyLoadOptions(updateFamilies);
-                        if (document.LoadFamily(revitFilePreview.Path, out family))
-                        {
-                            SetIdentifiers(bhomObject, family);
-                            element = family;
-                        }
+                        //bool updateFamilies = true;
+                        //FamilyLoadOptions familyLoadOptions = new FamilyLoadOptions(updateFamilies);
+                        //if (document.LoadFamily(revitFilePreview.Path, out family))
+                        //{
+                        //    SetIdentifiers(bhomObject, family);
+                        //    element = family;
+                        //}
                         //}
                     }
                     else

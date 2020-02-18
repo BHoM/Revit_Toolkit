@@ -56,6 +56,8 @@ namespace BH.UI.Revit.Adapter
             HashSet<ElementId> elementIDList = new HashSet<ElementId>(document.ElementIdsByUniqueIds(bHoMObjects.UniqueIds(true)));
             elementIDList.UnionWith(document.ElementIdsByInts(bHoMObjects.Select(x => BH.Engine.Adapters.Revit.Query.ElementId(x)).Where(x => x != -1)));
 
+            //TODO: handle RevitFilePreview here?
+
             if (elementIDList == null)
                 return false;
 
