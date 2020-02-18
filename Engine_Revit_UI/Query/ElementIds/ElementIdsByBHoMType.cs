@@ -66,6 +66,9 @@ namespace BH.UI.Revit.Engine
 
             IEnumerable<ElementId> elementIDs = null;
 
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             if (types == null || types.Count() == 0)
             {

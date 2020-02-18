@@ -48,6 +48,9 @@ namespace BH.UI.Revit.Engine
             if (document == null || string.IsNullOrEmpty(selectionSetName))
                 return null;
 
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
             List<SelectionFilterElement> selectionFilterElements = new FilteredElementCollector(document).OfClass(typeof(SelectionFilterElement)).Cast<SelectionFilterElement>().ToList();
 
             SelectionFilterElement selectionFilterElement = null;

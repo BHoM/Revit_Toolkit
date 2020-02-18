@@ -45,6 +45,9 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIdsByViewType(this Document document, ViewType viewType, IEnumerable<ElementId> ids = null)
         {
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             return collector.OfClass(typeof(View)).Cast<View>().Where(x => !x.IsTemplate).Where(x => x.ViewType == viewType).Select(x => x.Id);
         }

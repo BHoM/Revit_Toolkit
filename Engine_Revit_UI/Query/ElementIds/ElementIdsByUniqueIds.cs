@@ -48,6 +48,9 @@ namespace BH.UI.Revit.Engine
             if (document == null || uniqueIds == null)
                 return null;
 
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
             HashSet<string> corruptIds = new HashSet<string>();
             HashSet<ElementId> elementIDs = new HashSet<ElementId>();
             foreach (string uniqueID in uniqueIds)
