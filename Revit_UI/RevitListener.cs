@@ -254,7 +254,7 @@ namespace BH.UI.Revit
                             }
 
                             // Get push type
-                            if (!(package.Data[2] is PushType))
+                            if (!(package.Data[2] is PushType) && (!(package.Data[2] is int) || (int)package.Data[2] < 0 || (int)package.Data[2] >= Enum.GetNames(typeof(PushType)).Length))
                                 return;
 
                             LatestPushType = (PushType)package.Data[2];
@@ -272,7 +272,7 @@ namespace BH.UI.Revit
                             LatestRequest = package.Data[1] as IRequest;
 
                             // Get pull type
-                            if (!(package.Data[2] is PullType))
+                            if (!(package.Data[2] is PullType) && (!(package.Data[2] is int) || (int)package.Data[2] < 0 || (int)package.Data[2] >= Enum.GetNames(typeof(PullType)).Length))
                                 return;
 
                             LatestPullType = (PullType)package.Data[2];
