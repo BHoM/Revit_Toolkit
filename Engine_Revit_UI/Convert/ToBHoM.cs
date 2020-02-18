@@ -72,7 +72,6 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Architecture:
                 case Discipline.Environmental:
                 case Discipline.Physical:
-                case Discipline.Structural:
                     return panel.ToBHoMWindow(settings, refObjects);
                 default:
                     return null;
@@ -86,7 +85,10 @@ namespace BH.UI.Revit.Engine
             switch (discipline)
             {
                 case Discipline.Structural:
-                    return familyInstance.ToBHoMBar(settings, refObjects).Cast<IBHoMObject>();
+                    if (typeof(BH.oM.Structure.Elements.Bar).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                        return familyInstance.ToBHoMBar(settings, refObjects).Cast<IBHoMObject>();
+                    else
+                        return null;
                 case Discipline.Physical:
                 case Discipline.Architecture:
                     switch ((BuiltInCategory)familyInstance.Category.Id.IntegerValue)
@@ -152,7 +154,6 @@ namespace BH.UI.Revit.Engine
                     return ceiling.ToBHoMEnvironmentPanels(settings, refObjects).ConvertAll(x => x as IBHoMObject);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                case Discipline.Structural:
                     return ceiling.ToBHoMCeilings(settings, refObjects).ConvertAll(x => x as IBHoMObject);
                 default:
                     return null;
@@ -185,9 +186,10 @@ namespace BH.UI.Revit.Engine
             {
                 case Discipline.Environmental:
                     return roofBase.ToBHoMEnvironmentPanels(settings, refObjects).ConvertAll(x => x as IBHoMObject);
+                case Discipline.Structural:
+                    return roofBase.ToBHoMPanel(settings, refObjects).ConvertAll(p => p as IBHoMObject);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                case Discipline.Structural:
                     return roofBase.ToBHoMISurfaces(settings, refObjects).ConvertAll(x => x as IBHoMObject);
                 default:
                     return null;
@@ -234,10 +236,11 @@ namespace BH.UI.Revit.Engine
         {
             switch (discipline)
             {
+                case Discipline.Structural:
+                    return ceilingType.ToBHoMSurfaceProperty(null, settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
-                case Discipline.Structural:
                     return ceilingType.ToBHoMConstruction(settings, refObjects);
                 default:
                     return null;
@@ -250,10 +253,11 @@ namespace BH.UI.Revit.Engine
         {
             switch (discipline)
             {
+                case Discipline.Structural:
+                    return roofType.ToBHoMSurfaceProperty(null, settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
-                case Discipline.Structural:
                     return roofType.ToBHoMConstruction(settings, refObjects);
                 default:
                     return null;
@@ -266,8 +270,10 @@ namespace BH.UI.Revit.Engine
         {
             switch (discipline)
             {
-                default:
+                case Discipline.Structural:
                     return familySymbol.ToBHoMProfile(settings, refObjects);
+                default:
+                    return null;
             }
         }
 
@@ -351,7 +357,6 @@ namespace BH.UI.Revit.Engine
                     return spatialElement.ToBHoMSpace(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                case Discipline.Structural:
                     return spatialElement.ToBHoMRoom(settings, refObjects);
                 default:
                     return null;
@@ -367,7 +372,6 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Environmental:
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                case Discipline.Structural:
                     return energyAnalysisSpace.ToBHoMSpace(settings, refObjects);
                 default:
                     return null;
@@ -383,7 +387,6 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Environmental:
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                case Discipline.Structural:
                     return energyAnalysisSurface.ToBHoMEnvironmentPanel(settings, refObjects);
                 default:
                     return null;
@@ -399,7 +402,6 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Environmental:
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                case Discipline.Structural:
                     return energyAnalysisOpening.ToBHoMEnvironmentPanel(null, settings, refObjects);
                 default:
                     return null;
