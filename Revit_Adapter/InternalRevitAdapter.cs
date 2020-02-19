@@ -25,6 +25,8 @@ using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.Adapter.Revit
 {
+    // This class is needed only to pass RevitSettings from Revit_Adapter to the RevitUIAdapter.
+    // RevitUIAdapter can't be seen from the Revit_Adapter directly.
     public abstract class InternalRevitAdapter : BHoMAdapter
     {
 
