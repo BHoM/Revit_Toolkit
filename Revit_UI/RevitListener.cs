@@ -210,7 +210,7 @@ namespace BH.UI.Revit
 
             lock (m_PackageLock)
             {
-                if (package.Data.Count < 1)
+                if (package.Data.Count == 0)
                 {
                     ReturnData(new List<string> { "Cant handle empty package" });
                     return;
@@ -308,7 +308,7 @@ namespace BH.UI.Revit
 
         private bool CheckPackageSize(oM.Socket.DataPackage package)
         {
-            if (package.Data.Count < 4)
+            if (package.Data.Count < 5)
             {
                 ReturnData(new List<string> { "Invalid Package" });
                 return false;
