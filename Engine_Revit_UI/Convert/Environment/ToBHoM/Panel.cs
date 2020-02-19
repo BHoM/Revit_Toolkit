@@ -249,7 +249,7 @@ namespace BH.UI.Revit.Engine
             if (elementType != null)
                 panel = panel.SetCustomData(elementType, "Type ") as oM.Environment.Elements.Panel;
 
-            refObjects.AddOrReplace(energyAnalysisSpace.Id, panel);
+            refObjects.AddOrReplace(energyAnalysisSurface.Id, panel);
 
             panel = panel.UpdateBuildingElementTypeByCustomData();
             panel = panel.UpdateValues(settings, elementType) as oM.Environment.Elements.Panel;
