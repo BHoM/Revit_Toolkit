@@ -36,9 +36,12 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates Revit Settings class which contols behaviour of Revit Adapter")]
         [Input("connectionSettings", "Connection Settings for Revit Adapter")]
         [Input("familyLoadSettings", "FamilyLoad Settings for Revit Adapter")]
-        [Input("generalSettings", "General Settings for Revit Adapter")]
+        [Input("mapSettings", "Map Settings for Revit Adapter")]
+        [Input("tagsParameterName", "Name of the parameter to which the tags will be assigned")]
+        [Input("distanceTolerance", "Distance tolerance to be used by the adapter")]
+        [Input("angleTolerance", "Angle tolerance to be used by the adapter")]
         [Output("RevitSettings")]
-        public static RevitSettings RevitSettings(ConnectionSettings connectionSettings = null, FamilyLoadSettings familyLoadSettings = null, MapSettings mapSettings = null, string tagsParameterName = null, double tolerance = double.NaN)
+        public static RevitSettings RevitSettings(ConnectionSettings connectionSettings = null, FamilyLoadSettings familyLoadSettings = null, MapSettings mapSettings = null, string tagsParameterName = null, double distanceTolerance = BH.oM.Geometry.Tolerance.Distance, double angleTolerance = BH.oM.Geometry.Tolerance.Angle)
         {
             RevitSettings settings = new RevitSettings();
 
@@ -54,8 +57,11 @@ namespace BH.Engine.Adapters.Revit
             if (!string.IsNullOrWhiteSpace(tagsParameterName))
                 settings.TagsParameterName = tagsParameterName;
 
-            if (!double.IsNaN(tolerance))
-                settings.DistanceTolerance = tolerance;
+            if (!double.IsNaN(distanceTolerance))
+                settings.DistanceTolerance = distanceTolerance;
+
+            if (!double.IsNaN(distanceTolerance))
+                settings.AngleTolerance = angleTolerance;
 
             return settings;
         }
