@@ -21,13 +21,11 @@
  */
 
 
-
-using BH.Adapter;
-using BH.Adapter.Revit;
+using System;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class RevitUIAdapter : BHoMAdapter, IInternalRevitAdapter
+    public partial class RevitUIAdapter
     {
         /***************************************************/
         /****                   Update                  ****/
