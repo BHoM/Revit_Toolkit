@@ -57,7 +57,7 @@ namespace BH.UI.Revit.Engine
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    return projectInfo.FromRevit(settings, refObjects);
+                    return projectInfo.ToBHoMObjects(settings, refObjects);
                 default:
                     return null;
             }
