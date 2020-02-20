@@ -42,7 +42,7 @@ namespace BH.Adapter.Revit
         /****             Public Properties             ****/
         /***************************************************/
 
-        public static InternalRevitAdapter InternalAdapter { get; set; } = null;
+        public static IInternalRevitAdapter InternalAdapter { get; set; } = null;
         public RevitSettings RevitSettings { get; set; } = new RevitSettings();
 
 

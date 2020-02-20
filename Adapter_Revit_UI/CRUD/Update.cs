@@ -20,22 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-using BH.oM.Base;
-using BH.oM.Data.Requests;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Settings;
-using BH.UI.Revit.Engine;
 
-using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
+using BH.Adapter;
+using BH.Adapter.Revit;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class RevitUIAdapter
+    public partial class RevitUIAdapter : BHoMAdapter, IInternalRevitAdapter
     {
         /***************************************************/
         /****                   Update                  ****/

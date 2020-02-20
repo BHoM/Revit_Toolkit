@@ -21,10 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Adapter;
+using BH.Adapter.Revit;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Base;
-using BH.oM.Environment.Elements;
-using BH.oM.Environment.Fragments;
 using BH.UI.Revit.Engine;
 using System;
 using System.Collections.Generic;
@@ -32,7 +32,7 @@ using System.Linq;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class RevitUIAdapter
+    public partial class RevitUIAdapter : BHoMAdapter, IInternalRevitAdapter
     {
         /***************************************************/
         /****              Public methods               ****/

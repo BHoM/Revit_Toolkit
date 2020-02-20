@@ -20,21 +20,21 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Adapter;
+using BH.oM.Adapter;
 using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.Adapter.Revit
 {
-    // This class is needed only to pass RevitSettings from Revit_Adapter to the RevitUIAdapter.
+    // This interface is needed only to pass RevitSettings from Revit_Adapter to the RevitUIAdapter.
     // RevitUIAdapter can't be seen from the Revit_Adapter directly.
-    public abstract class InternalRevitAdapter : BHoMAdapter
+    public interface IInternalRevitAdapter : IBHoMAdapter
     {
 
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        public RevitSettings RevitSettings { get; set; }
+        RevitSettings RevitSettings { get; set; }
 
         /***************************************************/
     }
