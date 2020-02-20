@@ -58,6 +58,8 @@ namespace BH.UI.Revit.Adapter
 
             if (elementIDList == null)
                 return false;
+            else if (elementIDList.Count == 0)
+                return true;
 
             bool result = false;
             using (Transaction transaction = new Transaction(document, "Delete"))
