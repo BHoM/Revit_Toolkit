@@ -198,67 +198,16 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this WallType wallType, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this HostObjAttributes hostObjAttributes, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
                 case Discipline.Structural:
-                    return wallType.ToBHoMSurfaceProperty(null, settings, refObjects) as IBHoMObject;
+                    return hostObjAttributes.ToBHoMSurfaceProperty(null, settings, refObjects) as IBHoMObject;
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
-                    return wallType.ToBHoMConstruction(settings, refObjects);
-                default:
-                    return null;
-            }
-        }
-
-        /***************************************************/
-
-        public static IBHoMObject ToBHoM(this FloorType floorType, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            switch (discipline)
-            {
-                case Discipline.Structural:
-                    return floorType.ToBHoMSurfaceProperty(null, settings, refObjects);
-                case Discipline.Architecture:
-                case Discipline.Physical:
-                case Discipline.Environmental:
-                    return floorType.ToBHoMConstruction(settings, refObjects);
-                default:
-                    return null;
-            }
-        }
-
-        /***************************************************/
-
-        public static IBHoMObject ToBHoM(this CeilingType ceilingType, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            switch (discipline)
-            {
-                case Discipline.Structural:
-                    return ceilingType.ToBHoMSurfaceProperty(null, settings, refObjects);
-                case Discipline.Architecture:
-                case Discipline.Physical:
-                case Discipline.Environmental:
-                    return ceilingType.ToBHoMConstruction(settings, refObjects);
-                default:
-                    return null;
-            }
-        }
-
-        /***************************************************/
-
-        public static IBHoMObject ToBHoM(this RoofType roofType, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            switch (discipline)
-            {
-                case Discipline.Structural:
-                    return roofType.ToBHoMSurfaceProperty(null, settings, refObjects);
-                case Discipline.Architecture:
-                case Discipline.Physical:
-                case Discipline.Environmental:
-                    return roofType.ToBHoMConstruction(settings, refObjects);
+                    return hostObjAttributes.ToBHoMConstruction(settings, refObjects);
                 default:
                     return null;
             }

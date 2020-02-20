@@ -35,42 +35,6 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this WallType wallType, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            settings = settings.DefaultIfNull();
-
-            return ((HostObjAttributes)wallType).ToBHoMConstruction(settings, refObjects);
-        }
-
-        /***************************************************/
-
-        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this FloorType floorType, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            settings = settings.DefaultIfNull();
-
-            return ((HostObjAttributes)floorType).ToBHoMConstruction(settings, refObjects);
-        }
-
-        /***************************************************/
-
-        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this CeilingType ceilingType, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            settings = settings.DefaultIfNull();
-
-            return ((HostObjAttributes)ceilingType).ToBHoMConstruction(settings, refObjects);
-        }
-
-        /***************************************************/
-
-        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this RoofType roofType, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            settings = settings.DefaultIfNull();
-
-            return ((HostObjAttributes)roofType).ToBHoMConstruction(settings, refObjects);
-        }
-
-        /***************************************************/
-
         public static oM.Physical.Constructions.Construction ToBHoMConstruction(this HostObjAttributes hostObjAttributes, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
