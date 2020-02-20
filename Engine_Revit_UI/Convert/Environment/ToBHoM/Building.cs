@@ -104,11 +104,7 @@ namespace BH.UI.Revit.Engine
 
                 //Set identifiers & custom data
                 building = building.SetIdentifiers(document.ProjectInformation) as Building;
-                building = building.SetCustomData("Time Zone", timeZone) as Building;
-                building = building.SetCustomData("Place Name", placeName) as Building;
-                building = building.SetCustomData("Weather Station Name", weatherStationName) as Building;
 
-                building = building.SetCustomData("Project Angle", projectAngle) as Building;
                 building = building.SetCustomData("Project East/West Offset", projectEastWestOffset) as Building;
                 building = building.SetCustomData("Project North/South Offset", projectNorthSouthOffset) as Building;
                 building = building.SetCustomData("Project Elevation", projectElevation) as Building;
