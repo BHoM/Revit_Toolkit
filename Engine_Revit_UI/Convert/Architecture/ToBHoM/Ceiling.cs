@@ -67,15 +67,15 @@ namespace BH.UI.Revit.Engine
                 OriginContextFragment originContext = new OriginContextFragment();
                 originContext.ElementID = ceiling.Id.IntegerValue.ToString();
                 originContext.TypeName = ceiling.FamilyTypeFullName();
-                originContext = originContext.UpdateValues(settings, ceiling) as OriginContextFragment;
-                originContext = originContext.UpdateValues(settings, elementType) as OriginContextFragment;
+                originContext.UpdateValues(settings, ceiling);
+                originContext.UpdateValues(settings, elementType);
                 newCeiling.Fragments.Add(originContext);
 
                 //Set identifiers & custom data
-                newCeiling = newCeiling.SetIdentifiers(ceiling) as oM.Architecture.Elements.Ceiling;
-                newCeiling = newCeiling.SetCustomData(ceiling) as oM.Architecture.Elements.Ceiling;
+                newCeiling.SetIdentifiers(ceiling);
+                newCeiling.SetCustomData(ceiling);
 
-                newCeiling = newCeiling.UpdateValues(settings, ceiling) as oM.Architecture.Elements.Ceiling;
+                newCeiling.UpdateValues(settings, ceiling);
                 ceilingList.Add(newCeiling);
             }
 

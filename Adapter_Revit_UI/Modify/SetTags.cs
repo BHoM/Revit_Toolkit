@@ -24,22 +24,22 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Base;
 
-namespace BH.UI.Revit.Engine
+namespace BH.UI.Revit.Adapter
 {
     public static partial class Modify
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
         
-        public static Element SetTags(this Element element, IBHoMObject bHoMObject, string tagsParameterName)
+        internal static void SetTags(this Element element, IBHoMObject bHoMObject, string tagsParameterName)
         {
             if (bHoMObject == null || element == null || string.IsNullOrEmpty(tagsParameterName))
-                return null;
+                return;
 
             Parameter parameter = element.LookupParameter(tagsParameterName);
             if (parameter == null || parameter.IsReadOnly || parameter.StorageType != StorageType.String)
-                return null;
+                return;
 
             string newValue = null;
             if(bHoMObject.Tags != null)
@@ -49,28 +49,25 @@ namespace BH.UI.Revit.Engine
 
             if (newValue != oldValue)
                 parameter.Set(newValue);
-
-
-            return element;
         }
 
         /***************************************************/
 
-        public static IBHoMObject SetTags(this IBHoMObject bHoMObject, Element element, string tagsParameterName)
+        internal static void SetTags(this IBHoMObject bHoMObject, Element element, string tagsParameterName)
         {
             if (bHoMObject == null || element == null || string.IsNullOrEmpty(tagsParameterName))
-                return null;
+                return;
 
             Parameter parameter = element.LookupParameter(tagsParameterName);
             if (parameter == null || parameter.StorageType != StorageType.String)
-                return null;
+                return;
 
             string tags = parameter.AsString();
 
             IBHoMObject iBHoMObject = bHoMObject.GetShallowClone();
 
             if (string.IsNullOrEmpty(tags) && (bHoMObject.Tags == null || bHoMObject.Tags.Count == 0))
-                return iBHoMObject;
+                return;
 
             if (iBHoMObject.Tags == null)
                 iBHoMObject.Tags = new System.Collections.Generic.HashSet<string>();
@@ -79,8 +76,6 @@ namespace BH.UI.Revit.Engine
 
             foreach (string value in values)
                 iBHoMObject.Tags.Add(value);
-
-            return iBHoMObject;
         }
 
         /***************************************************/

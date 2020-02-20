@@ -443,8 +443,8 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             //Set identifiers & custom data
-            profile = profile.SetIdentifiers(familySymbol) as IProfile;
-            profile = profile.SetCustomData(familySymbol) as IProfile;
+            profile.SetIdentifiers(familySymbol);
+            profile.SetCustomData(familySymbol);
 
             profile.Name = familySymbol.Name;
 
@@ -568,8 +568,8 @@ namespace BH.UI.Revit.Engine
             profile = new FreeFormProfile(profileCurves);
 
             //Set identifiers & custom data
-            profile = profile.SetIdentifiers(familyInstance.Symbol) as IProfile;
-            profile = profile.SetCustomData(familyInstance.Symbol) as IProfile;
+            profile.SetIdentifiers(familyInstance.Symbol);
+            profile.SetCustomData(familyInstance.Symbol);
 
             refObjects.AddOrReplace(familyInstance.Symbol.Id, profile);
             return profile;

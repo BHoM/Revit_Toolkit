@@ -233,11 +233,11 @@ namespace BH.UI.Revit.Adapter
                         iBHoMObject = new BHoMObject();
 
                     if (!(iBHoMObject is DraftingInstance) && element.ViewSpecific)
-                        iBHoMObject = iBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.ViewName, element.Document.GetElement(element.OwnerViewId).Name);
+                        iBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.ViewName, element.Document.GetElement(element.OwnerViewId).Name);
 
                     iBHoMObject.Name = element.Name;
-                    iBHoMObject = iBHoMObject.SetIdentifiers(element);
-                    iBHoMObject = iBHoMObject.SetCustomData(element);
+                    iBHoMObject.SetIdentifiers(element);
+                    iBHoMObject.SetCustomData(element);
                     obj = iBHoMObject;
                 }
             }
@@ -262,11 +262,9 @@ namespace BH.UI.Revit.Adapter
 
             if (!string.IsNullOrEmpty(tagsParameterName))
             {
-                for (int i = 0; i < result.Count; i++)
+                foreach(IBHoMObject o in result)
                 {
-                    IBHoMObject iBHoMObject = result[i].SetTags(element, tagsParameterName);
-                    if (iBHoMObject != null)
-                        result[i] = iBHoMObject;
+                    o.SetTags(element, tagsParameterName);
                 }
             }
 

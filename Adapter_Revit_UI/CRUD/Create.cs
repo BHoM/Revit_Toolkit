@@ -159,7 +159,7 @@ namespace BH.UI.Revit.Adapter
                     else
                     {
                         element = BH.UI.Revit.Engine.Convert.IToRevit(bhomObject as dynamic, document, revitSettings, refObjects);
-                        SetIdentifiers(bhomObject, element);
+                        bhomObject.SetIdentifiers(element);
                     }
                 }
                 catch
@@ -216,77 +216,6 @@ namespace BH.UI.Revit.Adapter
                 e.SetProcessingResult(FailureProcessingResult.ProceedWithCommit);
 
             e.SetProcessingResult(FailureProcessingResult.Continue);
-        }
-
-        /***************************************************/
-
-        private static void SetIdentifiers(IBHoMObject bHoMObject, Element element)
-        {
-            if (bHoMObject == null || element == null)
-                return;
-
-            SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.ElementId, element.Id.IntegerValue);
-            SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.AdapterIdName, element.UniqueId);
-
-            if (element is Family)
-            {
-                Family family = (Family)element;
-
-                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName, family.FamilyPlacementTypeName());
-                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyName, family.Name);
-                if (family.FamilyCategory != null)
-                    SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.CategoryName, family.FamilyCategory.Name);
-            }
-            else
-            {
-                int worksetID = WorksetId.InvalidWorksetId.IntegerValue;
-                if (element.Document != null && element.Document.IsWorkshared)
-                {
-                    WorksetId revitWorksetID = element.WorksetId;
-                    if (revitWorksetID != null)
-                        worksetID = revitWorksetID.IntegerValue;
-                }
-                SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.WorksetId, worksetID);
-
-                Parameter parameter = null;
-
-                parameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
-                if (parameter != null)
-                {
-                    string value = parameter.AsValueString();
-                    if (!string.IsNullOrEmpty(value))
-                        SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyName, value);
-                }
-
-
-                parameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
-                if (parameter != null)
-                {
-                    string value = parameter.AsValueString();
-                    if (!string.IsNullOrEmpty(value))
-                        SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.FamilyTypeName, value);
-                }
-
-
-                parameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
-                if (parameter != null)
-                {
-                    string value = parameter.AsValueString();
-                    if (!string.IsNullOrEmpty(value))
-                        SetCustomData(bHoMObject, BH.Engine.Adapters.Revit.Convert.CategoryName, value);
-                }
-            }
-
-        }
-
-        /***************************************************/
-
-        private static void SetCustomData(IBHoMObject bHoMObject, string customDataName, object value)
-        {
-            if (bHoMObject == null || string.IsNullOrEmpty(customDataName))
-                return;
-
-            bHoMObject.CustomData[customDataName] = value;
         }
 
 

@@ -63,7 +63,7 @@ namespace BH.UI.Revit.Engine
             if (revitLevel == null)
                 return null;
 
-            // Copy custom data and set parameters
+            // Copy parameters from BHoM CustomData to Revit Element
             revitLevel.SetParameters(level, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
 
             refObjects.AddOrReplace(level, revitLevel);

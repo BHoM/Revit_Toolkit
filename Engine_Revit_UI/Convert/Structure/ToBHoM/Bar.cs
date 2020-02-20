@@ -185,8 +185,8 @@ namespace BH.UI.Revit.Engine
                 bars[i].Name = elementName;
 
                 //Set identifiers & custom data
-                bars[i] = bars[i].SetIdentifiers(familyInstance) as Bar;
-                bars[i] = bars[i].SetCustomData(familyInstance) as Bar;
+                bars[i].SetIdentifiers(familyInstance);
+                bars[i].SetCustomData(familyInstance);
 
                 refObjects.AddOrReplace(familyInstance.Id, bars[i]);
             }

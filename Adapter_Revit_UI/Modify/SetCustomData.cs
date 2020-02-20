@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,39 +20,23 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Adapters.Revit.Settings;
-using System;
-using System.Collections.Generic;
 
-namespace BH.UI.Revit.Engine
+using BH.oM.Base;
+
+namespace BH.UI.Revit.Adapter
 {
-    public static partial class Convert
+    public static partial class Modify
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****             Internal methods              ****/
         /***************************************************/
-
-        public static ViewSheet ToRevitViewSheet(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        
+        internal static void SetCustomData(this IBHoMObject bHoMObject, string customDataName, object value)
         {
-            if (sheet == null)
-                return null;
+            if (bHoMObject == null || string.IsNullOrEmpty(customDataName))
+                return;
 
-            ViewSheet viewSheet = refObjects.GetValue<ViewSheet>(document, sheet.BHoM_Guid);
-            if (viewSheet != null)
-                return viewSheet;
-
-            settings = settings.DefaultIfNull();
-
-            viewSheet = ViewSheet.Create(document, ElementId.InvalidElementId);
-
-            // Copy parameters from BHoM CustomData to Revit Element
-            viewSheet.SetParameters(sheet, null);
-
-            refObjects.AddOrReplace(sheet, viewSheet);
-            return viewSheet;
+            bHoMObject.CustomData[customDataName] = value;
         }
 
         /***************************************************/

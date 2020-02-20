@@ -48,8 +48,8 @@ namespace BH.UI.Revit.Engine
             material = new Material { Properties = new List<IMaterialProperties>(), Name = revitMaterial.Name };
 
             //Set identifiers & custom data
-            material = material.SetIdentifiers(revitMaterial) as Material;
-            material = material.SetCustomData(revitMaterial) as Material;
+            material.SetIdentifiers(revitMaterial);
+            material.SetCustomData(revitMaterial);
 
             refObjects.AddOrReplace(revitMaterial.Id, material);
             return material;

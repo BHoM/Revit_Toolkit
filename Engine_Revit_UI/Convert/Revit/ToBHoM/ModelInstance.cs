@@ -48,10 +48,10 @@ namespace BH.UI.Revit.Engine
             modelInstance.Name = curveElement.Name;
 
             //Set identifiers & custom data
-            modelInstance = modelInstance.SetIdentifiers(curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
-            modelInstance = modelInstance.SetCustomData(curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
+            modelInstance.SetIdentifiers(curveElement);
+            modelInstance.SetCustomData(curveElement);
 
-            modelInstance = modelInstance.UpdateValues(settings, curveElement) as oM.Adapters.Revit.Elements.ModelInstance;
+            modelInstance.UpdateValues(settings, curveElement);
 
             refObjects.AddOrReplace(curveElement.Id, modelInstance);
             return modelInstance;

@@ -52,10 +52,10 @@ namespace BH.UI.Revit.Engine
             draftingInstance.Name = curveElement.Name;
 
             //Set identifiers & custom data
-            draftingInstance = draftingInstance.SetIdentifiers(curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
-            draftingInstance = draftingInstance.SetCustomData(curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
+            draftingInstance.SetIdentifiers(curveElement);
+            draftingInstance.SetCustomData(curveElement);
 
-            draftingInstance = draftingInstance.UpdateValues(settings, curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
+            draftingInstance.UpdateValues(settings, curveElement);
 
             refObjects.AddOrReplace(curveElement.Id, draftingInstance);
             return draftingInstance;
@@ -94,10 +94,10 @@ namespace BH.UI.Revit.Engine
             draftingInstance.Name = filledRegion.Name;
 
             //Set identifiers & custom data
-            draftingInstance = draftingInstance.SetIdentifiers(filledRegion) as oM.Adapters.Revit.Elements.DraftingInstance;
-            draftingInstance = draftingInstance.SetCustomData(filledRegion) as oM.Adapters.Revit.Elements.DraftingInstance;
+            draftingInstance.SetIdentifiers(filledRegion);
+            draftingInstance.SetCustomData(filledRegion);
 
-            draftingInstance = draftingInstance.UpdateValues(settings, filledRegion) as oM.Adapters.Revit.Elements.DraftingInstance;
+            draftingInstance.UpdateValues(settings, filledRegion);
 
             refObjects.AddOrReplace(filledRegion.Id, draftingInstance);
             return draftingInstance;

@@ -73,10 +73,10 @@ namespace BH.UI.Revit.Engine
             }
 
             //Set identifiers & custom data
-            family = family.SetIdentifiers(revitFamily) as oM.Adapters.Revit.Elements.Family;
-            family = family.SetCustomData(revitFamily) as oM.Adapters.Revit.Elements.Family;
+            family.SetIdentifiers(revitFamily);
+            family.SetCustomData(revitFamily);
 
-            family = family.UpdateValues(settings, revitFamily) as oM.Adapters.Revit.Elements.Family;
+            family.UpdateValues(settings, revitFamily);
 
             refObjects.AddOrReplace(revitFamily.Id, family);
             return family;

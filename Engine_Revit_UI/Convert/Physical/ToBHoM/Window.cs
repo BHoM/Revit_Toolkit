@@ -61,13 +61,13 @@ namespace BH.UI.Revit.Engine
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.ElementID = familyInstance.Id.IntegerValue.ToString();
             originContext.TypeName = familyInstance.FamilyTypeFullName();
-            originContext = originContext.UpdateValues(settings, familyInstance) as OriginContextFragment;
-            originContext = originContext.UpdateValues(settings, elementType) as OriginContextFragment;
+            originContext.UpdateValues(settings, familyInstance);
+            originContext.UpdateValues(settings, elementType);
             window.Fragments.Add(originContext);
 
             //Set identifiers & custom data
-            window = window.SetIdentifiers(familyInstance) as Window;
-            window = window.SetCustomData(familyInstance) as Window;
+            window.SetIdentifiers(familyInstance);
+            window.SetCustomData(familyInstance);
 
             refObjects.AddOrReplace(familyInstance.Id, window);
             return window;
@@ -99,13 +99,13 @@ namespace BH.UI.Revit.Engine
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.ElementID = panel.Id.IntegerValue.ToString();
             originContext.TypeName = panel.FamilyTypeFullName();
-            originContext = originContext.UpdateValues(settings, panel) as OriginContextFragment;
-            originContext = originContext.UpdateValues(settings, elementType) as OriginContextFragment;
+            originContext.UpdateValues(settings, panel);
+            originContext.UpdateValues(settings, elementType);
             window.Fragments.Add(originContext);
 
             //Set identifiers & custom data
-            window = window.SetIdentifiers(panel) as Window;
-            window = window.SetCustomData(panel) as Window;
+            window.SetIdentifiers(panel);
+            window.SetCustomData(panel);
 
             refObjects.AddOrReplace(panel.Id, window);
             return window;
