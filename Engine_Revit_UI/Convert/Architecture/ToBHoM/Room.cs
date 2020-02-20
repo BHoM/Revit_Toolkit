@@ -62,7 +62,6 @@ namespace BH.UI.Revit.Engine
             room.Fragments.Add(originContext);
 
             //Set identifiers & custom data
-            //TODO: is customData added twice?
             room = room.SetIdentifiers(spatialElement) as oM.Architecture.Elements.Room;
             room = room.SetCustomData(spatialElement) as oM.Architecture.Elements.Room;
             
