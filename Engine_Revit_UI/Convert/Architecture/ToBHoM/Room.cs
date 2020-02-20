@@ -50,10 +50,6 @@ namespace BH.UI.Revit.Engine
             };
             room.Name = spatialElement.Name;
 
-            //Set identifiers & custom data
-            room = room.SetIdentifiers(spatialElement) as oM.Architecture.Elements.Room;
-            room = room.SetCustomData(spatialElement) as oM.Architecture.Elements.Room;
-
             //Set location
             if (spatialElement.Location != null && spatialElement.Location is LocationPoint)
                 room.Location = ((LocationPoint)spatialElement.Location).ToBHoM();
