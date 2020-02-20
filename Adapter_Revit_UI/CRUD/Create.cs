@@ -22,14 +22,12 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using BH.Adapter;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Structure.Elements;
 using BH.UI.Revit.Engine;
 using System;
 using System.Collections.Generic;
@@ -37,7 +35,7 @@ using System.Linq;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class RevitUIAdapter : BH.Adapter.Revit.InternalRevitAdapter
+    public partial class RevitUIAdapter : BHoMAdapter, BH.Adapter.Revit.IInternalRevitAdapter
     {
         /***************************************************/
         /****             Protected Methods             ****/
