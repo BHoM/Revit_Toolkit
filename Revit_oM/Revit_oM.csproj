@@ -85,7 +85,6 @@
     <Compile Include="Requests\ParameterTextRequest.cs" />
     <Compile Include="Requests\ElementIdsRequest.cs" />
     <Compile Include="Requests\UniqueIdsRequest.cs" />
-    <Compile Include="Requests\SelectionRequest.cs" />
     <Compile Include="Requests\SelectionSetRequest.cs" />
     <Compile Include="Requests\DBTypeNameRequest.cs" />
     <Compile Include="Requests\ViewByTemplateRequest.cs" />
