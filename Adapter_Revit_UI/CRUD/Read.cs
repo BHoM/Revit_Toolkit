@@ -118,7 +118,7 @@ namespace BH.UI.Revit.Adapter
             if (!pullConfig.IncludeClosedWorksets)
                 worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
 
-            List<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).ToList();
+            List<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).RemoveGridSegmentIds(document).ToList();
             if (elementIds == null)
                 return null;
             
@@ -144,8 +144,6 @@ namespace BH.UI.Revit.Adapter
                 mapSettings = BH.Engine.Adapters.Revit.Query.DefaultMapSettings();
             
             List<IBHoMObject> result = new List<IBHoMObject>();
-            List <int> elementIDList = new List<int>();
-
             Dictionary<string, List<IBHoMObject>> refObjects = new Dictionary<string, List<IBHoMObject>>();
 
             foreach (ElementId id in elementIds)
@@ -175,19 +173,6 @@ namespace BH.UI.Revit.Adapter
                     }
 
                     result.AddRange(iBHoMObjects);
-                    elementIDList.Add(element.Id.IntegerValue);
-
-                    //TODO: atm it has been glued to the existing code, should be done in a more structured way
-                    if (element is MultiSegmentGrid)
-                    {
-                        foreach (ElementId elementId in (element as MultiSegmentGrid).GetGridIds())
-                        {
-                            if (elementIDList.Contains(elementId.IntegerValue))
-                                result.RemoveAll(x => x.CustomData.ContainsKey(BH.Engine.Adapters.Revit.Convert.ElementId) && (int)x.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId] != elementId.IntegerValue);
-                            else
-                                elementIDList.Add(elementId.IntegerValue);
-                        }
-                    }
                 }
             }
 
