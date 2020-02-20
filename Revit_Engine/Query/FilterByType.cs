@@ -38,6 +38,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Deprecated("3.1", "This is a duplicate of BH.Engine.Base.Query.FilterByType method.", typeof(BH.Engine.Base.Query), "FilterByType")]
         [Description("Filters objects by type.")]
         [Input("objects", "Objects to be filtered by Type")]
         [Input("type", "Type")]
