@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -32,15 +32,28 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static CurveArray CurveArray(this IEnumerable<Curve> curves)
+        public static Options Options(ViewDetailLevel detailLevel, bool includeNonVisible = false, bool computeReferences = false)
         {
-            CurveArray ca = new CurveArray();
-            foreach (Curve c in curves)
-            {
-                ca.Append(c);
-            }
+            Options options = new Options();
+            options.DetailLevel = detailLevel;
+            options.IncludeNonVisibleObjects = includeNonVisible;
+            options.ComputeReferences = computeReferences;
+            return options;
+        }
 
-            return ca;
+        /***************************************************/
+
+        public static Options Options(View view, bool includeNonVisible = false, bool computeReferences = false)
+        {
+            if (view == null)
+                return null;
+
+            Options options = new Options();
+            options.View = view;
+            options.DetailLevel = view.DetailLevel;
+            options.IncludeNonVisibleObjects = includeNonVisible;
+            options.ComputeReferences = computeReferences;
+            return options;
         }
 
         /***************************************************/
