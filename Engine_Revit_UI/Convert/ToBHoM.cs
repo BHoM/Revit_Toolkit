@@ -456,7 +456,6 @@ namespace BH.UI.Revit.Engine
 
         public static IGeometry ToBHoM(this Location location)
         {
-            BH.Engine.Reflection.Compute.RecordError(string.Format("Conversion of Location type {0} is currently not supported by BHoM.", location.GetType()));
             return null;
         }
 
