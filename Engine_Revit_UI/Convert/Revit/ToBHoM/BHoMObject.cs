@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -22,8 +22,12 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Geometry;
 using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
@@ -34,27 +38,44 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Adapters.Revit.Elements.ModelInstance ToBHoMModelInstance(this CurveElement curveElement, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoMObject(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            oM.Adapters.Revit.Elements.ModelInstance modelInstance = refObjects.GetValue<oM.Adapters.Revit.Elements.ModelInstance>(curveElement.Id);
-            if (modelInstance != null)
-                return modelInstance;
+            IBHoMObject iBHoMObject = refObjects.GetValue<IBHoMObject>(element.Id);
+            if (iBHoMObject != null)
+                return iBHoMObject;
+            
+            IGeometry iGeometry = element.Location.IToBHoM();
+            if (iGeometry != null)
+            {
+                ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
+                if (elementType != null)
+                {
+                    InstanceProperties objectProperties = elementType.ToBHoM(discipline, settings, refObjects) as InstanceProperties;
+                    if (objectProperties != null)
+                    {
+                        if (element.ViewSpecific)
+                            iBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingInstance(objectProperties, element.Document.GetElement(element.OwnerViewId).Name, iGeometry as dynamic);
+                        else
+                            iBHoMObject = BH.Engine.Adapters.Revit.Create.ModelInstance(objectProperties, iGeometry as dynamic);
+                    }
+                }
+            }
 
-            oM.Adapters.Revit.Properties.InstanceProperties instanceProperties = (curveElement.LineStyle as GraphicsStyle).ToBHoMInstanceProperties(settings, refObjects) as oM.Adapters.Revit.Properties.InstanceProperties;
-            modelInstance = BH.Engine.Adapters.Revit.Create.ModelInstance(instanceProperties, curveElement.GeometryCurve.IToBHoM());
+            if (iBHoMObject == null)
+                iBHoMObject = new BHoMObject();
 
-            modelInstance.Name = curveElement.Name;
+            if (!(iBHoMObject is DraftingInstance) && element.ViewSpecific)
+                iBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.ViewName, element.Document.GetElement(element.OwnerViewId).Name);
 
-            //Set identifiers & custom data
-            modelInstance.SetIdentifiers(curveElement);
-            modelInstance.SetCustomData(curveElement);
+            iBHoMObject.Name = element.Name;
+            iBHoMObject.SetIdentifiers(element);
+            iBHoMObject.SetCustomData(element);
 
-            modelInstance.UpdateValues(settings, curveElement);
+            refObjects.AddOrReplace(element.Id, iBHoMObject);
 
-            refObjects.AddOrReplace(curveElement.Id, modelInstance);
-            return modelInstance;
+            return iBHoMObject;
         }
 
         /***************************************************/

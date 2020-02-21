@@ -158,7 +158,7 @@ namespace BH.UI.Revit.Adapter
                     }
                     else
                     {
-                        element = BH.UI.Revit.Engine.Convert.IToRevit(bhomObject as dynamic, document, revitSettings, refObjects);
+                        element = bhomObject.IToRevit(document, revitSettings, refObjects);
                         bhomObject.SetIdentifiers(element);
                     }
                 }

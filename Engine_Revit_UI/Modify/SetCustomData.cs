@@ -31,7 +31,7 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        public static void SetCustomData(this IBHoMObject bHoMObject, Element element, string namePrefix = null)
+        internal static void SetCustomData(this IBHoMObject bHoMObject, Element element, string namePrefix = null)
         {
             if (bHoMObject == null || element == null)
                 return;

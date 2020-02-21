@@ -261,8 +261,8 @@
     <Compile Include="Convert\Physical\ToRevit\HostObjAttributes.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilyInstance.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilySymbol.cs" />
+    <Compile Include="Convert\Revit\ToBHoM\BHoMObject.cs" />
     <Compile Include="Convert\Revit\ToBHoM\DraftingInstance.cs" />
-    <Compile Include="Convert\Revit\ToBHoM\ModelInstance.cs" />
     <Compile Include="Convert\Environment\ToBHoM\SolidMaterial.cs" />
     <Compile Include="Convert\Physical\ToRevit\RoofBase.cs" />
     <Compile Include="Convert\Physical\ToRevit\Floor.cs" />

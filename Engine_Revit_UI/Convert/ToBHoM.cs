@@ -475,7 +475,10 @@ namespace BH.UI.Revit.Engine
 
             var result = ToBHoM(element as dynamic, discipline, settings, refObjects);
             if (result == null)
+            {
+                result = element.ToBHoMObject(discipline, settings, refObjects);
                 element.NotConvertedWarning(discipline);
+            }
 
             return result;
         }

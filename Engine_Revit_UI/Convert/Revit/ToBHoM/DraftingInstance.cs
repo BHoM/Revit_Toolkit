@@ -22,6 +22,8 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using System;
@@ -34,40 +36,12 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /****               Public Methods              ****/
         /***************************************************/
-
-        public static oM.Adapters.Revit.Elements.DraftingInstance ToBHoMDraftingInstance(this CurveElement curveElement, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            settings = settings.DefaultIfNull();
-
-            oM.Adapters.Revit.Elements.DraftingInstance draftingInstance = refObjects.GetValue<oM.Adapters.Revit.Elements.DraftingInstance>(curveElement.Id);
-            if (draftingInstance != null)
-                return draftingInstance;
-
-            View view = curveElement.Document.GetElement(curveElement.OwnerViewId) as View;
-            if (view == null)
-                return null;
-
-            oM.Adapters.Revit.Properties.InstanceProperties instanceProperties = (curveElement.LineStyle as GraphicsStyle).ToBHoMInstanceProperties(settings, refObjects) as oM.Adapters.Revit.Properties.InstanceProperties;
-            draftingInstance = BH.Engine.Adapters.Revit.Create.DraftingInstance(instanceProperties, view.Name, curveElement.GeometryCurve.IToBHoM());
-            draftingInstance.Name = curveElement.Name;
-
-            //Set identifiers & custom data
-            draftingInstance.SetIdentifiers(curveElement);
-            draftingInstance.SetCustomData(curveElement);
-
-            draftingInstance.UpdateValues(settings, curveElement);
-
-            refObjects.AddOrReplace(curveElement.Id, draftingInstance);
-            return draftingInstance;
-        }
-
-        /***************************************************/
         
-        public static oM.Adapters.Revit.Elements.DraftingInstance ToBHoMDraftingInstance(this FilledRegion filledRegion, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static DraftingInstance ToBHoMDraftingInstance(this FilledRegion filledRegion, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            oM.Adapters.Revit.Elements.DraftingInstance draftingInstance = refObjects.GetValue<oM.Adapters.Revit.Elements.DraftingInstance>(filledRegion.Id);
+            DraftingInstance draftingInstance = refObjects.GetValue<DraftingInstance>(filledRegion.Id);
             if (draftingInstance != null)
                 return draftingInstance;
 
@@ -75,7 +49,7 @@ namespace BH.UI.Revit.Engine
             if (view == null)
                 return null;
 
-            oM.Adapters.Revit.Properties.InstanceProperties instanceProperties = (filledRegion.Document.GetElement(filledRegion.GetTypeId()) as ElementType).ToBHoMInstanceProperties(settings, refObjects) as oM.Adapters.Revit.Properties.InstanceProperties;
+            InstanceProperties instanceProperties = (filledRegion.Document.GetElement(filledRegion.GetTypeId()) as ElementType).ToBHoMInstanceProperties(settings, refObjects) as InstanceProperties;
 
             List<oM.Geometry.ICurve> curves = new List<oM.Geometry.ICurve>();
             foreach (CurveLoop loop in filledRegion.GetBoundaries())

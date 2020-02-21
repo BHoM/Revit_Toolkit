@@ -51,7 +51,7 @@ namespace BH.UI.Revit.Engine
 
         internal static void NotConvertedWarning(this Element element, Discipline discipline)
         {
-            string message = String.Format("Revit element conversion to BHoM failed for discipline {0}.", discipline);
+            string message = String.Format("Revit element conversion to BHoM failed for discipline {0}. The element has been converted into a generic BHoM instance.", discipline);
 
             if (element != null)
                 message += string.Format(" Element Type: {0}, Element Id: {1}, Element Name: {2}", element.GetType(), element.Id.IntegerValue, element.Name);

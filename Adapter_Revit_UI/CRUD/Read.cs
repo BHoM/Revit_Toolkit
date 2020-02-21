@@ -193,38 +193,6 @@ namespace BH.UI.Revit.Adapter
             try
             {
                 obj = element.IToBHoM(discipline, revitSettings, refObjects);
-
-                if (obj == null)
-                {
-                    IBHoMObject iBHoMObject = null;
-                    IGeometry iGeometry = element.Location.IToBHoM();
-                    if (iGeometry != null)
-                    {
-                        ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-                        if (elementType != null)
-                        {
-                            InstanceProperties objectProperties = elementType.ToBHoM(discipline, revitSettings, refObjects) as InstanceProperties;
-                            if (objectProperties != null)
-                            {
-                                if (element.ViewSpecific)
-                                    iBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingInstance(objectProperties, element.Document.GetElement(element.OwnerViewId).Name, iGeometry as dynamic);
-                                else
-                                    iBHoMObject = BH.Engine.Adapters.Revit.Create.ModelInstance(objectProperties, iGeometry as dynamic);
-                            }
-                        }
-                    }
-
-                    if (iBHoMObject == null)
-                        iBHoMObject = new BHoMObject();
-
-                    if (!(iBHoMObject is DraftingInstance) && element.ViewSpecific)
-                        iBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.ViewName, element.Document.GetElement(element.OwnerViewId).Name);
-
-                    iBHoMObject.Name = element.Name;
-                    iBHoMObject.SetIdentifiers(element);
-                    iBHoMObject.SetCustomData(element);
-                    obj = iBHoMObject;
-                }
             }
             catch (Exception exception)
             {
