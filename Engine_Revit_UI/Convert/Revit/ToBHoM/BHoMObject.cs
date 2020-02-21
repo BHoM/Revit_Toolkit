@@ -67,7 +67,7 @@ namespace BH.UI.Revit.Engine
                 iBHoMObject = new BHoMObject();
 
             if (!(iBHoMObject is DraftingInstance) && element.ViewSpecific)
-                iBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.ViewName, element.Document.GetElement(element.OwnerViewId).Name);
+                iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.ViewName] = element.Document.GetElement(element.OwnerViewId).Name;
 
             iBHoMObject.Name = element.Name;
             iBHoMObject.SetIdentifiers(element);

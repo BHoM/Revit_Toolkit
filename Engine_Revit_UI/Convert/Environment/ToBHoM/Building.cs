@@ -105,9 +105,9 @@ namespace BH.UI.Revit.Engine
                 //Set identifiers & custom data
                 building.SetIdentifiers(document.ProjectInformation);
 
-                building.SetCustomData("Project East/West Offset", projectEastWestOffset);
-                building.SetCustomData("Project North/South Offset", projectNorthSouthOffset);
-                building.SetCustomData("Project Elevation", projectElevation);
+                building.CustomData["Project East/West Offset"] = projectEastWestOffset;
+                building.CustomData["Project North/South Offset"] = projectNorthSouthOffset;
+                building.CustomData["Project Elevation"] = projectElevation;
 
                 building.SetCustomData(document.ProjectInformation);
 

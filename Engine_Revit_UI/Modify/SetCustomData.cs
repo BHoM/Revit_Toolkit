@@ -92,18 +92,5 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-
-        internal static void SetCustomData(this IBHoMObject bHoMObject, string customDataName, object value)
-        {
-            if (bHoMObject == null || string.IsNullOrEmpty(customDataName))
-                return;
-
-            if (bHoMObject.CustomData.ContainsKey(customDataName))
-                bHoMObject.CustomData[customDataName] = value;
-            else
-                bHoMObject.CustomData.Add(customDataName, value);
-        }
-
-        /***************************************************/
     }
 }

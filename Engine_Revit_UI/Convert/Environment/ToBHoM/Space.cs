@@ -159,8 +159,8 @@ namespace BH.UI.Revit.Engine
                 double innerVolume = energyAnalysisSpace.InnerVolume.ToSI(UnitType.UT_Volume);
                 double analyticalVolume = energyAnalysisSpace.AnalyticalVolume.ToSI(UnitType.UT_Volume);
 
-            space.SetCustomData("Inner Volume", innerVolume);
-            space.SetCustomData("Analytical Volume", analyticalVolume);
+            space.CustomData["Inner Volume"] = innerVolume;
+            space.CustomData["Analytical Volume"] = analyticalVolume;
 
             refObjects.AddOrReplace(energyAnalysisSpace.Id, space);
             space.UpdateValues(settings, energyAnalysisSpace);
