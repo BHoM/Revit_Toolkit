@@ -44,6 +44,9 @@ namespace BH.UI.Revit.Engine
             if (surfaces != null && surfaces.Count > 0)
                 return surfaces;
 
+            if (hostObject is Wall && ((Wall)hostObject).StackedWallOwnerId != null && ((Wall)hostObject).StackedWallOwnerId != ElementId.InvalidElementId)
+                return null;
+
             //TODO: check if the attributes != null
             HostObjAttributes hostObjAttributes = hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes;
             oM.Physical.Constructions.Construction construction = hostObjAttributes.ToBHoMConstruction(settings, refObjects);

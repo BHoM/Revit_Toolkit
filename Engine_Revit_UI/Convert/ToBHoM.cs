@@ -39,12 +39,12 @@ namespace BH.UI.Revit.Engine
         /****      Convert Revit elements to BHoM       ****/
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this PlanarFace planarFace, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> ToBHoM(this PlanarFace planarFace, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    return planarFace.Panels(settings).ConvertAll(x => x as IBHoMObject);
+                    return planarFace.Panels(settings);
                 default:
                     return null;
             }
@@ -52,7 +52,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this ProjectInfo projectInfo, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> ToBHoM(this ProjectInfo projectInfo, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -122,23 +122,17 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this Wall wall, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> ToBHoM(this Wall wall, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    if (wall.StackedWallOwnerId == null || wall.StackedWallOwnerId == ElementId.InvalidElementId)
-                        return wall.ToBHoMEnvironmentPanels(settings, refObjects).ConvertAll(x => x as IBHoMObject);
-                    else
-                        return null;
+                    return wall.ToBHoMEnvironmentPanels(settings, refObjects);
                 case Discipline.Structural:
-                    return wall.ToBHoMPanel(settings, refObjects).ConvertAll(p => p as IBHoMObject);
+                    return wall.ToBHoMPanel(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    if (wall.StackedWallOwnerId == null || wall.StackedWallOwnerId == ElementId.InvalidElementId)
-                        return wall.ToBHoMISurfaces(settings, refObjects).ConvertAll(x => x as IBHoMObject);
-                    else
-                        return null;
+                    return wall.ToBHoMISurfaces(settings, refObjects);
                 default:
                     return null;
             }
@@ -146,15 +140,15 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this Ceiling ceiling, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> ToBHoM(this Ceiling ceiling, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    return ceiling.ToBHoMEnvironmentPanels(settings, refObjects).ConvertAll(x => x as IBHoMObject);
+                    return ceiling.ToBHoMEnvironmentPanels(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return ceiling.ToBHoMCeilings(settings, refObjects).ConvertAll(x => x as IBHoMObject);
+                    return ceiling.ToBHoMCeilings(settings, refObjects);
                 default:
                     return null;
             }
@@ -162,17 +156,17 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this Floor floor, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> ToBHoM(this Floor floor, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch(discipline)
             {
                 case Discipline.Environmental:
-                    return floor.ToBHoMEnvironmentPanels(settings, refObjects).ConvertAll(x => x as IBHoMObject);
+                    return floor.ToBHoMEnvironmentPanels(settings, refObjects);
                 case Discipline.Structural:
-                    return floor.ToBHoMPanel(settings, refObjects).ConvertAll(p => p as IBHoMObject);
+                    return floor.ToBHoMPanel(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return floor.ToBHoMISurfaces(settings, refObjects).ConvertAll(x => x as IBHoMObject);
+                    return floor.ToBHoMISurfaces(settings, refObjects);
                 default:
                     return null;
             }
@@ -180,17 +174,17 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<IBHoMObject> ToBHoM(this RoofBase roofBase, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> ToBHoM(this RoofBase roofBase, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    return roofBase.ToBHoMEnvironmentPanels(settings, refObjects).ConvertAll(x => x as IBHoMObject);
+                    return roofBase.ToBHoMEnvironmentPanels(settings, refObjects);
                 case Discipline.Structural:
-                    return roofBase.ToBHoMPanel(settings, refObjects).ConvertAll(p => p as IBHoMObject);
+                    return roofBase.ToBHoMPanel(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return roofBase.ToBHoMISurfaces(settings, refObjects).ConvertAll(x => x as IBHoMObject);
+                    return roofBase.ToBHoMISurfaces(settings, refObjects);
                 default:
                     return null;
             }

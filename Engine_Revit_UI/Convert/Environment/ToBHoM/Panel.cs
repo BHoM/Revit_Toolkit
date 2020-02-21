@@ -467,6 +467,9 @@ namespace BH.UI.Revit.Engine
             if (panels != null && panels.Count > 0)
                 return panels;
 
+            if (wall.StackedWallOwnerId != null && wall.StackedWallOwnerId != ElementId.InvalidElementId)
+                return null;
+
             panels = new List<oM.Environment.Elements.Panel>();
 
             BH.oM.Physical.Constructions.Construction constrtuction = wall.WallType.ToBHoMConstruction(settings, refObjects);
