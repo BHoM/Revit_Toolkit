@@ -312,7 +312,6 @@
     <Compile Include="Convert\FromSI.cs" />
     <Compile Include="Modify\AddSpaceId.cs" />
     <Compile Include="Modify\RemoveGridSegmentIds.cs" />
-    <Compile Include="Modify\SetTags.cs" />
     <Compile Include="Modify\UpdateMaterialProperties.cs" />
     <Compile Include="Modify\UpdateValues.cs" />
     <Compile Include="Query\ArbitraryPlane.cs" />
