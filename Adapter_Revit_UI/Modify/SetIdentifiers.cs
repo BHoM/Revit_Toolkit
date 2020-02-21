@@ -38,17 +38,17 @@ namespace BH.UI.Revit.Adapter
             if (bHoMObject == null || element == null)
                 return;
 
-            bHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.ElementId, element.Id.IntegerValue);
-            bHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.AdapterIdName, element.UniqueId);
+            bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId] = element.Id.IntegerValue;
+            bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.AdapterIdName] = element.UniqueId;
 
             if (element is Family)
             {
                 Family family = (Family)element;
 
-                bHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName, family.FamilyPlacementTypeName());
-                bHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyName, family.Name);
+                bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName] = family.FamilyPlacementTypeName();
+                bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = family.Name;
                 if (family.FamilyCategory != null)
-                    bHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.CategoryName, family.FamilyCategory.Name);
+                    bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = family.FamilyCategory.Name;
             }
             else
             {
@@ -59,7 +59,7 @@ namespace BH.UI.Revit.Adapter
                     if (revitWorksetID != null)
                         worksetID = revitWorksetID.IntegerValue;
                 }
-                bHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.WorksetId, worksetID);
+                bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.WorksetId] = worksetID;
 
                 Parameter parameter = null;
 
@@ -68,7 +68,7 @@ namespace BH.UI.Revit.Adapter
                 {
                     string value = parameter.AsValueString();
                     if (!string.IsNullOrEmpty(value))
-                        bHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyName, value);
+                        bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = value;
                 }
 
 
@@ -77,7 +77,7 @@ namespace BH.UI.Revit.Adapter
                 {
                     string value = parameter.AsValueString();
                     if (!string.IsNullOrEmpty(value))
-                        bHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.FamilyTypeName, value);
+                        bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = value;
                 }
 
 
@@ -86,7 +86,7 @@ namespace BH.UI.Revit.Adapter
                 {
                     string value = parameter.AsValueString();
                     if (!string.IsNullOrEmpty(value))
-                        bHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.CategoryName, value);
+                        bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = value;
                 }
             }
 
