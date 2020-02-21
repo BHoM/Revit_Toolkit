@@ -283,6 +283,7 @@
     <Compile Include="Convert\Revit\ToRevit\CurveElement.cs" />
     <Compile Include="Convert\Structure\ToBHoM\Bar.cs" />
     <Compile Include="Create\CurveArray.cs" />
+    <Compile Include="Create\Options.cs" />
     <Compile Include="Modify\AddAdjacentSpaceId.cs" />
     <Compile Include="Compute\LoadFamily.cs" />
     <Compile Include="Modify\AddOrReplace.cs" />
