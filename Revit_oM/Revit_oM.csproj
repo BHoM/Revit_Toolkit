@@ -45,6 +45,10 @@
       <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Dimensional_oM">
+      <HintPath>..\..\BHoM\Build\Dimensional_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Geometry_oM">
       <HintPath>..\..\BHoM\Build\Geometry_oM.dll</HintPath>
       <Private>False</Private>
