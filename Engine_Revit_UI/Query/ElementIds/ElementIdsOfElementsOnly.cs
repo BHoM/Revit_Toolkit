@@ -20,29 +20,49 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+
+using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
+
+
+
+namespace BH.UI.Revit.Engine
 {
-    [Description("IRequest that filters elements based on given floating point number parameter value criterion.")]
-    public class ParameterNumberRequest : IParameterRequest
+    public static partial class Query
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Name of the parameter to be used as filter criterion.")]
-        public string ParameterName { get; set; } = "";
+        [Description("Get all instances of Elements as ElementIds, implies they exist in a XYZ context")]
+        [Input("document", "Revit Document where ElementIds are collected")]        
+        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
+        [Output("elementIdsByInstancesOnly", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsOfElementsOnly(this Document document, IEnumerable<ElementId> ids = null)
+        {
+            if (document == null)
+                return null;
 
-        [Description("NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
-        public Enums.NumberComparisonType NumberComparisonType { get; set; } = Enums.NumberComparisonType.Equal;
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+            collector.WhereElementIsNotElementType().Where(x => x.Location != null);
 
-        [Description("Value to compare the parameter against.")]
-        public double Value { get; set; } = double.NaN;
-
-        public double Tolerance { get; set; } = BH.oM.Geometry.Tolerance.Distance;
+            return collector.ToElementIds();
+        }
 
         /***************************************************/
+
     }
 }

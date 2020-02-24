@@ -25,8 +25,8 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters elements based on given Boolean parameter value criterion.")]
-    public class ParameterBoolRequest : IParameterRequest
+    [Description("IRequest that filters elements based on given integer parameter value criterion.")]
+    public class ByParameterIntegerRequest : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
@@ -35,8 +35,11 @@ namespace BH.oM.Adapters.Revit
         [Description("Name of the parameter to be used as filter criterion.")]
         public string ParameterName { get; set; } = "";
 
+        [Description("NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
+        public Enums.NumberComparisonType NumberComparisonType { get; set; } = Enums.NumberComparisonType.Equal;
+
         [Description("Value to compare the parameter against.")]
-        public bool Value { get; set; } = true;
+        public int Value { get; set; } = 0;
 
         /***************************************************/
     }

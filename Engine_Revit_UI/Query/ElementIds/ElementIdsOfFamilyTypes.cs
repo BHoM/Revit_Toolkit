@@ -47,6 +47,38 @@ namespace BH.UI.Revit.Engine
 
         [Description("Get the ElementId of all Family Types of certain Families")]
         [Input("document", "Revit Document where ElementIds are collected")]
+        [Input("familyNames", "Family names to search for Family Type ids")]
+        [Output("elementIdsOfFamilyTypes", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, List<string> familyNames, IEnumerable<ElementId> ids = null)
+        {
+            if (document == null || familyNames.Any() != true)
+                return null;
+            
+            List<ElementId> familyIds = new List<ElementId>();
+
+            foreach(string name in familyNames)
+            {
+                familyIds.Add(ElementIdsOfFamilies(document, name, true).FirstOrDefault());
+            }
+
+            return ElementIdsOfFamilyTypes(document,familyIds,ids);
+        }
+
+        /***************************************************/
+
+        [Description("Get the ElementId of all Family Types of a Family")]
+        [Input("document", "Revit Document where ElementIds are collected")]
+        [Input("familyName", "Family name to search for Family Type ids")]
+        [Output("elementIdsOfFamilyTypes", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, string familyName, IEnumerable<ElementId> ids = null)
+        {
+            return ElementIdsOfFamilyTypes(document, ElementIdsOfFamilies(document, familyName, true).FirstOrDefault(), ids);
+        }
+
+        /***************************************************/
+
+        [Description("Get the ElementId of all Family Types of certain Families")]
+        [Input("document", "Revit Document where ElementIds are collected")]
         [Input("familyIds", "Family ids to search for Family Type ids")]
         [Output("elementIdsOfFamilyTypes", "An enumerator for easy iteration of ElementIds collected")]
         public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, IEnumerable<ElementId> familyIds, IEnumerable<ElementId> ids = null)
@@ -55,7 +87,7 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             HashSet<ElementId> result = new HashSet<ElementId>();
-
+                         
             foreach(ElementId id in familyIds)
             {
                 Family family = document.GetElement(id) as Family;
@@ -66,51 +98,32 @@ namespace BH.UI.Revit.Engine
                     continue;
                 }
 
-                ISet<ElementId> symbolId = family.GetFamilySymbolIds();
-
-                foreach(ElementId sId in symbolId)
-                {
-                    result.Add(sId);
-                }
+                result.UnionWith(family.GetFamilySymbolIds());                
             }
+
+            if (ids != null)
+                result.IntersectWith(ids);
+
             return result; 
         }
-        
+
+        /***************************************************/
+
         [Description("Get the ElementId of all Family Types, with option to narrow search by a certain Family id")]
         [Input("document", "Revit Document where ElementIds are collected")]
         [Input("familyId", "Optional, Family id to search for Family Type ids")]
         [Output("elementIdsOfFamilyTypes", "An enumerator for easy iteration of ElementIds collected")]
         public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, ElementId familyId = null, IEnumerable<ElementId> ids = null)
         {
-            if (document == null)
-                return null;
-
-            if(familyId == null)
+            if(familyId != null)
             {
-                FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-                return collector.WhereElementIsElementType().ToElementIds();
+                return ElementIdsOfFamilyTypes(document, new List<ElementId> { familyId }, ids);
             }
             else
             {
-                HashSet<ElementId> result = new HashSet<ElementId>();
-
-                Family family = document.GetElement(familyId) as Family;
-
-                if (family == null)
-                {
-                    BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family with the Id " + familyId.ToString() + ".");
-                    return null;
-                }
-
-                ISet<ElementId> symbolId = family.GetFamilySymbolIds();
-
-                foreach (ElementId sId in symbolId)
-                {
-                    result.Add(sId);
-                }
-
-                return result;
-            }
+                FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+                return collector.WhereElementIsElementType().ToElementIds();
+            }            
         }
 
         /***************************************************/

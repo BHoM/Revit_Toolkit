@@ -49,21 +49,37 @@ namespace BH.UI.Revit.Engine
         [Input("document", "Revit Document where views are collected")]
         [Input("view", "Revit view where visible elements are collected")]
         [Output("elementIdsByView", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsByVisibleInView(this Document document, View view, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsByVisibleInView(this Document document, string viewName, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
-            if (document == null || view == null)
+            if (document == null || viewName == null)
                 return null;
 
-            FilteredElementCollector collector = new FilteredElementCollector(document, view.Id);
-            if (ids == null)
+            IEnumerable<Element> viewCollector = new FilteredElementCollector(document).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Views);
+            View view = null;
+
+            if (caseSensitive)
+                view = viewCollector.Where(x => x.Name == viewName).FirstOrDefault() as View;
+            else
+                view = viewCollector.Where(x => x.Name.ToUpper() == viewName.ToUpper()).FirstOrDefault() as View;            
+
+            if(viewCollector != null)
             {
-                return collector.ToElementIds();
+                FilteredElementCollector collector = new FilteredElementCollector(document, view.Id);
+                if (ids == null)
+                {
+                    return collector.ToElementIds();
+                }
+                else
+                {
+                    HashSet<ElementId> result = new HashSet<ElementId>(collector.ToElementIds());
+                    result.IntersectWith(ids);
+                    return result;
+                }
             }
             else
             {
-                HashSet<ElementId> result = new HashSet<ElementId>(collector.ToElementIds());                
-                result.IntersectWith(ids);
-                return result;
+                BH.Engine.Reflection.Compute.RecordError("Couldn't find a View named " + viewName + ".");
+                return null;
             }
         }
 

@@ -85,11 +85,12 @@ namespace BH.UI.Revit.Engine
                 BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family Type named " + familyTypeName + " in the Family " + familyName);
                 return null;
             }
-
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+                        
             List<ElementId> result = new List<ElementId>();
             foreach (ElementType elementType in elementTypes)
             {
+                FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+
                 if (elementType is FamilySymbol)
                     result.AddRange(collector.WherePasses(new FamilyInstanceFilter(document, elementType.Id)).ToElementIds());
                 else

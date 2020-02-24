@@ -44,23 +44,128 @@ namespace BH.UI.Revit.Engine
         /****         Public methods - Requests         ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this FilterRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIds(this ByActiveWorksetRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            return uIDocument.Document.ElementIdsByBHoMType(request.Type, ids);
+            return uIDocument.Document.ElementIdsByWorksets(new List<WorksetId> { uIDocument.Document.ActiveWorksetId() }, ids);
         }
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this ElementIdsRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIds(this ByCategoryRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsByCategoryNames(request.CategoryName, ids);
+        }
+
+        /***************************************************/
+        
+        public static IEnumerable<ElementId> ElementIds(this ByDBTypeNameRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsByDBType("RevitAPI.dll", request.TypeName, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this ByElementIdsRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             return uIDocument.Document.ElementIdsByInts(request.ElementIds, ids);
         }
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this UniqueIdsRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIds(this ByFamilyRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsByFamily(request.FamilyName, request.FamilyTypeName, true, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this ByParameterBoolRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsByParameter(request.ParameterName, request.Value, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this ByParameterElementIdRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsByParameter(request.ParameterName, request.ElementId, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this ByParameterExistsRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsByParameterExistence(request.ParameterName, request.ParameterExists, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this ByParameterIntegerRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsByParameter(request.ParameterName, request.NumberComparisonType, request.Value, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this ByParameterNumberRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsByParameter(request.ParameterName, request.NumberComparisonType, request.Value, request.Tolerance, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this ByParameterTextRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsByParameter(request.ParameterName, request.TextComparisonType, request.Value, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this BySelectionSetRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsBySelectionSet(request.SelectionSetName, true, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this ByUniqueIdsRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             return uIDocument.Document.ElementIdsByUniqueIds(request.UniqueIds, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this ByWorksetRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsByWorksets(new List<WorksetId> { uIDocument.Document.WorksetId(request.WorksetName) }, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this ElementsOnlyRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsOfElementsOnly(ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this FamilyByNameRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsOfFamilies(request.FamilyName, true, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this FamilyTypesOfFamilyRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsOfFamilyTypes(request.FamilyName, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this FilterRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsByBHoMType(request.Type, ids);
         }
 
         /***************************************************/
@@ -110,48 +215,6 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this SelectionSetRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsBySelectionSet(request.SelectionSetName, true, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this DBTypeNameRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsByDBType("RevitAPI.dll", request.TypeName, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this CategoryRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsByCategoryNames(request.CategoryName, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this FamilyRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsByFamily(request.FamilyName, request.FamilyTypeName, true, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this ActiveWorksetRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsByWorksets(new List<WorksetId> { uIDocument.Document.ActiveWorksetId() }, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this WorksetRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsByWorksets(new List<WorksetId> { uIDocument.Document.WorksetId(request.WorksetName) }, ids);
-        }
-
-        /***************************************************/
-
         public static IEnumerable<ElementId> ElementIds(this ViewByTemplateRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             return uIDocument.Document.ElementIdsByTemplate(request.TemplateName, ids);
@@ -166,53 +229,17 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this ViewTemplateRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIds(this ViewTemplateByNameRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             return uIDocument.Document.ElementIdsOfViewTemplates(request.TemplateName, ids);
         }
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this ParameterExistsRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIds(this VisibleInViewRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            return uIDocument.Document.ElementIdsByParameterExistence(request.ParameterName, request.ParameterExists, ids);
+            return uIDocument.Document.ElementIdsByVisibleInView(request.ViewName, true, ids);
         }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this ParameterNumberRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsByParameter(request.ParameterName, request.NumberComparisonType, request.Value, request.Tolerance, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this ParameterIntegerRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsByParameter(request.ParameterName, request.NumberComparisonType, request.Value, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this ParameterBoolRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsByParameter(request.ParameterName, request.Value, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this ParameterElementIdRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsByParameter(request.ParameterName, request.ElementId, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this ParameterTextRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsByParameter(request.ParameterName, request.TextComparisonType, request.Value, ids);
-        }
-
 
         /***************************************************/
         /****        Interface methods - Requests       ****/

@@ -25,18 +25,15 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters all elements of given Revit family and type.")]
-    public class FamilyRequest : IRequest
+    [Description("IRequest that filters elements contained in a given Revit Selection Set.")]
+    public class BySelectionSetRequest : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of Revit family.")]
-        public string FamilyName { get; set; } = "";
-
-        [Description("Name of Revit family type.")]
-        public string FamilyTypeName { get; set; } = "";
+        [Description("Name of the Revit Selection Set.")]
+        public string SelectionSetName { get; set; } = "";
 
         /***************************************************/
     }

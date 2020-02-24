@@ -20,47 +20,27 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
+using BH.oM.Adapters.Revit.Interface;
 using System.ComponentModel;
 
-using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
-
-
-
-namespace BH.UI.Revit.Engine
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Query
+    [Description("IRequest that filters elements based on given text parameter value criterion.")]
+    public class ByParameterTextRequest : IParameterRequest
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Get Elements as ElementIds that are Family Instances only")]
-        [Input("document", "Revit Document where ElementIds are collected")]        
-        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("elementIdsByInstancesOnly", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsByInstancesOnly(this Document document, IEnumerable<ElementId> ids = null)
-        {
-            if (document == null)
-                return null;
+        [Description("Name of the parameter to be used as filter criterion.")]
+        public string ParameterName { get; set; } = "";
 
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            return collector.WhereElementIsNotElementType().ToElementIds().ToList();
-        }
+        [Description("TextComparisonType enum representing comparison type, e.g. equality, contains, starts with etc.")]
+        public Enums.TextComparisonType TextComparisonType { get; set; } = Enums.TextComparisonType.Equal;
+
+        [Description("Value to compare the parameter against.")]
+        public string Value { get; set; } = "";
 
         /***************************************************/
-
     }
 }

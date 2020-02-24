@@ -20,37 +20,28 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
+using BH.oM.Adapters.Revit.Interface;
 using System.ComponentModel;
 
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit;
-using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Create
+    [Description("IRequest that filters elements based on given floating point number parameter value criterion.")]
+    public class ByParameterNumberRequest : IParameterRequest
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
-        [Input("parameterName", "Parameter name to be queried")]
-        [Input("bHoMObject", "BHoMObject pulled from Revit that has sought ElementId.")]
-        [Output("ParameterElementIdRequest")]
-        public static ByParameterElementIdRequest ParameterElementIdRequest(string parameterName, BHoMObject bHoMObject)
-        {
-            int elementId = bHoMObject.ElementId();
-            if (elementId == -1)
-            {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
-                return null;
-            }
-            else
-                return new ByParameterElementIdRequest { ParameterName = parameterName, ElementId = elementId };
-        }
+        [Description("Name of the parameter to be used as filter criterion.")]
+        public string ParameterName { get; set; } = "";
+
+        [Description("NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
+        public Enums.NumberComparisonType NumberComparisonType { get; set; } = Enums.NumberComparisonType.Equal;
+
+        [Description("Value to compare the parameter against.")]
+        public double Value { get; set; } = double.NaN;
+
+        public double Tolerance { get; set; } = BH.oM.Geometry.Tolerance.Distance;
 
         /***************************************************/
     }

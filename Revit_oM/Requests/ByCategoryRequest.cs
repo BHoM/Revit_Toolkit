@@ -20,37 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
+using BH.oM.Data.Requests;
 using System.ComponentModel;
 
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit;
-using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Create
+    [Description("IRequest that filters all elements of a category.")]
+    public class ByCategoryRequest : IRequest
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
-        [Input("parameterName", "Parameter name to be queried")]
-        [Input("bHoMObject", "BHoMObject pulled from Revit that has sought ElementId.")]
-        [Output("ParameterElementIdRequest")]
-        public static ByParameterElementIdRequest ParameterElementIdRequest(string parameterName, BHoMObject bHoMObject)
-        {
-            int elementId = bHoMObject.ElementId();
-            if (elementId == -1)
-            {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
-                return null;
-            }
-            else
-                return new ByParameterElementIdRequest { ParameterName = parameterName, ElementId = elementId };
-        }
+        [Description("Revit category name, as shown in Revit user interface.")]
+        public string CategoryName { get; set; } = "";
 
         /***************************************************/
     }

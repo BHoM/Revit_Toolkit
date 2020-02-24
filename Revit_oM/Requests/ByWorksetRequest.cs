@@ -20,25 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
 using BH.oM.Data.Requests;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters all elements in active workset.")]
-    public class ActiveWorksetRequest : IRequest
+    [Description("IRequest that filters all elements in a given workset.")]
+    public class ByWorksetRequest : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-
+        [Description("Revit workset name.")]
+        public string WorksetName { get; set; } = "";
 
         /***************************************************/
     }

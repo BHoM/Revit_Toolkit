@@ -25,15 +25,15 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters all view templates in document.")]
-    public class ViewTemplateRequest : IRequest
+    [Description("IRequest that filters Family Types elements of a Family.")]
+    public class FamilyTypesOfFamilyRequest : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Revit view template name.")]
-        public string TemplateName { get; set; } = "";
+        [Description("Revit Family name to retrieve Family Types from.")]
+        public string FamilyName { get; set; } = "";
 
         /***************************************************/
     }

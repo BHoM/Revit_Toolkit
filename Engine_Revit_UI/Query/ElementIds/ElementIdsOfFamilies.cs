@@ -47,7 +47,7 @@ namespace BH.UI.Revit.Engine
 
         [Description("Get the ElementId of all Families, with option to narrow search by Family name only")]
         [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("familyName", "Optional, narrows the search by a Family name")]        
+        [Input("familyName", "Optional, narrows the search by a Family name. If blank it returns all Families")]        
         [Input("caseSensitive", "Optional, sets the Family name and Family Type name to be case sensitive or not")]
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
         [Output("elementIdsOfFamilies", "An enumerator for easy iteration of ElementIds collected")]

@@ -20,23 +20,23 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters elements based on given ElementId parameter value criterion.")]
-    public class ParameterElementIdRequest : IParameterRequest
+    [Description("IRequest that filters all elements of given Revit family and type.")]
+    public class ByFamilyRequest : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the parameter to be used as filter criterion.")]
-        public string ParameterName { get; set; } = "";
+        [Description("Name of Revit family.")]
+        public string FamilyName { get; set; } = "";
 
-        [Description("Value to compare the parameter against.")]
-        public int ElementId { get; set; } = -1;
+        [Description("Name of Revit family type.")]
+        public string FamilyTypeName { get; set; } = "";
 
         /***************************************************/
     }

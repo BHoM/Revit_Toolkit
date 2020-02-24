@@ -47,7 +47,7 @@ namespace BH.UI.Revit.Engine
 
         [Description("Get ElementIds of Views that are View Template")]
         [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("viewTemplateName", "Optional, allows the filter to narrow the search to a specific View Template name")]
+        [Input("viewTemplateName", "Optional, allows the filter to narrow the search to a specific View Template name. If blank all View Templates are returned")]
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
         [Output("elementsIdsOfViewTemplate", "An enumerator for easy iteration of ElementIds collected")]
         public static IEnumerable<ElementId> ElementIdsOfViewTemplates(this Document document, string viewTemplateName = null, IEnumerable < ElementId> ids = null)

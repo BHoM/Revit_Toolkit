@@ -20,26 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters elements based on given text parameter value criterion.")]
-    public class ParameterTextRequest : IParameterRequest
+    [Description("IRequest that filters all elements in a given View.")]
+    public class VisibleInViewRequest : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the parameter to be used as filter criterion.")]
-        public string ParameterName { get; set; } = "";
-
-        [Description("TextComparisonType enum representing comparison type, e.g. equality, contains, starts with etc.")]
-        public Enums.TextComparisonType TextComparisonType { get; set; } = Enums.TextComparisonType.Equal;
-
-        [Description("Value to compare the parameter against.")]
-        public string Value { get; set; } = "";
+        [Description("Revit View name.")]
+        public string ViewName { get; set; } = "";
 
         /***************************************************/
     }

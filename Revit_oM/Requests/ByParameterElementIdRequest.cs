@@ -20,21 +20,23 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
-using System.Collections.Generic;
+using BH.oM.Adapters.Revit.Interface;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters elements by their UniqueIds.")]
-    public class UniqueIdsRequest : IRequest
+    [Description("IRequest that filters elements based on given ElementId parameter value criterion.")]
+    public class ByParameterElementIdRequest : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("List of Revit UniqueIds to be used to filter the elements.")]
-        public List<string> UniqueIds { get; set; } = new List<string>();
+        [Description("Name of the parameter to be used as filter criterion.")]
+        public string ParameterName { get; set; } = "";
+
+        [Description("Value to compare the parameter against.")]
+        public int ElementId { get; set; } = -1;
 
         /***************************************************/
     }

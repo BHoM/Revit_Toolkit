@@ -26,15 +26,15 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters elements by their ElementIds.")]
-    public class ElementIdsRequest : IRequest
+    [Description("IRequest that filters elements by their UniqueIds.")]
+    public class ByUniqueIdsRequest : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("List of Revit ElementIds to be used to filter the elements.")]
-        public List<int> ElementIds { get; set; } = new List<int>();
+        [Description("List of Revit UniqueIds to be used to filter the elements.")]
+        public List<string> UniqueIds { get; set; } = new List<string>();
 
         /***************************************************/
     }

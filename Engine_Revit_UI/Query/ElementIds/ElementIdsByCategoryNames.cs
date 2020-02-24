@@ -47,7 +47,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get Elements as ElementIds by Category name, including Family Instances and Family Types")]
+        [Description("Get Elements as ElementIds by Category names, including Family Instances and Family Types")]
         [Input("document", "Revit Document where ElementIds are collected")]
         [Input("categoryNames", "List of Category names to be used as filter")]
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
@@ -68,15 +68,22 @@ namespace BH.UI.Revit.Engine
                     continue;
                 }
 
-                FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-                collector.OfCategory(builtInCategory).ToList();
-
-                foreach(Element e in collector)
-                {
-                    result.Add(e.Id);
-                }                
+                FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());                
+                result.UnionWith(collector.OfCategory(builtInCategory).ToElementIds());                                
             }
             return result;       
+        }
+
+        /***************************************************/
+
+        [Description("Get Elements as ElementIds by Category name, including Family Instances and Family Types")]
+        [Input("document", "Revit Document where ElementIds are collected")]
+        [Input("categoryName", "Category name to be used as filter")]
+        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
+        [Output("elementIdsByCategoryNames", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsByCategoryNames(this Document document, string categoryName, IEnumerable<ElementId> ids = null)
+        {              
+            return ElementIdsByCategoryNames(document, new List<string> { categoryName }, ids);
         }
 
         /***************************************************/
