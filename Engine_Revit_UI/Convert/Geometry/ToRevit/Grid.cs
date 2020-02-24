@@ -112,7 +112,7 @@ namespace BH.UI.Revit.Engine
             if (revitGrid == null)
                 return null;
 
-            // Copy custom data and set parameters
+            // Copy parameters from BHoM CustomData to Revit Element
             revitGrid.SetParameters(grid, null);
 
             refObjects.AddOrReplace(grid, revitGrid);

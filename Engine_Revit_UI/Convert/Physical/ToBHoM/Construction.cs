@@ -60,10 +60,10 @@ namespace BH.UI.Revit.Engine
             construction = BH.Engine.Physical.Create.Construction(hostObjAttributes.FamilyTypeFullName(), layers);
 
             //Set identifiers & custom data
-            construction = construction.SetIdentifiers(hostObjAttributes) as oM.Physical.Constructions.Construction;
-            construction = construction.SetCustomData(hostObjAttributes) as oM.Physical.Constructions.Construction;
+            construction.SetIdentifiers(hostObjAttributes);
+            construction.SetCustomData(hostObjAttributes);
 
-            construction = construction.UpdateValues(settings, hostObjAttributes) as oM.Physical.Constructions.Construction;
+            construction.UpdateValues(settings, hostObjAttributes);
 
             refObjects.AddOrReplace(hostObjAttributes.Id, construction);
             return construction;

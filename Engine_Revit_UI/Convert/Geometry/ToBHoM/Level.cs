@@ -46,8 +46,8 @@ namespace BH.UI.Revit.Engine
             level.Name = revitLevel.Name;
 
             //Set identifiers & custom data
-            level = level.SetIdentifiers(revitLevel) as oM.Geometry.SettingOut.Level;
-            level = level.SetCustomData(revitLevel) as oM.Geometry.SettingOut.Level;
+            level.SetIdentifiers(revitLevel);
+            level.SetCustomData(revitLevel);
 
             refObjects.AddOrReplace(revitLevel.Id, level);
             return level;

@@ -51,7 +51,7 @@ namespace BH.UI.Revit.Engine
             if (elementType == null)
                 return null;
 
-            // Copy custom data and set parameters
+            // Copy parameters from BHoM CustomData to Revit Element
             elementType.SetParameters(instanceProperties, null);
 
             refObjects.AddOrReplace(instanceProperties, elementType);

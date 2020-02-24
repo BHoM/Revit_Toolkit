@@ -98,7 +98,7 @@ namespace BH.UI.Revit.Engine
             if (revitFloor == null)
                 return null;
 
-            // Copy custom data and set parameters
+            // Copy parameters from BHoM CustomData to Revit Element
             revitFloor.SetParameters(floor, new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM });
 
             refObjects.AddOrReplace(floor, revitFloor);

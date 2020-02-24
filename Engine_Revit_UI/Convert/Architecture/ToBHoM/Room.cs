@@ -58,12 +58,12 @@ namespace BH.UI.Revit.Engine
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.ElementID = spatialElement.Id.IntegerValue.ToString();
             originContext.TypeName = Query.Name(spatialElement);
-            originContext = originContext.UpdateValues(settings, spatialElement) as OriginContextFragment;
+            originContext.UpdateValues(settings, spatialElement);
             room.Fragments.Add(originContext);
 
             //Set identifiers & custom data
-            room = room.SetIdentifiers(spatialElement) as oM.Architecture.Elements.Room;
-            room = room.SetCustomData(spatialElement) as oM.Architecture.Elements.Room;
+            room.SetIdentifiers(spatialElement);
+            room.SetCustomData(spatialElement);
             
             refObjects.AddOrReplace(spatialElement.Id, room);
             return room;

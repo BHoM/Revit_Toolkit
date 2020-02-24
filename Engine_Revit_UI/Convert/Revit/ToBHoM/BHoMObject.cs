@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -22,11 +22,12 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Environment.Fragments;
 using BH.oM.Geometry;
-using BH.oM.Physical.Elements;
 using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
@@ -37,41 +38,47 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static Door ToBHoMDoor(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoMObject(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            Door door = refObjects.GetValue<Door>(familyInstance.Id);
-            if (door != null)
-                return door;
-
-            PolyCurve polycurve = familyInstance.PolyCurve(settings);
-            if (polycurve == null)
-                return null;
-
-            door = new Door()
+            IBHoMObject iBHoMObject = refObjects.GetValue<IBHoMObject>(element.Id);
+            if (iBHoMObject != null)
+                return iBHoMObject;
+            
+            IGeometry iGeometry = element.Location.IToBHoM();
+            if (iGeometry != null)
             {
-                Name = familyInstance.FamilyTypeFullName(),
-                Location = BH.Engine.Geometry.Create.PlanarSurface(polycurve)
-            };
+                ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
+                if (elementType != null)
+                {
+                    InstanceProperties objectProperties = elementType.ToBHoM(discipline, settings, refObjects) as InstanceProperties;
+                    if (objectProperties != null)
+                    {
+                        if (element.ViewSpecific)
+                            iBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingInstance(objectProperties, element.Document.GetElement(element.OwnerViewId).Name, iGeometry as dynamic);
+                        else
+                            iBHoMObject = BH.Engine.Adapters.Revit.Create.ModelInstance(objectProperties, iGeometry as dynamic);
+                    }
+                }
+            }
 
-            ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
-            //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment();
-            originContext.ElementID = familyInstance.Id.IntegerValue.ToString();
-            originContext.TypeName = familyInstance.FamilyTypeFullName();
-            originContext.UpdateValues(settings, familyInstance);
-            originContext.UpdateValues(settings, elementType);
-            door.Fragments.Add(originContext);
+            if (iBHoMObject == null)
+                iBHoMObject = new BHoMObject();
 
-            //Set identifiers & custom data
-            door.SetIdentifiers(familyInstance);
-            door.SetCustomData(familyInstance);
+            if (!(iBHoMObject is DraftingInstance) && element.ViewSpecific)
+                iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.ViewName] = element.Document.GetElement(element.OwnerViewId).Name;
 
-            refObjects.AddOrReplace(familyInstance.Id, door);
-            return door;
+            iBHoMObject.Name = element.Name;
+            iBHoMObject.SetIdentifiers(element);
+            iBHoMObject.SetCustomData(element);
+
+            refObjects.AddOrReplace(element.Id, iBHoMObject);
+
+            return iBHoMObject;
         }
 
         /***************************************************/
     }
 }
+

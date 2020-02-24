@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -23,15 +23,16 @@
 using Autodesk.Revit.DB;
 
 using BH.oM.Base;
+using BH.UI.Revit.Engine;
 
-namespace BH.UI.Revit.Engine
+namespace BH.UI.Revit.Adapter
 {
     public static partial class Modify
     {
         /***************************************************/
         /****             Internal methods              ****/
         /***************************************************/
-        
+
         internal static void SetIdentifiers(this IBHoMObject bHoMObject, Element element)
         {
             if (bHoMObject == null || element == null)
@@ -40,44 +41,57 @@ namespace BH.UI.Revit.Engine
             bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId] = element.Id.IntegerValue;
             bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.AdapterIdName] = element.UniqueId;
 
-            int worksetID = WorksetId.InvalidWorksetId.IntegerValue;
-            if (element.Document != null && element.Document.IsWorkshared)
-            {
-                WorksetId revitWorksetID = element.WorksetId;
-                if (revitWorksetID != null)
-                    worksetID = revitWorksetID.IntegerValue;
-            }
-            bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.WorksetId] = worksetID;
-
-            Parameter parameter = null;
-
             if (element is Family)
             {
                 Family family = (Family)element;
 
+                bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName] = family.FamilyPlacementTypeName();
                 bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = family.Name;
-
                 if (family.FamilyCategory != null)
                     bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = family.FamilyCategory.Name;
-
-                bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName] = family.FamilyPlacementTypeName();
             }
             else
             {
+                int worksetID = WorksetId.InvalidWorksetId.IntegerValue;
+                if (element.Document != null && element.Document.IsWorkshared)
+                {
+                    WorksetId revitWorksetID = element.WorksetId;
+                    if (revitWorksetID != null)
+                        worksetID = revitWorksetID.IntegerValue;
+                }
+                bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.WorksetId] = worksetID;
+
+                Parameter parameter = null;
+
                 parameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
                 if (parameter != null)
-                    bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = parameter.AsValueString();
+                {
+                    string value = parameter.AsValueString();
+                    if (!string.IsNullOrEmpty(value))
+                        bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = value;
+                }
+
 
                 parameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
                 if (parameter != null)
-                    bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = parameter.AsValueString();
+                {
+                    string value = parameter.AsValueString();
+                    if (!string.IsNullOrEmpty(value))
+                        bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = value;
+                }
+
 
                 parameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
                 if (parameter != null)
-                    bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = parameter.AsValueString();
+                {
+                    string value = parameter.AsValueString();
+                    if (!string.IsNullOrEmpty(value))
+                        bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = value;
+                }
             }
-        }
 
+        }
+        
         /***************************************************/
     }
 }

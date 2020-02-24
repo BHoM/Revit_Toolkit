@@ -266,8 +266,8 @@
     <Compile Include="Convert\Physical\ToRevit\HostObjAttributes.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilyInstance.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilySymbol.cs" />
+    <Compile Include="Convert\Revit\ToBHoM\BHoMObject.cs" />
     <Compile Include="Convert\Revit\ToBHoM\DraftingInstance.cs" />
-    <Compile Include="Convert\Revit\ToBHoM\ModelInstance.cs" />
     <Compile Include="Convert\Environment\ToBHoM\SolidMaterial.cs" />
     <Compile Include="Convert\Physical\ToRevit\RoofBase.cs" />
     <Compile Include="Convert\Physical\ToRevit\Floor.cs" />
@@ -283,6 +283,7 @@
     <Compile Include="Convert\Revit\ToRevit\CurveElement.cs" />
     <Compile Include="Convert\Structure\ToBHoM\Bar.cs" />
     <Compile Include="Create\CurveArray.cs" />
+    <Compile Include="Create\Options.cs" />
     <Compile Include="Modify\AddAdjacentSpaceId.cs" />
     <Compile Include="Compute\LoadFamily.cs" />
     <Compile Include="Modify\AddOrReplace.cs" />
@@ -317,7 +318,6 @@
     <Compile Include="Convert\FromSI.cs" />
     <Compile Include="Modify\AddSpaceId.cs" />
     <Compile Include="Modify\RemoveGridSegmentIds.cs" />
-    <Compile Include="Modify\SetTags.cs" />
     <Compile Include="Modify\UpdateMaterialProperties.cs" />
     <Compile Include="Modify\UpdateValues.cs" />
     <Compile Include="Query\ArbitraryPlane.cs" />

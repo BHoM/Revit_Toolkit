@@ -84,8 +84,8 @@ namespace BH.UI.Revit.Engine
 #else
             revitViewPlan.ViewName = viewPlan.Name;
 #endif
-            
-            // Copy custom data and set parameters
+
+            // Copy parameters from BHoM CustomData to Revit Element
             revitViewPlan.SetParameters(viewPlan, null);
 
             object value = null;
