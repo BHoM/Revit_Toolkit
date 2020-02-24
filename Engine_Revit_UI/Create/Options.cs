@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -21,57 +21,42 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Environment.Fragments;
-using BH.oM.Geometry;
-using BH.oM.Physical.Elements;
+
 using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Convert
+    public static partial class Create
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public static Door ToBHoMDoor(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static Options Options(ViewDetailLevel detailLevel, bool includeNonVisible = false, bool computeReferences = false)
         {
-            settings = settings.DefaultIfNull();
+            Options options = new Options();
+            options.DetailLevel = detailLevel;
+            options.IncludeNonVisibleObjects = includeNonVisible;
+            options.ComputeReferences = computeReferences;
+            return options;
+        }
 
-            Door door = refObjects.GetValue<Door>(familyInstance.Id);
-            if (door != null)
-                return door;
+        /***************************************************/
 
-            PolyCurve polycurve = familyInstance.PolyCurve(settings);
-            if (polycurve == null)
+        public static Options Options(View view, bool includeNonVisible = false, bool computeReferences = false)
+        {
+            if (view == null)
                 return null;
 
-            door = new Door()
-            {
-                Name = familyInstance.FamilyTypeFullName(),
-                Location = BH.Engine.Geometry.Create.PlanarSurface(polycurve)
-            };
-
-            ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
-            //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment();
-            originContext.ElementID = familyInstance.Id.IntegerValue.ToString();
-            originContext.TypeName = familyInstance.FamilyTypeFullName();
-            originContext.UpdateValues(settings, familyInstance);
-            originContext.UpdateValues(settings, elementType);
-            door.Fragments.Add(originContext);
-
-            //Set identifiers & custom data
-            door.SetIdentifiers(familyInstance);
-            door.SetCustomData(familyInstance);
-
-            refObjects.AddOrReplace(familyInstance.Id, door);
-            return door;
+            Options options = new Options();
+            options.View = view;
+            options.DetailLevel = view.DetailLevel;
+            options.IncludeNonVisibleObjects = includeNonVisible;
+            options.ComputeReferences = computeReferences;
+            return options;
         }
 
         /***************************************************/
     }
 }
+

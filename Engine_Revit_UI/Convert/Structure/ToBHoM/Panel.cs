@@ -88,8 +88,8 @@ namespace BH.UI.Revit.Engine
                 panel.Property = property2D;
 
                 //Set identifiers & custom data
-                panel = panel.SetIdentifiers(hostObject) as oM.Structure.Elements.Panel;
-                panel = panel.SetCustomData(hostObject) as oM.Structure.Elements.Panel;
+                panel.SetIdentifiers(hostObject);
+                panel.SetCustomData(hostObject);
 
                 refObjects.AddOrReplace(hostObject.Id, panel);
                 result[i] = panel;

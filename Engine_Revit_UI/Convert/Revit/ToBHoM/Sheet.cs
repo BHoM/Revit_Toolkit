@@ -52,10 +52,10 @@ namespace BH.UI.Revit.Engine
             sheet.Name = viewSheet.Name;
 
             //Set identifiers & custom data
-            sheet = sheet.SetIdentifiers(viewSheet) as Sheet;
-            sheet = sheet.SetCustomData(viewSheet) as Sheet;
-        
-            sheet = sheet.UpdateValues(settings, viewSheet) as Sheet;
+            sheet.SetIdentifiers(viewSheet);
+            sheet.SetCustomData(viewSheet);
+
+            sheet.UpdateValues(settings, viewSheet);
 
             refObjects.AddOrReplace(viewSheet.Id, sheet);
             return sheet;

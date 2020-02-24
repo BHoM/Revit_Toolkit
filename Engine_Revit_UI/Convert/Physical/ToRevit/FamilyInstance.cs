@@ -192,6 +192,7 @@ namespace BH.UI.Revit.Engine
                 BuiltInParameter.STRUCTURAL_MATERIAL_PARAM
             };
 
+            // Copy parameters from BHoM CustomData to Revit Element
             familyInstance.SetParameters(framingElement, paramsToIgnore);
 
             refObjects.AddOrReplace(framingElement, familyInstance);
@@ -378,6 +379,7 @@ namespace BH.UI.Revit.Engine
                 paramsToIgnore = paramsToIgnoreList.ToArray();
             }
 
+            // Copy parameters from BHoM CustomData to Revit Element
             familyInstance.SetParameters(framingElement, paramsToIgnore);
 
             refObjects.AddOrReplace(framingElement, familyInstance);

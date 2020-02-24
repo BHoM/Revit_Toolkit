@@ -22,6 +22,9 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using System.Collections.Generic;
@@ -34,22 +37,37 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Adapters.Revit.Interface.IInstance ToBHoMInstance(this CurveElement curveElement, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IInstance ToBHoMInstance(this CurveElement curveElement, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (curveElement == null)
-                return null;
-
             settings = settings.DefaultIfNull();
 
-            switch (curveElement.CurveElementType)
+            IInstance instance = refObjects.GetValue<ModelInstance>(curveElement.Id);
+            if (instance != null)
+                return instance;
+
+            InstanceProperties instanceProperties = (curveElement.LineStyle as GraphicsStyle).ToBHoMInstanceProperties(settings, refObjects) as InstanceProperties;
+
+            if (curveElement.ViewSpecific)
             {
-                case CurveElementType.DetailCurve:
-                    return curveElement.ToBHoMDraftingInstance(settings, refObjects);
-                case CurveElementType.ModelCurve:
-                    return curveElement.ToBHoMModelInstance(settings, refObjects);
-                default:
+                View view = curveElement.Document.GetElement(curveElement.OwnerViewId) as View;
+                if (view == null)
                     return null;
+
+                instance = BH.Engine.Adapters.Revit.Create.DraftingInstance(instanceProperties, view.Name, curveElement.GeometryCurve.IToBHoM());
             }
+            else
+                instance = BH.Engine.Adapters.Revit.Create.ModelInstance(instanceProperties, curveElement.GeometryCurve.IToBHoM());
+
+            instance.Name = curveElement.Name;
+
+            //Set identifiers & custom data
+            instance.SetIdentifiers(curveElement);
+            instance.SetCustomData(curveElement);
+
+            instance.UpdateValues(settings, curveElement);
+
+            refObjects.AddOrReplace(curveElement.Id, instance);
+            return instance;
         }
 
         /***************************************************/

@@ -28,44 +28,36 @@ namespace BH.UI.Revit.Engine
     public static partial class Modify
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
-        
-        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Element element, string namePrefix = null)
+
+        internal static void SetCustomData(this IBHoMObject bHoMObject, Element element, string namePrefix = null)
         {
             if (bHoMObject == null || element == null)
-                return bHoMObject;
-
-            IBHoMObject obj = bHoMObject.GetShallowClone() as IBHoMObject;
+                return;
 
             foreach (Parameter parameter in element.ParametersMap)
-                obj = SetCustomData(obj, parameter, namePrefix);
-
-            return obj;
+            {
+                bHoMObject.SetCustomData(parameter, namePrefix);
+            }
         }
 
         /***************************************************/
-        
-        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Element element, BuiltInParameter builtInParameter)
+
+        internal static void SetCustomData(this IBHoMObject bHoMObject, Element element, BuiltInParameter builtInParameter)
         {
             if (bHoMObject == null || element == null)
-                return bHoMObject;
+                return;
 
-            IBHoMObject obj = bHoMObject.GetShallowClone() as IBHoMObject;
-
-            obj = SetCustomData(obj, element.get_Parameter(builtInParameter));
-
-            return obj;
+            bHoMObject.SetCustomData(element.get_Parameter(builtInParameter));
         }
 
         /***************************************************/
 
-        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, string namePrefix = null)
+        internal static void SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, string namePrefix = null)
         {
             if (bHoMObject == null || parameter == null)
-                return bHoMObject;
-
-            IBHoMObject obj = bHoMObject.GetShallowClone() as IBHoMObject;
+                return;
 
             object value = null;
             switch (parameter.StorageType)
@@ -96,26 +88,7 @@ namespace BH.UI.Revit.Engine
             if (!string.IsNullOrEmpty(namePrefix))
                 name = namePrefix + name;
 
-            obj.CustomData[name] = value;
-
-            return obj;
-        }
-
-        /***************************************************/
-
-        public static IBHoMObject SetCustomData(this IBHoMObject bHoMObject, string customDataName, object value)
-        {
-            if (bHoMObject == null || string.IsNullOrEmpty(customDataName))
-                return bHoMObject;
-
-            IBHoMObject obj = bHoMObject.GetShallowClone() as IBHoMObject;
-
-            if (obj.CustomData.ContainsKey(customDataName))
-                obj.CustomData[customDataName] = value;
-            else
-                obj.CustomData.Add(customDataName, value);
-
-            return obj;
+            bHoMObject.CustomData[name] = value;
         }
 
         /***************************************************/

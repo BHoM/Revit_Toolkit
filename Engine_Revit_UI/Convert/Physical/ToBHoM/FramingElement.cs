@@ -130,8 +130,8 @@ namespace BH.UI.Revit.Engine
                 framingElement = BH.Engine.Physical.Create.Beam(locationCurve, property, elementName);
 
             //Set identifiers & custom data
-            framingElement = framingElement.SetIdentifiers(familyInstance) as IFramingElement;
-            framingElement = framingElement.SetCustomData(familyInstance) as IFramingElement;
+            framingElement.SetIdentifiers(familyInstance);
+            framingElement.SetCustomData(familyInstance);
 
             refObjects.AddOrReplace(familyInstance.Id, framingElement);
             return framingElement;

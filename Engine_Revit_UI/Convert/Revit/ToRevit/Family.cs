@@ -57,7 +57,7 @@ namespace BH.UI.Revit.Engine
             if (revitFamily == null)
                 return null;
 
-            // Copy custom data and set parameters
+            // Copy parameters from BHoM CustomData to Revit Element
             revitFamily.SetParameters(family, null);
 
             refObjects.AddOrReplace(family, revitFamily);

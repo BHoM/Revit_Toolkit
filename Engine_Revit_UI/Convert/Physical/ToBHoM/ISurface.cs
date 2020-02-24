@@ -44,6 +44,9 @@ namespace BH.UI.Revit.Engine
             if (surfaces != null && surfaces.Count > 0)
                 return surfaces;
 
+            if (hostObject is Wall && ((Wall)hostObject).StackedWallOwnerId != null && ((Wall)hostObject).StackedWallOwnerId != ElementId.InvalidElementId)
+                return null;
+
             //TODO: check if the attributes != null
             HostObjAttributes hostObjAttributes = hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes;
             oM.Physical.Constructions.Construction construction = hostObjAttributes.ToBHoMConstruction(settings, refObjects);
@@ -97,15 +100,15 @@ namespace BH.UI.Revit.Engine
                 OriginContextFragment originContext = new OriginContextFragment();
                 originContext.ElementID = hostObject.Id.IntegerValue.ToString();
                 originContext.TypeName = hostObject.FamilyTypeFullName();
-                originContext = originContext.UpdateValues(settings, hostObject) as OriginContextFragment;
-                originContext = originContext.UpdateValues(settings, elementType) as OriginContextFragment;
+                originContext.UpdateValues(settings, hostObject);
+                originContext.UpdateValues(settings, elementType);
                 iSurface.Fragments.Add(originContext);
 
                 //Set identifiers & custom data
-                iSurface = iSurface.SetIdentifiers(hostObject) as oM.Physical.Elements.ISurface;
-                iSurface = iSurface.SetCustomData(hostObject) as oM.Physical.Elements.ISurface;
+                iSurface.SetIdentifiers(hostObject);
+                iSurface.SetCustomData(hostObject);
 
-                iSurface = iSurface.UpdateValues(settings, hostObject) as oM.Physical.Elements.ISurface;
+                iSurface.UpdateValues(settings, hostObject);
 
                 refObjects.AddOrReplace(hostObject.Id, iSurface);
                 surfaces.Add(iSurface);

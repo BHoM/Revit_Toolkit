@@ -121,9 +121,6 @@ namespace BH.UI.Revit.Adapter
             List<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).RemoveGridSegmentIds(document).ToList();
             if (elementIds == null)
                 return null;
-            
-            bool pullEdges = pullConfig.PullEdges;
-            bool includeNonVisible = pullConfig.IncludeNonVisible;
 
             Discipline? requestDiscipline = request.Discipline(pullConfig.Discipline);
             if (requestDiscipline == null)
@@ -142,7 +139,11 @@ namespace BH.UI.Revit.Adapter
             MapSettings mapSettings = RevitSettings.MapSettings;
             if (mapSettings.TypeMaps == null || mapSettings.TypeMaps.Count == 0)
                 mapSettings = BH.Engine.Adapters.Revit.Query.DefaultMapSettings();
-            
+
+            Options options = null;
+            if (pullConfig.PullEdges)
+                options = BH.UI.Revit.Engine.Create.Options(ViewDetailLevel.Fine, pullConfig.IncludeNonVisible, false);
+
             List<IBHoMObject> result = new List<IBHoMObject>();
             Dictionary<string, List<IBHoMObject>> refObjects = new Dictionary<string, List<IBHoMObject>>();
 
@@ -151,21 +152,13 @@ namespace BH.UI.Revit.Adapter
                 Element element = document.GetElement(id);
                 if (element == null)
                     continue;
-
-                //TODO: PullEdges to happen here based on ActionConfig not to call objects twice?
+                
                 IEnumerable<IBHoMObject> iBHoMObjects = Read(element, discipline, revitSettings, refObjects);
-
                 if (iBHoMObjects != null && iBHoMObjects.Count() != 0)
                 { 
-                    //Pull Element Edges
-                    if (pullEdges)
+                    if (pullConfig.PullEdges)
                     {
-                        Options options = new Options();
-                        options.ComputeReferences = false;
-                        options.DetailLevel = ViewDetailLevel.Fine;
-                        options.IncludeNonVisibleObjects = includeNonVisible;
                         List<ICurve> edges = element.Curves(options, revitSettings);
-                        
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
                             iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Edges] = edges;
@@ -193,38 +186,6 @@ namespace BH.UI.Revit.Adapter
             try
             {
                 obj = element.IToBHoM(discipline, revitSettings, refObjects);
-
-                if (obj == null)
-                {
-                    IBHoMObject iBHoMObject = null;
-                    IGeometry iGeometry = element.Location.IToBHoM();
-                    if (iGeometry != null)
-                    {
-                        ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-                        if (elementType != null)
-                        {
-                            InstanceProperties objectProperties = elementType.ToBHoM(discipline, revitSettings, refObjects) as InstanceProperties;
-                            if (objectProperties != null)
-                            {
-                                if (element.ViewSpecific)
-                                    iBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingInstance(objectProperties, element.Document.GetElement(element.OwnerViewId).Name, iGeometry as dynamic);
-                                else
-                                    iBHoMObject = BH.Engine.Adapters.Revit.Create.ModelInstance(objectProperties, iGeometry as dynamic);
-                            }
-                        }
-                    }
-
-                    if (iBHoMObject == null)
-                        iBHoMObject = new BHoMObject();
-
-                    if (!(iBHoMObject is DraftingInstance) && element.ViewSpecific)
-                        iBHoMObject = iBHoMObject.SetCustomData(BH.Engine.Adapters.Revit.Convert.ViewName, element.Document.GetElement(element.OwnerViewId).Name);
-
-                    iBHoMObject.Name = element.Name;
-                    iBHoMObject = iBHoMObject.SetIdentifiers(element);
-                    iBHoMObject = iBHoMObject.SetCustomData(element);
-                    obj = iBHoMObject;
-                }
             }
             catch (Exception exception)
             {
@@ -247,11 +208,9 @@ namespace BH.UI.Revit.Adapter
 
             if (!string.IsNullOrEmpty(tagsParameterName))
             {
-                for (int i = 0; i < result.Count; i++)
+                foreach(IBHoMObject o in result)
                 {
-                    IBHoMObject iBHoMObject = result[i].SetTags(element, tagsParameterName);
-                    if (iBHoMObject != null)
-                        result[i] = iBHoMObject;
+                    o.SetTags(element, tagsParameterName);
                 }
             }
 

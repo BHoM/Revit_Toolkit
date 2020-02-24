@@ -48,8 +48,8 @@ namespace BH.UI.Revit.Engine
             grid.Name = revitGrid.Name;
 
             //Set identifiers & custom data
-            grid = grid.SetIdentifiers(revitGrid) as oM.Geometry.SettingOut.Grid;
-            grid = grid.SetCustomData(revitGrid) as oM.Geometry.SettingOut.Grid;
+            grid.SetIdentifiers(revitGrid);
+            grid.SetCustomData(revitGrid);
 
             refObjects.AddOrReplace(revitGrid.Id, grid);
             return grid;
@@ -84,8 +84,8 @@ namespace BH.UI.Revit.Engine
             }
 
             //Set identifiers & custom data
-            grid = grid.SetIdentifiers(revitGrid) as oM.Geometry.SettingOut.Grid;
-            grid = grid.SetCustomData(revitGrid) as oM.Geometry.SettingOut.Grid;
+            grid.SetIdentifiers(revitGrid);
+            grid.SetCustomData(revitGrid);
 
             refObjects.AddOrReplace(revitGrid.Id, grid);
             return grid;

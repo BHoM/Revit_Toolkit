@@ -103,13 +103,13 @@ namespace BH.UI.Revit.Engine
                 building.AddFragment(buildingContext);
 
                 //Set identifiers & custom data
-                building = building.SetIdentifiers(document.ProjectInformation) as Building;
+                building.SetIdentifiers(document.ProjectInformation);
 
-                building = building.SetCustomData("Project East/West Offset", projectEastWestOffset) as Building;
-                building = building.SetCustomData("Project North/South Offset", projectNorthSouthOffset) as Building;
-                building = building.SetCustomData("Project Elevation", projectElevation) as Building;
+                building.CustomData["Project East/West Offset"] = projectEastWestOffset;
+                building.CustomData["Project North/South Offset"] = projectNorthSouthOffset;
+                building.CustomData["Project Elevation"] = projectElevation;
 
-                building = building.SetCustomData(document.ProjectInformation) as Building;
+                building.SetCustomData(document.ProjectInformation);
 
                 refObjects.AddOrReplace(projectInfo.Id, building);
             }

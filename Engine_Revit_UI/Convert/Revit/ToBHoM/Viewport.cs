@@ -55,10 +55,10 @@ namespace BH.UI.Revit.Engine
             viewPort.Name = revitViewPort.Name;
 
             //Set identifiers & custom data
-            viewPort = viewPort.SetIdentifiers(revitViewPort) as oM.Adapters.Revit.Elements.Viewport;
-            viewPort = viewPort.SetCustomData(revitViewPort) as oM.Adapters.Revit.Elements.Viewport;
+            viewPort.SetIdentifiers(revitViewPort);
+            viewPort.SetCustomData(revitViewPort);
 
-            viewPort = viewPort.UpdateValues(settings, revitViewPort) as oM.Adapters.Revit.Elements.Viewport;
+            viewPort.UpdateValues(settings, revitViewPort);
 
             refObjects.AddOrReplace(revitViewPort.Id, viewPort);
             return viewPort;
