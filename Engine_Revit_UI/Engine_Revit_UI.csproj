@@ -246,6 +246,7 @@
   <ItemGroup>
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Room.cs" />
+    <Compile Include="Convert\Environment\ToBHoM\EnergyAnalysisModel.cs" />
     <Compile Include="Convert\Environment\ToRevit\Space.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\Curve.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\Grid.cs" />
@@ -334,6 +335,7 @@
     <Compile Include="Query\ElementIds\ElementIdsByUniqueIds.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByViewType.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByWorksets.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsEnergyAnalysisModel.cs" />
     <Compile Include="Query\ElementIds\ElementIdsViewTemplate.cs" />
     <Compile Include="Query\EmptyMaterialFragment.cs" />
     <Compile Include="Query\GetValues.cs" />
@@ -389,7 +391,6 @@
     <Compile Include="Query\Element.cs" />
     <Compile Include="Query\ElementId.cs" />
     <Compile Include="Query\ElementIds\ElementIds.cs" />
-    <Compile Include="Query\GetEnergyAnalysisModel.cs" />
     <Compile Include="Query\IntegerValue.cs" />
     <Compile Include="Query\MaterialGrade.cs" />
     <Compile Include="Query\Outlines.cs" />

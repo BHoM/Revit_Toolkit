@@ -52,12 +52,25 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> ToBHoM(this ProjectInfo projectInfo, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ToBHoM(this ProjectInfo projectInfo, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    return projectInfo.ToBHoMObjects(settings, refObjects);
+                    return projectInfo.ToBHoMBuilding(settings, refObjects);
+                default:
+                    return null;
+            }
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<IBHoMObject> ToBHoM(this EnergyAnalysisDetailModel energyAnalysisModel, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            switch (discipline)
+            {
+                case Discipline.Environmental:
+                    return energyAnalysisModel.ToBHoMEnergyAnalysisModel(settings, refObjects);
                 default:
                     return null;
             }

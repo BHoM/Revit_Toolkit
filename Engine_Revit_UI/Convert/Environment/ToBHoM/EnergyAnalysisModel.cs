@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -31,19 +31,29 @@ using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Query
+    public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        public static List<IBHoMObject> GetEnergyAnalysisModel(this Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> ToBHoMEnergyAnalysisModel(this EnergyAnalysisDetailModel energyAnalysisModel, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            if (refObjects == null)
-                refObjects = new Dictionary<string, List<IBHoMObject>>();
+            ElementId modelId = energyAnalysisModel.Id;
+            List<IBHoMObject> result = refObjects.GetValues<IBHoMObject>(energyAnalysisModel.Id);
+            if (result != null)
+                return result;
 
+            Document document = energyAnalysisModel.Document;
+
+            ProjectInfo projectInfo = new FilteredElementCollector(document).OfClass(typeof(ProjectInfo)).FirstOrDefault() as ProjectInfo;
+            if (projectInfo == null)
+                BH.Engine.Reflection.Compute.RecordError("Project info of a document has not been found.");
+            else
+                projectInfo.ToBHoMBuilding(settings, refObjects);
+                
             using (Transaction transaction = new Transaction(document, "GetAnalyticalModel"))
             {
                 transaction.Start();
@@ -51,19 +61,7 @@ namespace BH.UI.Revit.Engine
                 FailureHandlingOptions failureHandlingOptions = transaction.GetFailureHandlingOptions();
                 failureHandlingOptions.SetFailuresPreprocessor(new WarningSwallower());
                 transaction.SetFailureHandlingOptions(failureHandlingOptions);
-
-                EnergyAnalysisDetailModel energyAnalysisDetailModel = null;
-
-                using (SubTransaction subTransaction = new SubTransaction(document))
-                {
-                    subTransaction.Start();
-                    energyAnalysisDetailModel = EnergyAnalysisDetailModel.GetMainEnergyAnalysisDetailModel(document);
-                    if (energyAnalysisDetailModel != null && energyAnalysisDetailModel.IsValidObject)
-                        document.Delete(energyAnalysisDetailModel.Id);
-
-                    subTransaction.Commit();
-                }
-
+                
                 EnergyAnalysisDetailModelOptions energyAnalysisDetailModelOptions = new EnergyAnalysisDetailModelOptions();
                 energyAnalysisDetailModelOptions.Tier = EnergyAnalysisDetailModelTier.SecondLevelBoundaries;
                 energyAnalysisDetailModelOptions.EnergyModelType = EnergyModelType.SpatialElement;
@@ -100,7 +98,7 @@ namespace BH.UI.Revit.Engine
                         parameter.Set(0.0);
 
                     parameter = element.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM);
-                    if(parameter != null && !parameter.IsReadOnly)
+                    if (parameter != null && !parameter.IsReadOnly)
                         parameter.Set(0.0);
 
                     parameter = element.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM);
@@ -109,8 +107,8 @@ namespace BH.UI.Revit.Engine
                 }
 
                 //AnalyticalSpaces
-                energyAnalysisDetailModel = EnergyAnalysisDetailModel.Create(document, energyAnalysisDetailModelOptions);
-                IList<EnergyAnalysisSpace> energyAnalysisSpaces = energyAnalysisDetailModel.GetAnalyticalSpaces();
+                energyAnalysisModel = EnergyAnalysisDetailModel.Create(document, energyAnalysisDetailModelOptions);
+                IList<EnergyAnalysisSpace> energyAnalysisSpaces = energyAnalysisModel.GetAnalyticalSpaces();
                 Dictionary<string, EnergyAnalysisSurface> energyAnalsyisSurfaces = new Dictionary<string, EnergyAnalysisSurface>();
                 foreach (EnergyAnalysisSpace energyAnalysisSpace in energyAnalysisSpaces)
                 {
@@ -151,7 +149,7 @@ namespace BH.UI.Revit.Engine
                 }
 
                 //AnalyticalShadingSurfaces
-                IList<EnergyAnalysisSurface> analyticalShadingSurfaces = energyAnalysisDetailModel.GetAnalyticalShadingSurfaces();
+                IList<EnergyAnalysisSurface> analyticalShadingSurfaces = energyAnalysisModel.GetAnalyticalShadingSurfaces();
                 foreach (EnergyAnalysisSurface energyAnalysisSurface in analyticalShadingSurfaces)
                 {
                     try
@@ -178,13 +176,16 @@ namespace BH.UI.Revit.Engine
             //Levels
             IEnumerable<Level> levels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>();
             foreach (Level level in levels)
+            {
                 level.ToBHoMLevel(settings, refObjects);
+            }
 
-            List<IBHoMObject> result = new List<IBHoMObject>();
+            result = new List<IBHoMObject>();
             foreach (List<IBHoMObject> bhomObjects in refObjects.Values)
                 if (bhomObjects != null)
                     result.AddRange(bhomObjects);
-
+            
+            refObjects.AddOrReplace(modelId, result);
             return result;
         }
 

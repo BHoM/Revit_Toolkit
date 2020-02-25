@@ -79,6 +79,7 @@
     <Compile Include="Interface\IInstance.cs" />
     <Compile Include="Properties\InstanceProperties.cs" />
     <Compile Include="Requests\CategoryRequest.cs" />
+    <Compile Include="Requests\EnergyAnalysisModelRequest.cs" />
     <Compile Include="Requests\FamilyRequest.cs" />
     <Compile Include="Requests\ActiveWorksetRequest.cs" />
     <Compile Include="Requests\ParameterBoolRequest.cs" />
