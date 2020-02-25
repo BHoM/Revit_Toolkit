@@ -20,15 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Data.Requests;
-using System.Collections.Generic;
-using System.Linq;
-using System.ComponentModel;
 using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Settings;
+using System;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -82,6 +79,13 @@ namespace BH.Engine.Adapters.Revit
                 if (discipline == oM.Adapters.Revit.Enums.Discipline.Undefined)
                     discipline = requestDiscipline;
                 else if (discipline != requestDiscipline)
+                    return null;
+            }
+            else if (request is EnergyAnalysisModelRequest)
+            {
+                if (discipline == oM.Adapters.Revit.Enums.Discipline.Undefined)
+                    discipline = oM.Adapters.Revit.Enums.Discipline.Environmental;
+                else if (discipline != oM.Adapters.Revit.Enums.Discipline.Environmental)
                     return null;
             }
 

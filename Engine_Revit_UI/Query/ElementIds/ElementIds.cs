@@ -205,6 +205,13 @@ namespace BH.UI.Revit.Engine
             return uIDocument.Document.ElementIdsByParameter(request.ParameterName, request.TextComparisonType, request.Value, ids);
         }
 
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this EnergyAnalysisModelRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsEnergyAnalysisModel(ids);
+        }
+
 
         /***************************************************/
         /****        Interface methods - Requests       ****/
