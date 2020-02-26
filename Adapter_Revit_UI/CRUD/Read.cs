@@ -24,9 +24,7 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Data.Requests;
@@ -44,49 +42,16 @@ namespace BH.UI.Revit.Adapter
         /***************************************************/
         /****             Protected Methods             ****/
         /***************************************************/
-        
+
         protected override IEnumerable<IBHoMObject> IRead(Type type, IList ids, ActionConfig actionConfig = null)
         {
-            if (Document == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
-                return null;
-            }
-
             if (type == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided type is null.");
                 return null;
             }
 
-            List<int> elementIds = new List<int>();
-            List<string> uniqueIds = new List<string>();
-            if (ids != null)
-            {
-                foreach (object obj in ids)
-                {
-                    if (obj is int)
-                        elementIds.Add((int)obj);
-                    else if (obj is string)
-                    {
-                        string stringId = (string)obj;
-                        int id;
-                        if (int.TryParse(stringId, out id))
-                            elementIds.Add(id);
-                        else
-                            uniqueIds.Add(stringId);
-                    }
-                }
-            }
-
-            if (elementIds.Count == 0 && uniqueIds.Count == 0)
-                return Read(new FilterRequest() { Type = type } as IRequest, actionConfig);
-            else
-            {
-                ElementIdsRequest elementIdsRequest = new ElementIdsRequest { ElementIds = elementIds };
-                UniqueIdsRequest uniqueIdsRequest = new UniqueIdsRequest { UniqueIds = uniqueIds };
-                return Read(BH.Engine.Data.Create.LogicalAndRequest(new FilterRequest() { Type = type }, BH.Engine.Data.Create.LogicalOrRequest(elementIdsRequest, uniqueIdsRequest)), actionConfig);
-            }
+            return Read(type.Request(ids), actionConfig);
         }
 
         /***************************************************/

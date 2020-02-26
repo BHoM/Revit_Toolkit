@@ -63,8 +63,9 @@ namespace BH.UI.Revit.Adapter
                 BH.Engine.Reflection.Compute.RecordWarning("Revit Push Config has not been specified. Default Revit Push Config is used.");
                 pushConfig = RevitPushConfig.Default;
             }
-
-            bool suppressFailureMessages = pushConfig.SuppressFailureMessages;
+            
+            if (UIControlledApplication != null && pushConfig.SuppressFailureMessages)
+                UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
 
             RevitSettings revitSettings = RevitSettings.DefaultIfNull();
             Document document = Document;
@@ -76,15 +77,18 @@ namespace BH.UI.Revit.Adapter
                 using (Transaction transaction = new Transaction(document, "BHoM Push"))
                 {
                     transaction.Start();
-                    result = Create(objects, UIControlledApplication, document, revitSettings, suppressFailureMessages);
+                    result = Create(objects, document, revitSettings);
                     transaction.Commit();
                 }
             }
             else
             {
                 //Transaction is already opened
-                result = Create(objects, UIControlledApplication, document, revitSettings, suppressFailureMessages);
+                result = Create(objects, document, revitSettings);
             }
+
+            if (UIControlledApplication != null)
+                UIControlledApplication.ControlledApplication.FailuresProcessing -= ControlledApplication_FailuresProcessing;
 
             return result;
         }
@@ -94,13 +98,10 @@ namespace BH.UI.Revit.Adapter
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static bool Create<T>(IEnumerable<T> objects, UIControlledApplication UIContralledApplication, Document document, RevitSettings revitSettings, bool suppressFailureMessages) where T : IObject
+        private static bool Create<T>(IEnumerable<T> objects, Document document, RevitSettings revitSettings) where T : IObject
         {
             string tagsParameterName = revitSettings.TagsParameterName;
-
-            if (UIContralledApplication != null && suppressFailureMessages)
-                UIContralledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
-
+            
             Dictionary<Guid, List<int>> refObjects = new Dictionary<Guid, List<int>>();
 
             for (int i = 0; i < objects.Count(); i++)
@@ -173,49 +174,7 @@ namespace BH.UI.Revit.Adapter
                     element.SetTags(bhomObject, tagsParameterName);
             }
 
-            if (UIContralledApplication != null)
-                UIContralledApplication.ControlledApplication.FailuresProcessing -= ControlledApplication_FailuresProcessing;
-
             return true;
-        }
-
-        /***************************************************/
-
-        private static void ControlledApplication_FailuresProcessing(object sender, Autodesk.Revit.DB.Events.FailuresProcessingEventArgs e)
-        {
-            bool hasFailure = false;
-            FailuresAccessor failuresAccessor = e.GetFailuresAccessor();
-            List<FailureMessageAccessor> failureMessageAccessorsList = failuresAccessor.GetFailureMessages().ToList();
-            List<ElementId> elementsToDelete = new List<ElementId>();
-            foreach (FailureMessageAccessor failureMessageAccessor in failureMessageAccessorsList)
-            {
-                try
-                {
-                    if (failureMessageAccessor.GetSeverity() == FailureSeverity.Warning)
-                    {
-                        failuresAccessor.DeleteWarning(failureMessageAccessor);
-                        continue;
-                    }
-                    else
-                    {
-                        failuresAccessor.ResolveFailure(failureMessageAccessor);
-                        hasFailure = true;
-                        continue;
-                    }
-
-                }
-                catch
-                {
-                }
-            }
-
-            if (elementsToDelete.Count > 0)
-                failuresAccessor.DeleteElements(elementsToDelete);
-
-            if (hasFailure)
-                e.SetProcessingResult(FailureProcessingResult.ProceedWithCommit);
-
-            e.SetProcessingResult(FailureProcessingResult.Continue);
         }
 
 
