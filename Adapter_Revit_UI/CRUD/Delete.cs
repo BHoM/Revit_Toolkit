@@ -21,8 +21,12 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapter;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base;
+using BH.oM.Data.Requests;
 using BH.UI.Revit.Engine;
 using System;
 using System.Collections.Generic;
@@ -33,68 +37,59 @@ namespace BH.UI.Revit.Adapter
     public partial class RevitUIAdapter
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Protected methods             ****/
         /***************************************************/
-        
-        public static bool Delete(IEnumerable<IBHoMObject> bHoMObjects, Document document)
+
+        protected override int IDelete(Type type, IEnumerable<object> ids, ActionConfig actionConfig = null)
         {
-            if (document == null)
+            if (type == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because Revit Document is null.");
-                return false;
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be deleted because provided type is null.");
+                return 0;
             }
 
-            if (bHoMObjects == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because BHoM objects are null.");
-                return false;
-            }
-            
-            // Collect both UniqueIds as well as ElementIds
-            HashSet<ElementId> elementIDList = new HashSet<ElementId>(document.ElementIdsByUniqueIds(bHoMObjects.UniqueIds(true)));
-            elementIDList.UnionWith(document.ElementIdsByInts(bHoMObjects.Select(x => BH.Engine.Adapters.Revit.Query.ElementId(x)).Where(x => x != -1)));
-
-            //TODO: handle RevitFilePreview here?
-
-            if (elementIDList == null)
-                return false;
-            else if (elementIDList.Count == 0)
-                return true;
-
-            bool result = false;
-            using (Transaction transaction = new Transaction(document, "Delete"))
-            {
-                transaction.Start();
-                result = Delete(elementIDList, document);
-                transaction.Commit();
-            }
-            
-            return result;
+            return Delete(type.Request(ids), actionConfig);
         }
 
         /***************************************************/
-        
-        public static bool Delete(BHoMObject bHoMObject, Document document)
+
+        protected override int Delete(IRequest request, ActionConfig actionConfig = null)
         {
+            UIDocument uiDocument = this.UIDocument;
+            Document document = this.Document;
             if (document == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because Revit Document is null.");
-                return false;
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
+                return 0;
             }
 
-            if (bHoMObject == null)
+            if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because BHoM object is null.");
-                return false;
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
+                return 0;
             }
 
-            bool result = false;
-            using (Transaction transaction = new Transaction(document, "Delete"))
+            RevitRemoveConfig removeConfig = actionConfig as RevitRemoveConfig;
+            if (removeConfig == null)
             {
-                transaction.Start();
-                result = DeleteByUniqueId(bHoMObject, document);
-                transaction.Commit();
+                BH.Engine.Reflection.Compute.RecordWarning("Revit Remove Config has not been specified. Default Revit Remove Config is used.");
+                removeConfig = RevitRemoveConfig.Default;
             }
+
+            if (UIControlledApplication != null && removeConfig.SuppressFailureMessages)
+                UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
+
+            IEnumerable<ElementId> worksetPrefilter = null;
+            if (!removeConfig.IncludeClosedWorksets)
+                worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
+
+            List<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).RemoveGridSegmentIds(document).ToList();
+
+            int result = Delete(elementIds, document);
+
+            if (UIControlledApplication != null)
+                UIControlledApplication.ControlledApplication.FailuresProcessing -= ControlledApplication_FailuresProcessing;
+
             return result;
         }
 
@@ -103,116 +98,54 @@ namespace BH.UI.Revit.Adapter
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static bool DeleteByUniqueId(BHoMObject bHoMObject, Document document)
-        {
-            if(bHoMObject == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because BHoM object is null.");
-                return false;
-            }
+        //private static bool Delete(IEnumerable<IBHoMObject> bHoMObjects, Document document)
+        //{
+        //    if (document == null)
+        //    {
+        //        BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because Revit Document is null.");
+        //        return false;
+        //    }
 
-            string uniqueID = BH.Engine.Adapters.Revit.Query.UniqueId(bHoMObject);
-            if (uniqueID != null)
-            {
-                Element element = document.GetElement(uniqueID);
-                return Delete(element);
-            }
+        //    if (bHoMObjects == null)
+        //    {
+        //        BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because BHoM objects are null.");
+        //        return false;
+        //    }
 
-            return false;
-        }
+        //    // Collect both UniqueIds as well as ElementIds
+        //    HashSet<ElementId> elementIDList = new HashSet<ElementId>(document.ElementIdsByUniqueIds(bHoMObjects.UniqueIds(true)));
+        //    elementIDList.UnionWith(document.ElementIdsByInts(bHoMObjects.Select(x => BH.Engine.Adapters.Revit.Query.ElementId(x)).Where(x => x != -1)));
 
-        /***************************************************/
+        //    //TODO: handle RevitFilePreview here?
 
-        private static bool DeleteByName(Type type, BHoMObject bHoMObject, Document document)
-        {
-            if (bHoMObject == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because BHoM object is null.");
-                return false;
-            }
+        //    if (elementIDList == null)
+        //        return false;
+        //    else if (elementIDList.Count == 0)
+        //        return true;
 
-            if (type == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because provided type is null.");
-                return false;
-            }
+        //    bool result = false;
+        //    using (Transaction transaction = new Transaction(document, "Delete"))
+        //    {
+        //        transaction.Start();
+        //        result = Delete(elementIDList, , document);
+        //        transaction.Commit();
+        //    }
 
-            List<Element> elementList = new FilteredElementCollector(document).OfClass(type).ToList();
-            if (elementList == null || elementList.Count == 0)
-                return false;
-
-            Element element = elementList.Find(x => x.Name == bHoMObject.Name);
-            return Delete(element);
-        }
+        //    return result;
+        //}
 
         /***************************************************/
 
-        private static bool DeleteByName(Type type, IEnumerable<BHoMObject> bHoMObjects, Document document)
-        {
-            if (bHoMObjects == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because BHoM objects are null.");
-                return false;
-            }
-
-            if (type == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because provided type is null.");
-                return false;
-            }
-
-            if (bHoMObjects.Count() == 0)
-                return false;
-
-            List<Element> elementList = new FilteredElementCollector(document).OfClass(type).ToList();
-            if (elementList == null || elementList.Count == 0)
-                return false;
-
-            List<ElementId> elementIDList = new List<ElementId>();
-            foreach(BHoMObject bhomObject in bHoMObjects)
-            {
-                foreach(Element element in elementList)
-                {
-                    if(bhomObject.Name == element.Name)
-                    {
-                        elementIDList.Add(element.Id);
-                        break;
-                    }
-                }
-            }
-
-            return Delete(elementIDList, document);
-        }
-
-        /***************************************************/
-
-        private static bool Delete(Element element)
-        {
-            if(element == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Revit element could not be deleted because is null.");
-                return false;
-            }
-
-            ICollection<ElementId> elementIDs = element.Document.Delete(element.Id);
-            if (elementIDs != null && elementIDs.Count != 0)
-                return true;
-
-            return false;
-        }
-
-        /***************************************************/
-
-        private static bool Delete(ICollection<ElementId> elementIds, Document document)
+        private static int Delete(ICollection<ElementId> elementIds, Document document)
         {
             if (elementIds == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Revit elements could not be deleted because element Ids are null.");
-                return false;
+                return 0;
             }
 
             if (elementIds.Count() == 0)
-                return false;
+                return 0;
 
             List<ElementId> elementIDList = new List<ElementId>();
 
@@ -220,10 +153,10 @@ namespace BH.UI.Revit.Adapter
                 elementIDList.Add(elementId);
 
             ICollection<ElementId> elementIDs = document.Delete(elementIDList);
-            if (elementIDs != null && elementIDs.Count != 0)
-                return true;
+            if (elementIDs != null)
+                return elementIDs.Count;
 
-            return false;
+            return 0;
         }
 
         /***************************************************/

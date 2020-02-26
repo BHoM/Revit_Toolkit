@@ -236,6 +236,7 @@
     <Compile Include="AdapterActions\Push.cs" />
     <Compile Include="CRUD\Read.cs" />
     <Compile Include="CRUD\Update.cs" />
+    <Compile Include="FailuresProcessing.cs" />
     <Compile Include="Messages\Errors.cs" />
     <Compile Include="Modify\SetIdentifiers.cs" />
     <Compile Include="Modify\SetTags.cs" />

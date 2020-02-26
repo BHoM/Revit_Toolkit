@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\RevitRemoveConfig.cs" />
     <Compile Include="Elements\DraftingInstance.cs" />
     <Compile Include="Elements\Family.cs" />
     <Compile Include="Elements\ViewPlan.cs" />

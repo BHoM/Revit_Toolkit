@@ -27,8 +27,8 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("Configuration used for adapter interaction with Revit on Push action.")]
-    public class RevitPushConfig: ActionConfig
+    [Description("Configuration used for adapter interaction with Revit on Remove action.")]
+    public class RevitRemoveConfig : ActionConfig
     {
         /***************************************************/
         /****             Public Properties             ****/
@@ -46,7 +46,7 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         [Description("Default config, used if not set by the user.")]
-        public static readonly RevitPushConfig Default = new RevitPushConfig();
+        public static readonly RevitRemoveConfig Default = new RevitRemoveConfig();
 
         /***************************************************/
     }

@@ -60,6 +60,9 @@
       <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Data_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\Data_Engine.dll</HintPath>
+    </Reference>
     <Reference Include="Data_oM">
       <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
       <Private>False</Private>
@@ -149,6 +152,7 @@
     <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\InnerPolyCurves.cs" />
     <Compile Include="Query\Family.cs" />
+    <Compile Include="Query\Request.cs" />
     <Compile Include="Query\XDocument.cs" />
     <Compile Include="Query\RevitFilePreviews.cs" />
     <Compile Include="Query\IsValid.cs" />
