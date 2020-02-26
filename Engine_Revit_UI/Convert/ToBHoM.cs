@@ -39,19 +39,6 @@ namespace BH.UI.Revit.Engine
         /****      Convert Revit elements to BHoM       ****/
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> ToBHoM(this PlanarFace planarFace, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            switch (discipline)
-            {
-                case Discipline.Environmental:
-                    return planarFace.Panels(settings);
-                default:
-                    return null;
-            }
-        }
-
-        /***************************************************/
-
         public static IBHoMObject ToBHoM(this ProjectInfo projectInfo, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
