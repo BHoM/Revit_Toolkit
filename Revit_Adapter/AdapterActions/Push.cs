@@ -20,20 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
 using BH.oM.Adapter;
-using BH.Adapter.Socket;
-using BH.oM.Base;
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Debugging;
-using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Adapters.Revit;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
 
 namespace BH.Adapter.Revit
 {
@@ -45,29 +36,8 @@ namespace BH.Adapter.Revit
 
         public override List<object> Push(IEnumerable<object> objects, string tag = "", PushType pushType = PushType.AdapterDefault, ActionConfig actionConfig = null)
         {
-            // ----------------------------------------//
-            //                 SET-UP                  //
-            // ----------------------------------------//
-
-            // If unset, set the pushType to AdapterSettings' value (base AdapterSettings default is FullCRUD).
-            if (pushType == PushType.AdapterDefault)
-                pushType = PushType.DeleteThenCreate;
-
             //Initialize Revit config
             RevitPushConfig pushConfig = actionConfig as RevitPushConfig;
-
-            // Process the objects (verify they are valid; DeepClone them, wrap them, etc).
-            IEnumerable<IBHoMObject> objectsToPush = ProcessObjectsForPush(objects, pushConfig); // Note: default Push only supports IBHoMObjects.
-
-            if (objectsToPush.Count() == 0)
-            {
-                Engine.Reflection.Compute.RecordError("Input objects were invalid.");
-                return new List<object>();
-            }
-
-            // ----------------------------------------//
-            //               ACTUAL PUSH               //
-            // ----------------------------------------//
 
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)

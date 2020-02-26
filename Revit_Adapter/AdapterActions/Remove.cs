@@ -46,16 +46,38 @@ namespace BH.Adapter.Revit
         public override int Remove(IRequest request, ActionConfig actionConfig = null)
         {
             //Initialize Revit config
-            RevitPullConfig revitConfig = actionConfig as RevitPullConfig;
+            RevitRemoveConfig removeConfig = actionConfig as RevitRemoveConfig;
 
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)
             {
                 InternalAdapter.RevitSettings = RevitSettings;
-                return InternalAdapter.Remove(request, revitConfig);
+                return InternalAdapter.Remove(request, removeConfig);
             }
 
-            throw new NotImplementedException();
+            //Reset the wait event
+            m_WaitEvent.Reset();
+
+            if (!CheckConnection())
+                return 0;
+
+            //Send data through the socket link
+            m_LinkIn.SendData(new List<object>() { PackageType.Remove, request, removeConfig, RevitSettings });
+
+            //Wait until the return message has been recieved
+            if (!m_WaitEvent.WaitOne(TimeSpan.FromMinutes(m_WaitTime)))
+                BH.Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
+
+            //Grab the return count from the latest package
+            int returnCount = (int)m_ReturnPackage[0];
+
+            //Clear the return list
+            m_ReturnPackage.Clear();
+
+            RaiseEvents();
+
+            //Return the package
+            return returnCount;
         }
 
         /***************************************************/
