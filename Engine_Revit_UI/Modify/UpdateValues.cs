@@ -36,24 +36,21 @@ namespace BH.UI.Revit.Engine
     public static partial class Modify
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Internal methods              ****/
         /***************************************************/
 
-        public static IObject UpdateValues(this IObject iObject, PullSettings pullSettings, Element element)
+        internal static void UpdateValues(this IObject iObject, RevitSettings settings, Element element)
         {
-            if (iObject == null)
-                return null;
-
-            if (pullSettings == null || pullSettings.MapSettings == null || element == null)
-                return iObject;
+            if (iObject == null || settings == null || settings.MapSettings == null || element == null)
+                return;
 
             Type type = iObject.GetType();
 
             IEnumerable<PropertyInfo> propertyInfos = BH.Engine.Adapters.Revit.Query.MapPropertyInfos(type);
             if (propertyInfos == null || propertyInfos.Count() == 0)
-                return iObject;
+                return;
 
-            MapSettings mapSettings = pullSettings.MapSettings;
+            MapSettings mapSettings = settings.MapSettings;
 
             foreach (PropertyInfo pInfo in propertyInfos)
             {
@@ -86,8 +83,6 @@ namespace BH.UI.Revit.Engine
                 }
                     
             }
-
-            return iObject;
         }
 
         /***************************************************/

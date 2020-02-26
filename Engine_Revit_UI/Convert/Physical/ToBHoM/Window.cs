@@ -21,14 +21,13 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Physical.Elements;
+using BH.oM.Base;
 using BH.oM.Environment.Fragments;
-
 using BH.oM.Geometry;
+using BH.oM.Physical.Elements;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -38,15 +37,15 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static Window ToBHoMWindow(this FamilyInstance familyInstance, PullSettings pullSettings = null)
+        public static Window ToBHoMWindow(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            Window window = pullSettings.FindRefObject<Window>(familyInstance.Id.IntegerValue);
+            Window window = refObjects.GetValue<Window>(familyInstance.Id);
             if (window != null)
                 return window;
 
-            PolyCurve polycurve = Query.PolyCurve(familyInstance, pullSettings);
+            PolyCurve polycurve = familyInstance.PolyCurve(settings);
             if (polycurve == null)
                 return null;
 
@@ -55,60 +54,60 @@ namespace BH.UI.Revit.Engine
                 Name = Query.FamilyTypeFullName(familyInstance),
                 Location = BH.Engine.Geometry.Create.PlanarSurface(polycurve)
             };
-
-
+            
             ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
+
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.ElementID = familyInstance.Id.IntegerValue.ToString();
-            originContext.TypeName = Query.FamilyTypeFullName(familyInstance);
-            originContext = originContext.UpdateValues(pullSettings, familyInstance) as OriginContextFragment;
-            originContext = originContext.UpdateValues(pullSettings, elementType) as OriginContextFragment;
+            originContext.TypeName = familyInstance.FamilyTypeFullName();
+            originContext.UpdateValues(settings, familyInstance);
+            originContext.UpdateValues(settings, elementType);
             window.Fragments.Add(originContext);
 
-            window = Modify.SetIdentifiers(window, familyInstance) as Window;
-            if (pullSettings.CopyCustomData)
-                window = Modify.SetCustomData(window, familyInstance) as Window;
+            //Set identifiers & custom data
+            window.SetIdentifiers(familyInstance);
+            window.SetCustomData(familyInstance);
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(window);
-
+            refObjects.AddOrReplace(familyInstance.Id, window);
             return window;
         }
 
-        public static Window ToBHoMWindow(this Panel panel, PullSettings pullSettings = null)
-        {
-            pullSettings = pullSettings.DefaultIfNull();
+        /***************************************************/
 
-            Window window = pullSettings.FindRefObject<Window>(panel.Id.IntegerValue);
+        public static Window ToBHoMWindow(this Panel panel, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            Window window = refObjects.GetValue<Window>(panel.Id.IntegerValue);
             if (window != null)
                 return window;
 
-            PolyCurve polycurve = Query.PolyCurve(panel, pullSettings);
+            PolyCurve polycurve = panel.PolyCurve(settings);
             if (polycurve == null)
                 return null;
             
             window = new Window()
             {
-                Name = Query.FamilyTypeFullName(panel),
+                Name = panel.FamilyTypeFullName(),
                 Location = BH.Engine.Geometry.Create.PlanarSurface(polycurve)
             };
-
-
+            
             ElementType elementType = panel.Document.GetElement(panel.GetTypeId()) as ElementType;
+
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.ElementID = panel.Id.IntegerValue.ToString();
-            originContext.TypeName = Query.FamilyTypeFullName(panel);
-            originContext = originContext.UpdateValues(pullSettings, panel) as OriginContextFragment;
-            originContext = originContext.UpdateValues(pullSettings, elementType) as OriginContextFragment;
+            originContext.TypeName = panel.FamilyTypeFullName();
+            originContext.UpdateValues(settings, panel);
+            originContext.UpdateValues(settings, elementType);
             window.Fragments.Add(originContext);
 
-            window = Modify.SetIdentifiers(window, panel) as Window;
-            if (pullSettings.CopyCustomData)
-                window = Modify.SetCustomData(window, panel) as Window;
+            //Set identifiers & custom data
+            window.SetIdentifiers(panel);
+            window.SetCustomData(panel);
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(window);
-
+            refObjects.AddOrReplace(panel.Id, window);
             return window;
         }
 

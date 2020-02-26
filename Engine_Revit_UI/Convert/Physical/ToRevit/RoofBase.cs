@@ -20,14 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
-using BH.Engine.Geometry;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -37,7 +37,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static RoofBase ToRevitRoofBase(this oM.Physical.Elements.Roof roof, Document document, PushSettings pushSettings = null)
+        public static RoofBase ToRevitRoofBase(this oM.Physical.Elements.Roof roof, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (roof == null || roof.Location == null || document == null)
                 return null;
@@ -46,20 +46,20 @@ namespace BH.UI.Revit.Engine
             if (planarSurface == null)
                 return null;
 
-            RoofBase roofBase = pushSettings.FindRefObject<RoofBase>(document, roof.BHoM_Guid);
+            RoofBase roofBase = refObjects.GetValue<RoofBase>(document, roof.BHoM_Guid);
             if (roofBase != null)
                 return roofBase;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             RoofType roofType = null;
 
             if (roof.Construction != null)
-                roofType = roof.Construction.ToRevitHostObjAttributes(document, pushSettings) as RoofType;
+                roofType = roof.Construction.ToRevitHostObjAttributes(document, settings, refObjects) as RoofType;
 
             if (roofType == null)
             {
-                string familyTypeName = BH.Engine.Adapters.Revit.Query.FamilyTypeName(roof);
+                string familyTypeName = roof.FamilyTypeName();
                 if (!string.IsNullOrEmpty(familyTypeName))
                 {
                     List<RoofType> roofTypeList = new FilteredElementCollector(document).OfClass(typeof(RoofType)).Cast<RoofType>().ToList().FindAll(x => x.Name == familyTypeName);
@@ -115,7 +115,9 @@ namespace BH.UI.Revit.Engine
 
                     foreach (ICurve tempCurve in curveList)
                     {
-                        oM.Geometry.Point point = BH.Engine.Geometry.Query.IStartPoint(tempCurve);
+                        oM.Geometry.Point point = tempCurve.IStartPoint();
+
+                        //TODO: remove hardcoded tolerance
                         if (System.Math.Abs(point.Z - plane.Origin.Z) > Tolerance.MicroDistance)
                         {
                             XYZ xyz = point.ToRevit();
@@ -130,11 +132,10 @@ namespace BH.UI.Revit.Engine
             if (roofBase == null)
                 return null;
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(roofBase, roof, new BuiltInParameter[] { BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM, BuiltInParameter.ROOF_BASE_LEVEL_PARAM, BuiltInParameter.ROOF_UPTO_LEVEL_PARAM });
+            // Copy parameters from BHoM CustomData to Revit Element
+            roofBase.SetParameters(roof, new BuiltInParameter[] { BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM, BuiltInParameter.ROOF_BASE_LEVEL_PARAM, BuiltInParameter.ROOF_UPTO_LEVEL_PARAM });
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(roof, roofBase);
-
+            refObjects.AddOrReplace(roof, roofBase);
             return roofBase;
         }
 

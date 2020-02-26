@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,46 +20,40 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using System;
 using Autodesk.Revit.DB;
+
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Query
+    public static partial class Create
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        public static T FindRefObject<T>(this PullSettings pullSettings, int elementId) where T : IBHoMObject
+        public static Options Options(ViewDetailLevel detailLevel, bool includeNonVisible = false, bool computeReferences = false)
         {
-            if (pullSettings.RefObjects == null)
-                return default(T);
-
-            List<T> tList = FindRefObjects<T>(pullSettings, elementId);
-            if (tList != null && tList.Count > 0)
-                return tList.First();
-
-            return default(T);
+            Options options = new Options();
+            options.DetailLevel = detailLevel;
+            options.IncludeNonVisibleObjects = includeNonVisible;
+            options.ComputeReferences = computeReferences;
+            return options;
         }
 
         /***************************************************/
 
-        public static T FindRefObject<T>(this PushSettings pushSettings, Document document, Guid guid) where T : Element
+        public static Options Options(View view, bool includeNonVisible = false, bool computeReferences = false)
         {
-            if (pushSettings.RefObjects == null)
+            if (view == null)
                 return null;
 
-            List<T> tList = FindRefObjects<T>(pushSettings, document, guid);
-            if (tList != null && tList.Count > 0)
-                return tList.First();
-
-            return default(T);
+            Options options = new Options();
+            options.View = view;
+            options.DetailLevel = view.DetailLevel;
+            options.IncludeNonVisibleObjects = includeNonVisible;
+            options.ComputeReferences = computeReferences;
+            return options;
         }
 
         /***************************************************/

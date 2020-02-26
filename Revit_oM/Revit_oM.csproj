@@ -45,6 +45,10 @@
       <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Dimensional_oM">
+      <HintPath>..\..\BHoM\Build\Dimensional_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Geometry_oM">
       <HintPath>..\..\BHoM\Build\Geometry_oM.dll</HintPath>
       <Private>False</Private>
@@ -89,25 +93,22 @@
     <Compile Include="Requests\ByParameterTextRequest.cs" />
     <Compile Include="Requests\ByElementIdsRequest.cs" />
     <Compile Include="Requests\ByUniqueIdsRequest.cs" />
-    <Compile Include="Requests\SelectionRequest.cs" />
     <Compile Include="Requests\BySelectionSetRequest.cs" />
     <Compile Include="Requests\ByDBTypeNameRequest.cs" />
     <Compile Include="Requests\ViewByTemplateRequest.cs" />
     <Compile Include="Requests\ViewByTypeRequest.cs" />
     <Compile Include="Requests\ViewTemplateByNameRequest.cs" />
     <Compile Include="Requests\ByWorksetRequest.cs" />
-    <Compile Include="RevitConfig.cs" />
+    <Compile Include="Requests\EnergyAnalysisModelRequest.cs" />
+    <Compile Include="Config\RevitPushConfig.cs" />
+    <Compile Include="Config\RevitPullConfig.cs" />
     <Compile Include="_Properties\AssemblyInfo.cs" />
     <Compile Include="Generic\RevitFilePreview.cs" />
     <Compile Include="Settings\FamilyLoadSettings.cs" />
     <Compile Include="Settings\ConnectionSettings.cs" />
-    <Compile Include="Settings\GeneralSettings.cs" />
     <Compile Include="Generic\TypeMap.cs" />
     <Compile Include="Settings\MapSettings.cs" />
-    <Compile Include="Settings\UpdateTagsSettings.cs" />
-    <Compile Include="Settings\PullSettings.cs" />
     <Compile Include="Settings\RevitSettings.cs" />
-    <Compile Include="Settings\PushSettings.cs" />
     <Compile Include="Elements\Sheet.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

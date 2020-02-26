@@ -21,19 +21,15 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Structure.Elements;
+using BH.oM.Base;
+using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.Physical.Elements;
 using BH.oM.Physical.FramingProperties;
-using BH.oM.Geometry.ShapeProfiles;
-using BHG = BH.Engine.Geometry;
-using BH.oM.Structure.MaterialFragments;
-
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using BHG = BH.Engine.Geometry;
 
 namespace BH.UI.Revit.Engine
 {
@@ -43,11 +39,11 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static IFramingElement ToBHoMFramingElement(this FamilyInstance familyInstance, PullSettings pullSettings = null)
+        public static IFramingElement ToBHoMFramingElement(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            IFramingElement framingElement = pullSettings.FindRefObject<IFramingElement>(familyInstance.Id.IntegerValue);
+            IFramingElement framingElement = refObjects.GetValue<IFramingElement>(familyInstance.Id);
             if (framingElement != null)
                 return framingElement;
 
@@ -62,7 +58,7 @@ namespace BH.UI.Revit.Engine
             oM.Geometry.Vector startOffset;
             oM.Geometry.Vector endOffset;
             
-            familyInstance.FramingElementLocation(pullSettings, out locationCurve, out startOffset, out endOffset);
+            familyInstance.FramingElementLocation(out locationCurve, out startOffset, out endOffset, settings);
             if (locationCurve == null)
                 familyInstance.BarCurveNotFoundWarning();
             
@@ -98,20 +94,20 @@ namespace BH.UI.Revit.Engine
                 structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
 
             Autodesk.Revit.DB.Material revitMaterial = familyInstance.Document.GetElement(structuralMaterialId) as Autodesk.Revit.DB.Material;
-            BH.oM.Physical.Materials.Material material = pullSettings.FindRefObject<oM.Physical.Materials.Material>(structuralMaterialId.IntegerValue);
-            
+            BH.oM.Physical.Materials.Material material = refObjects.GetValue<oM.Physical.Materials.Material>(structuralMaterialId.IntegerValue);
+
             if (material == null)
-                material = revitMaterial.ToBHoMEmptyMaterial(pullSettings);
+                material = revitMaterial.ToBHoMEmptyMaterial(settings, refObjects);
 
             string materialGrade = familyInstance.MaterialGrade();
-            material = material.UpdateMaterialProperties(revitMaterial, pullSettings, materialGrade, familyInstance.StructuralMaterialType);
+            material = material.UpdateMaterialProperties(revitMaterial, materialGrade, familyInstance.StructuralMaterialType, settings);
 
             string elementName = familyInstance.Name;
             string profileName = familyInstance.Symbol.Name;
 
-            IProfile profile = familyInstance.Symbol.ToBHoMProfile(pullSettings);
+            IProfile profile = familyInstance.Symbol.ToBHoMProfile(settings, refObjects);
             if (profile == null)
-                profile = familyInstance.BHoMFreeFormProfile(pullSettings);
+                profile = familyInstance.BHoMFreeFormProfile(settings, refObjects);
 
             if (profile == null)
             {
@@ -121,7 +117,7 @@ namespace BH.UI.Revit.Engine
                 profile = new FreeFormProfile(new List<oM.Geometry.ICurve>());
             }
 
-            double rotation = familyInstance.FramingElementRotation(pullSettings);
+            double rotation = familyInstance.FramingElementRotation(settings);
             ConstantFramingProperty property = BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, profileName);
             
             if (framingType == typeof(BH.oM.Physical.Elements.Beam))
@@ -132,19 +128,21 @@ namespace BH.UI.Revit.Engine
                 framingElement = BH.Engine.Physical.Create.Column(locationCurve, property, elementName);
             else
                 framingElement = BH.Engine.Physical.Create.Beam(locationCurve, property, elementName);
-            
-            framingElement = Modify.SetIdentifiers(framingElement, familyInstance) as IFramingElement;
-            if (pullSettings.CopyCustomData)
-                framingElement = Modify.SetCustomData(framingElement, familyInstance) as IFramingElement;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(framingElement);
+            //Set identifiers & custom data
+            framingElement.SetIdentifiers(familyInstance);
+            framingElement.SetCustomData(familyInstance);
 
+            refObjects.AddOrReplace(familyInstance.Id, framingElement);
             return framingElement;
         }
 
+
+        /***************************************************/
+        /****              Private Methods              ****/
         /***************************************************/
 
-        private static double FramingElementRotation(this FamilyInstance familyInstance, PullSettings pullSettings)
+        private static double FramingElementRotation(this FamilyInstance familyInstance, RevitSettings settings)
         {
             double rotation = double.NaN;
             Location location = familyInstance.Location;
@@ -189,7 +187,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        private static void FramingElementLocation(this FamilyInstance familyInstance, PullSettings pullSettings, out oM.Geometry.ICurve locationCurve, out BH.oM.Geometry.Vector startOffset, out BH.oM.Geometry.Vector endOffset)
+        private static void FramingElementLocation(this FamilyInstance familyInstance, out oM.Geometry.ICurve locationCurve, out BH.oM.Geometry.Vector startOffset, out BH.oM.Geometry.Vector endOffset, RevitSettings settings)
         {
             locationCurve = null;
             startOffset = new oM.Geometry.Vector { X = 0, Y = 0, Z = 0 };

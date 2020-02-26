@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,13 +20,31 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-namespace BH.UI.Revit.Adapter
+using Autodesk.Revit.DB;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace BH.UI.Revit.Engine
 {
-    public  static partial class Messages
+    public static partial class Modify
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
+
+        public static IEnumerable<ElementId> RemoveGridSegmentIds(this IEnumerable<ElementId> ids, Document document)
+        {
+            if (ids == null || document == null)
+                return null;
+
+            HashSet<ElementId> segmentIds = new HashSet<ElementId>();
+            foreach (MultiSegmentGrid grid in new FilteredElementCollector(document, ids.ToList()).OfClass(typeof(MultiSegmentGrid)).Cast<MultiSegmentGrid>())
+            {
+                segmentIds.UnionWith(grid.GetGridIds());
+            }
+
+            return ids.Except(segmentIds);
+        }
 
         /***************************************************/
     }

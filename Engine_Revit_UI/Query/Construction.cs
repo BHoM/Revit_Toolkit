@@ -36,21 +36,21 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static oM.Physical.Constructions.Construction Construction(this EnergyAnalysisOpening energyAnalysisOpening, PullSettings pullSettings = null)
+        public static oM.Physical.Constructions.Construction Construction(this EnergyAnalysisOpening energyAnalysisOpening, RevitSettings settings = null)
         {
             if (energyAnalysisOpening == null)
                 return null;
 
-            Element element = Query.Element(energyAnalysisOpening);
+            Element element = energyAnalysisOpening.Element();
             if (element == null)
                 return null;
 
-            return Construction(element.EnergyAnalysisElementName(), energyAnalysisOpening.OpeningType.ToString());
+            return element.EnergyAnalysisElementName().Construction(energyAnalysisOpening.OpeningType.ToString());
         }
 
         /***************************************************/
 
-        public static oM.Physical.Constructions.Construction Construction(string constructionName, string materialName)
+        public static oM.Physical.Constructions.Construction Construction(this string constructionName, string materialName)
         {
             if (string.IsNullOrEmpty(constructionName) || string.IsNullOrEmpty(materialName))
                 return null;
@@ -79,6 +79,5 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-
     }
 }

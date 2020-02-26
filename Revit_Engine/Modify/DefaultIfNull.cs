@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -19,11 +19,11 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-
-using System.Collections.Generic;
+using System.IO;
 using System.ComponentModel;
+using System.Collections.Generic;
 
-using BH.oM.Base;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
@@ -34,27 +34,20 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Adds reference objects to existsing reference Dictionary. Method will create new dictionary if refObjects is null")]
-        [Input("refObjects", "Existing reference objects")]
-        [Input("bHoMObjects", "BHoM objects to be added")]
-        [Output("RefObjects")]
-        public static Dictionary<int, List<IBHoMObject>> AddRefObjects(this Dictionary<int, List<IBHoMObject>> refObjects, IEnumerable<IBHoMObject> bHoMObjects)
+        public static RevitSettings DefaultIfNull(this RevitSettings settings)
         {
-            if (bHoMObjects == null && bHoMObjects == null)
-                return null;
+            if (settings == null)
+            {
+                BH.Engine.Reflection.Compute.RecordNote("Revit settings are not set. Default settings are used.");
+                return RevitSettings.Default;
+            }
 
-            Dictionary<int, List<IBHoMObject>> result = null;
-            if (refObjects == null)
-                result = new Dictionary<int, List<IBHoMObject>>();
-            else
-                result = new Dictionary<int, List<IBHoMObject>>(refObjects);
-
-            foreach (BHoMObject obj in bHoMObjects)
-                result = result.AddRefObject(obj);
-
-            return result;
+            return settings;
         }
 
         /***************************************************/
     }
 }
+
+
+

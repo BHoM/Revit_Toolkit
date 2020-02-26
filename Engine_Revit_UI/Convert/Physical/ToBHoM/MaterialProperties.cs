@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,23 +20,33 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Physical.Materials;
+using BH.oM.Structure.MaterialFragments;
+using System.Collections.Generic;
 
-namespace BH.oM.Adapters.Revit.Settings
+namespace BH.UI.Revit.Engine
 {
-    public class GeneralSettings : BHoMObject
+    public static partial class Convert
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        public Discipline DefaultDiscipline { get; set; } = Discipline.Physical;
-        public AdapterMode AdapterMode { get; set; } = AdapterMode.Replace;
-        public string TagsParameterName { get; set; } = "BHE_Tags";
-        public bool SuppressFailureMessages { get; set; } = false;
+        public static List<IMaterialProperties> ToBHoMMaterialProperties(this Autodesk.Revit.DB.Material material, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            // Add material fragment per discipline.
+            List<IMaterialProperties> result = new List<IMaterialProperties>();
+            result.Add(material.ToBHoMSolidMaterial(settings, refObjects));
+            result.Add(material.ToBHoMMaterialFragment(materialGrade, settings, refObjects));
+
+            return result;
+        }
 
         /***************************************************/
     }
 }
-

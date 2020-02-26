@@ -141,6 +141,11 @@
       <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Dimensional_oM">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM\Build\Dimensional_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Environment_Engine">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Engine\Build\Environment_Engine.dll</HintPath>
@@ -241,6 +246,7 @@
   <ItemGroup>
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Room.cs" />
+    <Compile Include="Convert\Environment\ToBHoM\EnergyAnalysisModel.cs" />
     <Compile Include="Convert\Environment\ToRevit\Space.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\Curve.cs" />
     <Compile Include="Convert\Geometry\ToBHoM\Grid.cs" />
@@ -256,12 +262,13 @@
     <Compile Include="Convert\Physical\ToBHoM\Construction.cs" />
     <Compile Include="Convert\Physical\ToBHoM\ISurface.cs" />
     <Compile Include="Convert\Physical\ToBHoM\Material.cs" />
+    <Compile Include="Convert\Physical\ToBHoM\MaterialProperties.cs" />
     <Compile Include="Convert\Physical\ToBHoM\Window.cs" />
     <Compile Include="Convert\Physical\ToRevit\HostObjAttributes.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilyInstance.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilySymbol.cs" />
+    <Compile Include="Convert\Revit\ToBHoM\BHoMObject.cs" />
     <Compile Include="Convert\Revit\ToBHoM\DraftingInstance.cs" />
-    <Compile Include="Convert\Revit\ToBHoM\ModelInstance.cs" />
     <Compile Include="Convert\Environment\ToBHoM\SolidMaterial.cs" />
     <Compile Include="Convert\Physical\ToRevit\RoofBase.cs" />
     <Compile Include="Convert\Physical\ToRevit\Floor.cs" />
@@ -277,8 +284,10 @@
     <Compile Include="Convert\Revit\ToRevit\CurveElement.cs" />
     <Compile Include="Convert\Structure\ToBHoM\Bar.cs" />
     <Compile Include="Create\CurveArray.cs" />
+    <Compile Include="Create\Options.cs" />
     <Compile Include="Modify\AddAdjacentSpaceId.cs" />
     <Compile Include="Compute\LoadFamily.cs" />
+    <Compile Include="Modify\AddOrReplace.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Ceiling.cs" />
     <Compile Include="Convert\Revit\ToBHoM\ViewPlan.cs" />
@@ -309,8 +318,7 @@
     <Compile Include="Convert\ToSI.cs" />
     <Compile Include="Convert\FromSI.cs" />
     <Compile Include="Modify\AddSpaceId.cs" />
-    <Compile Include="Modify\SetTags.cs" />
-    <Compile Include="Modify\AppendRefObjects.cs" />
+    <Compile Include="Modify\RemoveGridSegmentIds.cs" />
     <Compile Include="Modify\UpdateMaterialProperties.cs" />
     <Compile Include="Modify\UpdateValues.cs" />
     <Compile Include="Query\ArbitraryPlane.cs" />
@@ -332,6 +340,9 @@
     <Compile Include="Query\ElementIds\ElementIdsByViewType.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByWorksets.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfViewTemplates.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsEnergyAnalysisModel.cs" />
+    <Compile Include="Query\EmptyMaterialFragment.cs" />
+    <Compile Include="Query\GetValues.cs" />
     <Compile Include="Query\IsContaining.cs" />
     <Compile Include="Query\PlanarSurfaceDictionary.cs" />
     <Compile Include="Query\Solids.cs" />
@@ -357,8 +368,6 @@
     <Compile Include="Query\EnergyAnalysisElementName.cs" />
     <Compile Include="Query\Layer.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
-    <Compile Include="Query\FindRefObjects.cs" />
-    <Compile Include="Query\FindRefObject.cs" />
     <Compile Include="Query\Construction.cs" />
     <Compile Include="Query\MaterialType.cs" />
     <Compile Include="Query\PolyCurve.cs" />
@@ -386,7 +395,6 @@
     <Compile Include="Query\Element.cs" />
     <Compile Include="Query\ElementId.cs" />
     <Compile Include="Query\ElementIds\ElementIds.cs" />
-    <Compile Include="Query\GetEnergyAnalysisModel.cs" />
     <Compile Include="Query\IntegerValue.cs" />
     <Compile Include="Query\MaterialGrade.cs" />
     <Compile Include="Query\Outlines.cs" />

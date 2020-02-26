@@ -22,6 +22,7 @@
 
 
 using BH.oM.Base;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Settings
 {
@@ -33,9 +34,23 @@ namespace BH.oM.Adapters.Revit.Settings
 
         public ConnectionSettings ConnectionSettings { get; set; } = new ConnectionSettings();
         public FamilyLoadSettings FamilyLoadSettings { get; set; } = new FamilyLoadSettings();
-        public GeneralSettings GeneralSettings { get; set; } = new GeneralSettings();
         public MapSettings MapSettings { get; set; } = new MapSettings();
-        
+
+        //TODO: move this to MapSettings
+        public string TagsParameterName { get; set; } = "BHE_Tags";
+
+        public double DistanceTolerance { get; set; } = BH.oM.Geometry.Tolerance.Distance;
+
+        public double AngleTolerance { get; set; } = BH.oM.Geometry.Tolerance.Angle;
+
+
+        /***************************************************/
+        /****                  Default                  ****/
+        /***************************************************/
+
+        [Description("Default settings, used if not set by the user.")]
+        public static readonly RevitSettings Default = new RevitSettings();
+
         /***************************************************/
     }
 }

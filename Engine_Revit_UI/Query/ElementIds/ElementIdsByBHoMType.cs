@@ -50,6 +50,8 @@ namespace BH.UI.Revit.Engine
 
             IEnumerable<Type> types = null;
             IEnumerable<BuiltInCategory> builtInCategories = null;
+
+            //TODO: this could raise wrong type error and return straight away? Or even better: if the type does not inherit IBHoMObject, raise error and return null.
             if (type.IsAssignableFromByFullName(typeof(Element)))
                 types = new List<Type>() { type };
             else if (typeof(IBHoMObject).IsAssignableFrom(type))
@@ -58,15 +60,19 @@ namespace BH.UI.Revit.Engine
                 builtInCategories = BuiltInCategories(type);
             }
 
+            //TODO: the list by default should contain types that inherit from Element, is that relevant?
             if (types != null)
                 types = types.ToList().FindAll(x => x.IsAssignableFromByFullName(typeof(Element)));
 
             IEnumerable<ElementId> elementIDs = null;
 
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             if (types == null || types.Count() == 0)
             {
-                if ((builtInCategories != null && builtInCategories.Count() > 0))
+                if ((builtInCategories != null && builtInCategories.Count() != 0))
                     elementIDs = collector.WherePasses(new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
                 else
                     return null;
@@ -119,7 +125,7 @@ namespace BH.UI.Revit.Engine
             }
 
             //Special Cases
-            if (elementIDs != null && elementIDs.Count() > 0)
+            if (elementIDs != null && elementIDs.Count() != 0)
             {
                 if (type == typeof(BH.oM.Adapters.Revit.Elements.ModelInstance))
                 {

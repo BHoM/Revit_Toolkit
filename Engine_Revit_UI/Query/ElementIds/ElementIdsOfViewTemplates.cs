@@ -52,6 +52,9 @@ namespace BH.UI.Revit.Engine
         [Output("elementsIdsOfViewTemplate", "An enumerator for easy iteration of ElementIds collected")]
         public static IEnumerable<ElementId> ElementIdsOfViewTemplates(this Document document, string viewTemplateName = null, IEnumerable < ElementId> ids = null)
         {
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
 
             if (viewTemplateName == null)

@@ -21,7 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -31,11 +34,11 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Adapters.Revit.Elements.ViewPlan ToBHoMViewPlan(this ViewPlan revitViewPlan, PullSettings pullSettings = null)
+        public static oM.Adapters.Revit.Elements.ViewPlan ToBHoMViewPlan(this ViewPlan revitViewPlan, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            oM.Adapters.Revit.Elements.ViewPlan viewPlan = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.ViewPlan>(revitViewPlan.Id.IntegerValue);
+            oM.Adapters.Revit.Elements.ViewPlan viewPlan = refObjects.GetValue<oM.Adapters.Revit.Elements.ViewPlan>(revitViewPlan.Id.IntegerValue);
             if (viewPlan != null)
                 return viewPlan;
 
@@ -45,18 +48,18 @@ namespace BH.UI.Revit.Engine
                 viewPlan = BH.Engine.Adapters.Revit.Create.ViewPlan(revitViewPlan.Name);
 
             ElementType elementType = revitViewPlan.Document.GetElement(revitViewPlan.GetTypeId()) as ElementType;
-            if(elementType != null)
-                viewPlan.InstanceProperties = ToBHoMInstanceProperties(elementType, pullSettings);
+            if (elementType != null)
+                viewPlan.InstanceProperties = elementType.ToBHoMInstanceProperties(settings, refObjects);
 
             viewPlan.Name = revitViewPlan.Name;
-            viewPlan = Modify.SetIdentifiers(viewPlan, revitViewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
-            if (pullSettings.CopyCustomData)
-                viewPlan = Modify.SetCustomData(viewPlan, revitViewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
 
-            viewPlan = viewPlan.UpdateValues(pullSettings, revitViewPlan) as oM.Adapters.Revit.Elements.ViewPlan;
+            //Set identifiers & custom data
+            viewPlan.SetIdentifiers(revitViewPlan);
+            viewPlan.SetCustomData(revitViewPlan);
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(viewPlan);
+            viewPlan.UpdateValues(settings, revitViewPlan);
 
+            refObjects.AddOrReplace(revitViewPlan.Id, viewPlan);
             return viewPlan;
         }
 

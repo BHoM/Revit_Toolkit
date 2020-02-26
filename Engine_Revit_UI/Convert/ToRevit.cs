@@ -22,14 +22,12 @@
 
 
 using Autodesk.Revit.DB;
-
-using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Elements;
-using BHP = BH.oM.Physical.Materials;
-using BHC = BH.oM.Physical.Constructions;
-using BH.oM.Geometry;
-using BH.oM.Geometry.CoordinateSystem;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using System;
 using System.Collections.Generic;
+using BH.oM.Physical.Materials;
 
 namespace BH.UI.Revit.Engine
 {
@@ -39,154 +37,176 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Element ToRevit(this oM.Geometry.SettingOut.Grid grid, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Geometry.SettingOut.Grid grid, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitGrid(grid, document, pushSettings);
+            return grid.ToRevitGrid(document, settings, refObjects);
         }
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Geometry.SettingOut.Level level, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Geometry.SettingOut.Level level, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitLevel(level, document, pushSettings);
+            return level.ToRevitLevel(document, settings, refObjects);
         }
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Physical.Elements.Wall wall, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Physical.Elements.Wall wall, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitWall(wall, document, pushSettings);
+            return wall.ToRevitWall(document, settings, refObjects);
         }
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Physical.Elements.Floor floor, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Physical.Elements.Floor floor, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitFloor(floor, document, pushSettings);
+            return floor.ToRevitFloor(document, settings, refObjects);
         }
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Physical.Elements.Roof roof, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Physical.Elements.Roof roof, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitRoofBase(roof, document, pushSettings);
+            return roof.ToRevitRoofBase(document, settings, refObjects);
         }
 
         /***************************************************/
 
-        public static Element ToRevit(this ModelInstance modelInstance, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this ModelInstance modelInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
             switch (modelInstance.BuiltInCategory(document))
             {
                 case BuiltInCategory.OST_Lines:
-                    return ToCurveElement(modelInstance, document, pushSettings);
+                    return modelInstance.ToCurveElement(document, settings, refObjects);
                 default:
-                    return ToRevitElement(modelInstance, document, pushSettings);
+                    return modelInstance.ToRevitElement(document, settings, refObjects);
             }
         }
 
         /***************************************************/
 
-        public static Element ToRevit(this DraftingInstance draftingInstance, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this DraftingInstance draftingInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            if (draftingInstance == null)
-                return null;
-
-            pushSettings = pushSettings.DefaultIfNull();
-
             switch (draftingInstance.BuiltInCategory(document))
             {
                 case BuiltInCategory.OST_Lines:
-                    return ToCurveElement(draftingInstance, document, pushSettings);
+                    return draftingInstance.ToCurveElement(document, settings, refObjects);
                 default:
-                    return ToRevitElement(draftingInstance, document, pushSettings);
+                    return draftingInstance.ToRevitElement(document, settings, refObjects);
             }
         }
 
         /***************************************************/
 
-        public static Element ToRevit(this BHP.Material material, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this BH.oM.Physical.Materials.Material material, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitMaterial(material, document, pushSettings);
+            return material.ToRevitMaterial(document, settings, refObjects);
         }
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Adapters.Revit.Elements.ViewPlan viewPlan, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Adapters.Revit.Elements.ViewPlan viewPlan, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitViewPlan(viewPlan, document, pushSettings);
+            return viewPlan.ToRevitViewPlan(document, settings, refObjects);
         }
 
         /***************************************************/
 
-        public static Element ToRevit(this oM.Adapters.Revit.Elements.Viewport viewport, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Adapters.Revit.Elements.Viewport viewport, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitViewport(viewport, document, pushSettings);
+            return viewport.ToRevitViewport(document, settings, refObjects);
         }
 
         /***************************************************/
 
-        public static Element ToRevit(this Sheet sheet, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitViewSheet(sheet, document, pushSettings);
+            return sheet.ToRevitViewSheet(document, settings, refObjects);
         }
 
         /***************************************************/
   
-        public static Element ToRevit(this BH.oM.Environment.Elements.Space space, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this BH.oM.Environment.Elements.Space space, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            //dynamic calls needs full namespace on output to method
-
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitSpace(space, document, pushSettings);
+            return space.ToRevitSpace(document, settings, refObjects);
         }
 
         /***************************************************/
 
-        public static Element ToRevit(this BH.oM.Physical.Elements.IFramingElement framingElement, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this BH.oM.Physical.Elements.IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitFamilyInstance(framingElement, document, pushSettings);
+            return framingElement.ToRevitFamilyInstance(document, settings, refObjects);
         }
 
         /***************************************************/
 
-        public static Autodesk.Revit.DB.Family ToRevit(this oM.Adapters.Revit.Elements.Family family, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Adapters.Revit.Elements.Family family, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
-
-            return ToRevitFamily(family, document, pushSettings);
+            return family.ToRevitFamily(document, settings, refObjects);
         }
 
         /***************************************************/
 
-        public static ElementType ToRevit(this oM.Adapters.Revit.Properties.InstanceProperties instanceProperties, Document document, PushSettings pushSettings = null)
+        public static Element ToRevit(this oM.Adapters.Revit.Properties.InstanceProperties instanceProperties, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            pushSettings = pushSettings.DefaultIfNull();
+            return instanceProperties.ToRevitElementType(document, settings, refObjects);
+        }
 
-            return ToRevitElementType(instanceProperties, document, pushSettings);
+
+        /***************************************************/
+        /****             Disallowed Types              ****/
+        /***************************************************/
+
+        public static Element ToRevit(this oM.Structure.Elements.Bar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            bar.ConvertBeforePushError(typeof(oM.Physical.Elements.IFramingElement));
+            return null;
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this oM.Structure.Elements.Panel panel, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            panel.ConvertBeforePushError(typeof(oM.Physical.Elements.ISurface));
+            return null;
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this oM.Environment.Elements.Panel panel, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            panel.ConvertBeforePushError(typeof(oM.Physical.Elements.ISurface));
+            return null;
+        }
+
+
+        /***************************************************/
+        /****             Fallback Methods              ****/
+        /***************************************************/
+
+        public static Element ToRevit(this IBHoMObject obj, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            return null;
+        }
+
+
+        /***************************************************/
+        /****             Interface Methods             ****/
+        /***************************************************/
+
+        public static Element IToRevit(this IBHoMObject obj, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            if (obj == null)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("Revit Element could not be created because BHoM object does not exist.");
+                return null;
+            }
+
+            Element result = ToRevit(obj as dynamic, document, settings, refObjects);
+            if (result == null)
+                obj.NotConvertedWarning();
+
+            return result;
         }
 
         /***************************************************/

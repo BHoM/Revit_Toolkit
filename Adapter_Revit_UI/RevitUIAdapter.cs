@@ -22,17 +22,15 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-
+using BH.Adapter;
 using BH.Adapter.Revit;
-using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.SectionProperties;
+using BH.oM.Adapters.Revit.Settings;
 using System;
 using System.Collections.Generic;
 
 namespace BH.UI.Revit.Adapter
 {
-    public partial class RevitUIAdapter : InternalRevitAdapter
+    public partial class RevitUIAdapter : BHoMAdapter,  IInternalRevitAdapter
     {
         /***************************************************/
         /****             Private Properties            ****/
@@ -57,8 +55,7 @@ namespace BH.UI.Revit.Adapter
 
             m_Document = document;
             m_UIControlledApplication = uIControlledApplication;
-
-
+            
             AdapterComparers = new Dictionary<Type, object>
             {
                 //{typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
@@ -113,6 +110,10 @@ namespace BH.UI.Revit.Adapter
                 return m_UIControlledApplication;
             }
         }
+
+        /***************************************************/
+
+        public RevitSettings RevitSettings { get; set; }
 
         /***************************************************/
     }

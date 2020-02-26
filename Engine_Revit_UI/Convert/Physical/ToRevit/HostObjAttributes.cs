@@ -20,12 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-
+using System;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -35,16 +34,16 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static HostObjAttributes ToRevitHostObjAttributes(this oM.Physical.Constructions.IConstruction construction, Document document, PushSettings pushSettings = null)
+        public static HostObjAttributes ToRevitHostObjAttributes(this oM.Physical.Constructions.IConstruction construction, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (construction == null || document == null)
                 return null;
 
-            HostObjAttributes elementType = pushSettings.FindRefObject<HostObjAttributes>(document, construction.BHoM_Guid);
+            HostObjAttributes elementType = refObjects.GetValue<HostObjAttributes>(document, construction.BHoM_Guid);
             if (elementType != null)
                 return elementType;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             List<BuiltInCategory> builtInCategoryList = null;
             BuiltInCategory buildInCategory = Query.BuiltInCategory(construction, document);
@@ -56,20 +55,19 @@ namespace BH.UI.Revit.Engine
             if (builtInCategoryList == null || builtInCategoryList.Count == 0)
                 return null;
 
-            elementType = construction.ElementType(document, builtInCategoryList, pushSettings.FamilyLoadSettings, true) as HostObjAttributes;
+            elementType = construction.ElementType(document, builtInCategoryList, settings.FamilyLoadSettings, true) as HostObjAttributes;
 
             elementType.CheckIfNullPush(construction);
             if (elementType == null)
                 return null;
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(elementType, construction, null);
+            // Copy parameters from BHoM CustomData to Revit Element
+            elementType.SetParameters(construction, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(construction, elementType);
-
+            refObjects.AddOrReplace(construction, elementType);
             return elementType;
         }
 
         /***************************************************/
-        }
     }
+}

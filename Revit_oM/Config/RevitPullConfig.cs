@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,56 +20,40 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Base;
+using BH.oM.Adapter;
+using BH.oM.Adapters.Revit.Enums;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Modify
+    [Description("Configuration used for adapter interaction with Revit on Pull action.")]
+    public class RevitPullConfig: ActionConfig
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Adds reference object to existsing reference Dictionary. Method will create new dictionary if refObjects is null")]
-        [Input("refObjects", "Existing reference objects")]
-        [Input("bHoMObject", "BHoM object to be added")]
-        [Output("RefObjects")]
-        public static Dictionary<int, List<IBHoMObject>> AddRefObject(this Dictionary<int, List<IBHoMObject>> refObjects, IBHoMObject bHoMObject)
-        {
-            if (bHoMObject == null && bHoMObject == null)
-                return null;
+        [Description("Discipline used on pull action. Default is Physical.")]
+        public Discipline Discipline { get; set; } = Discipline.Undefined;
 
-            Dictionary<int, List<IBHoMObject>> result = null;
-            if (refObjects == null)
-                result = new Dictionary<int, List<IBHoMObject>>();
-            else
-                result = new Dictionary<int, List<IBHoMObject>>(refObjects);
+        [Description("Elements from closed worksets will be processed if true.")]
+        public bool IncludeClosedWorksets { get; set; } = false;
 
-            if (bHoMObject == null)
-                return new Dictionary<int, List<IBHoMObject>>(refObjects);
+        [Description("If true, edges of elements will be pulled and stored under Revit_edges in CustomData.")]
+        public bool PullEdges { get; set; } = false;
 
-            int id = Query.ElementId(bHoMObject);
+        [Description("Invisible element edges will be pulled and passed to CustomData if true. PullEdges switched to true needed for this to activate.")]
+        public bool IncludeNonVisible { get; set; } = false;
 
-            List<IBHoMObject> objects = null;
-            if (result.TryGetValue(id, out objects))
-            {
-                if (objects == null)
-                    objects = new List<IBHoMObject>();
 
-                if (objects.Find(x => x != null && x.BHoM_Guid == bHoMObject.BHoM_Guid) == null)
-                    objects.Add(bHoMObject);
-            }
-            else
-            {
-                result.Add(id, new List<IBHoMObject>() { bHoMObject });
-            }
+        /***************************************************/
+        /****                  Default                  ****/
+        /***************************************************/
 
-            return result;
-        }
+        [Description("Default config, used if not set by the user.")]
+        public static readonly RevitPullConfig Default = new RevitPullConfig();
 
         /***************************************************/
     }

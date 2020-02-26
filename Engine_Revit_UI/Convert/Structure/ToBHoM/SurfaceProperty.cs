@@ -21,15 +21,12 @@
  */
 
 using Autodesk.Revit.DB;
-
-using System.Collections.Generic;
-using System.Linq;
-
-using BH.oM.Base;
-using BH.oM.Structure.SurfaceProperties;
-using BH.oM.Structure.MaterialFragments;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.Engine.Structure;
+using BH.oM.Base;
+using BH.oM.Structure.MaterialFragments;
+using BH.oM.Structure.SurfaceProperties;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -39,13 +36,13 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static ISurfaceProperty ToBHoMSurfaceProperty(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null, string materialGrade = null)
+        public static ISurfaceProperty ToBHoMSurfaceProperty(this HostObjAttributes hostObjAttributes, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             Document document = hostObjAttributes.Document;
 
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            ConstantThickness constantThickness = pullSettings.FindRefObject<ConstantThickness>(hostObjAttributes.Id.IntegerValue);
+            ConstantThickness constantThickness = refObjects.GetValue<ConstantThickness>(hostObjAttributes.Id);
             if (constantThickness != null)
                 return constantThickness;
 
@@ -70,23 +67,23 @@ namespace BH.UI.Revit.Engine
                     if (revitMaterial == null)
                     {
                         BH.Engine.Reflection.Compute.RecordWarning("There is a structural layer in wall/floor type without material assigned. A default empty material is returned. ElementId: " + hostObjAttributes.Id.IntegerValue.ToString());
-                        materialFragment = BHoMEmptyMaterialFragment(Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined, pullSettings);
+                        materialFragment = Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined.EmptyMaterialFragment();
                     }
                     else
                     {
                         Autodesk.Revit.DB.Structure.StructuralMaterialType structuralMaterialType = revitMaterial.MaterialClass.StructuralMaterialType();
-                        materialFragment = Query.LibraryMaterial(structuralMaterialType, materialGrade);
+                        materialFragment = structuralMaterialType.LibraryMaterial(materialGrade);
                         
                         if (materialFragment == null)
                         {
                             //Compute.MaterialNotInLibraryNote(familyInstance);
-                            materialFragment = revitMaterial.ToBHoMMaterialFragment(pullSettings);
+                            materialFragment = revitMaterial.ToBHoMMaterialFragment(null, settings, refObjects);
                         }
 
                         if (materialFragment == null)
                         {
                             Compute.InvalidDataMaterialWarning(hostObjAttributes);
-                            materialFragment = BHoMEmptyMaterialFragment(structuralMaterialType, pullSettings);
+                            materialFragment = structuralMaterialType.EmptyMaterialFragment();
                         }
                     }
 
@@ -115,12 +112,11 @@ namespace BH.UI.Revit.Engine
 
             ConstantThickness property2D = new ConstantThickness { PanelType = panelType, Thickness = thickness, Material = materialFragment, Name = hostObjAttributes.Name };
 
-            property2D = Modify.SetIdentifiers(property2D, hostObjAttributes) as ConstantThickness;
-            if (pullSettings.CopyCustomData)
-                property2D = Modify.SetCustomData(property2D, hostObjAttributes) as ConstantThickness;
+            //Set identifiers & custom data
+            property2D.SetIdentifiers(hostObjAttributes);
+            property2D.SetCustomData(hostObjAttributes);
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(property2D);
-
+            refObjects.AddOrReplace(hostObjAttributes.Id, property2D);
             return property2D;
         }
 

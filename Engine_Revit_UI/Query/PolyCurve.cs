@@ -28,7 +28,7 @@ using Autodesk.Revit.DB;
 using BH.Engine.Geometry;
 using BH.oM.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-
+using BH.Engine.Adapters.Revit;
 
 namespace BH.UI.Revit.Engine
 {
@@ -38,7 +38,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static PolyCurve PolyCurve(this MeshTriangle meshTriangle, PullSettings pullSettings = null)
+        public static PolyCurve PolyCurve(this MeshTriangle meshTriangle, RevitSettings settings = null)
         {
             if (meshTriangle == null)
                 return null;
@@ -52,7 +52,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static PolyCurve PolyCurve(this FamilyInstance familyInstance, PullSettings pullSettings = null)
+        public static PolyCurve PolyCurve(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             if (familyInstance == null)
                 return null;
@@ -61,30 +61,30 @@ namespace BH.UI.Revit.Engine
             if (hostObject == null)
                 return null;
 
-            List<PolyCurve> polycurves = Profiles(hostObject, pullSettings);
+            List<PolyCurve> polycurves = hostObject.Profiles(settings);
             if (polycurves == null || polycurves.Count == 0)
                 return null;
 
             List<oM.Geometry.Plane> planes = new List<oM.Geometry.Plane>();
             foreach (PolyCurve polycurve in polycurves)
             {
-                oM.Geometry.Plane tempPlane = BH.Engine.Adapters.Revit.Query.Plane(polycurve);
+                oM.Geometry.Plane tempPlane = polycurve.Plane();
                 if (tempPlane != null)
                     planes.Add(tempPlane);
             }
 
             //TODO: Get geometry from Host
-            List<ICurve> curves = Query.Curves(familyInstance, new Options(), pullSettings);
+            List<ICurve> curves = familyInstance.Curves(new Options(), settings);
             if (curves == null || curves.Count == 0)
             {
                 if (hostObject == null)
                     return null;
 
-                List<Solid> solids = hostObject.Solids(new Options(), pullSettings);
+                List<Solid> solids = hostObject.Solids(new Options(), settings);
                 if (solids == null || solids.Count == 0)
                     return null;
 
-                PolyCurve polycurve = PolyCurve(familyInstance, solids, planes, pullSettings);
+                PolyCurve polycurve = familyInstance.PolyCurve(solids, planes, settings);
                 if (polycurve != null)
                     return polycurve;
             }
@@ -96,13 +96,13 @@ namespace BH.UI.Revit.Engine
             oM.Geometry.Plane plane = null;
             foreach (ICurve curve in curves)
             {
-                List<oM.Geometry.Point> tempPoints = BH.Engine.Geometry.Query.IControlPoints(curve);
+                List<oM.Geometry.Point> tempPoints = curve.IControlPoints();
                 if (tempPoints == null || tempPoints.Count == 0)
                     continue;
 
                 foreach (oM.Geometry.Plane tempPlane in planes)
                 {
-                    double tempMin = tempPoints.ConvertAll(x => BH.Engine.Geometry.Query.Distance(x, tempPlane)).Min();
+                    double tempMin = tempPoints.ConvertAll(x => x.Distance(tempPlane)).Min();
                     if (tempMin < min)
                     {
                         plane = tempPlane;
@@ -118,7 +118,7 @@ namespace BH.UI.Revit.Engine
                 ICurve tempCurve = null;
                 try
                 {
-                    tempCurve = BH.Engine.Geometry.Modify.IProject(curve, plane);
+                    tempCurve = curve.IProject(plane);
                 }
                 catch
                 {
@@ -130,11 +130,10 @@ namespace BH.UI.Revit.Engine
                     continue;
 
                 if (bbox == null)
-                    bbox = BH.Engine.Geometry.Query.IBounds(tempCurve);
+                    bbox = tempCurve.IBounds();
                 else
-                    bbox += BH.Engine.Geometry.Query.IBounds(tempCurve);
-
-
+                    bbox += tempCurve.IBounds();
+               
                 //TODO: Issue with projecting to proper type - workaround solution: recognise object and call ControlPoints instead IControlPoints
                 if (tempCurve is oM.Geometry.Arc)
                 {
@@ -153,9 +152,9 @@ namespace BH.UI.Revit.Engine
 
             XYZ handOrientation = familyInstance.HandOrientation;
             Vector handDirection = new Vector { X = handOrientation.X, Y = handOrientation.Y, Z = handOrientation.Z };
-            handDirection = BH.Engine.Geometry.Modify.Project(handDirection, plane).Normalise();
+            handDirection = handDirection.Project(plane).Normalise();
 
-            Vector upDirection = BH.Engine.Geometry.Query.CrossProduct(handDirection, plane.Normal).Normalise();
+            Vector upDirection = handDirection.CrossProduct(plane.Normal).Normalise();
 
             double maxUp = double.MinValue;
             double maxHand = double.MinValue;
@@ -168,20 +167,20 @@ namespace BH.UI.Revit.Engine
 
                     Vector vector = new Vector { X = points[i].X - points[j].X, Y = points[i].Y - points[j].Y, Z = points[i].Z - points[j].Z };
 
-                    dotProduct = BH.Engine.Geometry.Query.DotProduct(vector, handDirection);
+                    dotProduct = vector.DotProduct(handDirection);
                     if (dotProduct > 0)
                     {
                         Vector tempVector = handDirection * dotProduct;
-                        double hand = BH.Engine.Geometry.Query.Length(tempVector);
+                        double hand = tempVector.Length();
                         if (hand > maxHand)
                             maxHand = hand;
                     }
 
-                    dotProduct = BH.Engine.Geometry.Query.DotProduct(vector, upDirection);
+                    dotProduct = vector.DotProduct(upDirection);
                     if (dotProduct > 0)
                     {
                         Vector tempVector = upDirection * dotProduct;
-                        double up = BH.Engine.Geometry.Query.Length(tempVector);
+                        double up = tempVector.Length();
                         if (up > maxUp)
                             maxUp = up;
                     }
@@ -194,47 +193,39 @@ namespace BH.UI.Revit.Engine
             upDirection = upDirection * maxUp / 2;
             handDirection = handDirection * maxHand / 2;
 
-            oM.Geometry.Point centre = BH.Engine.Geometry.Query.Centre(bbox);
-
-            oM.Geometry.Point point1 = BH.Engine.Geometry.Modify.Translate(centre, upDirection);
-            point1 = BH.Engine.Geometry.Modify.Translate(point1, handDirection);
-
-            oM.Geometry.Point point2 = BH.Engine.Geometry.Modify.Translate(centre, upDirection);
-            point2 = BH.Engine.Geometry.Modify.Translate(point2, -handDirection);
-
-            oM.Geometry.Point point3 = BH.Engine.Geometry.Modify.Translate(centre, -upDirection);
-            point3 = BH.Engine.Geometry.Modify.Translate(point3, -handDirection);
-
-            oM.Geometry.Point point4 = BH.Engine.Geometry.Modify.Translate(centre, -upDirection);
-            point4 = BH.Engine.Geometry.Modify.Translate(point4, handDirection);
+            oM.Geometry.Point centre = bbox.Centre();
+            oM.Geometry.Point point1 = centre + upDirection + handDirection;
+            oM.Geometry.Point point2 = centre + upDirection - handDirection;
+            oM.Geometry.Point point3 = centre - upDirection - handDirection;
+            oM.Geometry.Point point4 = centre - upDirection + handDirection;
 
             return new PolyCurve { Curves = new List<ICurve> { new BH.oM.Geometry.Line { Start = point1, End = point2 }, new BH.oM.Geometry.Line { Start = point2, End = point3 }, new BH.oM.Geometry.Line { Start = point3, End = point4 }, new BH.oM.Geometry.Line { Start = point4, End = point1 } } };
         }
 
         /***************************************************/
 
-        public static PolyCurve PolyCurve(this FamilyInstance familyInstance, HostObject hostObject, PullSettings pullSettings = null)
+        public static PolyCurve PolyCurve(this FamilyInstance familyInstance, HostObject hostObject, RevitSettings settings = null)
         {
             if (hostObject == null)
                 return null;
 
-            List<PolyCurve> polycurves = Profiles(hostObject, pullSettings);
+            List<PolyCurve> polycurves = hostObject.Profiles(settings);
             if (polycurves == null || polycurves.Count == 0)
                 return null;
 
             List<oM.Geometry.Plane> planes = new List<oM.Geometry.Plane>();
             foreach (PolyCurve polycurve in polycurves)
             {
-                oM.Geometry.Plane tempPlane = BH.Engine.Adapters.Revit.Query.Plane(polycurve);
+                oM.Geometry.Plane tempPlane = polycurve.Plane();
                 if (tempPlane != null)
                     planes.Add(tempPlane);
             }
 
-            List<Solid> solids = hostObject.Solids(new Options(), pullSettings);
+            List<Solid> solids = hostObject.Solids(new Options(), settings);
             if (solids == null || solids.Count == 0)
                 return null;
 
-            return PolyCurve(familyInstance, solids, planes, pullSettings);
+            return familyInstance.PolyCurve(solids, planes, settings);
         }
 
 
@@ -242,7 +233,7 @@ namespace BH.UI.Revit.Engine
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static PolyCurve PolyCurve(this FamilyInstance familyInstance, IEnumerable<Solid> solids, IEnumerable<oM.Geometry.Plane> planes, PullSettings pullSettings = null)
+        private static PolyCurve PolyCurve(this FamilyInstance familyInstance, IEnumerable<Solid> solids, IEnumerable<oM.Geometry.Plane> planes, RevitSettings settings = null)
         {
             if (familyInstance == null || solids == null || planes == null)
                 return null;
@@ -252,7 +243,7 @@ namespace BH.UI.Revit.Engine
                 if (plane == null)
                     continue;
 
-                Autodesk.Revit.DB.Plane revitPlane = Convert.ToRevit(plane);
+                Autodesk.Revit.DB.Plane revitPlane = plane.ToRevit();
                 if (revitPlane == null)
                     continue;
 
@@ -293,7 +284,7 @@ namespace BH.UI.Revit.Engine
                                 if (curve == null)
                                     continue;
 
-                                if (IsContaining(bboxXYZ, curve.GetEndPoint(0), true) && IsContaining(bboxXYZ, curve.GetEndPoint(1), true))
+                                if (bboxXYZ.IsContaining(curve.GetEndPoint(0), true) && bboxXYZ.IsContaining(curve.GetEndPoint(1), true))
                                     tempCurves.Add(curve.IToBHoM());
                             }
                         }
@@ -311,7 +302,7 @@ namespace BH.UI.Revit.Engine
 
                     PolyCurve pcurve = result.First();
 
-                    if (!BH.Engine.Geometry.Query.IsClosed(pcurve) && pcurve != null)
+                    if (!pcurve.IsClosed() && pcurve != null)
                     {
                         List<oM.Geometry.Point> points = pcurve.ControlPoints();
                         if (points != null && points.Count > 2)

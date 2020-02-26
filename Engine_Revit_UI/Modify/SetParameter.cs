@@ -252,12 +252,15 @@ namespace BH.UI.Revit.Engine
             return false;
         }
 
+
+        /***************************************************/
+        /****             Internal methods              ****/
         /***************************************************/
 
-        public static Element SetParameters(this Element element, IBHoMObject bHoMObject, IEnumerable<BuiltInParameter> builtInParametersIgnore = null)
+        internal static void SetParameters(this Element element, IBHoMObject bHoMObject, IEnumerable<BuiltInParameter> builtInParametersIgnore = null)
         {
             if (bHoMObject == null || element == null)
-                return null;
+                return;
 
             foreach (KeyValuePair<string, object> kvp in bHoMObject.CustomData)
             {
@@ -276,8 +279,6 @@ namespace BH.UI.Revit.Engine
                     SetParameter(parameter, kvp.Value, element.Document);
                 }
             }
-
-            return element;
         }
 
         /***************************************************/

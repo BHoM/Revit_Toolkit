@@ -20,15 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
-
+using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -38,7 +37,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<ICurve> Outlines(this HostObject hostObject, PullSettings pullSettings = null)
+        public static List<ICurve> Outlines(this HostObject hostObject, RevitSettings settings = null)
         {
             AnalyticalModel analyticalModel = hostObject.GetAnalyticalModel();
             if (analyticalModel == null)
@@ -47,7 +46,7 @@ namespace BH.UI.Revit.Engine
                 return null;
             }
 
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
             
             List<ICurve> wallCurves = analyticalModel.GetCurves(AnalyticalCurveType.RawCurves).ToList().ToBHoM();
             if (wallCurves.Any(x => x == null))

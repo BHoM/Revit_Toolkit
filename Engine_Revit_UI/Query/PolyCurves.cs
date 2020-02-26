@@ -36,7 +36,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<PolyCurve> PolyCurves(this Autodesk.Revit.DB.Face face, Transform transform = null, PullSettings pullSettings = null)
+        public static List<PolyCurve> PolyCurves(this Autodesk.Revit.DB.Face face, Transform transform = null, RevitSettings settings = null)
         {
             if (face == null)
                 return null;
@@ -57,7 +57,7 @@ namespace BH.UI.Revit.Engine
 
                     curves.Add(crv);
                 }
-                result.Add(new oM.Geometry.PolyCurve { Curves = curves });
+                result.Add(new PolyCurve { Curves = curves });
             }
 
             return result;
@@ -65,7 +65,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<PolyCurve> PolyCurves(this Element element, IEnumerable<Reference> references, PullSettings pullSettings = null)
+        public static List<PolyCurve> PolyCurves(this Element element, IEnumerable<Reference> references, RevitSettings settings = null)
         {
             List<PolyCurve> polycurves = new List<PolyCurve>();
 
@@ -78,9 +78,9 @@ namespace BH.UI.Revit.Engine
                 List<PolyCurve> tempCurves = null;
 
                 if (face is PlanarFace)
-                    tempCurves = ((PlanarFace)face).PolyCurves(null, pullSettings);
+                    tempCurves = ((PlanarFace)face).PolyCurves(null, settings);
                 else
-                    tempCurves = face.Triangulate().PolyCurves(pullSettings);
+                    tempCurves = face.Triangulate().PolyCurves(settings);
 
                 if (tempCurves == null || tempCurves.Count == 0)
                     continue;
@@ -93,7 +93,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<PolyCurve> PolyCurves(this Autodesk.Revit.DB.Mesh mesh, PullSettings pullSettings = null)
+        public static List<PolyCurve> PolyCurves(this Autodesk.Revit.DB.Mesh mesh, RevitSettings settings = null)
         {
             if (mesh == null)
                 return null;
@@ -101,7 +101,7 @@ namespace BH.UI.Revit.Engine
             List<PolyCurve> result = new List<PolyCurve>();
             for (int i=0; i < mesh.NumTriangles; i++)
             {
-                PolyCurve pcurve = mesh.get_Triangle(i).PolyCurve(pullSettings);
+                PolyCurve pcurve = mesh.get_Triangle(i).PolyCurve(settings);
                 if (pcurve != null)
                     result.Add(pcurve);
             }

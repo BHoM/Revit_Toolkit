@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -32,11 +34,11 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Adapters.Revit.Elements.Viewport ToBHoMViewport(this Viewport revitViewPort, PullSettings pullSettings = null)
+        public static oM.Adapters.Revit.Elements.Viewport ToBHoMViewport(this Viewport revitViewPort, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            oM.Adapters.Revit.Elements.Viewport viewPort = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.Viewport>(revitViewPort.Id.IntegerValue);
+            oM.Adapters.Revit.Elements.Viewport viewPort = refObjects.GetValue<oM.Adapters.Revit.Elements.Viewport>(revitViewPort.Id.IntegerValue);
             if (viewPort != null)
                 return viewPort;
 
@@ -48,18 +50,17 @@ namespace BH.UI.Revit.Engine
 
             ElementType elementType = revitViewPort.Document.GetElement(revitViewPort.GetTypeId()) as ElementType;
             if (elementType != null)
-                viewPort.InstanceProperties = ToBHoMInstanceProperties(elementType, pullSettings);
+                viewPort.InstanceProperties = elementType.ToBHoMInstanceProperties(settings, refObjects);
 
             viewPort.Name = revitViewPort.Name;
 
-            viewPort = Modify.SetIdentifiers(viewPort, revitViewPort) as oM.Adapters.Revit.Elements.Viewport;
-            if (pullSettings.CopyCustomData)
-                viewPort = Modify.SetCustomData(viewPort, revitViewPort) as oM.Adapters.Revit.Elements.Viewport;
+            //Set identifiers & custom data
+            viewPort.SetIdentifiers(revitViewPort);
+            viewPort.SetCustomData(revitViewPort);
 
-            viewPort = viewPort.UpdateValues(pullSettings, revitViewPort) as oM.Adapters.Revit.Elements.Viewport;
+            viewPort.UpdateValues(settings, revitViewPort);
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(viewPort);
-
+            refObjects.AddOrReplace(revitViewPort.Id, viewPort);
             return viewPort;
         }
 

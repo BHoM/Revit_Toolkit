@@ -20,20 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-
-using BH.oM.Base;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Data.Requests;
+using System.Collections.Generic;
 
 
 namespace BH.UI.Revit.Engine
@@ -239,6 +231,13 @@ namespace BH.UI.Revit.Engine
         public static IEnumerable<ElementId> ElementIds(this VisibleInViewRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             return uIDocument.Document.ElementIdsByVisibleInView(request.ViewName, true, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this EnergyAnalysisModelRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsEnergyAnalysisModel(ids);
         }
 
         /***************************************************/

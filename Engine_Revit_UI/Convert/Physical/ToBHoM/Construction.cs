@@ -21,8 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
 using BH.oM.Geometry;
 using System.Collections.Generic;
 
@@ -34,49 +35,13 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this WallType wallType, PullSettings pullSettings = null)
+        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this HostObjAttributes hostObjAttributes, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            return ToBHoMConstruction((HostObjAttributes)wallType, pullSettings);
-        }
-
-        /***************************************************/
-
-        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this FloorType floorType, PullSettings pullSettings = null)
-        {
-            pullSettings = pullSettings.DefaultIfNull();
-
-            return ToBHoMConstruction((HostObjAttributes)floorType, pullSettings);
-        }
-
-        /***************************************************/
-
-        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this CeilingType ceilingType, PullSettings pullSettings = null)
-        {
-            pullSettings = pullSettings.DefaultIfNull();
-
-            return ToBHoMConstruction((HostObjAttributes)ceilingType, pullSettings);
-        }
-
-        /***************************************************/
-
-        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this RoofType roofType, PullSettings pullSettings = null)
-        {
-            pullSettings = pullSettings.DefaultIfNull();
-
-            return ToBHoMConstruction((HostObjAttributes)roofType, pullSettings);
-        }
-
-        /***************************************************/
-
-        public static oM.Physical.Constructions.Construction ToBHoMConstruction(this HostObjAttributes hostObjAttributes, PullSettings pullSettings = null)
-        {
-            oM.Physical.Constructions.Construction construction = pullSettings.FindRefObject<oM.Physical.Constructions.Construction>(hostObjAttributes.Id.IntegerValue);
+            oM.Physical.Constructions.Construction construction = refObjects.GetValue<oM.Physical.Constructions.Construction>(hostObjAttributes.Id);
             if (construction != null)
                 return construction;
-
-            pullSettings = pullSettings.DefaultIfNull();
 
             List<BH.oM.Physical.Constructions.Layer> layers = new List<oM.Physical.Constructions.Layer>();
             CompoundStructure compoundStructure = hostObjAttributes.GetCompoundStructure();
@@ -88,20 +53,19 @@ namespace BH.UI.Revit.Engine
                     BuiltInCategory buildInCategory = (BuiltInCategory)hostObjAttributes.Category.Id.IntegerValue;
 
                     foreach (CompoundStructureLayer layer in compoundStructureLayers)
-                        layers.Add(Query.Layer(layer, hostObjAttributes.Document, buildInCategory, pullSettings));
+                        layers.Add(layer.Layer(hostObjAttributes.Document, buildInCategory, settings));
                 }
             }
 
-            construction = BH.Engine.Physical.Create.Construction(Query.FamilyTypeFullName(hostObjAttributes), layers);
+            construction = BH.Engine.Physical.Create.Construction(hostObjAttributes.FamilyTypeFullName(), layers);
 
-            construction = Modify.SetIdentifiers(construction, hostObjAttributes) as oM.Physical.Constructions.Construction;
-            if (pullSettings.CopyCustomData)
-                construction = Modify.SetCustomData(construction, hostObjAttributes) as oM.Physical.Constructions.Construction;
+            //Set identifiers & custom data
+            construction.SetIdentifiers(hostObjAttributes);
+            construction.SetCustomData(hostObjAttributes);
 
-            construction = construction.UpdateValues(pullSettings, hostObjAttributes) as oM.Physical.Constructions.Construction;
+            construction.UpdateValues(settings, hostObjAttributes);
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(construction);
-
+            refObjects.AddOrReplace(hostObjAttributes.Id, construction);
             return construction;
         }
 

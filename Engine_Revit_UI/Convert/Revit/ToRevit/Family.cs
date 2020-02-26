@@ -21,9 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
+using System;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -33,33 +35,32 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static Family ToRevitFamily(this oM.Adapters.Revit.Elements.Family family, Document document, PushSettings pushSettings = null)
+        public static Family ToRevitFamily(this oM.Adapters.Revit.Elements.Family family, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            Family revitFamily = pushSettings.FindRefObject<Family>(document, family.BHoM_Guid);
+            Family revitFamily = refObjects.GetValue<Family>(document, family.BHoM_Guid);
             if (revitFamily != null)
                 return revitFamily;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            if (family.PropertiesList != null && family.PropertiesList.Count > 0)
+            if (family.PropertiesList != null && family.PropertiesList.Count != 0)
             {
                 foreach(InstanceProperties instanceProperties in family.PropertiesList)
-                    ToRevitElementType(instanceProperties, document, pushSettings);
+                    instanceProperties.ToRevitElementType(document, settings, refObjects);
             }
 
-            BuiltInCategory builtInCategory = family.BuiltInCategory(document, pushSettings.FamilyLoadSettings);
+            BuiltInCategory builtInCategory = family.BuiltInCategory(document, settings.FamilyLoadSettings);
 
-            revitFamily = family.Family(document, builtInCategory, pushSettings.FamilyLoadSettings);
+            revitFamily = family.Family(document, builtInCategory, settings.FamilyLoadSettings);
 
             revitFamily.CheckIfNullPush(family);
             if (revitFamily == null)
                 return null;
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(revitFamily, family, null);
+            // Copy parameters from BHoM CustomData to Revit Element
+            revitFamily.SetParameters(family, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(family, revitFamily);
-
+            refObjects.AddOrReplace(family, revitFamily);
             return revitFamily;
         }
 

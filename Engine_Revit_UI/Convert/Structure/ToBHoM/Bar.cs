@@ -22,20 +22,15 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.SectionProperties;
-using BH.oM.Physical.Elements;
-using BH.oM.Physical.FramingProperties;
-using BH.oM.Geometry.ShapeProfiles;
-using BHG = BH.Engine.Geometry;
-using BHS = BH.Engine.Structure;
-
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -45,11 +40,11 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static List<Bar> ToBHoMBar(this FamilyInstance familyInstance, PullSettings pullSettings = null)
+        public static List<Bar> ToBHoMBar(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            List<Bar> bars = pullSettings.FindRefObjects<Bar>(familyInstance.Id.IntegerValue);
+            List<Bar> bars = refObjects.GetValues<Bar>(familyInstance.Id);
             if (bars != null)
                 return bars;
             
@@ -59,13 +54,13 @@ namespace BH.UI.Revit.Engine
 
             AnalyticalModelStick analyticalModel = familyInstance.GetAnalyticalModel() as AnalyticalModelStick;
             if (analyticalModel != null)
-                analyticalModel.AnalyticalBarLocation(pullSettings, out locationCurve);
+                analyticalModel.AnalyticalBarLocation(out locationCurve, settings);
 
             if (locationCurve != null)
                 familyInstance.AnalyticalPullWarning();
             else
             {
-                familyInstance.FramingElementLocation(pullSettings, out locationCurve, out startOffset, out endOffset);
+                familyInstance.FramingElementLocation(out locationCurve, out startOffset, out endOffset, settings);
 
                 if (locationCurve == null)
                     familyInstance.BarCurveNotFoundWarning();
@@ -100,7 +95,7 @@ namespace BH.UI.Revit.Engine
             }
             
             string materialGrade = familyInstance.MaterialGrade();
-            IMaterialFragment materialFragment = Query.LibraryMaterial(familyInstance.StructuralMaterialType, materialGrade);
+            IMaterialFragment materialFragment = familyInstance.StructuralMaterialType.LibraryMaterial(materialGrade);
 
             if (materialFragment == null)
             {
@@ -111,13 +106,13 @@ namespace BH.UI.Revit.Engine
                 if (structuralMaterialId.IntegerValue < 0)
                     structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
 
-                materialFragment = (familyInstance.Document.GetElement(structuralMaterialId) as Autodesk.Revit.DB.Material).ToBHoMMaterialFragment(pullSettings);
+                materialFragment = (familyInstance.Document.GetElement(structuralMaterialId) as Autodesk.Revit.DB.Material).ToBHoMMaterialFragment(null, settings, refObjects);
             }
 
             if (materialFragment == null)
             {
                 Compute.InvalidDataMaterialWarning(familyInstance);
-                materialFragment = BHoMEmptyMaterialFragment(familyInstance.StructuralMaterialType, pullSettings);
+                materialFragment = familyInstance.StructuralMaterialType.EmptyMaterialFragment();
             }
 
             //TODO: this probably should be deleted - the Physical material in RefObjects has no properties by definition (it gets updated after being set to RefObjects)
@@ -149,9 +144,9 @@ namespace BH.UI.Revit.Engine
 
             if (property == null)
             {
-                IProfile profile = familyInstance.Symbol.ToBHoMProfile(pullSettings);
+                IProfile profile = familyInstance.Symbol.ToBHoMProfile(settings, refObjects);
                 if (profile == null)
-                    profile = familyInstance.BHoMFreeFormProfile(pullSettings);
+                    profile = familyInstance.BHoMFreeFormProfile(settings, refObjects);
 
                 //TODO: this should be removed and null passed finally?
                 if (profile == null)
@@ -160,17 +155,7 @@ namespace BH.UI.Revit.Engine
                 if (profile.Edges.Count == 0)
                     familyInstance.Symbol.ConvertProfileFailedWarning();
 
-                //TODO: shouldn't we have empty AluminiumSection and TimberSection at least?
-                if (materialFragment is Concrete)
-                    property = BH.Engine.Structure.Create.ConcreteSectionFromProfile(profile, materialFragment as Concrete, profileName);
-                else if (materialFragment is Steel)
-                    property = BH.Engine.Structure.Create.SteelSectionFromProfile(profile, materialFragment as Steel, profileName);
-                else
-                {
-                    familyInstance.UnknownMaterialWarning();
-                    property = BH.Engine.Structure.Create.SteelSectionFromProfile(profile, null, profileName);
-                    property.Material = materialFragment;
-                }
+                property = BH.Engine.Structure.Create.SectionPropertyFromProfile(profile, materialFragment, profileName);
             }
             else
             {
@@ -183,7 +168,7 @@ namespace BH.UI.Revit.Engine
 
             if (locationCurve != null)
             {
-                double rotation = familyInstance.FramingElementRotation(pullSettings);
+                double rotation = familyInstance.FramingElementRotation(settings);
                 foreach (BH.oM.Geometry.Line line in BH.Engine.Geometry.Query.SubParts(BH.Engine.Geometry.Modify.ICollapseToPolyline(locationCurve, Math.PI / 12)))
                 {
                     //Bar bar = BH.Engine.Structure.Create.Bar(line, property, rotation);
@@ -199,19 +184,22 @@ namespace BH.UI.Revit.Engine
             {
                 bars[i].Name = elementName;
 
-                bars[i] = Modify.SetIdentifiers(bars[i], familyInstance) as Bar;
-                if (pullSettings.CopyCustomData)
-                    bars[i] = Modify.SetCustomData(bars[i], familyInstance) as Bar;
+                //Set identifiers & custom data
+                bars[i].SetIdentifiers(familyInstance);
+                bars[i].SetCustomData(familyInstance);
 
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(bars[i]);
+                refObjects.AddOrReplace(familyInstance.Id, bars[i]);
             }
             
             return bars;
         }
 
+
+        /***************************************************/
+        /****              Private Methods              ****/
         /***************************************************/
 
-        private static void AnalyticalBarLocation(this AnalyticalModelStick analyticalModel, PullSettings pullSettings, out oM.Geometry.ICurve locationCurve)
+        private static void AnalyticalBarLocation(this AnalyticalModelStick analyticalModel, out oM.Geometry.ICurve locationCurve, RevitSettings settings = null)
         {
             locationCurve = null;
 

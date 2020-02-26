@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using System;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -33,55 +35,53 @@ namespace BH.UI.Revit.Engine
         /****              Private methods              ****/
         /***************************************************/
 
-        private static FamilySymbol ToRevitFamilySymbol_Column(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
+        private static FamilySymbol ToRevitFamilySymbol_Column(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (framingElementProperty == null || document == null)
                 return null;
 
-            FamilySymbol familySymbol = pushSettings.FindRefObject<FamilySymbol>(document, framingElementProperty.BHoM_Guid);
+            FamilySymbol familySymbol = refObjects.GetValue<FamilySymbol>(document, framingElementProperty.BHoM_Guid);
             if (familySymbol != null)
                 return familySymbol;
 
-            pushSettings = pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            familySymbol = Query.ElementType(framingElementProperty, document, BuiltInCategory.OST_StructuralColumns, pushSettings.FamilyLoadSettings) as FamilySymbol;
+            familySymbol = framingElementProperty.ElementType(document, BuiltInCategory.OST_StructuralColumns, settings.FamilyLoadSettings) as FamilySymbol;
 
             familySymbol.CheckIfNullPush(framingElementProperty);
             if (familySymbol == null)
                 return null;
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(familySymbol, framingElementProperty, null);
+            // Copy parameters from BHoM CustomData to Revit Element
+            familySymbol.SetParameters(framingElementProperty, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElementProperty, familySymbol);
-
+            refObjects.AddOrReplace(framingElementProperty, familySymbol);
             return familySymbol;
         }
 
         /***************************************************/
 
-        private static FamilySymbol ToRevitFamilySymbol_Framing(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, PushSettings pushSettings = null)
+        private static FamilySymbol ToRevitFamilySymbol_Framing(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (framingElementProperty == null || document == null)
                 return null;
 
-            FamilySymbol familySymbol = pushSettings.FindRefObject<FamilySymbol>(document, framingElementProperty.BHoM_Guid);
+            FamilySymbol familySymbol = refObjects.GetValue<FamilySymbol>(document, framingElementProperty.BHoM_Guid);
             if (familySymbol != null)
                 return familySymbol;
 
-            pushSettings = pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            familySymbol = Query.ElementType(framingElementProperty, document, BuiltInCategory.OST_StructuralFraming, pushSettings.FamilyLoadSettings) as FamilySymbol;
+            familySymbol = framingElementProperty.ElementType(document, BuiltInCategory.OST_StructuralFraming, settings.FamilyLoadSettings) as FamilySymbol;
 
             familySymbol.CheckIfNullPush(framingElementProperty);
             if (familySymbol == null)
                 return null;
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(familySymbol, framingElementProperty, null);
+            // Copy parameters from BHoM CustomData to Revit Element
+            familySymbol.SetParameters(framingElementProperty, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElementProperty, familySymbol);
-
+            refObjects.AddOrReplace(framingElementProperty, familySymbol);
             return familySymbol;
         }
 

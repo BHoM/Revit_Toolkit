@@ -20,12 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-
+using BH.Engine.Common;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -35,16 +34,16 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static BoundingBox BoundingBox(this Element element, Options Options, PullSettings pullSettings = null)
+        public static BoundingBox BoundingBox(this Element element, Options options, RevitSettings settings = null)
         {
-            List<ICurve> curves = element.Curves(Options, pullSettings);
+            List<ICurve> curves = element.Curves(options, settings);
 
             if (curves == null || curves.Count == 0)
                 return null;
 
-            BoundingBox bbox = BH.Engine.Geometry.Query.IBounds(curves[0]);
+            BoundingBox bbox = curves[0].IBounds();
             for (int i = 1; i < curves.Count; i++)
-                bbox += BH.Engine.Geometry.Query.IBounds(curves[i]);
+                bbox += curves[i].IBounds();
 
             return bbox;
         }

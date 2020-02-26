@@ -20,13 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-
-using BH.Engine.Environment;
-using BH.oM.Environment.Elements;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -36,16 +33,16 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
         
-        public static List<oM.Environment.Elements.Panel> HostedBuildingElements(HostObject hostObject, Face face, PullSettings pullSettings = null)
+        public static List<oM.Environment.Elements.Panel> HostedBuildingElements(HostObject hostObject, Face face, RevitSettings settings = null)
         {
             if (hostObject == null)
                 return null;
 
             IList<ElementId> elementIDs = hostObject.FindInserts(false, false, false, false);
-            if (elementIDs == null || elementIDs.Count < 1)
+            if (elementIDs == null || elementIDs.Count == 0)
                 return null;
 
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             List<oM.Environment.Elements.Panel> panels = new List<oM.Environment.Elements.Panel>();
             foreach (ElementId id in elementIDs)
@@ -89,7 +86,7 @@ namespace BH.UI.Revit.Engine
                     points.Add(vXYZ.ToBHoM());
                     points.Add(maxXYZ.ToBHoM());
 
-                    oM.Environment.Elements.Panel panel = Convert.ToBHoMEnvironmentPanel(hostedElement, BH.Engine.Geometry.Create.Polyline(points), pullSettings);
+                    oM.Environment.Elements.Panel panel = hostedElement.ToBHoMEnvironmentPanel(BH.Engine.Geometry.Create.Polyline(points), settings);
                     if (panel != null)
                         panels.Add(panel);
                 }

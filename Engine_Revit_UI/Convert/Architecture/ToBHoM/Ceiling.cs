@@ -20,13 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
+using BH.oM.Base;
 using BH.oM.Environment.Fragments;
+using BH.oM.Geometry;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -36,17 +37,17 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static List<oM.Architecture.Elements.Ceiling> ToBHoMCeilings(this Ceiling ceiling, PullSettings pullSettings = null)
+        public static List<oM.Architecture.Elements.Ceiling> ToBHoMCeilings(this Ceiling ceiling, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            List<oM.Architecture.Elements.Ceiling> ceilingList = pullSettings.FindRefObjects<oM.Architecture.Elements.Ceiling>(ceiling.Id.IntegerValue);
-            if (ceilingList != null && ceilingList.Count > 0)
+            List<oM.Architecture.Elements.Ceiling> ceilingList = refObjects.GetValues<oM.Architecture.Elements.Ceiling>(ceiling.Id);
+            if (ceilingList != null && ceilingList.Count != 0)
                 return ceilingList;
 
-            oM.Physical.Constructions.Construction construction = ToBHoMConstruction(ceiling.Document.GetElement(ceiling.GetTypeId()) as HostObjAttributes, pullSettings);
+            oM.Physical.Constructions.Construction construction = (ceiling.Document.GetElement(ceiling.GetTypeId()) as HostObjAttributes).ToBHoMConstruction(settings, refObjects);
 
-            Dictionary<PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> disctionary = Query.PlanarSurfaceDictionary(ceiling, false, pullSettings);
+            Dictionary<PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> disctionary = ceiling.PlanarSurfaceDictionary(false, settings);
             if (disctionary == null)
                 return null;
 
@@ -55,32 +56,30 @@ namespace BH.UI.Revit.Engine
             {
                 oM.Architecture.Elements.Ceiling newCeiling = new oM.Architecture.Elements.Ceiling()
                 {
-                    Name = Query.FamilyTypeFullName(ceiling),
+                    Name = ceiling.FamilyTypeFullName(),
                     Construction = construction,
                     Surface = planarSurface
                 };
 
                 ElementType elementType = ceiling.Document.GetElement(ceiling.GetTypeId()) as ElementType;
+
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment();
                 originContext.ElementID = ceiling.Id.IntegerValue.ToString();
-                originContext.TypeName = Query.FamilyTypeFullName(ceiling);
-                originContext = originContext.UpdateValues(pullSettings, ceiling) as OriginContextFragment;
-                originContext = originContext.UpdateValues(pullSettings, elementType) as OriginContextFragment;
+                originContext.TypeName = ceiling.FamilyTypeFullName();
+                originContext.UpdateValues(settings, ceiling);
+                originContext.UpdateValues(settings, elementType);
                 newCeiling.Fragments.Add(originContext);
 
-                newCeiling = Modify.SetIdentifiers(newCeiling, ceiling) as oM.Architecture.Elements.Ceiling;
-                if (pullSettings.CopyCustomData)
-                    newCeiling = Modify.SetCustomData(newCeiling, ceiling) as oM.Architecture.Elements.Ceiling;
+                //Set identifiers & custom data
+                newCeiling.SetIdentifiers(ceiling);
+                newCeiling.SetCustomData(ceiling);
 
-                newCeiling = newCeiling.UpdateValues(pullSettings, ceiling) as oM.Architecture.Elements.Ceiling;
-
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(newCeiling);
-
+                newCeiling.UpdateValues(settings, ceiling);
                 ceilingList.Add(newCeiling);
-
             }
 
+            refObjects.AddOrReplace(ceiling.Id, ceilingList);
             return ceilingList;
         }
 

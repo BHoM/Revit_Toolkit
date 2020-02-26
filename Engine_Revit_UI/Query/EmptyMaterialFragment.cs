@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,34 +20,40 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+using Autodesk.Revit.DB.Structure;
+using BH.oM.Structure.MaterialFragments;
+using System;
 
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Enums;
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.UI.Revit.Engine
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Sets Replace property for GeneralSettings stored in RevitSettings.")]
-        [Input("revitSettings", "RevitSettings")]
-        [Input("replace", "Replace existing elements in the model for push method. Update parameters (CustomData) only if set to false.")]
-        [Output("RevitSettings")]
-        public static RevitSettings SetAdapterMode(this RevitSettings revitSettings, AdapterMode adapterMode)
+        public static IMaterialFragment EmptyMaterialFragment(this StructuralMaterialType structuralMaterialType)
         {
-            if (revitSettings == null || revitSettings.GeneralSettings == null)
-                return null;
+            string name;
+            if (structuralMaterialType == Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined)
+                name = "Unknown Material";
+            else
+                name = String.Format("Unknown {0} Material", structuralMaterialType);
 
-            RevitSettings settings = revitSettings.GetShallowClone() as RevitSettings;
-            settings.GeneralSettings = settings.GeneralSettings.GetShallowClone() as GeneralSettings;
-            settings.GeneralSettings.AdapterMode = adapterMode;
-
-            return settings;
+            switch (structuralMaterialType)
+            {
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Aluminum:
+                    return new Aluminium() { Name = name };
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete:
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.PrecastConcrete:
+                    return new Concrete() { Name = name };
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood:
+                    return new Timber() { Name = name };
+                case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
+                    return new Steel() { Name = name };
+                default:
+                    return new GenericIsotropicMaterial() { Name = name };
+            }
         }
 
         /***************************************************/

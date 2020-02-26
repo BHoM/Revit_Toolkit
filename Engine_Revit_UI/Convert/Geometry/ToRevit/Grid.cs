@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 
 using System;
@@ -35,13 +36,13 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Element ToRevitGrid(this oM.Geometry.SettingOut.Grid grid, Document document, PushSettings pushSettings = null)
+        public static Element ToRevitGrid(this oM.Geometry.SettingOut.Grid grid, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            Element revitGrid = pushSettings.FindRefObject<Grid>(document, grid.BHoM_Guid);
+            Element revitGrid = refObjects.GetValue<Grid>(document, grid.BHoM_Guid);
             if (revitGrid != null)
                 return revitGrid;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             if (BH.Engine.Geometry.Query.IIsClosed(grid.Curve))
             {
@@ -111,11 +112,10 @@ namespace BH.UI.Revit.Engine
             if (revitGrid == null)
                 return null;
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(revitGrid, grid, null);
+            // Copy parameters from BHoM CustomData to Revit Element
+            revitGrid.SetParameters(grid, null);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(grid, revitGrid);
-
+            refObjects.AddOrReplace(grid, revitGrid);
             return revitGrid;
         }
 

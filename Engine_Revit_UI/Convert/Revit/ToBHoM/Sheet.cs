@@ -21,9 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -33,11 +35,11 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static Sheet ToBHoMSheet(this ViewSheet viewSheet, PullSettings pullSettings = null)
+        public static Sheet ToBHoMSheet(this ViewSheet viewSheet, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            Sheet sheet = pullSettings.FindRefObject<Sheet>(viewSheet.Id.IntegerValue);
+            Sheet sheet = refObjects.GetValue<Sheet>(viewSheet.Id);
             if (sheet != null)
                 return sheet;
 
@@ -45,18 +47,17 @@ namespace BH.UI.Revit.Engine
 
             ElementType elementType = viewSheet.Document.GetElement(viewSheet.GetTypeId()) as ElementType;
             if (elementType != null)
-                sheet.InstanceProperties = ToBHoMInstanceProperties(elementType, pullSettings);
+                sheet.InstanceProperties = elementType.ToBHoMInstanceProperties(settings, refObjects);
 
             sheet.Name = viewSheet.Name;
 
-            sheet = Modify.SetIdentifiers(sheet, viewSheet) as Sheet;
-            if (pullSettings.CopyCustomData)
-                sheet = Modify.SetCustomData(sheet, viewSheet) as Sheet;
+            //Set identifiers & custom data
+            sheet.SetIdentifiers(viewSheet);
+            sheet.SetCustomData(viewSheet);
 
-            sheet = sheet.UpdateValues(pullSettings, viewSheet) as Sheet;
+            sheet.UpdateValues(settings, viewSheet);
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(sheet);
-
+            refObjects.AddOrReplace(viewSheet.Id, sheet);
             return sheet;
         }
 

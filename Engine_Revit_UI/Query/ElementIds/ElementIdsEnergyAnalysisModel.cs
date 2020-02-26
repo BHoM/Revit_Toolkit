@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,19 +20,49 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Collections.Generic;
 
-namespace BH.oM.Adapters.Revit.Settings
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+
+using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
+using Autodesk.Revit.DB.Analysis;
+using Autodesk.Revit.DB.Mechanical;
+
+namespace BH.UI.Revit.Engine
 {
-    public class UpdateTagsSettings : BHoMObject
+    public static partial class Query
     {
         /***************************************************/
-        /****            Public Properties              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public string ParameterName { get; set; } = null;
-        public object Value { get; set; } = null;
-        public static UpdateTagsSettings Default = new UpdateTagsSettings();
+        public static IEnumerable<ElementId> ElementIdsEnergyAnalysisModel(this Document document, IEnumerable<ElementId> ids = null)
+        {
+            if (document == null)
+                return null;
+
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
+            HashSet<ElementId> result = new HashSet<ElementId>();
+            EnergyAnalysisDetailModel energyAnalysisDetailModel = EnergyAnalysisDetailModel.GetMainEnergyAnalysisDetailModel(document);
+            if (energyAnalysisDetailModel != null && energyAnalysisDetailModel.IsValidObject)
+                result.Add(energyAnalysisDetailModel.Id);
+
+            if (ids != null)
+                result.IntersectWith(ids);
+
+            return result;
+        }
 
         /***************************************************/
     }

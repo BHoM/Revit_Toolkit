@@ -21,10 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
-
-using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-
+using BH.oM.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,33 +36,32 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static BH.oM.Geometry.SettingOut.Grid ToBHoMGrid(this Grid revitGrid, PullSettings pullSettings = null)
+        public static BH.oM.Geometry.SettingOut.Grid ToBHoMGrid(this Grid revitGrid, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            oM.Geometry.SettingOut.Grid grid = pullSettings.FindRefObject<oM.Geometry.SettingOut.Grid>(revitGrid.Id.IntegerValue);
+            oM.Geometry.SettingOut.Grid grid = refObjects.GetValue<oM.Geometry.SettingOut.Grid>(revitGrid.Id);
             if (grid != null)
                 return grid;
 
             grid = BH.Engine.Geometry.SettingOut.Create.Grid(revitGrid.Curve.IToBHoM());
             grid.Name = revitGrid.Name;
 
-            grid = Modify.SetIdentifiers(grid, revitGrid) as oM.Geometry.SettingOut.Grid;
-            if (pullSettings.CopyCustomData)
-                grid = Modify.SetCustomData(grid, revitGrid) as oM.Geometry.SettingOut.Grid;
+            //Set identifiers & custom data
+            grid.SetIdentifiers(revitGrid);
+            grid.SetCustomData(revitGrid);
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(grid);
-
+            refObjects.AddOrReplace(revitGrid.Id, grid);
             return grid;
         }
 
         /***************************************************/
 
-        public static BH.oM.Geometry.SettingOut.Grid ToBHoMGrid(this MultiSegmentGrid revitGrid, PullSettings pullSettings = null)
+        public static BH.oM.Geometry.SettingOut.Grid ToBHoMGrid(this MultiSegmentGrid revitGrid, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            oM.Geometry.SettingOut.Grid grid = pullSettings.FindRefObject<oM.Geometry.SettingOut.Grid>(revitGrid.Id.IntegerValue);
+            oM.Geometry.SettingOut.Grid grid = refObjects.GetValue<oM.Geometry.SettingOut.Grid>(revitGrid.Id);
             if (grid != null)
                 return grid;
 
@@ -71,7 +69,7 @@ namespace BH.UI.Revit.Engine
             if (gridSegments.Count == 0)
                 return null;
             else if (gridSegments.Count == 1)
-                return gridSegments[0].ToBHoMGrid(pullSettings);
+                return gridSegments[0].ToBHoMGrid(settings, refObjects);
             else
             {
                 List<BH.oM.Geometry.PolyCurve> joinedGridCurves = BH.Engine.Geometry.Compute.IJoin(gridSegments.Select(x => x.Curve.IToBHoM()).ToList());
@@ -84,13 +82,12 @@ namespace BH.UI.Revit.Engine
                 grid = BH.Engine.Geometry.SettingOut.Create.Grid(joinedGridCurves[0]);
                 grid.Name = revitGrid.Name;
             }
-            
-            grid = Modify.SetIdentifiers(grid, revitGrid) as oM.Geometry.SettingOut.Grid;
-            if (pullSettings.CopyCustomData)
-                grid = Modify.SetCustomData(grid, revitGrid) as oM.Geometry.SettingOut.Grid;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(grid);
+            //Set identifiers & custom data
+            grid.SetIdentifiers(revitGrid);
+            grid.SetCustomData(revitGrid);
 
+            refObjects.AddOrReplace(revitGrid.Id, grid);
             return grid;
         }
 

@@ -22,10 +22,11 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
-
+using BH.Engine.Adapters.Revit;
 using BH.Engine.Environment;
-using BH.oM.Environment.Elements;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Environment.Elements;
 using BH.oM.Environment.Fragments;
 using System.Collections.Generic;
 
@@ -37,39 +38,39 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static Space ToBHoMSpace(this SpatialElement spatialElement, PullSettings pullSettings = null)
+        public static Space ToBHoMSpace(this SpatialElement spatialElement, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             SpatialElementBoundaryOptions spatialElementBoundaryOptions = new SpatialElementBoundaryOptions();
             spatialElementBoundaryOptions.SpatialElementBoundaryLocation = SpatialElementBoundaryLocation.Center;
             spatialElementBoundaryOptions.StoreFreeBoundaryFaces = false;
 
-            return ToBHoMSpace(spatialElement, spatialElementBoundaryOptions, pullSettings);
+            return spatialElement.ToBHoMSpace(spatialElementBoundaryOptions, settings, refObjects);
         }
 
         /***************************************************/
 
-        public static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, PullSettings pullSettings = null)
+        public static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (spatialElement == null || spatialElementBoundaryOptions == null)
                 return new Space();
 
             SpatialElementGeometryCalculator spatialElementGeometryCalculator = new SpatialElementGeometryCalculator(spatialElement.Document, spatialElementBoundaryOptions);
 
-            return ToBHoMSpace(spatialElement, spatialElementGeometryCalculator, pullSettings);
+            return ToBHoMSpace(spatialElement, spatialElementGeometryCalculator, settings, refObjects);
         }
 
         /***************************************************/
 
-        public static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, PullSettings pullSettings = null)
+        public static Space ToBHoMSpace(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (spatialElement == null || spatialElementGeometryCalculator == null)
                 return new Space();
 
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            Space space = pullSettings.FindRefObject<Space>(spatialElement.Id.IntegerValue);
+            Space space = refObjects.GetValue<Space>(spatialElement.Id);
             if (space != null)
                 return space;
 
@@ -85,42 +86,42 @@ namespace BH.UI.Revit.Engine
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.ElementID = spatialElement.Id.IntegerValue.ToString();
             originContext.TypeName = Query.Name(spatialElement);
-            originContext = originContext.UpdateValues(pullSettings, spatialElement) as OriginContextFragment;
+            originContext.UpdateValues(settings, spatialElement);
             space.AddFragment(originContext);
 
             SpaceAnalyticalFragment spaceAnalytical = new SpaceAnalyticalFragment();
-            spaceAnalytical = spaceAnalytical.UpdateValues(pullSettings, spatialElement) as SpaceAnalyticalFragment;
+            spaceAnalytical.UpdateValues(settings, spatialElement);
             space.AddFragment(spaceAnalytical);
 
             SpaceContextFragment spaceContext = new SpaceContextFragment();
-            spaceContext = spaceContext.UpdateValues(pullSettings, spatialElement) as SpaceContextFragment;
+            spaceContext.UpdateValues(settings, spatialElement);
+            
             //TODO: Implement ConnectedElements
             space.AddFragment(spaceContext);
 
-            //Set custom data
-            space = Modify.SetIdentifiers(space, spatialElement) as Space;
-            if (pullSettings.CopyCustomData)
-                space = Modify.SetCustomData(space, spatialElement) as Space;
+            //Set identifiers & custom data
+            space.SetIdentifiers(spatialElement);
+            space.SetCustomData(spatialElement);
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(space);
-            space = space.UpdateValues(pullSettings, spatialElement) as Space;
+            refObjects.AddOrReplace(spatialElement.Id, space);
+            space.UpdateValues(settings, spatialElement);
             return space;
         }
 
         /***************************************************/
 
-        public static Space ToBHoMSpace(this EnergyAnalysisSpace energyAnalysisSpace, PullSettings pullSettings = null)
+        public static Space ToBHoMSpace(this EnergyAnalysisSpace energyAnalysisSpace, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (energyAnalysisSpace == null)
                 return new Space();
 
-            pullSettings = pullSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
-            Space space = pullSettings.FindRefObject<Space>(energyAnalysisSpace.Id.IntegerValue);
+            Space space = refObjects.GetValue<Space>(energyAnalysisSpace.Id.IntegerValue);
             if (space != null)
                 return space;
 
-            SpatialElement spatialElement = Query.Element(energyAnalysisSpace.Document, energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
+            SpatialElement spatialElement = energyAnalysisSpace.Document.Element(energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
 
             string name = Query.Name(spatialElement);
             space = BH.Engine.Environment.Create.Space(name);
@@ -132,39 +133,38 @@ namespace BH.UI.Revit.Engine
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.ElementID = spatialElement.Id.IntegerValue.ToString();
             originContext.TypeName = Query.Name(spatialElement);
-            originContext = originContext.UpdateValues(pullSettings, energyAnalysisSpace) as OriginContextFragment;
-            originContext = originContext.UpdateValues(pullSettings, spatialElement) as OriginContextFragment;
+            originContext.UpdateValues(settings, energyAnalysisSpace);
+            originContext.UpdateValues(settings, spatialElement);
             space.AddFragment(originContext);
 
             SpaceAnalyticalFragment spaceAnalytical = new SpaceAnalyticalFragment();
-            spaceAnalytical = spaceAnalytical.UpdateValues(pullSettings, energyAnalysisSpace) as SpaceAnalyticalFragment;
-            spaceAnalytical = spaceAnalytical.UpdateValues(pullSettings, spatialElement) as SpaceAnalyticalFragment;
+            spaceAnalytical.UpdateValues(settings, energyAnalysisSpace);
+            spaceAnalytical.UpdateValues(settings, spatialElement);
             space.AddFragment(spaceAnalytical);
 
             SpaceContextFragment spaceContext = new SpaceContextFragment();
             List<string> connectedElements = new List<string>();
             foreach (EnergyAnalysisSurface energyAnalysisSurface in energyAnalysisSpace.GetAnalyticalSurfaces())
+            {
                 connectedElements.Add(energyAnalysisSurface.CADObjectUniqueId);
+            }
             spaceContext.ConnectedElements = connectedElements;
-            spaceContext = spaceContext.UpdateValues(pullSettings, energyAnalysisSpace) as SpaceContextFragment;
-            spaceContext = spaceContext.UpdateValues(pullSettings, spatialElement) as SpaceContextFragment;
+            spaceContext.UpdateValues(settings, energyAnalysisSpace);
+            spaceContext.UpdateValues(settings, spatialElement);
             space.AddFragment(spaceContext);
 
-            //Set custom data
-            space = Modify.SetIdentifiers(space, spatialElement) as Space;
-            if (pullSettings.CopyCustomData)
-            {
-                space = Modify.SetCustomData(space, spatialElement) as Space;
+            //Set identifiers & custom data
+            space.SetIdentifiers(spatialElement);
+            space.SetCustomData(spatialElement);
                 double innerVolume = energyAnalysisSpace.InnerVolume.ToSI(UnitType.UT_Volume);
                 double analyticalVolume = energyAnalysisSpace.AnalyticalVolume.ToSI(UnitType.UT_Volume);
 
-                space = Modify.SetCustomData(space, "Inner Volume", innerVolume) as Space;
-                space = Modify.SetCustomData(space, "Analytical Volume", analyticalVolume) as Space;
-            }
+            space.CustomData["Inner Volume"] = innerVolume;
+            space.CustomData["Analytical Volume"] = analyticalVolume;
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(space);
-            space = space.UpdateValues(pullSettings, energyAnalysisSpace) as Space;
-            space = space.UpdateValues(pullSettings, spatialElement) as Space;
+            refObjects.AddOrReplace(energyAnalysisSpace.Id, space);
+            space.UpdateValues(settings, energyAnalysisSpace);
+            space.UpdateValues(settings, spatialElement);
             return space;
         }
 

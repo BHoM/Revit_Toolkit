@@ -23,8 +23,6 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Base;
-using BH.oM.Environment.Elements;
-using BH.oM.Environment.Fragments;
 using BH.UI.Revit.Engine;
 using System;
 using System.Collections.Generic;
@@ -38,7 +36,7 @@ namespace BH.UI.Revit.Adapter
         /****              Public methods               ****/
         /***************************************************/
         
-        public static bool Delete(IEnumerable<BHoMObject> bHoMObjects, Document document)
+        public static bool Delete(IEnumerable<IBHoMObject> bHoMObjects, Document document)
         {
             if (document == null)
             {
@@ -51,22 +49,26 @@ namespace BH.UI.Revit.Adapter
                 BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because BHoM objects are null.");
                 return false;
             }
+            
+            // Collect both UniqueIds as well as ElementIds
+            HashSet<ElementId> elementIDList = new HashSet<ElementId>(document.ElementIdsByUniqueIds(bHoMObjects.UniqueIds(true)));
+            elementIDList.UnionWith(document.ElementIdsByInts(bHoMObjects.Select(x => BH.Engine.Adapters.Revit.Query.ElementId(x)).Where(x => x != -1)));
 
-            if (bHoMObjects.Count() < 1)
+            //TODO: handle RevitFilePreview here?
+
+            if (elementIDList == null)
                 return false;
-
-            List<ElementId> elementIDList = document.ElementIdsByUniqueIds(bHoMObjects.UniqueIds(true)).ToList();
-
-            if (elementIDList == null || elementIDList.Count < 1)
-                return false;
+            else if (elementIDList.Count == 0)
+                return true;
 
             bool result = false;
-            using (Transaction transaction = new Transaction(document, "Create"))
+            using (Transaction transaction = new Transaction(document, "Delete"))
             {
                 transaction.Start();
                 result = Delete(elementIDList, document);
                 transaction.Commit();
             }
+            
             return result;
         }
 
@@ -87,7 +89,7 @@ namespace BH.UI.Revit.Adapter
             }
 
             bool result = false;
-            using (Transaction transaction = new Transaction(document, "Create"))
+            using (Transaction transaction = new Transaction(document, "Delete"))
             {
                 transaction.Start();
                 result = DeleteByUniqueId(bHoMObject, document);
@@ -95,6 +97,7 @@ namespace BH.UI.Revit.Adapter
             }
             return result;
         }
+
 
         /***************************************************/
         /****              Private Methods              ****/
@@ -135,7 +138,7 @@ namespace BH.UI.Revit.Adapter
             }
 
             List<Element> elementList = new FilteredElementCollector(document).OfClass(type).ToList();
-            if (elementList == null || elementList.Count < 1)
+            if (elementList == null || elementList.Count == 0)
                 return false;
 
             Element element = elementList.Find(x => x.Name == bHoMObject.Name);
@@ -158,11 +161,11 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            if (bHoMObjects.Count() < 1)
+            if (bHoMObjects.Count() == 0)
                 return false;
 
             List<Element> elementList = new FilteredElementCollector(document).OfClass(type).ToList();
-            if (elementList == null || elementList.Count < 1)
+            if (elementList == null || elementList.Count == 0)
                 return false;
 
             List<ElementId> elementIDList = new List<ElementId>();
@@ -192,7 +195,7 @@ namespace BH.UI.Revit.Adapter
             }
 
             ICollection<ElementId> elementIDs = element.Document.Delete(element.Id);
-            if (elementIDs != null && elementIDs.Count > 0)
+            if (elementIDs != null && elementIDs.Count != 0)
                 return true;
 
             return false;
@@ -208,7 +211,7 @@ namespace BH.UI.Revit.Adapter
                 return false;
             }
 
-            if (elementIds.Count() < 1)
+            if (elementIds.Count() == 0)
                 return false;
 
             List<ElementId> elementIDList = new List<ElementId>();
@@ -217,7 +220,7 @@ namespace BH.UI.Revit.Adapter
                 elementIDList.Add(elementId);
 
             ICollection<ElementId> elementIDs = document.Delete(elementIDList);
-            if (elementIDs != null && elementIDs.Count > 0)
+            if (elementIDs != null && elementIDs.Count != 0)
                 return true;
 
             return false;

@@ -20,13 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Linq;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -36,16 +35,16 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static ViewPlan ToRevitViewPlan(this oM.Adapters.Revit.Elements.ViewPlan viewPlan, Document document, PushSettings pushSettings = null)
+        public static ViewPlan ToRevitViewPlan(this oM.Adapters.Revit.Elements.ViewPlan viewPlan, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (viewPlan == null || string.IsNullOrEmpty(viewPlan.LevelName) || string.IsNullOrEmpty(viewPlan.Name))
                 return null;
 
-            ViewPlan revitViewPlan = pushSettings.FindRefObject<ViewPlan>(document, viewPlan.BHoM_Guid);
+            ViewPlan revitViewPlan = refObjects.GetValue<ViewPlan>(document, viewPlan.BHoM_Guid);
             if (revitViewPlan != null)
                 return revitViewPlan;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             ElementId levelElementID = null;
 
@@ -86,14 +85,13 @@ namespace BH.UI.Revit.Engine
             revitViewPlan.ViewName = viewPlan.Name;
 #endif
 
-
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(revitViewPlan, viewPlan, null);
+            // Copy parameters from BHoM CustomData to Revit Element
+            revitViewPlan.SetParameters(viewPlan, null);
 
             object value = null;
-            if(viewPlan.CustomData.TryGetValue(BH.Engine.Adapters.Revit.Convert.ViewTemplate, out value))
+            if (viewPlan.CustomData.TryGetValue(BH.Engine.Adapters.Revit.Convert.ViewTemplate, out value))
             {
-                if(value is string)
+                if (value is string)
                 {
                     List<ViewPlan> viewPlans = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).Cast<ViewPlan>().ToList();
                     ViewPlan viewPlanTemplate = viewPlans.Find(x => x.IsTemplate && value.Equals(x.Name));
@@ -104,8 +102,7 @@ namespace BH.UI.Revit.Engine
                 }
             }
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(viewPlan, revitViewPlan);
-
+            refObjects.AddOrReplace(viewPlan, revitViewPlan);
             return revitViewPlan;
         }
 

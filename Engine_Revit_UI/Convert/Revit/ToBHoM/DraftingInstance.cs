@@ -21,9 +21,13 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
-using System.Collections.Generic;
+using BH.oM.Base;
 using System;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -32,38 +36,12 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /****               Public Methods              ****/
         /***************************************************/
-
-        public static oM.Adapters.Revit.Elements.DraftingInstance ToBHoMDraftingInstance(this CurveElement curveElement, PullSettings pullSettings = null)
-        {
-            oM.Adapters.Revit.Elements.DraftingInstance draftingInstance = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.DraftingInstance>(curveElement.Id.IntegerValue);
-            if (draftingInstance != null)
-                return draftingInstance;
-
-            View view = curveElement.Document.GetElement(curveElement.OwnerViewId) as View;
-            if (view == null)
-                return null;
-
-            oM.Adapters.Revit.Properties.InstanceProperties instanceProperties = ToBHoMInstanceProperties(curveElement.LineStyle as GraphicsStyle, pullSettings) as oM.Adapters.Revit.Properties.InstanceProperties;
-
-            draftingInstance = BH.Engine.Adapters.Revit.Create.DraftingInstance(instanceProperties, view.Name, curveElement.GeometryCurve.IToBHoM());
-
-            draftingInstance.Name = curveElement.Name;
-            draftingInstance = Modify.SetIdentifiers(draftingInstance, curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
-            if (pullSettings.CopyCustomData)
-                draftingInstance = Modify.SetCustomData(draftingInstance, curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
-
-            draftingInstance = draftingInstance.UpdateValues(pullSettings, curveElement) as oM.Adapters.Revit.Elements.DraftingInstance;
-
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(draftingInstance);
-
-            return draftingInstance;
-        }
-
-        /***************************************************/
         
-        public static oM.Adapters.Revit.Elements.DraftingInstance ToBHoMDraftingInstance(this FilledRegion filledRegion, PullSettings pullSettings = null)
+        public static DraftingInstance ToBHoMDraftingInstance(this FilledRegion filledRegion, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            oM.Adapters.Revit.Elements.DraftingInstance draftingInstance = pullSettings.FindRefObject<oM.Adapters.Revit.Elements.DraftingInstance>(filledRegion.Id.IntegerValue);
+            settings = settings.DefaultIfNull();
+
+            DraftingInstance draftingInstance = refObjects.GetValue<DraftingInstance>(filledRegion.Id);
             if (draftingInstance != null)
                 return draftingInstance;
 
@@ -71,7 +49,7 @@ namespace BH.UI.Revit.Engine
             if (view == null)
                 return null;
 
-            oM.Adapters.Revit.Properties.InstanceProperties instanceProperties = ToBHoMInstanceProperties(filledRegion.Document.GetElement(filledRegion.GetTypeId()) as ElementType, pullSettings) as oM.Adapters.Revit.Properties.InstanceProperties;
+            InstanceProperties instanceProperties = (filledRegion.Document.GetElement(filledRegion.GetTypeId()) as ElementType).ToBHoMInstanceProperties(settings, refObjects) as InstanceProperties;
 
             List<oM.Geometry.ICurve> curves = new List<oM.Geometry.ICurve>();
             foreach (CurveLoop loop in filledRegion.GetBoundaries())
@@ -87,16 +65,15 @@ namespace BH.UI.Revit.Engine
             }
 
             draftingInstance = BH.Engine.Adapters.Revit.Create.DraftingInstance(instanceProperties, view.Name, surfaces[0]);
-
             draftingInstance.Name = filledRegion.Name;
-            draftingInstance = Modify.SetIdentifiers(draftingInstance, filledRegion) as oM.Adapters.Revit.Elements.DraftingInstance;
-            if (pullSettings.CopyCustomData)
-                draftingInstance = Modify.SetCustomData(draftingInstance, filledRegion) as oM.Adapters.Revit.Elements.DraftingInstance;
 
-            draftingInstance = draftingInstance.UpdateValues(pullSettings, filledRegion) as oM.Adapters.Revit.Elements.DraftingInstance;
+            //Set identifiers & custom data
+            draftingInstance.SetIdentifiers(filledRegion);
+            draftingInstance.SetCustomData(filledRegion);
 
-            pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(draftingInstance);
+            draftingInstance.UpdateValues(settings, filledRegion);
 
+            refObjects.AddOrReplace(filledRegion.Id, draftingInstance);
             return draftingInstance;
         }
 

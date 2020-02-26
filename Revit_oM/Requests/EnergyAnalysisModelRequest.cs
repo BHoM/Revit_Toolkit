@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,25 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using BH.oM.Data.Requests;
+using System.ComponentModel;
 
-using System.Collections.Generic;
-
-namespace BH.oM.Adapters.Revit.Settings
+namespace BH.oM.Adapters.Revit
 {
-    public class PullSettings : BHoMObject
+    [Description("IRequest that filters all elements that are contained in an energy analysis model.")]
+    public class EnergyAnalysisModelRequest : IRequest
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****                Properties                 ****/
         /***************************************************/
 
-        public Enums.Discipline Discipline { get; set; } = Enums.Discipline.Physical;
-        public bool CopyCustomData { get; set; } = true;
-        public MapSettings MapSettings { get; set; } = null;
-        public Dictionary<int, List<IBHoMObject>> RefObjects = null;
-        public static PullSettings Default = new PullSettings();
+
 
         /***************************************************/
     }
 }
-

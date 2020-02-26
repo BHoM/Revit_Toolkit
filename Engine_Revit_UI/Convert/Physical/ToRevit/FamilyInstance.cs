@@ -39,18 +39,18 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static FamilyInstance ToRevitFamilyInstance(this IFramingElement framingElement, Document document, PushSettings pushSettings = null)
+        public static FamilyInstance ToRevitFamilyInstance(this IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (framingElement == null || document == null)
                 return null;
 
             if (framingElement is Column)
             {
-                return ToRevitFamilyInstance_Column(framingElement, document, pushSettings);
+                return ToRevitFamilyInstance_Column(framingElement, document, settings, refObjects);
             }
             else if (framingElement is Beam || framingElement is Bracing || framingElement is Cable)
             {
-                return ToRevitFamilyInstance_Framing(framingElement, document, pushSettings);
+                return ToRevitFamilyInstance_Framing(framingElement, document, settings, refObjects);
             }
             else if (framingElement is Pile)
             {
@@ -59,32 +59,33 @@ namespace BH.UI.Revit.Engine
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError(string.Format("Push of {0} is not supported in current version of BHoM. BHoM element Guid: {1}",framingElement.GetType(), framingElement.BHoM_Guid));
+                BH.Engine.Reflection.Compute.RecordError(string.Format("Push of {0} is not supported in current version of BHoM. BHoM element Guid: {1}", framingElement.GetType(), framingElement.BHoM_Guid));
                 return null;
             }
         }
+
 
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
 
-        private static FamilyInstance ToRevitFamilyInstance_Column(this IFramingElement framingElement, Document document, PushSettings pushSettings = null)
+        private static FamilyInstance ToRevitFamilyInstance_Column(this IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (framingElement == null || document == null)
                 return null;
 
-            FamilyInstance familyInstance = pushSettings.FindRefObject<FamilyInstance>(document, framingElement.BHoM_Guid);
+            FamilyInstance familyInstance = refObjects.GetValue<FamilyInstance>(document, framingElement.BHoM_Guid);
             if (familyInstance != null)
                 return familyInstance;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             object customDataValue = null;
 
             //Check that the curve works for revit
             if (!CheckLocationCurveColumns(framingElement))
                 return null;
-            
+
             Line columnLine = framingElement.Location.IToRevit() as Line;
             Level level = null;
 
@@ -98,11 +99,11 @@ namespace BH.UI.Revit.Engine
             if (level == null)
                 level = Query.BottomLevel(framingElement.Location, document);
 
-            FamilySymbol familYSymbol = framingElement.Property.ToRevitFamilySymbol_Column(document, pushSettings);
+            FamilySymbol familYSymbol = framingElement.Property.ToRevitFamilySymbol_Column(document, settings, refObjects);
 
             if (familYSymbol == null)
             {
-                familYSymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralColumns, pushSettings.FamilyLoadSettings) as FamilySymbol;
+                familYSymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralColumns, settings.FamilyLoadSettings) as FamilySymbol;
 
                 if (familYSymbol == null)
                 {
@@ -146,7 +147,7 @@ namespace BH.UI.Revit.Engine
                     }
                 }
             }
-            
+
             if (1 - Math.Abs(columnLine.Direction.DotProduct(XYZ.BasisZ)) < BH.oM.Geometry.Tolerance.Angle)
             {
                 document.Regenerate();
@@ -162,47 +163,45 @@ namespace BH.UI.Revit.Engine
             familyInstance.SetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_PARAM, level.Id);
             familyInstance.SetParameter(BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM, level.Id);
 
-            if (pushSettings.CopyCustomData)
+            // Copy custom data and set parameters
+            BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
             {
-                BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
-                {
-                    //BuiltInParameter.SCHEDULE_LEVEL_PARAM,
-                    BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM,
-                    BuiltInParameter.FAMILY_BASE_LEVEL_PARAM,
-                    BuiltInParameter.FAMILY_TOP_LEVEL_PARAM,
-                    BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM,
-                    BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM,
-                    BuiltInParameter.SCHEDULE_BASE_LEVEL_OFFSET_PARAM,
-                    BuiltInParameter.SCHEDULE_TOP_LEVEL_OFFSET_PARAM,
-                    BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM,
-                    BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM,
-                    BuiltInParameter.ELEM_FAMILY_PARAM,
-                    BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
-                    BuiltInParameter.ELEM_TYPE_PARAM,
-                    BuiltInParameter.ALL_MODEL_IMAGE,
-                    BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE,
-                    BuiltInParameter.COLUMN_BASE_ATTACHED_PARAM,
-                    BuiltInParameter.COLUMN_TOP_ATTACHED_PARAM,
-                    BuiltInParameter.COLUMN_BASE_ATTACHMENT_OFFSET_PARAM,
-                    BuiltInParameter.COLUMN_TOP_ATTACHMENT_OFFSET_PARAM,
-                    BuiltInParameter.SLANTED_COLUMN_BASE_EXTENSION,
-                    BuiltInParameter.SLANTED_COLUMN_TOP_EXTENSION,
-                    BuiltInParameter.SLANTED_COLUMN_BASE_CUT_STYLE,
-                    BuiltInParameter.SLANTED_COLUMN_TOP_CUT_STYLE,
-                    BuiltInParameter.STRUCTURAL_MATERIAL_PARAM
-                };
+                //BuiltInParameter.SCHEDULE_LEVEL_PARAM,
+                BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM,
+                BuiltInParameter.FAMILY_BASE_LEVEL_PARAM,
+                BuiltInParameter.FAMILY_TOP_LEVEL_PARAM,
+                BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM,
+                BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM,
+                BuiltInParameter.SCHEDULE_BASE_LEVEL_OFFSET_PARAM,
+                BuiltInParameter.SCHEDULE_TOP_LEVEL_OFFSET_PARAM,
+                BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM,
+                BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM,
+                BuiltInParameter.ELEM_FAMILY_PARAM,
+                BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
+                BuiltInParameter.ELEM_TYPE_PARAM,
+                BuiltInParameter.ALL_MODEL_IMAGE,
+                BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE,
+                BuiltInParameter.COLUMN_BASE_ATTACHED_PARAM,
+                BuiltInParameter.COLUMN_TOP_ATTACHED_PARAM,
+                BuiltInParameter.COLUMN_BASE_ATTACHMENT_OFFSET_PARAM,
+                BuiltInParameter.COLUMN_TOP_ATTACHMENT_OFFSET_PARAM,
+                BuiltInParameter.SLANTED_COLUMN_BASE_EXTENSION,
+                BuiltInParameter.SLANTED_COLUMN_TOP_EXTENSION,
+                BuiltInParameter.SLANTED_COLUMN_BASE_CUT_STYLE,
+                BuiltInParameter.SLANTED_COLUMN_TOP_CUT_STYLE,
+                BuiltInParameter.STRUCTURAL_MATERIAL_PARAM
+            };
 
-                Modify.SetParameters(familyInstance, framingElement, paramsToIgnore);
-            }
+            // Copy parameters from BHoM CustomData to Revit Element
+            familyInstance.SetParameters(framingElement, paramsToIgnore);
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElement, familyInstance);
-
+            refObjects.AddOrReplace(framingElement, familyInstance);
             return familyInstance;
         }
 
         /***************************************************/
 
-        private static bool CheckLocationCurveColumns(IFramingElement framingElement)
+        private static bool CheckLocationCurveColumns(this IFramingElement framingElement)
         {
 
             if ((framingElement.Location is BH.oM.Geometry.Line))
@@ -229,27 +228,23 @@ namespace BH.UI.Revit.Engine
         {
             //For vertical columns orientation angles are following similar rules between Revit and BHoM but flipped 90 degrees
             if (centreLine.IsVertical())
-            {
                 return CheckOrientationAngleDomain((Math.PI * 0.5 - bhomOrientationAngle));
-            }
             else
-            {
                 return CheckOrientationAngleDomain(-bhomOrientationAngle);
-            }
         }
 
         /***************************************************/
 
-        private static FamilyInstance ToRevitFamilyInstance_Framing(this IFramingElement framingElement, Document document, PushSettings pushSettings = null)
+        private static FamilyInstance ToRevitFamilyInstance_Framing(this IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (framingElement == null || document == null)
                 return null;
 
-            FamilyInstance familyInstance = pushSettings.FindRefObject<FamilyInstance>(document, framingElement.BHoM_Guid);
+            FamilyInstance familyInstance = refObjects.GetValue<FamilyInstance>(document, framingElement.BHoM_Guid);
             if (familyInstance != null)
                 return familyInstance;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             object customDataValue = null;
 
@@ -261,7 +256,7 @@ namespace BH.UI.Revit.Engine
             bool isVertical, isLinear;
             //Check if curve is planar, and if so, if it is vertical. This is used to determine if the orientation angle needs
             //To be subtracted by 90 degrees or not.
-            if (!CheckLocationCurveBeams(framingElement, revitCurve, out isVertical, out isLinear))
+            if (!framingElement.CheckLocationCurveBeams(revitCurve, out isVertical, out isLinear))
                 return null;
 
             Level level = null;
@@ -276,11 +271,11 @@ namespace BH.UI.Revit.Engine
             if (level == null)
                 level = Query.BottomLevel(framingElement.Location, document);
 
-            FamilySymbol familySymbol = framingElement.Property.ToRevitFamilySymbol_Framing(document, pushSettings);
+            FamilySymbol familySymbol = framingElement.Property.ToRevitFamilySymbol_Framing(document, settings, refObjects);
 
             if (familySymbol == null)
             {
-                familySymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralFraming, pushSettings.FamilyLoadSettings) as FamilySymbol;
+                familySymbol = Query.ElementType(framingElement, document, BuiltInCategory.OST_StructuralFraming, settings.FamilyLoadSettings) as FamilySymbol;
 
                 if (familySymbol == null)
                 {
@@ -336,9 +331,8 @@ namespace BH.UI.Revit.Engine
             if (zJustification != null && !zJustification.IsReadOnly)
                 zJustification.Set((int)Autodesk.Revit.DB.Structure.ZJustification.Origin);
 
-            if (pushSettings.CopyCustomData)
-            {
-                BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
+            // Copy custom data and set parameters
+            BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
                 {
                     BuiltInParameter.STRUCTURAL_BEAM_END0_ELEVATION,
                     BuiltInParameter.STRUCTURAL_BEAM_END1_ELEVATION,
@@ -350,10 +344,10 @@ namespace BH.UI.Revit.Engine
                     BuiltInParameter.STRUCTURAL_MATERIAL_PARAM
                 };
 
-                //TODO: this is a hack, should be removed once the offset/justification  is implemented for curved framing.
-                if (framingElement.Location is BH.oM.Geometry.Line)
-                {
-                    List<BuiltInParameter> paramsToIgnoreList = new List<BuiltInParameter>
+            //TODO: this is a hack, should be removed once the offset/justification  is implemented for curved framing.
+            if (framingElement.Location is BH.oM.Geometry.Line)
+            {
+                List<BuiltInParameter> paramsToIgnoreList = new List<BuiltInParameter>
                     {
                         BuiltInParameter.Y_OFFSET_VALUE,
                         BuiltInParameter.Z_OFFSET_VALUE,
@@ -363,14 +357,14 @@ namespace BH.UI.Revit.Engine
                         BuiltInParameter.END_Z_OFFSET_VALUE,
                     };
 
-                    paramsToIgnoreList.AddRange(paramsToIgnore);
-                    paramsToIgnore = paramsToIgnoreList.ToArray();
-                }
+                paramsToIgnoreList.AddRange(paramsToIgnore);
+                paramsToIgnore = paramsToIgnoreList.ToArray();
+            }
 
-                //TODO: this is a hack, should be removed once the offset/justification  is properly implemented.
-                if (!adjusted)
-                {
-                    List<BuiltInParameter> paramsToIgnoreList = new List<BuiltInParameter>
+            //TODO: this is a hack, should be removed once the offset/justification  is properly implemented.
+            if (!adjusted)
+            {
+                List<BuiltInParameter> paramsToIgnoreList = new List<BuiltInParameter>
                     {
                         BuiltInParameter.YZ_JUSTIFICATION,
                         BuiltInParameter.Y_JUSTIFICATION,
@@ -381,21 +375,20 @@ namespace BH.UI.Revit.Engine
                         BuiltInParameter.END_Z_JUSTIFICATION
                     };
 
-                    paramsToIgnoreList.AddRange(paramsToIgnore);
-                    paramsToIgnore = paramsToIgnoreList.ToArray();
-                }
-
-                Modify.SetParameters(familyInstance, framingElement, paramsToIgnore);
+                paramsToIgnoreList.AddRange(paramsToIgnore);
+                paramsToIgnore = paramsToIgnoreList.ToArray();
             }
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(framingElement, familyInstance);
+            // Copy parameters from BHoM CustomData to Revit Element
+            familyInstance.SetParameters(framingElement, paramsToIgnore);
 
+            refObjects.AddOrReplace(framingElement, familyInstance);
             return familyInstance;
         }
 
         /***************************************************/
 
-        private static bool CheckLocationCurveBeams(IFramingElement framingElement, Curve revitCurve, out bool isVertical, out bool isLinear)
+        private static bool CheckLocationCurveBeams(this IFramingElement framingElement, Curve revitCurve, out bool isVertical, out bool isLinear)
         {
             isLinear = framingElement.Location is BH.oM.Geometry.Line;
 

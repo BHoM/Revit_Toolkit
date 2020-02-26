@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 
@@ -33,13 +33,12 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static ICurve Location(this Wall wall, PullSettings pullSettings = null)
+        public static ICurve Location(this Wall wall, RevitSettings settings = null)
         {
             if (wall == null)
                 return null;
 
-            if (pullSettings == null)
-                pullSettings = PullSettings.Default;
+            settings = settings.DefaultIfNull();
 
             return (wall.Location as LocationCurve).ToBHoM();
         }

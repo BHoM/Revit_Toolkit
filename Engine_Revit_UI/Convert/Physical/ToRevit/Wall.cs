@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -34,7 +36,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Wall ToRevitWall(this oM.Physical.Elements.Wall wall, Document document, PushSettings pushSettings = null)
+        public static Wall ToRevitWall(this oM.Physical.Elements.Wall wall, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (wall == null || wall.Location == null || document == null)
                 return null;
@@ -43,20 +45,20 @@ namespace BH.UI.Revit.Engine
             if (planarSurface == null)
                 return null;
 
-            Wall revitWall = pushSettings.FindRefObject<Wall>(document, wall.BHoM_Guid);
+            Wall revitWall = refObjects.GetValue<Wall>(document, wall.BHoM_Guid);
             if (revitWall != null)
                 return revitWall;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             WallType wallType = null;
 
             if (wall.Construction!= null)
-                wallType = wall.Construction.ToRevitHostObjAttributes(document, pushSettings) as WallType;
+                wallType = wall.Construction.ToRevitHostObjAttributes(document, settings, refObjects) as WallType;
 
             if (wallType == null)
             {
-                string familyTypeName = BH.Engine.Adapters.Revit.Query.FamilyTypeName(wall);
+                string familyTypeName = wall.FamilyTypeName();
                 if (!string.IsNullOrEmpty(familyTypeName))
                 {
                     List<WallType> wallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).Cast<WallType>().ToList().FindAll(x => x.Name == familyTypeName);
@@ -119,11 +121,10 @@ namespace BH.UI.Revit.Engine
             if (revitWall == null)
                 return null;
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(revitWall, wall, new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT, BuiltInParameter.WALL_BASE_OFFSET, BuiltInParameter.WALL_HEIGHT_TYPE, BuiltInParameter.WALL_USER_HEIGHT_PARAM });
+            // Copy parameters from BHoM CustomData to Revit Element
+            revitWall.SetParameters(wall, new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT, BuiltInParameter.WALL_BASE_OFFSET, BuiltInParameter.WALL_HEIGHT_TYPE, BuiltInParameter.WALL_USER_HEIGHT_PARAM });
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(wall, revitWall);
-
+            refObjects.AddOrReplace(wall, revitWall);
             return revitWall;
         }
 

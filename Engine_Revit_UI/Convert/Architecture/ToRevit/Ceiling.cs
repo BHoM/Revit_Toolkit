@@ -36,7 +36,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Ceiling ToRevitCeiling(this oM.Architecture.Elements.Ceiling ceiling, Document document, PushSettings pushSettings = null)
+        public static Ceiling ToRevitCeiling(this oM.Architecture.Elements.Ceiling ceiling, Document document, RevitSettings settings = null)
         {
             BH.Engine.Reflection.Compute.RecordError("Revit API does not allow creation of Ceiling: This is a known limitation, currently, Revit API doesn't support the new ceiling creation.");
             return null;

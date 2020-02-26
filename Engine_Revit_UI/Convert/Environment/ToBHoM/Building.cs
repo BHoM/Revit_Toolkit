@@ -29,6 +29,7 @@ using BH.oM.Environment.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Environment.Fragments;
 using BH.Engine.Environment;
+using BH.Engine.Adapters.Revit;
 
 namespace BH.UI.Revit.Engine
 {
@@ -37,93 +38,82 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /****               Public Methods              ****/
         /***************************************************/
-        
-        public static List<IBHoMObject> ToBHoMObjects(this ProjectInfo projectInfo, PullSettings pullSettings = null)
-        {
-            pullSettings = pullSettings.DefaultIfNull();
 
+        public static Building ToBHoMBuilding(this ProjectInfo projectInfo, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            settings = settings.DefaultIfNull();
             Document document = projectInfo.Document;
 
-            Building building = pullSettings.FindRefObject<Building>(projectInfo.Id.IntegerValue);
+            Building building = refObjects.GetValue<Building>(projectInfo.Id);
+            if (building != null)
+                return building;
 
-            if (building == null)
+            double elevation = 0;
+            double longitude = 0;
+            double latitude = 0;
+            double timeZone = 0;
+            string placeName = string.Empty;
+            string weatherStationName = string.Empty;
+
+            if (document.SiteLocation != null)
             {
-                double elevation = 0;
-                double longitude = 0;
-                double latitude = 0;
-                double timeZone = 0;
-                string placeName = string.Empty;
-                string weatherStationName = string.Empty;
-
-                if (document.SiteLocation != null)
-                {
-                    elevation = document.SiteLocation.Elevation.ToSI(UnitType.UT_Length);
-                    longitude = document.SiteLocation.Longitude.ToSI(UnitType.UT_Length);
-                    latitude = document.SiteLocation.Latitude.ToSI(UnitType.UT_Length);
-                    timeZone = document.SiteLocation.TimeZone;
-                    placeName = document.SiteLocation.PlaceName;
-                    weatherStationName = document.SiteLocation.WeatherStationName;
-                }
-
-                double projectAngle = 0;
-                double projectEastWestOffset = 0;
-                double projectElevation = 0;
-                double projectNorthSouthOffset = 0;
-
-                if (document.ActiveProjectLocation != null)
-                {
-                    ProjectLocation projectLocation = document.ActiveProjectLocation;
-                    XYZ xyz = new XYZ(0, 0, 0);
-                    ProjectPosition projectPosition = projectLocation.GetProjectPosition(xyz);
-                    if (projectPosition != null)
-                    {
-                        projectAngle = projectPosition.Angle;
-                        projectEastWestOffset = projectPosition.EastWest;
-                        projectElevation = projectPosition.Elevation;
-                        projectNorthSouthOffset = projectPosition.NorthSouth;
-                    }
-                }
-
-                building = BH.Engine.Environment.Create.Building(elevation: elevation, latitude: latitude, longitude: longitude);
-
-                //Set ExtendedProperties
-                OriginContextFragment originContext = new OriginContextFragment();
-                originContext.ElementID = projectInfo.Id.IntegerValue.ToString();
-                originContext.Description = projectInfo.OrganizationDescription;
-                originContext.TypeName = projectInfo.Name;
-                building.AddFragment(originContext);
-
-                BuildingAnalyticalFragment buildingAnalytical = new BuildingAnalyticalFragment();
-                buildingAnalytical.GMTOffset = timeZone;
-                buildingAnalytical.NorthAngle = projectAngle;
-                building.AddFragment(buildingAnalytical);
-
-                BuildingContextFragment buildingContext = new BuildingContextFragment();
-                buildingContext.PlaceName = placeName;
-                buildingContext.WeatherStation = weatherStationName;
-                building.AddFragment(buildingContext);
-
-                building = Modify.SetIdentifiers(building, document.ProjectInformation) as Building;
-                if (pullSettings.CopyCustomData)
-                {
-                    building = Modify.SetCustomData(building, "Time Zone", timeZone) as Building;
-                    building = Modify.SetCustomData(building, "Place Name", placeName) as Building;
-                    building = Modify.SetCustomData(building, "Weather Station Name", weatherStationName) as Building;
-
-                    building = Modify.SetCustomData(building, "Project Angle", projectAngle) as Building;
-                    building = Modify.SetCustomData(building, "Project East/West Offset", projectEastWestOffset) as Building;
-                    building = Modify.SetCustomData(building, "Project North/South Offset", projectNorthSouthOffset) as Building;
-                    building = Modify.SetCustomData(building, "Project Elevation", projectElevation) as Building;
-
-                    building = Modify.SetCustomData(building, document.ProjectInformation) as Building;
-                }
-
-                pullSettings.RefObjects = pullSettings.RefObjects.AppendRefObjects(building);
+                elevation = document.SiteLocation.Elevation.ToSI(UnitType.UT_Length);
+                longitude = document.SiteLocation.Longitude.ToSI(UnitType.UT_Length);
+                latitude = document.SiteLocation.Latitude.ToSI(UnitType.UT_Length);
+                timeZone = document.SiteLocation.TimeZone;
+                placeName = document.SiteLocation.PlaceName;
+                weatherStationName = document.SiteLocation.WeatherStationName;
             }
 
-            List<IBHoMObject> bhomObjectList = Query.GetEnergyAnalysisModel(document, pullSettings);
+            double projectAngle = 0;
+            double projectEastWestOffset = 0;
+            double projectElevation = 0;
+            double projectNorthSouthOffset = 0;
 
-            return bhomObjectList;
+            if (document.ActiveProjectLocation != null)
+            {
+                ProjectLocation projectLocation = document.ActiveProjectLocation;
+                XYZ xyz = new XYZ(0, 0, 0);
+                ProjectPosition projectPosition = projectLocation.GetProjectPosition(xyz);
+                if (projectPosition != null)
+                {
+                    projectAngle = projectPosition.Angle;
+                    projectEastWestOffset = projectPosition.EastWest;
+                    projectElevation = projectPosition.Elevation;
+                    projectNorthSouthOffset = projectPosition.NorthSouth;
+                }
+            }
+
+            building = BH.Engine.Environment.Create.Building(elevation: elevation, latitude: latitude, longitude: longitude);
+
+            //Set ExtendedProperties
+            OriginContextFragment originContext = new OriginContextFragment();
+            originContext.ElementID = projectInfo.Id.IntegerValue.ToString();
+            originContext.Description = projectInfo.OrganizationDescription;
+            originContext.TypeName = projectInfo.Name;
+            building.AddFragment(originContext);
+
+            BuildingAnalyticalFragment buildingAnalytical = new BuildingAnalyticalFragment();
+            buildingAnalytical.GMTOffset = timeZone;
+            buildingAnalytical.NorthAngle = projectAngle;
+            building.AddFragment(buildingAnalytical);
+
+            BuildingContextFragment buildingContext = new BuildingContextFragment();
+            buildingContext.PlaceName = placeName;
+            buildingContext.WeatherStation = weatherStationName;
+            building.AddFragment(buildingContext);
+
+            //Set identifiers & custom data
+            building.SetIdentifiers(document.ProjectInformation);
+
+            building.CustomData["Project East/West Offset"] = projectEastWestOffset;
+            building.CustomData["Project North/South Offset"] = projectNorthSouthOffset;
+            building.CustomData["Project Elevation"] = projectElevation;
+
+            building.SetCustomData(document.ProjectInformation);
+
+            refObjects.AddOrReplace(projectInfo.Id, building);
+            return building;
         }
 
         /***************************************************/

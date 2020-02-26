@@ -20,19 +20,30 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
+using BH.oM.Adapter;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters all elements currently selected in Revit.")]
-    public class SelectionRequest : IRequest
+    [Description("Configuration used for adapter interaction with Revit on Push action.")]
+    public class RevitPushConfig: ActionConfig
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
+        [Description("If true, Revit warnings and failure messages will be suppressed (not shown to the user). Whilst this option may speed the pushing process up in case of multiple warnings, it may lead to important issues.")]
+        public bool SuppressFailureMessages { get; set; } = false;
 
+
+        /***************************************************/
+        /****                  Default                  ****/
+        /***************************************************/
+
+        [Description("Default config, used if not set by the user.")]
+        public static readonly RevitPushConfig Default = new RevitPushConfig();
 
         /***************************************************/
     }

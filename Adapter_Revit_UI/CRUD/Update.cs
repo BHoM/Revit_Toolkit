@@ -20,30 +20,36 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using BH.oM.Base;
-using BH.oM.Data.Requests;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Settings;
-using BH.UI.Revit.Engine;
-
-using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
 
 namespace BH.UI.Revit.Adapter
 {
     public partial class RevitUIAdapter
     {
         /***************************************************/
-        /**** Update                                    ****/
+        /****                   Update                  ****/
         /***************************************************/
 
+        //CODE TAKEN FROM CREATE, LEFT FOR REFERENCE.
+        //    element = element.SetParameters(bhomObject);
+        //    if (element != null && element.Location != null)
+        //    {
+        //        try
+        //        {
+        //            Location location = element.Move(bhomObject);
+        //        }
+        //        catch
+        //        {
+        //            ObjectNotMovedWarning(bhomObject);
+        //        }
+        //    }
+
+        //    if (bhomObject is IView || bhomObject is oM.Adapters.Revit.Elements.Family || bhomObject is InstanceProperties)
+        //        element.Name = bhomObject.Name;
 
         /***************************************************/
-        /**** UpdateProperty                            ****/
+        /****              UpdateProperty               ****/
         /***************************************************/
 
         // This method used to be called from the UpdateProperty component

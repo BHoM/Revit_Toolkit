@@ -85,7 +85,10 @@ namespace BH.UI.Revit.Engine
                 BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family Type named " + familyTypeName + " in the Family " + familyName);
                 return null;
             }
-                        
+            
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
             List<ElementId> result = new List<ElementId>();
             foreach (ElementType elementType in elementTypes)
             {

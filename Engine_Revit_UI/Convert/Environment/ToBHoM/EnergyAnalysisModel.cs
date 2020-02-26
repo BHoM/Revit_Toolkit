@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,33 +20,40 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
-
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Environment.Fragments;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Query
+    public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        public static List<IBHoMObject> GetEnergyAnalysisModel(this Document document, PullSettings pullSettings = null)
+        public static List<IBHoMObject> ToBHoMEnergyAnalysisModel(this EnergyAnalysisDetailModel energyAnalysisModel, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            pullSettings = pullSettings.DefaultIfNull();
-                
-            if(pullSettings.RefObjects == null)
-                pullSettings.RefObjects = new Dictionary<int, List<IBHoMObject>>();
+            settings = settings.DefaultIfNull();
 
+            ElementId modelId = energyAnalysisModel.Id;
+            List<IBHoMObject> result = refObjects.GetValues<IBHoMObject>(energyAnalysisModel.Id);
+            if (result != null)
+                return result;
+
+            Document document = energyAnalysisModel.Document;
+
+            ProjectInfo projectInfo = new FilteredElementCollector(document).OfClass(typeof(ProjectInfo)).FirstOrDefault() as ProjectInfo;
+            if (projectInfo == null)
+                BH.Engine.Reflection.Compute.RecordError("Project info of a document has not been found.");
+            else
+                projectInfo.ToBHoMBuilding(settings, refObjects);
+                
             using (Transaction transaction = new Transaction(document, "GetAnalyticalModel"))
             {
                 transaction.Start();
@@ -54,19 +61,7 @@ namespace BH.UI.Revit.Engine
                 FailureHandlingOptions failureHandlingOptions = transaction.GetFailureHandlingOptions();
                 failureHandlingOptions.SetFailuresPreprocessor(new WarningSwallower());
                 transaction.SetFailureHandlingOptions(failureHandlingOptions);
-
-                EnergyAnalysisDetailModel energyAnalysisDetailModel = null;
-
-                using (SubTransaction subTransaction = new SubTransaction(document))
-                {
-                    subTransaction.Start();
-                    energyAnalysisDetailModel = EnergyAnalysisDetailModel.GetMainEnergyAnalysisDetailModel(document);
-                    if (energyAnalysisDetailModel != null && energyAnalysisDetailModel.IsValidObject)
-                        document.Delete(energyAnalysisDetailModel.Id);
-
-                    subTransaction.Commit();
-                }
-
+                
                 EnergyAnalysisDetailModelOptions energyAnalysisDetailModelOptions = new EnergyAnalysisDetailModelOptions();
                 energyAnalysisDetailModelOptions.Tier = EnergyAnalysisDetailModelTier.SecondLevelBoundaries;
                 energyAnalysisDetailModelOptions.EnergyModelType = EnergyModelType.SpatialElement;
@@ -103,7 +98,7 @@ namespace BH.UI.Revit.Engine
                         parameter.Set(0.0);
 
                     parameter = element.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM);
-                    if(parameter != null && !parameter.IsReadOnly)
+                    if (parameter != null && !parameter.IsReadOnly)
                         parameter.Set(0.0);
 
                     parameter = element.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM);
@@ -112,14 +107,14 @@ namespace BH.UI.Revit.Engine
                 }
 
                 //AnalyticalSpaces
-                energyAnalysisDetailModel = EnergyAnalysisDetailModel.Create(document, energyAnalysisDetailModelOptions);
-                IList<EnergyAnalysisSpace> energyAnalysisSpaces = energyAnalysisDetailModel.GetAnalyticalSpaces();
+                energyAnalysisModel = EnergyAnalysisDetailModel.Create(document, energyAnalysisDetailModelOptions);
+                IList<EnergyAnalysisSpace> energyAnalysisSpaces = energyAnalysisModel.GetAnalyticalSpaces();
                 Dictionary<string, EnergyAnalysisSurface> energyAnalsyisSurfaces = new Dictionary<string, EnergyAnalysisSurface>();
                 foreach (EnergyAnalysisSpace energyAnalysisSpace in energyAnalysisSpaces)
                 {
                     try
                     {
-                        Space space = energyAnalysisSpace.ToBHoMSpace(pullSettings);
+                        Space space = energyAnalysisSpace.ToBHoMSpace(settings, refObjects);
 
                         foreach (EnergyAnalysisSurface energyAnalysisSurface in energyAnalysisSpace.GetAnalyticalSurfaces())
                         {
@@ -138,12 +133,12 @@ namespace BH.UI.Revit.Engine
                 {
                     try
                     {
-                        oM.Environment.Elements.Panel panel = kvp.Value.ToBHoMEnvironmentPanel(pullSettings);
+                        oM.Environment.Elements.Panel panel = kvp.Value.ToBHoMEnvironmentPanel(settings, refObjects);
 
                         List<IBHoMObject> hostedBHoMObjects = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening energyAnalysisOpening in kvp.Value.GetAnalyticalOpenings())
                         {
-                            oM.Environment.Elements.Opening opening = energyAnalysisOpening.ToBHoMOpening(pullSettings);
+                            oM.Environment.Elements.Opening opening = energyAnalysisOpening.ToBHoMOpening(settings, refObjects);
                             panel.Openings.Add(opening);
                         }
                     }
@@ -154,17 +149,17 @@ namespace BH.UI.Revit.Engine
                 }
 
                 //AnalyticalShadingSurfaces
-                IList<EnergyAnalysisSurface> analyticalShadingSurfaces = energyAnalysisDetailModel.GetAnalyticalShadingSurfaces();
+                IList<EnergyAnalysisSurface> analyticalShadingSurfaces = energyAnalysisModel.GetAnalyticalShadingSurfaces();
                 foreach (EnergyAnalysisSurface energyAnalysisSurface in analyticalShadingSurfaces)
                 {
                     try
                     {
-                        oM.Environment.Elements.Panel panel = energyAnalysisSurface.ToBHoMEnvironmentPanel(pullSettings);
+                        oM.Environment.Elements.Panel panel = energyAnalysisSurface.ToBHoMEnvironmentPanel(settings, refObjects);
 
                         List<IBHoMObject> hostedBHoMObjects = new List<IBHoMObject>();
                         foreach (EnergyAnalysisOpening energyOpening in energyAnalysisSurface.GetAnalyticalOpenings())
                         {
-                            oM.Environment.Elements.Opening opening = energyOpening.ToBHoMOpening(pullSettings);
+                            oM.Environment.Elements.Opening opening = energyOpening.ToBHoMOpening(settings, refObjects);
                             panel.Openings.Add(opening);
                         }
                     }
@@ -181,13 +176,16 @@ namespace BH.UI.Revit.Engine
             //Levels
             IEnumerable<Level> levels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>();
             foreach (Level level in levels)
-                Convert.ToBHoMLevel(level, pullSettings);
+            {
+                level.ToBHoMLevel(settings, refObjects);
+            }
 
-            List<IBHoMObject> result = new List<IBHoMObject>();
-            foreach (List<IBHoMObject> bhomObjects in pullSettings.RefObjects.Values)
+            result = new List<IBHoMObject>();
+            foreach (List<IBHoMObject> bhomObjects in refObjects.Values)
                 if (bhomObjects != null)
                     result.AddRange(bhomObjects);
-
+            
+            refObjects.AddOrReplace(modelId, result);
             return result;
         }
 

@@ -51,13 +51,13 @@ namespace BH.Adapter.Revit
 
             // If unset, set the pushType to AdapterSettings' value (base AdapterSettings default is FullCRUD).
             if (pushType == PushType.AdapterDefault)
-                pushType = m_AdapterSettings.DefaultPushType;
+                pushType = PushType.DeleteThenCreate;
 
             //Initialize Revit config
-            RevitConfig revitConfig = actionConfig as RevitConfig;
+            RevitPushConfig pushConfig = actionConfig as RevitPushConfig;
 
             // Process the objects (verify they are valid; DeepClone them, wrap them, etc).
-            IEnumerable<IBHoMObject> objectsToPush = ProcessObjectsForPush(objects, revitConfig); // Note: default Push only supports IBHoMObjects.
+            IEnumerable<IBHoMObject> objectsToPush = ProcessObjectsForPush(objects, pushConfig); // Note: default Push only supports IBHoMObjects.
 
             if (objectsToPush.Count() == 0)
             {
@@ -73,7 +73,7 @@ namespace BH.Adapter.Revit
             if (InternalAdapter != null)
             {
                 InternalAdapter.RevitSettings = RevitSettings;
-                return InternalAdapter.Push(objects, tag, pushType, revitConfig);
+                return InternalAdapter.Push(objects, tag, pushType, pushConfig);
             }
 
             //Reset the wait event
@@ -83,7 +83,7 @@ namespace BH.Adapter.Revit
                 return new List<object>();
 
             //Send data through the socket link
-            m_LinkIn.SendData(new List<object>() { PackageType.Push, objects.ToList(), revitConfig, RevitSettings }, tag);
+            m_LinkIn.SendData(new List<object>() { PackageType.Push, objects.ToList(), pushType, pushConfig, RevitSettings }, tag);
 
             //Wait until the return message has been recieved
             if (!m_WaitEvent.WaitOne(TimeSpan.FromMinutes(m_WaitTime)))

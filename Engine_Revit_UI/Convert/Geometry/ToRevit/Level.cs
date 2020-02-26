@@ -21,7 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -32,13 +35,13 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Level ToRevitLevel(this oM.Geometry.SettingOut.Level level, Document document, PushSettings pushSettings = null)
+        public static Level ToRevitLevel(this oM.Geometry.SettingOut.Level level, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            Level revitLevel = pushSettings.FindRefObject<Level>(document, level.BHoM_Guid);
+            Level revitLevel = refObjects.GetValue<Level>(document, level.BHoM_Guid);
             if (revitLevel != null)
                 return revitLevel;
 
-            pushSettings.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             ElementId elementID = level.ElementId();
 
@@ -60,11 +63,10 @@ namespace BH.UI.Revit.Engine
             if (revitLevel == null)
                 return null;
 
-            if (pushSettings.CopyCustomData)
-                Modify.SetParameters(revitLevel, level, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
+            // Copy parameters from BHoM CustomData to Revit Element
+            revitLevel.SetParameters(level, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
 
-            pushSettings.RefObjects = pushSettings.RefObjects.AppendRefObjects(level, revitLevel);
-
+            refObjects.AddOrReplace(level, revitLevel);
             return revitLevel;
         }
 

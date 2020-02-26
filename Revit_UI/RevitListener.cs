@@ -34,7 +34,7 @@ using BH.oM.Base;
 using BH.oM.Data.Requests;
 using BH.oM.Adapters.Revit.Settings;
 using BH.UI.Revit.Adapter;
-
+using BH.oM.Adapter;
 
 namespace BH.UI.Revit
 {
@@ -54,7 +54,15 @@ namespace BH.UI.Revit
 
         /***************************************************/
 
-        public RevitConfig LatestConfig { get; set; } = null;
+        public PullType LatestPullType { get; set; }
+
+        /***************************************************/
+
+        public PushType LatestPushType { get; set; }
+
+        /***************************************************/
+
+        public ActionConfig LatestConfig { get; set; } = null;
 
         /***************************************************/
 
@@ -202,7 +210,7 @@ namespace BH.UI.Revit
 
             lock (m_PackageLock)
             {
-                if (package.Data.Count < 1)
+                if (package.Data.Count == 0)
                 {
                     ReturnData(new List<string> { "Cant handle empty package" });
                     return;
@@ -223,41 +231,73 @@ namespace BH.UI.Revit
                 switch (packageType)
                 {
                     case PackageType.ConnectionCheck:
-                        ReturnData(new List<object>());
-                        return;
-                    case PackageType.Push:
-                        if (!CheckPackageSize(package)) return;
-                        eve = m_PushEvent;  //Set the event to raise
-                        LatestPackage = new List<IObject>();    //Clear the previous package list
-                        //Add all objects to the list
-                        foreach (object obj in package.Data[1] as IEnumerable<object>)
                         {
-                            if (obj is IObject)
-                                LatestPackage.Add(obj as IObject);
+                            ReturnData(new List<object>());
+                            return;
                         }
-                        break;
+                    case PackageType.Push:
+                        {
+                            if (!CheckPackageSize(package))
+                                return;
+
+                            //Set the event to raise
+                            eve = m_PushEvent;
+
+                            //Clear the previous package list
+                            LatestPackage = new List<IObject>();
+
+                            //Add all objects to the list
+                            foreach (object obj in package.Data[1] as IEnumerable<object>)
+                            {
+                                if (obj is IObject)
+                                    LatestPackage.Add(obj as IObject);
+                            }
+
+                            // Get push type
+                            if (!(package.Data[2] is PushType) && (!(package.Data[2] is int) || (int)package.Data[2] < 0 || (int)package.Data[2] >= Enum.GetNames(typeof(PushType)).Length))
+                                return;
+
+                            LatestPushType = (PushType)package.Data[2];
+                            break;
+                        }
                     case PackageType.Pull:
-                        if (!CheckPackageSize(package)) return;
-                        eve = m_PullEvent;
-                        LatestRequest = package.Data[1] as IRequest;
-                        break;
+                        {
+                            if (!CheckPackageSize(package))
+                                return;
+
+                            //Set the event to raise
+                            eve = m_PullEvent;
+
+                            //Clear the previous package list
+                            LatestRequest = package.Data[1] as IRequest;
+
+                            // Get pull type
+                            if (!(package.Data[2] is PullType) && (!(package.Data[2] is int) || (int)package.Data[2] < 0 || (int)package.Data[2] >= Enum.GetNames(typeof(PullType)).Length))
+                                return;
+
+                            LatestPullType = (PullType)package.Data[2];
+                            break;
+                        }
                     case PackageType.UpdateTags:
-                        if (!CheckPackageSize(package)) return;
-                        eve = m_UpdateTagsEvent;
-                        var tuple = package.Data[1] as Tuple<IRequest, string, object>;
-                        LatestRequest = tuple.Item1;
-                        LatestKeyValuePair = new KeyValuePair<string, object>(tuple.Item2, tuple.Item3);
-                        break;
+                        {
+                            if (!CheckPackageSize(package))
+                                return;
+
+                            //Set the event to raise
+                            eve = m_UpdateTagsEvent;
+
+                            var tuple = package.Data[1] as Tuple<IRequest, string, object>;
+                            LatestRequest = tuple.Item1;
+                            LatestKeyValuePair = new KeyValuePair<string, object>(tuple.Item2, tuple.Item3);
+                            break;
+                        }
                     default:
                         ReturnData(new List<string> { "Unrecognized package type" });
                         return;
                 }
-                
-                RevitConfig revitConfig = package.Data[2] as RevitConfig;
-                LatestConfig = revitConfig;
-                
-                AdapterSettings = package.Data[3] as RevitSettings;
 
+                LatestConfig = package.Data[3] as ActionConfig;
+                AdapterSettings = package.Data[4] as RevitSettings;
                 LatestTag = package.Tag;
             }
 
@@ -268,7 +308,7 @@ namespace BH.UI.Revit
 
         private bool CheckPackageSize(oM.Socket.DataPackage package)
         {
-            if (package.Data.Count < 4)
+            if (package.Data.Count < 5)
             {
                 ReturnData(new List<string> { "Invalid Package" });
                 return false;

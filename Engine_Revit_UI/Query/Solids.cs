@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
         
-        public static List<Solid> Solids(this GeometryElement geometryElement, Transform transform = null, PullSettings pullSettings = null)
+        public static List<Solid> Solids(this GeometryElement geometryElement, Transform transform = null, RevitSettings settings = null)
         {
             if (geometryElement == null)
                 return null;
@@ -57,9 +57,7 @@ namespace BH.UI.Revit.Engine
                         result.AddRange(solids);
                 }
                 else if (geomObject is Solid)
-                {
-                    result.Add((Solid)geomObject);                                              
-                }
+                    result.Add((Solid)geomObject);
             }
 
             return result;
@@ -67,7 +65,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<Solid> Solids(this Element element, Options options, PullSettings pullSettings = null)
+        public static List<Solid> Solids(this Element element, Options options, RevitSettings settings = null)
         {
             GeometryElement geomElement = element.get_Geometry(options);
 
@@ -75,7 +73,7 @@ namespace BH.UI.Revit.Engine
             if (element is FamilyInstance)
                 transform = ((FamilyInstance)element).GetTotalTransform();
 
-            return Solids(geomElement, transform, pullSettings);
+            return geomElement.Solids(transform, settings);
         }
 
         /***************************************************/

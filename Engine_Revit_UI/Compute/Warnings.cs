@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
 using System;
@@ -38,12 +39,22 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static void NotConvertedWarning(this Element element)
+        internal static void NotConvertedWarning(this IBHoMObject obj)
         {
-            string message = "Revit element could not be converted because conversion method does not exist.";
+            string message = String.Format("BHoM object conversion to Revit failed.");
+
+            if (obj != null)
+                message += string.Format(" BHoM object type: {0}, BHoM Guid: {1}", obj.GetType(), obj.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordWarning(message);
+        }
+
+        internal static void NotConvertedWarning(this Element element, Discipline discipline)
+        {
+            string message = String.Format("Revit element conversion to BHoM failed for discipline {0}. The element has been converted into a generic BHoM instance.", discipline);
 
             if (element != null)
-                message = string.Format("{0} Element Id: {1}, Element Name: {2}", message, element.Id.IntegerValue, element.Name);
+                message += string.Format(" Element Type: {0}, Element Id: {1}, Element Name: {2}", element.GetType(), element.Id.IntegerValue, element.Name);
 
             BH.Engine.Reflection.Compute.RecordWarning(message);
         }
@@ -60,14 +71,6 @@ namespace BH.UI.Revit.Engine
         internal static void NotConvertedWarning(this FamilySymbol symbol)
         {
             BH.Engine.Reflection.Compute.RecordWarning("Framing profile " + symbol.Name + " could not be converted. ElementId: " + symbol.Id.IntegerValue.ToString());
-        }
-
-        /***************************************************/
-
-        internal static void CheckIfNullPull(this Element element)
-        {
-            if (element == null)
-                BH.Engine.Reflection.Compute.RecordWarning("BHoM object could not be read because Revit element does not exist.");
         }
 
         /***************************************************/

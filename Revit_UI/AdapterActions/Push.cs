@@ -50,10 +50,11 @@ namespace BH.UI.Revit
                     RevitUIAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
 
                     //Push the data
-                    List<object> objs = adapter.Push(listener.LatestPackage, listener.LatestTag, oM.Adapter.PushType.AdapterDefault, listener.LatestConfig);
+                    List<object> objs = adapter.Push(listener.LatestPackage, listener.LatestTag, listener.LatestPushType, listener.LatestConfig);
 
                     //Clear the lastest package list
                     listener.LatestPackage.Clear();
+                    listener.LatestPushType = oM.Adapter.PushType.AdapterDefault;
                     listener.LatestConfig = null;
                     listener.LatestTag = "";
 
