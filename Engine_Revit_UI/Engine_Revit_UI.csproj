@@ -375,7 +375,6 @@
     <Compile Include="Compute\LoadFamilySymbol.cs" />
     <Compile Include="Modify\SetCustomData.cs" />
     <Compile Include="Modify\SetIdentifiers.cs" />
-    <Compile Include="Modify\Append.cs" />
     <Compile Include="Modify\SetParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\BottomLevel.cs" />
