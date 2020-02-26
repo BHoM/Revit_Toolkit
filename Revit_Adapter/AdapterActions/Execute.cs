@@ -23,6 +23,7 @@
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
 using BH.oM.Reflection;
+using System;
 using System.Collections.Generic;
 
 namespace BH.Adapter.Revit
@@ -35,16 +36,7 @@ namespace BH.Adapter.Revit
 
         public override Output<List<object>, bool> Execute(IExecuteCommand command, ActionConfig actionConfig = null)
         {
-            //Initialize Revit config
-            RevitPullConfig revitConfig = actionConfig as RevitPullConfig;
-
-            if (InternalAdapter != null)
-            {
-                InternalAdapter.RevitSettings = RevitSettings;
-                return InternalAdapter.Execute(command, revitConfig);
-            }
-
-            return null;
+            throw new NotImplementedException();
         }
 
         /***************************************************/

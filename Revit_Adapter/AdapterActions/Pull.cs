@@ -20,20 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
 using BH.oM.Adapter;
-using BH.Adapter.Socket;
-using BH.oM.Base;
+using BH.oM.Adapters.Revit;
 using BH.oM.Data.Requests;
-using BH.oM.Reflection.Debugging;
-using BH.oM.Adapters.Revit.Settings;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
 
 namespace BH.Adapter.Revit
 {
