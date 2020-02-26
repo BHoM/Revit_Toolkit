@@ -32,7 +32,8 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
+        
+        [DeprecatedAttribute("3.1", "This method is questionably useful and potentially harmful as it introduces a hardcoded tolerance.")]
         [Description("Checks if given double value is almost equal 0 (MicroDistance Tolerance).")]
         [Input("value", "Double value")]
         [Output("IsZero")]
