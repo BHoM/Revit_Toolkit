@@ -167,6 +167,9 @@ namespace BH.UI.Revit
             PullEvent pullEvent = new PullEvent();
             m_PullEvent = ExternalEvent.Create(pullEvent);
 
+            RemoveEvent removeEvent = new RemoveEvent();
+            m_RemoveEvent = ExternalEvent.Create(removeEvent);
+
             //empty list for package holding
             LatestPackage = new List<IObject>();
 
@@ -347,6 +350,7 @@ namespace BH.UI.Revit
         private SocketLink_Tcp m_LinkOut;
         private ExternalEvent m_PushEvent;
         private ExternalEvent m_PullEvent;
+        private ExternalEvent m_RemoveEvent;
         private ExternalEvent m_UpdateTagsEvent;
         private Dictionary<Document, RevitUIAdapter> m_Adapters = new Dictionary<Document, RevitUIAdapter>();
         
