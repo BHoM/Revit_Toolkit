@@ -85,7 +85,22 @@ namespace BH.UI.Revit.Adapter
 
             List<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).RemoveGridSegmentIds(document).ToList();
 
-            int result = Delete(elementIds, document);
+            int result = 0;
+            if (!document.IsModifiable && !document.IsReadOnly)
+            {
+                //Transaction has to be opened
+                using (Transaction transaction = new Transaction(document, "Delete"))
+                {
+                    transaction.Start();
+                    result = Delete(elementIds, document);
+                    transaction.Commit();
+                }
+            }
+            else
+            {
+                //Transaction is already opened
+                result = Delete(elementIds, document);
+            }
 
             if (UIControlledApplication != null)
                 UIControlledApplication.ControlledApplication.FailuresProcessing -= ControlledApplication_FailuresProcessing;
@@ -147,18 +162,36 @@ namespace BH.UI.Revit.Adapter
             if (elementIds.Count() == 0)
                 return 0;
 
-            List<ElementId> elementIDList = new List<ElementId>();
-
-            foreach (ElementId elementId in elementIds)
-                elementIDList.Add(elementId);
-
-            ICollection<ElementId> elementIDs = document.Delete(elementIDList);
-            if (elementIDs != null)
-                return elementIDs.Count;
+            ICollection<ElementId> deletedIds = document.Delete(elementIds.ToList());
+            if (deletedIds != null)
+                return deletedIds.Count;
 
             return 0;
         }
 
         /***************************************************/
+
+        //FOR REFERENCE DELETING REVITFILEPREVIEW
+        //TODO: this is deleting a family based on a .rfa file - is it ever useful? Would rather pull the families and choose which to delete.
+        //if(revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
+        //{
+        //    IEnumerable<FamilySymbol> familySymbols = Query.FamilySymbols(revitFilePreview, document);
+        //    if (familySymbols != null)
+        //    {
+        //        if (familySymbols.Count() > 0)
+        //            family = familySymbols.First().Family;
+
+        //        foreach (FamilySymbol familySymbol in familySymbols)
+        //            document.Delete(familySymbol.Id);
+        //    }
+
+        //    SetIdentifiers(bhomObject, family);
+
+        //    IEnumerable<ElementId> elementIDs = family.GetFamilySymbolIds();
+        //    if (elementIDs == null || elementIDs.Count() == 0)
+        //        document.Delete(family.Id);
+        //}
+        //else
+        //{
     }
 }

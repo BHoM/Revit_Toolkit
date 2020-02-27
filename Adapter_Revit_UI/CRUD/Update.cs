@@ -21,6 +21,7 @@
  */
 
 
+using Autodesk.Revit.DB;
 using System;
 
 namespace BH.UI.Revit.Adapter
@@ -48,6 +49,17 @@ namespace BH.UI.Revit.Adapter
         //    if (bhomObject is IView || bhomObject is oM.Adapters.Revit.Elements.Family || bhomObject is InstanceProperties)
         //        element.Name = bhomObject.Name;
 
+        //FOR REFERENCE, IF OBJECT IS REVITFILEPREVIEW:
+        //TODO: this value should come from adapter PushType?
+        //bool updateFamilies = true;
+        //FamilyLoadOptions familyLoadOptions = new FamilyLoadOptions(updateFamilies);
+        //if (document.LoadFamily(revitFilePreview.Path, out family))
+        //{
+        //    SetIdentifiers(bhomObject, family);
+        //    element = family;
+        //}
+        //}
+
         /***************************************************/
         /****              UpdateProperty               ****/
         /***************************************************/
@@ -55,5 +67,50 @@ namespace BH.UI.Revit.Adapter
         // This method used to be called from the UpdateProperty component
         // Now it is never called as it doesn't override anymore
         // This logic should be called from the Push component instead
+
+
+        /***************************************************/
+        /****              Private Classes              ****/
+        /***************************************************/
+
+        private class FamilyLoadOptions : IFamilyLoadOptions
+        {
+            private bool m_Update;
+
+            public FamilyLoadOptions(bool update)
+            {
+                this.m_Update = update;
+            }
+
+            public bool OnFamilyFound(bool familyInUse, out bool overwriteParameterValues)
+            {
+                if (m_Update)
+                {
+                    overwriteParameterValues = false;
+                    return false;
+
+                }
+
+                overwriteParameterValues = true;
+                return true;
+            }
+
+            public bool OnSharedFamilyFound(Family sharedFamily, bool familyInUse, out FamilySource source, out bool overwriteParameterValues)
+            {
+                if (m_Update)
+                {
+                    overwriteParameterValues = false;
+                    source = FamilySource.Project;
+                    return false;
+
+                }
+
+                overwriteParameterValues = true;
+                source = FamilySource.Family;
+                return true;
+            }
+        }
+
+        /***************************************************/
     }
 }
