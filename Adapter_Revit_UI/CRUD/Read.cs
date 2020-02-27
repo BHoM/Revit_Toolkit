@@ -142,7 +142,7 @@ namespace BH.UI.Revit.Adapter
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static IEnumerable<IBHoMObject> Read(Element element, Discipline discipline, RevitSettings revitSettings, Dictionary<string, List<IBHoMObject>> refObjects)
+        private static IEnumerable<IBHoMObject> Read(Element element, Discipline discipline, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects)
         {
             if (element == null || !element.IsValidObject)
                 return new List<IBHoMObject>();
@@ -150,7 +150,7 @@ namespace BH.UI.Revit.Adapter
             object obj = null;
             try
             {
-                obj = element.IToBHoM(discipline, revitSettings, refObjects);
+                obj = element.IToBHoM(discipline, settings, refObjects);
             }
             catch (Exception exception)
             {
@@ -168,8 +168,8 @@ namespace BH.UI.Revit.Adapter
 
             //Assign Tags
             string tagsParameterName = null;
-            if (revitSettings != null)
-                tagsParameterName = revitSettings.TagsParameterName;
+            if (settings != null)
+                tagsParameterName = settings.TagsParameterName;
 
             if (!string.IsNullOrEmpty(tagsParameterName))
             {

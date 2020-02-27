@@ -67,6 +67,13 @@ namespace BH.Adapter.Revit
 
             RaiseEvents();
 
+            //Check if the return package contains error message
+            if (returnObjs.Count == 1 && returnObjs[0] is string)
+            {
+                Engine.Reflection.Compute.RecordError(returnObjs[0] as string);
+                return new List<object>();
+            }
+
             //Return the package
             return returnObjs;
         }

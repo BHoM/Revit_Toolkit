@@ -69,15 +69,23 @@ namespace BH.Adapter.Revit
                 BH.Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
 
             //Grab the return count from the latest package
-            int returnCount = (int)m_ReturnPackage[0];
+            List<object> returnObjs = new List<object>(m_ReturnPackage);
 
             //Clear the return list
             m_ReturnPackage.Clear();
 
+            //Raise returned events
             RaiseEvents();
 
+            //Check if the return package contains error message
+            if (returnObjs.Count == 1 && returnObjs[0] is string)
+            {
+                Engine.Reflection.Compute.RecordError(returnObjs[0] as string);
+                return 0;
+            }
+
             //Return the package
-            return returnCount;
+            return (int)returnObjs[0];
         }
 
         /***************************************************/

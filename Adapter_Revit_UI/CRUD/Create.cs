@@ -56,6 +56,8 @@ namespace BH.UI.Revit.Adapter
 
             if (objects.Count() == 0)
                 return false;
+
+            IEnumerable<IBHoMObject> bhomObjects = objects.Cast<IBHoMObject>();
             
             RevitPushConfig pushConfig = actionConfig as RevitPushConfig;
             if (pushConfig == null)
@@ -77,14 +79,14 @@ namespace BH.UI.Revit.Adapter
                 using (Transaction transaction = new Transaction(document, "BHoM Push"))
                 {
                     transaction.Start();
-                    result = Create(objects, document, revitSettings);
+                    result = Create(bhomObjects, document, revitSettings);
                     transaction.Commit();
                 }
             }
             else
             {
                 //Transaction is already opened
-                result = Create(objects, document, revitSettings);
+                result = Create(bhomObjects, document, revitSettings);
             }
 
             if (UIControlledApplication != null)
@@ -98,128 +100,43 @@ namespace BH.UI.Revit.Adapter
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static bool Create<T>(IEnumerable<T> objects, Document document, RevitSettings revitSettings) where T : IObject
+        private static bool Create(IEnumerable<IBHoMObject> objects, Document document, RevitSettings settings)
         {
-            string tagsParameterName = revitSettings.TagsParameterName;
+            string tagsParameterName = settings.TagsParameterName;
             
             Dictionary<Guid, List<int>> refObjects = new Dictionary<Guid, List<int>>();
 
-            for (int i = 0; i < objects.Count(); i++)
+            bool result = true;
+            foreach (IBHoMObject obj in objects)
             {
-                IBHoMObject bhomObject = objects.ElementAt<T>(i) as IBHoMObject;
-
-                if (bhomObject == null)
+                if (obj == null)
                 {
                     NullObjectCreateError(typeof(IBHoMObject));
                     continue;
                 }
                 
-                Element element = null;
-
                 try
                 {
-                    if (bhomObject is oM.Adapters.Revit.Generic.RevitFilePreview)
-                    {
-                        //TODO: This should be handled by each adapter action separately
-                        oM.Adapters.Revit.Generic.RevitFilePreview revitFilePreview = (oM.Adapters.Revit.Generic.RevitFilePreview)bhomObject;
+                    Element element = obj.IToRevit(document, settings, refObjects);
+                    if (element == null)
+                        result = false;
 
-                        //Family family = null;
+                    obj.SetIdentifiers(element);
 
-                        //TODO: this is deleting a family based on a .rfa file - is it ever useful? Would rather pull the families and choose which to delete.
-                        //if(revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
-                        //{
-                        //    IEnumerable<FamilySymbol> familySymbols = Query.FamilySymbols(revitFilePreview, document);
-                        //    if (familySymbols != null)
-                        //    {
-                        //        if (familySymbols.Count() > 0)
-                        //            family = familySymbols.First().Family;
-
-                        //        foreach (FamilySymbol familySymbol in familySymbols)
-                        //            document.Delete(familySymbol.Id);
-                        //    }
-
-                        //    SetIdentifiers(bhomObject, family);
-
-                        //    IEnumerable<ElementId> elementIDs = family.GetFamilySymbolIds();
-                        //    if (elementIDs == null || elementIDs.Count() == 0)
-                        //        document.Delete(family.Id);
-                        //}
-                        //else
-                        //{
-
-                        //TODO: this value should come from adapter PushType?
-                        //bool updateFamilies = true;
-                        //FamilyLoadOptions familyLoadOptions = new FamilyLoadOptions(updateFamilies);
-                        //if (document.LoadFamily(revitFilePreview.Path, out family))
-                        //{
-                        //    SetIdentifiers(bhomObject, family);
-                        //    element = family;
-                        //}
-                        //}
-                    }
-                    else
-                    {
-                        element = bhomObject.IToRevit(document, revitSettings, refObjects);
-                        bhomObject.SetIdentifiers(element);
-                    }
+                    //Assign Tags
+                    if (!string.IsNullOrEmpty(tagsParameterName))
+                        element.SetTags(obj, tagsParameterName);
                 }
                 catch
                 {
-                    ObjectNotCreatedCreateError(bhomObject);
-                    element = null;
+                    ObjectNotCreatedCreateError(obj);
+                    result = false;
                 }
-
-                //Assign Tags
-                if (element != null && !string.IsNullOrEmpty(tagsParameterName))
-                    element.SetTags(bhomObject, tagsParameterName);
             }
 
-            return true;
+            return result;
         }
-
-
-        /***************************************************/
-        /****              Private Classes              ****/
-        /***************************************************/
-
-        private class FamilyLoadOptions : IFamilyLoadOptions
-        {
-            private bool m_Update;
-
-            public FamilyLoadOptions(bool update)
-            {
-                this.m_Update = update;
-            }
-
-            public bool OnFamilyFound(bool familyInUse, out bool overwriteParameterValues)
-            {
-                if (m_Update)
-                {
-                    overwriteParameterValues = false;
-                    return false;
-
-                }
-
-                overwriteParameterValues = true;
-                return true;
-            }
-
-            public bool OnSharedFamilyFound(Family sharedFamily, bool familyInUse, out FamilySource source, out bool overwriteParameterValues)
-            {
-                if (m_Update)
-                {
-                    overwriteParameterValues = false;
-                    source = FamilySource.Project;
-                    return false;
-
-                }
-
-                overwriteParameterValues = true;
-                source = FamilySource.Family;
-                return true;
-            }
-        }
-
+        
         /***************************************************/
     }
 }
