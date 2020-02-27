@@ -58,41 +58,8 @@ namespace BH.UI.Revit.Adapter
                 return false;
 
             IEnumerable<IBHoMObject> bhomObjects = objects.Cast<IBHoMObject>();
-            
-            RevitPushConfig pushConfig = actionConfig as RevitPushConfig;
-            if (pushConfig == null)
-            {
-                BH.Engine.Reflection.Compute.RecordWarning("Revit Push Config has not been specified. Default Revit Push Config is used.");
-                pushConfig = RevitPushConfig.Default;
-            }
-            
-            if (UIControlledApplication != null && pushConfig.SuppressFailureMessages)
-                UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
-
             RevitSettings revitSettings = RevitSettings.DefaultIfNull();
-            Document document = Document;
-
-            bool result = false;
-            if (!document.IsModifiable && !document.IsReadOnly)
-            {
-                //Transaction has to be opened
-                using (Transaction transaction = new Transaction(document, "BHoM Push"))
-                {
-                    transaction.Start();
-                    result = Create(bhomObjects, document, revitSettings);
-                    transaction.Commit();
-                }
-            }
-            else
-            {
-                //Transaction is already opened
-                result = Create(bhomObjects, document, revitSettings);
-            }
-
-            if (UIControlledApplication != null)
-                UIControlledApplication.ControlledApplication.FailuresProcessing -= ControlledApplication_FailuresProcessing;
-
-            return result;
+            return Create(bhomObjects, Document, revitSettings);
         }
 
 

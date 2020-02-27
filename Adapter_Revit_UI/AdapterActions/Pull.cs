@@ -20,36 +20,49 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapter;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 
-namespace BH.oM.Adapters.Revit
+using BH.oM.Base;
+using BH.oM.Adapter;
+using BH.oM.Adapters.Revit;
+using BH.oM.Data.Requests;
+using Autodesk.Revit.UI;
+using Autodesk.Revit.DB;
+
+namespace BH.UI.Revit.Adapter
 {
-    [Description("Configuration used for adapter interaction with Revit on Remove action.")]
-    public class RevitRemoveConfig : ActionConfig
+    public partial class RevitUIAdapter
     {
-        /***************************************************/
-        /****             Public Properties             ****/
-        /***************************************************/
-
-        [Description("If true, Revit warnings and failure messages will be suppressed (not shown to the user). Whilst this option may speed the pushing process up in case of multiple warnings, it may lead to important issues.")]
-        public bool SuppressFailureMessages { get; set; } = false;
-
-        [Description("Elements from closed worksets will be processed if true.")]
-        public bool IncludeClosedWorksets { get; set; } = false;
-
-        [Description("Pinned elements will be processed if true.")]
-        public bool RemovePinned { get; set; } = false;
-
 
         /***************************************************/
-        /****                  Default                  ****/
+        /****             Protected Methods             ****/
         /***************************************************/
 
-        [Description("Default config, used if not set by the user.")]
-        public static readonly RevitRemoveConfig Default = new RevitRemoveConfig();
+        public override IEnumerable<object> Pull(IRequest request, PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null)
+        {
+            // Check the document
+            UIDocument uiDocument = this.UIDocument;
+            Document document = this.Document;
+            if (document == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is null.");
+                return null;
+            }
+
+            // Set config
+            RevitPullConfig pullConfig = actionConfig as RevitPullConfig;
+            if (pullConfig == null)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("Revit Pull Config has not been specified. Default Revit Pull Config is used.");
+                pullConfig = RevitPullConfig.Default;
+            }
+
+            // Read the objects based on the request
+            return Read(request as dynamic, pullConfig);
+        }
 
         /***************************************************/
     }

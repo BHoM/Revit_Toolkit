@@ -40,44 +40,17 @@ namespace BH.UI.Revit.Adapter
         /****             Protected methods             ****/
         /***************************************************/
 
-        protected override int IDelete(Type type, IEnumerable<object> ids, ActionConfig actionConfig = null)
-        {
-            if (type == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be deleted because provided type is null.");
-                return 0;
-            }
-
-            return Delete(type.Request(ids), actionConfig);
-        }
-
-        /***************************************************/
-
         protected override int Delete(IRequest request, ActionConfig actionConfig = null)
         {
-            UIDocument uiDocument = this.UIDocument;
-            Document document = this.Document;
-            if (document == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
-                return 0;
-            }
-
             if (request == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
                 return 0;
             }
 
+            UIDocument uiDocument = this.UIDocument;
+            Document document = this.Document;
             RevitRemoveConfig removeConfig = actionConfig as RevitRemoveConfig;
-            if (removeConfig == null)
-            {
-                BH.Engine.Reflection.Compute.RecordWarning("Revit Remove Config has not been specified. Default Revit Remove Config is used.");
-                removeConfig = RevitRemoveConfig.Default;
-            }
-
-            if (UIControlledApplication != null && removeConfig.SuppressFailureMessages)
-                UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
 
             IEnumerable<ElementId> worksetPrefilter = null;
             if (!removeConfig.IncludeClosedWorksets)
@@ -85,27 +58,11 @@ namespace BH.UI.Revit.Adapter
 
             List<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).RemoveGridSegmentIds(document).ToList();
 
-            int result = 0;
-            if (!document.IsModifiable && !document.IsReadOnly)
-            {
-                //Transaction has to be opened
-                using (Transaction transaction = new Transaction(document, "Delete"))
-                {
-                    transaction.Start();
-                    result = Delete(elementIds, document);
-                    transaction.Commit();
-                }
-            }
+            List<ElementId> deletedIds = Delete(elementIds, document, removeConfig.RemovePinned);
+            if (deletedIds == null)
+                return 0;
             else
-            {
-                //Transaction is already opened
-                result = Delete(elementIds, document);
-            }
-
-            if (UIControlledApplication != null)
-                UIControlledApplication.ControlledApplication.FailuresProcessing -= ControlledApplication_FailuresProcessing;
-
-            return result;
+                return deletedIds.Count;
         }
 
 
@@ -113,63 +70,73 @@ namespace BH.UI.Revit.Adapter
         /****              Private Methods              ****/
         /***************************************************/
 
-        //private static bool Delete(IEnumerable<IBHoMObject> bHoMObjects, Document document)
-        //{
-        //    if (document == null)
-        //    {
-        //        BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because Revit Document is null.");
-        //        return false;
-        //    }
+        private static bool Delete(IBHoMObject bHoMObject, Document document)
+        {
+            ElementId elementId = Engine.Query.ElementId(bHoMObject);
+            if (elementId == null)
+            {
+                string uniqueId = bHoMObject.UniqueId();
+                if (!string.IsNullOrWhiteSpace(uniqueId))
+                {
+                    Element element = document.GetElement(uniqueId);
+                    if (element != null)
+                        elementId = element.Id;
+                }
+            }
 
-        //    if (bHoMObjects == null)
-        //    {
-        //        BH.Engine.Reflection.Compute.RecordError("Revit objects could not be deleted because BHoM objects are null.");
-        //        return false;
-        //    }
+            if (elementId == null || elementId == ElementId.InvalidElementId)
+                return false;
 
-        //    // Collect both UniqueIds as well as ElementIds
-        //    HashSet<ElementId> elementIDList = new HashSet<ElementId>(document.ElementIdsByUniqueIds(bHoMObjects.UniqueIds(true)));
-        //    elementIDList.UnionWith(document.ElementIdsByInts(bHoMObjects.Select(x => BH.Engine.Adapters.Revit.Query.ElementId(x)).Where(x => x != -1)));
-
-        //    //TODO: handle RevitFilePreview here?
-
-        //    if (elementIDList == null)
-        //        return false;
-        //    else if (elementIDList.Count == 0)
-        //        return true;
-
-        //    bool result = false;
-        //    using (Transaction transaction = new Transaction(document, "Delete"))
-        //    {
-        //        transaction.Start();
-        //        result = Delete(elementIDList, , document);
-        //        transaction.Commit();
-        //    }
-
-        //    return result;
-        //}
+            return Delete(elementId, document, false).Count() != 0;
+        }
 
         /***************************************************/
 
-        private static int Delete(ICollection<ElementId> elementIds, Document document)
+        private static List<ElementId> Delete(ICollection<ElementId> elementIds, Document document, bool removePinned)
         {
             if (elementIds == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Revit elements could not be deleted because element Ids are null.");
-                return 0;
+                return null;
             }
 
-            if (elementIds.Count() == 0)
-                return 0;
+            List<ElementId> result = new List<ElementId>();
+            foreach (ElementId elementId in elementIds)
+            {
+                result.AddRange(Delete(elementId, document, removePinned));
+            }
 
-            ICollection<ElementId> deletedIds = document.Delete(elementIds.ToList());
-            if (deletedIds != null)
-                return deletedIds.Count;
-
-            return 0;
+            return result;
         }
 
         /***************************************************/
+
+        private static IEnumerable<ElementId> Delete(ElementId elementId, Document document, bool deletePinned)
+        {
+            Element element = document.GetElement(elementId);
+            if (element == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Element has not been deleted because it does not exist in the current model. ElementId: {0}", elementId));
+                return new List<ElementId>();
+            }
+            else if(!deletePinned && element.Pinned)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Element has not been deleted because it is pinned. ElementId: {0}", elementId));
+                return new List<ElementId>();
+            }
+            else
+            {
+                try
+                {
+                    return document.Delete(elementId);
+                }
+                catch (Exception e)
+                {
+                    BH.Engine.Reflection.Compute.RecordError(String.Format("Element has not been deleted due to a Revit error. Error message: {0} ElementId: {1}", e.Message, elementId));
+                    return new List<ElementId>();
+                }
+            }
+        }
 
         //FOR REFERENCE DELETING REVITFILEPREVIEW
         //TODO: this is deleting a family based on a .rfa file - is it ever useful? Would rather pull the families and choose which to delete.

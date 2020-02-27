@@ -231,6 +231,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdapterActions\Pull.cs" />
+    <Compile Include="AdapterActions\Remove.cs" />
     <Compile Include="CRUD\Create.cs" />
     <Compile Include="CRUD\Delete.cs" />
     <Compile Include="AdapterActions\Push.cs" />

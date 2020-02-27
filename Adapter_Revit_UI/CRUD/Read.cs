@@ -60,11 +60,6 @@ namespace BH.UI.Revit.Adapter
         {
             Autodesk.Revit.UI.UIDocument uiDocument = this.UIDocument;
             Document document = this.Document;
-            if (document == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because Revit Document is null.");
-                return null;
-            }
 
             if (request == null)
             {
@@ -73,11 +68,6 @@ namespace BH.UI.Revit.Adapter
             }
 
             RevitPullConfig pullConfig = actionConfig as RevitPullConfig;
-            if (pullConfig == null)
-            {
-                BH.Engine.Reflection.Compute.RecordWarning("Revit Pull Config has not been specified. Default Revit Pull Config is used.");
-                pullConfig = RevitPullConfig.Default;
-            }
 
             IEnumerable<ElementId> worksetPrefilter = null;
             if (!pullConfig.IncludeClosedWorksets)
