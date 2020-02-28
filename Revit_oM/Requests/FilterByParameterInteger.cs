@@ -20,20 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Interface;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters all elements of given Autodesk.Revit.DB type.")]
-    public class ByDBTypeNameRequest : IRequest
+    [Description("IRequest that filters elements based on given integer parameter value criterion.")]
+    public class FilterByParameterInteger : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Revit DB type name.")]
-        public string TypeName { get; set; } = "";
+        [Description("Name of the parameter to be used as filter criterion.")]
+        public string ParameterName { get; set; } = "";
+
+        [Description("NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
+        public Enums.NumberComparisonType NumberComparisonType { get; set; } = Enums.NumberComparisonType.Equal;
+
+        [Description("Value to compare the parameter against.")]
+        public int Value { get; set; } = 0;
 
         /***************************************************/
     }

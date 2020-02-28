@@ -25,15 +25,15 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters all views of given type.")]
-    public class ViewByTypeRequest : IRequest
+    [Description("IRequest that filters a Family element by name.")]
+    public class FilterFamilyByName : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("RevitViewType enum correspondent to Revit view type.")]
-        public Revit.Enums.RevitViewType RevitViewType { get; set; } =  Enums.RevitViewType.Undefined;
+        [Description("Revit Family name matching one displayed in Revit UI.")]
+        public string FamilyName { get; set; } = "";
 
         /***************************************************/
     }

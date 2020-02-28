@@ -20,22 +20,45 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.UI.Revit.Engine
 {
-    [Description("IRequest that filters elements by their UniqueIds.")]
-    public class ByUniqueIdsRequest : IRequest
+    public static partial class Query
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("List of Revit UniqueIds to be used to filter the elements.")]
-        public List<string> UniqueIds { get; set; } = new List<string>();
+        [Description("Get Elements as ElementIds by Category names, including Element and Element Types")]
+        [Input("document", "Revit Document where ElementIds are collected")]
+        [Input("categoryName", "List of Revit Category name to be used as filter")]
+        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
+        [Output("elementIdsByCategoryName", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsByCategoryNames(this Document document, string categoryName, IEnumerable<ElementId> ids = null)
+        {
+            if (document == null || string.IsNullOrEmpty(categoryName))
+                return null;
+
+            BuiltInCategory builtInCategory = document.BuiltInCategory(categoryName);
+            if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Couldn't find a Category named " + categoryName + ".");
+                return null;
+            }
+
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+            return collector.OfCategory(builtInCategory).ToElementIds();
+        }
 
         /***************************************************/
+
     }
 }

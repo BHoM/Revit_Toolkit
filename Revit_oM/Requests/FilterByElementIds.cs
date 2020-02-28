@@ -21,19 +21,20 @@
  */
 
 using BH.oM.Data.Requests;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters all elements in a given workset.")]
-    public class ByWorksetRequest : IRequest
+    [Description("IRequest that filters elements by their ElementIds.")]
+    public class FilterByElementIds : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Revit workset name.")]
-        public string WorksetName { get; set; } = "";
+        [Description("List of Revit ElementIds to be used to filter the elements.")]
+        public List<int> ElementIds { get; set; } = new List<int>();
 
         /***************************************************/
     }

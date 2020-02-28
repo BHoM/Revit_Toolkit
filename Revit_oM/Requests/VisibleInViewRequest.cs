@@ -32,7 +32,7 @@ namespace BH.oM.Adapters.Revit
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Revit View name.")]
+        [Description("Revit View name matching one displayed in Revit UI.")]
         public string ViewName { get; set; } = "";
 
         /***************************************************/

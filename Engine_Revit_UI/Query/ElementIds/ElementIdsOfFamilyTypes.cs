@@ -20,21 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
 using System.Linq;
-using System.Reflection;
 using System.Collections.Generic;
 using System.ComponentModel;
-
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.UI.Revit.Engine
@@ -45,84 +34,36 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get the ElementId of all Family Types of certain Families")]
+        [Description("Get the ElementId of all Family Types, with option to narrow search by a certain Family name")]
         [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("familyNames", "Family names to search for Family Type ids")]
+        [Input("familyName", "Optional, Family name to search for Family Type ids")]
+        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
         [Output("elementIdsOfFamilyTypes", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, List<string> familyNames, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, string familyName = null, IEnumerable<ElementId> ids = null)
         {
-            if (document == null || familyNames.Any() != true)
-                return null;
-            
-            List<ElementId> familyIds = new List<ElementId>();
-
-            foreach(string name in familyNames)
-            {
-                familyIds.Add(ElementIdsOfFamilies(document, name, true).FirstOrDefault());
-            }
-
-            return ElementIdsOfFamilyTypes(document,familyIds,ids);
-        }
-
-        /***************************************************/
-
-        [Description("Get the ElementId of all Family Types of a Family")]
-        [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("familyName", "Family name to search for Family Type ids")]
-        [Output("elementIdsOfFamilyTypes", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, string familyName, IEnumerable<ElementId> ids = null)
-        {
-            return ElementIdsOfFamilyTypes(document, ElementIdsOfFamilies(document, familyName, true).FirstOrDefault(), ids);
-        }
-
-        /***************************************************/
-
-        [Description("Get the ElementId of all Family Types of certain Families")]
-        [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("familyIds", "Family ids to search for Family Type ids")]
-        [Output("elementIdsOfFamilyTypes", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, IEnumerable<ElementId> familyIds, IEnumerable<ElementId> ids = null)
-        {
-            if (document == null || familyIds == null)
+            if (document == null)
                 return null;
 
-            HashSet<ElementId> result = new HashSet<ElementId>();
-                         
-            foreach(ElementId id in familyIds)
-            {
-                Family family = document.GetElement(id) as Family;
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
 
-                if (family == null)
-                {
-                    BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family with the Id " + id.ToString() + ".");
-                    continue;
-                }
-
-                result.UnionWith(family.GetFamilySymbolIds());                
-            }
-
-            if (ids != null)
-                result.IntersectWith(ids);
-
-            return result; 
-        }
-
-        /***************************************************/
-
-        [Description("Get the ElementId of all Family Types, with option to narrow search by a certain Family id")]
-        [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("familyId", "Optional, Family id to search for Family Type ids")]
-        [Output("elementIdsOfFamilyTypes", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, ElementId familyId = null, IEnumerable<ElementId> ids = null)
-        {
-            if(familyId != null)
-            {
-                return ElementIdsOfFamilyTypes(document, new List<ElementId> { familyId }, ids);
-            }
-            else
+            if (familyName == null)
             {
                 FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
                 return collector.WhereElementIsElementType().ToElementIds();
+            }
+            else
+            {
+                HashSet<ElementId> result = new HashSet<ElementId>();
+
+                Element collector = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name == familyName).FirstOrDefault();
+
+                result.UnionWith((collector as Family).GetFamilySymbolIds());
+
+                if (ids != null)
+                    result.IntersectWith(ids);
+
+                return result;
             }            
         }
 

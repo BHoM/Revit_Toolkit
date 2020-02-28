@@ -25,21 +25,18 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters elements based on given integer parameter value criterion.")]
-    public class ByParameterIntegerRequest : IParameterRequest
+    [Description("IRequest that filters elements the have (or do not have) a parameter with given name.")]
+    public class FilterByParameterExistence : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the parameter to be used as filter criterion.")]
+        [Description("Name of the parameter to look for.")]
         public string ParameterName { get; set; } = "";
 
-        [Description("NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
-        public Enums.NumberComparisonType NumberComparisonType { get; set; } = Enums.NumberComparisonType.Equal;
-
-        [Description("Value to compare the parameter against.")]
-        public int Value { get; set; } = 0;
+        [Description("If true, elements with the given parameter will be filtered, if false - the opposite.")]
+        public bool ParameterExists { get; set; } = false;
 
         /***************************************************/
     }

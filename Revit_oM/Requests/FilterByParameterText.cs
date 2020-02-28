@@ -20,37 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
+using BH.oM.Adapters.Revit.Interface;
 using System.ComponentModel;
 
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit;
-using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Create
+    [Description("IRequest that filters elements based on given text parameter value criterion.")]
+    public class FilterByParameterText : IParameterRequest
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
-        [Input("parameterName", "Parameter name to be queried")]
-        [Input("bHoMObject", "BHoMObject pulled from Revit that has sought ElementId.")]
-        [Output("ByParameterElementIdRequest")]
-        public static FilterByParameterElementId ParameterElementIdRequest(string parameterName, BHoMObject bHoMObject)
-        {
-            int elementId = bHoMObject.ElementId();
-            if (elementId == -1)
-            {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
-                return null;
-            }
-            else
-                return new FilterByParameterElementId { ParameterName = parameterName, ElementId = elementId };
-        }
+        [Description("Name of the parameter to be used as filter criterion.")]
+        public string ParameterName { get; set; } = "";
+
+        [Description("TextComparisonType enum representing comparison type, e.g. equality, contains, starts with etc.")]
+        public Enums.TextComparisonType TextComparisonType { get; set; } = Enums.TextComparisonType.Equal;
+
+        [Description("Value to compare the parameter against.")]
+        public string Value { get; set; } = "";
 
         /***************************************************/
     }

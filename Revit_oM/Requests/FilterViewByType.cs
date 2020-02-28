@@ -25,15 +25,15 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters all view templates in document.")]
-    public class ViewTemplateByNameRequest : IRequest
+    [Description("IRequest that filters all views of given type.")]
+    public class FilterViewByType : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Revit view template name. If blank all View Templates are returned instead.")]
-        public string TemplateName { get; set; } = "";
+        [Description("RevitViewType enum correspondent to Revit view type.")]
+        public Revit.Enums.RevitViewType RevitViewType { get; set; } =  Enums.RevitViewType.Undefined;
 
         /***************************************************/
     }

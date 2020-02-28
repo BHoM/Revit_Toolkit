@@ -19,22 +19,11 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-
-using System;
+ 
 using System.Linq;
-using System.Reflection;
 using System.Collections.Generic;
 using System.ComponentModel;
-
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.UI.Revit.Engine
@@ -47,8 +36,10 @@ namespace BH.UI.Revit.Engine
 
         [Description("Get all Elements as ElementId that are visible in a list of Views")]
         [Input("document", "Revit Document where views are collected")]
-        [Input("view", "Revit view where visible elements are collected")]
-        [Output("elementIdsByView", "An enumerator for easy iteration of ElementIds collected")]
+        [Input("viewName", "Revit view where visible elements are collected")]
+        [Input("caseSensitive", "Optional, sets the View name to be case sensitive or not")]
+        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
+        [Output("elementIdsByVisibleInView", "An enumerator for easy iteration of ElementIds collected")]
         public static IEnumerable<ElementId> ElementIdsByVisibleInView(this Document document, string viewName, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
             if (document == null || viewName == null)
@@ -64,6 +55,9 @@ namespace BH.UI.Revit.Engine
 
             if(viewCollector != null)
             {
+                if (ids != null && ids.Count() == 0)
+                    return new List<ElementId>();
+
                 FilteredElementCollector collector = new FilteredElementCollector(document, view.Id);
                 if (ids == null)
                 {

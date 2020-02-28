@@ -25,15 +25,18 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters all views that implement a given template.")]
-    public class ViewByTemplateRequest : IRequest
+    [Description("IRequest that filters all elements of given Revit family and type.")]
+    public class FilterByFamily : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Revit view template name.")]
-        public string TemplateName { get; set; } = "";
+        [Description("Name of Revit family.")]
+        public string FamilyName { get; set; } = "";
+
+        [Description("Name of Revit family type.")]
+        public string FamilyTypeName { get; set; } = "";
 
         /***************************************************/
     }

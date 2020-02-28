@@ -20,23 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters elements based on given Boolean parameter value criterion.")]
-    public class ByParameterBoolRequest : IParameterRequest
+    [Description("IRequest that filters all view templates in document.")]
+    public class FilterViewTemplateByName : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the parameter to be used as filter criterion.")]
-        public string ParameterName { get; set; } = "";
-
-        [Description("Value to compare the parameter against.")]
-        public bool Value { get; set; } = true;
+        [Description("Revit view template name matching one displayed in Revit UI.")]
+        public string TemplateName { get; set; } = "";
 
         /***************************************************/
     }

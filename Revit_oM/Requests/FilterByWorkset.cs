@@ -25,15 +25,15 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters Family Types elements of a Family.")]
-    public class FamilyTypesOfFamilyRequest : IRequest
+    [Description("IRequest that filters all elements in a given workset.")]
+    public class FilterByWorkset : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Revit Family name to retrieve Family Types from.")]
-        public string FamilyName { get; set; } = "";
+        [Description("Revit workset name.")]
+        public string WorksetName { get; set; } = "";
 
         /***************************************************/
     }

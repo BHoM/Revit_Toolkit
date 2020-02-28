@@ -25,14 +25,15 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters all elements in active workset.")]
-    public class ByActiveWorksetRequest : IRequest
+    [Description("IRequest that filters all views that implement a given template.")]
+    public class FilterViewByTemplate : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-
+        [Description("Revit view template name.")]
+        public string TemplateName { get; set; } = "";
 
         /***************************************************/
     }

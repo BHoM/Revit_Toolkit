@@ -25,18 +25,15 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters all elements of given Revit family and type.")]
-    public class ByFamilyRequest : IRequest
+    [Description("IRequest that filters all elements of given Autodesk.Revit.DB type.")]
+    public class FilterByDBTypeName : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of Revit family.")]
-        public string FamilyName { get; set; } = "";
-
-        [Description("Name of Revit family type.")]
-        public string FamilyTypeName { get; set; } = "";
+        [Description("Revit DB type name.")]
+        public string TypeName { get; set; } = "";
 
         /***************************************************/
     }

@@ -25,15 +25,15 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters all elements of a category.")]
-    public class ByCategoryRequest : IRequest
+    [Description("IRequest that filters Family Types elements of a Family.")]
+    public class FilterFamilyTypesOfFamily : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Revit category name, as shown in Revit user interface.")]
-        public string CategoryName { get; set; } = "";
+        [Description("Revit Family name to retrieve Family Types from. Must match one displayed in Revit UI.")]
+        public string FamilyName { get; set; } = "";
 
         /***************************************************/
     }

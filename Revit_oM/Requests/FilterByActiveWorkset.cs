@@ -20,23 +20,19 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters elements the have (or do not have) a parameter with given name.")]
-    public class ByParameterExistsRequest : IParameterRequest
+    [Description("IRequest that filters all elements in active workset.")]
+    public class FilterByActiveWorkset : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the parameter to look for.")]
-        public string ParameterName { get; set; } = "";
 
-        [Description("If true, elements with the given parameter will be filtered, if false - the opposite.")]
-        public bool ParameterExists { get; set; } = false;
 
         /***************************************************/
     }

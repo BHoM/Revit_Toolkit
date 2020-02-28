@@ -25,8 +25,8 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters elements based on given text parameter value criterion.")]
-    public class ByParameterTextRequest : IParameterRequest
+    [Description("IRequest that filters elements based on given floating point number parameter value criterion.")]
+    public class FilterByParameterNumber : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
@@ -35,11 +35,13 @@ namespace BH.oM.Adapters.Revit
         [Description("Name of the parameter to be used as filter criterion.")]
         public string ParameterName { get; set; } = "";
 
-        [Description("TextComparisonType enum representing comparison type, e.g. equality, contains, starts with etc.")]
-        public Enums.TextComparisonType TextComparisonType { get; set; } = Enums.TextComparisonType.Equal;
+        [Description("NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
+        public Enums.NumberComparisonType NumberComparisonType { get; set; } = Enums.NumberComparisonType.Equal;
 
         [Description("Value to compare the parameter against.")]
-        public string Value { get; set; } = "";
+        public double Value { get; set; } = double.NaN;
+
+        public double Tolerance { get; set; } = BH.oM.Geometry.Tolerance.Distance;
 
         /***************************************************/
     }

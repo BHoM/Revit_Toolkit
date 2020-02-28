@@ -83,8 +83,8 @@ namespace BH.UI.Revit.Adapter
                 return Read(new FilterRequest() { Type = type } as IRequest, actionConfig);
             else
             {
-                ByElementIdsRequest elementIdsRequest = new ByElementIdsRequest { ElementIds = elementIds };
-                ByUniqueIdsRequest uniqueIdsRequest = new ByUniqueIdsRequest { UniqueIds = uniqueIds };
+                FilterByElementIds elementIdsRequest = new FilterByElementIds { ElementIds = elementIds };
+                FilterByUniqueIds uniqueIdsRequest = new FilterByUniqueIds { UniqueIds = uniqueIds };
                 return Read(BH.Engine.Data.Create.LogicalAndRequest(new FilterRequest() { Type = type }, BH.Engine.Data.Create.LogicalOrRequest(elementIdsRequest, uniqueIdsRequest)), actionConfig);
             }
         }

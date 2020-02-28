@@ -22,19 +22,9 @@
 
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Collections.Generic;
 using System.ComponentModel;
-
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.UI.Revit.Engine
@@ -51,7 +41,7 @@ namespace BH.UI.Revit.Engine
         [Input("familyTypeName", "Optional, the name of Family Type to look for in the Family")]
         [Input("caseSensitive", "Optional, sets the Family name and Family Type name to be case sensitive or not")]
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("elementIdsByFamilyType", "An enumerator for easy iteration of ElementIds collected")]
+        [Output("elementIdsByFamily", "An enumerator for easy iteration of ElementIds collected")]
         public static IEnumerable<ElementId> ElementIdsByFamily(this Document document, string familyName, string familyTypeName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
             if (document == null)

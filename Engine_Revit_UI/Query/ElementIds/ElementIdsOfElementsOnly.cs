@@ -20,21 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
 using System.Linq;
-using System.Reflection;
 using System.Collections.Generic;
 using System.ComponentModel;
-
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.UI.Revit.Engine
@@ -48,7 +37,7 @@ namespace BH.UI.Revit.Engine
         [Description("Get all instances of Elements as ElementIds, implies they exist in a XYZ context")]
         [Input("document", "Revit Document where ElementIds are collected")]        
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("elementIdsByInstancesOnly", "An enumerator for easy iteration of ElementIds collected")]
+        [Output("elementIdsOfElementsOnly", "An enumerator for easy iteration of ElementIds collected")]
         public static IEnumerable<ElementId> ElementIdsOfElementsOnly(this Document document, IEnumerable<ElementId> ids = null)
         {
             if (document == null)

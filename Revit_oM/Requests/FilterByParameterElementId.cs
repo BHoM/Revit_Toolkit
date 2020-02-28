@@ -20,20 +20,23 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Interface;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters a Family element by name.")]
-    public class FamilyByNameRequest : IRequest
+    [Description("IRequest that filters elements based on given ElementId parameter value criterion.")]
+    public class FilterByParameterElementId : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Revit Family name.")]
-        public string FamilyName { get; set; } = "";
+        [Description("Name of the parameter to be used as filter criterion.")]
+        public string ParameterName { get; set; } = "";
+
+        [Description("Value to compare the parameter against.")]
+        public int ElementId { get; set; } = -1;
 
         /***************************************************/
     }

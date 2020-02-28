@@ -20,20 +20,23 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Interface;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("IRequest that filters elements contained in a given Revit Selection Set.")]
-    public class BySelectionSetRequest : IRequest
+    [Description("IRequest that filters elements based on given Boolean parameter value criterion.")]
+    public class FilterByParameterBool : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the Revit Selection Set.")]
-        public string SelectionSetName { get; set; } = "";
+        [Description("Name of the parameter to be used as filter criterion.")]
+        public string ParameterName { get; set; } = "";
+
+        [Description("Value to compare the parameter against.")]
+        public bool Value { get; set; } = true;
 
         /***************************************************/
     }
