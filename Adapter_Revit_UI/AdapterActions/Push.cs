@@ -87,7 +87,7 @@ namespace BH.UI.Revit.Adapter
                 BH.Engine.Reflection.Compute.RecordError("Input objects were invalid.");
                 return new List<object>();
             }
-
+            
             // Push the objects
             string transactionName = "BHoM Push " + pushType;
             bool success = false;
@@ -95,37 +95,26 @@ namespace BH.UI.Revit.Adapter
             {
                 transaction.Start();
 
-                // Group the objects by their specific type.
-                var typeGroups = objectsToPush.GroupBy(x => x.GetType());
-
-                MethodInfo miToList = typeof(Enumerable).GetMethod("Cast");
-                foreach (var typeGroup in typeGroups)
+                if (pushType == PushType.CreateOnly)
+                    success &= Create(objectsToPush, document, RevitSettings);
+                else if (pushType == PushType.DeleteThenCreate)
                 {
-                    // Cast the objects to their specific types
-                    MethodInfo miListObject = miToList.MakeGenericMethod(new[] { typeGroup.Key });
-                    IEnumerable<IBHoMObject> list = miListObject.Invoke(typeGroup, new object[] { typeGroup }) as IEnumerable<IBHoMObject>;
-
-                    if (pushType == PushType.CreateOnly)
-                        success &= ICreate(list as dynamic, pushConfig);
-                    else if (pushType == PushType.DeleteThenCreate)
+                    List<IBHoMObject> toCreate = new List<IBHoMObject>();
+                    foreach (IBHoMObject obj in objectsToPush)
                     {
-                        List<IBHoMObject> toCreate = new List<IBHoMObject>();
-                        foreach (IBHoMObject obj in list)
-                        {
-                            Element element = obj.Element(document);
-                            if (element == null || Delete(element.Id, document, false).Count() != 0)
-                                toCreate.Add(obj);
-                        }
-                        success = ICreate(toCreate, pushConfig);
+                        Element element = obj.Element(document);
+                        if (element == null || Delete(element.Id, document, false).Count() != 0)
+                            toCreate.Add(obj);
                     }
-                    else if (pushType == PushType.UpdateOnly)
-                    {
-                        BH.Engine.Reflection.Compute.RecordError("Update is currently not supported by Revit_Toolkit, please use DeleteThenCreate instead.");
-                    }
-                    else if (pushType == PushType.FullCRUD)
-                    {
-                        BH.Engine.Reflection.Compute.RecordError("Full CRUD is currently not supported by Revit_Toolkit, please use DeleteThenCreate instead.");
-                    }
+                    success = ICreate(toCreate, pushConfig);
+                }
+                else if (pushType == PushType.UpdateOnly)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Update is currently not supported by Revit_Toolkit, please use DeleteThenCreate instead.");
+                }
+                else if (pushType == PushType.FullCRUD)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Full CRUD is currently not supported by Revit_Toolkit, please use DeleteThenCreate instead.");
                 }
 
                 transaction.Commit();

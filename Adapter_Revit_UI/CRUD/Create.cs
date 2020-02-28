@@ -58,7 +58,8 @@ namespace BH.UI.Revit.Adapter
             string tagsParameterName = settings.TagsParameterName;
             
             Dictionary<Guid, List<int>> refObjects = new Dictionary<Guid, List<int>>();
-            
+            List<Element> elements = new List<Element>();
+
             foreach (IBHoMObject obj in objects)
             {
                 if (obj == null)
@@ -75,6 +76,9 @@ namespace BH.UI.Revit.Adapter
                     //Assign Tags
                     if (!string.IsNullOrEmpty(tagsParameterName))
                         element.SetTags(obj, tagsParameterName);
+
+                    if (element != null)
+                        elements.Add(element);
                 }
                 catch
                 {
@@ -82,7 +86,7 @@ namespace BH.UI.Revit.Adapter
                 }
             }
 
-            return true;
+            return elements.Count != 0;
         }
         
         /***************************************************/
