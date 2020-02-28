@@ -84,7 +84,7 @@ namespace BH.UI.Revit.Adapter
                 }
             }
 
-            if (elementId == null || elementId == ElementId.InvalidElementId)
+            if (elementId == null || elementId.IntegerValue < 0)
                 return false;
 
             return Delete(elementId, document, false).Count() != 0;

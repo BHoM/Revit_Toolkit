@@ -20,17 +20,15 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+using BH.oM.Adapter;
+using BH.oM.Adapters.Revit;
+using BH.oM.Base;
+using BH.UI.Revit.Engine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
-using BH.oM.Base;
-using BH.oM.Adapter;
-using BH.oM.Adapters.Revit;
-using Autodesk.Revit.UI;
-using Autodesk.Revit.DB;
-using System.Collections;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -95,6 +93,8 @@ namespace BH.UI.Revit.Adapter
             bool success = true;
             using (Transaction transaction = new Transaction(document, transactionName))
             {
+                transaction.Start();
+
                 // Group the objects by their specific type.
                 var typeGroups = objectsToPush.GroupBy(x => x.GetType());
 
@@ -109,9 +109,14 @@ namespace BH.UI.Revit.Adapter
                         success &= ICreate(list as dynamic, pushConfig);
                     else if (pushType == PushType.DeleteThenCreate)
                     {
-                        //TODO: get the list of not deleted elements and do not recreate them, return error!
-                        IEnumerable<IBHoMObject> deletedElements = list.Where(x => Delete(x, document));
-                        success = ICreate(deletedElements, pushConfig);
+                        List<IBHoMObject> toCreate = new List<IBHoMObject>();
+                        foreach (IBHoMObject obj in list)
+                        {
+                            Element element = obj.Element(document);
+                            if (element == null || Delete(element.Id, document, false).Count() != 0)
+                                toCreate.Add(obj);
+                        }
+                        success = ICreate(toCreate, pushConfig);
                     }
                     else if (pushType == PushType.UpdateOnly)
                     {
@@ -124,6 +129,8 @@ namespace BH.UI.Revit.Adapter
                         success = false;
                     }
                 }
+
+                transaction.Commit();
             }
 
             // Switch of warning suppression

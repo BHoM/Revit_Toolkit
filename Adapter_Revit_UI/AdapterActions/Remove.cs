@@ -20,17 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
-using BH.oM.Base;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
 using BH.oM.Data.Requests;
-using Autodesk.Revit.UI;
-using Autodesk.Revit.DB;
 
 namespace BH.UI.Revit.Adapter
 {
