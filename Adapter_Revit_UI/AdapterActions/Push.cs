@@ -96,7 +96,7 @@ namespace BH.UI.Revit.Adapter
                 transaction.Start();
 
                 if (pushType == PushType.CreateOnly)
-                    success &= Create(objectsToPush, document, RevitSettings);
+                    success = Create(objectsToPush, document, RevitSettings);
                 else if (pushType == PushType.DeleteThenCreate)
                 {
                     List<IBHoMObject> toCreate = new List<IBHoMObject>();
