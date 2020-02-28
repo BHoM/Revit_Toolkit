@@ -48,7 +48,7 @@ namespace BH.UI.Revit.Adapter
             if (type == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided type is null.");
-                return null;
+                return new List<IBHoMObject>();
             }
 
             return Read(type.Request(ids), actionConfig);
@@ -64,10 +64,17 @@ namespace BH.UI.Revit.Adapter
             if (request == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
-                return null;
+                return new List<IBHoMObject>();
             }
 
             RevitPullConfig pullConfig = actionConfig as RevitPullConfig;
+
+            Discipline? requestDiscipline = request.Discipline(pullConfig.Discipline);
+            if (requestDiscipline == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Conflicting disciplines have been detected.");
+                return new List<IBHoMObject>();
+            }
 
             IEnumerable<ElementId> worksetPrefilter = null;
             if (!pullConfig.IncludeClosedWorksets)
@@ -75,14 +82,7 @@ namespace BH.UI.Revit.Adapter
 
             List<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).RemoveGridSegmentIds(document).ToList();
             if (elementIds == null)
-                return null;
-
-            Discipline? requestDiscipline = request.Discipline(pullConfig.Discipline);
-            if (requestDiscipline == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Conflicting disciplines have been detected.");
-                return null;
-            }
+                return new List<IBHoMObject>();
 
             Discipline discipline = requestDiscipline.Value;
             if (discipline == Discipline.Undefined)

@@ -44,7 +44,7 @@ namespace BH.UI.Revit.Adapter
             if (document == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is null.");
-                return null;
+                return new List<object>();
             }
 
             // Set config
