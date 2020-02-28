@@ -47,19 +47,19 @@ namespace BH.UI.Revit.Adapter
             if (document == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is null.");
-                return null;
+                return new List<object>();
             }
 
             if (document.IsReadOnly)
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is read only.");
-                return null;
+                return new List<object>();
             }
 
             if (document.IsModifiable)
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because another transaction is open in Revit.");
-                return null;
+                return new List<object>();
             }
 
             // Set config
@@ -88,9 +88,9 @@ namespace BH.UI.Revit.Adapter
                 return new List<object>();
             }
 
-            // Push the objects\
+            // Push the objects
             string transactionName = "BHoM Push " + pushType;
-            bool success = true;
+            bool success = false;
             using (Transaction transaction = new Transaction(document, transactionName))
             {
                 transaction.Start();
@@ -121,12 +121,10 @@ namespace BH.UI.Revit.Adapter
                     else if (pushType == PushType.UpdateOnly)
                     {
                         BH.Engine.Reflection.Compute.RecordError("Update is currently not supported by Revit_Toolkit, please use DeleteThenCreate instead.");
-                        success = false;
                     }
                     else if (pushType == PushType.FullCRUD)
                     {
                         BH.Engine.Reflection.Compute.RecordError("Full CRUD is currently not supported by Revit_Toolkit, please use DeleteThenCreate instead.");
-                        success = false;
                     }
                 }
 
