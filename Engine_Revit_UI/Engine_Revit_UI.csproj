@@ -331,6 +331,7 @@
     <Compile Include="Query\ElementIds\ElementIdsByParameter.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByParameterExistence.cs" />
     <Compile Include="Query\ElementIds\ElementIdsBySelectionSet.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsByIdObjects.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByTemplate.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByUniqueIds.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByViewType.cs" />

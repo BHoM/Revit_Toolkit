@@ -43,19 +43,6 @@ namespace BH.UI.Revit.Adapter
         /****             Protected Methods             ****/
         /***************************************************/
 
-        protected override IEnumerable<IBHoMObject> IRead(Type type, IList ids, ActionConfig actionConfig = null)
-        {
-            if (type == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided type is null.");
-                return new List<IBHoMObject>();
-            }
-
-            return Read(type.Request(ids), actionConfig);
-        }
-
-        /***************************************************/
-
         protected override IEnumerable<IBHoMObject> Read(IRequest request, ActionConfig actionConfig = null)
         {
             Autodesk.Revit.UI.UIDocument uiDocument = this.UIDocument;

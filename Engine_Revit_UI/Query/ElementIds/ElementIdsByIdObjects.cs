@@ -20,15 +20,23 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
 using System;
-using System.Collections;
+using System.Linq;
+using System.Reflection;
 using System.Collections.Generic;
-using System.ComponentModel;
 
-namespace BH.Engine.Adapters.Revit
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+
+using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
+using System.Collections;
+
+namespace BH.UI.Revit.Engine
 {
     public static partial class Query
     {
@@ -36,17 +44,13 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns an IRequest that will filter elements of a given BHoM type. If ids argument is not null, filter will be narrowed down to elements with relevant Revit ElementIds or UniqueIds.")]
-        [Input("type", "BHoM type of elements to be filtered")]
-        [Input("ids", "Optional argument, a list of Revit ElementIds or UniqueIds to be used to narrow down the search.")]
-        [Output("Request")]
-        public static IRequest Request(this Type type, IEnumerable ids)
+        public static IEnumerable<ElementId> ElementIdsByIdObjects(this Document document, IList idObjects, IEnumerable<ElementId> ids = null)
         {
             List<int> elementIds = new List<int>();
             List<string> uniqueIds = new List<string>();
-            if (ids != null)
+            if (idObjects != null)
             {
-                foreach (object obj in ids)
+                foreach (object obj in idObjects)
                 {
                     if (obj is int)
                         elementIds.Add((int)obj);
@@ -63,13 +67,12 @@ namespace BH.Engine.Adapters.Revit
             }
 
             if (elementIds.Count == 0 && uniqueIds.Count == 0)
-                return new FilterRequest() { Type = type };
-            else
-            {
-                ElementIdsRequest elementIdsRequest = new ElementIdsRequest { ElementIds = elementIds };
-                UniqueIdsRequest uniqueIdsRequest = new UniqueIdsRequest { UniqueIds = uniqueIds };
-                return BH.Engine.Data.Create.LogicalAndRequest(new FilterRequest() { Type = type }, BH.Engine.Data.Create.LogicalOrRequest(elementIdsRequest, uniqueIdsRequest));
-            }
+                return ids;
+            
+            HashSet<ElementId> result = new HashSet<ElementId>();
+            result.UnionWith(document.ElementIdsByInts(elementIds));
+            result.UnionWith(document.ElementIdsByUniqueIds(uniqueIds));
+            return result;
         }
 
         /***************************************************/

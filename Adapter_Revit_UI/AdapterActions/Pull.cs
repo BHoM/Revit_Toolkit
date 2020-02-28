@@ -56,7 +56,7 @@ namespace BH.UI.Revit.Adapter
             }
 
             // Read the objects based on the request
-            return Read(request as dynamic, pullConfig);
+            return Read(request, pullConfig);
         }
 
         /***************************************************/
