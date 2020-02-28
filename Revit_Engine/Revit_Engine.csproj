@@ -153,7 +153,6 @@
     <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\InnerPolyCurves.cs" />
     <Compile Include="Query\Family.cs" />
-    <Compile Include="Query\Request.cs" />
     <Compile Include="Query\XDocument.cs" />
     <Compile Include="Query\RevitFilePreviews.cs" />
     <Compile Include="Query\IsValid.cs" />

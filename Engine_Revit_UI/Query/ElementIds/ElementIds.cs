@@ -25,8 +25,9 @@ using Autodesk.Revit.UI;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit;
 using BH.oM.Data.Requests;
+using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -38,6 +39,14 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIds(this FilterRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
+            object idObject;
+            if (request.Equalities.TryGetValue("ObjectIds", out idObject) && idObject is IList)
+            {
+                IList list = idObject as IList;
+                if (list != null)
+                    ids = uIDocument.Document.ElementIdsByIdObjects(list, ids);
+            }
+
             return uIDocument.Document.ElementIdsByBHoMType(request.Type, ids);
         }
 
