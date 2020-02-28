@@ -21,10 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapter;
-using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.UI.Revit.Engine;
@@ -42,18 +40,6 @@ namespace BH.UI.Revit.Adapter
 
         protected override bool ICreate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
         {
-            if (Document == null)
-            {
-                NullDocumentCreateError();
-                return false;
-            }
-
-            if (objects == null)
-            {
-                NullObjectsCreateError();
-                return false;
-            }
-
             if (objects.Count() == 0)
                 return false;
 
@@ -72,8 +58,7 @@ namespace BH.UI.Revit.Adapter
             string tagsParameterName = settings.TagsParameterName;
             
             Dictionary<Guid, List<int>> refObjects = new Dictionary<Guid, List<int>>();
-
-            bool result = true;
+            
             foreach (IBHoMObject obj in objects)
             {
                 if (obj == null)
@@ -85,9 +70,6 @@ namespace BH.UI.Revit.Adapter
                 try
                 {
                     Element element = obj.IToRevit(document, settings, refObjects);
-                    if (element == null)
-                        result = false;
-
                     obj.SetIdentifiers(element);
 
                     //Assign Tags
@@ -97,11 +79,10 @@ namespace BH.UI.Revit.Adapter
                 catch
                 {
                     ObjectNotCreatedCreateError(obj);
-                    result = false;
                 }
             }
 
-            return result;
+            return true;
         }
         
         /***************************************************/
