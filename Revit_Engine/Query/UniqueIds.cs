@@ -37,7 +37,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Deprecated("3.1", "BH.Engine.Adapters.Revit.Query.UniqueIds is an unused duplicate of BH.Engine.Adapters.Revit.Query.UniqueId.")]
         [Description("Returns Revit UniqueIds of given BHoMObjects (stored in CustomData).")]
-        [Input("bHoMObjects", "Collection of BHoMObjects")]
+        [Input("bHoMObjects", "Collection of BHoMObjects.")]
         [Output("UniqueIds")]
         public static List<string> UniqueIds(this IEnumerable<IBHoMObject> bHoMObjects, bool removeNulls = true)
         {
