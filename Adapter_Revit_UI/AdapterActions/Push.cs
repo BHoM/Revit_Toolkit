@@ -34,9 +34,8 @@ namespace BH.UI.Revit.Adapter
 {
     public partial class RevitUIAdapter
     {
-
         /***************************************************/
-        /****             Protected Methods             ****/
+        /****              Public Methods               ****/
         /***************************************************/
 
         public override List<object> Push(IEnumerable<object> objects, string tag = "", PushType pushType = PushType.AdapterDefault, ActionConfig actionConfig = null)
@@ -46,7 +45,7 @@ namespace BH.UI.Revit.Adapter
             Document document = this.Document;
             if (document == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is null.");
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
                 return new List<object>();
             }
 
@@ -66,7 +65,7 @@ namespace BH.UI.Revit.Adapter
             RevitPushConfig pushConfig = actionConfig as RevitPushConfig;
             if (pushConfig == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("Revit Push Config has not been specified. Default Revit Push Config is used.");
+                BH.Engine.Reflection.Compute.RecordNote("Revit Push Config has not been specified. Default Revit Push Config is used.");
                 pushConfig = RevitPushConfig.Default;
             }
 

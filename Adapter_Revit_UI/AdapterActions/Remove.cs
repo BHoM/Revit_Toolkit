@@ -30,9 +30,8 @@ namespace BH.UI.Revit.Adapter
 {
     public partial class RevitUIAdapter
     {
-
         /***************************************************/
-        /****             Protected Methods             ****/
+        /****              Public Methods               ****/
         /***************************************************/
 
         public override int Remove(IRequest request, ActionConfig actionConfig = null)
@@ -42,7 +41,7 @@ namespace BH.UI.Revit.Adapter
             Document document = this.Document;
             if (document == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is null.");
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
                 return 0;
             }
 
@@ -62,7 +61,7 @@ namespace BH.UI.Revit.Adapter
             RevitRemoveConfig removeConfig = actionConfig as RevitRemoveConfig;
             if (removeConfig == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("Revit Remove Config has not been specified. Default Revit Remove Config is used.");
+                BH.Engine.Reflection.Compute.RecordNote("Revit Remove Config has not been specified. Default Revit Remove Config is used.");
                 removeConfig = RevitRemoveConfig.Default;
             }
 
