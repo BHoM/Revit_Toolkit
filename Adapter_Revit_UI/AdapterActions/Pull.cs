@@ -31,9 +31,8 @@ namespace BH.UI.Revit.Adapter
 {
     public partial class RevitUIAdapter
     {
-
         /***************************************************/
-        /****             Protected Methods             ****/
+        /****              Public Methods               ****/
         /***************************************************/
 
         public override IEnumerable<object> Pull(IRequest request, PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null)
@@ -43,7 +42,7 @@ namespace BH.UI.Revit.Adapter
             Document document = this.Document;
             if (document == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is null.");
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
                 return new List<object>();
             }
 
@@ -51,7 +50,7 @@ namespace BH.UI.Revit.Adapter
             RevitPullConfig pullConfig = actionConfig as RevitPullConfig;
             if (pullConfig == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("Revit Pull Config has not been specified. Default Revit Pull Config is used.");
+                BH.Engine.Reflection.Compute.RecordNote("Revit Pull Config has not been specified. Default Revit Pull Config is used.");
                 pullConfig = RevitPullConfig.Default;
             }
 
