@@ -40,14 +40,6 @@ namespace BH.oM.Adapters.Revit
         [Description("Elements from closed worksets will be processed if true.")]
         public bool IncludeClosedWorksets { get; set; } = false;
 
-
-        /***************************************************/
-        /****                  Default                  ****/
-        /***************************************************/
-
-        [Description("Default config, used if not set by the user.")]
-        public static readonly RevitPushConfig Default = new RevitPushConfig();
-
         /***************************************************/
     }
 }

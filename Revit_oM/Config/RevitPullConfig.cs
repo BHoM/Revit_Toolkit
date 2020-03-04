@@ -47,14 +47,6 @@ namespace BH.oM.Adapters.Revit
         [Description("Invisible element edges will be pulled and passed to CustomData if true. PullEdges switched to true needed for this to activate.")]
         public bool IncludeNonVisible { get; set; } = false;
 
-
-        /***************************************************/
-        /****                  Default                  ****/
-        /***************************************************/
-
-        [Description("Default config, used if not set by the user.")]
-        public static readonly RevitPullConfig Default = new RevitPullConfig();
-
         /***************************************************/
     }
 }
