@@ -62,7 +62,7 @@ namespace BH.UI.Revit.Adapter
             if (removeConfig == null)
             {
                 BH.Engine.Reflection.Compute.RecordNote("Revit Remove Config has not been specified. Default Revit Remove Config is used.");
-                removeConfig = RevitRemoveConfig.Default;
+                removeConfig = new RevitRemoveConfig();
             }
 
             // Suppress warnings

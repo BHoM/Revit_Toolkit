@@ -43,14 +43,6 @@ namespace BH.oM.Adapters.Revit
         [Description("Pinned elements will be processed if true.")]
         public bool RemovePinned { get; set; } = false;
 
-
-        /***************************************************/
-        /****                  Default                  ****/
-        /***************************************************/
-
-        [Description("Default config, used if not set by the user.")]
-        public static readonly RevitRemoveConfig Default = new RevitRemoveConfig();
-
         /***************************************************/
     }
 }
