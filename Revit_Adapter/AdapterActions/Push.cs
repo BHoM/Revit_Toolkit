@@ -31,7 +31,7 @@ namespace BH.Adapter.Revit
     public partial class RevitAdapter : BHoMAdapter
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****      BHoM side of Revit_Adapter Push      ****/
         /***************************************************/
 
         public override List<object> Push(IEnumerable<object> objects, string tag = "", PushType pushType = PushType.AdapterDefault, ActionConfig actionConfig = null)

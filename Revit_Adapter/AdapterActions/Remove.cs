@@ -40,7 +40,7 @@ namespace BH.Adapter.Revit
     public partial class RevitAdapter : BHoMAdapter
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****     BHoM side of Revit_Adapter Remove     ****/
         /***************************************************/
 
         public override int Remove(IRequest request, ActionConfig actionConfig = null)

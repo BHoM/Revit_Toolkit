@@ -31,7 +31,7 @@ namespace BH.UI.Revit.Adapter
     public partial class RevitUIAdapter
     {
         /***************************************************/
-        /****              Public Methods               ****/
+        /****     Revit side of Revit_Adapter Remove    ****/
         /***************************************************/
 
         public override int Remove(IRequest request, ActionConfig actionConfig = null)

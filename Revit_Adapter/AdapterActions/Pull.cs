@@ -31,7 +31,7 @@ namespace BH.Adapter.Revit
     public partial class RevitAdapter : BHoMAdapter
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****      BHoM side of Revit_Adapter Pull      ****/
         /***************************************************/
 
         public override IEnumerable<object> Pull(IRequest request, PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null)
