@@ -35,7 +35,7 @@ namespace BH.UI.Revit.Adapter
     public partial class RevitUIAdapter
     {
         /***************************************************/
-        /****              Public Methods               ****/
+        /****      Revit side of Revit_Adapter Push     ****/
         /***************************************************/
 
         public override List<object> Push(IEnumerable<object> objects, string tag = "", PushType pushType = PushType.AdapterDefault, ActionConfig actionConfig = null)

@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Adapter
     public partial class RevitUIAdapter
     {
         /***************************************************/
-        /****              Public Methods               ****/
+        /****      Revit side of Revit_Adapter Pull     ****/
         /***************************************************/
 
         public override IEnumerable<object> Pull(IRequest request, PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null)
