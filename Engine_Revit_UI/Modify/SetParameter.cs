@@ -187,6 +187,10 @@ namespace BH.UI.Revit.Engine
                             if (int.TryParse((string)value, out num))
                                 elementID = new ElementId(num);
                         }
+                        else if (value is IBHoMObject)
+                        {
+                            elementID = (value as IBHoMObject).ElementId();
+                        }
                         else if (value != null)
                         {
                             int num;
@@ -232,9 +236,48 @@ namespace BH.UI.Revit.Engine
                         }
                         else if (value is string)
                         {
+                            string valueString = (string)value;
                             int num = 0;
-                            if (int.TryParse((string)value, out num))
+                            if (int.TryParse(valueString, out num))
                                 return parameter.Set(num);
+
+                            if (parameter.HasValue && parameter.Definition.ParameterType == ParameterType.Invalid)
+                            {
+                                string val = parameter.AsValueString();
+                                if (val == valueString)
+                                    break;
+
+                                int current = parameter.AsInteger();
+                                int k = 0;
+
+                                string before = null;
+                                while (before != val)
+                                {
+                                    if (k == current)
+                                    {
+                                        k++;
+                                        continue;
+                                    }
+
+                                    try
+                                    {
+                                        before = val;
+
+                                        parameter.Set(k);
+                                        val = parameter.AsValueString();
+                                        if (val == valueString)
+                                            return true;
+
+                                        k++;
+                                    }
+                                    catch
+                                    {
+                                        break;
+                                    }
+                                }
+
+                                parameter.Set(current);
+                            }
                         }
                         break;
                     }
@@ -257,7 +300,7 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static void SetParameters(this Element element, IBHoMObject bHoMObject, IEnumerable<BuiltInParameter> builtInParametersIgnore = null)
+        public static void SetParameters(this Element element, IBHoMObject bHoMObject, IEnumerable<BuiltInParameter> builtInParametersIgnore = null)
         {
             if (bHoMObject == null || element == null)
                 return;

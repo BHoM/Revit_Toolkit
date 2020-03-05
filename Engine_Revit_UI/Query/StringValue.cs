@@ -40,7 +40,12 @@ namespace BH.UI.Revit.Engine
                     case (StorageType.Double):
                         return UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), parameter.DisplayUnitType).ToString();
                     case (StorageType.Integer):
-                        return parameter.AsInteger().ToString();
+                        {
+                            if (parameter.Definition.ParameterType == ParameterType.Invalid)
+                                return parameter.AsValueString();
+                            else
+                                return parameter.AsInteger().ToString();
+                        }
                     case (StorageType.String):
                         return parameter.AsString();
                     case (StorageType.ElementId):
