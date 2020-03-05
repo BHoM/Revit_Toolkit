@@ -73,7 +73,7 @@ namespace BH.UI.Revit.Adapter
             if (UIControlledApplication != null && pushConfig.SuppressFailureMessages)
                 UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
 
-            
+
             // If unset, set the pushType to AdapterSettings' value (base AdapterSettings default is FullCRUD).
             if (pushType == PushType.AdapterDefault)
                 pushType = PushType.DeleteThenCreate;
@@ -86,7 +86,7 @@ namespace BH.UI.Revit.Adapter
                 BH.Engine.Reflection.Compute.RecordError("Input objects were invalid.");
                 return new List<object>();
             }
-            
+
             // Push the objects
             string transactionName = "BHoM Push " + pushType;
             bool success = false;
@@ -109,11 +109,16 @@ namespace BH.UI.Revit.Adapter
                 }
                 else if (pushType == PushType.UpdateOnly)
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Update is currently not supported by Revit_Toolkit, please use DeleteThenCreate instead.");
+                    foreach (IBHoMObject obj in objectsToPush)
+                    {
+                        Element element = obj.Element(document);
+                        if (element != null)
+                            success |= IUpdate(element, obj, RevitSettings);
+                    }
                 }
                 else if (pushType == PushType.FullCRUD)
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Full CRUD is currently not supported by Revit_Toolkit, please use DeleteThenCreate instead.");
+                    BH.Engine.Reflection.Compute.RecordError("Full CRUD is currently not supported by Revit_Toolkit, please use Create, UpdateOnly or DeleteThenCreate instead.");
                 }
 
                 transaction.Commit();

@@ -288,7 +288,6 @@
     <Compile Include="Modify\AddAdjacentSpaceId.cs" />
     <Compile Include="Compute\LoadFamily.cs" />
     <Compile Include="Modify\AddOrReplace.cs" />
-    <Compile Include="Modify\Move.cs" />
     <Compile Include="Convert\Architecture\ToBHoM\Ceiling.cs" />
     <Compile Include="Convert\Revit\ToBHoM\ViewPlan.cs" />
     <Compile Include="Convert\Structure\ToBHoM\MaterialFragment.cs" />
@@ -319,6 +318,7 @@
     <Compile Include="Convert\FromSI.cs" />
     <Compile Include="Modify\AddSpaceId.cs" />
     <Compile Include="Modify\RemoveGridSegmentIds.cs" />
+    <Compile Include="Modify\SetLocation.cs" />
     <Compile Include="Modify\UpdateMaterialProperties.cs" />
     <Compile Include="Modify\UpdateValues.cs" />
     <Compile Include="Query\ArbitraryPlane.cs" />
