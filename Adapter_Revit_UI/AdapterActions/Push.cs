@@ -112,7 +112,7 @@ namespace BH.UI.Revit.Adapter
                     {
                         Element element = obj.Element(document);
                         if (element != null)
-                            success |= IUpdate(element, obj, RevitSettings);
+                            success |= Update(element, obj, RevitSettings);
                     }
                 }
                 else if (pushType == PushType.FullCRUD)

@@ -54,9 +54,16 @@ namespace BH.UI.Revit.Adapter
 
         /***************************************************/
 
-        private static void ObjectNotCreatedCreateError(IBHoMObject iBHoMObject)
+        private static void ObjectNotCreatedError(IBHoMObject iBHoMObject)
         {
             BH.Engine.Reflection.Compute.RecordError(string.Format("Revit object could not be created. BHoM object Guid: {0}", iBHoMObject.BHoM_Guid));
+        }
+
+        /***************************************************/
+
+        private static void ObjectNotUpdatedError(Element element, IBHoMObject iBHoMObject)
+        {
+            BH.Engine.Reflection.Compute.RecordError(string.Format("Revit object could not be updated. Revit ElementId: {0} BHoM object Guid: {1}", element.Id, iBHoMObject.BHoM_Guid));
         }
 
         /***************************************************/

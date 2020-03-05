@@ -68,21 +68,31 @@ namespace BH.UI.Revit.Engine
                 return false;
             }
 
+            if (columnLine.Start.Z >= columnLine.End.Z)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Location of the column has not been updated because BHoM column has start above end. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
+                return false;
+            }
+
             if (columnLine.IsVertical())
             {
                 element.SetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 0);
                 element.SetLocation(new oM.Geometry.Point { X = columnLine.Start.X, Y = columnLine.Start.Y, Z = 0 }, settings);
-                
-                Level bottomLevel = columnLine.Start.BottomLevel(element.Document);
-                Level topLevel = columnLine.End.BottomLevel(element.Document);
 
-                element.SetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_PARAM, bottomLevel.Id);
-                element.SetParameter(BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM, bottomLevel.Id);
-                element.SetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_PARAM, topLevel.Id);
-                element.SetParameter(BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM, topLevel.Id);
+                Parameter baseLevelParam = element.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_PARAM);
+                Parameter topLevelParam = element.get_Parameter(BuiltInParameter.FAMILY_TOP_LEVEL_PARAM);
+                Parameter baseOffsetParam = element.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM);
+                Parameter topOffsetParam = element.get_Parameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM);
+                Level baseLevel = element.Document.GetElement(baseLevelParam.AsElementId()) as Level;
+                Level topLevel = element.Document.GetElement(topLevelParam.AsElementId()) as Level;
+                double baseElevation = baseLevel.ProjectElevation + baseOffsetParam.AsDouble().ToSI(UnitType.UT_Length);
+                double topElevation = topLevel.ProjectElevation + topOffsetParam.AsDouble().ToSI(UnitType.UT_Length);
 
-                element.SetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM, columnLine.Start.Z.FromSI(UnitType.UT_Length) - bottomLevel.Elevation, false);
-                element.SetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.End.Z.FromSI(UnitType.UT_Length) - topLevel.Elevation, false);
+                if (Math.Abs(baseElevation - columnLine.Start.Z) > settings.DistanceTolerance)
+                    element.SetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM, columnLine.Start.Z.FromSI(UnitType.UT_Length) - baseLevel.ProjectElevation, false);
+
+                if (Math.Abs(topElevation - columnLine.End.Z) > settings.DistanceTolerance)
+                    element.SetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.End.Z.FromSI(UnitType.UT_Length) - topLevel.ProjectElevation, false);
 
                 return true;
             }
@@ -114,6 +124,16 @@ namespace BH.UI.Revit.Engine
             oM.Geometry.Point point = BH.Engine.Geometry.Create.Point(bHoMSpace.Location.X, bHoMSpace.Location.Y, level.Elevation);
 
             return revitSpace.SetLocation(point, settings);
+        }
+
+        /***************************************************/
+
+        public static bool SetLocation(this Grid grid, BH.oM.Geometry.SettingOut.Grid bHoMGrid, RevitSettings settings)
+        {
+            if (!bHoMGrid.Curve.IToRevit().IsSimilar(grid.Curve, settings))
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Revit does not allow changing the geometry of an existing grid programatically. Try using DeleteThenCreate PushType instead. Revit ElementId: {0} BHoM_Guid: {1}", grid.Id, bHoMGrid.BHoM_Guid));
+
+            return false;
         }
 
         /***************************************************/
