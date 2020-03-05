@@ -22,6 +22,9 @@
 
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.UI.Revit.Engine;
 using System;
 
 namespace BH.UI.Revit.Adapter
@@ -29,86 +32,56 @@ namespace BH.UI.Revit.Adapter
     public partial class RevitUIAdapter
     {
         /***************************************************/
-        /****                   Update                  ****/
+        /****              Private Methods              ****/
         /***************************************************/
 
-        //CODE TAKEN FROM CREATE, LEFT FOR REFERENCE.
-        //    element = element.SetParameters(bhomObject);
-        //    if (element != null && element.Location != null)
-        //    {
-        //        try
-        //        {
-        //            Location location = element.Move(bhomObject);
-        //        }
-        //        catch
-        //        {
-        //            ObjectNotMovedWarning(bhomObject);
-        //        }
-        //    }
-
-        //    if (bhomObject is IView || bhomObject is oM.Adapters.Revit.Elements.Family || bhomObject is InstanceProperties)
-        //        element.Name = bhomObject.Name;
-
-        //FOR REFERENCE, IF OBJECT IS REVITFILEPREVIEW:
-        //TODO: this value should come from adapter PushType?
-        //bool updateFamilies = true;
-        //FamilyLoadOptions familyLoadOptions = new FamilyLoadOptions(updateFamilies);
-        //if (document.LoadFamily(revitFilePreview.Path, out family))
-        //{
-        //    SetIdentifiers(bhomObject, family);
-        //    element = family;
-        //}
-        //}
-
-        /***************************************************/
-        /****              UpdateProperty               ****/
-        /***************************************************/
-
-        // This method used to be called from the UpdateProperty component
-        // Now it is never called as it doesn't override anymore
-        // This logic should be called from the Push component instead
-
-
-        /***************************************************/
-        /****              Private Classes              ****/
-        /***************************************************/
-
-        private class FamilyLoadOptions : IFamilyLoadOptions
+        private static bool Update(Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
-            private bool m_Update;
-
-            public FamilyLoadOptions(bool update)
+            element.SetParameters(bHoMObject);
+            if (!string.IsNullOrWhiteSpace(bHoMObject.Name) && element.Name != bHoMObject.Name)
             {
-                this.m_Update = update;
-            }
-
-            public bool OnFamilyFound(bool familyInUse, out bool overwriteParameterValues)
-            {
-                if (m_Update)
+                try
                 {
-                    overwriteParameterValues = false;
-                    return false;
+                    element.Name = bHoMObject.Name;
+                }
+                catch
+                {
 
                 }
-
-                overwriteParameterValues = true;
-                return true;
             }
 
-            public bool OnSharedFamilyFound(Family sharedFamily, bool familyInUse, out FamilySource source, out bool overwriteParameterValues)
+            if (new ElementIsElementTypeFilter(true).PassesFilter(element))
+                element.ISetLocation(bHoMObject, settings);
+
+            return true;
+        }
+
+
+        /***************************************************/
+        /****             Interface Methods             ****/
+        /***************************************************/
+
+        private static bool IUpdate(Element element, IBHoMObject bHoMObject, RevitSettings settings)
+        {
+            if (element == null)
             {
-                if (m_Update)
-                {
-                    overwriteParameterValues = false;
-                    source = FamilySource.Project;
-                    return false;
-
-                }
-
-                overwriteParameterValues = true;
-                source = FamilySource.Family;
-                return true;
+                BH.Engine.Reflection.Compute.RecordWarning("The element could not be updated because Revit element does not exist.");
+                return false;
             }
+
+            if (bHoMObject == null)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("The element could not be updated because BHoM object does not exist.");
+                return false;
+            }
+
+            if (element.Pinned)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Element could not be updated because it is pinned. ElementId: {0}", element.Id));
+                return false;
+            }
+
+            return Update(element as dynamic, bHoMObject as dynamic, settings);
         }
 
         /***************************************************/
