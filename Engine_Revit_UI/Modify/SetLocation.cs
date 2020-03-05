@@ -21,7 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Analysis;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Adapters.Revit.Settings;
@@ -29,6 +28,7 @@ using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
+using BH.Engine.Geometry;
 using System;
 using System.Linq;
 
@@ -56,13 +56,51 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static bool SetLocation(this FamilyInstance element, Column column, RevitSettings settings)
+        {
+            if (!typeof(Column).BuiltInCategories().ToList().Contains((BuiltInCategory)element.Category.Id.IntegerValue))
+                return false;
+
+            oM.Geometry.Line columnLine = column.Location as oM.Geometry.Line;
+            if (columnLine == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Location has not been updated, only linear columns are allowed in Revit. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
+                return false;
+            }
+
+            if (columnLine.IsVertical())
+            {
+                element.SetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 0);
+                element.SetLocation(new oM.Geometry.Point { X = columnLine.Start.X, Y = columnLine.Start.Y, Z = 0 }, settings);
+                
+                Level bottomLevel = columnLine.Start.BottomLevel(element.Document);
+                Level topLevel = columnLine.End.BottomLevel(element.Document);
+
+                element.SetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_PARAM, bottomLevel.Id);
+                element.SetParameter(BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM, bottomLevel.Id);
+                element.SetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_PARAM, topLevel.Id);
+                element.SetParameter(BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM, topLevel.Id);
+
+                element.SetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM, columnLine.Start.Z.FromSI(UnitType.UT_Length) - bottomLevel.Elevation, false);
+                element.SetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.End.Z.FromSI(UnitType.UT_Length) - topLevel.Elevation, false);
+
+                return true;
+            }
+            else
+            {
+                element.SetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 2);
+                return element.SetLocation(columnLine, settings);
+            }
+        }
+
+        /***************************************************/
+
         public static bool SetLocation(this FamilyInstance element, IFramingElement framingElement, RevitSettings settings)
         {
             if (!typeof(IFramingElement).BuiltInCategories().ToList().Contains((BuiltInCategory)element.Category.Id.IntegerValue))
                 return false;
 
-            BH.Engine.Reflection.Compute.RecordError(String.Format("Update of location of framing elements is currently not supported. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, framingElement.BHoM_Guid));
-            return false;
+            return element.SetLocation(framingElement.Location, settings);
         }
 
         /***************************************************/
