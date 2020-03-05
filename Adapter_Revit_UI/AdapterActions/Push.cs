@@ -28,7 +28,6 @@ using BH.oM.Base;
 using BH.UI.Revit.Engine;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace BH.UI.Revit.Adapter
 {

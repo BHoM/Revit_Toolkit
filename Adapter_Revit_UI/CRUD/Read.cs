@@ -31,7 +31,6 @@ using BH.oM.Data.Requests;
 using BH.oM.Geometry;
 using BH.UI.Revit.Engine;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
