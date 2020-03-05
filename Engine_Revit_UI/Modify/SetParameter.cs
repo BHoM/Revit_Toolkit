@@ -294,10 +294,7 @@ namespace BH.UI.Revit.Engine
 
             return false;
         }
-
-
-        /***************************************************/
-        /****             Internal methods              ****/
+        
         /***************************************************/
 
         public static void SetParameters(this Element element, IBHoMObject bHoMObject, IEnumerable<BuiltInParameter> builtInParametersIgnore = null)

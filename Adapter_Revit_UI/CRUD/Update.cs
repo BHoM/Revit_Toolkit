@@ -25,7 +25,6 @@ using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.UI.Revit.Engine;
-using System;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -37,51 +36,23 @@ namespace BH.UI.Revit.Adapter
 
         private static bool Update(Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
-            element.SetParameters(bHoMObject);
-            if (!string.IsNullOrWhiteSpace(bHoMObject.Name) && element.Name != bHoMObject.Name)
+            string tagsParameterName = settings.TagsParameterName;
+            
+            try
             {
-                try
-                {
-                    element.Name = bHoMObject.Name;
-                }
-                catch
-                {
+                element.IUpdate(bHoMObject, settings);
 
-                }
+                //Assign Tags
+                if (!string.IsNullOrEmpty(tagsParameterName))
+                    element.SetTags(bHoMObject, tagsParameterName);
+
+                return true;
             }
-
-            if (new ElementIsElementTypeFilter(true).PassesFilter(element))
-                element.ISetLocation(bHoMObject, settings);
-
-            return true;
-        }
-
-
-        /***************************************************/
-        /****             Interface Methods             ****/
-        /***************************************************/
-
-        private static bool IUpdate(Element element, IBHoMObject bHoMObject, RevitSettings settings)
-        {
-            if (element == null)
+            catch
             {
-                BH.Engine.Reflection.Compute.RecordWarning("The element could not be updated because Revit element does not exist.");
+                ObjectNotUpdatedError(element, bHoMObject);
                 return false;
             }
-
-            if (bHoMObject == null)
-            {
-                BH.Engine.Reflection.Compute.RecordWarning("The element could not be updated because BHoM object does not exist.");
-                return false;
-            }
-
-            if (element.Pinned)
-            {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Element could not be updated because it is pinned. ElementId: {0}", element.Id));
-                return false;
-            }
-
-            return Update(element as dynamic, bHoMObject as dynamic, settings);
         }
 
         /***************************************************/

@@ -82,7 +82,7 @@ namespace BH.UI.Revit.Adapter
                 }
                 catch
                 {
-                    ObjectNotCreatedCreateError(obj);
+                    ObjectNotCreatedError(obj);
                 }
             }
 
