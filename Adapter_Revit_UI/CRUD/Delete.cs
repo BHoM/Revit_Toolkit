@@ -56,7 +56,7 @@ namespace BH.UI.Revit.Adapter
             if (!removeConfig.IncludeClosedWorksets)
                 worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
 
-            List<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).RemoveGridSegmentIds(document).ToList();
+            IEnumerable<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).RemoveGridSegmentIds(document);
 
             List<ElementId> deletedIds = Delete(elementIds, document, removeConfig.RemovePinned);
             if (deletedIds == null)
@@ -92,7 +92,7 @@ namespace BH.UI.Revit.Adapter
 
         /***************************************************/
 
-        private static List<ElementId> Delete(ICollection<ElementId> elementIds, Document document, bool removePinned)
+        private static List<ElementId> Delete(IEnumerable<ElementId> elementIds, Document document, bool removePinned)
         {
             if (elementIds == null)
             {
@@ -138,27 +138,6 @@ namespace BH.UI.Revit.Adapter
             }
         }
 
-        //FOR REFERENCE DELETING REVITFILEPREVIEW
-        //TODO: this is deleting a family based on a .rfa file - is it ever useful? Would rather pull the families and choose which to delete.
-        //if(revitSettings.GeneralSettings.AdapterMode == oM.Adapters.Revit.Enums.AdapterMode.Delete)
-        //{
-        //    IEnumerable<FamilySymbol> familySymbols = Query.FamilySymbols(revitFilePreview, document);
-        //    if (familySymbols != null)
-        //    {
-        //        if (familySymbols.Count() > 0)
-        //            family = familySymbols.First().Family;
-
-        //        foreach (FamilySymbol familySymbol in familySymbols)
-        //            document.Delete(familySymbol.Id);
-        //    }
-
-        //    SetIdentifiers(bhomObject, family);
-
-        //    IEnumerable<ElementId> elementIDs = family.GetFamilySymbolIds();
-        //    if (elementIDs == null || elementIDs.Count() == 0)
-        //        document.Delete(family.Id);
-        //}
-        //else
-        //{
+        /***************************************************/
     }
 }
