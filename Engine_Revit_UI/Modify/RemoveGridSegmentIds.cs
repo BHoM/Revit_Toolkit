@@ -37,6 +37,9 @@ namespace BH.UI.Revit.Engine
             if (ids == null || document == null)
                 return null;
 
+            if (ids.Count() == 0)
+                return ids;
+
             HashSet<ElementId> segmentIds = new HashSet<ElementId>();
             foreach (MultiSegmentGrid grid in new FilteredElementCollector(document, ids.ToList()).OfClass(typeof(MultiSegmentGrid)).Cast<MultiSegmentGrid>())
             {
