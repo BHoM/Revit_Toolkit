@@ -76,7 +76,13 @@ namespace BH.UI.Revit.Engine
 
             if (columnLine.IsVertical())
             {
-                element.SetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 0);
+                bool slanted =  element.SetLocation(columnLine, settings);
+                if (slanted)
+                {
+                    element.Document.Regenerate();
+                    element.SetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 0);
+                }
+
                 element.SetLocation(new oM.Geometry.Point { X = columnLine.Start.X, Y = columnLine.Start.Y, Z = 0 }, settings);
 
                 Parameter baseLevelParam = element.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_PARAM);
@@ -120,10 +126,17 @@ namespace BH.UI.Revit.Engine
             Level level = bHoMSpace.Location.Z.BottomLevel(revitSpace.Document);
             if (level == null)
                 return false;
-            
+
             oM.Geometry.Point point = BH.Engine.Geometry.Create.Point(bHoMSpace.Location.X, bHoMSpace.Location.Y, level.Elevation);
 
             return revitSpace.SetLocation(point, settings);
+        }
+
+        /***************************************************/
+
+        public static bool SetLocation(this Element element, BH.oM.Geometry.SettingOut.Level level, RevitSettings settings)
+        {
+            return true;
         }
 
         /***************************************************/
@@ -146,9 +159,12 @@ namespace BH.UI.Revit.Engine
 
             Curve bHoMCurve = curve.IToRevit();
             if (!location.Curve.IsSimilar(bHoMCurve, settings))
+            {
                 location.Curve = bHoMCurve;
-
-            return true;
+                return true;
+            }
+            else
+                return false;
         }
 
         /***************************************************/
