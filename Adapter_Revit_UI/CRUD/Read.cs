@@ -31,7 +31,6 @@ using BH.oM.Data.Requests;
 using BH.oM.Geometry;
 using BH.UI.Revit.Engine;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -67,7 +66,7 @@ namespace BH.UI.Revit.Adapter
             if (!pullConfig.IncludeClosedWorksets)
                 worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
 
-            List<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).RemoveGridSegmentIds(document).ToList();
+            IEnumerable<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).RemoveGridSegmentIds(document);
             if (elementIds == null)
                 return new List<IBHoMObject>();
 
