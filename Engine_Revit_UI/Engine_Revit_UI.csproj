@@ -387,11 +387,9 @@
     <Compile Include="Query\ElementType.cs" />
     <Compile Include="Query\Family.cs" />
     <Compile Include="Query\PolyCurves.cs" />
-    <Compile Include="Query\SelectionBuiltInCategories.cs" />
     <Compile Include="Query\Element.cs" />
     <Compile Include="Query\ElementId.cs" />
     <Compile Include="Query\ElementIds\ElementIds.cs" />
-    <Compile Include="Query\IntegerValue.cs" />
     <Compile Include="Query\MaterialGrade.cs" />
     <Compile Include="Query\Outlines.cs" />
     <Compile Include="Query\SpatialElementId.cs" />
