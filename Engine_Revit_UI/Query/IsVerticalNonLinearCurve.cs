@@ -21,29 +21,31 @@
  */
 
 using Autodesk.Revit.DB;
-using System.Collections.Generic;
-using System.Linq;
+using System;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> RemoveGridSegmentIds(this IEnumerable<ElementId> ids, Document document)
+        public static bool IsVerticalNonLinearCurve(Curve revitCurve)
         {
-            if (ids == null || document == null)
-                return null;
-
-            HashSet<ElementId> segmentIds = new HashSet<ElementId>();
-            foreach (MultiSegmentGrid grid in new FilteredElementCollector(document, ids.ToList()).OfClass(typeof(MultiSegmentGrid)).Cast<MultiSegmentGrid>())
+            if (!(revitCurve is Line))
             {
-                segmentIds.UnionWith(grid.GetGridIds());
+                CurveLoop curveLoop = CurveLoop.Create(new Curve[] { revitCurve });
+                if (curveLoop.HasPlane())
+                {
+                    Plane curvePlane = curveLoop.GetPlane();
+                    //Orientation angles are handled slightly differently for framing elements that have a curve fits in a plane that contains the z-vector
+                    if (Math.Abs(curvePlane.Normal.DotProduct(XYZ.BasisZ)) < BH.oM.Geometry.Tolerance.Angle)
+                        return true;
+                }
             }
 
-            return ids.Except(segmentIds);
+            return false;
         }
 
         /***************************************************/

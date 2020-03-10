@@ -21,29 +21,39 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Physical.Elements;
+using BH.oM.Physical.FramingProperties;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Modify
+    public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> RemoveGridSegmentIds(this IEnumerable<ElementId> ids, Document document)
+        public static Column ToBHoMColumn(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (ids == null || document == null)
-                return null;
+            settings = settings.DefaultIfNull();
 
-            HashSet<ElementId> segmentIds = new HashSet<ElementId>();
-            foreach (MultiSegmentGrid grid in new FilteredElementCollector(document, ids.ToList()).OfClass(typeof(MultiSegmentGrid)).Cast<MultiSegmentGrid>())
-            {
-                segmentIds.UnionWith(grid.GetGridIds());
-            }
+            Column column = refObjects.GetValue<Column>(familyInstance.Id);
+            if (column != null)
+                return column;
 
-            return ids.Except(segmentIds);
+            oM.Geometry.ICurve locationCurve = familyInstance.FramingElementLocation(settings);
+            IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
+            column = BH.Engine.Physical.Create.Column(locationCurve, property, familyInstance.Name);
+
+            //Set identifiers & custom data
+            column.SetIdentifiers(familyInstance);
+            column.SetCustomData(familyInstance);
+
+            refObjects.AddOrReplace(familyInstance.Id, column);
+            return column;
         }
 
         /***************************************************/

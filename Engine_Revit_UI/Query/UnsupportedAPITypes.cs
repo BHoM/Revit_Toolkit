@@ -21,6 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Structure;
+using Autodesk.Revit.DB.Architecture;
+using Autodesk.Revit.DB.Mechanical;
 using System;
 using System.Collections.Generic;
 
@@ -35,80 +38,80 @@ namespace BH.UI.Revit.Engine
         public static readonly Dictionary<Type, Type[]> UnsupportedAPITypes = new Dictionary<Type, Type[]>
         {
             {
-                typeof(Autodesk.Revit.DB.CurveElement), new Type[]
+                typeof(CurveElement), new Type[]
                 {
-                    typeof(Autodesk.Revit.DB.CurveByPoints),
-                    typeof(Autodesk.Revit.DB.DetailCurve),
-                    typeof(Autodesk.Revit.DB.ModelCurve),
-                    typeof(Autodesk.Revit.DB.SymbolicCurve),
-                    typeof(Autodesk.Revit.DB.Structure.AreaReinforcementCurve)
+                    typeof(CurveByPoints),
+                    typeof(DetailCurve),
+                    typeof(ModelCurve),
+                    typeof(SymbolicCurve),
+                    typeof(AreaReinforcementCurve)
                 }
             },
             {
-                typeof(Autodesk.Revit.DB.DetailCurve), new Type[]
+                typeof(DetailCurve), new Type[]
                 {
-                    typeof(Autodesk.Revit.DB.DetailArc),
-                    typeof(Autodesk.Revit.DB.DetailEllipse),
-                    typeof(Autodesk.Revit.DB.DetailLine),
-                    typeof(Autodesk.Revit.DB.DetailNurbSpline)
+                    typeof(DetailArc),
+                    typeof(DetailEllipse),
+                    typeof(DetailLine),
+                    typeof(DetailNurbSpline)
                 }
             },
             {
-                typeof(Autodesk.Revit.DB.Element), new Type[]
+                typeof(Element), new Type[]
                 {
-                    typeof(Autodesk.Revit.DB.CombinableElement)
+                    typeof(CombinableElement)
                 }
             },
             {
-                typeof(Autodesk.Revit.DB.FamilyInstance), new Type[]
+                typeof(FamilyInstance), new Type[]
                 {
-                    typeof(Autodesk.Revit.DB.AnnotationSymbol),
-                    typeof(Autodesk.Revit.DB.Mullion),
-                    typeof(Autodesk.Revit.DB.Panel)
+                    typeof(AnnotationSymbol),
+                    typeof(Mullion),
+                    typeof(Panel)
                 }
             },
             {
-                typeof(Autodesk.Revit.DB.FamilySymbol), new Type[]
+                typeof(FamilySymbol), new Type[]
                 {
-                    typeof(Autodesk.Revit.DB.Architecture.RoomTagType),
-                    typeof(Autodesk.Revit.DB.AnnotationSymbolType),
-                    typeof(Autodesk.Revit.DB.Mechanical.SpaceTagType),
-                    typeof(Autodesk.Revit.DB.Structure.TrussType),
-                    typeof(Autodesk.Revit.DB.AreaTagType)
+                    typeof(RoomTagType),
+                    typeof(AnnotationSymbolType),
+                    typeof(SpaceTagType),
+                    typeof(TrussType),
+                    typeof(AreaTagType)
                 }
             },
             {
-                typeof(Autodesk.Revit.DB.HostedSweep), new Type[]
+                typeof(HostedSweep), new Type[]
                 {
-                    typeof(Autodesk.Revit.DB.Architecture.Fascia),
-                    typeof(Autodesk.Revit.DB.Architecture.Gutter),
-                    typeof(Autodesk.Revit.DB.SlabEdge)
+                    typeof(Fascia),
+                    typeof(Gutter),
+                    typeof(SlabEdge)
                 }
             },
             {
-                typeof(Autodesk.Revit.DB.ModelCurve), new Type[]
+                typeof(ModelCurve), new Type[]
                 {
-                    typeof(Autodesk.Revit.DB.ModelArc),
-                    typeof(Autodesk.Revit.DB.ModelEllipse),
-                    typeof(Autodesk.Revit.DB.ModelHermiteSpline),
-                    typeof(Autodesk.Revit.DB.ModelLine),
-                    typeof(Autodesk.Revit.DB.ModelNurbSpline)
+                    typeof(ModelArc),
+                    typeof(ModelEllipse),
+                    typeof(ModelHermiteSpline),
+                    typeof(ModelLine),
+                    typeof(ModelNurbSpline)
                 }
             },
             {
-                typeof(Autodesk.Revit.DB.SpatialElement), new Type[]
+                typeof(SpatialElement), new Type[]
                 {
-                    typeof(Autodesk.Revit.DB.Architecture.Room),
-                    typeof(Autodesk.Revit.DB.Area),
-                    typeof(Autodesk.Revit.DB.Mechanical.Space)
+                    typeof(Room),
+                    typeof(Area),
+                    typeof(Space)
                 }
             },
             {
-                typeof(Autodesk.Revit.DB.SpatialElementTag), new Type[]
+                typeof(SpatialElementTag), new Type[]
                 {
-                    typeof(Autodesk.Revit.DB.AreaTag),
-                    typeof(Autodesk.Revit.DB.Architecture.RoomTag),
-                    typeof(Autodesk.Revit.DB.Mechanical.SpaceTag)
+                    typeof(AreaTag),
+                    typeof(RoomTag),
+                    typeof(SpaceTag)
                 }
             }
         };

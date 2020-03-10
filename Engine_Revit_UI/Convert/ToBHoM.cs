@@ -91,32 +91,36 @@ namespace BH.UI.Revit.Engine
                         return null;
                 case Discipline.Physical:
                 case Discipline.Architecture:
-                    switch ((BuiltInCategory)familyInstance.Category.Id.IntegerValue)
-                    {
-                        case BuiltInCategory.OST_Windows:
-                            return new List<IBHoMObject> { familyInstance.ToBHoMWindow(settings, refObjects) };
-                        case BuiltInCategory.OST_Doors:
-                            return new List<IBHoMObject> { familyInstance.ToBHoMDoor(settings, refObjects) };
-                        case BuiltInCategory.OST_StructuralFraming:
-                        case BuiltInCategory.OST_StructuralColumns:
-                        case BuiltInCategory.OST_Columns:
-                        case BuiltInCategory.OST_VerticalBracing:
-                        case BuiltInCategory.OST_Truss:
-                        case BuiltInCategory.OST_StructuralTruss:
-                        case BuiltInCategory.OST_HorizontalBracing:
-                        case BuiltInCategory.OST_Purlin:
-                        case BuiltInCategory.OST_Joist:
-                        case BuiltInCategory.OST_Girder:
-                        case BuiltInCategory.OST_StructuralStiffener:
-                        case BuiltInCategory.OST_StructuralFramingOther:
-                            return new List<IBHoMObject> { familyInstance.ToBHoMFramingElement(settings, refObjects) };
-                        default:
-                            return null;
-                    }
+                    if (typeof(BH.oM.Physical.Elements.Window).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                        return new List<IBHoMObject> { familyInstance.ToBHoMWindow(settings, refObjects) };
+                    if (typeof(BH.oM.Physical.Elements.Door).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                        return new List<IBHoMObject> { familyInstance.ToBHoMDoor(settings, refObjects) };
+                    if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                        return new List<IBHoMObject> { familyInstance.ToBHoMColumn(settings, refObjects) };
+                    if (typeof(BH.oM.Physical.Elements.Beam).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                        return new List<IBHoMObject> { familyInstance.ToBHoMBeam(settings, refObjects) };
+                    if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                        return new List<IBHoMObject> { familyInstance.ToBHoMBracing(settings, refObjects) };
+                    else
+                        return null;
                 case Discipline.Environmental:
                     return new List<IBHoMObject> { familyInstance.ToBHoMEnvironmentPanel(settings, refObjects) };
                 default:
                     return null;
+            }
+        }
+
+        /***************************************************/
+
+        public static IBHoMObject ToBHoM(this FamilySymbol familySymbol, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            switch (discipline)
+            {
+                default:
+                    if (typeof(BH.oM.Geometry.ShapeProfiles.IProfile).BuiltInCategories().Contains((BuiltInCategory)familySymbol.Category.Id.IntegerValue))
+                        return familySymbol.ToBHoMProfile(settings, refObjects);
+                    else
+                        return null;
             }
         }
 
@@ -132,7 +136,7 @@ namespace BH.UI.Revit.Engine
                     return wall.ToBHoMPanel(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return wall.ToBHoMISurfaces(settings, refObjects);
+                    return wall.ToBHoMWalls(settings, refObjects);
                 default:
                     return null;
             }
@@ -166,7 +170,7 @@ namespace BH.UI.Revit.Engine
                     return floor.ToBHoMPanel(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return floor.ToBHoMISurfaces(settings, refObjects);
+                    return floor.ToBHoMFloors(settings, refObjects);
                 default:
                     return null;
             }
@@ -184,7 +188,7 @@ namespace BH.UI.Revit.Engine
                     return roofBase.ToBHoMPanel(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return roofBase.ToBHoMISurfaces(settings, refObjects);
+                    return roofBase.ToBHoMRoofs(settings, refObjects);
                 default:
                     return null;
             }
@@ -209,30 +213,12 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IBHoMObject ToBHoM(this FamilySymbol familySymbol, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            switch (discipline)
-            {
-                case Discipline.Structural:
-                    return familySymbol.ToBHoMProfile(settings, refObjects);
-                default:
-                    return null;
-            }
-        }
-
-        /***************************************************/
-
         public static IBHoMObject ToBHoM(this Level level, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch(discipline)
             {
-                case Discipline.Architecture:
-                case Discipline.Environmental:
-                case Discipline.Structural:
-                case Discipline.Physical:
-                    return level.ToBHoMLevel(settings, refObjects);
                 default:
-                    return null;
+                    return level.ToBHoMLevel(settings, refObjects);
             }
         }
 
@@ -242,13 +228,8 @@ namespace BH.UI.Revit.Engine
         {
             switch (discipline)
             {
-                case Discipline.Architecture:
-                case Discipline.Environmental:
-                case Discipline.Structural:
-                case Discipline.Physical:
-                    return grid.ToBHoMGrid(settings, refObjects);
                 default:
-                    return null;
+                    return grid.ToBHoMGrid(settings, refObjects);
             }
         }
 
@@ -258,13 +239,8 @@ namespace BH.UI.Revit.Engine
         {
             switch (discipline)
             {
-                case Discipline.Architecture:
-                case Discipline.Environmental:
-                case Discipline.Structural:
-                case Discipline.Physical:
-                    return grid.ToBHoMGrid(settings, refObjects);
                 default:
-                    return null;
+                    return grid.ToBHoMGrid(settings, refObjects);
             }
         }
 

@@ -21,29 +21,39 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Physical.Elements;
+using BH.oM.Physical.FramingProperties;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Modify
+    public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> RemoveGridSegmentIds(this IEnumerable<ElementId> ids, Document document)
+        public static Bracing ToBHoMBracing(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (ids == null || document == null)
-                return null;
+            settings = settings.DefaultIfNull();
 
-            HashSet<ElementId> segmentIds = new HashSet<ElementId>();
-            foreach (MultiSegmentGrid grid in new FilteredElementCollector(document, ids.ToList()).OfClass(typeof(MultiSegmentGrid)).Cast<MultiSegmentGrid>())
-            {
-                segmentIds.UnionWith(grid.GetGridIds());
-            }
+            Bracing bracing = refObjects.GetValue<Bracing>(familyInstance.Id);
+            if (bracing != null)
+                return bracing;
 
-            return ids.Except(segmentIds);
+            oM.Geometry.ICurve locationCurve = familyInstance.FramingElementLocation(settings);
+            IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
+            bracing = BH.Engine.Physical.Create.Bracing(locationCurve, property, familyInstance.Name);
+
+            //Set identifiers & custom data
+            bracing.SetIdentifiers(familyInstance);
+            bracing.SetCustomData(familyInstance);
+
+            refObjects.AddOrReplace(familyInstance.Id, bracing);
+            return bracing;
         }
 
         /***************************************************/
