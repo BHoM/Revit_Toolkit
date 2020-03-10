@@ -46,10 +46,12 @@ namespace BH.UI.Revit.Engine
             IProfile profile = refObjects.GetValue<IProfile>(familySymbol.Id);
             if (profile != null)
                 return profile;
-
-            string familyName = familySymbol.Family.Name;
+            
             Parameter sectionShapeParam = familySymbol.get_Parameter(BuiltInParameter.STRUCTURAL_SECTION_SHAPE);
             StructuralSectionShape sectionShape = sectionShapeParam == null ? sectionShape = StructuralSectionShape.NotDefined : (StructuralSectionShape)sectionShapeParam.AsInteger();
+
+            if (sectionShape == StructuralSectionShape.NotDefined)
+                sectionShape = familySymbol.Family.Name.SectionShape();
 
             switch (sectionShape)
             {
