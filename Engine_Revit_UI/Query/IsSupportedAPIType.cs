@@ -19,31 +19,21 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-
-using Autodesk.Revit.DB;
-using System.Collections.Generic;
+ 
+using System;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> RemoveGridSegmentIds(this IEnumerable<ElementId> ids, Document document)
+        public static bool IsSupportedAPIType(this Type type)
         {
-            if (ids == null || document == null)
-                return null;
-
-            HashSet<ElementId> segmentIds = new HashSet<ElementId>();
-            foreach (MultiSegmentGrid grid in new FilteredElementCollector(document, ids.ToList()).OfClass(typeof(MultiSegmentGrid)).Cast<MultiSegmentGrid>())
-            {
-                segmentIds.UnionWith(grid.GetGridIds());
-            }
-
-            return ids.Except(segmentIds);
+            return !UnsupportedAPITypes.Values.Any(x => x.Contains(type));
         }
 
         /***************************************************/

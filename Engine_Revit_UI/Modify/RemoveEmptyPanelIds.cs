@@ -22,7 +22,6 @@
 
 using Autodesk.Revit.DB;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -32,18 +31,23 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> RemoveGridSegmentIds(this IEnumerable<ElementId> ids, Document document)
+        public static HashSet<ElementId> RemoveEmptyPanelIds(this IEnumerable<ElementId> ids, Document document)
         {
-            if (ids == null || document == null)
-                return null;
-
-            HashSet<ElementId> segmentIds = new HashSet<ElementId>();
-            foreach (MultiSegmentGrid grid in new FilteredElementCollector(document, ids.ToList()).OfClass(typeof(MultiSegmentGrid)).Cast<MultiSegmentGrid>())
+            HashSet<ElementId> result = new HashSet<ElementId>();
+            foreach (ElementId elementId in ids)
             {
-                segmentIds.UnionWith(grid.GetGridIds());
+                Panel panel = document.GetElement(elementId) as Panel;
+                if (panel != null)
+                {
+                    ElementId hostId = panel.FindHostPanel();
+                    if (hostId != null && hostId != ElementId.InvalidElementId)
+                        continue;
+                }
+
+                result.Add(elementId);
             }
 
-            return ids.Except(segmentIds);
+            return result;
         }
 
         /***************************************************/

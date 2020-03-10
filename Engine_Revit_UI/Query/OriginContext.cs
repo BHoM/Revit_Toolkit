@@ -21,31 +21,31 @@
  */
 
 using Autodesk.Revit.DB;
-using System.Collections.Generic;
-using System.Linq;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Environment.Fragments;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> RemoveGridSegmentIds(this IEnumerable<ElementId> ids, Document document)
+        public static OriginContextFragment OriginContext(this HostObject hostObject, RevitSettings settings)
         {
-            if (ids == null || document == null)
+            if (hostObject == null)
                 return null;
 
-            HashSet<ElementId> segmentIds = new HashSet<ElementId>();
-            foreach (MultiSegmentGrid grid in new FilteredElementCollector(document, ids.ToList()).OfClass(typeof(MultiSegmentGrid)).Cast<MultiSegmentGrid>())
-            {
-                segmentIds.UnionWith(grid.GetGridIds());
-            }
-
-            return ids.Except(segmentIds);
+            OriginContextFragment originContext = new OriginContextFragment();
+            originContext.ElementID = hostObject.Id.IntegerValue.ToString();
+            originContext.TypeName = hostObject.FamilyTypeFullName();
+            originContext.UpdateValues(settings, hostObject);
+            originContext.UpdateValues(settings, hostObject.Document.GetElement(hostObject.GetTypeId()) as ElementType);
+            return originContext;
         }
 
         /***************************************************/
     }
 }
+

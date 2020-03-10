@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry.ShapeProfiles;
@@ -48,65 +49,33 @@ namespace BH.UI.Revit.Engine
             if (bars != null)
                 return bars;
             
+            // Get bar curve
             oM.Geometry.ICurve locationCurve = null;
-            BH.oM.Geometry.Vector startOffset = new oM.Geometry.Vector { X = 0, Y = 0, Z = 0 };
-            BH.oM.Geometry.Vector endOffset = new oM.Geometry.Vector { X = 0, Y = 0, Z = 0 };
-
             AnalyticalModelStick analyticalModel = familyInstance.GetAnalyticalModel() as AnalyticalModelStick;
             if (analyticalModel != null)
-                analyticalModel.AnalyticalBarLocation(out locationCurve, settings);
+            {
+                Curve curve = analyticalModel.GetCurve();
+                if (curve != null)
+                    locationCurve = curve.IToBHoM();
+            }
 
             if (locationCurve != null)
                 familyInstance.AnalyticalPullWarning();
             else
-            {
-                familyInstance.FramingElementLocation(out locationCurve, out startOffset, out endOffset, settings);
+                locationCurve = familyInstance.FramingElementLocation(settings);
 
-                if (locationCurve == null)
-                    familyInstance.BarCurveNotFoundWarning();
-                else
-                {
-                    //TODO: wrap it into single method both in FramingElement and Bar
-                    //TODO: for nonlinear bars this should be actual offset, not translation?
-                    double startOffsetLength = BH.Engine.Geometry.Query.Length(startOffset);
-                    double endOffsetLength = BH.Engine.Geometry.Query.Length(endOffset);
-                    if (startOffsetLength > BH.oM.Geometry.Tolerance.Distance || endOffsetLength > BH.oM.Geometry.Tolerance.Distance)
-                    {
-                        Transform transform = familyInstance.GetTotalTransform();
-                        //if (BH.Engine.Geometry.Query.Distance(startOffset, endOffset) <= BH.oM.Geometry.Tolerance.Distance)
-                        //{
-                        //    BH.oM.Geometry.Vector yOffset = new BH.oM.Geometry.Vector { X = transform.BasisY.X * startOffset.Y, Y = transform.BasisY.Y * startOffset.Y, Z = transform.BasisY.Z * startOffset.Y };
-                        //    BH.oM.Geometry.Vector zOffset = new BH.oM.Geometry.Vector { X = transform.BasisZ.X * startOffset.Z, Y = transform.BasisZ.Y * startOffset.Z, Z = transform.BasisZ.Z * startOffset.Z };
-                        //    locationCurve = BHG.Modify.Translate(locationCurve as dynamic, yOffset - zOffset);
-                        //}
-                        if (locationCurve is BH.oM.Geometry.Line)
-                        {
-                            BH.oM.Geometry.Line l = locationCurve as BH.oM.Geometry.Line;
-                            BH.oM.Geometry.Vector yOffsetStart = new BH.oM.Geometry.Vector { X = transform.BasisY.X * startOffset.Y, Y = transform.BasisY.Y * startOffset.Y, Z = transform.BasisY.Z * startOffset.Y };
-                            BH.oM.Geometry.Vector zOffsetStart = new BH.oM.Geometry.Vector { X = transform.BasisZ.X * startOffset.Z, Y = transform.BasisZ.Y * startOffset.Z, Z = transform.BasisZ.Z * startOffset.Z };
-                            BH.oM.Geometry.Vector yOffsetEnd = new BH.oM.Geometry.Vector { X = transform.BasisY.X * endOffset.Y, Y = transform.BasisY.Y * endOffset.Y, Z = transform.BasisY.Z * endOffset.Y };
-                            BH.oM.Geometry.Vector zOffsetEnd = new BH.oM.Geometry.Vector { X = transform.BasisZ.X * endOffset.Z, Y = transform.BasisZ.Y * endOffset.Z, Z = transform.BasisZ.Z * endOffset.Z };
-                            locationCurve = new BH.oM.Geometry.Line { Start = BH.Engine.Geometry.Modify.Translate(l.Start, yOffsetStart - zOffsetStart), End = BH.Engine.Geometry.Modify.Translate(l.End, yOffsetEnd - zOffsetEnd) };
-                        }
-                        else
-                            BH.Engine.Reflection.Compute.RecordWarning(string.Format("Offset/justification of nonlinear framing is currently not supported. Revit justification and offset has been ignored. Element Id: {0}", familyInstance.Id.IntegerValue));
-                    }
-                }
-            }
-            
+            // Get bar material
             string materialGrade = familyInstance.MaterialGrade();
             IMaterialFragment materialFragment = familyInstance.StructuralMaterialType.LibraryMaterial(materialGrade);
 
             if (materialFragment == null)
             {
-                //Compute.MaterialNotInLibraryNote(familyInstance);
-
                 // Check if an instance or type Structural Material parameter exists.
                 ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
                 if (structuralMaterialId.IntegerValue < 0)
                     structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
 
-                materialFragment = (familyInstance.Document.GetElement(structuralMaterialId) as Autodesk.Revit.DB.Material).ToBHoMMaterialFragment(null, settings, refObjects);
+                materialFragment = (familyInstance.Document.GetElement(structuralMaterialId) as Material).ToBHoMMaterialFragment(null, settings, refObjects);
             }
 
             if (materialFragment == null)
@@ -114,32 +83,9 @@ namespace BH.UI.Revit.Engine
                 Compute.InvalidDataMaterialWarning(familyInstance);
                 materialFragment = familyInstance.StructuralMaterialType.EmptyMaterialFragment();
             }
-
-            //TODO: this probably should be deleted - the Physical material in RefObjects has no properties by definition (it gets updated after being set to RefObjects)
-            //if (materialFragment == null)
-            //{
-            //    BH.oM.Physical.Materials.Material material = pullSettings.FindRefObject<oM.Physical.Materials.Material>(familyInstance.StructuralMaterialId.IntegerValue);
-            //    if (material != null)
-            //        materialFragment = material.GetMaterialProperties(oM.Adapters.Revit.Enums.Discipline.Structural).FirstOrDefault() as IMaterialFragment;
-            //    else
-            //    {
-            //        if (materialFragment == null)
-            //        {
-            //            //Compute.MaterialNotInLibraryNote(familyInstance);
-            //            materialFragment = (familyInstance.Document.GetElement(familyInstance.StructuralMaterialId) as Autodesk.Revit.DB.Material).ToBHoMMaterialFragment(pullSettings);
-            //        }
-
-            //        if (materialFragment == null)
-            //        {
-            //            Compute.InvalidDataMaterialWarning(familyInstance);
-            //            materialFragment = BHoMEmptyMaterialFragment(familyInstance.StructuralMaterialType, pullSettings);
-            //        }
-            //    }
-            //}
-
-            string elementName = familyInstance.Name;
+            
+            // Get bar profile and create property
             string profileName = familyInstance.Symbol.Name;
-
             ISectionProperty property = BH.Engine.Library.Query.Match("SectionProperties", profileName) as ISectionProperty;
 
             if (property == null)
@@ -164,16 +110,13 @@ namespace BH.UI.Revit.Engine
                 property.Name = profileName;
             }
             
+            // Create linear bars
             bars = new List<Bar>();
-
             if (locationCurve != null)
             {
                 double rotation = familyInstance.FramingElementRotation(settings);
-                foreach (BH.oM.Geometry.Line line in BH.Engine.Geometry.Query.SubParts(BH.Engine.Geometry.Modify.ICollapseToPolyline(locationCurve, Math.PI / 12)))
+                foreach (BH.oM.Geometry.Line line in locationCurve.ICollapseToPolyline(Math.PI / 12).SubParts())
                 {
-                    //Bar bar = BH.Engine.Structure.Create.Bar(line, property, rotation);
-                    //bar.Offset = new oM.Structure.Offsets.Offset { Start = startOffset, End = endOffset };
-                    //bars.Add(bar);
                     bars.Add(BH.Engine.Structure.Create.Bar(line, property, rotation));
                 }
             }
@@ -182,32 +125,15 @@ namespace BH.UI.Revit.Engine
 
             for (int i = 0; i < bars.Count; i++)
             {
-                bars[i].Name = elementName;
+                bars[i].Name = familyInstance.Name;
 
                 //Set identifiers & custom data
                 bars[i].SetIdentifiers(familyInstance);
                 bars[i].SetCustomData(familyInstance);
-
-                refObjects.AddOrReplace(familyInstance.Id, bars[i]);
             }
-            
+
+            refObjects.AddOrReplace(familyInstance.Id, bars);
             return bars;
-        }
-
-
-        /***************************************************/
-        /****              Private Methods              ****/
-        /***************************************************/
-
-        private static void AnalyticalBarLocation(this AnalyticalModelStick analyticalModel, out oM.Geometry.ICurve locationCurve, RevitSettings settings = null)
-        {
-            locationCurve = null;
-
-            Curve curve = analyticalModel.GetCurve();
-            if (curve == null)
-                return;
-
-            locationCurve = curve.IToBHoM();
         }
 
         /***************************************************/

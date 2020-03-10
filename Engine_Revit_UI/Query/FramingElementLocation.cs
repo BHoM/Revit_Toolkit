@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -21,177 +21,24 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Geometry.ShapeProfiles;
-using BH.oM.Physical.Elements;
-using BH.oM.Physical.FramingProperties;
+using BH.oM.Geometry;
 using System;
-using System.Collections.Generic;
-using BHG = BH.Engine.Geometry;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public static IFramingElement ToBHoMFramingElement(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static ICurve FramingElementLocation(this FamilyInstance familyInstance, RevitSettings settings)
         {
-            settings = settings.DefaultIfNull();
-
-            IFramingElement framingElement = refObjects.GetValue<IFramingElement>(familyInstance.Id);
-            if (framingElement != null)
-                return framingElement;
-
-            Type framingType = ((BuiltInCategory)familyInstance.Category.Id.IntegerValue).FramingType();
-            if (framingType == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError(string.Format("Category of the element is not supported by IFramingElement. Element Id: {0}", familyInstance.Id.IntegerValue));
-                return null;
-            }
-
-            oM.Geometry.ICurve locationCurve = null;
-            oM.Geometry.Vector startOffset;
-            oM.Geometry.Vector endOffset;
-            
-            familyInstance.FramingElementLocation(out locationCurve, out startOffset, out endOffset, settings);
-            if (locationCurve == null)
-                familyInstance.BarCurveNotFoundWarning();
-            
-            //TODO: wrap it into single method both in FramingElement and Bar
-            //TODO: for nonlinear bars this should be actual offset, not translation?
-            double startOffsetLength = BH.Engine.Geometry.Query.Length(startOffset);
-            double endOffsetLength = BH.Engine.Geometry.Query.Length(endOffset);
-            if (startOffsetLength > BH.oM.Geometry.Tolerance.Distance || endOffsetLength > BH.oM.Geometry.Tolerance.Distance)
-            {
-                Transform transform = familyInstance.GetTotalTransform();
-                //if (BH.Engine.Geometry.Query.Distance(startOffset, endOffset) <= BH.oM.Geometry.Tolerance.Distance)
-                //{
-                //    BH.oM.Geometry.Vector yOffset = new BH.oM.Geometry.Vector { X = transform.BasisY.X * startOffset.Y, Y = transform.BasisY.Y * startOffset.Y, Z = transform.BasisY.Z * startOffset.Y };
-                //    BH.oM.Geometry.Vector zOffset = new BH.oM.Geometry.Vector { X = transform.BasisZ.X * startOffset.Z, Y = transform.BasisZ.Y * startOffset.Z, Z = transform.BasisZ.Z * startOffset.Z };
-                //    locationCurve = BHG.Modify.Translate(locationCurve as dynamic, yOffset - zOffset);
-                //}
-                if (locationCurve is BH.oM.Geometry.Line)
-                {
-                    BH.oM.Geometry.Line l = locationCurve as BH.oM.Geometry.Line;
-                    BH.oM.Geometry.Vector yOffsetStart = new BH.oM.Geometry.Vector { X = transform.BasisY.X * startOffset.Y, Y = transform.BasisY.Y * startOffset.Y, Z = transform.BasisY.Z * startOffset.Y };
-                    BH.oM.Geometry.Vector zOffsetStart = new BH.oM.Geometry.Vector { X = transform.BasisZ.X * startOffset.Z, Y = transform.BasisZ.Y * startOffset.Z, Z = transform.BasisZ.Z * startOffset.Z };
-                    BH.oM.Geometry.Vector yOffsetEnd = new BH.oM.Geometry.Vector { X = transform.BasisY.X * endOffset.Y, Y = transform.BasisY.Y * endOffset.Y, Z = transform.BasisY.Z * endOffset.Y };
-                    BH.oM.Geometry.Vector zOffsetEnd = new BH.oM.Geometry.Vector { X = transform.BasisZ.X * endOffset.Z, Y = transform.BasisZ.Y * endOffset.Z, Z = transform.BasisZ.Z * endOffset.Z };
-                    locationCurve = new BH.oM.Geometry.Line { Start = BH.Engine.Geometry.Modify.Translate(l.Start, yOffsetStart - zOffsetStart), End = BH.Engine.Geometry.Modify.Translate(l.End, yOffsetEnd - zOffsetEnd) };
-                }
-                else
-                    BH.Engine.Reflection.Compute.RecordWarning(string.Format("Offset/justification of nonlinear framing is currently not supported. Revit justification and offset has been ignored. Element Id: {0}", familyInstance.Id.IntegerValue));
-            }
-            
-            // Check if an instance or type Structural Material parameter exists.
-            ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
-            if (structuralMaterialId.IntegerValue < 0)
-                structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
-
-            Autodesk.Revit.DB.Material revitMaterial = familyInstance.Document.GetElement(structuralMaterialId) as Autodesk.Revit.DB.Material;
-            BH.oM.Physical.Materials.Material material = refObjects.GetValue<oM.Physical.Materials.Material>(structuralMaterialId.IntegerValue);
-
-            if (material == null)
-                material = revitMaterial.ToBHoMEmptyMaterial(settings, refObjects);
-
-            string materialGrade = familyInstance.MaterialGrade();
-            material = material.UpdateMaterialProperties(revitMaterial, materialGrade, familyInstance.StructuralMaterialType, settings);
-
-            string elementName = familyInstance.Name;
-            string profileName = familyInstance.Symbol.Name;
-
-            IProfile profile = familyInstance.Symbol.ToBHoMProfile(settings, refObjects);
-            if (profile == null)
-                profile = familyInstance.BHoMFreeFormProfile(settings, refObjects);
-
-            if (profile == null)
-            {
-                familyInstance.Symbol.NotConvertedWarning();
-
-                //TODO: this should be removed and null passed finally?
-                profile = new FreeFormProfile(new List<oM.Geometry.ICurve>());
-            }
-
-            double rotation = familyInstance.FramingElementRotation(settings);
-            ConstantFramingProperty property = BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, profileName);
-            
-            if (framingType == typeof(BH.oM.Physical.Elements.Beam))
-                framingElement = BH.Engine.Physical.Create.Beam(locationCurve, property, elementName);
-            else if (framingType == typeof(BH.oM.Physical.Elements.Bracing))
-                framingElement = BH.Engine.Physical.Create.Bracing(locationCurve, property, elementName);
-            else if (framingType == typeof(BH.oM.Physical.Elements.Column))
-                framingElement = BH.Engine.Physical.Create.Column(locationCurve, property, elementName);
-            else
-                framingElement = BH.Engine.Physical.Create.Beam(locationCurve, property, elementName);
-
-            //Set identifiers & custom data
-            framingElement.SetIdentifiers(familyInstance);
-            framingElement.SetCustomData(familyInstance);
-
-            refObjects.AddOrReplace(familyInstance.Id, framingElement);
-            return framingElement;
-        }
-
-
-        /***************************************************/
-        /****              Private Methods              ****/
-        /***************************************************/
-
-        private static double FramingElementRotation(this FamilyInstance familyInstance, RevitSettings settings)
-        {
-            double rotation = double.NaN;
-            Location location = familyInstance.Location;
-
-            if (location is LocationPoint)
-                rotation = Math.PI * 0.5 + (location as LocationPoint).Rotation;
-            else if (location is LocationCurve)
-            {
-                BH.oM.Geometry.ICurve locationCurve = (location as LocationCurve).Curve.IToBHoM();
-                if (locationCurve is BH.oM.Geometry.Line)
-                {
-                    Transform transform = familyInstance.GetTotalTransform();
-                    if (BHG.Query.IsVertical(locationCurve as BH.oM.Geometry.Line))
-                    {
-                        if (familyInstance.IsSlantedColumn)
-                            rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisX, transform.BasisZ);
-                        else
-                            rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisY, transform.BasisX);
-                    }
-                    else
-                    {
-                        if (familyInstance.IsSlantedColumn)
-                            rotation = XYZ.BasisZ.AngleOnPlaneTo(transform.BasisY, transform.BasisZ);
-                        else
-                            rotation = XYZ.BasisZ.AngleOnPlaneTo(transform.BasisZ, transform.BasisX);
-                    }
-                }
-                else
-                {
-                    if (IsVerticalNonLinearCurve((location as LocationCurve).Curve))
-                        rotation = Math.PI * 0.5 - familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
-                    else
-                        rotation = -familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
-
-                    if (familyInstance.Mirrored)
-                        rotation *= -1;
-                }
-            }
-
-            return rotation;
-        }
-
-        /***************************************************/
-
-        private static void FramingElementLocation(this FamilyInstance familyInstance, out oM.Geometry.ICurve locationCurve, out BH.oM.Geometry.Vector startOffset, out BH.oM.Geometry.Vector endOffset, RevitSettings settings)
-        {
-            locationCurve = null;
-            startOffset = new oM.Geometry.Vector { X = 0, Y = 0, Z = 0 };
-            endOffset = new oM.Geometry.Vector { X = 0, Y = 0, Z = 0 };
+            ICurve locationCurve = null;
+            Vector startOffset = new Vector { X = 0, Y = 0, Z = 0 };
+            Vector endOffset = new Vector { X = 0, Y = 0, Z = 0 };
 
             Location location = familyInstance.Location;
 
@@ -227,8 +74,8 @@ namespace BH.UI.Revit.Engine
                     if (locationCurve is BH.oM.Geometry.Line)
                     {
                         BH.oM.Geometry.Line locationLine = locationCurve as BH.oM.Geometry.Line;
-                        BH.oM.Geometry.Vector direction = BH.Engine.Geometry.Query.Direction(locationLine);
-                        double angle = BH.Engine.Geometry.Query.Angle(direction, BH.oM.Geometry.Vector.ZAxis);
+                        Vector direction = locationLine.Direction();
+                        double angle = direction.Angle(Vector.ZAxis);
 
                         int attachedBase = familyInstance.LookupParameterInteger(BuiltInParameter.COLUMN_BASE_ATTACHED_PARAM);
                         int attachedTop = familyInstance.LookupParameterInteger(BuiltInParameter.COLUMN_TOP_ATTACHED_PARAM);
@@ -241,7 +88,7 @@ namespace BH.UI.Revit.Engine
                         else
                         {
                             double baseExtensionValue = familyInstance.LookupParameterDouble(BuiltInParameter.SLANTED_COLUMN_BASE_EXTENSION);
-                            if (!double.IsNaN(baseExtensionValue) && Math.Abs(baseExtensionValue) > BH.oM.Geometry.Tolerance.Distance)
+                            if (!double.IsNaN(baseExtensionValue) && Math.Abs(baseExtensionValue) > Tolerance.Distance)
                             {
                                 int baseCutStyle = familyInstance.LookupParameterInteger(BuiltInParameter.SLANTED_COLUMN_BASE_CUT_STYLE);
                                 switch (baseCutStyle)
@@ -264,7 +111,7 @@ namespace BH.UI.Revit.Engine
                         else
                         {
                             double topExtensionValue = familyInstance.LookupParameterDouble(BuiltInParameter.SLANTED_COLUMN_TOP_EXTENSION);
-                            if (!double.IsNaN(topExtensionValue) && Math.Abs(topExtensionValue) > BH.oM.Geometry.Tolerance.Distance)
+                            if (!double.IsNaN(topExtensionValue) && Math.Abs(topExtensionValue) > Tolerance.Distance)
                             {
                                 int topCutStyle = familyInstance.LookupParameterInteger(BuiltInParameter.SLANTED_COLUMN_TOP_CUT_STYLE);
                                 switch (topCutStyle)
@@ -289,7 +136,7 @@ namespace BH.UI.Revit.Engine
                     else
                         BH.Engine.Reflection.Compute.RecordWarning(string.Format("A nonlinear slanted column has been detected. Attachment properties are lost. Element Id: {0}", familyInstance.Id.IntegerValue));
                 }
-                
+
                 int yzJustification = familyInstance.LookupParameterInteger(BuiltInParameter.YZ_JUSTIFICATION);
                 if (yzJustification == 0)
                 {
@@ -374,26 +221,32 @@ namespace BH.UI.Revit.Engine
                     endOffset = (new XYZ(0, yOffsetEnd, zOffsetEnd)).ToBHoMVector();
                 }
             }
-        }
+            
+            if (locationCurve == null)
+                familyInstance.BarCurveNotFoundWarning();
 
-        /***************************************************/
-
-        private static bool IsVerticalNonLinearCurve(Curve revitCurve)
-        {
-            if (!(revitCurve is Line))
+            //TODO: for nonlinear bars this should be actual offset, not translation?
+            double startOffsetLength = startOffset.Length();
+            double endOffsetLength = endOffset.Length();
+            if (startOffsetLength > Tolerance.Distance || endOffsetLength > Tolerance.Distance)
             {
-                CurveLoop curveLoop = CurveLoop.Create(new Curve[] { revitCurve });
-                if (curveLoop.HasPlane())
+                Transform transform = familyInstance.GetTotalTransform();
+                if (locationCurve is BH.oM.Geometry.Line)
                 {
-                    Plane curvePlane = curveLoop.GetPlane();
-                    //Orientation angles are handled slightly differently for framing elements that have a curve fits in a plane that contains the z-vector
-                    if (Math.Abs(curvePlane.Normal.DotProduct(XYZ.BasisZ)) < BH.oM.Geometry.Tolerance.Angle)
-                        return true;
+                    BH.oM.Geometry.Line l = locationCurve as BH.oM.Geometry.Line;
+                    Vector yOffsetStart = new Vector { X = transform.BasisY.X * startOffset.Y, Y = transform.BasisY.Y * startOffset.Y, Z = transform.BasisY.Z * startOffset.Y };
+                    Vector zOffsetStart = new Vector { X = transform.BasisZ.X * startOffset.Z, Y = transform.BasisZ.Y * startOffset.Z, Z = transform.BasisZ.Z * startOffset.Z };
+                    Vector yOffsetEnd = new Vector { X = transform.BasisY.X * endOffset.Y, Y = transform.BasisY.Y * endOffset.Y, Z = transform.BasisY.Z * endOffset.Y };
+                    Vector zOffsetEnd = new Vector { X = transform.BasisZ.X * endOffset.Z, Y = transform.BasisZ.Y * endOffset.Z, Z = transform.BasisZ.Z * endOffset.Z };
+                    locationCurve = new BH.oM.Geometry.Line { Start = l.Start.Translate(yOffsetStart - zOffsetStart), End = l.End.Translate(yOffsetEnd - zOffsetEnd) };
                 }
+                else
+                    BH.Engine.Reflection.Compute.RecordWarning(string.Format("Offset/justification of nonlinear framing is currently not supported. Revit justification and offset has been ignored. Element Id: {0}", familyInstance.Id.IntegerValue));
             }
-            return false;
-        }
 
+            return locationCurve;
+        }
+        
         /***************************************************/
     }
 }

@@ -58,7 +58,7 @@ namespace BH.UI.Revit.Engine
 
         public static bool SetLocation(this FamilyInstance element, Column column, RevitSettings settings)
         {
-            if (!typeof(Column).BuiltInCategories().ToList().Contains((BuiltInCategory)element.Category.Id.IntegerValue))
+            if (!(typeof(Column).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.IntegerValue)))
                 return false;
 
             oM.Geometry.Line columnLine = column.Location as oM.Geometry.Line;
@@ -113,7 +113,7 @@ namespace BH.UI.Revit.Engine
 
         public static bool SetLocation(this FamilyInstance element, IFramingElement framingElement, RevitSettings settings)
         {
-            if (!typeof(IFramingElement).BuiltInCategories().ToList().Contains((BuiltInCategory)element.Category.Id.IntegerValue))
+            if (!(typeof(IFramingElement).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.IntegerValue)))
                 return false;
 
             return element.SetLocation(framingElement.Location, settings);
