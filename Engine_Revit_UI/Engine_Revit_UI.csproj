@@ -355,6 +355,7 @@
     <Compile Include="Query\OriginContext.cs" />
     <Compile Include="Query\PlanarSurfaceDictionary.cs" />
     <Compile Include="Query\RevitTypes.cs" />
+    <Compile Include="Query\SectionShape.cs" />
     <Compile Include="Query\Solids.cs" />
     <Compile Include="Query\FamilySymbols.cs" />
     <Compile Include="Query\HighElevation.cs" />
@@ -405,7 +406,6 @@
     <Compile Include="Query\Outlines.cs" />
     <Compile Include="Query\SpatialElementId.cs" />
     <Compile Include="Query\HostedBuildingElements.cs" />
-    <Compile Include="Query\BHoMTypes.cs" />
     <Compile Include="Query\Level.cs" />
     <Compile Include="Query\LookupParameter.cs" />
     <Compile Include="Query\Profiles.cs" />

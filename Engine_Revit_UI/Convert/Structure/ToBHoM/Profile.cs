@@ -111,430 +111,6 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static CircleProfile ToBHoMCircleProfile(this FamilySymbol familySymbol)
-        {
-            double diameter;
-            StructuralSection section = familySymbol.GetStructuralSection();
-            if (section is StructuralSectionConcreteRound)
-                diameter = (section as StructuralSectionConcreteRound).Diameter.ToSI(UnitType.UT_Section_Dimension);
-            else if (section is StructuralSectionConcreteRound)
-                diameter = (section as StructuralSectionConcreteRound).Diameter.ToSI(UnitType.UT_Section_Dimension);
-            else
-                diameter = familySymbol.LookupParameterDouble(diameterNames);
-
-            if (!double.IsNaN(diameter))
-                return BHG.Create.CircleProfile(diameter);
-            else
-            {
-                double radius = familySymbol.LookupParameterDouble(radiusNames);
-                if (!double.IsNaN(radius))
-                    return BHG.Create.CircleProfile(radius * 2);
-            }
-
-            return null;
-        }
-
-        /***************************************************/
-
-        public static FabricatedISectionProfile ToBHoMFabricatedISectionProfile(this FamilySymbol familySymbol)
-        {
-            double height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize;
-            StructuralSection section = familySymbol.GetStructuralSection();
-            if (section is StructuralSectionIWelded)
-            {
-                StructuralSectionIWelded sectionType = section as StructuralSectionIWelded;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                topFlangeWidth = sectionType.TopFlangeWidth.ToSI(UnitType.UT_Section_Dimension);
-                botFlangeWidth = sectionType.BottomFlangeWidth.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
-                topFlangeThickness = sectionType.TopFlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                botFlangeThickness = sectionType.BottomFlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                weldSize = 0;
-            }
-            else
-            {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                topFlangeWidth = familySymbol.LookupParameterDouble(topFlangeWidthNames);
-                botFlangeWidth = familySymbol.LookupParameterDouble(botFlangeWidthNames);
-                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
-                topFlangeThickness = familySymbol.LookupParameterDouble(topFlangeThicknessNames);
-                botFlangeThickness = familySymbol.LookupParameterDouble(botFlangeThicknessNames);
-                weldSize = familySymbol.LookupParameterDouble(weldSizeNames1);
-            }
-
-            if (double.IsNaN(weldSize))
-            {
-                weldSize = familySymbol.LookupParameterDouble(weldSizeNames2);
-                if (!double.IsNaN(weldSize) && !double.IsNaN(webThickness))
-                    weldSize = (weldSize - webThickness) / (Math.Sqrt(2));
-                else
-                    weldSize = 0;
-            }
-
-            if (!double.IsNaN(height) && !double.IsNaN(topFlangeWidth) && !double.IsNaN(botFlangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(topFlangeThickness) && !double.IsNaN(botFlangeThickness))
-                return BHG.Create.FabricatedISectionProfile(height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize);
-
-            return null;
-        }
-
-        /***************************************************/
-
-        public static RectangleProfile ToBHoMRectangleProfile(this FamilySymbol familySymbol)
-        {
-            double height, width, cornerRadius;
-            StructuralSection section = familySymbol.GetStructuralSection();
-            if (section is StructuralSectionConcreteRectangle)
-            {
-                StructuralSectionConcreteRectangle sectionType = section as StructuralSectionConcreteRectangle;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                cornerRadius = 0;
-            }
-            else if (section is StructuralSectionRectangularBar)
-            {
-                StructuralSectionRectangularBar sectionType = section as StructuralSectionRectangularBar;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                cornerRadius = 0;
-            }
-            else if (section is StructuralSectionRectangleParameterized)
-            {
-                StructuralSectionRectangleParameterized sectionType = section as StructuralSectionRectangleParameterized;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                cornerRadius = 0;
-            }
-            else
-            {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                width = familySymbol.LookupParameterDouble(widthNames);
-                cornerRadius = familySymbol.LookupParameterDouble(cornerRadiusNames);
-            }
-
-            if (double.IsNaN(cornerRadius))
-                cornerRadius = 0;
-
-            if (!double.IsNaN(height) && !double.IsNaN(width))
-                return BHG.Create.RectangleProfile(height, width, cornerRadius);
-
-            return null;
-        }
-
-        /***************************************************/
-
-        public static AngleProfile ToBHoMAngleProfile(this FamilySymbol familySymbol)
-        {
-            double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
-            StructuralSection section = familySymbol.GetStructuralSection();
-            if (section is StructuralSectionLAngle)
-            {
-                StructuralSectionLAngle sectionType = section as StructuralSectionLAngle;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
-                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
-            }
-            else if (section is StructuralSectionLProfile)
-            {
-                //TODO: Implement cold-formed profiles?
-                StructuralSectionLProfile sectionType = section as StructuralSectionLProfile;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.InnerFillet.ToSI(UnitType.UT_Section_Dimension);
-                toeRadius = 0;
-            }
-            else
-            {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                width = familySymbol.LookupParameterDouble(widthNames);
-                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
-                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
-                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
-                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
-            }
-
-            if (double.IsNaN(rootRadius))
-                rootRadius = 0;
-
-            if (double.IsNaN(toeRadius))
-                toeRadius = 0;
-
-            if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
-                return BHG.Create.AngleProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
-
-            return null;
-        }
-
-        /***************************************************/
-
-        public static BoxProfile ToBHoMBoxProfile(this FamilySymbol familySymbol)
-        {
-            double height, width, thickness, outerRadius, innerRadius;
-            StructuralSection section = familySymbol.GetStructuralSection();
-            if (section is StructuralSectionRectangleHSS)
-            {
-                StructuralSectionRectangleHSS sectionType = section as StructuralSectionRectangleHSS;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                thickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                outerRadius = sectionType.OuterFillet.ToSI(UnitType.UT_Section_Dimension);
-                innerRadius = sectionType.InnerFillet.ToSI(UnitType.UT_Section_Dimension);
-            }
-            else
-            {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                width = familySymbol.LookupParameterDouble(widthNames);
-                thickness = familySymbol.LookupParameterDouble(wallThicknessNames);
-                outerRadius = familySymbol.LookupParameterDouble(outerRadiusNames);
-                innerRadius = familySymbol.LookupParameterDouble(innerRadiusNames);
-            }
-
-            if (double.IsNaN(outerRadius))
-                outerRadius = 0;
-
-            if (double.IsNaN(innerRadius))
-                innerRadius = 0;
-
-            if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(thickness))
-                return BHG.Create.BoxProfile(height, width, thickness, outerRadius, innerRadius);
-
-            return null;
-        }
-
-        /***************************************************/
-
-        public static ChannelProfile ToBHoMChannelProfile(this FamilySymbol familySymbol)
-        {
-            double height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius;
-            StructuralSection section = familySymbol.GetStructuralSection();
-            if (section is StructuralSectionCParallelFlange)
-            {
-                StructuralSectionCParallelFlange sectionType = section as StructuralSectionCParallelFlange;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                flangeWidth = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
-                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
-            }
-            else if (section is StructuralSectionCProfile)
-            {
-                //TODO: Implement cold-formed profiles?
-                StructuralSectionCProfile sectionType = section as StructuralSectionCProfile;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                flangeWidth = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.InnerFillet.ToSI(UnitType.UT_Section_Dimension);
-                toeRadius = 0;
-            }
-            else
-            {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                flangeWidth = familySymbol.LookupParameterDouble(widthNames);
-                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
-                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
-                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
-                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
-            }
-
-            if (double.IsNaN(rootRadius))
-                rootRadius = 0;
-
-            if (double.IsNaN(toeRadius))
-                toeRadius = 0;
-
-            if (!double.IsNaN(height) && !double.IsNaN(flangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
-                return BHG.Create.ChannelProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
-
-            return null;
-        }
-
-        /***************************************************/
-
-        public static ISectionProfile ToBHoMISectionProfile(this FamilySymbol familySymbol)
-        {
-            double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
-            StructuralSection section = familySymbol.GetStructuralSection();
-            if (section is StructuralSectionIParallelFlange)
-            {
-                StructuralSectionIParallelFlange sectionType = section as StructuralSectionIParallelFlange;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
-                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
-            }
-            else if (section is StructuralSectionIWideFlange)
-            {
-                StructuralSectionIWideFlange sectionType = section as StructuralSectionIWideFlange;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
-                toeRadius = 0;
-            }
-            else
-            {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                width = familySymbol.LookupParameterDouble(widthNames);
-                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
-                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
-                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
-                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
-            }
-
-            if (double.IsNaN(rootRadius))
-                rootRadius = 0;
-
-            if (double.IsNaN(toeRadius))
-                toeRadius = 0;
-
-            if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
-                return BHG.Create.ISectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
-
-            return null;
-        }
-
-        /***************************************************/
-
-        public static TSectionProfile ToBHoMTSectionProfile(this FamilySymbol familySymbol)
-        {
-            double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
-
-            StructuralSection section = familySymbol.GetStructuralSection();
-            if (section is StructuralSectionISplitParallelFlange)
-            {
-                StructuralSectionISplitParallelFlange sectionType = section as StructuralSectionISplitParallelFlange;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
-                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
-            }
-            else if (section is StructuralSectionStructuralTees)
-            {
-                StructuralSectionStructuralTees sectionType = section as StructuralSectionStructuralTees;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
-                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
-            }
-            else if (section is StructuralSectionConcreteT)
-            {
-                StructuralSectionConcreteT sectionType = section as StructuralSectionConcreteT;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = (sectionType.Width + 2 * sectionType.CantileverLength).ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.CantileverHeight.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = 0;
-                toeRadius = 0;
-            }
-            else
-            {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                width = familySymbol.LookupParameterDouble(widthNames);
-                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
-                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
-                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
-                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
-            }
-
-            if (double.IsNaN(rootRadius))
-                rootRadius = 0;
-
-            if (double.IsNaN(toeRadius))
-                toeRadius = 0;
-
-            if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
-                return BHG.Create.TSectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
-
-            return null;
-        }
-
-        /***************************************************/
-
-        public static ZSectionProfile ToBHoMZSectionProfile(this FamilySymbol familySymbol)
-        {
-            double height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius;
-            StructuralSection section = familySymbol.GetStructuralSection();
-            if (section is StructuralSectionZProfile)
-            {
-                StructuralSectionZProfile sectionType = section as StructuralSectionZProfile;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                flangeWidth = sectionType.BottomFlangeLength.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.InnerFillet.ToSI(UnitType.UT_Section_Dimension);
-                toeRadius = 0;
-            }
-            else
-            {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                flangeWidth = familySymbol.LookupParameterDouble(widthNames);
-                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
-                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
-                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
-                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
-            }
-
-            if (double.IsNaN(rootRadius))
-                rootRadius = 0;
-
-            if (double.IsNaN(toeRadius))
-                toeRadius = 0;
-
-            if (!double.IsNaN(height) && !double.IsNaN(flangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
-                return BHG.Create.ZSectionProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
-
-            return null;
-        }
-
-        /***************************************************/
-
-        public static TubeProfile ToBHoMTubeProfile(this FamilySymbol familySymbol)
-        {
-            double thickness, diameter;
-            StructuralSection section = familySymbol.GetStructuralSection();
-            if (section is StructuralSectionPipeStandard)
-            {
-                StructuralSectionPipeStandard sectionType = section as StructuralSectionPipeStandard;
-                thickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                diameter = sectionType.Diameter.ToSI(UnitType.UT_Section_Dimension);
-            }
-            else if (section is StructuralSectionRoundHSS)
-            {
-                StructuralSectionRoundHSS sectionType = section as StructuralSectionRoundHSS;
-                thickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                diameter = sectionType.Diameter.ToSI(UnitType.UT_Section_Dimension);
-            }
-            else
-            {
-                thickness = familySymbol.LookupParameterDouble(wallThicknessNames);
-                diameter = familySymbol.LookupParameterDouble(diameterNames);
-            }
-
-            if (!double.IsNaN(diameter) && !double.IsNaN(thickness))
-                return BHG.Create.TubeProfile(diameter, thickness);
-
-            double radius = familySymbol.LookupParameterDouble(radiusNames);
-            if (!double.IsNaN(radius) && !double.IsNaN(thickness))
-                return BHG.Create.TubeProfile(radius * 2, thickness);
-
-            return null;
-        }
-
-        /***************************************************/
-
         public static IProfile BHoMFreeFormProfile(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -653,6 +229,433 @@ namespace BH.UI.Revit.Engine
 
             refObjects.AddOrReplace(familyInstance.Symbol.Id, profile);
             return profile;
+        }
+
+
+        /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
+
+        private static CircleProfile ToBHoMCircleProfile(this FamilySymbol familySymbol)
+        {
+            double diameter;
+            StructuralSection section = familySymbol.GetStructuralSection();
+            if (section is StructuralSectionConcreteRound)
+                diameter = (section as StructuralSectionConcreteRound).Diameter.ToSI(UnitType.UT_Section_Dimension);
+            else if (section is StructuralSectionConcreteRound)
+                diameter = (section as StructuralSectionConcreteRound).Diameter.ToSI(UnitType.UT_Section_Dimension);
+            else
+                diameter = familySymbol.LookupParameterDouble(diameterNames);
+
+            if (!double.IsNaN(diameter))
+                return BHG.Create.CircleProfile(diameter);
+            else
+            {
+                double radius = familySymbol.LookupParameterDouble(radiusNames);
+                if (!double.IsNaN(radius))
+                    return BHG.Create.CircleProfile(radius * 2);
+            }
+
+            return null;
+        }
+
+        /***************************************************/
+
+        private static FabricatedISectionProfile ToBHoMFabricatedISectionProfile(this FamilySymbol familySymbol)
+        {
+            double height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize;
+            StructuralSection section = familySymbol.GetStructuralSection();
+            if (section is StructuralSectionIWelded)
+            {
+                StructuralSectionIWelded sectionType = section as StructuralSectionIWelded;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                topFlangeWidth = sectionType.TopFlangeWidth.ToSI(UnitType.UT_Section_Dimension);
+                botFlangeWidth = sectionType.BottomFlangeWidth.ToSI(UnitType.UT_Section_Dimension);
+                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
+                topFlangeThickness = sectionType.TopFlangeThickness.ToSI(UnitType.UT_Section_Dimension);
+                botFlangeThickness = sectionType.BottomFlangeThickness.ToSI(UnitType.UT_Section_Dimension);
+                weldSize = 0;
+            }
+            else
+            {
+                height = familySymbol.LookupParameterDouble(heightNames);
+                topFlangeWidth = familySymbol.LookupParameterDouble(topFlangeWidthNames);
+                botFlangeWidth = familySymbol.LookupParameterDouble(botFlangeWidthNames);
+                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
+                topFlangeThickness = familySymbol.LookupParameterDouble(topFlangeThicknessNames);
+                botFlangeThickness = familySymbol.LookupParameterDouble(botFlangeThicknessNames);
+                weldSize = familySymbol.LookupParameterDouble(weldSizeNames1);
+            }
+
+            if (double.IsNaN(weldSize))
+            {
+                weldSize = familySymbol.LookupParameterDouble(weldSizeNames2);
+                if (!double.IsNaN(weldSize) && !double.IsNaN(webThickness))
+                    weldSize = (weldSize - webThickness) / (Math.Sqrt(2));
+                else
+                    weldSize = 0;
+            }
+
+            if (!double.IsNaN(height) && !double.IsNaN(topFlangeWidth) && !double.IsNaN(botFlangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(topFlangeThickness) && !double.IsNaN(botFlangeThickness))
+                return BHG.Create.FabricatedISectionProfile(height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize);
+
+            return null;
+        }
+
+        /***************************************************/
+
+        private static RectangleProfile ToBHoMRectangleProfile(this FamilySymbol familySymbol)
+        {
+            double height, width, cornerRadius;
+            StructuralSection section = familySymbol.GetStructuralSection();
+            if (section is StructuralSectionConcreteRectangle)
+            {
+                StructuralSectionConcreteRectangle sectionType = section as StructuralSectionConcreteRectangle;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                cornerRadius = 0;
+            }
+            else if (section is StructuralSectionRectangularBar)
+            {
+                StructuralSectionRectangularBar sectionType = section as StructuralSectionRectangularBar;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                cornerRadius = 0;
+            }
+            else if (section is StructuralSectionRectangleParameterized)
+            {
+                StructuralSectionRectangleParameterized sectionType = section as StructuralSectionRectangleParameterized;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                cornerRadius = 0;
+            }
+            else
+            {
+                height = familySymbol.LookupParameterDouble(heightNames);
+                width = familySymbol.LookupParameterDouble(widthNames);
+                cornerRadius = familySymbol.LookupParameterDouble(cornerRadiusNames);
+            }
+
+            if (double.IsNaN(cornerRadius))
+                cornerRadius = 0;
+
+            if (!double.IsNaN(height) && !double.IsNaN(width))
+                return BHG.Create.RectangleProfile(height, width, cornerRadius);
+
+            return null;
+        }
+
+        /***************************************************/
+
+        private static AngleProfile ToBHoMAngleProfile(this FamilySymbol familySymbol)
+        {
+            double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
+            StructuralSection section = familySymbol.GetStructuralSection();
+            if (section is StructuralSectionLAngle)
+            {
+                StructuralSectionLAngle sectionType = section as StructuralSectionLAngle;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
+                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
+                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
+                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
+            }
+            else if (section is StructuralSectionLProfile)
+            {
+                //TODO: Implement cold-formed profiles?
+                StructuralSectionLProfile sectionType = section as StructuralSectionLProfile;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                webThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
+                flangeThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
+                rootRadius = sectionType.InnerFillet.ToSI(UnitType.UT_Section_Dimension);
+                toeRadius = 0;
+            }
+            else
+            {
+                height = familySymbol.LookupParameterDouble(heightNames);
+                width = familySymbol.LookupParameterDouble(widthNames);
+                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
+                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
+                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
+                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
+            }
+
+            if (double.IsNaN(rootRadius))
+                rootRadius = 0;
+
+            if (double.IsNaN(toeRadius))
+                toeRadius = 0;
+
+            if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
+                return BHG.Create.AngleProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+
+            return null;
+        }
+
+        /***************************************************/
+
+        private static BoxProfile ToBHoMBoxProfile(this FamilySymbol familySymbol)
+        {
+            double height, width, thickness, outerRadius, innerRadius;
+            StructuralSection section = familySymbol.GetStructuralSection();
+            if (section is StructuralSectionRectangleHSS)
+            {
+                StructuralSectionRectangleHSS sectionType = section as StructuralSectionRectangleHSS;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                thickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
+                outerRadius = sectionType.OuterFillet.ToSI(UnitType.UT_Section_Dimension);
+                innerRadius = sectionType.InnerFillet.ToSI(UnitType.UT_Section_Dimension);
+            }
+            else
+            {
+                height = familySymbol.LookupParameterDouble(heightNames);
+                width = familySymbol.LookupParameterDouble(widthNames);
+                thickness = familySymbol.LookupParameterDouble(wallThicknessNames);
+                outerRadius = familySymbol.LookupParameterDouble(outerRadiusNames);
+                innerRadius = familySymbol.LookupParameterDouble(innerRadiusNames);
+            }
+
+            if (double.IsNaN(outerRadius))
+                outerRadius = 0;
+
+            if (double.IsNaN(innerRadius))
+                innerRadius = 0;
+
+            if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(thickness))
+                return BHG.Create.BoxProfile(height, width, thickness, outerRadius, innerRadius);
+
+            return null;
+        }
+
+        /***************************************************/
+
+        private static ChannelProfile ToBHoMChannelProfile(this FamilySymbol familySymbol)
+        {
+            double height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius;
+            StructuralSection section = familySymbol.GetStructuralSection();
+            if (section is StructuralSectionCParallelFlange)
+            {
+                StructuralSectionCParallelFlange sectionType = section as StructuralSectionCParallelFlange;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                flangeWidth = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
+                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
+                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
+                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
+            }
+            else if (section is StructuralSectionCProfile)
+            {
+                //TODO: Implement cold-formed profiles?
+                StructuralSectionCProfile sectionType = section as StructuralSectionCProfile;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                flangeWidth = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                webThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
+                flangeThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
+                rootRadius = sectionType.InnerFillet.ToSI(UnitType.UT_Section_Dimension);
+                toeRadius = 0;
+            }
+            else
+            {
+                height = familySymbol.LookupParameterDouble(heightNames);
+                flangeWidth = familySymbol.LookupParameterDouble(widthNames);
+                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
+                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
+                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
+                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
+            }
+
+            if (double.IsNaN(rootRadius))
+                rootRadius = 0;
+
+            if (double.IsNaN(toeRadius))
+                toeRadius = 0;
+
+            if (!double.IsNaN(height) && !double.IsNaN(flangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
+                return BHG.Create.ChannelProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
+
+            return null;
+        }
+
+        /***************************************************/
+
+        private static ISectionProfile ToBHoMISectionProfile(this FamilySymbol familySymbol)
+        {
+            double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
+            StructuralSection section = familySymbol.GetStructuralSection();
+            if (section is StructuralSectionIParallelFlange)
+            {
+                StructuralSectionIParallelFlange sectionType = section as StructuralSectionIParallelFlange;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
+                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
+                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
+                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
+            }
+            else if (section is StructuralSectionIWideFlange)
+            {
+                StructuralSectionIWideFlange sectionType = section as StructuralSectionIWideFlange;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
+                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
+                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
+                toeRadius = 0;
+            }
+            else
+            {
+                height = familySymbol.LookupParameterDouble(heightNames);
+                width = familySymbol.LookupParameterDouble(widthNames);
+                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
+                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
+                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
+                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
+            }
+
+            if (double.IsNaN(rootRadius))
+                rootRadius = 0;
+
+            if (double.IsNaN(toeRadius))
+                toeRadius = 0;
+
+            if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
+                return BHG.Create.ISectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+
+            return null;
+        }
+
+        /***************************************************/
+
+        private static TSectionProfile ToBHoMTSectionProfile(this FamilySymbol familySymbol)
+        {
+            double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
+
+            StructuralSection section = familySymbol.GetStructuralSection();
+            if (section is StructuralSectionISplitParallelFlange)
+            {
+                StructuralSectionISplitParallelFlange sectionType = section as StructuralSectionISplitParallelFlange;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
+                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
+                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
+                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
+            }
+            else if (section is StructuralSectionStructuralTees)
+            {
+                StructuralSectionStructuralTees sectionType = section as StructuralSectionStructuralTees;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
+                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
+                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
+                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
+            }
+            else if (section is StructuralSectionConcreteT)
+            {
+                StructuralSectionConcreteT sectionType = section as StructuralSectionConcreteT;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                width = (sectionType.Width + 2 * sectionType.CantileverLength).ToSI(UnitType.UT_Section_Dimension);
+                webThickness = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                flangeThickness = sectionType.CantileverHeight.ToSI(UnitType.UT_Section_Dimension);
+                rootRadius = 0;
+                toeRadius = 0;
+            }
+            else
+            {
+                height = familySymbol.LookupParameterDouble(heightNames);
+                width = familySymbol.LookupParameterDouble(widthNames);
+                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
+                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
+                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
+                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
+            }
+
+            if (double.IsNaN(rootRadius))
+                rootRadius = 0;
+
+            if (double.IsNaN(toeRadius))
+                toeRadius = 0;
+
+            if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
+                return BHG.Create.TSectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+
+            return null;
+        }
+
+        /***************************************************/
+
+        private static ZSectionProfile ToBHoMZSectionProfile(this FamilySymbol familySymbol)
+        {
+            double height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius;
+            StructuralSection section = familySymbol.GetStructuralSection();
+            if (section is StructuralSectionZProfile)
+            {
+                StructuralSectionZProfile sectionType = section as StructuralSectionZProfile;
+                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
+                flangeWidth = sectionType.BottomFlangeLength.ToSI(UnitType.UT_Section_Dimension);
+                webThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
+                flangeThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
+                rootRadius = sectionType.InnerFillet.ToSI(UnitType.UT_Section_Dimension);
+                toeRadius = 0;
+            }
+            else
+            {
+                height = familySymbol.LookupParameterDouble(heightNames);
+                flangeWidth = familySymbol.LookupParameterDouble(widthNames);
+                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
+                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
+                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
+                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
+            }
+
+            if (double.IsNaN(rootRadius))
+                rootRadius = 0;
+
+            if (double.IsNaN(toeRadius))
+                toeRadius = 0;
+
+            if (!double.IsNaN(height) && !double.IsNaN(flangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
+                return BHG.Create.ZSectionProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
+
+            return null;
+        }
+
+        /***************************************************/
+
+        private static TubeProfile ToBHoMTubeProfile(this FamilySymbol familySymbol)
+        {
+            double thickness, diameter;
+            StructuralSection section = familySymbol.GetStructuralSection();
+            if (section is StructuralSectionPipeStandard)
+            {
+                StructuralSectionPipeStandard sectionType = section as StructuralSectionPipeStandard;
+                thickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
+                diameter = sectionType.Diameter.ToSI(UnitType.UT_Section_Dimension);
+            }
+            else if (section is StructuralSectionRoundHSS)
+            {
+                StructuralSectionRoundHSS sectionType = section as StructuralSectionRoundHSS;
+                thickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
+                diameter = sectionType.Diameter.ToSI(UnitType.UT_Section_Dimension);
+            }
+            else
+            {
+                thickness = familySymbol.LookupParameterDouble(wallThicknessNames);
+                diameter = familySymbol.LookupParameterDouble(diameterNames);
+            }
+
+            if (!double.IsNaN(diameter) && !double.IsNaN(thickness))
+                return BHG.Create.TubeProfile(diameter, thickness);
+
+            double radius = familySymbol.LookupParameterDouble(radiusNames);
+            if (!double.IsNaN(radius) && !double.IsNaN(thickness))
+                return BHG.Create.TubeProfile(radius * 2, thickness);
+
+            return null;
         }
 
 
