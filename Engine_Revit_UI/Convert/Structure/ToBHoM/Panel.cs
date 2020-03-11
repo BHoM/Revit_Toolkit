@@ -36,7 +36,26 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static List<oM.Structure.Elements.Panel> ToBHoMPanel(this HostObject hostObject, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<oM.Structure.Elements.Panel> ToBHoMPanels(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            return (wall as HostObject).ToBHoMPanels(settings, refObjects);
+        }
+        
+        public static List<oM.Structure.Elements.Panel> ToBHoMPanels(this Floor floor, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            return (floor as HostObject).ToBHoMPanels(settings, refObjects);
+        }
+        
+        public static List<oM.Structure.Elements.Panel> ToBHoMPanels(this RoofBase roofBase, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            return (roofBase as HostObject).ToBHoMPanels(settings, refObjects);
+        }
+
+        /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
+
+        private static List<oM.Structure.Elements.Panel> ToBHoMPanels(this HostObject hostObject, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 

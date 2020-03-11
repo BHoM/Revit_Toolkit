@@ -20,16 +20,15 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
-using BH.oM.Base;
-using BH.oM.Geometry;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Settings;
-
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
+using Autodesk.Revit.DB.Structure;
+using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Geometry;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -86,7 +85,7 @@ namespace BH.UI.Revit.Engine
             {
                 case Discipline.Structural:
                     if (typeof(BH.oM.Structure.Elements.Bar).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                        return familyInstance.ToBHoMBar(settings, refObjects).Cast<IBHoMObject>();
+                        return familyInstance.ToBHoMBars(settings, refObjects).Cast<IBHoMObject>();
                     else
                         return null;
                 case Discipline.Physical:
@@ -95,12 +94,12 @@ namespace BH.UI.Revit.Engine
                         return new List<IBHoMObject> { familyInstance.ToBHoMWindow(settings, refObjects) };
                     if (typeof(BH.oM.Physical.Elements.Door).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
                         return new List<IBHoMObject> { familyInstance.ToBHoMDoor(settings, refObjects) };
-                    if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                    if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue) || familyInstance.StructuralType == StructuralType.Column)
                         return new List<IBHoMObject> { familyInstance.ToBHoMColumn(settings, refObjects) };
+                    if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue) || familyInstance.StructuralType == StructuralType.Brace)
+                        return new List<IBHoMObject> { familyInstance.ToBHoMBracing(settings, refObjects) };
                     if (typeof(BH.oM.Physical.Elements.Beam).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
                         return new List<IBHoMObject> { familyInstance.ToBHoMBeam(settings, refObjects) };
-                    if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                        return new List<IBHoMObject> { familyInstance.ToBHoMBracing(settings, refObjects) };
                     else
                         return null;
                 case Discipline.Environmental:
@@ -133,7 +132,7 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Environmental:
                     return wall.ToBHoMEnvironmentPanels(settings, refObjects);
                 case Discipline.Structural:
-                    return wall.ToBHoMPanel(settings, refObjects);
+                    return wall.ToBHoMPanels(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                     return wall.ToBHoMWalls(settings, refObjects);
@@ -167,7 +166,7 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Environmental:
                     return floor.ToBHoMEnvironmentPanels(settings, refObjects);
                 case Discipline.Structural:
-                    return floor.ToBHoMPanel(settings, refObjects);
+                    return floor.ToBHoMPanels(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                     return floor.ToBHoMFloors(settings, refObjects);
@@ -185,7 +184,7 @@ namespace BH.UI.Revit.Engine
                 case Discipline.Environmental:
                     return roofBase.ToBHoMEnvironmentPanels(settings, refObjects);
                 case Discipline.Structural:
-                    return roofBase.ToBHoMPanel(settings, refObjects);
+                    return roofBase.ToBHoMPanels(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
                     return roofBase.ToBHoMRoofs(settings, refObjects);

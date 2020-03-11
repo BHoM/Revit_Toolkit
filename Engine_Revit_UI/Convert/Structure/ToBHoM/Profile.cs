@@ -26,6 +26,7 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry.ShapeProfiles;
+using BH.oM.Structure.SectionProperties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,11 @@ namespace BH.UI.Revit.Engine
             IProfile profile = refObjects.GetValue<IProfile>(familySymbol.Id);
             if (profile != null)
                 return profile;
-            
+
+            IGeometricalSection property = BH.Engine.Library.Query.Match("SectionProperties", familySymbol.Name) as IGeometricalSection;
+            if (property != null)
+                return property.SectionProfile;
+
             Parameter sectionShapeParam = familySymbol.get_Parameter(BuiltInParameter.STRUCTURAL_SECTION_SHAPE);
             StructuralSectionShape sectionShape = sectionShapeParam == null ? sectionShape = StructuralSectionShape.NotDefined : (StructuralSectionShape)sectionShapeParam.AsInteger();
 

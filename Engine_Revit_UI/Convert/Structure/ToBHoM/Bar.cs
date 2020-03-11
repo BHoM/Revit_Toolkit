@@ -41,7 +41,7 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static List<Bar> ToBHoMBar(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<Bar> ToBHoMBars(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 

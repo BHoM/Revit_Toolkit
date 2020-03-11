@@ -21,44 +21,34 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Structure;
+
+using BH.oM.Base;
+using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Query
+    public static partial class Modify
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<Type> RevitTypes(this Type type)
+        public static ElementFilter StructuralTypeFilter(this ElementFilter filter, Type bHoMType)
         {
-            HashSet<Type> types = new HashSet<Type>();
-            BindingFlags bindingBHoM = BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static;
-            foreach (Type t in Assembly.GetExecutingAssembly().GetTypes())
-            {
-                if (t.IsInterface || !t.IsAbstract || t.Name != "Convert")
-                    continue;
-
-                MethodInfo[] typeMethods = t.GetMethods(bindingBHoM);
-                Type ienumType = typeof(IEnumerable<>).MakeGenericType(type);
-                foreach (MethodInfo mi in typeMethods.Where(x => x.Name.StartsWith("ToBHoM")))
-                {
-                    if (type.IsAssignableFrom(mi.ReturnType) || ienumType.IsAssignableFrom(mi.ReturnType))
-                    {
-                        Type parameterType = mi.GetParameters().First().ParameterType;
-                        if (parameterType != typeof(Element) && typeof(Element).IsAssignableFrom(parameterType))
-                            types.Add(parameterType);
-                    }
-                }
-            }
-
-            return types;
+            if (bHoMType == typeof(Column))
+                return new LogicalOrFilter(filter, new ElementStructuralTypeFilter(StructuralType.Column));
+            else if (bHoMType == typeof(Bracing))
+                return new LogicalOrFilter(filter, new ElementStructuralTypeFilter(StructuralType.Brace));
+            else if (bHoMType == typeof(Beam))
+                return new LogicalAndFilter(new List<ElementFilter> { filter, new ElementStructuralTypeFilter(StructuralType.Brace, true), new ElementStructuralTypeFilter(StructuralType.Column, true), new ElementStructuralTypeFilter(StructuralType.Footing, true) });
+            else
+                return filter;
         }
 
         /***************************************************/
     }
 }
+
