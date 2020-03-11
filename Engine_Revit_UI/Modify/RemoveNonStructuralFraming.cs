@@ -21,42 +21,30 @@
  */
 
 using Autodesk.Revit.DB;
-using System;
+using Autodesk.Revit.DB.Structure;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Query
+    public static partial class Modify
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<Type> RevitTypes(this Type type)
+        public static HashSet<ElementId> RemoveNonStructuralFraming(this IEnumerable<ElementId> ids, Document document)
         {
-            HashSet<Type> types = new HashSet<Type>();
-            BindingFlags bindingBHoM = BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static;
-            foreach (Type t in Assembly.GetExecutingAssembly().GetTypes())
+            HashSet<ElementId> result = new HashSet<ElementId>();
+            foreach (ElementId elementId in ids)
             {
-                if (t.IsInterface || !t.IsAbstract || t.Name != "Convert")
+                Element element = document.GetElement(elementId);
+                if (element is FamilyInstance && (element as FamilyInstance).StructuralType == StructuralType.NonStructural)
                     continue;
 
-                MethodInfo[] typeMethods = t.GetMethods(bindingBHoM);
-                Type ienumType = typeof(IEnumerable<>).MakeGenericType(type);
-                foreach (MethodInfo mi in typeMethods.Where(x => x.Name.StartsWith("ToBHoM")))
-                {
-                    if (type.IsAssignableFrom(mi.ReturnType) || ienumType.IsAssignableFrom(mi.ReturnType))
-                    {
-                        Type parameterType = mi.GetParameters().First().ParameterType;
-                        if (parameterType != typeof(Element) && typeof(Element).IsAssignableFrom(parameterType))
-                            types.Add(parameterType);
-                    }
-                }
+                result.Add(elementId);
             }
 
-            return types;
+            return result;
         }
 
         /***************************************************/

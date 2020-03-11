@@ -323,6 +323,8 @@
     <Compile Include="Modify\AddSpaceId.cs" />
     <Compile Include="Modify\RemoveEmptyPanelIds.cs" />
     <Compile Include="Modify\RemoveGridSegmentIds.cs" />
+    <Compile Include="Modify\RemoveNonStructuralFraming.cs" />
+    <Compile Include="Modify\RemoveNonStructuralPanels.cs" />
     <Compile Include="Modify\SetLocation.cs" />
     <Compile Include="Modify\Update.cs" />
     <Compile Include="Modify\UpdateMaterialProperties.cs" />
@@ -362,6 +364,7 @@
     <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\OpeningType.cs" />
     <Compile Include="Query\StringValue.cs" />
+    <Compile Include="Modify\StructuralTypeFilter.cs" />
     <Compile Include="Query\SupportedAPIType.cs" />
     <Compile Include="Query\SystemWorksetIds.cs" />
     <Compile Include="Query\TopFacesPolyCurves.cs" />
