@@ -22,8 +22,8 @@
 
 using System.ComponentModel;
 
-using BH.oM.Reflection.Attributes;
 using BH.oM.Environment.Fragments;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -33,11 +33,11 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Sets Family Type name for Environment Context Properties")]
+        [Description("Sets Family name for Environment Context Properties")]
         [Input("originContextFragment", "Origin Context Properties")]
-        [Input("familyTypeName", "Revit Family Type Name")]
+        [Input("familyName", "Revit Family Name")]
         [Output("OriginContextFragment")]
-        public static OriginContextFragment SetFamilyTypeName(this OriginContextFragment originContextFragment, string familyTypeName)
+        public static OriginContextFragment SetFamilyName(this OriginContextFragment originContextFragment, string familyName)
         {
             if (originContextFragment == null)
                 return null;
@@ -45,7 +45,7 @@ namespace BH.Engine.Adapters.Revit
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.Description = originContextFragment.Description;
             originContext.ElementID = originContextFragment.ElementID;
-            originContext.TypeName = familyTypeName;
+            originContext.TypeName = familyName;
 
             return originContext;
         }

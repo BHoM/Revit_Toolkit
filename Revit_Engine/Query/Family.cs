@@ -39,7 +39,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Returns Family based on RevitFilePreview and sepcified Family Type Names")]
         [Input("revitFilePreview", "RevitFilePreview")]
-        [Input("FamilyTypeNames", "Family Type Names.")]
+        [Input("familyTypeNames", "Family Type Names.")]
         [Output("Family")]
         public static Family Family(this RevitFilePreview revitFilePreview, IEnumerable<string> familyTypeNames)
         {

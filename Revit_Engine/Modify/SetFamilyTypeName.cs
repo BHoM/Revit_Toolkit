@@ -20,13 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using BH.oM.Adapters.Revit;
-using System.IO;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Geometry;
 using System.ComponentModel;
+
 using BH.oM.Reflection.Attributes;
 using BH.oM.Environment.Fragments;
 
@@ -38,11 +33,11 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Sets Family name for Environment Context Properties")]
+        [Description("Sets Family Type name for Environment Context Properties")]
         [Input("originContextFragment", "Origin Context Properties")]
-        [Input("familyName", "Revit Family Name")]
+        [Input("familyTypeName", "Revit Family Type Name")]
         [Output("OriginContextFragment")]
-        public static OriginContextFragment SetFamilyName(this OriginContextFragment originContextFragment, string familyName)
+        public static OriginContextFragment SetFamilyTypeName(this OriginContextFragment originContextFragment, string familyTypeName)
         {
             if (originContextFragment == null)
                 return null;
@@ -50,7 +45,7 @@ namespace BH.Engine.Adapters.Revit
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.Description = originContextFragment.Description;
             originContext.ElementID = originContextFragment.ElementID;
-            originContext.TypeName = familyName;
+            originContext.TypeName = familyTypeName;
 
             return originContext;
         }

@@ -57,7 +57,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Links Revit parameter with BHoM parameter for given TypeMap.")]
         [Input("typeMap", "TypeMap")]
         [Input("sourceName", "BHoM parameter name of type")]
-        [Input("destinationName", "Revit parameter name to be mapped")]
+        [Input("destinationNames", "Revit parameter names to be mapped")]
         [Output("TypeMap")]
         public static TypeMap AddMap(this TypeMap typeMap, string sourceName, IEnumerable<string> destinationNames)
         {
