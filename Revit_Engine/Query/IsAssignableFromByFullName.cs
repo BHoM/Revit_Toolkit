@@ -33,6 +33,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Deprecated("3.1", "This method is not used any more.")]
         [Description("Checks if one type is assignable from another type by comparing its full name.")]
         [Input("typeToCheck", "Type to be checked")]
         [Input("type", "Type")]

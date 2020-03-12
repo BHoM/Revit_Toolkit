@@ -34,6 +34,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Deprecated("3.1", "This method is not used any more.")]
         [Description("Gets full names for given Type.")]
         [Input("type", "Type")]
         [Output("FullNames")]
