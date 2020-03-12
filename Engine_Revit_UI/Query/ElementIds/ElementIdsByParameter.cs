@@ -101,6 +101,8 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             HashSet<ElementId> result = new HashSet<ElementId>();
+            if (ids != null && ids.Count() == 0)
+                return result;
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             foreach (Element element in collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))))
@@ -148,6 +150,8 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             HashSet<ElementId> result = new HashSet<ElementId>();
+            if (ids != null && ids.Count() == 0)
+                return result;
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             foreach (Element element in collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))))
@@ -172,6 +176,8 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             HashSet<ElementId> result = new HashSet<ElementId>();
+            if (ids != null && ids.Count() == 0)
+                return result;
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             foreach (Element element in collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))))
@@ -195,6 +201,8 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             HashSet<ElementId> result = new HashSet<ElementId>();
+            if (ids != null && ids.Count() == 0)
+                return result;
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             foreach (Element element in collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))))

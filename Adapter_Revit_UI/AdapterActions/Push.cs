@@ -73,7 +73,7 @@ namespace BH.UI.Revit.Adapter
             RevitPushConfig pushConfig = actionConfig as RevitPushConfig;
             if (pushConfig == null)
             {
-                BH.Engine.Reflection.Compute.RecordNote("Revit Push Config has not been specified. Default Revit Push Config is used.");
+                BH.Engine.Reflection.Compute.RecordWarning("Revit Push Config has not been specified. Default Revit Push Config is used.");
                 pushConfig = new RevitPushConfig();
             }
 
@@ -88,6 +88,18 @@ namespace BH.UI.Revit.Adapter
             {
                 BH.Engine.Reflection.Compute.RecordError("Input objects were invalid.");
                 return new List<object>();
+            }
+
+            // Add tag to each object
+            if (!string.IsNullOrWhiteSpace(tag))
+            {
+                foreach (IBHoMObject obj in objectsToPush)
+                {
+                    if (obj.Tags == null)
+                        obj.Tags = new HashSet<string> { tag };
+                    else
+                        obj.Tags.Add(tag);
+                }
             }
 
             // Push the objects

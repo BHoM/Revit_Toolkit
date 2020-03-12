@@ -50,7 +50,7 @@ namespace BH.UI.Revit.Adapter
             RevitPullConfig pullConfig = actionConfig as RevitPullConfig;
             if (pullConfig == null)
             {
-                BH.Engine.Reflection.Compute.RecordNote("Revit Pull Config has not been specified. Default Revit Pull Config is used.");
+                BH.Engine.Reflection.Compute.RecordWarning("Revit Pull Config has not been specified. Default Revit Pull Config is used.");
                 pullConfig = new RevitPullConfig();
             }
 

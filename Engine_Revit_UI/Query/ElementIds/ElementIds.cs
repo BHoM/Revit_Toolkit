@@ -39,15 +39,23 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIds(this FilterRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
+            IEnumerable<ElementId> elementIds = ids;
+
             object idObject;
             if (request.Equalities.TryGetValue("ObjectIds", out idObject) && idObject is IList)
             {
                 IList list = idObject as IList;
                 if (list != null)
-                    ids = uIDocument.Document.ElementIdsByIdObjects(list, ids);
+                    elementIds = uIDocument.Document.ElementIdsByIdObjects(list, elementIds);
             }
 
-            return uIDocument.Document.ElementIdsByBHoMType(request.Type, ids);
+            if (request.Type != null)
+                elementIds = uIDocument.Document.ElementIdsByBHoMType(request.Type, elementIds);
+
+            if (!string.IsNullOrWhiteSpace(request.Tag))
+                BH.Engine.Reflection.Compute.RecordError("Filtering based on tag declared in FilterRequest is currently not supported. The tag-related filter has not been applied.");
+
+            return elementIds;
         }
 
         /***************************************************/
