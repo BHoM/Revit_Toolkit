@@ -26,8 +26,10 @@ using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -51,20 +53,18 @@ namespace BH.UI.Revit.Engine
 
             InstanceProperties instanceProperties = (filledRegion.Document.GetElement(filledRegion.GetTypeId()) as ElementType).ToBHoMInstanceProperties(settings, refObjects) as InstanceProperties;
 
-            List<oM.Geometry.ICurve> curves = new List<oM.Geometry.ICurve>();
+            List<ICurve> curves = new List<oM.Geometry.ICurve>();
             foreach (CurveLoop loop in filledRegion.GetBoundaries())
             {
                 curves.Add(loop.ToBHoM());
             }
 
-            List<oM.Geometry.PlanarSurface> surfaces = BH.Engine.Geometry.Create.PlanarSurface(curves);
-            if (surfaces.Count != 1)
-            {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("BHoM supports only filled regions consisting of single surfaces. The region could not be converted. Element Id: {0}", filledRegion.Id.IntegerValue));
-                return null;
-            }
+            List<PlanarSurface> surfaces = BH.Engine.Geometry.Create.PlanarSurface(curves);
+            if (surfaces.Count == 1)
+                draftingInstance = new DraftingInstance { Properties = instanceProperties, ViewName = view.Name, Location = surfaces[0] };
+            else
+                draftingInstance = new DraftingInstance { Properties = instanceProperties, ViewName = view.Name, Location = new PolySurface { Surfaces = surfaces.Cast<ISurface>().ToList() } };
 
-            draftingInstance = BH.Engine.Adapters.Revit.Create.DraftingInstance(instanceProperties, view.Name, surfaces[0]);
             draftingInstance.Name = filledRegion.Name;
 
             //Set identifiers & custom data
