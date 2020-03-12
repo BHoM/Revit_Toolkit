@@ -38,62 +38,6 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this Element element, ICurve crv, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            settings = settings.DefaultIfNull();
-
-            oM.Environment.Elements.Panel panel = refObjects.GetValue<oM.Environment.Elements.Panel>(element.Id);
-            if (panel != null)
-                return panel;
-
-            ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-
-            panel = BH.Engine.Environment.Create.Panel(externalEdges: crv.ToEdges());
-            panel.Name = element.FamilyTypeFullName();
-
-            //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment();
-            originContext.ElementID = element.Id.IntegerValue.ToString();
-            originContext.TypeName = element.FamilyTypeFullName();
-            originContext.UpdateValues(settings, element);
-            originContext.UpdateValues(settings, elementType);
-            panel.Fragments.Add(originContext);
-
-            PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
-            panelAnalytical.UpdateValues(settings, element);
-            panelAnalytical.UpdateValues(settings, elementType);
-            panel.Fragments.Add(panelAnalytical);
-
-            PanelContextFragment panelContext = new PanelContextFragment();
-            panelContext.UpdateValues(settings, element);
-            panelContext.UpdateValues(settings, elementType);
-            panel.Fragments.Add(panelContext);
-
-            BuildingResultFragment buildingResults = new BuildingResultFragment();
-            buildingResults.UpdateValues(settings, element);
-            buildingResults.UpdateValues(settings, elementType);
-            panel.Fragments.Add(buildingResults);
-
-            oM.Environment.Elements.PanelType? panelType = element.Category.PanelType();
-            if (panelType.HasValue)
-                panel.Type = panelType.Value;
-            else
-                panel.Type = oM.Environment.Elements.PanelType.Undefined;
-
-            //Set identifiers & custom data
-            panel.SetIdentifiers(element);
-            panel.SetCustomData(element);
-
-            refObjects.AddOrReplace(element.Id, panel);
-
-            panel = panel.UpdateBuildingElementTypeByCustomData();
-            panel.UpdateValues(settings, element);
-            panel.UpdateValues(settings, elementType);
-            return panel;
-        }
-
-        /***************************************************/
-
         public static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             //Create a BuildingElement from the familyInstance geometry
@@ -148,112 +92,6 @@ namespace BH.UI.Revit.Engine
             panel = panel.UpdateBuildingElementTypeByCustomData();
             panel.UpdateValues(settings, familyInstance.Symbol);
             panel.UpdateValues(settings, familyInstance);
-            return panel;
-        }
-
-        /***************************************************/
-
-        public static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this EnergyAnalysisSurface energyAnalysisSurface, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            settings = settings.DefaultIfNull();
-
-            oM.Environment.Elements.Panel panel = refObjects.GetValue<oM.Environment.Elements.Panel>(energyAnalysisSurface.Id);
-            if (panel != null)
-                return panel;
-
-            //Get the geometry Curve
-            ICurve curve = null;
-            if (energyAnalysisSurface != null)
-                curve = energyAnalysisSurface.GetPolyloop().ToBHoM();
-
-            //Get the name and element type
-            Element element = energyAnalysisSurface.Document.Element(energyAnalysisSurface.CADObjectUniqueId, energyAnalysisSurface.CADLinkUniqueId);
-            ElementType elementType = null;
-            if (element != null)
-            {
-                elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-                panel = BH.Engine.Environment.Create.Panel(name: element.FamilyTypeFullName(), externalEdges: curve.ToEdges());
-            }
-
-            //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment();
-            originContext.ElementID = element.Id.IntegerValue.ToString();
-            originContext.TypeName = element.FamilyTypeFullName();
-            originContext.UpdateValues(settings, element);
-            originContext.UpdateValues(settings, elementType);
-            panel.AddFragment(originContext);
-
-            PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
-            panelAnalytical.UpdateValues(settings, elementType);
-            panelAnalytical.UpdateValues(settings, element);
-            panel.AddFragment(panelAnalytical);
-
-            PanelContextFragment panelContext = new PanelContextFragment();
-
-            List<string> connectedSpaces = new List<string>();
-            EnergyAnalysisSpace energyAnalysisSpace = null;
-            energyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
-            if (energyAnalysisSpace != null)
-            {
-                SpatialElement spatialElement = energyAnalysisSpace.Document.Element(energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
-                connectedSpaces.Add(Query.Name(spatialElement));
-            }
-
-            energyAnalysisSpace = energyAnalysisSurface.GetAdjacentAnalyticalSpace();
-            if (energyAnalysisSpace != null)
-            {
-                SpatialElement spatialElement = energyAnalysisSpace.Document.Element(energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
-                if (spatialElement != null)
-                {
-                    connectedSpaces.Add(Query.Name(spatialElement));
-
-                    if (spatialElement is Autodesk.Revit.DB.Mechanical.Space)
-                    {
-                        Autodesk.Revit.DB.Mechanical.Space space = (Autodesk.Revit.DB.Mechanical.Space)spatialElement;
-
-                        BuildingResultFragment buildingResultsProperties = new BuildingResultFragment();
-                        buildingResultsProperties.PeakCooling = space.DesignCoolingLoad.ToSI(UnitType.UT_HVAC_Cooling_Load);
-                        buildingResultsProperties.PeakHeating = space.DesignHeatingLoad.ToSI(UnitType.UT_HVAC_Heating_Load);
-                        panel.AddFragment(buildingResultsProperties);
-                    }
-                }
-            }
-
-            panel.ConnectedSpaces = connectedSpaces;
-            panelContext.UpdateValues(settings, elementType);
-            panelContext.UpdateValues(settings, element);
-            panel.AddFragment(panelContext);
-
-            oM.Environment.Elements.PanelType? panelType = element.Category.PanelType();
-            if (panelType.HasValue)
-                panel.Type = panelType.Value;
-            else
-                panel.Type = oM.Environment.Elements.PanelType.Undefined;
-
-            panel.Construction = Convert.ToBHoMConstruction(elementType as dynamic, settings, refObjects);
-
-            //Set identifiers & custom data
-            panel.SetIdentifiers(element);
-            panel.SetCustomData(element);
-            double height = energyAnalysisSurface.Height.ToSI(UnitType.UT_Length);
-            double width = energyAnalysisSurface.Width.ToSI(UnitType.UT_Length);
-            double azimuth = energyAnalysisSurface.Azimuth;
-
-            panel.CustomData["Height"] = height;
-            panel.CustomData["Width"] = width;
-            panel.CustomData["Azimuth"] = azimuth;
-            panel.SetCustomData(elementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME);
-            panel = panel.AddSpaceId(energyAnalysisSurface);
-            panel = panel.AddAdjacentSpaceId(energyAnalysisSurface);
-
-            if (elementType != null)
-                panel.SetCustomData(elementType, "Type ");
-
-            refObjects.AddOrReplace(energyAnalysisSurface.Id, panel);
-
-            panel = panel.UpdateBuildingElementTypeByCustomData();
-            panel.UpdateValues(settings, elementType);
-            panel.UpdateValues(settings, element);
             return panel;
         }
 
@@ -522,6 +360,171 @@ namespace BH.UI.Revit.Engine
 
             panels = panels.UpdateBuildingElementTypeByCustomData();
             return panels;
+        }
+
+
+        /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
+
+        internal static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this Element element, ICurve crv, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            oM.Environment.Elements.Panel panel = refObjects.GetValue<oM.Environment.Elements.Panel>(element.Id);
+            if (panel != null)
+                return panel;
+
+            ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
+
+            panel = BH.Engine.Environment.Create.Panel(externalEdges: crv.ToEdges());
+            panel.Name = element.FamilyTypeFullName();
+
+            //Set ExtendedProperties
+            OriginContextFragment originContext = new OriginContextFragment();
+            originContext.ElementID = element.Id.IntegerValue.ToString();
+            originContext.TypeName = element.FamilyTypeFullName();
+            originContext.UpdateValues(settings, element);
+            originContext.UpdateValues(settings, elementType);
+            panel.Fragments.Add(originContext);
+
+            PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
+            panelAnalytical.UpdateValues(settings, element);
+            panelAnalytical.UpdateValues(settings, elementType);
+            panel.Fragments.Add(panelAnalytical);
+
+            PanelContextFragment panelContext = new PanelContextFragment();
+            panelContext.UpdateValues(settings, element);
+            panelContext.UpdateValues(settings, elementType);
+            panel.Fragments.Add(panelContext);
+
+            BuildingResultFragment buildingResults = new BuildingResultFragment();
+            buildingResults.UpdateValues(settings, element);
+            buildingResults.UpdateValues(settings, elementType);
+            panel.Fragments.Add(buildingResults);
+
+            oM.Environment.Elements.PanelType? panelType = element.Category.PanelType();
+            if (panelType.HasValue)
+                panel.Type = panelType.Value;
+            else
+                panel.Type = oM.Environment.Elements.PanelType.Undefined;
+
+            //Set identifiers & custom data
+            panel.SetIdentifiers(element);
+            panel.SetCustomData(element);
+
+            refObjects.AddOrReplace(element.Id, panel);
+
+            panel = panel.UpdateBuildingElementTypeByCustomData();
+            panel.UpdateValues(settings, element);
+            panel.UpdateValues(settings, elementType);
+            return panel;
+        }
+
+        /***************************************************/
+
+        internal static oM.Environment.Elements.Panel ToBHoMEnvironmentPanel(this EnergyAnalysisSurface energyAnalysisSurface, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            oM.Environment.Elements.Panel panel = refObjects.GetValue<oM.Environment.Elements.Panel>(energyAnalysisSurface.Id);
+            if (panel != null)
+                return panel;
+
+            //Get the geometry Curve
+            ICurve curve = null;
+            if (energyAnalysisSurface != null)
+                curve = energyAnalysisSurface.GetPolyloop().ToBHoM();
+
+            //Get the name and element type
+            Element element = energyAnalysisSurface.Document.Element(energyAnalysisSurface.CADObjectUniqueId, energyAnalysisSurface.CADLinkUniqueId);
+            ElementType elementType = null;
+            if (element != null)
+            {
+                elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
+                panel = BH.Engine.Environment.Create.Panel(name: element.FamilyTypeFullName(), externalEdges: curve.ToEdges());
+            }
+
+            //Set ExtendedProperties
+            OriginContextFragment originContext = new OriginContextFragment();
+            originContext.ElementID = element.Id.IntegerValue.ToString();
+            originContext.TypeName = element.FamilyTypeFullName();
+            originContext.UpdateValues(settings, element);
+            originContext.UpdateValues(settings, elementType);
+            panel.AddFragment(originContext);
+
+            PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
+            panelAnalytical.UpdateValues(settings, elementType);
+            panelAnalytical.UpdateValues(settings, element);
+            panel.AddFragment(panelAnalytical);
+
+            PanelContextFragment panelContext = new PanelContextFragment();
+
+            List<string> connectedSpaces = new List<string>();
+            EnergyAnalysisSpace energyAnalysisSpace = null;
+            energyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
+            if (energyAnalysisSpace != null)
+            {
+                SpatialElement spatialElement = energyAnalysisSpace.Document.Element(energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
+                connectedSpaces.Add(Query.Name(spatialElement));
+            }
+
+            energyAnalysisSpace = energyAnalysisSurface.GetAdjacentAnalyticalSpace();
+            if (energyAnalysisSpace != null)
+            {
+                SpatialElement spatialElement = energyAnalysisSpace.Document.Element(energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
+                if (spatialElement != null)
+                {
+                    connectedSpaces.Add(Query.Name(spatialElement));
+
+                    if (spatialElement is Autodesk.Revit.DB.Mechanical.Space)
+                    {
+                        Autodesk.Revit.DB.Mechanical.Space space = (Autodesk.Revit.DB.Mechanical.Space)spatialElement;
+
+                        BuildingResultFragment buildingResultsProperties = new BuildingResultFragment();
+                        buildingResultsProperties.PeakCooling = space.DesignCoolingLoad.ToSI(UnitType.UT_HVAC_Cooling_Load);
+                        buildingResultsProperties.PeakHeating = space.DesignHeatingLoad.ToSI(UnitType.UT_HVAC_Heating_Load);
+                        panel.AddFragment(buildingResultsProperties);
+                    }
+                }
+            }
+
+            panel.ConnectedSpaces = connectedSpaces;
+            panelContext.UpdateValues(settings, elementType);
+            panelContext.UpdateValues(settings, element);
+            panel.AddFragment(panelContext);
+
+            oM.Environment.Elements.PanelType? panelType = element.Category.PanelType();
+            if (panelType.HasValue)
+                panel.Type = panelType.Value;
+            else
+                panel.Type = oM.Environment.Elements.PanelType.Undefined;
+
+            panel.Construction = Convert.ToBHoMConstruction(elementType as dynamic, settings, refObjects);
+
+            //Set identifiers & custom data
+            panel.SetIdentifiers(element);
+            panel.SetCustomData(element);
+            double height = energyAnalysisSurface.Height.ToSI(UnitType.UT_Length);
+            double width = energyAnalysisSurface.Width.ToSI(UnitType.UT_Length);
+            double azimuth = energyAnalysisSurface.Azimuth;
+
+            panel.CustomData["Height"] = height;
+            panel.CustomData["Width"] = width;
+            panel.CustomData["Azimuth"] = azimuth;
+            panel.SetCustomData(elementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME);
+            panel = panel.AddSpaceId(energyAnalysisSurface);
+            panel = panel.AddAdjacentSpaceId(energyAnalysisSurface);
+
+            if (elementType != null)
+                panel.SetCustomData(elementType, "Type ");
+
+            refObjects.AddOrReplace(energyAnalysisSurface.Id, panel);
+
+            panel = panel.UpdateBuildingElementTypeByCustomData();
+            panel.UpdateValues(settings, elementType);
+            panel.UpdateValues(settings, element);
+            return panel;
         }
 
         /***************************************************/
