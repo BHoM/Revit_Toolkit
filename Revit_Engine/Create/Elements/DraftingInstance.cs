@@ -28,6 +28,8 @@ using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Properties;
 using BH.Engine.Geometry;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -163,7 +165,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        public static DraftingInstance DraftingInstance(string name, string viewName, PlanarSurface location)
+        public static DraftingInstance DraftingInstance(string name, string viewName, ISurface location)
         {
             InstanceProperties instanceProperties = new InstanceProperties();
             instanceProperties.Name = name;
@@ -173,16 +175,39 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        public static DraftingInstance DraftingInstance(InstanceProperties properties, string viewName, PlanarSurface location)
+        public static DraftingInstance DraftingInstance(InstanceProperties properties, string viewName, ISurface location)
         {
-            if (properties == null || string.IsNullOrWhiteSpace(viewName) || !(location is PlanarSurface))
+            if (properties == null || string.IsNullOrWhiteSpace(viewName))
                 return null;
 
-            Vector normal = (location as PlanarSurface).Normal();
-            if (normal == null || 1 - Math.Abs(normal.DotProduct(Vector.ZAxis)) > Tolerance.Angle)
+            List<PlanarSurface> surfaces = new List<PlanarSurface>();
+            if (location is PlanarSurface)
+                surfaces.Add((PlanarSurface)location);
+            else if (location is PolySurface)
             {
-                BH.Engine.Reflection.Compute.RecordError("Normal of the surface is not parallel to the global Z axis.");
+                PolySurface polySurface = (PolySurface)location;
+                if (polySurface.Surfaces.Any(x => !(x is PlanarSurface)))
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Only PlanarSurfaces and PolySurfaces consisting of PlanarSurfaces can be used as location for ISurface-based DraftingInstances.");
+                    return null;
+                }
+
+                surfaces = polySurface.Surfaces.Cast<PlanarSurface>().ToList();
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordError("Only PlanarSurfaces and PolySurfaces consisting of PlanarSurfaces can be used as location for ISurface-based DraftingInstances.");
                 return null;
+            }
+
+            foreach (PlanarSurface surface in surfaces)
+            {
+                Vector normal = (surface).Normal();
+                if (normal == null || 1 - Math.Abs(normal.DotProduct(Vector.ZAxis)) > Tolerance.Angle)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Normal of the surface or its components is not parallel to the global Z axis.");
+                    return null;
+                }
             }
             
             DraftingInstance draftingInstance = new DraftingInstance()
@@ -194,6 +219,24 @@ namespace BH.Engine.Adapters.Revit
             };
 
             return draftingInstance;
+        }
+
+        /***************************************************/
+        /****            Deprecated methods             ****/
+        /***************************************************/
+
+        [Deprecated("3.1", "Location type has been generalized from PlanarSurface to ISurface.")]
+        public static DraftingInstance DraftingInstance(string name, string viewName, PlanarSurface location)
+        {
+            return Create.DraftingInstance(name, viewName, location as ISurface);
+        }
+
+        /***************************************************/
+
+        [Deprecated("3.1", "Location type has been generalized from PlanarSurface to ISurface.")]
+        public static DraftingInstance DraftingInstance(InstanceProperties properties, string viewName, PlanarSurface location)
+        {
+            return Create.DraftingInstance(properties, viewName, location as ISurface);
         }
 
         /***************************************************/

@@ -128,7 +128,7 @@ namespace BH.UI.Revit.Engine
             refObjects.AddOrReplace(modelInstance, element);
             return element;
         }
-        
+
         /***************************************************/
 
         public static Element ToRevitElement(this DraftingInstance draftingInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
@@ -194,19 +194,39 @@ namespace BH.UI.Revit.Engine
                 else if (elementType is FilledRegionType)
                 {
                     FilledRegionType regionType = elementType as FilledRegionType;
+                    ISurface location = draftingInstance.Location as ISurface;
 
-                    PlanarSurface surface = draftingInstance.Location as PlanarSurface;
-                    if (surface != null)
+                    List<PlanarSurface> surfaces = new List<PlanarSurface>();
+                    if (location is PlanarSurface)
+                        surfaces.Add((PlanarSurface)location);
+                    else if (location is PolySurface)
                     {
-                        List<CurveLoop> loops = new List<CurveLoop>();
+                        PolySurface polySurface = (PolySurface)location;
+                        if (polySurface.Surfaces.Any(x => !(x is PlanarSurface)))
+                        {
+                            BH.Engine.Reflection.Compute.RecordError(String.Format("Only PlanarSurfaces and PolySurfaces consisting of PlanarSurfaces can be converted into a FilledRegion. BHoM_Guid: {0}", draftingInstance.BHoM_Guid));
+                            return null;
+                        }
+
+                        surfaces = polySurface.Surfaces.Cast<PlanarSurface>().ToList();
+                    }
+                    else
+                    {
+                        BH.Engine.Reflection.Compute.RecordError(String.Format("Only PlanarSurfaces and PolySurfaces consisting of PlanarSurfaces can be converted into a FilledRegion. BHoM_Guid: {0}", draftingInstance.BHoM_Guid));
+                        return null;
+                    }
+
+                    List<CurveLoop> loops = new List<CurveLoop>();
+                    foreach (PlanarSurface surface in surfaces)
+                    {
                         foreach (ICurve curve in surface.Edges())
                         {
                             loops.Add(curve.ToRevitCurveLoop());
                         }
-
-                        if (loops.Count != 0)
-                            element = FilledRegion.Create(document, regionType.Id, view.Id, loops);
                     }
+
+                    if (loops.Count != 0)
+                        element = FilledRegion.Create(document, regionType.Id, view.Id, loops);
                 }
             }
 
