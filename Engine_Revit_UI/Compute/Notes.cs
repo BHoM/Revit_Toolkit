@@ -40,7 +40,7 @@ namespace BH.UI.Revit.Engine
             if (material != null)
                 message = string.Format("{0} BHoM Guid: {1}", message, material.BHoM_Guid);
 
-            BH.Engine.Reflection.Compute.RecordNote(message);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
@@ -52,7 +52,7 @@ namespace BH.UI.Revit.Engine
             if (material != null)
                 message = string.Format("{0} Material Id: {1}", message, material.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordNote(message);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/
@@ -64,7 +64,7 @@ namespace BH.UI.Revit.Engine
             if (element != null)
                 message = string.Format("{0} Element Id: {1}", message, element.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordNote(message);
+            BH.Engine.Reflection.Compute.RecordWarning(message);
         }
 
         /***************************************************/

@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 
 using BH.oM.Base;
+using System;
 
 namespace BH.UI.Revit.Adapter
 {
@@ -42,8 +43,8 @@ namespace BH.UI.Revit.Adapter
                 return;
 
             string newValue = null;
-            if(bHoMObject.Tags != null)
-                newValue = string.Join("\n", bHoMObject.Tags);
+            if (bHoMObject.Tags != null && bHoMObject.Tags.Count != 0)
+                newValue = string.Join("; ", bHoMObject.Tags);
 
             string oldValue = parameter.AsString();
 
@@ -63,19 +64,16 @@ namespace BH.UI.Revit.Adapter
                 return;
 
             string tags = parameter.AsString();
-
-            IBHoMObject iBHoMObject = bHoMObject.GetShallowClone();
-
-            if (string.IsNullOrEmpty(tags) && (bHoMObject.Tags == null || bHoMObject.Tags.Count == 0))
+            if (string.IsNullOrEmpty(tags))
                 return;
 
-            if (iBHoMObject.Tags == null)
-                iBHoMObject.Tags = new System.Collections.Generic.HashSet<string>();
+            if (bHoMObject.Tags == null)
+                bHoMObject.Tags = new System.Collections.Generic.HashSet<string>();
 
-            string[] values = tags.Split('\n');
+            string[] values = tags.Split(new string[] { "; " }, StringSplitOptions.None);
 
             foreach (string value in values)
-                iBHoMObject.Tags.Add(value);
+                bHoMObject.Tags.Add(value);
         }
 
         /***************************************************/
