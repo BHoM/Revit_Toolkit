@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
         
-        internal static void SetIdentifiers(this IBHoMObject bHoMObject, Element element)
+        public static void SetIdentifiers(this IBHoMObject bHoMObject, Element element)
         {
             if (bHoMObject == null || element == null)
                 return;

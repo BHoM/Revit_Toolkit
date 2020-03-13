@@ -42,7 +42,7 @@ namespace BH.UI.Revit.Engine
                 rotation = Math.PI * 0.5 + (location as LocationPoint).Rotation;
             else if (location is LocationCurve)
             {
-                BH.oM.Geometry.ICurve locationCurve = (location as LocationCurve).Curve.IToBHoM();
+                BH.oM.Geometry.ICurve locationCurve = (location as LocationCurve).Curve.IFromRevit();
                 if (locationCurve is BH.oM.Geometry.Line)
                 {
                     Transform transform = familyInstance.GetTotalTransform();

@@ -43,9 +43,9 @@ namespace BH.UI.Revit.Engine
             if (meshTriangle == null)
                 return null;
 
-            oM.Geometry.Point point1 = meshTriangle.get_Vertex(0).ToBHoM();
-            oM.Geometry.Point point2 = meshTriangle.get_Vertex(1).ToBHoM();
-            oM.Geometry.Point point3 = meshTriangle.get_Vertex(2).ToBHoM();
+            oM.Geometry.Point point1 = meshTriangle.get_Vertex(0).PointFromRevit();
+            oM.Geometry.Point point2 = meshTriangle.get_Vertex(1).PointFromRevit();
+            oM.Geometry.Point point3 = meshTriangle.get_Vertex(2).PointFromRevit();
 
             return new PolyCurve { Curves = new List<ICurve> { new BH.oM.Geometry.Line { Start = point1, End = point2 }, new BH.oM.Geometry.Line { Start = point2, End = point3 }, new BH.oM.Geometry.Line { Start = point3, End = point1 } } };
         }
@@ -285,7 +285,7 @@ namespace BH.UI.Revit.Engine
                                     continue;
 
                                 if (bboxXYZ.IsContaining(curve.GetEndPoint(0), true) && bboxXYZ.IsContaining(curve.GetEndPoint(1), true))
-                                    tempCurves.Add(curve.IToBHoM());
+                                    tempCurves.Add(curve.IFromRevit());
                             }
                         }
                     }

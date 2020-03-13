@@ -126,7 +126,7 @@ namespace BH.UI.Revit.Adapter
             object obj = null;
             try
             {
-                obj = element.IToBHoM(discipline, settings, refObjects);
+                obj = element.IFromRevit(discipline, settings, refObjects);
             }
             catch (Exception exception)
             {

@@ -44,7 +44,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void SetCustomData(this IBHoMObject bHoMObject, Element element, BuiltInParameter builtInParameter)
+        public static void SetCustomData(this IBHoMObject bHoMObject, Element element, BuiltInParameter builtInParameter)
         {
             if (bHoMObject == null || element == null)
                 return;
@@ -54,7 +54,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, string namePrefix = null)
+        public static void SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, string namePrefix = null)
         {
             if (bHoMObject == null || parameter == null)
                 return;

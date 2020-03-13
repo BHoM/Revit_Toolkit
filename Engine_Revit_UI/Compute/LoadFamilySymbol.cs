@@ -20,14 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Linq;
-using System.Collections.Generic;
-
-using BH.oM.Adapters.Revit.Generic;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
-
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Adapters.Revit.Settings;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -81,39 +78,6 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-
-        private class FamilyLoadOptions : IFamilyLoadOptions
-        {
-            private bool m_OverwriteParameterValues;
-            private bool m_OverwriteFamily;
-
-            public FamilyLoadOptions(FamilyLoadSettings familyLoadSettings)
-            {
-                m_OverwriteParameterValues = familyLoadSettings.OverwriteParameterValues;
-                m_OverwriteFamily = familyLoadSettings.OverwriteFamily;
-            }
-
-            public bool OnFamilyFound(bool familyInUse, out bool overwriteParameterValues)
-            {
-                overwriteParameterValues = m_OverwriteParameterValues;
-                return m_OverwriteFamily;
-            }
-
-            public bool OnSharedFamilyFound(Family sharedFamily, bool familyInUse, out FamilySource source, out bool overwriteParameterValues)
-            {
-                overwriteParameterValues = m_OverwriteParameterValues;
-                if(m_OverwriteFamily)
-                {
-                    source = FamilySource.Family;
-                    return true;
-                }
-                else
-                {
-                    source = FamilySource.Project;
-                    return false;
-                }
-            }
-        }
     }
 }
 

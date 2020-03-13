@@ -44,7 +44,7 @@ namespace BH.UI.Revit.Engine
             if (level == null)
                 return null;
 
-            return level.ToBHoMLevel(settings) as oM.Geometry.SettingOut.Level;
+            return level.LevelFromRevit(settings) as oM.Geometry.SettingOut.Level;
         }
 
         /***************************************************/

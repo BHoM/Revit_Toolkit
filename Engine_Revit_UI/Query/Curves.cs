@@ -66,13 +66,13 @@ namespace BH.UI.Revit.Engine
                     if (edges == null)
                         continue;
 
-                    List<oM.Geometry.ICurve> curves = edges.ToBHoM();
+                    List<oM.Geometry.ICurve> curves = edges.FromRevit();
                     if (curves != null && curves.Count != 0)
                         result.AddRange(curves);                        
                 }
                 else if(geometryObject is Curve)
                 {
-                    oM.Geometry.ICurve curve = ((Curve)geometryObject).IToBHoM();
+                    oM.Geometry.ICurve curve = ((Curve)geometryObject).IFromRevit();
                     if (curve != null)
                         result.Add(curve);
                 }
