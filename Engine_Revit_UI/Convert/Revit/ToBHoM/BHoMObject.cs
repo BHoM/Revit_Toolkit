@@ -46,30 +46,23 @@ namespace BH.UI.Revit.Engine
             if (iBHoMObject != null)
                 return iBHoMObject;
 
-            if (typeof(ElementType).IsAssignableFrom(element.GetType()))
-                iBHoMObject = (element as ElementType).ToBHoM(discipline, settings, refObjects);
-            if (typeof(GraphicsStyle).IsAssignableFrom(element.GetType()))
-                iBHoMObject = (element as GraphicsStyle).ToBHoM(discipline, settings, refObjects);
-            else
+            IGeometry iGeometry = element.Location.IToBHoM();
+            if (iGeometry != null)
             {
-                IGeometry iGeometry = element.Location.IToBHoM();
-                if (iGeometry != null)
+                ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
+                if (elementType != null)
                 {
-                    ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-                    if (elementType != null)
+                    InstanceProperties objectProperties = elementType.ToBHoMInstanceProperties(settings, refObjects) as InstanceProperties;
+                    if (objectProperties != null)
                     {
-                        InstanceProperties objectProperties = elementType.ToBHoM(discipline, settings, refObjects) as InstanceProperties;
-                        if (objectProperties != null)
-                        {
-                            if (element.ViewSpecific)
-                                iBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingInstance(objectProperties, element.Document.GetElement(element.OwnerViewId).Name, iGeometry as dynamic);
-                            else
-                                iBHoMObject = BH.Engine.Adapters.Revit.Create.ModelInstance(objectProperties, iGeometry as dynamic);
-                        }
+                        if (element.ViewSpecific)
+                            iBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingInstance(objectProperties, element.Document.GetElement(element.OwnerViewId).Name, iGeometry as dynamic);
+                        else
+                            iBHoMObject = BH.Engine.Adapters.Revit.Create.ModelInstance(objectProperties, iGeometry as dynamic);
                     }
                 }
             }
-            
+
             if (iBHoMObject == null)
                 iBHoMObject = new BHoMObject();
 
