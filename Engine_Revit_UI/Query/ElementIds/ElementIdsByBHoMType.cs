@@ -26,6 +26,7 @@ using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Base;
 using BH.oM.Physical.Elements;
+using BH.oM.Physical.Materials;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +51,7 @@ namespace BH.UI.Revit.Engine
                 return elementIds;
             }
 
-            if (type == typeof(ModelInstance) || type == typeof(IInstance) || type == typeof(InstanceProperties) || type == typeof(IBHoMObject) || type == typeof(BHoMObject))
+            if (type == typeof(ModelInstance) || type == typeof(IInstance) || type == typeof(InstanceProperties) || type == typeof(IBHoMObject) || type == typeof(BHoMObject) || type == typeof(IMaterialProperties))
             {
                 BH.Engine.Reflection.Compute.RecordError(String.Format("It is not allowed to pull elements of type {0} because it is too general, please try to narrow the filter down.", type));
                 return elementIds;
