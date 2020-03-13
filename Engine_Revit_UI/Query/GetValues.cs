@@ -31,10 +31,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /****             Internal Methods              ****/
+        /****             public Methods              ****/
         /***************************************************/
 
-        internal static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, string key) where T : IBHoMObject
+        public static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, string key) where T : IBHoMObject
         {
             if (refObjects == null || string.IsNullOrWhiteSpace(key))
                 return null;
@@ -48,21 +48,21 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, int key) where T : IBHoMObject
+        public static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, int key) where T : IBHoMObject
         {
             return refObjects.GetValues<T>(key.ToString());
         }
 
         /***************************************************/
 
-        internal static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key) where T : IBHoMObject
+        public static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key) where T : IBHoMObject
         {
             return refObjects.GetValues<T>(key.ToString());
         }
 
         /***************************************************/
 
-        internal static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, string key) where T : IBHoMObject
+        public static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, string key) where T : IBHoMObject
         {
             List<T> values = refObjects.GetValues<T>(key);
             if (values != null && values.Count == 1)
@@ -73,21 +73,21 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, int key) where T : IBHoMObject
+        public static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, int key) where T : IBHoMObject
         {
             return refObjects.GetValue<T>(key.ToString());
         }
 
         /***************************************************/
 
-        internal static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key) where T : IBHoMObject
+        public static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key) where T : IBHoMObject
         {
             return refObjects.GetValue<T>(key.ToString());
         }
 
         /***************************************************/
 
-        internal static List<T> GetValues<T>(this Dictionary<Guid, List<int>> refObjects, Document document, Guid key) where T : Element
+        public static List<T> GetValues<T>(this Dictionary<Guid, List<int>> refObjects, Document document, Guid key) where T : Element
         {
             if (refObjects == null || document == null)
                 return null;
@@ -100,7 +100,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static T GetValue<T>(this Dictionary<Guid, List<int>> refObjects, Document document, Guid key) where T : Element
+        public static T GetValue<T>(this Dictionary<Guid, List<int>> refObjects, Document document, Guid key) where T : Element
         {
             if (refObjects == null || document == null)
                 return null;

@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Modify
     {
         /***************************************************/
-        /****              Private Methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
         public static bool Update(this Element element, IBHoMObject bHoMObject, RevitSettings settings)

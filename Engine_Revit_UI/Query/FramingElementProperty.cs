@@ -49,15 +49,12 @@ namespace BH.UI.Revit.Engine
             BH.oM.Physical.Materials.Material material = refObjects.GetValue<oM.Physical.Materials.Material>(structuralMaterialId.IntegerValue);
 
             if (material == null)
-                material = revitMaterial.ToBHoMEmptyMaterial(settings, refObjects);
+                material = revitMaterial.EmptyMaterialFromRevit(settings, refObjects);
 
             string materialGrade = familyInstance.MaterialGrade();
             material = material.UpdateMaterialProperties(revitMaterial, materialGrade, familyInstance.StructuralMaterialType, settings);
             
-            IProfile profile = familyInstance.Symbol.ToBHoMProfile(settings, refObjects);
-            if (profile == null)
-                profile = familyInstance.BHoMFreeFormProfile(settings, refObjects);
-
+            IProfile profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
             if (profile == null)
                 familyInstance.Symbol.NotConvertedWarning();
 

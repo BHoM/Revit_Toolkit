@@ -31,10 +31,10 @@ namespace BH.UI.Revit.Engine
     public static partial class Modify
     {
         /***************************************************/
-        /****             Internal Methods              ****/
+        /****              Public Methods               ****/
         /***************************************************/
 
-        internal static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, string key, IEnumerable<IBHoMObject> values)
+        public static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, string key, IEnumerable<IBHoMObject> values)
         {
             if (refObjects == null || string.IsNullOrWhiteSpace(key) || values == null)
                 return;
@@ -48,14 +48,14 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key, IEnumerable<IBHoMObject> values)
+        public static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key, IEnumerable<IBHoMObject> values)
         {
             refObjects.AddOrReplace(key.ToString(), values);
         }
 
         /***************************************************/
 
-        internal static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, string key, IBHoMObject value)
+        public static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, string key, IBHoMObject value)
         {
             if (refObjects == null || string.IsNullOrWhiteSpace(key) || value == null)
                 return;
@@ -69,14 +69,14 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key, IBHoMObject value)
+        public static void AddOrReplace(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key, IBHoMObject value)
         {
             refObjects.AddOrReplace(key.ToString(), value);
         }
 
         /***************************************************/
 
-        internal static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, Guid key, IEnumerable<int> values)
+        public static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, Guid key, IEnumerable<int> values)
         {
             if (refObjects == null || key == Guid.Empty || values == null)
                 return;
@@ -90,7 +90,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, Guid key, int value)
+        public static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, Guid key, int value)
         {
             if (refObjects == null || key == Guid.Empty)
                 return;
@@ -104,7 +104,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, IBHoMObject obj, IEnumerable<Element> values)
+        public static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, IBHoMObject obj, IEnumerable<Element> values)
         {
             if (obj == null)
                 return;
@@ -114,7 +114,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        internal static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, IBHoMObject obj, Element value)
+        public static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, IBHoMObject obj, Element value)
         {
             if (obj == null)
                 return;

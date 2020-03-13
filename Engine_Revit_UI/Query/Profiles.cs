@@ -109,7 +109,7 @@ namespace BH.UI.Revit.Engine
                         if (sketch.Profile == null)
                             continue;
 
-                        List<PolyCurve> polycurves = sketch.ToBHoM();
+                        List<PolyCurve> polycurves = sketch.FromRevit();
                         if (polycurves == null)
                             continue;
 
@@ -145,7 +145,7 @@ namespace BH.UI.Revit.Engine
                 List<BH.oM.Geometry.ICurve> curves = new List<ICurve>();
                 foreach (BoundarySegment boundarySegment in boundarySegmentList)
                 {
-                    curves.Add(boundarySegment.GetCurve().IToBHoM());
+                    curves.Add(boundarySegment.GetCurve().IFromRevit());
                 }
 
                 results.Add(BH.Engine.Geometry.Create.PolyCurve(curves));
@@ -169,7 +169,7 @@ namespace BH.UI.Revit.Engine
                 LocationCurve locationCurve = wall.Location as LocationCurve;
                 if (locationCurve != null)
                 {
-                    ICurve curve = locationCurve.ToBHoM();
+                    ICurve curve = locationCurve.FromRevit();
                     if (curve != null)
                     {
                         oM.Geometry.Plane plane = null;
@@ -217,7 +217,7 @@ namespace BH.UI.Revit.Engine
             polycurves = new List<PolyCurve>();
             foreach (CurveLoop curveLoop in curveLoops)
             {
-                PolyCurve polycurve = curveLoop.ToBHoM();
+                PolyCurve polycurve = curveLoop.FromRevit();
                 if (polycurve != null)
                     polycurves.Add(polycurve);
             }

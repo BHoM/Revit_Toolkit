@@ -43,7 +43,7 @@ namespace BH.UI.Revit.Engine
             layer.Thickness = compoundStructureLayer.Width.ToSI(UnitType.UT_Length);
 
             Material revitMaterial = doc.GetElement(compoundStructureLayer.MaterialId) as Material;
-            layer.Material = revitMaterial.ToBHoMEmptyMaterial(settings);
+            layer.Material = revitMaterial.EmptyMaterialFromRevit(settings);
             return layer;
         }
 

@@ -45,7 +45,7 @@ namespace BH.UI.Revit.Engine
 
                 MethodInfo[] typeMethods = t.GetMethods(bindingBHoM);
                 Type ienumType = typeof(IEnumerable<>).MakeGenericType(type);
-                foreach (MethodInfo mi in typeMethods.Where(x => x.Name.StartsWith("ToBHoM")))
+                foreach (MethodInfo mi in typeMethods.Where(x => x.Name.EndsWith("FromRevit")))
                 {
                     if (type.IsAssignableFrom(mi.ReturnType) || ienumType.IsAssignableFrom(mi.ReturnType))
                     {

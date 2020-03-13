@@ -60,12 +60,12 @@ namespace BH.UI.Revit.Engine
                     double topOffset = topOffsetParam.AsDouble();
                     XYZ baseNode = new XYZ(loc.X, loc.Y, baseLevel + baseOffset);
                     XYZ topNode = new XYZ(loc.X, loc.Y, topLevel + topOffset);
-                    locationCurve = new oM.Geometry.Line { Start = baseNode.ToBHoM(), End = topNode.ToBHoM() };
+                    locationCurve = new oM.Geometry.Line { Start = baseNode.PointFromRevit(), End = topNode.PointFromRevit() };
                 }
             }
             else if (location is LocationCurve)
             {
-                locationCurve = (location as LocationCurve).Curve.IToBHoM();
+                locationCurve = (location as LocationCurve).Curve.IFromRevit();
                 double startExtension = 0;
                 double endExtension = 0;
 
@@ -167,8 +167,8 @@ namespace BH.UI.Revit.Engine
                         }
                     }
 
-                    startOffset = (new XYZ(0, yOffset, zOffset)).ToBHoMVector();
-                    endOffset = (new XYZ(0, yOffset, zOffset)).ToBHoMVector();
+                    startOffset = (new XYZ(0, yOffset, zOffset)).VectorFromRevit();
+                    endOffset = (new XYZ(0, yOffset, zOffset)).VectorFromRevit();
                 }
                 else if (yzJustification == 1)
                 {
@@ -217,8 +217,8 @@ namespace BH.UI.Revit.Engine
                         }
                     }
 
-                    startOffset = (new XYZ(0, yOffsetStart, zOffsetStart)).ToBHoMVector();
-                    endOffset = (new XYZ(0, yOffsetEnd, zOffsetEnd)).ToBHoMVector();
+                    startOffset = (new XYZ(0, yOffsetStart, zOffsetStart)).VectorFromRevit();
+                    endOffset = (new XYZ(0, yOffsetEnd, zOffsetEnd)).VectorFromRevit();
                 }
             }
             

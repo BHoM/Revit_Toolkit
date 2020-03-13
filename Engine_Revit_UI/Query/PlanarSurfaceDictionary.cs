@@ -118,10 +118,10 @@ namespace BH.UI.Revit.Engine
                             switch ((BuiltInCategory)(familyInstance.Category.Id.IntegerValue))
                             {
                                 case Autodesk.Revit.DB.BuiltInCategory.OST_Windows:
-                                    openings.Add(familyInstance.ToBHoMWindow(settings));
+                                    openings.Add(familyInstance.WindowFromRevit(settings));
                                     break;
                                 case Autodesk.Revit.DB.BuiltInCategory.OST_Doors:
-                                    openings.Add(familyInstance.ToBHoMDoor(settings));
+                                    openings.Add(familyInstance.DoorFromRevit(settings));
                                     break;
                                 default:
                                     PolyCurve pcurve = familyInstance.PolyCurve(hostObject, settings);
