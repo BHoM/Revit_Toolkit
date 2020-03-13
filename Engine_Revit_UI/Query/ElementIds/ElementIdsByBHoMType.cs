@@ -105,7 +105,11 @@ namespace BH.UI.Revit.Engine
             // Filter only structural panels
             if (type == typeof(BH.oM.Structure.Elements.Panel))
                 elementIds = elementIds.RemoveNonStructuralPanels(document);
-            
+
+            // Filter out walls that are parts of stacked wall
+            if (types.Any(x => typeof(Autodesk.Revit.DB.Wall).IsAssignableFrom(x)))
+                elementIds = elementIds.RemoveStackedWallParts(document);
+
             //Revit returns additional "parent" Autodesk.Revit.DB.Panel with no geometry when pulling all panels from model. This part of the code filter them out
             if (type == typeof(Window))
                 elementIds = elementIds.RemoveEmptyPanelIds(document);

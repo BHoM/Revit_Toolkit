@@ -325,6 +325,7 @@
     <Compile Include="Modify\RemoveGridSegmentIds.cs" />
     <Compile Include="Modify\RemoveNonStructuralFraming.cs" />
     <Compile Include="Modify\RemoveNonStructuralPanels.cs" />
+    <Compile Include="Modify\RemoveStackedWallParts.cs" />
     <Compile Include="Modify\SetLocation.cs" />
     <Compile Include="Modify\Update.cs" />
     <Compile Include="Modify\UpdateMaterialProperties.cs" />
