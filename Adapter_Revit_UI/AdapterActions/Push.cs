@@ -73,7 +73,7 @@ namespace BH.UI.Revit.Adapter
             RevitPushConfig pushConfig = actionConfig as RevitPushConfig;
             if (pushConfig == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("Revit Push Config has not been specified. Default Revit Push Config is used.");
+                //BH.Engine.Reflection.Compute.RecordNote("Revit Push Config has not been specified. Default Revit Push Config is used.");
                 pushConfig = new RevitPushConfig();
             }
 
