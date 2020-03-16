@@ -19,12 +19,12 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
-using System.Linq;
-using System.Collections.Generic;
-using System.ComponentModel;
+
 using Autodesk.Revit.DB;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -45,24 +45,23 @@ namespace BH.UI.Revit.Engine
             if (document == null || viewName == null)
                 return null;
 
+            if (ids != null && ids.Count() == 0)
+                return new HashSet<ElementId>();
+
             IEnumerable<Element> viewCollector = new FilteredElementCollector(document).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Views);
             View view = null;
 
             if (caseSensitive)
                 view = viewCollector.Where(x => x.Name == viewName).FirstOrDefault() as View;
             else
-                view = viewCollector.Where(x => x.Name.ToUpper() == viewName.ToUpper()).FirstOrDefault() as View;            
+                view = viewCollector.Where(x => x.Name.ToUpper() == viewName.ToUpper()).FirstOrDefault() as View;
 
-            if(viewCollector != null)
+            if (viewCollector != null)
             {
-                if (ids != null && ids.Count() == 0)
-                    return new List<ElementId>();
-
                 FilteredElementCollector collector = new FilteredElementCollector(document, view.Id);
+
                 if (ids == null)
-                {
                     return collector.ToElementIds();
-                }
                 else
                 {
                     HashSet<ElementId> result = new HashSet<ElementId>(collector.ToElementIds());
@@ -73,11 +72,10 @@ namespace BH.UI.Revit.Engine
             else
             {
                 BH.Engine.Reflection.Compute.RecordError("Couldn't find a View named " + viewName + ".");
-                return null;
+                return new HashSet<ElementId>();
             }
         }
 
         /***************************************************/
-
     }
 }

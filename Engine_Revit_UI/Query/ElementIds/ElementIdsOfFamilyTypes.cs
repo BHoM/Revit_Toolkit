@@ -20,11 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Linq;
-using System.Collections.Generic;
-using System.ComponentModel;
 using Autodesk.Revit.DB;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -54,11 +54,14 @@ namespace BH.UI.Revit.Engine
             }
             else
             {
-                HashSet<ElementId> result = new HashSet<ElementId>();
-
                 Element collector = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name == familyName).FirstOrDefault();
-
-                result.UnionWith((collector as Family).GetFamilySymbolIds());
+                if (collector == null)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");
+                    return new List<ElementId>();
+                }
+                
+                HashSet<ElementId> result = new HashSet<ElementId>((collector as Family).GetFamilySymbolIds());
 
                 if (ids != null)
                     result.IntersectWith(ids);
@@ -68,6 +71,5 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-
     }
 }

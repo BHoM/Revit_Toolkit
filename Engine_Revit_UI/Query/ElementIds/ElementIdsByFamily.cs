@@ -46,6 +46,8 @@ namespace BH.UI.Revit.Engine
         {
             if (document == null)
                 return null;
+            
+            List<ElementId> result = new List<ElementId>();
 
             List<ElementType> elementTypes = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>().ToList();
             if (!string.IsNullOrEmpty(familyName))
@@ -59,7 +61,7 @@ namespace BH.UI.Revit.Engine
             if (elementTypes == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");
-                return null;
+                return result;
             }
 
             if (!string.IsNullOrEmpty(familyTypeName))
@@ -73,13 +75,12 @@ namespace BH.UI.Revit.Engine
             if (elementTypes == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family Type named " + familyTypeName + " in the Family " + familyName);
-                return null;
+                return result;
             }
-            
-            if (ids != null && ids.Count() == 0)
-                return new List<ElementId>();
 
-            List<ElementId> result = new List<ElementId>();
+            if (ids != null && ids.Count() == 0)
+                return result;
+
             foreach (ElementType elementType in elementTypes)
             {
                 FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
@@ -134,6 +135,5 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-
     }
 }

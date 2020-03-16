@@ -20,22 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
 using Autodesk.Revit.DB.Analysis;
-using Autodesk.Revit.DB.Mechanical;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -50,10 +38,10 @@ namespace BH.UI.Revit.Engine
             if (document == null)
                 return null;
 
-            if (ids != null && ids.Count() == 0)
-                return new List<ElementId>();
-
             HashSet<ElementId> result = new HashSet<ElementId>();
+            if (ids != null && ids.Count() == 0)
+                return result;
+
             EnergyAnalysisDetailModel energyAnalysisDetailModel = EnergyAnalysisDetailModel.GetMainEnergyAnalysisDetailModel(document);
             if (energyAnalysisDetailModel != null && energyAnalysisDetailModel.IsValidObject)
                 result.Add(energyAnalysisDetailModel.Id);

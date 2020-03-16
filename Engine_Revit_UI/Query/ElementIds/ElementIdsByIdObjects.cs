@@ -20,21 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
@@ -48,7 +36,7 @@ namespace BH.UI.Revit.Engine
         {
             List<int> elementIds = new List<int>();
             List<string> uniqueIds = new List<string>();
-            if (idObjects != null)
+            if (idObjects != null && idObjects.Count != 0)
             {
                 foreach (object obj in idObjects)
                 {
@@ -65,13 +53,12 @@ namespace BH.UI.Revit.Engine
                     }
                 }
             }
-
-            if (elementIds.Count == 0 && uniqueIds.Count == 0)
+            else
                 return ids;
             
             HashSet<ElementId> result = new HashSet<ElementId>();
-            result.UnionWith(document.ElementIdsByInts(elementIds));
-            result.UnionWith(document.ElementIdsByUniqueIds(uniqueIds));
+            result.UnionWith(document.ElementIdsByInts(elementIds, ids));
+            result.UnionWith(document.ElementIdsByUniqueIds(uniqueIds, ids));
             return result;
         }
 

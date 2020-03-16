@@ -19,12 +19,12 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
-using System.Linq;
-using System.Collections.Generic;
-using System.ComponentModel;
+
 using Autodesk.Revit.DB;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -41,15 +41,16 @@ namespace BH.UI.Revit.Engine
         [Output("elementsIdsOfViewTemplate", "An enumerator for easy iteration of ElementIds collected")]
         public static IEnumerable<ElementId> ElementIdsOfViewTemplates(this Document document, string viewTemplateName = null, IEnumerable < ElementId> ids = null)
         {
+            if (document == null)
+                return null;
+
             if (ids != null && ids.Count() == 0)
                 return new List<ElementId>();
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
 
             if (viewTemplateName == null)
-            {
                 return collector.OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Select(x => x.Id);
-            }
             else
             {
                 IEnumerable<View> collected = collector.OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Where(x => x.Name == viewTemplateName);
@@ -62,5 +63,4 @@ namespace BH.UI.Revit.Engine
     }
 
     /***************************************************/
-
 }

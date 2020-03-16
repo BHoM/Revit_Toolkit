@@ -20,20 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -101,6 +92,8 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             HashSet<ElementId> result = new HashSet<ElementId>();
+            if (ids != null && ids.Count() == 0)
+                return result;
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             foreach (Element element in collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))))
@@ -148,6 +141,8 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             HashSet<ElementId> result = new HashSet<ElementId>();
+            if (ids != null && ids.Count() == 0)
+                return result;
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             foreach (Element element in collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))))
@@ -172,6 +167,8 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             HashSet<ElementId> result = new HashSet<ElementId>();
+            if (ids != null && ids.Count() == 0)
+                return result;
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             foreach (Element element in collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))))
@@ -195,6 +192,8 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             HashSet<ElementId> result = new HashSet<ElementId>();
+            if (ids != null && ids.Count() == 0)
+                return result;
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             foreach (Element element in collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))))
@@ -242,6 +241,5 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-
     }
 }

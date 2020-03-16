@@ -19,12 +19,12 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
-using System.Linq;
-using System.Collections.Generic;
-using System.ComponentModel;
+
 using Autodesk.Revit.DB;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -45,28 +45,31 @@ namespace BH.UI.Revit.Engine
             if (document == null)
                 return null;
 
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
             if (!string.IsNullOrEmpty(familyName))
             {
                 Element element = null;
 
                 if (caseSensitive)
-                {
-                    element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name == familyName).FirstOrDefault();                    
-                }
+                    element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name == familyName).FirstOrDefault();
                 else
-                {
-                    element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name.ToUpper() == familyName.ToUpper()).FirstOrDefault();                    
-                }
+                    element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name.ToUpper() == familyName.ToUpper()).FirstOrDefault();
 
-                if(element == null)
+                if (element == null)
                 {
                     BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");
-                    return null;
+                    return new List<ElementId>();
                 }
                 else
                 {
-                    return new List<ElementId> { (element.Id) };                    
-                }                
+                    ElementId familyId = element.Id;
+                    if (ids != null && !ids.Contains(familyId))
+                        return new List<ElementId>();
+                    else
+                        return new List<ElementId> { familyId };
+                }
             }
             else
             {
@@ -76,6 +79,5 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-
     }
 }

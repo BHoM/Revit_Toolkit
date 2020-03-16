@@ -48,7 +48,7 @@ namespace BH.UI.Revit.Engine
             if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
             {
                 BH.Engine.Reflection.Compute.RecordError("Couldn't find a Category named " + categoryName + ".");
-                return null;
+                return new List<ElementId>();
             }
 
             if (ids != null && ids.Count() == 0)
@@ -59,6 +59,5 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-
     }
 }
