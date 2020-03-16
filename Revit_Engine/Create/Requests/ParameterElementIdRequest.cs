@@ -39,7 +39,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
         [Input("parameterName", "Parameter name to be queried")]
         [Input("bHoMObject", "BHoMObject pulled from Revit that has sought ElementId.")]
-        [Output("ByParameterElementIdRequest")]
+        [Output("filterByParameterElementId")]
         public static FilterByParameterElementId ParameterElementIdRequest(string parameterName, BHoMObject bHoMObject)
         {
             int elementId = bHoMObject.ElementId();
