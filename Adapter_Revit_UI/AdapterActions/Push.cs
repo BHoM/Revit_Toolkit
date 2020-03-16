@@ -104,13 +104,13 @@ namespace BH.UI.Revit.Adapter
 
             // Push the objects
             string transactionName = "BHoM Push " + pushType;
-            bool success = false;
+            List<IBHoMObject> pushed = new List<IBHoMObject>();
             using (Transaction transaction = new Transaction(document, transactionName))
             {
                 transaction.Start();
 
                 if (pushType == PushType.CreateOnly)
-                    success = Create(objectsToPush, document, RevitSettings);
+                    pushed = Create(objectsToPush, pushConfig);
                 else if (pushType == PushType.DeleteThenCreate)
                 {
                     List<IBHoMObject> toCreate = new List<IBHoMObject>();
@@ -120,15 +120,16 @@ namespace BH.UI.Revit.Adapter
                         if (element == null || Delete(element.Id, document, false).Count() != 0)
                             toCreate.Add(obj);
                     }
-                    success = ICreate(toCreate, pushConfig);
+
+                    pushed = Create(toCreate, pushConfig);
                 }
                 else if (pushType == PushType.UpdateOnly)
                 {
                     foreach (IBHoMObject obj in objectsToPush)
                     {
                         Element element = obj.Element(document);
-                        if (element != null)
-                            success |= Update(element, obj, RevitSettings);
+                        if (element != null && Update(element, obj, RevitSettings))
+                            pushed.Add(obj);
                     }
                 }
 
@@ -139,7 +140,7 @@ namespace BH.UI.Revit.Adapter
             if (UIControlledApplication != null)
                 UIControlledApplication.ControlledApplication.FailuresProcessing -= ControlledApplication_FailuresProcessing;
 
-            return success ? objectsToPush.Cast<object>().ToList() : new List<object>();
+            return pushed.Cast<object>().ToList();
         }
 
         /***************************************************/
