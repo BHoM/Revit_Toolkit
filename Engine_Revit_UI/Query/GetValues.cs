@@ -31,7 +31,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Query
     {
         /***************************************************/
-        /****             public Methods              ****/
+        /****             Public Methods              ****/
         /***************************************************/
 
         public static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, string key) where T : IBHoMObject
