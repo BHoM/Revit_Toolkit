@@ -63,9 +63,9 @@ namespace BH.UI.Revit.Adapter
             // If unset, set the pushType to AdapterSettings' value (base AdapterSettings default is FullCRUD). Disallow the unsupported PushTypes.
             if (pushType == PushType.AdapterDefault)
                 pushType = PushType.DeleteThenCreate;
-            else if (pushType == PushType.FullCRUD)
+            else if (pushType == PushType.FullPush)
             {
-                BH.Engine.Reflection.Compute.RecordError("Full CRUD is currently not supported by Revit_Toolkit, please use Create, UpdateOnly or DeleteThenCreate instead.");
+                BH.Engine.Reflection.Compute.RecordError("Full Push is currently not supported by Revit_Toolkit, please use Create, UpdateOnly or DeleteThenCreate instead.");
                 return new List<object>();
             }
             
