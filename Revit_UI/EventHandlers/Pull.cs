@@ -45,11 +45,22 @@ namespace BH.UI.Revit
                     //Get instance of listener
                     RevitListener listener = RevitListener.Listener;
 
-                    //Get the revit adapter
-                    RevitUIAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
+                    IEnumerable<object> objs;
 
-                    //Pull the data
-                    IEnumerable<object> objs = adapter.Pull(listener.LatestRequest, listener.LatestPullType, listener.LatestConfig);
+                    // Do not attempt to pull if no document is open.
+                    if (app.ActiveUIDocument == null || app.ActiveUIDocument.Document == null)
+                    {
+                        BH.Engine.Reflection.Compute.RecordError("The adaper has successfully connected to Revit, but open document could not be found. Pull aborted.");
+                        objs = new List<object>();
+                    }
+                    else
+                    {
+                        //Get the revit adapter
+                        RevitUIAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
+
+                        //Pull the data
+                        objs = adapter.Pull(listener.LatestRequest, listener.LatestPullType, listener.LatestConfig);
+                    }
 
                     //Clear the previous data
                     listener.LatestPullType = oM.Adapter.PullType.AdapterDefault;
