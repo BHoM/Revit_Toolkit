@@ -34,10 +34,10 @@ namespace BH.UI.Revit.Adapter
     public partial class RevitUIAdapter
     {
         /***************************************************/
-        /****              Private Methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        private List<IBHoMObject> Create(IEnumerable<IBHoMObject> bHoMObjects, RevitPushConfig pushConfig)
+        public List<IBHoMObject> Create(IEnumerable<IBHoMObject> bHoMObjects, RevitPushConfig pushConfig)
         {
             Document document = this.Document;
             RevitSettings settings = this.RevitSettings.DefaultIfNull();
@@ -55,7 +55,7 @@ namespace BH.UI.Revit.Adapter
 
         /***************************************************/
 
-        private static Element Create(IBHoMObject bHoMObject, Document document, RevitSettings settings, Dictionary<Guid, List<int>> refObjects)
+        public static Element Create(IBHoMObject bHoMObject, Document document, RevitSettings settings, Dictionary<Guid, List<int>> refObjects)
         {
             if (bHoMObject == null)
             {

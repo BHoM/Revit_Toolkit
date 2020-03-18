@@ -67,10 +67,10 @@ namespace BH.UI.Revit.Adapter
 
 
         /***************************************************/
-        /****              Private Methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        private static bool Delete(IBHoMObject bHoMObject, Document document)
+        public static bool Delete(IBHoMObject bHoMObject, Document document)
         {
             ElementId elementId = Engine.Query.ElementId(bHoMObject);
             if (elementId == null)
@@ -92,7 +92,7 @@ namespace BH.UI.Revit.Adapter
 
         /***************************************************/
 
-        private static List<ElementId> Delete(IEnumerable<ElementId> elementIds, Document document, bool removePinned)
+        public static List<ElementId> Delete(IEnumerable<ElementId> elementIds, Document document, bool removePinned)
         {
             if (elementIds == null)
             {
@@ -111,7 +111,7 @@ namespace BH.UI.Revit.Adapter
 
         /***************************************************/
 
-        private static IEnumerable<ElementId> Delete(ElementId elementId, Document document, bool deletePinned)
+        public static IEnumerable<ElementId> Delete(ElementId elementId, Document document, bool deletePinned)
         {
             Element element = document.GetElement(elementId);
             if (element == null)

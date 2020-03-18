@@ -115,10 +115,10 @@ namespace BH.UI.Revit.Adapter
 
 
         /***************************************************/
-        /****              Private Methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        private static IEnumerable<IBHoMObject> Read(Element element, Discipline discipline, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects)
+        public static IEnumerable<IBHoMObject> Read(Element element, Discipline discipline, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects)
         {
             if (element == null || !element.IsValidObject)
                 return new List<IBHoMObject>();
