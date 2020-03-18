@@ -31,10 +31,10 @@ namespace BH.UI.Revit.Adapter
     public partial class RevitUIAdapter
     {
         /***************************************************/
-        /****              Private Methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        private static bool Update(Element element, IBHoMObject bHoMObject, RevitSettings settings)
+        public static bool Update(Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
             string tagsParameterName = settings.TagsParameterName;
             
