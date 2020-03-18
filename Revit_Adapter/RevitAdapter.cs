@@ -130,7 +130,7 @@ namespace BH.Adapter.Revit
             m_WaitEvent.Reset();
 
             if (!returned)
-                Engine.Reflection.Compute.RecordError("Failed to connect to Revit");
+                Engine.Reflection.Compute.RecordError("Failed to connect to Revit. Check if one and only one instance of Revit is open and RevitListener is activated in Add-Ins tab.");
 
             return returned;
         }
