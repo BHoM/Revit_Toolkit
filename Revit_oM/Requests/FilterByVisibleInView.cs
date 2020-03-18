@@ -25,8 +25,8 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements in a given View.")]
-    public class VisibleInViewRequest : IRequest
+    [Description("IRequest that filters all elements visible in a given View.")]
+    public class FilterByVisibleInView : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/

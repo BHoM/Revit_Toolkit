@@ -35,16 +35,30 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIdsByInts(this Document document, IEnumerable<int> elementIds, IEnumerable<ElementId> ids = null)
         {
+            if (document == null)
+                return null;
+
+            HashSet<ElementId> result = new HashSet<ElementId>();
             if (elementIds != null)
             {
-                HashSet<int> corruptIds = new HashSet<int>(elementIds.Where(x => x < 0));
+                HashSet<int> corruptIds = new HashSet<int>();
+                foreach (int id in elementIds)
+                {
+                    ElementId elementId = new ElementId(id);
+                    if (document.GetElement(elementId) != null)
+                        result.Add(elementId);
+                    else
+                        corruptIds.Add(id);
+                }
+
                 if (corruptIds.Count != 0)
-                    BH.Engine.Reflection.Compute.RecordError(String.Format("Invalid Revit ElementIds have been used: {0}", string.Join(", ", corruptIds)));
-                
-                return (ids == null ? elementIds : elementIds.Intersect(ids.Select(x => x.IntegerValue))).Select(x => new ElementId(x));
+                    BH.Engine.Reflection.Compute.RecordError(String.Format("Invalid or nonexistent Revit ElementIds have been used: {0}", string.Join(", ", corruptIds)));
+
+                if (ids != null)
+                    result.IntersectWith(ids);
             }
-            else
-                return null;
+
+            return result;
         }
 
         /***************************************************/

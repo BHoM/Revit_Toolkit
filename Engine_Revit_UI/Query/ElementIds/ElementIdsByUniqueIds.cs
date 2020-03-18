@@ -35,35 +35,38 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIdsByUniqueIds(this Document document, IEnumerable<string> uniqueIds, IEnumerable<ElementId> ids = null)
         {
-            if (document == null || uniqueIds == null)
+            if (document == null)
                 return null;
 
-            HashSet<ElementId> elementIDs = new HashSet<ElementId>();
+            HashSet<ElementId> result = new HashSet<ElementId>();
             if (ids != null && ids.Count() == 0)
-                return elementIDs;
+                return result;
 
-            HashSet<string> corruptIds = new HashSet<string>();
-            foreach (string uniqueID in uniqueIds)
+            if (uniqueIds != null)
             {
-                if (!string.IsNullOrEmpty(uniqueID))
+                HashSet<string> corruptIds = new HashSet<string>();
+                foreach (string uniqueID in uniqueIds)
                 {
-                    Element element = document.GetElement(uniqueID);
-                    if (element != null)
-                        elementIDs.Add(element.Id);
+                    if (!string.IsNullOrEmpty(uniqueID))
+                    {
+                        Element element = document.GetElement(uniqueID);
+                        if (element != null)
+                            result.Add(element.Id);
+                        else
+                            corruptIds.Add(uniqueID);
+                    }
                     else
-                        corruptIds.Add(uniqueID);
+                        BH.Engine.Reflection.Compute.RecordError("An attempt to use empty Unique Revit Id has been found.");
                 }
-                else
-                    BH.Engine.Reflection.Compute.RecordError("An attempt to use empty Unique Revit Id has been found.");
+
+                if (corruptIds.Count != 0)
+                    BH.Engine.Reflection.Compute.RecordError(String.Format("Elements have not been found in the document. Unique Revit Ids: {0}", string.Join(", ", corruptIds)));
+
+                if (ids != null)
+                    result.IntersectWith(ids);
             }
 
-            if (corruptIds.Count != 0)
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Elements have not been found in the document. Unique Revit Ids: {0}", string.Join(", ", corruptIds)));
-
-            if (ids != null)
-                elementIDs.IntersectWith(ids);
-
-            return elementIDs;
+            return result;
         }
 
         /***************************************************/

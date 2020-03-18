@@ -34,46 +34,39 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get all Elements as ElementId that are visible in a list of Views")]
-        [Input("document", "Revit Document where views are collected")]
-        [Input("viewName", "Revit view where visible elements are collected")]
+        [Description("Get the ElementId of all Views, with option to narrow search by View name only")]
+        [Input("document", "Revit Document where ElementIds are collected")]
+        [Input("viewName", "Optional, narrows the search by a View name. If blank it returns all Views")]
         [Input("caseSensitive", "Optional, sets the View name to be case sensitive or not")]
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("elementIdsByVisibleInView", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsByVisibleInView(this Document document, string viewName, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
+        [Output("elementIdsOfViews", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsOfViews(this Document document, string viewName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
-            if (document == null || viewName == null)
+            if (document == null)
                 return null;
 
             if (ids != null && ids.Count() == 0)
-                return new HashSet<ElementId>();
+                return new List<ElementId>();
 
-            IEnumerable<Element> viewCollector = new FilteredElementCollector(document).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Views);
-            View view = null;
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
 
-            if (caseSensitive)
-                view = viewCollector.Where(x => x.Name == viewName).FirstOrDefault() as View;
-            else
-                view = viewCollector.Where(x => x.Name.ToUpper() == viewName.ToUpper()).FirstOrDefault() as View;
-
-            if (viewCollector != null)
+            if (!string.IsNullOrEmpty(viewName))
             {
-                FilteredElementCollector collector = new FilteredElementCollector(document, view.Id);
-
-                if (ids == null)
-                    return collector.ToElementIds();
+                IEnumerable<ElementId> result;
+                if (caseSensitive)
+                    result = collector.OfClass(typeof(View)).Where(x => x.Name == viewName).Select(x => x.Id);
                 else
-                {
-                    HashSet<ElementId> result = new HashSet<ElementId>(collector.ToElementIds());
-                    result.IntersectWith(ids);
-                    return result;
-                }
+                    result = collector.OfClass(typeof(View)).Where(x => x.Name.ToUpper() == viewName.ToUpper()).Select(x => x.Id);
+
+                if (result.Count() == 0)
+                    BH.Engine.Reflection.Compute.RecordWarning("Couldn't find any View named " + viewName + ".");
+                else if (result.Count() != 1)
+                    BH.Engine.Reflection.Compute.RecordWarning("More than one View named " + viewName + " has been found.");
+
+                return result;
             }
             else
-            {
-                BH.Engine.Reflection.Compute.RecordError("Couldn't find a View named " + viewName + ".");
-                return new HashSet<ElementId>();
-            }
+                return collector.OfClass(typeof(View)).Select(x => x.Id);
         }
 
         /***************************************************/

@@ -20,41 +20,45 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Base;
+using Autodesk.Revit.DB;
 using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.UI.Revit.Engine
 {
-    public static partial class Create
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an IRequest that filters elements by their ElementIds.")]
-        [Input("bHoMObjects", "BHoMObjects pulled from Revit that have sought ElementIds.")]
-        [Output("filterByElementIds")]
-        public static FilterByElementIds FilterByElementIds(IEnumerable<IBHoMObject> bHoMObjects)
+        [Description("Get all Elements as ElementId that are owned by (specific to) a View")]
+        [Input("document", "Revit Document where views are collected")]
+        [Input("viewId", "ElementId of the Revit view to which the elements belong")]
+        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
+        [Output("elementIdsOfViewSpecific", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsOfViewSpecific(this Document document, int viewId, IEnumerable<ElementId> ids = null)
         {
-            List<int> elementIds = new List<int>();
-            foreach (IBHoMObject bHoMObject in bHoMObjects)
-            {
-                int elementId = bHoMObject.ElementId();
-                if (elementId == -1)
-                {
-                    BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
-                    return null;
-                }
-                else
-                    elementIds.Add(elementId);
-            }
+            if (document == null)
+                return null;
 
-            return new FilterByElementIds { ElementIds = elementIds };
+            View view = document.GetElement(new ElementId(viewId)) as View;
+            if (view != null)
+            {
+                if (ids != null && ids.Count() == 0)
+                    return new List<ElementId>();
+
+                FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+                return collector.Where(x => x.OwnerViewId == view.Id).Select(x => x.Id);
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Couldn't find a View under ElementId {0}", viewId));
+                return new HashSet<ElementId>();
+            }
         }
 
         /***************************************************/

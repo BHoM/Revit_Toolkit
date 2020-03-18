@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Reflection.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -36,15 +37,18 @@ namespace BH.UI.Revit.Engine
 
         [Description("Get all Views that have the named View Template assigned")]
         [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("templateName", "Name of View Template assigend to Views")]
+        [Input("templateId", "ElementId of View Template assigend to Views meant to be filtered")]
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("ElementIdsByTemplate", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsByTemplate(this Document document, string templateName, IEnumerable<ElementId> ids = null)
+        [Output("elementIdsByTemplate", "An enumerator for easy iteration of ElementIds collected")]
+        public static IEnumerable<ElementId> ElementIdsByTemplate(this Document document, int templateId, IEnumerable<ElementId> ids = null)
         {
-            Element viewTemplate = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Where(x => x.Name == templateName).FirstOrDefault();
-            if (viewTemplate == null)
-                return null;
-
+            View viewTemplate = document.GetElement(new ElementId(templateId)) as View;
+            if (viewTemplate == null || !viewTemplate.IsTemplate)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Couldn't find a View Template under ElementId {0}", templateId));
+                return new List<ElementId>();
+            }
+            
             if (ids != null && ids.Count() == 0)
                 return new List<ElementId>();
 

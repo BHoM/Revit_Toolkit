@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System;
@@ -38,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("parameterName", "Parameter name to be queried")]
         [Input("bHoMObject", "BHoMObject pulled from Revit that has sought ElementId.")]
         [Output("filterByParameterElementId")]
-        public static FilterByParameterElementId FilterByParameterElementId(string parameterName, BHoMObject bHoMObject)
+        public static FilterByParameterElementId FilterByParameterElementId(string parameterName, IBHoMObject bHoMObject)
         {
             int elementId = bHoMObject.ElementId();
             if (elementId == -1)

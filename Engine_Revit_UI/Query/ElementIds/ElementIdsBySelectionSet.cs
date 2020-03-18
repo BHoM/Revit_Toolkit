@@ -34,7 +34,7 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIdsBySelectionSet(this Document document, string selectionSetName, bool caseSensitive, IEnumerable<ElementId> ids = null)
         {
-            if (document == null || string.IsNullOrEmpty(selectionSetName))
+            if (document == null)
                 return null;
 
             if (ids != null && ids.Count() == 0)

@@ -34,14 +34,14 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIdsByWorksets(this Document document, List<WorksetId> worksetIds, IEnumerable<ElementId> ids = null)
         {
-            if (document == null || worksetIds == null)
+            if (document == null)
                 return null;
 
             if (ids != null && ids.Count() == 0)
                 return new List<ElementId>();
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            if (worksetIds.Count == 0)
+            if (worksetIds == null || worksetIds.Count == 0)
                 return new List<ElementId>();
             else
                 return collector.WherePasses(new LogicalOrFilter(worksetIds.ConvertAll(x => new ElementWorksetFilter(x, false) as ElementFilter))).ToElementIds();

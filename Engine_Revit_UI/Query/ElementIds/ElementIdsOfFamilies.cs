@@ -37,7 +37,7 @@ namespace BH.UI.Revit.Engine
         [Description("Get the ElementId of all Families, with option to narrow search by Family name only")]
         [Input("document", "Revit Document where ElementIds are collected")]
         [Input("familyName", "Optional, narrows the search by a Family name. If blank it returns all Families")]        
-        [Input("caseSensitive", "Optional, sets the Family name and Family Type name to be case sensitive or not")]
+        [Input("caseSensitive", "Optional, sets the Family name to be case sensitive or not")]
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
         [Output("elementIdsOfFamilies", "An enumerator for easy iteration of ElementIds collected")]
         public static IEnumerable<ElementId> ElementIdsOfFamilies(this Document document, string familyName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
@@ -48,34 +48,25 @@ namespace BH.UI.Revit.Engine
             if (ids != null && ids.Count() == 0)
                 return new List<ElementId>();
 
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+
             if (!string.IsNullOrEmpty(familyName))
             {
-                Element element = null;
-
+                IEnumerable<ElementId> result;
                 if (caseSensitive)
-                    element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name == familyName).FirstOrDefault();
+                    result = collector.OfClass(typeof(Family)).Where(x => x.Name == familyName).Select(x => x.Id);
                 else
-                    element = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name.ToUpper() == familyName.ToUpper()).FirstOrDefault();
+                    result = collector.OfClass(typeof(Family)).Where(x => x.Name.ToUpper() == familyName.ToUpper()).Select(x => x.Id);
 
-                if (element == null)
-                {
-                    BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");
-                    return new List<ElementId>();
-                }
-                else
-                {
-                    ElementId familyId = element.Id;
-                    if (ids != null && !ids.Contains(familyId))
-                        return new List<ElementId>();
-                    else
-                        return new List<ElementId> { familyId };
-                }
+                if (result.Count() == 0)
+                    BH.Engine.Reflection.Compute.RecordWarning("Couldn't find any Family named " + familyName + ".");
+                else if (result.Count() != 1)
+                    BH.Engine.Reflection.Compute.RecordWarning("More than one Family named " + familyName + " has been found.");
+
+                return result;
             }
             else
-            {
-                FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
                 return collector.OfClass(typeof(Family)).Select(x => x.Id);
-            }            
         }
 
         /***************************************************/

@@ -20,13 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Base;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -36,25 +32,11 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an IRequest that filters elements by their ElementIds.")]
-        [Input("bHoMObjects", "BHoMObjects pulled from Revit that have sought ElementIds.")]
-        [Output("filterByElementIds")]
-        public static FilterByElementIds FilterByElementIds(IEnumerable<IBHoMObject> bHoMObjects)
+        [Description("Creates an IRequest that filters elements selected in Revit. Wrapper for BH.oM.Data.Requests.SelectionRequest.")]
+        [Output("selectionRequest")]
+        public static SelectionRequest FilterBySelection()
         {
-            List<int> elementIds = new List<int>();
-            foreach (IBHoMObject bHoMObject in bHoMObjects)
-            {
-                int elementId = bHoMObject.ElementId();
-                if (elementId == -1)
-                {
-                    BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
-                    return null;
-                }
-                else
-                    elementIds.Add(elementId);
-            }
-
-            return new FilterByElementIds { ElementIds = elementIds };
+            return new SelectionRequest();
         }
 
         /***************************************************/

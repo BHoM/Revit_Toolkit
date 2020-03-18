@@ -38,6 +38,9 @@ namespace BH.oM.Adapters.Revit.Requests
         [Description("Name of Revit family type.")]
         public string FamilyTypeName { get; set; } = "";
 
+        [Description("If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        public bool CaseSensitive { get; set; } = true;
+
         /***************************************************/
     }
 }

@@ -77,7 +77,7 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIds(this FilterByCategory request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            return uIDocument.Document.ElementIdsByCategoryNames(request.CategoryName, ids);
+            return uIDocument.Document.ElementIdsByCategoryName(request.CategoryName, request.CaseSensitive, ids);
         }
 
         /***************************************************/
@@ -106,7 +106,7 @@ namespace BH.UI.Revit.Engine
         public static IEnumerable<ElementId> ElementIds(this SelectionRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             if (uIDocument.Selection == null)
-                return null;
+                return new List<ElementId>();
 
             HashSet<ElementId> result = new HashSet<ElementId>(uIDocument.Selection.GetElementIds());
             if (ids != null)
@@ -168,28 +168,56 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIds(this FilterByFamilyAndTypeName request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            return uIDocument.Document.ElementIdsByFamily(request.FamilyName, request.FamilyTypeName, true, ids);
+            return uIDocument.Document.ElementIdsByFamilyAndType(request.FamilyName, request.FamilyTypeName, request.CaseSensitive, ids);
         }
 
         /***************************************************/
 
         public static IEnumerable<ElementId> ElementIds(this FilterFamilyByName request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            return uIDocument.Document.ElementIdsOfFamilies(request.FamilyName, true, ids);
+            return uIDocument.Document.ElementIdsOfFamilies(request.FamilyName, request.CaseSensitive, ids);
         }
 
         /***************************************************/
 
         public static IEnumerable<ElementId> ElementIds(this FilterFamilyTypesOfFamily request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            return uIDocument.Document.ElementIdsOfFamilyTypes(request.FamilyName, ids);
+            return uIDocument.Document.ElementIdsOfFamilyTypes(request.FamilyId, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this FilterActiveView request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsOfActiveView(ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this FilterByViewSpecific request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsOfViewSpecific(request.ViewId, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this FilterByVisibleInView request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsOfVisibleInView(request.ViewId, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this FilterViewByName request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsOfViews(request.ViewName, request.CaseSensitive, ids);
         }
 
         /***************************************************/
 
         public static IEnumerable<ElementId> ElementIds(this FilterViewsByTemplate request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            return uIDocument.Document.ElementIdsByTemplate(request.TemplateName, ids);
+            return uIDocument.Document.ElementIdsByTemplate(request.TemplateId, ids);
         }
 
         /***************************************************/
@@ -203,14 +231,7 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIds(this FilterViewTemplateByName request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            return uIDocument.Document.ElementIdsOfViewTemplates(request.TemplateName, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this VisibleInViewRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsByVisibleInView(request.ViewName, true, ids);
+            return uIDocument.Document.ElementIdsOfViewTemplates(request.TemplateName, request.CaseSensitive, ids);
         }
 
         /***************************************************/

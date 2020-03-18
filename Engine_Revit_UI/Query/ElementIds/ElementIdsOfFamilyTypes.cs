@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Reflection.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -36,10 +37,10 @@ namespace BH.UI.Revit.Engine
 
         [Description("Get the ElementId of all Family Types, with option to narrow search by a certain Family name")]
         [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("familyName", "Optional, Family name to search for Family Type ids")]
+        [Input("familyId", "Optional, Family id to search for Family Type ids - if set to -1 then all Element types will be filtered")]
         [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
         [Output("elementIdsOfFamilyTypes", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, string familyName = null, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, int familyId, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
@@ -47,22 +48,21 @@ namespace BH.UI.Revit.Engine
             if (ids != null && ids.Count() == 0)
                 return new List<ElementId>();
 
-            if (familyName == null)
+            if (familyId == -1)
             {
                 FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
                 return collector.WhereElementIsElementType().ToElementIds();
             }
             else
             {
-                Element collector = new FilteredElementCollector(document).OfClass(typeof(Family)).Where(x => x.Name == familyName).FirstOrDefault();
-                if (collector == null)
+                Family family = document.GetElement(new ElementId(familyId)) as Family;
+                if (family == null)
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");
+                    BH.Engine.Reflection.Compute.RecordError(String.Format("Couldn't find a Family under ElementId {0}", familyId));
                     return new List<ElementId>();
                 }
                 
-                HashSet<ElementId> result = new HashSet<ElementId>((collector as Family).GetFamilySymbolIds());
-
+                HashSet<ElementId> result = new HashSet<ElementId>(family.GetFamilySymbolIds());
                 if (ids != null)
                     result.IntersectWith(ids);
 
