@@ -45,12 +45,20 @@ namespace BH.UI.Revit
                     //Get instance of listener
                     RevitListener listener = RevitListener.Listener;
 
-                    //Get the revit adapter
-                    RevitUIAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
+                    int count = 0;
 
-                    //Remove the elements
-                    int count = adapter.Remove(listener.LatestRequest, listener.LatestConfig);
+                    // Do not attempt to remove if no document is open.
+                    if (app.ActiveUIDocument == null || app.ActiveUIDocument.Document == null)
+                        BH.Engine.Reflection.Compute.RecordError("The adaper has successfully connected to Revit, but open document could not be found. Remove aborted.");
+                    else
+                    {
+                        //Get the revit adapter
+                        RevitUIAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
 
+                        //Remove the elements
+                        count = adapter.Remove(listener.LatestRequest, listener.LatestConfig);
+                    }
+                    
                     //Clear the previous data
                     listener.LatestConfig = null;
 
