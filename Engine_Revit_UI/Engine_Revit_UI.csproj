@@ -325,7 +325,6 @@
     <Compile Include="Query\BoundingBox.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByBHoMType.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByIdObjects.cs" />
-    <Compile Include="Query\ElementIds\ElementIdsOfElementsOnly.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByCategoryName.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByDBType.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfFamilyTypes.cs" />

@@ -23,14 +23,17 @@
 using BH.oM.Data.Requests;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements placed in document.")]
-    public class ElementsOnlyRequest : IRequest
+    [Description("IRequest that filters all views that implement a given template.")]
+    public class FilterViewsByTemplate : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
+
+        [Description("ElementId of the view template sought for.")]
+        public int TemplateId { get; set; } = -1;
 
         /***************************************************/
     }

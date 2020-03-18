@@ -20,37 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
-using System.Collections.Generic;
+using BH.oM.Data.Requests;
 using System.ComponentModel;
-using System.Linq;
 
-namespace BH.UI.Revit.Engine
+namespace BH.oM.Adapters.Revit.Requests
 {
-    public static partial class Query
+    [Description("IRequest that filters a View by name.")]
+    public class FilterViewByName : IRequest
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Get all instances of Elements as ElementIds, implies they exist in a XYZ context")]
-        [Input("document", "Revit Document where ElementIds are collected")]        
-        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("elementIdsOfElementsOnly", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsOfElementsOnly(this Document document, IEnumerable<ElementId> ids = null)
-        {
-            if (document == null)
-                return null;
-
-            if (ids != null && ids.Count() == 0)
-                return new List<ElementId>();
-
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            collector.WhereElementIsNotElementType().Where(x => x.Location != null);
-
-            return collector.ToElementIds();
-        }
+        [Description("Revit View name matching one displayed in Revit UI.")]
+        public string ViewName { get; set; } = "";
 
         /***************************************************/
     }

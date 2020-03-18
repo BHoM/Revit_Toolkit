@@ -23,7 +23,7 @@
 using BH.oM.Adapters.Revit.Interface;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
     [Description("IRequest that filters elements based on given floating point number parameter value criterion.")]
     public class FilterByParameterNumber : IParameterRequest

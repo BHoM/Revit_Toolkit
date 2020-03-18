@@ -23,17 +23,17 @@
 using BH.oM.Data.Requests;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements in a given View.")]
-    public class VisibleInViewRequest : IRequest
+    [Description("IRequest that filters elements specific to (owned by) a given View.")]
+    public class FilterByViewSpecific : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Revit View name matching one displayed in Revit UI.")]
-        public string ViewName { get; set; } = "";
+        [Description("ElementId of the owner view.")]
+        public int ViewId { get; set; } = -1;
 
         /***************************************************/
     }

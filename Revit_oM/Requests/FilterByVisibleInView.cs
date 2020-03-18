@@ -20,37 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
+using BH.oM.Data.Requests;
 using System.ComponentModel;
 
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit;
-using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
-    public static partial class Create
+    [Description("IRequest that filters all elements in a given View.")]
+    public class VisibleInViewRequest : IRequest
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
-        [Input("parameterName", "Parameter name to be queried")]
-        [Input("bHoMObject", "BHoMObject pulled from Revit that has sought ElementId.")]
-        [Output("filterByParameterElementId")]
-        public static FilterByParameterElementId ParameterElementIdRequest(string parameterName, BHoMObject bHoMObject)
-        {
-            int elementId = bHoMObject.ElementId();
-            if (elementId == -1)
-            {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
-                return null;
-            }
-            else
-                return new FilterByParameterElementId { ParameterName = parameterName, ElementId = elementId };
-        }
+        [Description("ElementId of the view in which the elements are expected to be visible.")]
+        public int ViewId { get; set; } = -1;
 
         /***************************************************/
     }

@@ -24,7 +24,7 @@ using BH.oM.Data.Requests;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
     [Description("IRequest that filters elements by their UniqueIds.")]
     public class FilterByUniqueIds : IRequest

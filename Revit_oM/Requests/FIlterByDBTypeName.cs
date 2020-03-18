@@ -23,7 +23,7 @@
 using BH.oM.Data.Requests;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
     [Description("IRequest that filters all elements of given Autodesk.Revit.DB type.")]
     public class FilterByDBTypeName : IRequest

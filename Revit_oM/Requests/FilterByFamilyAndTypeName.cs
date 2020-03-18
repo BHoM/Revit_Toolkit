@@ -23,17 +23,20 @@
 using BH.oM.Data.Requests;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all views of given type.")]
-    public class FilterViewByType : IRequest
+    [Description("IRequest that filters all elements of given Revit family and type.")]
+    public class FilterByFamilyAndTypeName : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("RevitViewType enum correspondent to Revit view type.")]
-        public Revit.Enums.RevitViewType RevitViewType { get; set; } =  Enums.RevitViewType.Undefined;
+        [Description("Name of Revit family.")]
+        public string FamilyName { get; set; } = "";
+
+        [Description("Name of Revit family type.")]
+        public string FamilyTypeName { get; set; } = "";
 
         /***************************************************/
     }

@@ -20,20 +20,35 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit;
+using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
+using System;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.Engine.Adapters.Revit
 {
-    [Description("IRequest that filters all views that implement a given template.")]
-    public class FilterViewByTemplate : IRequest
+    public static partial class Create
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Revit view template name.")]
-        public string TemplateName { get; set; } = "";
+        [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
+        [Input("parameterName", "Parameter name to be queried")]
+        [Input("bHoMObject", "BHoMObject pulled from Revit that has sought ElementId.")]
+        [Output("filterByParameterElementId")]
+        public static FilterByParameterElementId FilterByParameterElementId(string parameterName, BHoMObject bHoMObject)
+        {
+            int elementId = bHoMObject.ElementId();
+            if (elementId == -1)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
+                return null;
+            }
+            else
+                return new FilterByParameterElementId { ParameterName = parameterName, ElementId = elementId };
+        }
 
         /***************************************************/
     }

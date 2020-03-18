@@ -24,6 +24,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Data.Requests;
 using System.Collections;
 using System.Collections.Generic;
@@ -102,13 +103,6 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this ElementsOnlyRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            return uIDocument.Document.ElementIdsOfElementsOnly(ids);
-        }
-
-        /***************************************************/
-
         public static IEnumerable<ElementId> ElementIds(this SelectionRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             if (uIDocument.Selection == null)
@@ -172,7 +166,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this FilterByFamily request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIds(this FilterByFamilyAndTypeName request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             return uIDocument.Document.ElementIdsByFamily(request.FamilyName, request.FamilyTypeName, true, ids);
         }
@@ -193,14 +187,14 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this FilterViewByTemplate request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIds(this FilterViewsByTemplate request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             return uIDocument.Document.ElementIdsByTemplate(request.TemplateName, ids);
         }
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this FilterViewByType request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIds(this FilterViewsByType request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             return uIDocument.Document.ElementIdsByViewType(request.RevitViewType.ViewType(), ids);
         }

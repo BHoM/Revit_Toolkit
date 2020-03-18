@@ -23,7 +23,7 @@
 using BH.oM.Adapters.Revit.Interface;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
     [Description("IRequest that filters elements based on given text parameter value criterion.")]
     public class FilterByParameterText : IParameterRequest

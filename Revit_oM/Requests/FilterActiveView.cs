@@ -23,20 +23,16 @@
 using BH.oM.Data.Requests;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements of given Revit family and type.")]
-    public class FilterByFamily : IRequest
+    [Description("IRequest that filters the active view.")]
+    public class FilterActiveView : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of Revit family.")]
-        public string FamilyName { get; set; } = "";
 
-        [Description("Name of Revit family type.")]
-        public string FamilyTypeName { get; set; } = "";
 
         /***************************************************/
     }
