@@ -55,6 +55,12 @@ namespace BH.Adapter.Revit
                 return InternalAdapter.Remove(request, removeConfig);
             }
 
+            if (!this.IsValid())
+            {
+                BH.Engine.Reflection.Compute.RecordError("Revit Adapter is not valid. Please check if it has been set up correctly and activated.");
+                return 0;
+            }
+
             //Reset the wait event
             m_WaitEvent.Reset();
 
