@@ -80,13 +80,13 @@ namespace BH.UI.Revit.Engine
                         continue;
 
                     List<oM.Geometry.Point> points = new List<oM.Geometry.Point>();
-                    points.Add(maxXYZ.ToBHoM());
-                    points.Add(uXYZ.ToBHoM());
-                    points.Add(minXYZ.ToBHoM());
-                    points.Add(vXYZ.ToBHoM());
-                    points.Add(maxXYZ.ToBHoM());
+                    points.Add(maxXYZ.PointFromRevit());
+                    points.Add(uXYZ.PointFromRevit());
+                    points.Add(minXYZ.PointFromRevit());
+                    points.Add(vXYZ.PointFromRevit());
+                    points.Add(maxXYZ.PointFromRevit());
 
-                    oM.Environment.Elements.Panel panel = hostedElement.ToBHoMEnvironmentPanel(BH.Engine.Geometry.Create.Polyline(points), settings);
+                    oM.Environment.Elements.Panel panel = hostedElement.EnvironmentPanelFromRevit(BH.Engine.Geometry.Create.Polyline(points), settings);
                     if (panel != null)
                         panels.Add(panel);
                 }

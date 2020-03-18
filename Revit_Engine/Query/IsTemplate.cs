@@ -36,12 +36,12 @@ namespace BH.Engine.Adapters.Revit
         [Description("Returns true if given FloorPlan should be considered as template.")]
         [Input("viewPlan", "ViewPlan")]
         [Output("IsTemplate")]
-        public static bool IsTemplate(this ViewPlan floorPlan)
+        public static bool IsTemplate(this ViewPlan viewPlan)
         {
-            if (floorPlan == null)
+            if (viewPlan == null)
                 return false;
 
-            return floorPlan.IsTemplate;
+            return viewPlan.IsTemplate;
         }
 
         /***************************************************/

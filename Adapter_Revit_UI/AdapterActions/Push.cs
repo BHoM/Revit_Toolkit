@@ -20,39 +20,67 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-
-using BH.oM.Base;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
+using BH.oM.Base;
+using BH.UI.Revit.Engine;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Adapter
 {
     public partial class RevitUIAdapter
     {
-
         /***************************************************/
-        /****             Protected Methods             ****/
+        /****      Revit side of Revit_Adapter Push     ****/
         /***************************************************/
 
         public override List<object> Push(IEnumerable<object> objects, string tag = "", PushType pushType = PushType.AdapterDefault, ActionConfig actionConfig = null)
         {
-            bool success = true;
+            // Check the document
+            UIDocument uiDocument = this.UIDocument;
+            Document document = this.Document;
+            if (document == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
+                return new List<object>();
+            }
 
-            // ----------------------------------------//
-            //                 SET-UP                  //
-            // ----------------------------------------//
+            if (document.IsReadOnly)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is read only.");
+                return new List<object>();
+            }
 
-            // If unset, set the pushType to AdapterSettings' value (base AdapterSettings default is FullCRUD).
+            if (document.IsModifiable)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because another transaction is open in Revit.");
+                return new List<object>();
+            }
+            
+            // If unset, set the pushType to AdapterSettings' value (base AdapterSettings default is FullCRUD). Disallow the unsupported PushTypes.
             if (pushType == PushType.AdapterDefault)
                 pushType = PushType.DeleteThenCreate;
-
-            //Initialize Revit config
+            else if (pushType == PushType.FullPush)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Full Push is currently not supported by Revit_Toolkit, please use Create, UpdateOnly or DeleteThenCreate instead.");
+                return new List<object>();
+            }
+            
+            // Set config
             RevitPushConfig pushConfig = actionConfig as RevitPushConfig;
+            if (pushConfig == null)
+            {
+                //BH.Engine.Reflection.Compute.RecordNote("Revit Push Config has not been specified. Default Revit Push Config is used.");
+                pushConfig = new RevitPushConfig();
+            }
 
+            // Suppress warnings
+            if (UIControlledApplication != null && pushConfig.SuppressFailureMessages)
+                UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
+            
             // Process the objects (verify they are valid; DeepClone them, wrap them, etc).
             IEnumerable<IBHoMObject> objectsToPush = ProcessObjectsForPush(objects, pushConfig); // Note: default Push only supports IBHoMObjects.
 
@@ -62,41 +90,57 @@ namespace BH.UI.Revit.Adapter
                 return new List<object>();
             }
 
-            // ----------------------------------------//
-            //               ACTUAL PUSH               //
-            // ----------------------------------------//
-
-            // Group the objects by their specific type.
-            var typeGroups = objectsToPush.GroupBy(x => x.GetType());
-            
-            MethodInfo miToList = typeof(Enumerable).GetMethod("Cast");
-            foreach (var typeGroup in typeGroups)
+            // Add tag to each object
+            if (!string.IsNullOrWhiteSpace(tag))
             {
-                // Cast the objects to their specific types
-                MethodInfo miListObject = miToList.MakeGenericMethod(new[] { typeGroup.Key });
-                var list = miListObject.Invoke(typeGroup, new object[] { typeGroup });
-
-                if (pushType == PushType.CreateOnly)
-                    success &= ICreate(list as dynamic, pushConfig);
-                else if (pushType == PushType.DeleteThenCreate)
+                foreach (IBHoMObject obj in objectsToPush)
                 {
-                    //TODO: get the list of not deleted elements and do not recreate them, return error!
-                    success &= Delete(list as dynamic, Document);
-                    success &= ICreate(list as dynamic, pushConfig);
-                }
-                else if (pushType == PushType.UpdateOnly)
-                {
-                    BH.Engine.Reflection.Compute.RecordError("Update is currently not supported by Revit_Toolkit, please use DeleteThenCreate instead.");
-                    success = false;
-                }
-                else if (pushType == PushType.FullCRUD)
-                {
-                    BH.Engine.Reflection.Compute.RecordError("Full CRUD is currently not supported by Revit_Toolkit, please use DeleteThenCreate instead.");
-                    success = false;
+                    if (obj.Tags == null)
+                        obj.Tags = new HashSet<string> { tag };
+                    else
+                        obj.Tags.Add(tag);
                 }
             }
 
-            return success ? objectsToPush.Cast<object>().ToList() : new List<object>();
+            // Push the objects
+            string transactionName = "BHoM Push " + pushType;
+            List<IBHoMObject> pushed = new List<IBHoMObject>();
+            using (Transaction transaction = new Transaction(document, transactionName))
+            {
+                transaction.Start();
+
+                if (pushType == PushType.CreateOnly)
+                    pushed = Create(objectsToPush, pushConfig);
+                else if (pushType == PushType.DeleteThenCreate)
+                {
+                    List<IBHoMObject> toCreate = new List<IBHoMObject>();
+                    foreach (IBHoMObject obj in objectsToPush)
+                    {
+                        Element element = obj.Element(document);
+                        if (element == null || Delete(element.Id, document, false).Count() != 0)
+                            toCreate.Add(obj);
+                    }
+
+                    pushed = Create(toCreate, pushConfig);
+                }
+                else if (pushType == PushType.UpdateOnly)
+                {
+                    foreach (IBHoMObject obj in objectsToPush)
+                    {
+                        Element element = obj.Element(document);
+                        if (element != null && Update(element, obj, RevitSettings))
+                            pushed.Add(obj);
+                    }
+                }
+
+                transaction.Commit();
+            }
+
+            // Switch of warning suppression
+            if (UIControlledApplication != null)
+                UIControlledApplication.ControlledApplication.FailuresProcessing -= ControlledApplication_FailuresProcessing;
+
+            return pushed.Cast<object>().ToList();
         }
 
         /***************************************************/

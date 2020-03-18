@@ -51,9 +51,9 @@ namespace BH.UI.Revit.Engine
                     ICurve crv = null;
 
                     if (transform != null)
-                        crv = curve.CreateTransformed(transform).IToBHoM();
+                        crv = curve.CreateTransformed(transform).IFromRevit();
                     else
-                        crv = curve.IToBHoM();
+                        crv = curve.IFromRevit();
 
                     curves.Add(crv);
                 }

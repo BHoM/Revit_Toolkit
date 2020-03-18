@@ -34,10 +34,11 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates a push action-specific configuration used for adapter interaction with Revit.")]
         [Input("suppressFailureMessages", "If true, Revit warnings and failure messages will be suppressed (not shown to the user). Whilst this option may speed the pushing process up in case of multiple warnings, it may lead to important issues.")]
+        [Input("includeClosedWorksets", "Elements from closed worksets will be processed if true.")]
         [Output("RevitPushConfig")]
-        public static RevitPushConfig RevitPushConfig(bool suppressFailureMessages = false)
+        public static RevitPushConfig RevitPushConfig(bool suppressFailureMessages = false, bool includeClosedWorksets = false)
         {
-            return new RevitPushConfig { SuppressFailureMessages = suppressFailureMessages };
+            return new RevitPushConfig { SuppressFailureMessages = suppressFailureMessages, IncludeClosedWorksets = includeClosedWorksets };
         }
 
         /***************************************************/

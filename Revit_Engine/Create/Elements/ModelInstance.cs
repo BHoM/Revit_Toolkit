@@ -36,49 +36,49 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates ModelInstance by given Point, Family Name and Family Type Name. ModelInstance represents generic 3D elements which have not been defined in BHoM structure")]
-        [Input("point", "Location Point of Object in 3D space")]
+        [Input("location", "Location Point of Object in 3D space")]
         [Input("familyName", "Revit Family Name")]
         [Input("familyTypeName", "Revit Family Type Name")]
         [Output("ModelInstance")]
-        public static ModelInstance ModelInstance(string familyName, string familyTypeName, Point point)
+        public static ModelInstance ModelInstance(string familyName, string familyTypeName, Point location)
         {
-            if (point == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
+            if (location == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
                 return null;
 
-            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), point);
+            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location);
         }
 
         /***************************************************/
 
         [Description("Creates ModelInstance by given Point, Family Name and Family Type Name. ModelInstance represents generic 3D elements which have not been defined in BHoM structure")]
-        [Input("curve", "Location Curve of Object in 3D space")]
+        [Input("location", "Location Curve of Object in 3D space")]
         [Input("familyName", "Revit Family Name")]
         [Input("familyTypeName", "Revit Family Type Name")]
         [Output("ModelInstance")]
-        public static ModelInstance ModelInstance(string familyName, string familyTypeName, ICurve curve)
+        public static ModelInstance ModelInstance(string familyName, string familyTypeName, ICurve location)
         {
-            if (curve == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
+            if (location == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
                 return null;
 
-            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), curve);
+            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location);
         }
 
         /***************************************************/
 
         [Description("Creates ModelInstance by given Point, Family Name and Family Type Name. ModelInstance represents generic 3D elements which have not been defined in BHoM structure")]
-        [Input("point", "Location Point of Object in 3D space")]
+        [Input("location", "Location Point of Object in 3D space")]
         [Input("properties", "InstanceProperties of Instance")]
         [Output("ModelInstance")]
-        public static ModelInstance ModelInstance(InstanceProperties properties, Point point)
+        public static ModelInstance ModelInstance(InstanceProperties properties, Point location)
         {
-            if (properties == null || point == null)
+            if (properties == null || location == null)
                 return null;
 
             ModelInstance modelInstance = new ModelInstance()
             {
                 Properties = properties,
                 Name = properties.Name,
-                Location = point
+                Location = location
             };
 
             return modelInstance;
@@ -87,19 +87,19 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates ModelInstance by given Point, Family Name and Family Type Name. ModelInstance represents generic 3D elements which have not been defined in BHoM structure")]
-        [Input("curve", "Location Curve of Object in 3D space")]
+        [Input("location", "Location Curve of Object in 3D space")]
         [Input("properties", "InstanceProperties of Instance")]
         [Output("ModelInstance")]
-        public static ModelInstance ModelInstance(InstanceProperties properties, ICurve curve)
+        public static ModelInstance ModelInstance(InstanceProperties properties, ICurve location)
         {
-            if (properties == null || curve == null)
+            if (properties == null || location == null)
                 return null;
 
             ModelInstance modelInstance = new ModelInstance()
             {
                 Properties = properties,
                 Name = properties.Name,
-                Location = curve
+                Location = location
             };
 
             return modelInstance;
@@ -108,7 +108,7 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates ModelInstance by given Point, Family Name and Family Type Name. ModelInstance represents generic 3D elements which have not been defined in BHoM structure")]
-        [Input("curve", "Location Curve of Object in 3D space")]
+        [Input("location", "Location Curve of Object in 3D space")]
         [Output("ModelInstance")]
         public static ModelInstance ModelInstance(ICurve location)
         {
@@ -133,7 +133,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates ModelInstance by given Point, Family Name and Family Type Name. ModelInstance represents generic 3D elements which have not been defined in BHoM structure")]
         [Input("name", "InstanceProperties name")]
-        [Input("curve", "Location Curve of Object in 3D space")]
+        [Input("location", "Location Curve of Object in 3D space")]
         [Output("ModelInstance")]
         public static ModelInstance ModelInstance(string name, ICurve location)
         {

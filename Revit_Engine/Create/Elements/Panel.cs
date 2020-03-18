@@ -106,9 +106,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Creates BuildingElement by given profile points, BuildingElementType and Revit Family Type Name")]
+        [Description("Creates BuildingElement by given profile points, Environment PanelType and Revit Family Type Name")]
         [Input("points", "points describing profile of Environment Panel")]
-        [Input("buildingElementType", "Environment PanelType")]
+        [Input("panelType", "Environment PanelType")]
         [Input("familyTypeName", "Revit Family Type Name for wall Environment Panel")]
         [Output("Environment Panel")]
         [Deprecated("3.0", "All Create methods for BH.oM.Environment.Elements.Panel are stored in BH.Engine.Environment.Create.")]

@@ -21,39 +21,40 @@
  */
 
 
-using System;
+using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.UI.Revit.Engine;
 
 namespace BH.UI.Revit.Adapter
 {
     public partial class RevitUIAdapter
     {
         /***************************************************/
-        /****                   Update                  ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        //CODE TAKEN FROM CREATE, LEFT FOR REFERENCE.
-        //    element = element.SetParameters(bhomObject);
-        //    if (element != null && element.Location != null)
-        //    {
-        //        try
-        //        {
-        //            Location location = element.Move(bhomObject);
-        //        }
-        //        catch
-        //        {
-        //            ObjectNotMovedWarning(bhomObject);
-        //        }
-        //    }
+        public static bool Update(Element element, IBHoMObject bHoMObject, RevitSettings settings)
+        {
+            string tagsParameterName = settings.TagsParameterName;
+            
+            try
+            {
+                element.IUpdate(bHoMObject, settings);
 
-        //    if (bhomObject is IView || bhomObject is oM.Adapters.Revit.Elements.Family || bhomObject is InstanceProperties)
-        //        element.Name = bhomObject.Name;
+                //Assign Tags
+                if (!string.IsNullOrEmpty(tagsParameterName))
+                    element.SetTags(bHoMObject, tagsParameterName);
+
+                return true;
+            }
+            catch
+            {
+                ObjectNotUpdatedError(element, bHoMObject);
+                return false;
+            }
+        }
 
         /***************************************************/
-        /****              UpdateProperty               ****/
-        /***************************************************/
-
-        // This method used to be called from the UpdateProperty component
-        // Now it is never called as it doesn't override anymore
-        // This logic should be called from the Push component instead
     }
 }

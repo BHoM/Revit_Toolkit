@@ -33,42 +33,16 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static void NonIsotopicStructuralAssetNote(this oM.Physical.Materials.Material material)
-        {
-            string message = "Revit Structural Asset is Non-Isotopic.";
-
-            if (material != null)
-                message = string.Format("{0} BHoM Guid: {1}", message, material.BHoM_Guid);
-
-            BH.Engine.Reflection.Compute.RecordNote(message);
-        }
-
-        /***************************************************/
-
         internal static void MaterialNotInLibraryNote(this Material material)
         {
-            string message = "Material could not be found in BHoM Libary.";
+            //string message = "Material could not be found in BHoM Libary.";
 
-            if (material != null)
-                message = string.Format("{0} Material Id: {1}", message, material.Id.IntegerValue);
+            //if (material != null)
+            //    message = string.Format("{0} Material Id: {1}", message, material.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordNote(message);
+            //BH.Engine.Reflection.Compute.RecordNote(message);
         }
 
         /***************************************************/
-
-        internal static void MaterialNotInLibraryNote(this Element element)
-        {
-            string message = "Material could not be found in BHoM Libary.";
-
-            if (element != null)
-                message = string.Format("{0} Element Id: {1}", message, element.Id.IntegerValue);
-
-            BH.Engine.Reflection.Compute.RecordNote(message);
-        }
-
-        /***************************************************/
-
-
     }
 }

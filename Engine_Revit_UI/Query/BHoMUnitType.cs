@@ -82,5 +82,7 @@ namespace BH.UI.Revit.Engine
                     return DisplayUnitType.DUT_GENERAL;
             }
         }
+
+        /***************************************************/
     }
 }

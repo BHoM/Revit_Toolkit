@@ -20,27 +20,18 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
 using BH.oM.Adapter;
-using BH.Adapter.Socket;
-using BH.oM.Base;
+using BH.oM.Adapters.Revit;
 using BH.oM.Data.Requests;
-using BH.oM.Reflection.Debugging;
-using BH.oM.Adapters.Revit.Settings;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
 
 namespace BH.Adapter.Revit
 {
     public partial class RevitAdapter : BHoMAdapter
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****      BHoM side of Revit_Adapter Pull      ****/
         /***************************************************/
 
         public override IEnumerable<object> Pull(IRequest request, PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null)
@@ -53,6 +44,12 @@ namespace BH.Adapter.Revit
             {
                 InternalAdapter.RevitSettings = RevitSettings;
                 return InternalAdapter.Pull(request, pullType, pullConfig);
+            }
+
+            if (!this.IsValid())
+            {
+                BH.Engine.Reflection.Compute.RecordError("Revit Adapter is not valid. Please check if it has been set up correctly and activated.");
+                return new List<object>();
             }
 
             //Reset the wait event
@@ -76,6 +73,13 @@ namespace BH.Adapter.Revit
 
             //Raise returned events
             RaiseEvents();
+
+            //Check if the return package contains error message
+            if (returnObjs.Count == 1 && returnObjs[0] is string)
+            {
+                Engine.Reflection.Compute.RecordError(returnObjs[0] as string);
+                return new List<object>();
+            }
 
             //Return the package
             return returnObjs;

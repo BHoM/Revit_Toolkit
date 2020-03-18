@@ -35,10 +35,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates Family Library Class which holds information about families can be loaded to model.")]
-        [Input("directory", "Directory from where famlies will be loaded if not exists in model")]
-        [Input("topDirectoryOnly", "Search through top dilectory folder and skip subfolders")]
-        [Output("FamilyLibrary")]
+        [Description("Creates a TypeMap that contains the information about the relationship between BHoM property names and Revit parameter names.")]
+        [Input("type", "BHoM type, which properties are meant to be matched with Revit parameters")]
+        [Output("TypeMap")]
         public static TypeMap TypeMap(Type type)
         {
             if (type == null)

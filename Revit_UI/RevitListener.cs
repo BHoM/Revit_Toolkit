@@ -167,6 +167,9 @@ namespace BH.UI.Revit
             PullEvent pullEvent = new PullEvent();
             m_PullEvent = ExternalEvent.Create(pullEvent);
 
+            RemoveEvent removeEvent = new RemoveEvent();
+            m_RemoveEvent = ExternalEvent.Create(removeEvent);
+
             //empty list for package holding
             LatestPackage = new List<IObject>();
 
@@ -210,23 +213,7 @@ namespace BH.UI.Revit
 
             lock (m_PackageLock)
             {
-                if (package.Data.Count == 0)
-                {
-                    ReturnData(new List<string> { "Cant handle empty package" });
-                    return;
-                }
-
-                PackageType packageType = PackageType.ConnectionCheck;
-
-                try
-                {
-                    packageType = (PackageType)package.Data[0];
-                }
-                catch
-                {
-                    ReturnData(new List<string> { "Unrecognized package type" });
-                    return;
-                }
+                PackageType packageType = (PackageType)package.Data[0];
 
                 switch (packageType)
                 {
@@ -237,9 +224,6 @@ namespace BH.UI.Revit
                         }
                     case PackageType.Push:
                         {
-                            if (!CheckPackageSize(package))
-                                return;
-
                             //Set the event to raise
                             eve = m_PushEvent;
 
@@ -258,13 +242,12 @@ namespace BH.UI.Revit
                                 return;
 
                             LatestPushType = (PushType)package.Data[2];
+                            LatestConfig = package.Data[3] as ActionConfig;
+                            AdapterSettings = package.Data[4] as RevitSettings;
                             break;
                         }
                     case PackageType.Pull:
                         {
-                            if (!CheckPackageSize(package))
-                                return;
-
                             //Set the event to raise
                             eve = m_PullEvent;
 
@@ -276,13 +259,23 @@ namespace BH.UI.Revit
                                 return;
 
                             LatestPullType = (PullType)package.Data[2];
+                            LatestConfig = package.Data[3] as ActionConfig;
+                            AdapterSettings = package.Data[4] as RevitSettings;
+                            break;
+                        }
+                    case PackageType.Remove:
+                        {
+                            //Set the event to raise
+                            eve = m_RemoveEvent;
+
+                            //Clear the previous package list
+                            LatestRequest = package.Data[1] as IRequest;
+                            LatestConfig = package.Data[2] as ActionConfig;
+                            AdapterSettings = package.Data[3] as RevitSettings;
                             break;
                         }
                     case PackageType.UpdateTags:
                         {
-                            if (!CheckPackageSize(package))
-                                return;
-
                             //Set the event to raise
                             eve = m_UpdateTagsEvent;
 
@@ -296,8 +289,6 @@ namespace BH.UI.Revit
                         return;
                 }
 
-                LatestConfig = package.Data[3] as ActionConfig;
-                AdapterSettings = package.Data[4] as RevitSettings;
                 LatestTag = package.Tag;
             }
 
@@ -306,13 +297,47 @@ namespace BH.UI.Revit
 
         /***************************************************/
 
-        private bool CheckPackageSize(oM.Socket.DataPackage package)
+        private bool CheckPackage(oM.Socket.DataPackage package)
         {
-            if (package.Data.Count < 5)
+            if (package.Data.Count == 0)
+            {
+                ReturnData(new List<string> { "Cant handle empty package" });
+                return false;
+            }
+
+            PackageType packageType = PackageType.ConnectionCheck;
+
+            try
+            {
+                packageType = (PackageType)package.Data[0];
+            }
+            catch
+            {
+                ReturnData(new List<string> { "Unrecognized package type" });
+                return false;
+            }
+
+            int packageSize = 0;
+            switch (packageType)
+            {
+                case PackageType.ConnectionCheck:
+                    packageSize = 1;
+                    break;
+                case PackageType.Pull:
+                case PackageType.Push:
+                    packageSize = 5;
+                    break;
+                case PackageType.Remove:
+                    packageSize = 4;
+                    break;
+            }
+
+            if (package.Data.Count != packageSize)
             {
                 ReturnData(new List<string> { "Invalid Package" });
                 return false;
             }
+
             return true;
         }
 
@@ -325,6 +350,7 @@ namespace BH.UI.Revit
         private SocketLink_Tcp m_LinkOut;
         private ExternalEvent m_PushEvent;
         private ExternalEvent m_PullEvent;
+        private ExternalEvent m_RemoveEvent;
         private ExternalEvent m_UpdateTagsEvent;
         private Dictionary<Document, RevitUIAdapter> m_Adapters = new Dictionary<Document, RevitUIAdapter>();
         

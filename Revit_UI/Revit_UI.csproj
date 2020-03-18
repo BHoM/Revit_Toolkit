@@ -208,8 +208,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdapterActions\Pull.cs" />
-    <Compile Include="AdapterActions\Push.cs" />
+    <Compile Include="EventHandlers\Pull.cs" />
+    <Compile Include="EventHandlers\Push.cs" />
+    <Compile Include="EventHandlers\Remove.cs" />
     <Compile Include="Forms\UpdatePortsForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -26,6 +26,8 @@ namespace BH.Adapter.Revit
     {
         Push,
         Pull,
+        Remove,
+        Execute,
         ConnectionCheck,
         UpdateTags,
     }

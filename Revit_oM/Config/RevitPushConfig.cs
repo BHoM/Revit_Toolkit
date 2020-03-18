@@ -37,13 +37,8 @@ namespace BH.oM.Adapters.Revit
         [Description("If true, Revit warnings and failure messages will be suppressed (not shown to the user). Whilst this option may speed the pushing process up in case of multiple warnings, it may lead to important issues.")]
         public bool SuppressFailureMessages { get; set; } = false;
 
-
-        /***************************************************/
-        /****                  Default                  ****/
-        /***************************************************/
-
-        [Description("Default config, used if not set by the user.")]
-        public static readonly RevitPushConfig Default = new RevitPushConfig();
+        [Description("Elements from closed worksets will be processed if true.")]
+        public bool IncludeClosedWorksets { get; set; } = false;
 
         /***************************************************/
     }

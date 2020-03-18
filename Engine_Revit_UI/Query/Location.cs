@@ -40,7 +40,7 @@ namespace BH.UI.Revit.Engine
 
             settings = settings.DefaultIfNull();
 
-            return (wall.Location as LocationCurve).ToBHoM();
+            return (wall.Location as LocationCurve).FromRevit();
         }
 
         /***************************************************/

@@ -40,22 +40,58 @@ namespace BH.Adapter.Revit
     public partial class RevitAdapter : BHoMAdapter
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****     BHoM side of Revit_Adapter Remove     ****/
         /***************************************************/
 
         public override int Remove(IRequest request, ActionConfig actionConfig = null)
         {
             //Initialize Revit config
-            RevitPullConfig revitConfig = actionConfig as RevitPullConfig;
+            RevitRemoveConfig removeConfig = actionConfig as RevitRemoveConfig;
 
             //If internal adapter is loaded call it directly
             if (InternalAdapter != null)
             {
                 InternalAdapter.RevitSettings = RevitSettings;
-                return InternalAdapter.Remove(request, revitConfig);
+                return InternalAdapter.Remove(request, removeConfig);
             }
 
-            throw new NotImplementedException();
+            if (!this.IsValid())
+            {
+                BH.Engine.Reflection.Compute.RecordError("Revit Adapter is not valid. Please check if it has been set up correctly and activated.");
+                return 0;
+            }
+
+            //Reset the wait event
+            m_WaitEvent.Reset();
+
+            if (!CheckConnection())
+                return 0;
+
+            //Send data through the socket link
+            m_LinkIn.SendData(new List<object>() { PackageType.Remove, request, removeConfig, RevitSettings });
+
+            //Wait until the return message has been recieved
+            if (!m_WaitEvent.WaitOne(TimeSpan.FromMinutes(m_WaitTime)))
+                BH.Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
+
+            //Grab the return count from the latest package
+            List<object> returnObjs = new List<object>(m_ReturnPackage);
+
+            //Clear the return list
+            m_ReturnPackage.Clear();
+
+            //Raise returned events
+            RaiseEvents();
+
+            //Check if the return package contains error message
+            if (returnObjs.Count == 1 && returnObjs[0] is string)
+            {
+                Engine.Reflection.Compute.RecordError(returnObjs[0] as string);
+                return 0;
+            }
+
+            //Return the package
+            return (int)returnObjs[0];
         }
 
         /***************************************************/

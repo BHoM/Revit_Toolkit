@@ -20,10 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Settings;
 using System;
 using System.Collections.Generic;
-
-using Autodesk.Revit.DB;
 
 namespace BH.UI.Revit.Engine
 {
@@ -33,39 +33,27 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
         
-        public static bool IsSimilar(this Curve curve1, Curve curve2, double tolerance = oM.Geometry.Tolerance.MicroDistance)
+        public static bool IsSimilar(this Curve curve1, Curve curve2, RevitSettings settings, bool flippedIsEqual = false)
         {
-            if (curve1 == null && curve2 == null)
-                return true;
-
             if (curve2 == null || curve1 == null)
-                return false;
-
-            if (curve1.GetType() != curve2.GetType())
                 return false;
 
             if (curve1.IsBound != curve2.IsBound)
                 return false;
 
-            if (Math.Abs(curve1.ApproximateLength - curve2.ApproximateLength) > tolerance)
+            if (Math.Abs(curve1.ApproximateLength - curve2.ApproximateLength) > settings.DistanceTolerance)
                 return false;
-
-            if(curve1 is Line && curve2 is Line)
-            {
-                if (curve1.GetEndPoint(0).IsAlmostEqualTo(curve2.GetEndPoint(0), tolerance) && curve1.GetEndPoint(1).IsAlmostEqualTo(curve2.GetEndPoint(1), tolerance))
-                    return true;
-                else
-                    return false;
-            }
 
             IList<XYZ> xyz1 = curve1.Tessellate();
             IList<XYZ> xyz2 = curve2.Tessellate();
             if (xyz1.Count != xyz2.Count)
                 return false;
-
+            
             for (int i = 0; i < xyz1.Count; i++)
-                if (!xyz1[i].IsAlmostEqualTo(xyz2[i], tolerance))
+            {
+                if (!xyz1[i].IsAlmostEqualTo(xyz2[i], settings.DistanceTolerance) && (!flippedIsEqual || !xyz1[i].IsAlmostEqualTo(xyz2[xyz2.Count - 1 - i], settings.DistanceTolerance)))
                     return false;
+            }
 
             return true;
         }

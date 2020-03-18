@@ -83,7 +83,7 @@ namespace BH.UI.Revit.Engine
             settings = settings.DefaultIfNull();
 
             BH.oM.Physical.Materials.Material newMaterial = material.GetShallowClone() as BH.oM.Physical.Materials.Material;
-            newMaterial.Properties = sourceMaterial.ToBHoMMaterialProperties(materialGrade, settings, refObjects);
+            newMaterial.Properties = sourceMaterial.MaterialPropertiesFromRevit(materialGrade, settings, refObjects);
 
             if (sourceMaterial == null)
             {

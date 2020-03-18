@@ -38,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
         {
             if (settings == null)
             {
-                BH.Engine.Reflection.Compute.RecordNote("Revit settings are not set. Default settings are used.");
+                //BH.Engine.Reflection.Compute.RecordNote("Revit settings are not set. Default settings are used.");
                 return RevitSettings.Default;
             }
 
