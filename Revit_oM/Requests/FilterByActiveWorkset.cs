@@ -20,26 +20,19 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters elements based on given integer parameter value criterion.")]
-    public class ParameterIntegerRequest : IParameterRequest
+    [Description("IRequest that filters all elements in active Revit workset.")]
+    public class FilterByActiveWorkset : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the parameter to be used as filter criterion.")]
-        public string ParameterName { get; set; } = "";
 
-        [Description("NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
-        public Enums.NumberComparisonType NumberComparisonType { get; set; } = Enums.NumberComparisonType.Equal;
-
-        [Description("Value to compare the parameter against.")]
-        public int Value { get; set; } = 0;
 
         /***************************************************/
     }

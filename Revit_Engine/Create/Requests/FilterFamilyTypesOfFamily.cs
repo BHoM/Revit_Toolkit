@@ -20,21 +20,34 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
-using System.Collections.Generic;
+using BH.oM.Adapters.Revit.Requests;
+using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
+using System;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.Engine.Adapters.Revit
 {
-    [Description("IRequest that filters elements by their UniqueIds.")]
-    public class UniqueIdsRequest : IRequest
+    public static partial class Create
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("List of Revit UniqueIds to be used to filter the elements.")]
-        public List<string> UniqueIds { get; set; } = new List<string>();
+        [Description("Creates an IRequest that filters Revit Family Types of input Family.")]
+        [Input("bHoMObject", "BHoMObject that contains ElementId of a correspondent Revit element under Revit_elementId CustomData key - usually previously pulled from Revit.")]
+        [Output("F", "IRequest to be used to filter Revit Family Types of a Family.")]
+        public static FilterFamilyTypesOfFamily FilterFamilyTypesOfFamily(IBHoMObject bHoMObject)
+        {
+            int elementId = bHoMObject.ElementId();
+            if (elementId == -1)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
+                return null;
+            }
+            else
+                return new FilterFamilyTypesOfFamily { FamilyId = elementId };
+        }
 
         /***************************************************/
     }

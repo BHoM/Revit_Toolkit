@@ -20,20 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -43,16 +35,36 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIdsViewTemplate(this Document document, IEnumerable<ElementId> ids = null)
+        [Description("Filters ElementIds of elements that are visible in a view.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("viewId", "ElementId of the Revit view in which the filtered elements are visible.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
+        public static IEnumerable<ElementId> ElementIdsByVisibleInView(this Document document, int viewId, IEnumerable<ElementId> ids = null)
         {
-            if (ids != null && ids.Count() == 0)
-                return new List<ElementId>();
+            if (document == null)
+                return null;
 
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            return collector.OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Select(x => x.Id);
+            View view = document.GetElement(new ElementId(viewId)) as View;
+            if (view != null)
+            {
+                if (ids != null && ids.Count() == 0)
+                    return new HashSet<ElementId>();
+
+                FilteredElementCollector collector = new FilteredElementCollector(document, view.Id);
+
+                if (ids == null)
+                    return collector.ToElementIds();
+                else
+                    return collector.ToElementIds().Intersect(ids);
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Couldn't find a View under ElementId {0}", viewId));
+                return new HashSet<ElementId>();
+            }
         }
 
         /***************************************************/
-
     }
 }

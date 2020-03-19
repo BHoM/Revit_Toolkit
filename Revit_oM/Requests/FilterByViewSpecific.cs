@@ -20,43 +20,21 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-
-using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Data.Requests;
+using System.ComponentModel;
 
-namespace BH.UI.Revit.Engine
+namespace BH.oM.Adapters.Revit.Requests
 {
-    public static partial class Query
+    [Description("IRequest that filters elements specific to (owned by) a given view in Revit.")]
+    public class FilterByViewSpecific : IRequest
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****                Properties                 ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIdsByTemplate(this Document document, string templateName, IEnumerable<ElementId> ids = null)
-        {
-            Element viewTemplate = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Where(x => x.Name == templateName).FirstOrDefault();
-            if (viewTemplate == null)
-                return null;
-
-            if (ids != null && ids.Count() == 0)
-                return new List<ElementId>();
-
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            return collector.OfClass(typeof(View)).Cast<View>().Where(x => !x.IsTemplate).Where(x => x.ViewTemplateId == viewTemplate.Id).Select(x => x.Id);
-        }
+        [Description("ElementId of the owner view in Revit.")]
+        public int ViewId { get; set; } = -1;
 
         /***************************************************/
-
     }
 }

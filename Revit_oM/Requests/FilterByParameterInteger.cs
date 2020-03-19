@@ -23,20 +23,23 @@
 using BH.oM.Adapters.Revit.Interface;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters elements the have (or do not have) a parameter with given name.")]
-    public class ParameterExistsRequest : IParameterRequest
+    [Description("IRequest that filters elements based on given integer parameter value criterion.")]
+    public class FilterByParameterInteger : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
-
-        [Description("Name of the parameter to look for.")]
+        
+        [Description("Case sensitive name of the parameter to be used as filter criterion.")]
         public string ParameterName { get; set; } = "";
 
-        [Description("If true, elements with the given parameter will be filtered, if false - the opposite.")]
-        public bool ParameterExists { get; set; } = false;
+        [Description("NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
+        public Enums.NumberComparisonType NumberComparisonType { get; set; } = Enums.NumberComparisonType.Equal;
+
+        [Description("Value to compare the parameter against.")]
+        public int Value { get; set; } = 0;
 
         /***************************************************/
     }

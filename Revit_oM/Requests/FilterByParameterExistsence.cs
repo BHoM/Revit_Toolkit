@@ -20,19 +20,23 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Interface;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements that are contained in an energy analysis model.")]
-    public class EnergyAnalysisModelRequest : IRequest
+    [Description("IRequest that filters elements the have (or do not have) a parameter with given name.")]
+    public class FilterByParameterExistence : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
+        [Description("Case sensitive name of the parameter to look for.")]
+        public string ParameterName { get; set; } = "";
 
+        [Description("If true, elements with the given parameter will be filtered, if false - the opposite.")]
+        public bool ParameterExists { get; set; } = false;
 
         /***************************************************/
     }

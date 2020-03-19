@@ -20,20 +20,23 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Interface;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all views of given type.")]
-    public class ViewByTypeRequest : IRequest
+    [Description("IRequest that filters elements based on given Boolean parameter value criterion.")]
+    public class FilterByParameterBool : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("RevitViewType enum correspondent to Revit view type.")]
-        public Revit.Enums.RevitViewType RevitViewType { get; set; } =  Enums.RevitViewType.Undefined;
+        [Description("Case sensitive name of the parameter to be used as filter criterion.")]
+        public string ParameterName { get; set; } = "";
+
+        [Description("Value to compare the parameter against.")]
+        public bool Value { get; set; } = true;
 
         /***************************************************/
     }

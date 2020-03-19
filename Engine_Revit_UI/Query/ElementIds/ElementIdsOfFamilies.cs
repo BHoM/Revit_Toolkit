@@ -20,20 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -43,23 +34,41 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIdsByCategoryName(this Document document, string categoryName, IEnumerable<ElementId> ids = null)
+        [Description("Filters ElementIds of Revit families that have a given name. If family name is left blank, ElementIds of all families in the document will be filtered.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("familyName", "Name used to filter the Revit families. Optional: if left blank, ElementIds of all families in the document will be filtered.")]
+        [Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
+        public static IEnumerable<ElementId> ElementIdsOfFamilies(this Document document, string familyName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
-            if (document == null || string.IsNullOrEmpty(categoryName))
-                return null;
-            
-            BuiltInCategory builtInCategory = document.BuiltInCategory(categoryName);
-            if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
+            if (document == null)
                 return null;
 
             if (ids != null && ids.Count() == 0)
                 return new List<ElementId>();
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            return collector.OfCategory(builtInCategory).ToElementIds();
+
+            if (!string.IsNullOrEmpty(familyName))
+            {
+                IEnumerable<ElementId> result;
+                if (caseSensitive)
+                    result = collector.OfClass(typeof(Family)).Where(x => x.Name == familyName).Select(x => x.Id);
+                else
+                    result = collector.OfClass(typeof(Family)).Where(x => x.Name.ToUpper() == familyName.ToUpper()).Select(x => x.Id);
+
+                if (result.Count() == 0)
+                    BH.Engine.Reflection.Compute.RecordWarning("Couldn't find any Family named " + familyName + ".");
+                else if (result.Count() != 1)
+                    BH.Engine.Reflection.Compute.RecordWarning("More than one Family named " + familyName + " has been found.");
+
+                return result;
+            }
+            else
+                return collector.OfClass(typeof(Family)).Select(x => x.Id);
         }
 
         /***************************************************/
-
     }
 }

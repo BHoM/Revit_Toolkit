@@ -20,20 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -43,40 +35,47 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document based on a collection of strings that represent Revit UniqueIds.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("uniqueIds", "Collection of strings representing Revit UniqueIds.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByUniqueIds(this Document document, IEnumerable<string> uniqueIds, IEnumerable<ElementId> ids = null)
         {
-            if (document == null || uniqueIds == null)
+            if (document == null)
                 return null;
 
+            HashSet<ElementId> result = new HashSet<ElementId>();
             if (ids != null && ids.Count() == 0)
-                return new List<ElementId>();
+                return result;
 
-            HashSet<string> corruptIds = new HashSet<string>();
-            HashSet<ElementId> elementIDs = new HashSet<ElementId>();
-            foreach (string uniqueID in uniqueIds)
+            if (uniqueIds != null)
             {
-                if (!string.IsNullOrEmpty(uniqueID))
+                HashSet<string> corruptIds = new HashSet<string>();
+                foreach (string uniqueID in uniqueIds)
                 {
-                    Element element = document.GetElement(uniqueID);
-                    if (element != null)
-                        elementIDs.Add(element.Id);
+                    if (!string.IsNullOrEmpty(uniqueID))
+                    {
+                        Element element = document.GetElement(uniqueID);
+                        if (element != null)
+                            result.Add(element.Id);
+                        else
+                            corruptIds.Add(uniqueID);
+                    }
                     else
-                        corruptIds.Add(uniqueID);
+                        BH.Engine.Reflection.Compute.RecordError("An attempt to use empty Unique Revit Id has been found.");
                 }
-                else
-                    BH.Engine.Reflection.Compute.RecordError("An attempt to use empty Unique Revit Id has been found.");
+
+                if (corruptIds.Count != 0)
+                    BH.Engine.Reflection.Compute.RecordError(String.Format("Elements have not been found in the document. Unique Revit Ids: {0}", string.Join(", ", corruptIds)));
+
+                if (ids != null)
+                    result.IntersectWith(ids);
             }
 
-            if (corruptIds.Count != 0)
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Elements have not been found in the document. Unique Revit Ids: {0}", string.Join(", ", corruptIds)));
-
-            if (ids != null)
-                elementIDs.IntersectWith(ids);
-
-            return elementIDs;
+            return result;
         }
 
         /***************************************************/
-
     }
 }

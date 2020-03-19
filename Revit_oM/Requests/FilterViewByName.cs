@@ -20,39 +20,24 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-
-using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Data.Requests;
+using System.ComponentModel;
 
-namespace BH.UI.Revit.Engine
+namespace BH.oM.Adapters.Revit.Requests
 {
-    public static partial class Query
+    [Description("IRequest that filters Revit views by name. If the view name is left blank, all families will be filtered.")]
+    public class FilterViewByName : IRequest
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****                Properties                 ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIdsByViewType(this Document document, ViewType viewType, IEnumerable<ElementId> ids = null)
-        {
-            if (ids != null && ids.Count() == 0)
-                return new List<ElementId>();
+        [Description("Revit view name matching one displayed in Revit UI. Optional: if left blank, all views will be filtered.")]
+        public string ViewName { get; set; } = "";
 
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            return collector.OfClass(typeof(View)).Cast<View>().Where(x => !x.IsTemplate).Where(x => x.ViewType == viewType).Select(x => x.Id);
-        }
+        [Description("If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        public bool CaseSensitive { get; set; } = true;
 
         /***************************************************/
-
     }
 }

@@ -20,13 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.ComponentModel;
-
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -36,20 +35,25 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
-        [Input("parameterName", "Parameter name to be queried")]
-        [Input("bHoMObject", "BHoMObject pulled from Revit that has sought ElementId.")]
-        [Output("ParameterElementIdRequest")]
-        public static ParameterElementIdRequest ParameterElementIdRequest(string parameterName, BHoMObject bHoMObject)
+        [Description("Creates an IRequest that filters elements by their ElementIds.")]
+        [Input("bHoMObject", "BHoMObjects that contain ElementId of a correspondent Revit element under Revit_elementId CustomData key - usually previously pulled from Revit.")]
+        [Output("F", "IRequest to be used to filter elements by their ElementIds.")]
+        public static FilterByElementIds FilterByElementIds(IEnumerable<IBHoMObject> bHoMObjects)
         {
-            int elementId = bHoMObject.ElementId();
-            if (elementId == -1)
+            List<int> elementIds = new List<int>();
+            foreach (IBHoMObject bHoMObject in bHoMObjects)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
-                return null;
+                int elementId = bHoMObject.ElementId();
+                if (elementId == -1)
+                {
+                    BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
+                    return null;
+                }
+                else
+                    elementIds.Add(elementId);
             }
-            else
-                return new ParameterElementIdRequest { ParameterName = parameterName, ElementId = elementId };
+
+            return new FilterByElementIds { ElementIds = elementIds };
         }
 
         /***************************************************/

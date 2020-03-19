@@ -22,18 +22,10 @@
 
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Collections.Generic;
-
+using System.ComponentModel;
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.UI.Revit.Engine
 {
@@ -43,10 +35,19 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIdsByFamilyType(this Document document, string familyName, string familyTypeName, bool caseSensitive, IEnumerable<ElementId> ids = null)
+        [Description("Filters ElementIds of elements and types in a Revit document based on Revit family criterion, optionally narrowing the search to a specific family type.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("familyName", "Name of the Revit family to be used as a filter.")]
+        [Input("familyTypeName", "Optional, the name of Revit family type to be used to narrow down the search.")]
+        [Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
+        public static IEnumerable<ElementId> ElementIdsByFamilyAndType(this Document document, string familyName, string familyTypeName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
+            
+            List<ElementId> result = new List<ElementId>();
 
             List<ElementType> elementTypes = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>().ToList();
             if (!string.IsNullOrEmpty(familyName))
@@ -58,7 +59,10 @@ namespace BH.UI.Revit.Engine
             }
 
             if (elementTypes == null)
-                return null;
+            {
+                BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");
+                return result;
+            }
 
             if (!string.IsNullOrEmpty(familyTypeName))
             {
@@ -69,15 +73,18 @@ namespace BH.UI.Revit.Engine
             }
 
             if (elementTypes == null)
-                return null;
-            
-            if (ids != null && ids.Count() == 0)
-                return new List<ElementId>();
+            {
+                BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family Type named " + familyTypeName + " in the Family " + familyName);
+                return result;
+            }
 
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            List<ElementId> result = new List<ElementId>();
+            if (ids != null && ids.Count() == 0)
+                return result;
+
             foreach (ElementType elementType in elementTypes)
             {
+                FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+
                 if (elementType is FamilySymbol)
                     result.AddRange(collector.WherePasses(new FamilyInstanceFilter(document, elementType.Id)).ToElementIds());
                 else
@@ -128,6 +135,5 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-
     }
 }

@@ -20,19 +20,43 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Analysis;
+using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
-namespace BH.oM.Adapters.Revit.Requests
+namespace BH.UI.Revit.Engine
 {
-    [Description("IRequest that filters all elements that are contained in an energy analysis model.")]
-    public class EnergyAnalysisModelRequest : IRequest
+    public static partial class Query
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Filters ElementIds of elements that belong to Revit energy analysis model.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
+        public static IEnumerable<ElementId> ElementIdsOfEnergyAnalysisModel(this Document document, IEnumerable<ElementId> ids = null)
+        {
+            if (document == null)
+                return null;
 
+            HashSet<ElementId> result = new HashSet<ElementId>();
+            if (ids != null && ids.Count() == 0)
+                return result;
+
+            EnergyAnalysisDetailModel energyAnalysisDetailModel = EnergyAnalysisDetailModel.GetMainEnergyAnalysisDetailModel(document);
+            if (energyAnalysisDetailModel != null && energyAnalysisDetailModel.IsValidObject)
+                result.Add(energyAnalysisDetailModel.Id);
+
+            if (ids != null)
+                result.IntersectWith(ids);
+
+            return result;
+        }
 
         /***************************************************/
     }

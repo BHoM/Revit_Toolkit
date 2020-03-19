@@ -20,19 +20,34 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
+using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
-namespace BH.oM.Adapters.Revit.Requests
+namespace BH.UI.Revit.Engine
 {
-    [Description("IRequest that filters all elements that are contained in an energy analysis model.")]
-    public class EnergyAnalysisModelRequest : IRequest
+    public static partial class Query
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Filters ElementId of active view in Revit document.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
+        public static IEnumerable<ElementId> ElementIdsOfActiveView(this Document document, IEnumerable<ElementId> ids = null)
+        {
+            if (document == null)
+                return null;
 
+            if (ids != null && !ids.Contains(document.ActiveView.Id))
+                return new List<ElementId>();
+            else
+                return new List<ElementId> { document.ActiveView.Id };
+        }
 
         /***************************************************/
     }

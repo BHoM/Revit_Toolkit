@@ -20,23 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters elements based on given Boolean parameter value criterion.")]
-    public class ParameterBoolRequest : IParameterRequest
+    [Description("IRequest that filters all elements visible in a given Revit view.")]
+    public class FilterByVisibleInView : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the parameter to be used as filter criterion.")]
-        public string ParameterName { get; set; } = "";
-
-        [Description("Value to compare the parameter against.")]
-        public bool Value { get; set; } = true;
+        [Description("ElementId of Revit view to be checked for element visibility.")]
+        public int ViewId { get; set; } = -1;
 
         /***************************************************/
     }

@@ -25,14 +25,18 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements that are contained in an energy analysis model.")]
-    public class EnergyAnalysisModelRequest : IRequest
+    [Description("IRequest that filters Revit view templates by name. If the template name is left blank, all view templates will be filtered.")]
+    public class FilterViewTemplateByName : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
+        [Description("Revit view template name matching one displayed in Revit UI. Optional: if left blank, all view templates will be filtered.")]
+        public string TemplateName { get; set; } = "";
 
+        [Description("If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        public bool CaseSensitive { get; set; } = true;
 
         /***************************************************/
     }

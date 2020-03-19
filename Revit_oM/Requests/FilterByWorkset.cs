@@ -25,14 +25,15 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements that are contained in an energy analysis model.")]
-    public class EnergyAnalysisModelRequest : IRequest
+    [Description("IRequest that filters all elements in a given Revit workset.")]
+    public class FilterByWorkset : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-
+        [Description("Revit workset name.")]
+        public string WorksetName { get; set; } = "";
 
         /***************************************************/
     }

@@ -21,14 +21,12 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Adapters.Revit.Properties;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Base;
-using BH.oM.Physical.Elements;
-using BH.oM.Physical.Materials;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -39,85 +37,135 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document based on BHoM type criterion.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("type", "BHoM type, which correspondent Revit types are meant to be filtered.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByBHoMType(this Document document, Type type, IEnumerable<ElementId> ids = null)
         {
             if (document == null || type == null)
                 return null;
 
-            HashSet<ElementId> elementIds = new HashSet<ElementId>();
-            if (!typeof(IBHoMObject).IsAssignableFrom(type))
+            IEnumerable<Type> types = null;
+            IEnumerable<BuiltInCategory> builtInCategories = null;
+
+            //TODO: this could raise wrong type error and return straight away? Or even better: if the type does not inherit IBHoMObject, raise error and return null.
+            if (type.IsAssignableFromByFullName(typeof(Element)))
+                types = new List<Type>() { type };
+            else if (typeof(IBHoMObject).IsAssignableFrom(type))
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Input type {0} is not a BHoM type", type));
-                return elementIds;
+                types = RevitTypes(type);
+                builtInCategories = BuiltInCategories(type);
             }
 
-            if (type == typeof(ModelInstance) || type == typeof(IInstance) || type == typeof(InstanceProperties) || type == typeof(IBHoMObject) || type == typeof(BHoMObject) || type == typeof(IMaterialProperties))
-            {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("It is not allowed to pull elements of type {0} because it is too general, please try to narrow the filter down.", type));
-                return elementIds;
-            }
+            //TODO: the list by default should contain types that inherit from Element, is that relevant?
+            if (types != null)
+                types = types.ToList().FindAll(x => x.IsAssignableFromByFullName(typeof(Element)));
+
+            IEnumerable<ElementId> elementIDs = null;
 
             if (ids != null && ids.Count() == 0)
-                return elementIds;
-
-            // Special case - filter drafting instances
-            if (type == typeof(DraftingInstance))
-                return new FilteredElementCollector(document).WhereElementIsNotElementType().WherePasses(new ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_SketchLines, true)).Where(x => x.ViewSpecific && (x is FilledRegion || x.Location is LocationPoint || x.Location is LocationCurve)).Select(x => x.Id);
-            
-            // Else go the regular way
-            List<ElementFilter> filters = new List<ElementFilter>();
-            List<Tuple<Type, Type>> unsupportedAPITypes = new List<Tuple<Type, Type>>();
-            IEnumerable<Type> types = type.RevitTypes();
-            if (types == null || types.Count() == 0)
-            {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Type {0} is not coupled with any Revit type that could be converted.", type));
-                return elementIds;
-            }
-
-            foreach (Type t in types)
-            {
-                if (t == typeof(FamilyInstance) || t == typeof(FamilySymbol))
-                {
-                    IEnumerable<BuiltInCategory> builtInCategories = type.BuiltInCategories();
-                    ElementFilter filter = new LogicalAndFilter(new ElementClassFilter(t), new LogicalOrFilter(builtInCategories.Select(x => new ElementCategoryFilter(x) as ElementFilter).ToList()));
-
-                    // Accommodate the fact that bracing can sit in category OST_StructuralFraming etc.
-                    filter = filter.StructuralTypeFilter(type);
-                    filters.Add(filter);
-                }
-                else if (t.IsSupportedAPIType())
-                    filters.Add(new ElementClassFilter(t));
-                else
-                    unsupportedAPITypes.Add(new Tuple<Type, Type>(t, t.SupportedAPIType()));
-            }
+                return new List<ElementId>();
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            elementIds.UnionWith(collector.WherePasses(new LogicalOrFilter(filters)).ToElementIds());
-            foreach (Tuple<Type, Type> unsupportedAPIType in unsupportedAPITypes)
+            if (types == null || types.Count() == 0)
             {
-                elementIds.UnionWith(collector.OfClass(unsupportedAPIType.Item2).Where(x => x.GetType() == unsupportedAPIType.Item1).Select(x => x.Id));
+                if ((builtInCategories != null && builtInCategories.Count() != 0))
+                    elementIDs = collector.WherePasses(new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter))).ToElementIds();
+                else
+                    return null;
             }
-            
-            // Filter only structural bars
-            if (type == typeof(BH.oM.Structure.Elements.Bar))
-                elementIds = elementIds.RemoveNonStructuralFraming(document);
 
-            // Filter only structural panels
-            if (type == typeof(BH.oM.Structure.Elements.Panel))
-                elementIds = elementIds.RemoveNonStructuralPanels(document);
+            //Some of the Revit API types do not exist in the object model of Revit - they cannot be filtered...
+            List<Type> supportedAPITypes = new List<Type>();
+            List<Tuple<Type, Type>> unsupportedAPITypes = new List<Tuple<Type, Type>>();
+            foreach (Type t in types)
+            {
+                Type supportedAPIType = t.SupportedAPIType();
+                if (supportedAPIType != t)
+                    unsupportedAPITypes.Add(new Tuple<Type, Type>(t, supportedAPIType));
+                else
+                    supportedAPITypes.Add(t);
+            }
 
-            // Filter out walls that are parts of stacked wall
-            if (types.Any(x => typeof(Autodesk.Revit.DB.Wall).IsAssignableFrom(x)))
-                elementIds = elementIds.RemoveStackedWallParts(document);
+            if (supportedAPITypes.Count != 0)
+            {
+                if ((builtInCategories == null || builtInCategories.Count() == 0))
+                    elementIDs = collector.WherePasses(new LogicalOrFilter(supportedAPITypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter))).ToElementIds();
+                else
+                    elementIDs = collector.WherePasses(new LogicalAndFilter(new LogicalOrFilter(supportedAPITypes.ToList().ConvertAll(x => new ElementClassFilter(x) as ElementFilter)), new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)))).ToElementIds();
+            }
 
-            //Revit returns additional "parent" Autodesk.Revit.DB.Panel with no geometry when pulling all panels from model. This part of the code filter them out
-            if (type == typeof(Window))
-                elementIds = elementIds.RemoveEmptyPanelIds(document);
+            if (unsupportedAPITypes.Count != 0)
+            {
+                HashSet<ElementId> extraElementIds = new HashSet<ElementId>();
+                foreach (Tuple<Type, Type> unsupportedAPIType in unsupportedAPITypes)
+                {
+                    IEnumerable<ElementId> elementIds;
+                    if ((builtInCategories == null || builtInCategories.Count() == 0))
+                        elementIds = collector.WherePasses(new ElementClassFilter(unsupportedAPIType.Item2)).ToElementIds();
+                    else
+                        elementIds = collector.WherePasses(new LogicalAndFilter(new ElementClassFilter(unsupportedAPIType.Item2), new LogicalOrFilter(builtInCategories.ToList().ConvertAll(x => new ElementCategoryFilter(x) as ElementFilter)))).ToElementIds();
 
-            return elementIds;
+                    foreach (ElementId id in elementIds)
+                    {
+                        if (unsupportedAPIType.Item1.IsAssignableFrom(document.GetElement(id).GetType()))
+                            extraElementIds.Add(id);
+                    }
+                }
+
+                foreach (ElementId id in elementIDs)
+                {
+                    extraElementIds.Add(id);
+                }
+
+                elementIDs = extraElementIds;
+            }
+
+            //Special Cases
+            if (elementIDs != null && elementIDs.Count() != 0)
+            {
+                if (type == typeof(BH.oM.Adapters.Revit.Elements.ModelInstance))
+                {
+                    //OST_DetailComponents BuiltInCategory is wrongly set to CategoryType.Model.
+                    int detailComponentsCategoryId = Category.GetCategory(document, Autodesk.Revit.DB.BuiltInCategory.OST_DetailComponents).Id.IntegerValue;
+
+                    List<ElementId> newElementIds = new List<ElementId>();
+                    foreach (ElementId id in elementIDs)
+                    {
+                        Category category = document.GetElement(id).Category;
+                        if ((category.CategoryType == CategoryType.AnalyticalModel || category.CategoryType == CategoryType.Model) && category.Id.IntegerValue != detailComponentsCategoryId)
+                            newElementIds.Add(id);
+                    }
+
+                    elementIDs = newElementIds;
+                }
+
+                if (type == typeof(oM.Physical.Elements.Window))
+                {
+                    //Revit returns additional "parent" Autodesk.Revit.DB.Panel with no geometry when pulling all panels from model. This part of the code filter them out
+                    List<ElementId> elementIDList = new List<ElementId>();
+                    foreach (ElementId elementID in elementIDs)
+                    {
+                        Panel panel = document.GetElement(elementID) as Panel;
+                        if (panel != null)
+                        {
+                            ElementId hostID = panel.FindHostPanel();
+                            if (hostID != null && hostID != Autodesk.Revit.DB.ElementId.InvalidElementId)
+                                continue;
+                        }
+
+                        elementIDList.Add(elementID);
+                    }
+
+                    elementIDs = elementIDList;
+                }
+            }
+
+            return elementIDs;
         }
 
         /***************************************************/
-
     }
 }
