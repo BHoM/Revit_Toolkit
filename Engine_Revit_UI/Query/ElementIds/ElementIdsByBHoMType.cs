@@ -23,8 +23,10 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -35,6 +37,11 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document based on BHoM type criterion.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("type", "BHoM type, which correspondent Revit types are meant to be filtered.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByBHoMType(this Document document, Type type, IEnumerable<ElementId> ids = null)
         {
             if (document == null || type == null)

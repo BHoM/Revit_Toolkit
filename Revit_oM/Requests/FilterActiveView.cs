@@ -25,7 +25,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters the active view.")]
+    [Description("IRequest that filters the active view in Revit.")]
     public class FilterActiveView : IRequest
     {
         /***************************************************/

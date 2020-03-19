@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -33,6 +35,11 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document based on a collection of integers that represent Revit ElementIds.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("elementIds", "Collection of integers representing Revit ElementIds.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByInts(this Document document, IEnumerable<int> elementIds, IEnumerable<ElementId> ids = null)
         {
             if (document == null)

@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -32,6 +34,12 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document based on parameter existence criterion.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("parameterName", "Case sensitive name of the parameter to be used as filter criterion.")]
+        [Input("parameterExists", "If true, ids of elements with a parameter under given name will be returned, if false, ids of elements without it.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByParameterExistence(this Document document, string parameterName, bool parameterExists, IEnumerable<ElementId> ids = null)
         {
             if (document == null)

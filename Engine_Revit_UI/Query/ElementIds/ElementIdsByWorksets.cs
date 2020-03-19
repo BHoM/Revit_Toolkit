@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -32,6 +34,11 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document based on Revit workset criterion.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("worksetIds", "WorksetIds of Revit worksets, to which filtered elements belong.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByWorksets(this Document document, List<WorksetId> worksetIds, IEnumerable<ElementId> ids = null)
         {
             if (document == null)

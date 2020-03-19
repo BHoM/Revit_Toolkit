@@ -22,8 +22,10 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -34,6 +36,14 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document based on floating point number parameter criterion.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("parameterName", "Case sensitive name of the parameter to be used as filter criterion.")]
+        [Input("numberComparisonType", "NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
+        [Input("value", "Value to compare the parameter against.")]
+        [Input("tolerance", "Numerical tolerance for number comparison.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByParameter(this Document document, string parameterName, NumberComparisonType numberComparisonType, double value, double tolerance, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
@@ -86,6 +96,13 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document based on integer number parameter criterion.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("parameterName", "Case sensitive name of the parameter to be used as filter criterion.")]
+        [Input("numberComparisonType", "NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
+        [Input("value", "Value to compare the parameter against.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByParameter(this Document document, string parameterName, NumberComparisonType numberComparisonType, int value, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
@@ -135,6 +152,12 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document based on Boolean value parameter criterion.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("parameterName", "Case sensitive name of the parameter to be used as filter criterion.")]
+        [Input("value", "Value to compare the parameter against.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByParameter(this Document document, string parameterName, bool value, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
@@ -161,6 +184,12 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document based on ElementId value parameter criterion.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("parameterName", "Case sensitive name of the parameter to be used as filter criterion.")]
+        [Input("elementId", "Revit ElementId to compare the parameter against.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByParameter(this Document document, string parameterName, int elementId, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
@@ -186,6 +215,13 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document based on text parameter criterion.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("parameterName", "Case sensitive name of the parameter to be used as filter criterion.")]
+        [Input("textComparisonType", "TextComparisonType enum representing comparison type, e.g. equality, contains, starts with etc.")]
+        [Input("value", "Value to compare the parameter against.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByParameter(this Document document, string parameterName, TextComparisonType textComparisonType, string value, IEnumerable<ElementId> ids = null)
         {
             if (document == null)

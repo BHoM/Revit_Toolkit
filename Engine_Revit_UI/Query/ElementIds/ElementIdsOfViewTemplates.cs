@@ -34,12 +34,12 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get ElementIds of Views that are View Template")]
-        [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("viewTemplateName", "Optional, allows the filter to narrow the search to a specific View Template name. If blank all View Templates are returned")]
-        [Input("caseSensitive", "Optional, sets the View Template name to be case sensitive or not")]
-        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("elementsIdsOfViewTemplate", "An enumerator for easy iteration of ElementIds collected")]
+        [Description("Filters ElementIds of Revit view templates that have a given name. If view name is left blank, ElementIds of all view templates in the document will be filtered.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("viewTemplateName", "Name used to filter the Revit view templates. Optional: if left blank, ElementIds of all view templates in the document will be filtered.")]
+        [Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfViewTemplates(this Document document, string viewTemplateName = null, bool caseSensitive = true, IEnumerable < ElementId> ids = null)
         {
             if (document == null)

@@ -34,9 +34,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an IRequest that filters all elements visible in a given View.")]
-        [Input("bHoMObject", "BHoMObject pulled from Revit that has sought ElementId.")]
-        [Output("filterByVisibleInView")]
+        [Description("Creates an IRequest that filters elements visible in a given View.")]
+        [Input("bHoMObject", "BHoMObject that contains ElementId of a correspondent Revit element under Revit_elementId CustomData key - usually previously pulled from Revit.")]
+        [Output("F", "IRequest to be used to filter elements visible in a given View.")]
         public static FilterByVisibleInView FilterByVisibleInView(IBHoMObject bHoMObject)
         {
             int elementId = bHoMObject.ElementId();

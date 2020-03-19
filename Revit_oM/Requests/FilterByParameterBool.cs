@@ -32,7 +32,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the parameter to be used as filter criterion.")]
+        [Description("Case sensitive name of the parameter to be used as filter criterion.")]
         public string ParameterName { get; set; } = "";
 
         [Description("Value to compare the parameter against.")]

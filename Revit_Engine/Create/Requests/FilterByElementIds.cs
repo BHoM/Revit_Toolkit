@@ -26,7 +26,6 @@ using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -37,8 +36,8 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates an IRequest that filters elements by their ElementIds.")]
-        [Input("bHoMObjects", "BHoMObjects pulled from Revit that have sought ElementIds.")]
-        [Output("filterByElementIds")]
+        [Input("bHoMObject", "BHoMObjects that contain ElementId of a correspondent Revit element under Revit_elementId CustomData key - usually previously pulled from Revit.")]
+        [Output("F", "IRequest to be used to filter elements by their ElementIds.")]
         public static FilterByElementIds FilterByElementIds(IEnumerable<IBHoMObject> bHoMObjects)
         {
             List<int> elementIds = new List<int>();

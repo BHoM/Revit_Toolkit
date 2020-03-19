@@ -25,14 +25,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters a View by name.")]
+    [Description("IRequest that filters Revit views by name. If the view name is left blank, all families will be filtered.")]
     public class FilterViewByName : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Revit View name matching one displayed in Revit UI.")]
+        [Description("Revit view name matching one displayed in Revit UI. Optional: if left blank, all views will be filtered.")]
         public string ViewName { get; set; } = "";
 
         [Description("If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]

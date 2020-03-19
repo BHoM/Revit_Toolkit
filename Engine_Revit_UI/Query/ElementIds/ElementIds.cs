@@ -77,7 +77,7 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIds(this FilterByCategory request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            return uIDocument.Document.ElementIdsByCategoryName(request.CategoryName, request.CaseSensitive, ids);
+            return uIDocument.Document.ElementIdsByCategory(request.CategoryName, request.CaseSensitive, ids);
         }
 
         /***************************************************/
@@ -196,14 +196,14 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIds(this FilterByViewSpecific request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            return uIDocument.Document.ElementIdsOfViewSpecific(request.ViewId, ids);
+            return uIDocument.Document.ElementIdsByViewSpecific(request.ViewId, ids);
         }
 
         /***************************************************/
 
         public static IEnumerable<ElementId> ElementIds(this FilterByVisibleInView request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            return uIDocument.Document.ElementIdsOfVisibleInView(request.ViewId, ids);
+            return uIDocument.Document.ElementIdsByVisibleInView(request.ViewId, ids);
         }
 
         /***************************************************/
@@ -217,14 +217,14 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIds(this FilterViewsByTemplate request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            return uIDocument.Document.ElementIdsByTemplate(request.TemplateId, ids);
+            return uIDocument.Document.ElementIdsOfViews(request.TemplateId, ids);
         }
 
         /***************************************************/
 
         public static IEnumerable<ElementId> ElementIds(this FilterViewsByType request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            return uIDocument.Document.ElementIdsByViewType(request.RevitViewType.ViewType(), ids);
+            return uIDocument.Document.ElementIdsOfViews(request.RevitViewType.ViewType(), ids);
         }
 
         /***************************************************/
@@ -238,7 +238,7 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIds(this EnergyAnalysisModelRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            return uIDocument.Document.ElementIdsEnergyAnalysisModel(ids);
+            return uIDocument.Document.ElementIdsOfEnergyAnalysisModel(ids);
         }
 
         /***************************************************/

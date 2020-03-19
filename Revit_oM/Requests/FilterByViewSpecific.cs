@@ -25,14 +25,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters elements specific to (owned by) a given View.")]
+    [Description("IRequest that filters elements specific to (owned by) a given view in Revit.")]
     public class FilterByViewSpecific : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("ElementId of the owner view.")]
+        [Description("ElementId of the owner view in Revit.")]
         public int ViewId { get; set; } = -1;
 
         /***************************************************/

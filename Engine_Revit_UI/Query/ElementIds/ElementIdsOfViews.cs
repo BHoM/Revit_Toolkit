@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Reflection.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -34,12 +35,12 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get the ElementId of all Views, with option to narrow search by View name only")]
-        [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("viewName", "Optional, narrows the search by a View name. If blank it returns all Views")]
-        [Input("caseSensitive", "Optional, sets the View name to be case sensitive or not")]
-        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("elementIdsOfViews", "An enumerator for easy iteration of ElementIds collected")]
+        [Description("Filters ElementIds of Revit views that have a given name. If view name is left blank, ElementIds of all views in the document will be filtered.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("viewName", "Name used to filter the Revit views. Optional: if left blank, ElementIds of all views in the document will be filtered.")]
+        [Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfViews(this Document document, string viewName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
@@ -67,6 +68,45 @@ namespace BH.UI.Revit.Engine
             }
             else
                 return collector.OfClass(typeof(View)).Select(x => x.Id);
+        }
+
+        /***************************************************/
+
+        [Description("Filters ElementIds of Revit views of given view type.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("viewType", "Revit view type used to filter the Revit views.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
+        public static IEnumerable<ElementId> ElementIdsOfViews(this Document document, ViewType viewType, IEnumerable<ElementId> ids = null)
+        {
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+            return collector.OfClass(typeof(View)).Cast<View>().Where(x => !x.IsTemplate).Where(x => x.ViewType == viewType).Select(x => x.Id);
+        }
+
+        /***************************************************/
+
+        [Description("Filters ElementIds of Revit views that implement a given view template.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("templateId", "Integer representing ElementId of Revit view template implemented by filtered views.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
+        public static IEnumerable<ElementId> ElementIdsOfViews(this Document document, int templateId, IEnumerable<ElementId> ids = null)
+        {
+            View viewTemplate = document.GetElement(new ElementId(templateId)) as View;
+            if (viewTemplate == null || !viewTemplate.IsTemplate)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Couldn't find a View Template under ElementId {0}", templateId));
+                return new List<ElementId>();
+            }
+
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+            return collector.OfClass(typeof(View)).Cast<View>().Where(x => !x.IsTemplate).Where(x => x.ViewTemplateId == viewTemplate.Id).Select(x => x.Id);
         }
 
         /***************************************************/

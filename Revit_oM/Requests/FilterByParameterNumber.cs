@@ -32,7 +32,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the parameter to be used as filter criterion.")]
+        [Description("Case sensitive name of the parameter to be used as filter criterion.")]
         public string ParameterName { get; set; } = "";
 
         [Description("NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
@@ -41,6 +41,7 @@ namespace BH.oM.Adapters.Revit.Requests
         [Description("Value to compare the parameter against.")]
         public double Value { get; set; } = double.NaN;
 
+        [Description("Numerical tolerance for number comparison.")]
         public double Tolerance { get; set; } = BH.oM.Geometry.Tolerance.Distance;
 
         /***************************************************/

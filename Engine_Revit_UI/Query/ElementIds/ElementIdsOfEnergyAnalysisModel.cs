@@ -21,7 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Analysis;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -32,13 +35,27 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIdsByViewType(this Document document, ViewType viewType, IEnumerable<ElementId> ids = null)
+        [Description("Filters ElementIds of elements that belong to Revit energy analysis model.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
+        public static IEnumerable<ElementId> ElementIdsOfEnergyAnalysisModel(this Document document, IEnumerable<ElementId> ids = null)
         {
-            if (ids != null && ids.Count() == 0)
-                return new List<ElementId>();
+            if (document == null)
+                return null;
 
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            return collector.OfClass(typeof(View)).Cast<View>().Where(x => !x.IsTemplate).Where(x => x.ViewType == viewType).Select(x => x.Id);
+            HashSet<ElementId> result = new HashSet<ElementId>();
+            if (ids != null && ids.Count() == 0)
+                return result;
+
+            EnergyAnalysisDetailModel energyAnalysisDetailModel = EnergyAnalysisDetailModel.GetMainEnergyAnalysisDetailModel(document);
+            if (energyAnalysisDetailModel != null && energyAnalysisDetailModel.IsValidObject)
+                result.Add(energyAnalysisDetailModel.Id);
+
+            if (ids != null)
+                result.IntersectWith(ids);
+
+            return result;
         }
 
         /***************************************************/

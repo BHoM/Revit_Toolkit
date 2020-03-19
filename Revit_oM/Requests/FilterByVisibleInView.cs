@@ -25,14 +25,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements visible in a given View.")]
+    [Description("IRequest that filters all elements visible in a given Revit view.")]
     public class FilterByVisibleInView : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("ElementId of the view in which the elements are expected to be visible.")]
+        [Description("ElementId of Revit view to be checked for element visibility.")]
         public int ViewId { get; set; } = -1;
 
         /***************************************************/

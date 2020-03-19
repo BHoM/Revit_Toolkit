@@ -25,14 +25,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters a Family element by name.")]
+    [Description("IRequest that filters Revit families by name. If the family name is left blank, all families will be filtered.")]
     public class FilterFamilyByName : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
         
-        [Description("Revit Family name matching one displayed in Revit UI.")]
+        [Description("Revit Family name matching one displayed in Revit UI. Optional: if left blank, all families will be filtered.")]
         public string FamilyName { get; set; } = "";
 
         [Description("If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]

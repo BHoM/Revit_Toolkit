@@ -33,7 +33,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("List of Revit ElementIds to be used to filter the elements.")]
+        [Description("List of integers representing Revit ElementIds to be used to filter the elements.")]
         public List<int> ElementIds { get; set; } = new List<int>();
 
         /***************************************************/

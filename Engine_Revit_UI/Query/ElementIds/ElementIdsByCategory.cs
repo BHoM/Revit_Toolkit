@@ -35,13 +35,13 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get Elements as ElementIds by Category names, including Element and Element Types")]
-        [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("categoryName", "List of Revit Category name to be used as filter")]
-        [Input("caseSensitive", "Optional, sets the Category name to be case sensitive or not")]
-        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("elementIdsByCategoryName", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsByCategoryName(this Document document, string categoryName, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
+        [Description("Filters ElementIds of elements and types in a Revit document based on Revit category criterion.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("categoryName", "Name of the Revit category to be used as a filter.")]
+        [Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
+        public static IEnumerable<ElementId> ElementIdsByCategory(this Document document, string categoryName, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;

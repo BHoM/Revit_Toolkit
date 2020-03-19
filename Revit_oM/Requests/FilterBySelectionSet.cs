@@ -32,7 +32,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the Revit Selection Set.")]
+        [Description("Name of the Revit Selection Set to be filtered.")]
         public string SelectionSetName { get; set; } = "";
 
         /***************************************************/

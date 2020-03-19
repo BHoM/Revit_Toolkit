@@ -25,14 +25,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters Family Types elements of a Family.")]
+    [Description("IRequest that filters Revit family types that belong to a given Revit family.")]
     public class FilterFamilyTypesOfFamily : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("ElementId of the family, which types are being queried.")]
+        [Description("ElementId of the Revit family, which types are being queried.")]
         public int FamilyId { get; set; } = -1;
 
         /***************************************************/

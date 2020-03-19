@@ -35,13 +35,13 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get all Elements as ElementIds by Family name, optionally narrowing the search by Family Type name")]
-        [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("familyName", "Name of the Family to look for the type")]
-        [Input("familyTypeName", "Optional, the name of Family Type to look for in the Family")]
-        [Input("caseSensitive", "Optional, sets the Family name and Family Type name to be case sensitive or not")]
-        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("elementIdsByFamily", "An enumerator for easy iteration of ElementIds collected")]
+        [Description("Filters ElementIds of elements and types in a Revit document based on Revit family criterion, optionally narrowing the search to a specific family type.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("familyName", "Name of the Revit family to be used as a filter.")]
+        [Input("familyTypeName", "Optional, the name of Revit family type to be used to narrow down the search.")]
+        [Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByFamilyAndType(this Document document, string familyName, string familyTypeName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
             if (document == null)

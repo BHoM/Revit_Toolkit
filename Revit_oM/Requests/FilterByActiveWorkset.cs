@@ -25,7 +25,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements in active workset.")]
+    [Description("IRequest that filters all elements in active Revit workset.")]
     public class FilterByActiveWorkset : IRequest
     {
         /***************************************************/

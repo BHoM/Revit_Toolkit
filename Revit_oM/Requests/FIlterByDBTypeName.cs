@@ -25,14 +25,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements of given Autodesk.Revit.DB type.")]
+    [Description("IRequest that filters all elements of given Autodesk.Revit.DB type. Information about types can be found in the Revit API documentation.")]
     public class FilterByDBTypeName : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Revit DB type name.")]
+        [Description("Full Revit DB type name, including namespace before the name of the actual type. For example: 'Autodesk.Revit.DB.Wall.")]
         public string TypeName { get; set; } = "";
 
         /***************************************************/

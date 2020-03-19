@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Analysis;
+using BH.oM.Reflection.Attributes;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -33,23 +35,30 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIdsEnergyAnalysisModel(this Document document, IEnumerable<ElementId> ids = null)
+        [Description("Filters ElementIds of elements that are owned by (specific to) a view.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("viewId", "ElementId of the Revit view to which the filtered elements belong.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
+        public static IEnumerable<ElementId> ElementIdsByViewSpecific(this Document document, int viewId, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
 
-            HashSet<ElementId> result = new HashSet<ElementId>();
-            if (ids != null && ids.Count() == 0)
-                return result;
+            View view = document.GetElement(new ElementId(viewId)) as View;
+            if (view != null)
+            {
+                if (ids != null && ids.Count() == 0)
+                    return new List<ElementId>();
 
-            EnergyAnalysisDetailModel energyAnalysisDetailModel = EnergyAnalysisDetailModel.GetMainEnergyAnalysisDetailModel(document);
-            if (energyAnalysisDetailModel != null && energyAnalysisDetailModel.IsValidObject)
-                result.Add(energyAnalysisDetailModel.Id);
-
-            if (ids != null)
-                result.IntersectWith(ids);
-
-            return result;
+                FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+                return collector.Where(x => x.OwnerViewId == view.Id).Select(x => x.Id);
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Couldn't find a View under ElementId {0}", viewId));
+                return new HashSet<ElementId>();
+            }
         }
 
         /***************************************************/

@@ -35,8 +35,8 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates an IRequest that filters elements specific to (owned by) a given View.")]
-        [Input("bHoMObject", "BHoMObject pulled from Revit that has sought ElementId.")]
-        [Output("filterByViewSpecific")]
+        [Input("bHoMObject", "BHoMObject that contains ElementId of a correspondent Revit element under Revit_elementId CustomData key - usually previously pulled from Revit.")]
+        [Output("F", "IRequest to be used to filter elements specific to (owned by) a given View.")]
         public static FilterByViewSpecific FilterByViewSpecific(IBHoMObject bHoMObject)
         {
             int elementId = bHoMObject.ElementId();

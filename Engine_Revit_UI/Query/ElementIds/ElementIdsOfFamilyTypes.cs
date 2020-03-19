@@ -35,11 +35,11 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get the ElementId of all Family Types, with option to narrow search by a certain Family name")]
-        [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("familyId", "Optional, Family id to search for Family Type ids - if set to -1 then all Element types will be filtered")]
-        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("elementIdsOfFamilyTypes", "An enumerator for easy iteration of ElementIds collected")]
+        [Description("Filters ElementIds of Revit family types that belong to a given Revit family.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("familyId", "ElementId of the Revit family, to which filtered family types belong.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, int familyId, IEnumerable<ElementId> ids = null)
         {
             if (document == null)

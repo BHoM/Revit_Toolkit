@@ -25,14 +25,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all views that implement a given template.")]
+    [Description("IRequest that filters all Revit views that implement a given view template.")]
     public class FilterViewsByTemplate : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("ElementId of the view template sought for.")]
+        [Description("ElementId of the Revit view template.")]
         public int TemplateId { get; set; } = -1;
 
         /***************************************************/

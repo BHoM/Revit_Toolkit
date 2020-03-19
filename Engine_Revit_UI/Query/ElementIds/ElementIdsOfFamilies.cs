@@ -34,12 +34,12 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get the ElementId of all Families, with option to narrow search by Family name only")]
-        [Input("document", "Revit Document where ElementIds are collected")]
-        [Input("familyName", "Optional, narrows the search by a Family name. If blank it returns all Families")]        
-        [Input("caseSensitive", "Optional, sets the Family name to be case sensitive or not")]
-        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("elementIdsOfFamilies", "An enumerator for easy iteration of ElementIds collected")]
+        [Description("Filters ElementIds of Revit families that have a given name. If family name is left blank, ElementIds of all families in the document will be filtered.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("familyName", "Name used to filter the Revit families. Optional: if left blank, ElementIds of all families in the document will be filtered.")]
+        [Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfFamilies(this Document document, string familyName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
             if (document == null)

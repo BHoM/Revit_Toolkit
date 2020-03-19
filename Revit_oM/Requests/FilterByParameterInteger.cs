@@ -31,8 +31,8 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
-
-        [Description("Name of the parameter to be used as filter criterion.")]
+        
+        [Description("Case sensitive name of the parameter to be used as filter criterion.")]
         public string ParameterName { get; set; } = "";
 
         [Description("NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]

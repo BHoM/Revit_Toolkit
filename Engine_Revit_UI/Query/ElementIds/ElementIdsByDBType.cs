@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -34,6 +36,12 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document based on Autodesk.Revit.DB type criterion. Information about types can be found in the Revit API documentation.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("currentDomainAssembly", "Location of the assembly to be searched for the type.")]
+        [Input("typeName", "Name of the type to be used as a filter.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByDBType(this Document document, string currentDomainAssembly, string typeName, IEnumerable<ElementId> ids = null)
         {
             if (document == null || string.IsNullOrEmpty(currentDomainAssembly) || string.IsNullOrEmpty(typeName))

@@ -35,12 +35,12 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get all Elements as ElementId that are owned by (specific to) a View")]
-        [Input("document", "Revit Document where views are collected")]
-        [Input("viewId", "ElementId of the Revit view to which the elements belong")]
-        [Input("ids", "Optional, allows the filter to narrow the search from an existing enumerator")]
-        [Output("elementIdsOfViewSpecific", "An enumerator for easy iteration of ElementIds collected")]
-        public static IEnumerable<ElementId> ElementIdsOfViewSpecific(this Document document, int viewId, IEnumerable<ElementId> ids = null)
+        [Description("Filters ElementIds of elements that are visible in a view.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("viewId", "ElementId of the Revit view in which the filtered elements are visible.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
+        public static IEnumerable<ElementId> ElementIdsByVisibleInView(this Document document, int viewId, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
@@ -49,10 +49,14 @@ namespace BH.UI.Revit.Engine
             if (view != null)
             {
                 if (ids != null && ids.Count() == 0)
-                    return new List<ElementId>();
+                    return new HashSet<ElementId>();
 
-                FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-                return collector.Where(x => x.OwnerViewId == view.Id).Select(x => x.Id);
+                FilteredElementCollector collector = new FilteredElementCollector(document, view.Id);
+
+                if (ids == null)
+                    return collector.ToElementIds();
+                else
+                    return collector.ToElementIds().Intersect(ids);
             }
             else
             {
