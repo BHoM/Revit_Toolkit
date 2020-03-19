@@ -106,16 +106,18 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static BuiltInCategory BuiltInCategory(this Document document, string categoryName)
+        public static BuiltInCategory BuiltInCategory(this Document document, string categoryName, bool caseSensitive = true)
         {
             if (document == null || string.IsNullOrEmpty(categoryName)|| document.Settings == null || document.Settings.Categories == null)
                 return Autodesk.Revit.DB.BuiltInCategory.INVALID;
 
             foreach (Category category in document.Settings.Categories)
-                if (category.Name == categoryName)
+            {
+                if ((caseSensitive && category.Name == categoryName) || (!caseSensitive && category.Name.ToUpper() == categoryName.ToUpper()))
                     return (BuiltInCategory)category.Id.IntegerValue;
-
-            switch(categoryName)
+            }
+            
+            switch (categoryName)
             {
                 case "Space Type Settings":
                     return Autodesk.Revit.DB.BuiltInCategory.OST_HVAC_Load_Space_Types;

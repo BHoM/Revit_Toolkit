@@ -52,7 +52,7 @@ namespace BH.UI.Revit.Engine
                     return new List<ElementId>();
 
                 FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-                return collector.Where(x => x.OwnerViewId == view.Id).Select(x => x.Id);
+                return collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))).Where(x => x.OwnerViewId == view.Id).Select(x => x.Id);
             }
             else
             {

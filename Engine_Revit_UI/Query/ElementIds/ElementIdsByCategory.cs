@@ -46,22 +46,7 @@ namespace BH.UI.Revit.Engine
             if (document == null)
                 return null;
 
-            BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID;
-            if (caseSensitive)
-                builtInCategory = document.BuiltInCategory(categoryName);
-            else
-            {
-                string nameUpper = categoryName.ToUpper();
-                foreach (BuiltInCategory bic in Enum.GetValues(typeof(BuiltInCategory)))
-                {
-                    if (bic.ToString().ToUpper() == nameUpper)
-                    {
-                        builtInCategory = bic;
-                        break;
-                    }
-                }
-            }
-
+            BuiltInCategory builtInCategory = document.BuiltInCategory(categoryName, caseSensitive);
             if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
             {
                 BH.Engine.Reflection.Compute.RecordError("Couldn't find a Category named " + categoryName + ".");
