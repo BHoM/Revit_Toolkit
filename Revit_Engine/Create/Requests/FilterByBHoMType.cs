@@ -21,18 +21,25 @@
  */
 
 using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
+using System;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.Engine.Adapters.Revit
 {
-    [Description("IRequest that filters all view templates in document.")]
-    public class ViewTemplateRequest : IRequest
+    public static partial class Create
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-
+        [Description("Creates an IRequest that filters Revit elements based on their correspondent BHoM Type. Wrapper for BH.oM.Data.Requests.FilterRequest.")]
+        [Input("bHoMType", "BHoM type, which correspondent Revit types are meant to be filtered.")]
+        [Output("F", "FilterRequest to be used to filter Revit elements based on their correspondent BHoM Type.")]
+        public static FilterRequest FilterByBHoMType(Type bHoMType)
+        {
+            return new FilterRequest { Type = bHoMType };
+        }
 
         /***************************************************/
     }

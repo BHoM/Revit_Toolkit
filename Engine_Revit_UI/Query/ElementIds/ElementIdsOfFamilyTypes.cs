@@ -35,37 +35,39 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Filters ElementIds of elements and types in a Revit document based on a collection of integers that represent Revit ElementIds.")]
+        [Description("Filters ElementIds of Revit family types that belong to a given Revit family.")]
         [Input("document", "Revit document to be processed.")]
-        [Input("elementIds", "Collection of integers representing Revit ElementIds.")]
+        [Input("familyId", "ElementId of the Revit family, to which filtered family types belong.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> ElementIdsByInts(this Document document, IEnumerable<int> elementIds, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, int familyId, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
 
-            HashSet<ElementId> result = new HashSet<ElementId>();
-            if (elementIds != null)
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
+            if (familyId == -1)
             {
-                HashSet<int> corruptIds = new HashSet<int>();
-                foreach (int id in elementIds)
+                FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+                return collector.WhereElementIsElementType().ToElementIds();
+            }
+            else
+            {
+                Family family = document.GetElement(new ElementId(familyId)) as Family;
+                if (family == null)
                 {
-                    ElementId elementId = new ElementId(id);
-                    if (document.GetElement(elementId) != null)
-                        result.Add(elementId);
-                    else
-                        corruptIds.Add(id);
+                    BH.Engine.Reflection.Compute.RecordError(String.Format("Couldn't find a Family under ElementId {0}", familyId));
+                    return new List<ElementId>();
                 }
-
-                if (corruptIds.Count != 0)
-                    BH.Engine.Reflection.Compute.RecordError(String.Format("Invalid or nonexistent Revit ElementIds have been used: {0}", string.Join(", ", corruptIds)));
-
+                
+                HashSet<ElementId> result = new HashSet<ElementId>(family.GetFamilySymbolIds());
                 if (ids != null)
                     result.IntersectWith(ids);
-            }
 
-            return result;
+                return result;
+            }            
         }
 
         /***************************************************/

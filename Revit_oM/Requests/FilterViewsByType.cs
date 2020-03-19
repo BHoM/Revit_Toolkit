@@ -25,14 +25,15 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements that are contained in an energy analysis model.")]
-    public class EnergyAnalysisModelRequest : IRequest
+    [Description("IRequest that filters all views of given type.")]
+    public class FilterViewsByType : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-
+        [Description("RevitViewType enum correspondent to Revit view type.")]
+        public Revit.Enums.RevitViewType RevitViewType { get; set; } =  Enums.RevitViewType.Undefined;
 
         /***************************************************/
     }

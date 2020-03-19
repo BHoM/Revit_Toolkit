@@ -20,26 +20,34 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Base;
-using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.Engine.Adapters.Revit
 {
-    [Description("IRequest that filters all elements of given Autodesk.Revit.DB type.")]
-    public class DBTypeNameRequest : IRequest
+    public static partial class Create
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Revit DB type name.")]
-        public string TypeName { get; set; } = "";
+        [Description("Creates an IRequest that filters elements specific to (owned by) a given View.")]
+        [Input("bHoMObject", "BHoMObject that contains ElementId of a correspondent Revit element under Revit_elementId CustomData key - usually previously pulled from Revit.")]
+        [Output("F", "IRequest to be used to filter elements specific to (owned by) a given View.")]
+        public static FilterByViewSpecific FilterByViewSpecific(IBHoMObject bHoMObject)
+        {
+            int elementId = bHoMObject.ElementId();
+            if (elementId == -1)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
+                return null;
+            }
+            else
+                return new FilterByViewSpecific { ViewId = elementId };
+        }
 
         /***************************************************/
     }

@@ -20,28 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
+using BH.oM.Data.Requests;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters elements based on given floating point number parameter value criterion.")]
-    public class ParameterNumberRequest : IParameterRequest
+    [Description("IRequest that filters all elements of given Revit family, optionally narrowing the search to a specific family type.")]
+    public class FilterByFamilyAndTypeName : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the parameter to be used as filter criterion.")]
-        public string ParameterName { get; set; } = "";
+        [Description("Name of Revit family as shown in Revit UI.")]
+        public string FamilyName { get; set; } = "";
 
-        [Description("NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
-        public Enums.NumberComparisonType NumberComparisonType { get; set; } = Enums.NumberComparisonType.Equal;
+        [Description("Name of Revit family type as shown in the UI. Optional: allows to narrow the pull down to elements of specific family type.")]
+        public string FamilyTypeName { get; set; } = "";
 
-        [Description("Value to compare the parameter against.")]
-        public double Value { get; set; } = double.NaN;
-
-        public double Tolerance { get; set; } = BH.oM.Geometry.Tolerance.Distance;
+        [Description("If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        public bool CaseSensitive { get; set; } = true;
 
         /***************************************************/
     }

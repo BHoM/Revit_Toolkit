@@ -20,20 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -43,24 +34,26 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document based on Revit workset criterion.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("worksetIds", "WorksetIds of Revit worksets, to which filtered elements belong.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByWorksets(this Document document, List<WorksetId> worksetIds, IEnumerable<ElementId> ids = null)
         {
-            if (document == null || worksetIds == null)
+            if (document == null)
                 return null;
 
             if (ids != null && ids.Count() == 0)
                 return new List<ElementId>();
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            if (worksetIds.Count == 0)
+            if (worksetIds == null || worksetIds.Count == 0)
                 return new List<ElementId>();
-            else if (worksetIds.Count == 1)
-                return collector.WherePasses(new ElementWorksetFilter(worksetIds.First(), false)).ToElementIds();
             else
                 return collector.WherePasses(new LogicalOrFilter(worksetIds.ConvertAll(x => new ElementWorksetFilter(x, false) as ElementFilter))).ToElementIds();
         }
 
         /***************************************************/
-
     }
 }

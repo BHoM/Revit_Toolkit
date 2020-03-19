@@ -20,21 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
 using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.UI.Revit.Engine
 {
@@ -44,11 +34,16 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document based on a collection of objects shipped as a part of FilterRequest.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("idObjects", "Collection of objects that are either strings representing Revit UniqueIds or integers representing Revit ElementIds.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByIdObjects(this Document document, IList idObjects, IEnumerable<ElementId> ids = null)
         {
             List<int> elementIds = new List<int>();
             List<string> uniqueIds = new List<string>();
-            if (idObjects != null)
+            if (idObjects != null && idObjects.Count != 0)
             {
                 foreach (object obj in idObjects)
                 {
@@ -65,13 +60,12 @@ namespace BH.UI.Revit.Engine
                     }
                 }
             }
-
-            if (elementIds.Count == 0 && uniqueIds.Count == 0)
+            else
                 return ids;
             
             HashSet<ElementId> result = new HashSet<ElementId>();
-            result.UnionWith(document.ElementIdsByInts(elementIds));
-            result.UnionWith(document.ElementIdsByUniqueIds(uniqueIds));
+            result.UnionWith(document.ElementIdsByInts(elementIds, ids));
+            result.UnionWith(document.ElementIdsByUniqueIds(uniqueIds, ids));
             return result;
         }
 

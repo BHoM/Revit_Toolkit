@@ -20,19 +20,35 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Requests;
+using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
+using System;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Requests
+namespace BH.Engine.Adapters.Revit
 {
-    [Description("IRequest that filters all elements that are contained in an energy analysis model.")]
-    public class EnergyAnalysisModelRequest : IRequest
+    public static partial class Create
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-
+        [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
+        [InputFromProperty("parameterName")]
+        [Input("bHoMObject", "BHoMObject that contains ElementId of a correspondent Revit element under Revit_elementId CustomData key - usually previously pulled from Revit.")]
+        [Output("F", "IRequest to be used to filter elements by given parameter value criterion.")]
+        public static FilterByParameterElementId FilterByParameterElementId(string parameterName, IBHoMObject bHoMObject)
+        {
+            int elementId = bHoMObject.ElementId();
+            if (elementId == -1)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
+                return null;
+            }
+            else
+                return new FilterByParameterElementId { ParameterName = parameterName, ElementId = elementId };
+        }
 
         /***************************************************/
     }

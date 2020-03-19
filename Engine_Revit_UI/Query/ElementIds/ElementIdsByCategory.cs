@@ -35,37 +35,29 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Filters ElementIds of elements and types in a Revit document based on a collection of integers that represent Revit ElementIds.")]
+        [Description("Filters ElementIds of elements and types in a Revit document based on Revit category criterion.")]
         [Input("document", "Revit document to be processed.")]
-        [Input("elementIds", "Collection of integers representing Revit ElementIds.")]
+        [Input("categoryName", "Name of the Revit category to be used as a filter.")]
+        [Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> ElementIdsByInts(this Document document, IEnumerable<int> elementIds, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsByCategory(this Document document, string categoryName, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
 
-            HashSet<ElementId> result = new HashSet<ElementId>();
-            if (elementIds != null)
+            BuiltInCategory builtInCategory = document.BuiltInCategory(categoryName, caseSensitive);
+            if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
             {
-                HashSet<int> corruptIds = new HashSet<int>();
-                foreach (int id in elementIds)
-                {
-                    ElementId elementId = new ElementId(id);
-                    if (document.GetElement(elementId) != null)
-                        result.Add(elementId);
-                    else
-                        corruptIds.Add(id);
-                }
-
-                if (corruptIds.Count != 0)
-                    BH.Engine.Reflection.Compute.RecordError(String.Format("Invalid or nonexistent Revit ElementIds have been used: {0}", string.Join(", ", corruptIds)));
-
-                if (ids != null)
-                    result.IntersectWith(ids);
+                BH.Engine.Reflection.Compute.RecordError("Couldn't find a Category named " + categoryName + ".");
+                return new List<ElementId>();
             }
 
-            return result;
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+            return collector.OfCategory(builtInCategory).ToElementIds();
         }
 
         /***************************************************/

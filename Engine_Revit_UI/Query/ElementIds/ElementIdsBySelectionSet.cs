@@ -20,20 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-
-using BH.oM.Base;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -43,9 +34,15 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Filters ElementIds of elements and types in a Revit document contained in a given Revit Selection Set.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("selectionSetName", "Name of the Revit selection set, which contents are meant to be filtered out.")]
+        [Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsBySelectionSet(this Document document, string selectionSetName, bool caseSensitive, IEnumerable<ElementId> ids = null)
         {
-            if (document == null || string.IsNullOrEmpty(selectionSetName))
+            if (document == null)
                 return null;
 
             if (ids != null && ids.Count() == 0)
@@ -60,7 +57,10 @@ namespace BH.UI.Revit.Engine
                 selectionFilterElement = selectionFilterElements.Find(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper() == selectionSetName.ToUpper());
 
             if (selectionFilterElement == null)
-                return null;
+            {
+                BH.Engine.Reflection.Compute.RecordError("Couldn't find a Selection Set named " + selectionSetName + ".");
+                return new HashSet<ElementId>();
+            }
 
             HashSet<ElementId> result = new HashSet<ElementId>(selectionFilterElement.GetElementIds());
             if (ids != null)
@@ -70,6 +70,5 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-
     }
 }

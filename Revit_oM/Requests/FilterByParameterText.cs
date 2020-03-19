@@ -20,19 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Interface;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements that are contained in an energy analysis model.")]
-    public class EnergyAnalysisModelRequest : IRequest
+    [Description("IRequest that filters elements based on given text parameter value criterion.")]
+    public class FilterByParameterText : IParameterRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
+        [Description("Case sensitive name of the parameter to be used as filter criterion.")]
+        public string ParameterName { get; set; } = "";
 
+        [Description("TextComparisonType enum representing comparison type, e.g. equality, contains, starts with etc.")]
+        public Enums.TextComparisonType TextComparisonType { get; set; } = Enums.TextComparisonType.Equal;
+
+        [Description("Value to compare the parameter against.")]
+        public string Value { get; set; } = "";
 
         /***************************************************/
     }

@@ -23,17 +23,16 @@
 using BH.oM.Data.Requests;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters elements contained in a given Revit Selection Set.")]
-    public class SelectionSetRequest : IRequest
+    [Description("IRequest that filters the active view in Revit.")]
+    public class FilterActiveView : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the Revit Selection Set.")]
-        public string SelectionSetName { get; set; } = "";
+
 
         /***************************************************/
     }
