@@ -132,10 +132,10 @@
     <Compile Include="Create\Elements\ViewPlan.cs" />
     <Compile Include="Create\Elements\ModelInstance.cs" />
     <Compile Include="Create\Properties\InstanceProperties.cs" />
-    <Compile Include="Create\Requests\FilterByBHoMType.cs" />
+    <Compile Include="Create\Requests\FilterRequest.cs" />
     <Compile Include="Create\Requests\FilterByElementIds.cs" />
     <Compile Include="Create\Requests\FilterByParameterElementId.cs" />
-    <Compile Include="Create\Requests\FilterBySelection.cs" />
+    <Compile Include="Create\Requests\SelectionRequest.cs" />
     <Compile Include="Create\Requests\FilterByViewSpecific.cs" />
     <Compile Include="Create\Requests\FilterByVisibleInView.cs" />
     <Compile Include="Create\Requests\FilterFamilyTypesOfFamily.cs" />
