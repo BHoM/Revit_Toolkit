@@ -85,12 +85,12 @@
     <Compile Include="Requests\FilterActiveView.cs" />
     <Compile Include="Requests\FilterByActiveWorkset.cs" />
     <Compile Include="Requests\FilterByCategory.cs" />
-    <Compile Include="Requests\FIlterByDBTypeName.cs" />
+    <Compile Include="Requests\FilterByDBTypeName.cs" />
     <Compile Include="Requests\FilterByElementIds.cs" />
     <Compile Include="Requests\FilterByFamilyAndTypeName.cs" />
     <Compile Include="Requests\FilterByParameterBool.cs" />
     <Compile Include="Requests\FilterByParameterElementId.cs" />
-    <Compile Include="Requests\FilterByParameterExistsence.cs" />
+    <Compile Include="Requests\FilterByParameterExistence.cs" />
     <Compile Include="Requests\FilterByParameterInteger.cs" />
     <Compile Include="Requests\FilterByParameterNumber.cs" />
     <Compile Include="Requests\FilterByParameterText.cs" />
