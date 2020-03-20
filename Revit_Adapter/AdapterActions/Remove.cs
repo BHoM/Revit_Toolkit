@@ -21,19 +21,10 @@
  */
 
 using BH.oM.Adapter;
-using BH.Adapter.Socket;
-using BH.oM.Base;
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Debugging;
-using BH.oM.Adapters.Revit.Settings;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
 using BH.oM.Adapters.Revit;
+using BH.oM.Data.Requests;
+using System;
+using System.Collections.Generic;
 
 namespace BH.Adapter.Revit
 {
@@ -45,6 +36,22 @@ namespace BH.Adapter.Revit
 
         public override int Remove(IRequest request, ActionConfig actionConfig = null)
         {
+            //Check if request is not null or empty
+            if (request == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null or empty.");
+                return 0;
+            }
+            else if (request is FilterRequest)
+            {
+                FilterRequest filterRequest = (FilterRequest)request;
+                if (filterRequest.Type == null && String.IsNullOrWhiteSpace(filterRequest.Tag) && (filterRequest.Equalities == null || filterRequest.Equalities.Count == 0))
+                {
+                    BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null or empty.");
+                    return 0;
+                }
+            }
+
             //Initialize Revit config
             RevitRemoveConfig removeConfig = actionConfig as RevitRemoveConfig;
 

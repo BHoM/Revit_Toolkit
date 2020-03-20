@@ -36,6 +36,22 @@ namespace BH.Adapter.Revit
 
         public override IEnumerable<object> Pull(IRequest request, PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null)
         {
+            //Check if request is not null or empty
+            if (request == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null or empty.");
+                return new List<object>();
+            }
+            else if (request is FilterRequest)
+            {
+                FilterRequest filterRequest = (FilterRequest)request;
+                if (filterRequest.Type == null && String.IsNullOrWhiteSpace(filterRequest.Tag) && (filterRequest.Equalities == null || filterRequest.Equalities.Count == 0))
+                {
+                    BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null or empty.");
+                    return new List<object>();
+                }
+            }
+
             //Initialize Revit config
             RevitPullConfig pullConfig = actionConfig as RevitPullConfig;
 
