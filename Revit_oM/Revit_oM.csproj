@@ -85,7 +85,7 @@
     <Compile Include="Requests\FilterActiveView.cs" />
     <Compile Include="Requests\FilterByActiveWorkset.cs" />
     <Compile Include="Requests\FilterByCategory.cs" />
-    <Compile Include="Requests\fFilterByDBTypeName.cs" />
+    <Compile Include="Requests\FilterByDBTypeName.cs" />
     <Compile Include="Requests\FilterByElementIds.cs" />
     <Compile Include="Requests\FilterByFamilyAndTypeName.cs" />
     <Compile Include="Requests\FilterByParameterBool.cs" />
