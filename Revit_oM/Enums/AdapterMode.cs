@@ -20,12 +20,24 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
+
 namespace BH.oM.Adapters.Revit.Enums
 {
+    /***************************************************/
+
+    [Deprecated("3.1", "BH.oM.Adapters.Revit.Enums.AdapterMode enum is not used any more.")]
+    [Description("Enumerator defining the adapter Push mode.")]
     public enum AdapterMode
     {
+        [Description("Delete elements from Revit document.")]
         Delete,
+        [Description("Delete and recreate elements in Revit document.")]
         Replace,
+        [Description("Update elements in Revit document.")]
         Update,
     }
+
+    /***************************************************/
 }

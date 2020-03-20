@@ -23,18 +23,22 @@
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Elements
 {
+    [Description("A wrapper BHoM type for Revit viewport.")]
     public class Viewport : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
+        [Description("An entity storing the information about Revit viewport type, see description of InstanceProperties for more details.")]
         public InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
 
-        public Point Location { get; set; } = new Point() { X =0, Y = 0, Z = 0 };
+        [Description("Location of the viewport in Revit sheet space.")]
+        public Point Location { get; set; } = new Point() { X = 0, Y = 0, Z = 0 };
 
         /***************************************************/
     }

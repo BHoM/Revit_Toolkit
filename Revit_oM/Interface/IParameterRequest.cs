@@ -20,12 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Properties;
-using BH.oM.Base;
 using BH.oM.Data.Requests;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Interface
 {
+    [Description("Interface for types that filter elements based on parameter value criterion.")]
     public interface IParameterRequest : IRequest
     {
         /***************************************************/

@@ -20,17 +20,29 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System.ComponentModel;
+
 namespace BH.oM.Adapters.Revit.Enums
 {
+    /***************************************************/
 
+    [Description("Enumerator defining the way in which two numbers are compared.")]
     public enum NumberComparisonType
     {
+        [Description("Check if input number and reference number are equal.")]
         Equal,
+        [Description("Check if input number and reference number are not equal.")]
         NotEqual,
+        [Description("Check if input number is greater than reference number.")]
         Greater,
+        [Description("Check if input number is smaller than reference number.")]
         Less,
+        [Description("Check if input number is smaller than or equal to reference number.")]
         LessOrEqual,
+        [Description("Check if input number is greater than or equal to reference number.")]
         GreaterOrEqual,
     }
+
+    /***************************************************/
 }
 

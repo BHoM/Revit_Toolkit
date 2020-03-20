@@ -22,15 +22,18 @@
 
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Base;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Elements
 {
+    [Description("A wrapper BHoM type for Revit sheet.")]
     public class Sheet : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
+        [Description("An entity storing the information about Revit sheet type, see description of InstanceProperties for more details.")]
         public InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
 
         /***************************************************/

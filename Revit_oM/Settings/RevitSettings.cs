@@ -26,31 +26,31 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Settings
 {
+    [Description("General settings that are applicable to all actions performed by the instance of Revit adapter.")]
     public class RevitSettings : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
+        [Description("Socket connection settings.")]
         public ConnectionSettings ConnectionSettings { get; set; } = new ConnectionSettings();
-        public FamilyLoadSettings FamilyLoadSettings { get; set; } = new FamilyLoadSettings();
-        public MapSettings MapSettings { get; set; } = new MapSettings();
 
-        //TODO: move this to MapSettings
+        [Description("Revit family load settings. Limited functionality at the moment.")]
+        public FamilyLoadSettings FamilyLoadSettings { get; set; } = new FamilyLoadSettings();
+
+        [Description("A collection of relationships between property names of BHoM types and parameter names of correspondent Revit elements.")]
+        public MapSettings MapSettings { get; set; } = new MapSettings();
+        
+        [Description("Name of Revit parameter to be used to store BHoM tags.")]
         public string TagsParameterName { get; set; } = "BHE_Tags";
 
+        [Description("Distance tolerance to be used in geometry processing.")]
         public double DistanceTolerance { get; set; } = BH.oM.Geometry.Tolerance.Distance;
 
+        [Description("Angle tolerance to be used in geometry processing.")]
         public double AngleTolerance { get; set; } = BH.oM.Geometry.Tolerance.Angle;
-
-
-        /***************************************************/
-        /****                  Default                  ****/
-        /***************************************************/
-
-        [Description("Default settings, used if not set by the user.")]
-        public static readonly RevitSettings Default = new RevitSettings();
-
+        
         /***************************************************/
     }
 }

@@ -20,15 +20,28 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System.ComponentModel;
+
 namespace BH.oM.Adapters.Revit.Enums
 {
+    /***************************************************/
+
+    [Description("Enumerator defining the way in which two strings are compared.")]
     public enum TextComparisonType
     {
+        [Description("Check if input string and reference string are the same.")]
         Equal,
+        [Description("Check if input string and reference string are different.")]
         NotEqual,
+        [Description("Check if the input input string contains reference string.")]
         Contains,
+        [Description("Check if the input input string does not contain reference string.")]
         ContainsNot,
+        [Description("Check if the input input string starts with reference string.")]
         StartsWith,
+        [Description("Check if the input input string ends with reference string.")]
         EndsWith,
     }
+
+    /***************************************************/
 }

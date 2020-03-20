@@ -20,14 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System.ComponentModel;
+
 namespace BH.oM.Adapters.Revit.Enums
 {
+    /***************************************************/
+
+    [Description("Enumerator allowing choosing to which discipline (and corresponding namespace) should Revit elements be converted on pull.")]
     public enum Discipline
     {
+        [Description("Default discipline to be used.")]
         Undefined,
+        [Description("Elements to be converted to types from BH.oM.Environment. If no suitable conversion exists, default discipline to be used.")]
         Environmental,
+        [Description("Elements to be converted to types from BH.oM.Structure. If no suitable conversion exists, default discipline to be used.")]
         Structural,
+        [Description("Elements to be converted to types from BH.oM.Architecture. If no suitable conversion exists, default discipline to be used.")]
         Architecture,
+        [Description("Elements to be converted to types from BH.oM.Physical. If no suitable conversion exists, default discipline to be used.")]
         Physical,
     }
+
+    /***************************************************/
 }

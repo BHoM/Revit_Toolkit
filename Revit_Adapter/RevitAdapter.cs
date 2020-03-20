@@ -21,18 +21,13 @@
  */
 
 using BH.Adapter.Socket;
-using BH.oM.Base;
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Debugging;
 using BH.oM.Adapters.Revit.Settings;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using BH.oM.Reflection.Attributes;
+using BH.oM.Reflection.Debugging;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using BH.oM.Adapter;
+using System.Threading;
 
 namespace BH.Adapter.Revit
 {
@@ -51,7 +46,7 @@ namespace BH.Adapter.Revit
         /***************************************************/
 
         [Description("Adapter to connect to an open Revit file. Connection will be made to the active document (based on active view). Make sure to only have ONE Revit Window open, or connection will not work as intended.")]
-        [Input("revitSettings", "Connect RevitSettings to control what is being connected")]
+        [Input("revitSettings", "General settings that are applicable to all actions performed by this adapter, e.g. connection settings, tolerances, parameter mapping settings etc.")]
         [Input("active", "Establish connection with Revit by setting to 'True'")]
         [Output("adapter", "Adapter to Revit")]
         public RevitAdapter(RevitSettings revitSettings = null, bool active = false)

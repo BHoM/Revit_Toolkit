@@ -22,17 +22,21 @@
 
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Base;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Interface
 {
+    [Description("A wrapper BHoM interface for any Revit view.")]
     public interface IView : IBHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
+        [Description("An entity storing the information about Revit view type, see description of InstanceProperties for more details.")]
         InstanceProperties InstanceProperties { get; set; }
 
+        [Description("If true, the object represents a Revit view template, if false, the object represents an actual Revit view.")]
         bool IsTemplate { get; set; }
 
         /***************************************************/

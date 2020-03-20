@@ -23,17 +23,21 @@
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Interface
 {
+    [Description("A generic wrapper BHoM interface corresponding to any Revit element.")]
     public interface IInstance : IBHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
+        [Description("Information about family type of the instance, see description of InstanceProperties for more details.")]
         InstanceProperties Properties { get; set; }
 
+        [Description("Location of the instance in space.")]
         IGeometry Location { get; set; }
 
         /***************************************************/

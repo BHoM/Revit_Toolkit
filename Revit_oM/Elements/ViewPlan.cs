@@ -23,19 +23,24 @@
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Adapters.Revit.Properties;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Elements
 {
+    [Description("A wrapper BHoM type for Revit plan view.")]
     public class ViewPlan : BHoMObject, IView
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
+        [Description("An entity storing the information about Revit view type, see description of InstanceProperties for more details.")]
         public InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
 
+        [Description("Name of Revit level to which the view belongs (Associated Level).")]
         public string LevelName { get; set; } = string.Empty;
 
+        [Description("If true, the object represents a Revit view template, if false, the object represents an actual Revit view.")]
         public bool IsTemplate { get; set; } = false;
 
         /***************************************************/
