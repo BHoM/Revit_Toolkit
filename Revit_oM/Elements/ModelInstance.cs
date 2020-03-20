@@ -24,17 +24,21 @@ using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Elements
 {
+    [Description("A generic wrapper BHoM type corresponding to any view-independent Revit element (model elements, e.g. duct or beam).")]
     public class ModelInstance : BHoMObject, IInstance
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
+        [Description("Information about family type of the instance, see description of InstanceProperties for more details.")]
         public InstanceProperties Properties { get; set; } = new InstanceProperties();
 
+        [Description("Location of the instance in space.")]
         public IGeometry Location { get; set; } = new Point();
 
         /***************************************************/

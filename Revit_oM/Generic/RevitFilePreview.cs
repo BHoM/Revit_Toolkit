@@ -21,15 +21,18 @@
  */
 
 using BH.oM.Base;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Generic
 {
+    [Description("Wrapper for Revit family file that allows processing it with BHoM. Limited functionality at the moment.")]
     public class RevitFilePreview : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
+        [Description("Path to the Revit family file wrapped by this object.")]
         public string Path { get; set; } = null;
 
         /***************************************************/

@@ -20,19 +20,21 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-
-using BH.oM.Base;
 using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Base;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Settings
 {
+    [Description("A collection of relationships between property names of BHoM types and parameter names of correspondent Revit elements.")]
     public class MapSettings : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
+        [Description("A list of entities defining relationships between property names of BHoM types and parameter names of correspondent Revit elements.")]
         public List<TypeMap> TypeMaps { get; set; } = new List<TypeMap>();
 
         /***************************************************/
