@@ -19,12 +19,8 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-using System.IO;
-using System.ComponentModel;
-using System.Collections.Generic;
 
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -39,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
             if (settings == null)
             {
                 BH.Engine.Reflection.Compute.RecordNote("Revit settings are not set. Default settings are used.");
-                return RevitSettings.Default;
+                return new RevitSettings();
             }
 
             return settings;
