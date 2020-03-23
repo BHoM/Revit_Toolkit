@@ -33,14 +33,14 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates Revit Settings class which contols behaviour of Revit Adapter")]
-        [Input("connectionSettings", "Connection Settings for Revit Adapter")]
-        [Input("familyLoadSettings", "FamilyLoad Settings for Revit Adapter")]
-        [Input("mapSettings", "Map Settings for Revit Adapter")]
-        [Input("tagsParameterName", "Name of the parameter to which the tags will be assigned")]
-        [Input("distanceTolerance", "Distance tolerance to be used by the adapter")]
-        [Input("angleTolerance", "Angle tolerance to be used by the adapter")]
-        [Output("RevitSettings")]
+        [Description("Creates an object that carries general settings that are applicable to all actions performed by the instance of Revit adapter.")]
+        [InputFromProperty("connectionSettings")]
+        [InputFromProperty("familyLoadSettings")]
+        [InputFromProperty("mapSettings")]
+        [InputFromProperty("tagsParameterName")]
+        [InputFromProperty("distanceTolerance")]
+        [InputFromProperty("angleTolerance")]
+        [Output("revitSettings")]
         public static RevitSettings RevitSettings(ConnectionSettings connectionSettings = null, FamilyLoadSettings familyLoadSettings = null, MapSettings mapSettings = null, string tagsParameterName = null, double distanceTolerance = BH.oM.Geometry.Tolerance.Distance, double angleTolerance = BH.oM.Geometry.Tolerance.Angle)
         {
             RevitSettings settings = new RevitSettings();

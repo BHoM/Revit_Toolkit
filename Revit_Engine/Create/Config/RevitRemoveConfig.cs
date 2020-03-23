@@ -32,11 +32,11 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates a pull action-specific configuration used for adapter interaction with Revit.")]
-        [Input("suppressFailureMessages", "If true, Revit warnings and failure messages will be suppressed (not shown to the user). Whilst this option may speed the pushing process up in case of multiple warnings, it may lead to important issues.")]
-        [Input("includeClosedWorksets", "Elements from closed worksets will be processed if true.")]
-        [Input("removePinned", "Pinned elements will be processed if true.")]
-        [Output("RevitRemoveConfig")]
+        [Description("Creates a remove action-specific configuration used for adapter interaction with Revit.")]
+        [InputFromProperty("suppressFailureMessages")]
+        [InputFromProperty("includeClosedWorksets")]
+        [InputFromProperty("removePinned")]
+        [Output("revitRemoveConfig")]
         public static RevitRemoveConfig RevitRemoveConfig(bool suppressFailureMessages = false, bool includeClosedWorksets = false, bool removePinned = false)
         {
             return new RevitRemoveConfig { SuppressFailureMessages = suppressFailureMessages, IncludeClosedWorksets = includeClosedWorksets, RemovePinned = removePinned };

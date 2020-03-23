@@ -20,12 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.ComponentModel;
-
-using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -35,9 +34,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates MapSettings")]
-        [Input("typeMaps", "List of typeMaps for MapSettings")]
-        [Output("MapSettings")]
+        [Description("Creates a collection of relationships between property names of BHoM types and parameter names of correspondent Revit elements")]
+        [InputFromProperty("typeMaps")]
+        [Output("mapSettings")]
         public static MapSettings MapSettings(IEnumerable<TypeMap> typeMaps)
         {
             MapSettings mapSettings = new MapSettings();

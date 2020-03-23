@@ -20,10 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -33,10 +32,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates Sheet object by given name and number.")]
-        [Input("name", "Sheet Name")]
-        [Input("number", "Sheet Number")]
-        [Output("Sheet")]
+        [Description("Creates BHoM Sheet object.")]
+        [Input("name", "Name of the created Sheet correspondent with Revit sheet name.")]
+        [Input("number", "Number of the created Sheet correspondent with Revit sheet number.")]
+        [Output("sheet")]
         public static Sheet Sheet(string name, string number)
         {
             Sheet sheet = new Sheet()

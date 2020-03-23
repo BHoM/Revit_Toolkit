@@ -20,10 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -33,6 +32,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Deprecated("3.1", "BH.Engine.Adapters.Revit.Create.BHoMObject is not used any more.")]
         [Description("Creates BHoMObject by given Revit ElementId (Element.Id). Allows to pull parameters from any element from Revit")]
         [Input("elementId", "Integer value for Revit ElementId")]
         [Output("BHoMObject")]
@@ -47,6 +47,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Deprecated("3.1", "BH.Engine.Adapters.Revit.Create.BHoMObject is not used any more.")]
         [Description("Creates BHoMObject by given Revit UniqueId (Element.UniqueId). Allows to pull parameters from any element from Revit")]
         [Input("uniqueId", "String value for Revit UniqueId")]
         [Output("BHoMObject")]

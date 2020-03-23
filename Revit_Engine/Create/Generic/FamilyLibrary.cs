@@ -20,10 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -33,10 +32,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates Family Library Class which holds information about families can be loaded to model.")]
-        [Input("directory", "Directory from where famlies will be loaded if not exists in model")]
-        [Input("topDirectoryOnly", "Search through top dilectory folder and skip subfolders")]
-        [Output("FamilyLibrary")]
+        [Description("Creates an object that stores information about families that can be loaded to model.")]
+        [Input("directory", "Directory from which Revit families will be loaded if they do not exist in the model.")]
+        [Input("topDirectoryOnly", "Search through top directory folder only and skip subfolders.")]
+        [Output("familyLibrary")]
         public static FamilyLibrary FamilyLibrary(string directory, bool topDirectoryOnly = false)
         {
             return new FamilyLibrary().Append(directory, topDirectoryOnly);

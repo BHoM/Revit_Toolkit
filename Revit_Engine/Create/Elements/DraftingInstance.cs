@@ -20,15 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-using System;
-
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Properties;
-using BH.Engine.Geometry;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
@@ -39,12 +38,12 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates DraftingInstance by given Family Name, Type Name, Location and View Name. Drafting Instance defines all view specific 2D elements")]
-        [Input("familyName", "Revit Family Name")]
-        [Input("familyTypeName", "Revit Family Type Name")]
-        [Input("location", "Location of DraftingObject on View")]
-        [Input("viewName", "View assigned to DraftingInstance")]
-        [Output("DraftingInstance")]
+        [Description("Creates DraftingInstance object based on point location, Revit family name and family type name. Such DraftingInstance can be pushed to Revit as a point-driven drafting element.")]
+        [Input("familyName", "Name of Revit family to be used when creating the element.")]
+        [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
+        [InputFromProperty("viewName")]
+        [InputFromProperty("location")]
+        [Output("draftingInstance")]
         public static DraftingInstance DraftingInstance(string familyName, string familyTypeName, string viewName, Point location)
         {
             if (string.IsNullOrWhiteSpace(familyName) || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(viewName) || location == null)
@@ -55,11 +54,11 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Creates DraftingInstance on specific view by properties and location. Drafting Instance defines all view specific 2D elements")]
-        [Input("properties", "InstanceProperties of Instance")]
-        [Input("location", "Location of DraftingObject on View")]
-        [Input("viewName", "View assigned to DraftingInstance")]
-        [Output("DraftingInstance")]
+        [Description("Creates DraftingInstance object based on point location and BHoM InstanceProperties. Such DraftingInstance can be pushed to Revit as a point-driven drafting element.")]
+        [InputFromProperty("properties")]
+        [InputFromProperty("viewName")]
+        [InputFromProperty("location")]
+        [Output("draftingInstance")]
         public static DraftingInstance DraftingInstance(InstanceProperties properties, string viewName, Point location)
         {
             if (properties == null || string.IsNullOrWhiteSpace(viewName) || location == null)
@@ -78,11 +77,11 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Creates DraftingInstance on specific view by properties and location. Drafting Instance defines all view specific 2D elements")]
-        [Input("properties", "InstanceProperties of Instance")]
-        [Input("location", "Location of DraftingObject on View")]
-        [Input("viewName", "View assigned to DraftingInstance")]
-        [Output("DraftingInstance")]
+        [Description("Creates DraftingInstance object based on curve location and BHoM InstanceProperties. Such DraftingInstance can be pushed to Revit as a detail line.")]
+        [InputFromProperty("properties")]
+        [InputFromProperty("viewName")]
+        [InputFromProperty("location")]
+        [Output("draftingInstance")]
         public static DraftingInstance DraftingInstance(InstanceProperties properties, string viewName, ICurve location)
         {
             if (properties == null || string.IsNullOrWhiteSpace(viewName) || location == null)
@@ -101,10 +100,10 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Creates DraftingInstance. Drafting Instance defines all view specific 2D elements")]
-        [Input("location", "Location of DraftingObject on View")]
-        [Input("viewName", "View assigned to DraftingInstance")]
-        [Output("DraftingInstance")]
+        [Description("Creates DraftingInstance object based on curve location. Such DraftingInstance can be pushed to Revit as a detail line with default graphic style.")]
+        [InputFromProperty("viewName")]
+        [InputFromProperty("location")]
+        [Output("draftingInstance")]
         public static DraftingInstance DraftingInstance(string viewName, ICurve location)
         {
             if (string.IsNullOrWhiteSpace(viewName) || location == null)
@@ -127,11 +126,11 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Creates DraftingInstance. Drafting Instance defines all view specific 2D elements")]
-        [Input("name", "InstanceProperties name")]
-        [Input("location", "Location of DraftingObject on View")]
-        [Input("viewName", "View assigned to DraftingInstance")]
-        [Output("DraftingInstance")]
+        [Description("Creates DraftingInstance object based on curve location and graphic style name. Such DraftingInstance can be pushed to Revit as a detail line.")]
+        [Input("name", "Name of Revit graphic style to be used to create the element on Push.")]
+        [InputFromProperty("viewName")]
+        [InputFromProperty("location")]
+        [Output("draftingInstance")]
         public static DraftingInstance DraftingInstance(string name, string viewName, ICurve location)
         {
             if (string.IsNullOrWhiteSpace(viewName) || location == null)
@@ -155,6 +154,12 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Creates DraftingInstance object based on curve location, Revit family name and family type name. Such DraftingInstance can be pushed to Revit as a view specific, curve-driven element, e.g. load line.")]
+        [Input("familyName", "Name of Revit family to be used when creating the element.")]
+        [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
+        [InputFromProperty("viewName")]
+        [InputFromProperty("location")]
+        [Output("draftingInstance")]
         public static DraftingInstance DraftingInstance(string familyName, string familyTypeName, string viewName, ICurve location)
         {
             if (string.IsNullOrWhiteSpace(familyName) || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(viewName) || location == null)
@@ -165,6 +170,11 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Creates DraftingInstance object based on surface location and Revit filled region type name. Such DraftingInstance can be pushed to Revit as a filled region.")]
+        [Input("name", "Name of Revit filled region type to be used when creating the element.")]
+        [InputFromProperty("viewName")]
+        [InputFromProperty("location")]
+        [Output("draftingInstance")]
         public static DraftingInstance DraftingInstance(string name, string viewName, ISurface location)
         {
             InstanceProperties instanceProperties = new InstanceProperties();
@@ -175,6 +185,11 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Creates DraftingInstance object based on surface location and BHoM InstanceProperties. Such DraftingInstance can be pushed to Revit as a filled region.")]
+        [InputFromProperty("properties")]
+        [InputFromProperty("viewName")]
+        [InputFromProperty("location")]
+        [Output("draftingInstance")]
         public static DraftingInstance DraftingInstance(InstanceProperties properties, string viewName, ISurface location)
         {
             if (properties == null || string.IsNullOrWhiteSpace(viewName))
@@ -220,6 +235,7 @@ namespace BH.Engine.Adapters.Revit
 
             return draftingInstance;
         }
+
 
         /***************************************************/
         /****            Deprecated methods             ****/
