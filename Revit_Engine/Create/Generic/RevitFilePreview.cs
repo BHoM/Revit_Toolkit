@@ -20,10 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -33,9 +32,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates Revit File Preview Class which stores basic information about Revit File such as Family Category, Familiy Type Names etc.")]
-        [Input("path", "Path to the Revit file")]
-        [Output("RevitFilePreview")]
+        [Description("Creates an object that stores basic information about Revit family file (.rfa) such as family category, familiy type names etc.")]
+        [InputFromProperty("path")]
+        [Output("revitFilePreview")]
         public static RevitFilePreview RevitFilePreview(string path)
         {
             RevitFilePreview revitFilePreview = new RevitFilePreview()

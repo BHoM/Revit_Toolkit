@@ -20,11 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,11 +33,11 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates Viewport on specific location point and which is assigned to the view by given name and to the sheet by given sheet Number.")]
-        [Input("sheetNumber", "Sheet Number linked with this Viewport")]
-        [Input("viewName", "View Name linked with this Viewport")]
-        [Input("location", "Location of the view port on sheet")]
-        [Output("Viewport")]
+        [Description("Creates BHoM Viewport object in specific point location, linked to the view by given name and to the sheet by given sheet Number.")]
+        [Input("sheetNumber", "Revit sheet number linked with created Viewport")]
+        [Input("viewName", "Revit view name linked with created Viewport")]
+        [InputFromProperty("location")]
+        [Output("viewport")]
         public static Viewport Viewport(string sheetNumber, string viewName, Point location)
         {
             Viewport viewport = new Viewport()

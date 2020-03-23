@@ -25,7 +25,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Generic
 {
-    [Description("Wrapper for Revit family file that allows processing it with BHoM. Prototype, currently with limited functionality.")]
+    [Description("Wrapper for Revit family file (.rfa) that stores basic information about it such as family category, familiy type names etc. Prototype, currently with limited functionality.")]
     public class RevitFilePreview : BHoMObject
     {
         /***************************************************/

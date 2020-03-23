@@ -20,11 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.ComponentModel;
-
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
+using System;
+using System.ComponentModel;
 
 
 namespace BH.Engine.Adapters.Revit
@@ -35,9 +34,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates a TypeMap that contains the information about the relationship between BHoM property names and Revit parameter names.")]
-        [Input("type", "BHoM type, which properties are meant to be matched with Revit parameters")]
-        [Output("TypeMap")]
+        [Description("Creates an object that contains the information about the relationship between BHoM property names and Revit parameter names.")]
+        [InputFromProperty("type")]
+        [Output("typeMap")]
         public static TypeMap TypeMap(Type type)
         {
             if (type == null)

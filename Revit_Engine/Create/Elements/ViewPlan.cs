@@ -20,10 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -33,10 +32,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates ViewPlan object by given name and Level Name.")]
-        [Input("name", "View plan Name")]
-        [Input("levelName", "Level Name")]
-        [Output("ViewPlan")]
+        [Description("Creates BHoM ViewPlan object linked to a specific Revit level.")]
+        [Input("name", "Name of the created ViewPlan correspondent with Revit view name.")]
+        [InputFromProperty("levelName")]
+        [Output("viewPlan")]
         public static ViewPlan ViewPlan(string name, string levelName)
         {
             ViewPlan viewPlan = new ViewPlan()
@@ -56,9 +55,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Creates ViewPlan object by given name.")]
-        [Input("name", "View plan Name")]
-        [Output("ViewPlan")]
+        [Description("Creates BHoM ViewPlan object not linked to any specific Revit level.")]
+        [Input("name", "Name of the created ViewPlan correspondent with Revit view name.")]
+        [Output("viewPlan")]
         public static ViewPlan ViewPlan(string name)
         {
             ViewPlan viewPlan = new ViewPlan()
@@ -78,11 +77,11 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Creates ViewPlan object by given name and Level Name.")]
-        [Input("name", "View plan Name")]
-        [Input("levelName", "Level Name")]
-        [Input("viewTemplateName", "View Template Name")]
-        [Output("ViewPlan")]
+        [Description("Creates BHoM ViewPlan object linked to a specific level, based on specific Revit view template.")]
+        [Input("name", "Name of the created ViewPlan correspondent with Revit view name.")]
+        [InputFromProperty("levelName")]
+        [Input("viewTemplateName", "Name of Revit view template to be assigned to the created ViewPlan.")]
+        [Output("viewPlan")]
         public static ViewPlan ViewPlan(string name, string levelName, string viewTemplateName)
         {
             ViewPlan viewPlan = new ViewPlan()

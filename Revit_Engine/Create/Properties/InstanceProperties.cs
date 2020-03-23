@@ -33,10 +33,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates InstanceProperties")]
-        [Input("familyName", "Revit Family Name")]
-        [Input("familyTypeName", "Revit Family Type Name")]
-        [Output("InstanceProperties")]
+        [Description("Creates an object that carries information about correspondent Revit family type.")]
+        [Input("familyName", "Name of the correspondent Revit family.")]
+        [Input("familyTypeName", "Name of the correspondent Revit family type.")]
+        [Output("instanceProperties")]
         public static InstanceProperties InstanceProperties(string familyName, string familyTypeName)
         {
             InstanceProperties instanceProperties = new InstanceProperties()
@@ -52,9 +52,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Creates InstanceProperties")]
-        [Input("name", "name")]
-        [Output("InstanceProperties")]
+        [Description("Creates an object that carries information about correspondent Revit family type.")]
+        [Input("name", "Name of the correspondent Revit family type in format FamilyName: FamilyTypeName.")]
+        [Output("instanceProperties")]
         public static InstanceProperties InstanceProperties(string name)
         {
             InstanceProperties instanceProperties = new InstanceProperties()

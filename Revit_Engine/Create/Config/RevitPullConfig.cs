@@ -34,11 +34,11 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates a pull action-specific configuration used for adapter interaction with Revit.")]
-        [Input("discipline", "Discipline used on push/pull action. Default is Physical.")]
-        [Input("includeClosedWorksets", "Elements from closed worksets will be processed if true.")]
-        [Input("pullEdges", "If true, edges of elements will be pulled and stored under Revit_edges in CustomData.")]
-        [Input("includeNonVisible", "Invisible element edges will be pulled and passed to CustomData if true. PullEdges switched to true needed for this to activate.")]
-        [Output("RevitPullConfig")]
+        [InputFromProperty("discipline")]
+        [InputFromProperty("includeClosedWorksets")]
+        [InputFromProperty("pullEdges")]
+        [InputFromProperty("includeNonVisible")]
+        [Output("revitPullConfig")]
         public static RevitPullConfig RevitPullConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, bool pullEdges = false, bool includeNonVisible = false)
         {
             return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, PullEdges = pullEdges, IncludeNonVisible = includeNonVisible };

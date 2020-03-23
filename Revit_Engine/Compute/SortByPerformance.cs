@@ -21,11 +21,10 @@
  */
 
 using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Adapters.Revit;
-using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
 using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -35,6 +34,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public Methods               ****/
         /***************************************************/
 
+        [Description("Groups and sorts IRequests by their estimated execution time in order to execute fastest first. Order from slowest to fastest: IParameterRequest, IlogicalRequests, others. ")]
+        [Input("requests", "A collection of IRequests to be sorted.")]
+        [Output("sortedRequests")]
         public static List<IRequest> SortByPerformance(this List<IRequest> requests)
         {
             List<IRequest> allRequests = new List<IRequest>();

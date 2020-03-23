@@ -43,7 +43,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("typeMap", "TypeMap")]
         [Input("sourceName", "BHoM parameter name of type")]
         [Input("destinationName", "Revit parameter name to be mapped")]
-        [Output("TypeMap")]
+        [Output("typeMap")]
         public static TypeMap AddMap(this TypeMap typeMap, string sourceName, string destinationName)
         {
             if (string.IsNullOrWhiteSpace(destinationName))
@@ -58,7 +58,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("typeMap", "TypeMap")]
         [Input("sourceName", "BHoM parameter name of type")]
         [Input("destinationNames", "Revit parameter names to be mapped")]
-        [Output("TypeMap")]
+        [Output("typeMap")]
         public static TypeMap AddMap(this TypeMap typeMap, string sourceName, IEnumerable<string> destinationNames)
         {
             if (typeMap == null)
