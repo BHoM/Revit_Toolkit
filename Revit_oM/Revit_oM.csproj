@@ -53,6 +53,10 @@
       <HintPath>..\..\BHoM\Build\Geometry_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Quantities_oM">
+      <HintPath>..\..\BHoM\Build\Quantities_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Reflection_oM">
       <HintPath>..\..\BHoM\Build\Reflection_oM.dll</HintPath>
       <Private>False</Private>

@@ -28,14 +28,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Elements
 {
-    [Description("A generic wrapper BHoM type corresponding to any view-independent Revit element (model elements, e.g. duct or beam).")]
+    [Description("A generic wrapper BHoM type corresponding to any view-independent Revit element (model elements, e.g. duct or beam). On Push it can be used to generate or update Revit model elements that do not have a correspondent BHoM type, on Pull all Revit model elements that do not have explicit Convert method for given discipline will be converted to ModelInstance.")]
     public class ModelInstance : BHoMObject, IInstance
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Information about family type of the instance, see description of InstanceProperties for more details.")]
+        [Description("Information about family type of the instance.")]
         public InstanceProperties Properties { get; set; } = new InstanceProperties();
 
         [Description("Location of the instance in space.")]

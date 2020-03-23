@@ -25,7 +25,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Interface
 {
-    [Description("Interface for types that filter elements based on parameter value criterion.")]
+    [Description("Interface for Requests that filter elements based on parameter value criterion.")]
     public interface IParameterRequest : IRequest
     {
         /***************************************************/

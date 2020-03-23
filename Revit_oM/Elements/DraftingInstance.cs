@@ -35,7 +35,7 @@ namespace BH.oM.Adapters.Revit.Elements
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Information about family type of the instance, see description of InstanceProperties for more details.")]
+        [Description("Information about family type of the instance.")]
         public InstanceProperties Properties { get; set; } = new InstanceProperties();
 
         [Description("Location of the instance in space.")]

@@ -22,6 +22,7 @@
 
 
 using BH.oM.Base;
+using BH.oM.Quantities.Attributes;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Settings
@@ -32,22 +33,21 @@ namespace BH.oM.Adapters.Revit.Settings
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
-
-        [Description("Socket connection settings.")]
+        
         public ConnectionSettings ConnectionSettings { get; set; } = new ConnectionSettings();
-
-        [Description("Revit family load settings. Limited functionality at the moment.")]
+        
         public FamilyLoadSettings FamilyLoadSettings { get; set; } = new FamilyLoadSettings();
-
-        [Description("A collection of relationships between property names of BHoM types and parameter names of correspondent Revit elements.")]
+        
         public MapSettings MapSettings { get; set; } = new MapSettings();
         
         [Description("Name of Revit parameter to be used to store BHoM tags.")]
         public string TagsParameterName { get; set; } = "BHE_Tags";
 
+        [Length]
         [Description("Distance tolerance to be used in geometry processing.")]
         public double DistanceTolerance { get; set; } = BH.oM.Geometry.Tolerance.Distance;
 
+        [Angle]
         [Description("Angle tolerance to be used in geometry processing.")]
         public double AngleTolerance { get; set; } = BH.oM.Geometry.Tolerance.Angle;
         

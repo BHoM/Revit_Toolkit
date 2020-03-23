@@ -27,14 +27,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Elements
 {
-    [Description("A wrapper BHoM type for Revit family.")]
+    [Description("A wrapper BHoM type for Revit family used on Pull and Update of Revit families.")]
     public class Family : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("A list of BHoM wrapper objects representing Revit family types.")]
+        [Description("Wrapped Revit family types that belong to the family.")]
         public List<InstanceProperties> PropertiesList { get; set; } = new List<InstanceProperties>();
 
         /***************************************************/

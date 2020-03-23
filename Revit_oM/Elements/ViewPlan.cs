@@ -27,14 +27,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Elements
 {
-    [Description("A wrapper BHoM type for Revit plan view.")]
+    [Description("A wrapper BHoM type for Revit plan view, used to create or update Revit plans (on Push) and represent them as BHoMObjects (on Pull).")]
     public class ViewPlan : BHoMObject, IView
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("An entity storing the information about Revit view type, see description of InstanceProperties for more details.")]
+        [Description("An entity storing the information about Revit view type.")]
         public InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
 
         [Description("Name of Revit level to which the view belongs (Associated Level).")]

@@ -26,14 +26,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Elements
 {
-    [Description("A wrapper BHoM type for Revit sheet.")]
+    [Description("A wrapper BHoM type for Revit sheet, used to create or update Revit sheets (on Push) and represent them as BHoMObjects (on Pull).")]
     public class Sheet : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("An entity storing the information about Revit sheet type, see description of InstanceProperties for more details.")]
+        [Description("An entity storing the information about Revit sheet type.")]
         public InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
 
         /***************************************************/
