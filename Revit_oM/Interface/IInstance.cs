@@ -27,14 +27,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Interface
 {
-    [Description("A generic wrapper BHoM interface corresponding to any Revit element.")]
+    [Description("A base interface for BHoM wrapper classes that can wrap Revit elements.")]
     public interface IInstance : IBHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Information about family type of the instance, see description of InstanceProperties for more details.")]
+        [Description("Information about family type of the instance.")]
         InstanceProperties Properties { get; set; }
 
         [Description("Location of the instance in space.")]

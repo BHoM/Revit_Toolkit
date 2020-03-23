@@ -26,7 +26,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Settings
 {
-    [Description("Revit family load settings for Revit Adapter. Limited functionality at the moment.")]
+    [Description("Revit family load settings for Revit Adapter. Prototype, currently with limited functionality.")]
     public class FamilyLoadSettings : BHoMObject
     {
         /***************************************************/

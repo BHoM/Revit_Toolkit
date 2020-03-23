@@ -27,14 +27,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Elements
 {
-    [Description("A wrapper BHoM type for Revit viewport.")]
+    [Description("A wrapper BHoM type for Revit viewport, used to create or update Revit viewports (on Push) and represent them as BHoMObjects (on Pull).")]
     public class Viewport : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("An entity storing the information about Revit viewport type, see description of InstanceProperties for more details.")]
+        [Description("An entity storing the information about Revit viewport type.")]
         public InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
 
         [Description("Location of the viewport in Revit sheet space.")]

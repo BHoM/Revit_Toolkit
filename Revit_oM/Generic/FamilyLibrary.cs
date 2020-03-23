@@ -26,14 +26,13 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Generic
 {
-    [Description("Library of Revit families that can be loaded to the model. Limited functionality at the moment.")]
+    [Description("Library of Revit families that can be loaded to the model. Prototype, currently with limited functionality.")]
     public class FamilyLibrary : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
-
-        [Description("Dictionary.")]
+        
         public Dictionary<string, Dictionary<string, Dictionary<string, string>>> Dictionary { get; set; } = null;
 
         /***************************************************/
