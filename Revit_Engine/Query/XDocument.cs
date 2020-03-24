@@ -20,18 +20,17 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Text;
+using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Reflection.Attributes;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.IO.Packaging;
 using System.Linq;
-using System.Collections.Generic;
 using System.Reflection;
-using System.IO;
-using System;
-using System.ComponentModel;
+using System.Text;
 using System.Xml.Linq;
-
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Generic;
 
 
 namespace BH.Engine.Adapters.Revit
@@ -42,9 +41,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Retrieves. XDocument from RevitFilePreview")]
-        [Input("revitFilePreview", "RevitFilePreview")]
-        [Output("XDocument")]
+        [Description("Retrieves XDocument from header of a Revit family file (.rfa) wrapped by RevitFilePreview.")]
+        [Input("revitFilePreview", "RevitFilePreview to be queried.")]
+        [Output("xDocument")]
         public static XDocument XDocument(this RevitFilePreview revitFilePreview)
         {
             if (revitFilePreview == null)
@@ -102,6 +101,7 @@ namespace BH.Engine.Adapters.Revit
 
             return null;
         }
+
 
         /***************************************************/
         /****              Private Methods              ****/

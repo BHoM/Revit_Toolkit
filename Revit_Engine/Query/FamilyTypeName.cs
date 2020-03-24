@@ -21,7 +21,6 @@
  */
 
 using BH.oM.Base;
-using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
 
@@ -33,9 +32,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets Revit Family Type name (stored in CustomData) for given BHoMObject.")]
-        [Input("bHoMObject", "BHoMObject")]
-        [Output("FamilyTypeName")]
+        [Description("Gets the name of Revit family type correspondent to given BHoMObject. This value is stored in CustomData under key Revit_familyTypeName.")]
+        [Input("bHoMObject", "BHoMObject to be queried.")]
+        [Output("familyTypeName")]
         public static string FamilyTypeName(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
@@ -55,9 +54,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Gets Revit Family Type name from Family Type Full Name in format [Family Name] : [Family Type Name].")]
-        [Input("familyTypeFullName", "BHoMObject")]
-        [Output("FamilyTypeName")]
+        [Description("Gets Revit family type name from family type full name in format FamilyName: FamilyTypeName.")]
+        [Input("familyTypeFullName", "Family type full name to be queried.")]
+        [Output("familyTypeName")]
         public static string FamilyTypeName(this string familyTypeFullName)
         {
             if (string.IsNullOrWhiteSpace(familyTypeFullName))

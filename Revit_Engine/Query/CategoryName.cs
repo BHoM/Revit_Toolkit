@@ -20,15 +20,13 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Xml.Linq;
-using System.ComponentModel;
-
-using BH.oM.Base;
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -38,9 +36,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets Revit Category name from RevitFilePreview.")]
-        [Input("revitFilePreview", "RevitFilePreview")]
-        [Output("CategoryName")]
+        [Description("Gets Revit category name from RevitFilePreview.")]
+        [Input("revitFilePreview", "RevitFilePreview to be queried.")]
+        [Output("categoryName")]
         public static string CategoryName(this RevitFilePreview revitFilePreview)
         {
             if (revitFilePreview == null)
@@ -51,9 +49,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Gets Revit Category name from XDocument.")]
-        [Input("xDocument", "XDocument from Header of Revit Family File (*.rfa)")]
-        [Output("CategoryName")]
+        [Description("Gets Revit category name from XDocument.")]
+        [Input("xDocument", "XDocument from header of Revit family file (*.rfa).")]
+        [Output("categoryName")]
         public static string CategoryName(this XDocument xDocument)
         {
             if (xDocument == null || xDocument.Root == null || xDocument.Root.Attributes() == null)
@@ -87,9 +85,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Gets Revit Category name from BHoMObject.")]
-        [Input("bHoMObject", "BHoMObject")]
-        [Output("CategoryName")]
+        [Description("Gets Revit category name from BHoMObject.")]
+        [Input("bHoMObject", "BHoMObject to be queried.")]
+        [Output("categoryName")]
         public static string CategoryName(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)

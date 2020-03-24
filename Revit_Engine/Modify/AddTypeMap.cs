@@ -20,12 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-using System.Collections.Generic;
-
 using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -35,11 +34,11 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Add TypeMap to the given MapSettings")]
-        [Input("mapSettings", "MapSettings")]
-        [Input("typeMap", "TypeMap to be added")]
-        [Input("merge", "merge TypeMap if already exists in MapSettings")]
-        [Output("MapSettings")]
+        [Description("Adds TypeMap to existing MapSettings.")]
+        [Input("mapSettings", "MapSettings to be extended.")]
+        [Input("typeMap", "TypeMap to be added.")]
+        [Input("merge", "If there is an existing TypeMap in MapSettings that maps same BHoM type, if true: merge the one to be added with it, if false: leave both TypeMaps separate.")]
+        [Output("mapSettings")]
         public static MapSettings AddTypeMap(this MapSettings mapSettings, TypeMap typeMap, bool merge = true)
         {
             if (mapSettings == null)

@@ -20,12 +20,13 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-
-using BH.oM.Environment.Fragments;
-using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Environment.Fragments;
 using BH.oM.Geometry.ShapeProfiles;
+using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,7 +35,9 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-  
+
+        [Description("Creates an instance of MapSettings with default values.")]
+        [Output("mapSettings")]
         public static MapSettings DefaultMapSettings()
         {
             //TODO: To be moved to DataSets??

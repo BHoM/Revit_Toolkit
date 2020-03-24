@@ -20,13 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
 using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Generic;
-
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
@@ -37,10 +35,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns Family based on RevitFilePreview and sepcified Family Type Names")]
-        [Input("revitFilePreview", "RevitFilePreview")]
-        [Input("familyTypeNames", "Family Type Names.")]
-        [Output("Family")]
+        [Description("Returns BHoM family wrapper based on RevitFilePreview and given Revit family type names.")]
+        [Input("revitFilePreview", "RevitFilePreview to be queried.")]
+        [Input("familyTypeNames", "Revit family type names sought for.")]
+        [Output("family")]
         public static Family Family(this RevitFilePreview revitFilePreview, IEnumerable<string> familyTypeNames)
         {
             if (revitFilePreview == null)
@@ -63,7 +61,7 @@ namespace BH.Engine.Adapters.Revit
                         continue;
 
                     oM.Adapters.Revit.Properties.InstanceProperties instanceProps = Create.InstanceProperties(familyName, familyTypeName);
-                    instanceProps = instanceProps.UpdateCustomDataValue(Convert.CategoryName, categoryName) as oM.Adapters.Revit.Properties.InstanceProperties;
+                    instanceProps.CustomData[Convert.CategoryName] = categoryName;
                     instanceProperties.Add(instanceProps);
                 }
             }
@@ -73,19 +71,18 @@ namespace BH.Engine.Adapters.Revit
                 PropertiesList = instanceProperties
             };
 
-            family = family.UpdateCustomDataValue(Convert.FamilyName, familyName) as Family;
-            family = family.UpdateCustomDataValue(Convert.CategoryName, categoryName) as Family;
-
-            family = family.UpdateCustomDataValue(Convert.FamilyPlacementTypeName, revitFilePreview.CustomDataValue(Convert.FamilyPlacementTypeName)) as Family;
+            family.CustomData[Convert.FamilyName] = familyName;
+            family.CustomData[Convert.CategoryName] = categoryName;
+            family.CustomData[Convert.FamilyPlacementTypeName] = revitFilePreview.CustomDataValue(Convert.FamilyPlacementTypeName);
 
             return family;
         }
 
         /***************************************************/
 
-        [Description("Returns Family based on RevitFilePreview")]
-        [Input("revitFilePreview", "RevitFilePreview")]
-        [Output("Family")]
+        [Description("Returns BHoM family wrapper based on RevitFilePreview.")]
+        [Input("revitFilePreview", "RevitFilePreview to be queried.")]
+        [Output("family")]
         public static Family Family(this RevitFilePreview revitFilePreview)
         {
             if (revitFilePreview == null)

@@ -20,11 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-using System.Collections.Generic;
-
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,11 +33,11 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets all Revit Category Names from FamilyLibrary for given Family name and Family Type name.")]
-        [Input("familyLibrary", "FamilyLibrary")]
-        [Input("familyName", "Family name")]
-        [Input("familyTypeName", "Family Type name")]
-        [Output("CategoryNames")]
+        [Description("Gets all Revit category names from FamilyLibrary for given family name and family fype name.")]
+        [Input("familyLibrary", "FamilyLibrary to be queried.")]
+        [Input("familyName", "Family name to be sought for.")]
+        [Input("familyTypeName", "Family type name to be sought for.")]
+        [Output("categoryNames")]
         public static List<string> CategoryNames(this FamilyLibrary familyLibrary, string familyName, string familyTypeName = null)
         {
             if (familyLibrary == null || familyLibrary.Dictionary == null)

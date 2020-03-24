@@ -19,12 +19,11 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-using System.IO;
-using System.ComponentModel;
-using System.Collections.Generic;
-
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,10 +33,11 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Adds new directory to FamilyLibrary.")]
-        [Input("directory", "Directory from where famlies will be loaded if not exists in model")]
-        [Input("topDirectoryOnly", "Search through top dilectory folder and skip subfolders")]
-        [Output("FamilyLibrary")]
+        [Description("Adds new directory to existing FamilyLibrary.")]
+        [Input("familyLibrary", "FamilyLibrary to be extended.")]
+        [Input("directory", "Directory to be added.")]
+        [Input("topDirectoryOnly", "If true, add top directory folder and skip subfolders.")]
+        [Output("familyLibrary")]
         public static FamilyLibrary Append(this FamilyLibrary familyLibrary, string directory, bool topDirectoryOnly = false)
         {
             if (familyLibrary == null)
@@ -63,9 +63,10 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Adds new path to FamilyLibrary.")]
-        [Input("path", "path of Revit file")]
-        [Output("FamilyLibrary")]
+        [Description("Adds new path to existing FamilyLibrary.")]
+        [Input("familyLibrary", "FamilyLibrary to be extended.")]
+        [Input("path", "Path of Revit file to be added.")]
+        [Output("familyLibrary")]
         public static FamilyLibrary Append(this FamilyLibrary familyLibrary, string path)
         {
             if (familyLibrary == null)

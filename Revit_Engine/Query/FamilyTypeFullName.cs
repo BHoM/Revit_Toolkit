@@ -20,8 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
-using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
 
@@ -33,10 +31,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets Full Revit Family Type name for given Family and Type Name. Example: [FamilyName] : [FamilyTypeName]")]
-        [Input("familyName", "Family Name")]
-        [Input("familyTypeName", "Family Type Name")]
-        [Output("FamilyTypeFullName")]
+        [Description("Gets full name of Revit family type (in format FamilyName: FamilyTypeName) based on given family name and family type name.")]
+        [Input("familyName", "Family name to be used to build the string.")]
+        [Input("familyTypeName", "Family type name to be used to build the string.")]
+        [Output("familyTypeFullName")]
         public static string FamilyTypeFullName(string familyName, string familyTypeName)
         {
             if (string.IsNullOrWhiteSpace(familyName) || string.IsNullOrWhiteSpace(familyTypeName))

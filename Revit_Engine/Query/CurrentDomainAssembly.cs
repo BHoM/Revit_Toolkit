@@ -20,11 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Reflection;
-using System.ComponentModel;
-
 using BH.oM.Reflection.Attributes;
+using System;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,9 +33,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets current domain assembly for given Manifest Module name.")]
-        [Input("manifestModuleName", "Manifest Module Name")]
-        [Output("Assembly")]
+        [Description("Gets current domain assembly with given ManifestModule name.")]
+        [Input("manifestModuleName", "ManifestModule name to be sought for.")]
+        [Output("assembly")]
         public static Assembly CurrentDomainAssembly(this string manifestModuleName)
         {
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())

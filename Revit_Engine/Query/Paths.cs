@@ -20,12 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Linq;
-
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -35,9 +34,12 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns all Paths in FamilyLibrary of given Category, Family and Family Type")]
-        [Input("familyLibrary", "FamilyLibrary")]
-        [Output("Paths")]
+        [Description("Returns all file paths in FamilyLibrary that meet given Revit category, family and family type requirements.")]
+        [Input("familyLibrary", "FamilyLibrary to be queried.")]
+        [Input("categoryName", "Name of Revit category to be sought for. Optional: if null, all items to be taken.")]
+        [Input("familyName", "Name of Revit family to be sought for. Optional: if null, all items to be taken.")]
+        [Input("typeName", "Name of Revit family type to be sought for. Optional: if null, all items to be taken.")]
+        [Output("paths")]
         public static IEnumerable<string> Paths(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null, string typeName = null)
         {
             if (familyLibrary == null || familyLibrary.Dictionary == null || familyLibrary.Dictionary.Keys.Count == 0)

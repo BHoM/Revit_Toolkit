@@ -20,15 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
 using BH.oM.Geometry;
-using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Reflection.Attributes;
-using BH.oM.Environment.Elements;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -38,9 +34,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the outer PolyCurves from list. QUICK CHECK (Centroid)")]
-        [Input("polyCurves", "PolyCurves")]
-        [Output("PolyCurves")]
+        [Description("Returns the PolyCurves from list that lie outside any other PolyCurve. QUICK CHECK (BOUNDING BOX).")]
+        [Input("polyCurves", "Collection of PolyCurves to be queried for containment.")]
+        [Output("outerPolyCurves")]
         public static List<PolyCurve> OuterPolyCurves(this IEnumerable<PolyCurve> polyCurves)
         {
             if (polyCurves == null || polyCurves.Count() == 0)

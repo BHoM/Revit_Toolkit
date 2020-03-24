@@ -20,15 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.ComponentModel;
-using System.Collections.Generic;
-
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Settings;
 
 
 namespace BH.Engine.Adapters.Revit
@@ -38,12 +37,12 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
-        [Description("Links Revit parameter with BHoM parameter for given TypeMap.")]
-        [Input("typeMap", "TypeMap")]
-        [Input("sourceName", "BHoM parameter name of type")]
-        [Input("destinationName", "Revit parameter name to be mapped")]
-        [Output("TypeMap")]
+        
+        [Description("Links Revit parameter with BHoM type property or CustomData inside existing TypeMap.")]
+        [Input("typeMap", "TypeMap to be extended.")]
+        [Input("sourceName", "BHoM type property or CustomData name.")]
+        [Input("destinationName", "Revit parameter name to be mapped.")]
+        [Output("typeMap")]
         public static TypeMap AddMap(this TypeMap typeMap, string sourceName, string destinationName)
         {
             if (string.IsNullOrWhiteSpace(destinationName))
@@ -53,12 +52,12 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
-
-        [Description("Links Revit parameter with BHoM parameter for given TypeMap.")]
-        [Input("typeMap", "TypeMap")]
-        [Input("sourceName", "BHoM parameter name of type")]
-        [Input("destinationNames", "Revit parameter names to be mapped")]
-        [Output("TypeMap")]
+        
+        [Description("Links Revit parameters with BHoM type property or CustomData inside existing TypeMap.")]
+        [Input("typeMap", "TypeMap to be extended.")]
+        [Input("sourceName", "BHoM type property or CustomData name.")]
+        [Input("destinationName", "Revit parameter name to be mapped.")]
+        [Output("typeMap")]
         public static TypeMap AddMap(this TypeMap typeMap, string sourceName, IEnumerable<string> destinationNames)
         {
             if (typeMap == null)
@@ -102,12 +101,12 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Links Revit parameter with BHoM parameter for given type and MapSettings.")]
-        [Input("mapSettings", "MapSettings")]
-        [Input("type", "BHoM type to be mapped")]
-        [Input("sourceName", "BHoM parameter name of type")]
-        [Input("destinationName", "Revit parameter name to be mapped")]
-        [Output("MapSettings")]
+        [Description("Links Revit parameter with BHoM type property or CustomData inside existing MapSettings.")]
+        [Input("mapSettings", "MapSettings to be extended.")]
+        [Input("type", "BHoM type to be mapped.")]
+        [Input("sourceName", "BHoM type property or CustomData name.")]
+        [Input("destinationName", "Revit parameter name to be mapped.")]
+        [Output("mapSettings")]
         public static MapSettings AddMap(this MapSettings mapSettings, Type type, string sourceName, string destinationName)
         {
             if (mapSettings == null)

@@ -20,15 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Data.Requests;
-using System.Collections.Generic;
-using System.Linq;
-using System.ComponentModel;
 using BH.oM.Reflection.Attributes;
-using BH.oM.Base;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {

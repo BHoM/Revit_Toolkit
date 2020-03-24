@@ -20,12 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
 
-using BH.oM.Base;
-using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -35,6 +33,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Gets placement type name of Revit family represented by RevitFilePreview.")]
+        [Input("revitFilePreview", "RevitFilePreview to be queried.")]
+        [Output("familyPlacementTypeName")]
         public static string FamilyPlacementTypeName(this oM.Adapters.Revit.Generic.RevitFilePreview revitFilePreview)
         {
             if (revitFilePreview == null || revitFilePreview.CustomData == null)
@@ -49,6 +50,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Gets placement type name of Revit family.")]
+        [Input("family", "BHoM wrapper of Revit family to be queried.")]
+        [Output("familyPlacementTypeName")]
         public static string FamilyPlacementTypeName(this Family family)
         {
             if (family == null || family.CustomData == null)
