@@ -21,9 +21,7 @@
  */
 
 using BH.oM.Base;
-using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
@@ -34,6 +32,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Deprecated("3.1", "This method is a duplicate of Modify.RemoveIdentifiers.", typeof(Modify), "RemoveIdentifiers")]
         [Description("Duplicates given BHoMObject and removes its identity data (ElementId, AdapterIdName).")]
         [Input("bHoMObject", "BHoMObject")]
         [Output("BHoMObject")]
