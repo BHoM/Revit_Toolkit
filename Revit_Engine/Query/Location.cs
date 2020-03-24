@@ -20,11 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
-using BH.oM.Geometry;
 using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,6 +33,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Deprecated("3.1", "This method is a duplicate of GetProperty.")]
         [Description("Returns Location (Point or Curve) of given ModelInstance.")]
         [Input("modelInstance", "ModelInstance")]
         [Output("Location")]
