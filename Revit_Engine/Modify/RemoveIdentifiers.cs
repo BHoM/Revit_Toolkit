@@ -20,10 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -33,9 +32,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Removes Revit Identifiers from BHoM object.")]
-        [Input("bHoMObject", "BHoMObject")]
-        [Output("IBHoMObject")]
+        [Description("Removes Revit-related identifiers (CustomData keys such as Revit_id, Revit_elementId etc.) from BHoM object.")]
+        [Input("bHoMObject", "BHoMObject to be cleaned.")]
+        [Output("bHoMObject")]
         public static IBHoMObject RemoveIdentifiers(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)

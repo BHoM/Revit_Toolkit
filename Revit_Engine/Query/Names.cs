@@ -20,11 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
-
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Adapters.Revit.Generic;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,6 +35,11 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Returns a collection of parameter names associated with a given type property inside MapSettings.")]
+        [Input("mapSettings", "MapSettings to be queried.")]
+        [Input("type", "Type to be sought for.")]
+        [Input("name", "Property name to be sought for.")]
+        [Output("names")]
         public static IEnumerable<string> Names(this MapSettings mapSettings, Type type, string name)
         {
             if (mapSettings == null || type == null || string.IsNullOrWhiteSpace(name))

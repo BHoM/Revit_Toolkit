@@ -21,6 +21,8 @@
  */
 
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -30,6 +32,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Sets RevitSettings to default value if they are null.")]
+        [Input("settings", "RevitSettings to be set to default if null.")]
+        [Output("revitSettings")]
         public static RevitSettings DefaultIfNull(this RevitSettings settings)
         {
             if (settings == null)

@@ -20,11 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
-using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
 using BH.oM.Environment.Elements;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,9 +32,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Cheks whatever Environment Panel is internal element. Works only for Environment Panels pulled from analytical model and adjacency have been assigned.")]
-        [Input("environmentPanel", "Environment Panel pulled from Revit analytical model")]
-        [Output("IsInternal")]
+        [Description("Cheks whether environment panel is internal element. Works only for environment panels pulled from analytical model with adjacency assigned.")]
+        [Input("environmentPanel", "Environment panel pulled from Revit analytical model.")]
+        [Output("isInternal")]
         public static bool IsInternal(this Panel environmentPanel)
         {
             if (environmentPanel == null)

@@ -20,13 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
-
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -36,11 +35,11 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets Revit Family Type names in FamilyLibrary for given Category and Family Name.")]
-        [Input("familyLibrary", "FamilyLibrary")]
-        [Input("categoryName", "Category Name")]
-        [Input("familyName", "Family Name")]
-        [Output("FamilyTypeNames")]
+        [Description("Gets Revit family type names available in FamilyLibrary for given names of Revit category and family.")]
+        [Input("familyLibrary", "FamilyLibrary to be queried.")]
+        [Input("categoryName", "Name of Revit category to be sought for.")]
+        [Input("familyName", "Name of Revit family to be sought for.")]
+        [Output("familyTypeNames")]
         public static List<string> FamilyTypeNames(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null)
         {
             if (familyLibrary == null)
@@ -79,10 +78,10 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
-
-        [Description("Gets all Revit Family Type names in RevitFilePreview")]
-        [Input("revitFilePreview", "RevitFilePreview")]
-        [Output("FamilyTypeNames")]
+        
+        [Description("Gets all Revit family type names owned by Revit family represented by RevitFilePreview.")]
+        [Input("revitFilePreview", "RevitFilePreview to be queried.")]
+        [Output("familyTypeNames")]
         public static List<string> FamilyTypeNames(this RevitFilePreview revitFilePreview)
         {
             if (revitFilePreview == null)
@@ -93,9 +92,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Gets all Revit Family Type names in XDocument")]
-        [Input("xDocument", "XDocument from Header of Revit Family File (*.rfa)")]
-        [Output("FamilyTypeNames")]
+        [Description("Gets all Revit family type names in XDocument.")]
+        [Input("xDocument", "XDocument from header of Revit family file (*.rfa).")]
+        [Output("familyTypeNames")]
         public static List<string> FamilyTypeNames(this XDocument xDocument)
         {
             if (xDocument == null || xDocument.Root == null || xDocument.Root.Attributes() == null)

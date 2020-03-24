@@ -20,13 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.ComponentModel;
-
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Generic;
 using BH.Adapter.Revit;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -36,9 +32,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Checks if RevitAdapter is valid.")]
-        [Input("revitAdapter", "Revit Adapter")]
-        [Output("IsValid", "True if RevitAdapter is valid")]
+        [Description("Checks if Revit Adapter is valid.")]
+        [Input("revitAdapter", "Revit Adapter to be checked.")]
+        [Output("isValid")]
         public static bool IsValid(this RevitAdapter revitAdapter)
         {
             if (revitAdapter == null)

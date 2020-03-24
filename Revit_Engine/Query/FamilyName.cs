@@ -20,11 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
 using BH.oM.Base;
-using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,9 +32,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets Revit Family name (stored in CustomData) for given BHoMObject.")]
+        [Description("Gets the name of Revit family correspondent to given BHoMObject. This value is stored in CustomData under key Revit_familyName.")]
         [Input("bHoMObject", "BHoMObject")]
-        [Output("FamilyName")]
+        [Output("familyName")]
         public static string FamilyName(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
@@ -55,10 +53,10 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
-
-        [Description("Gets Revit Family name from Family Type Full Name in format [Family Name] : [Family Type Name].")]
-        [Input("familyTypeFullName", "Family Type Full Name")]
-        [Output("FamilyName")]
+        
+        [Description("Gets Revit family name from family type full name in format FamilyName: FamilyTypeName.")]
+        [Input("familyTypeFullName", "Family type full name to be queried.")]
+        [Output("familyName")]
         public static string FamilyName(this string familyTypeFullName)
         {
             if (string.IsNullOrWhiteSpace(familyTypeFullName))
@@ -73,9 +71,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Gets Revit Family name from Family Type Full Name in format [Family Name] : [Family Type Name].")]
-        [Input("revitFilePreview", "RevitFilePreview")]
-        [Output("FamilyName")]
+        [Description("Gets the name of Revit family represented by RevitFilePreview.")]
+        [Input("revitFilePreview", "RevitFilePreview to be queried.")]
+        [Output("familyName")]
         public static string FamilyName(this oM.Adapters.Revit.Generic.RevitFilePreview revitFilePreview)
         {
             if (revitFilePreview == null || string.IsNullOrWhiteSpace(revitFilePreview.Path))

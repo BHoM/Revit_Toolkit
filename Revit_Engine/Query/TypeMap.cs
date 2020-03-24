@@ -20,12 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.ComponentModel;
-
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Reflection.Attributes;
-using BH.oM.Adapters.Revit.Settings;
 
 
 namespace BH.Engine.Adapters.Revit
@@ -36,10 +35,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns TypeMap for given type")]
-        [Input("mapSettings", "MapSettings")]
-        [Input("type", "Type")]
-        [Output("TypeMap")]
+        [Description("Returns TypeMap for given type inside MapSettings.")]
+        [Input("mapSettings", "MapSettings to be queried.")]
+        [Input("type", "Type to be sought for.")]
+        [Output("typeMap")]
         public static TypeMap TypeMap(this MapSettings mapSettings, Type type)
         {
             if (mapSettings == null)

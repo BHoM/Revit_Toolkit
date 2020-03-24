@@ -20,12 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Linq;
-using System.ComponentModel;
-using System.Collections.Generic;
-
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 
 namespace BH.Engine.Adapters.Revit
@@ -36,12 +35,12 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns all RevitFilePreviews for FamilyLibrary of given Category, Family and Family Type Name")]
-        [Input("familyLibrary", "FamilyLibrary")]
-        [Input("categoryName", "Family Category Name")]
-        [Input("familyName", "Family Name")]
-        [Input("familyTypeName", "FamilyTypeName")]
-        [Output("RevitFilePreviews")]
+        [Description("Returns all RevitFilePreviews inside FamilyLibrary that meet Revit category, family and family type name requirements.")]
+        [Input("familyLibrary", "FamilyLibrary to be queried.")]
+        [Input("categoryName", "Name of Revit category to be sought for. Optional: if null, all items to be taken.")]
+        [Input("familyName", "Name of Revit family to be sought for. Optional: if null, all items to be taken.")]
+        [Input("familyTypeName", "Name of Revit family type to be sought for. Optional: if null, all items to be taken.")]
+        [Output("revitFilePreviews")]
         public static List<RevitFilePreview> RevitFilePreviews(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null, string familyTypeName = null)
         {
             if (familyLibrary == null || familyLibrary.Dictionary == null || familyLibrary.Dictionary.Keys.Count == 0)

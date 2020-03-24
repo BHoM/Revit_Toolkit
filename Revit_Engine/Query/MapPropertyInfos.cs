@@ -20,9 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Reflection.Attributes;
 using System;
-using System.Reflection;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Reflection;
 
 
 namespace BH.Engine.Adapters.Revit
@@ -33,6 +35,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Returns a collection of PropertyInfo objects owned by given type, which can be used to map parameters with MapSettings.")]
+        [Input("type", "Type to be queried.")]
+        [Output("mapPropertyInfos")]
         public static IEnumerable<PropertyInfo> MapPropertyInfos(this Type type)
         {
             if (type == null)

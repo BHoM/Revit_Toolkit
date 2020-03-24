@@ -20,11 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-using System.Collections.Generic;
-
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,10 +33,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Sets Tag for BHoMObject.")]
-        [Input("bHoMObject", "BHoMObject")]
-        [Input("tag", "tag to be set")]
-        [Output("IBHoMObject")]
+        [Description("Sets tag to BHoMObject.")]
+        [Input("bHoMObject", "BHoMObject to be modified.")]
+        [Input("tag", "Tag to be set.")]
+        [Output("bHoMObject")]
         public static IBHoMObject SetTag(this IBHoMObject bHoMObject, string tag)
         {
             if (bHoMObject == null)

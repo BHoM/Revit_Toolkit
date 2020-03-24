@@ -20,10 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -33,9 +32,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("gets integer representation of adjacent Space ElementId (stored in CustomData) for given BHoMObject.")]
-        [Input("bHoMObject", "BHoMObject")]
-        [Output("ElementId")]
+        [Description("Gets integer representation of adjacent space Revit ElementId (stored in CustomData) for given BHoMObject.")]
+        [Input("bHoMObject", "BHoMObject to be queried.")]
+        [Output("elementId")]
         public static int AdjacentSpaceId(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)

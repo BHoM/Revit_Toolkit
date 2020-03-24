@@ -20,10 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -33,9 +32,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns integer represetation of WorksetId for given BHoMObject (stored in CustomData).")]
-        [Input("bHoMObject", "BHoMObject")]
-        [Output("WorksetId")]
+        [Description("Returns integer representation of WorksetId of Revit workset correspondent to given BHoMObject. This value is stored in CustomData under key Revit_worksetId.")]
+        [Input("bHoMObject", "BHoMObject to be queried.")]
+        [Output("worksetId")]
         public static int WorksetId(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)

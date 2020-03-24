@@ -33,9 +33,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("gets integer representation of Space ElementId (stored in CustomData) for given BHoMObject.")]
-        [Input("bHoMObject", "BHoMObject")]
-        [Output("ElementId")]
+        [Description("Gets integer representation of ElementId of Revit space element correspondent to given BHoMObject. This value is stored in CustomData under key SpaceID.")]
+        [Input("bHoMObject", "BHoMObject to be queried.")]
+        [Output("elementId")]
         public static int SpaceId(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)

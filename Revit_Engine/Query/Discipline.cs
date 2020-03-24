@@ -35,9 +35,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets Discipline for given BHoM Type.")]
-        [Input("type", "BHoM Type")]
-        [Output("Discipline")]
+        [Description("Gets discipline to which given BHoM type belongs. The result is based on the namespace in which the type is declared, e.g. BH.oM.Structure.Elements.Bar will return oM.Adapters.Revit.Enums.Discipline.Structural.")]
+        [Input("type", "BHoM type to be queried.")]
+        [Output("discipline")]
         public static Discipline Discipline(this Type type)
         {
             if (type == null)
@@ -60,6 +60,10 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Gets discipline enforced by the Request. If the result is different than defaultDiscipline and neither of two is Undefined, null is returned (the result discipline is conflicting with defaultDiscipline).")]
+        [Input("request", "BHoM Request to be queried.")]
+        [Input("defaultDiscipline", "Default discipline set in adapter's ActionConfig (RevitPullConfig).")]
+        [Output("discipline")]
         public static Discipline? Discipline(this IRequest request, Discipline? defaultDiscipline)
         {
             Discipline? discipline = defaultDiscipline;

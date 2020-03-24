@@ -20,13 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Xml.Linq;
-
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Reflection.Attributes;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -36,9 +35,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns OmniClass assigned to Revit Family (RevitFilePreview)")]
-        [Input("revitFilePreview", "RevitFilePreview")]
-        [Output("OmniClass")]
+        [Description("Returns OmniClass assigned to Revit family represented by RevitFilePreview.")]
+        [Input("revitFilePreview", "RevitFilePreview to be queried.")]
+        [Output("omniClass")]
         public static string OmniClass(this RevitFilePreview revitFilePreview)
         {
             if (revitFilePreview == null)
@@ -49,9 +48,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns OmniClass assigned to Revit Family (RevitFilePreview)")]
-        [Input("xDocument", "XDocument from Header of Revit Family File (*.rfa)")]
-        [Output("OmniClass")]
+        [Description("Returns OmniClass assigned to Revit family stored in XDocument.")]
+        [Input("xDocument", "XDocument from header of Revit family file (*.rfa).")]
+        [Output("omniClass")]
         public static string OmniClass(this XDocument xDocument)
         {
             if (xDocument == null || xDocument.Root == null)

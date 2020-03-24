@@ -34,9 +34,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns edges of given BHoMObject (stored in CustomData)")]
-        [Input("bHoMObject", "BHoMObject")]
-        [Output("Edges")]
+        [Description("Returns edges of given BHoMObject captured on Pull. This value is stored in CustomData under key Revit_edges.")]
+        [Input("bHoMObject", "BHoMObject to be queried.")]
+        [Output("edges")]
         public static List<oM.Geometry.ICurve> Edges(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)

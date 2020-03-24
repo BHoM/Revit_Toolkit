@@ -33,9 +33,9 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
 
-        [Description("Returns Revit UniqueId of given BHoMObject (stored in CustomData).")]
-        [Input("bHoMObject", "BHoMObject")]
-        [Output("UniqueId")]
+        [Description("Returns UniqueId of Revit element correspondent to given BHoMObject. This value is stored in CustomData under key Revit_id.")]
+        [Input("bHoMObject", "BHoMObject to be queried.")]
+        [Output("uniqueId")]
         public static string UniqueId(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)

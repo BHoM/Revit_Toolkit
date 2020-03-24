@@ -20,10 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -33,10 +32,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets value of CustomData for given name.")]
-        [Input("bHoMObject", "BHoMObject")]
-        [Input("name", "CustomData Name")]
-        [Output("Value")]
+        [Description("Gets value of BHoM objects's CustomData under given key.")]
+        [Input("bHoMObject", "BHoMObject to be queried.")]
+        [Input("name", "CustomData key to be sought for.")]
+        [Output("value")]
         public static object CustomDataValue(this IBHoMObject bHoMObject, string name)
         {
             if (bHoMObject == null)

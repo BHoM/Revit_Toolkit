@@ -20,11 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
-using BH.oM.Geometry;
 using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,10 +33,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Moves ModelInstance by given vector.")]
-        [Input("modelInstance", "ModelInstance to be moved")]
-        [Input("vector", "Vector")]
-        [Output("ModelInstance")]
+        [Description("Translates ModelInstance by given vector.")]
+        [Input("modelInstance", "ModelInstance to be moved.")]
+        [Input("vector", "Translation vector.")]
+        [Output("modelInstance")]
         public static ModelInstance Move(this ModelInstance modelInstance, Vector vector)
         {
             if (modelInstance == null)
