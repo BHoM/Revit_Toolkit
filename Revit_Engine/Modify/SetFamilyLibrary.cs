@@ -33,6 +33,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Deprecated("3.1", "This method is a duplicate of SetProperty.")]
         [Description("Sets Pull FamilyLibrary for RevitSettings.")]
         [Input("revitSettings", "RevitSettings")]
         [Input("familyLibrary", "FamilyLibrary to be set")]
@@ -51,6 +52,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Deprecated("3.1", "This method is a duplicate of SetProperty.")]
         [Description("Sets Pull FamilyLibrary for FamilyLoadSettings.")]
         [Input("familyLoadSettings", "FamilyLoadSettings")]
         [Input("familyLibrary", "FamilyLibrary to be set")]
