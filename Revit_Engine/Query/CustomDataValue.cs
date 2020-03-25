@@ -34,15 +34,15 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Gets value of BHoM objects's CustomData under given key.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
-        [Input("name", "CustomData key to be sought for.")]
+        [Input("key", "CustomData key to be sought for.")]
         [Output("value")]
-        public static object CustomDataValue(this IBHoMObject bHoMObject, string name)
+        public static object CustomDataValue(this IBHoMObject bHoMObject, string key)
         {
             if (bHoMObject == null)
                 return null;
 
             object obj;
-            if (bHoMObject.CustomData.TryGetValue(name, out obj))
+            if (bHoMObject.CustomData.TryGetValue(key, out obj))
                 return obj;
 
             return null;
