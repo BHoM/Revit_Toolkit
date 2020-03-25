@@ -46,11 +46,11 @@ namespace BH.UI.Revit.Engine
 
             settings = settings.DefaultIfNull();
 
-            string viewName = viewport.ViewName();
+            string viewName = viewport.CustomDataValue("View Name") as string;
             if (string.IsNullOrEmpty(viewName))
                 return null;
 
-            string sheetNumber = viewport.SheetNumber();
+            string sheetNumber = viewport.CustomDataValue("Sheet Number") as string;
             if (string.IsNullOrEmpty(sheetNumber))
                 return null;
 

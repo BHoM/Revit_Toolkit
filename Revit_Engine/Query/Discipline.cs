@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets discipline to which given BHoM type belongs. The result is based on the namespace in which the type is declared, e.g. BH.oM.Structure.Elements.Bar will return oM.Adapters.Revit.Enums.Discipline.Structural.")]
+        [Description("Gets the discipline to which a given BHoM type belongs. The result is based on the namespace in which the type is declared, e.g. BH.oM.Structure.Elements.Bar will return oM.Adapters.Revit.Enums.Discipline.Structural.")]
         [Input("type", "BHoM type to be queried.")]
         [Output("discipline")]
         public static Discipline Discipline(this Type type)

@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns a collection of parameter names associated with a given type property inside MapSettings.")]
+        [Description("Returns a collection of Revit parameter names associated with a given type property inside MapSettings.")]
         [Input("mapSettings", "MapSettings to be queried.")]
         [Input("type", "Type to be sought for.")]
         [Input("name", "Property name to be sought for.")]

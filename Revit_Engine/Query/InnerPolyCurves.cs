@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the PolyCurves from list that lie inside given outer PolyCurve. QUICK CHECK (BOUNDING BOX).")]
+        [Description("Returns the PolyCurves from the list that lie inside the provided PolyCurve. QUICK CHECK (BOUNDING BOX).")]
         [Input("polyCurve", "PolyCurve to be used as outer bounds of space.")]
         [Input("polyCurves", "Collection of PolyCurves to be queried for containment.")]
         [Output("innerPolyCurves")]

@@ -33,7 +33,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets all Revit category names from FamilyLibrary for given family name and family fype name.")]
+        [Description("Gets all Revit category names from FamilyLibrary for given family name and family type name.")]
         [Input("familyLibrary", "FamilyLibrary to be queried.")]
         [Input("familyName", "Family name to be sought for.")]
         [Input("familyTypeName", "Family type name to be sought for.")]
