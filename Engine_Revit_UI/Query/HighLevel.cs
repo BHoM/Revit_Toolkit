@@ -63,16 +63,16 @@ namespace BH.UI.Revit.Engine
 
         public static Level HighLevel(this Document document, oM.Geometry.ICurve curve)
         {
-            double elevation = HighElevation(curve);
-            return HighLevel(document, elevation);
+            double elevation = curve.HighElevation();
+            return document.HighLevel(elevation);
         }
 
         /***************************************************/
 
         public static Level HighLevel(this Document document, IObject2D object2D)
         {
-            double elevation = HighElevation(object2D);
-            return HighLevel(document, elevation);
+            double elevation = object2D.HighElevation();
+            return document.HighLevel(elevation);
         }
 
         /***************************************************/

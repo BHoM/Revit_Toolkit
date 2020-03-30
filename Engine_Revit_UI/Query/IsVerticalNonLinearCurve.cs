@@ -31,7 +31,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static bool IsVerticalNonLinearCurve(Curve revitCurve)
+        public static bool IsVerticalNonLinearCurve(this Curve revitCurve)
         {
             if (!(revitCurve is Line))
             {

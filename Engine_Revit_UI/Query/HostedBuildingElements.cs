@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
         
-        public static List<oM.Environment.Elements.Panel> HostedBuildingElements(HostObject hostObject, Face face, RevitSettings settings = null)
+        public static List<oM.Environment.Elements.Panel> HostedBuildingElements(this HostObject hostObject, Face face, RevitSettings settings = null)
         {
             if (hostObject == null)
                 return null;
