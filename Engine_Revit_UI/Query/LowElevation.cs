@@ -32,7 +32,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static double LowElevation(ICurve curve)
+        public static double LowElevation(this ICurve curve)
         {
             return BH.Engine.Geometry.Query.Bounds(curve as dynamic).Min.Z;
         }

@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("familyName", "Family name to be used to build the string.")]
         [Input("familyTypeName", "Family type name to be used to build the string.")]
         [Output("familyTypeFullName")]
-        public static string FamilyTypeFullName(string familyName, string familyTypeName)
+        public static string FamilyTypeFullName(this string familyName, string familyTypeName)
         {
             if (string.IsNullOrWhiteSpace(familyName) || string.IsNullOrWhiteSpace(familyTypeName))
                 return null;

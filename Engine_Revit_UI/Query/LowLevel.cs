@@ -61,18 +61,16 @@ namespace BH.UI.Revit.Engine
 
         public static Level LowLevel(this Document document, oM.Geometry.ICurve curve)
         {
-            double elevation = LowElevation(curve);
-
-            return LowLevel(document, elevation);
+            double elevation = curve.LowElevation();
+            return document.LowLevel(elevation);
         }
 
         /***************************************************/
 
         public static Level LowLevel(this Document document, IObject2D object2D)
         {
-            double elevation = LowElevation(object2D);
-
-            return LowLevel(document, elevation);
+            double elevation = object2D.LowElevation();
+            return document.LowLevel(elevation);
         }
 
         /***************************************************/

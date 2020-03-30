@@ -119,20 +119,20 @@ namespace BH.UI.Revit.Engine
                 switch (structuralMaterialType)
                 {
                     case StructuralMaterialType.Aluminum:
-                        structuralProperty = new BH.oM.Structure.MaterialFragments.Aluminium();
+                        structuralProperty = new Aluminium();
                         break;
                     case StructuralMaterialType.Concrete:
                     case StructuralMaterialType.PrecastConcrete:
-                        structuralProperty = new BH.oM.Structure.MaterialFragments.Concrete();
+                        structuralProperty = new Concrete();
                         break;
                     case StructuralMaterialType.Wood:
-                        structuralProperty = new BH.oM.Structure.MaterialFragments.Timber();
+                        structuralProperty = new Timber();
                         break;
                     case StructuralMaterialType.Steel:
-                        structuralProperty = new BH.oM.Structure.MaterialFragments.Steel();
+                        structuralProperty = new Steel();
                         break;
                     default:
-                        structuralProperty = new BH.oM.Structure.MaterialFragments.GenericIsotropicMaterial();
+                        structuralProperty = new GenericIsotropicMaterial();
                         break;
                 }
 

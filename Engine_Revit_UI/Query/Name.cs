@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static string Name(SpatialElement spatialElement)
+        public static string Name(this SpatialElement spatialElement)
         {
             if (spatialElement == null)
                 return null;
