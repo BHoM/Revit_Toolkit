@@ -1,7 +1,7 @@
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
 # Revit_Toolkit
-A module that enables exchange of information between BHoM and Revit:
+A set of tools enabling exchange of information between BHoM and Revit:
 - communication between BHoM and Revit via `RevitListener` and sockets
 - `ToRevit` and `FromRevit` conversion
 - a set of utility methods supporting conversion and processing of Revit elements
@@ -40,7 +40,7 @@ Debug2019 -> Revit 2019
 
 Debug2020 -> Revit 2020
 
-Revit_Toolkit requires Revit 2018 or higher to be installed on the computer.
+Revit_Toolkit requires relevant version of Revit to be installed on the computer.
 
 ## Contribute ##
 BHoM is an open-source project and would be nothing without its community. Take a look at our contributing guidelines and tips [here](https://github.com/BHoM/BHoM/blob/master/CONTRIBUTING.md).
