@@ -36,10 +36,10 @@ namespace BH.oM.Adapters.Revit.Elements
         /***************************************************/
 
         [Description("Information about Revit family type of the instance.")]
-        public InstanceProperties Properties { get; set; } = new InstanceProperties();
+        public virtual InstanceProperties Properties { get; set; } = new InstanceProperties();
 
         [Description("Location of the instance in in three dimensional space.")]
-        public IGeometry Location { get; set; } = new Point();
+        public virtual IGeometry Location { get; set; } = new Point();
 
         /***************************************************/
     }

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -33,7 +33,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
 
         [Description("Full Revit DB type name, including namespace before the name of the actual type. For example: 'Autodesk.Revit.DB.Wall.")]
-        public string TypeName { get; set; } = "";
+        public virtual string TypeName { get; set; } = "";
 
         /***************************************************/
     }

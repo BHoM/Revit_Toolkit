@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -33,13 +33,13 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
 
         [Description("Case sensitive name of the parameter to be used as filter criterion.")]
-        public string ParameterName { get; set; } = "";
+        public virtual string ParameterName { get; set; } = "";
 
         [Description("TextComparisonType enum representing comparison type, e.g. equality, contains, starts with etc.")]
-        public Enums.TextComparisonType TextComparisonType { get; set; } = Enums.TextComparisonType.Equal;
+        public virtual Enums.TextComparisonType TextComparisonType { get; set; } = Enums.TextComparisonType.Equal;
 
         [Description("Value to compare the parameter against.")]
-        public string Value { get; set; } = "";
+        public virtual string Value { get; set; } = "";
 
         /***************************************************/
     }

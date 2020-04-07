@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -33,7 +33,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
 
         [Description("RevitViewType enum correspondent to Revit view type.")]
-        public Revit.Enums.RevitViewType RevitViewType { get; set; } =  Enums.RevitViewType.Undefined;
+        public virtual Revit.Enums.RevitViewType RevitViewType { get; set; } =  Enums.RevitViewType.Undefined;
 
         /***************************************************/
     }

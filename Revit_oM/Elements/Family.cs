@@ -35,7 +35,7 @@ namespace BH.oM.Adapters.Revit.Elements
         /***************************************************/
 
         [Description("Wrapped Revit family types that belong to the family.")]
-        public List<InstanceProperties> PropertiesList { get; set; } = new List<InstanceProperties>();
+        public virtual List<InstanceProperties> PropertiesList { get; set; } = new List<InstanceProperties>();
 
         /***************************************************/
     }

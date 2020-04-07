@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -34,7 +34,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
 
         [Description("List of Revit UniqueIds to be used to filter the elements.")]
-        public List<string> UniqueIds { get; set; } = new List<string>();
+        public virtual List<string> UniqueIds { get; set; } = new List<string>();
 
         /***************************************************/
     }

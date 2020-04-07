@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -33,10 +33,10 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
 
         [Description("Revit view template name matching one displayed in Revit UI. Optional: if left blank, all view templates will be filtered.")]
-        public string TemplateName { get; set; } = "";
+        public virtual string TemplateName { get; set; } = "";
 
         [Description("If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
-        public bool CaseSensitive { get; set; } = true;
+        public virtual bool CaseSensitive { get; set; } = true;
 
         /***************************************************/
     }

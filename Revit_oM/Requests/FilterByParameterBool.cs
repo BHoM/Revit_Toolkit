@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -33,10 +33,10 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
 
         [Description("Case sensitive name of the parameter to be used as filter criterion.")]
-        public string ParameterName { get; set; } = "";
+        public virtual string ParameterName { get; set; } = "";
 
         [Description("Value to compare the parameter against.")]
-        public bool Value { get; set; } = true;
+        public virtual bool Value { get; set; } = true;
 
         /***************************************************/
     }

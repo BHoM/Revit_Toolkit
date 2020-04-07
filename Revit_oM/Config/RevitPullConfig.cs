@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -36,16 +36,16 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         [Description("Discipline used on pull action. Default is Physical.")]
-        public Discipline Discipline { get; set; } = Discipline.Undefined;
+        public virtual Discipline Discipline { get; set; } = Discipline.Undefined;
 
         [Description("Elements from closed worksets will be processed if true.")]
-        public bool IncludeClosedWorksets { get; set; } = false;
+        public virtual bool IncludeClosedWorksets { get; set; } = false;
 
         [Description("If true, edges of elements will be pulled and stored under Revit_edges in CustomData.")]
-        public bool PullEdges { get; set; } = false;
+        public virtual bool PullEdges { get; set; } = false;
 
         [Description("Invisible element edges will be pulled and passed to CustomData if true. PullEdges switched to true needed for this to activate.")]
-        public bool IncludeNonVisible { get; set; } = false;
+        public virtual bool IncludeNonVisible { get; set; } = false;
 
         /***************************************************/
     }

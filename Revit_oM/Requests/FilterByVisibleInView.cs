@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -33,7 +33,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
 
         [Description("ElementId of Revit view to be checked for element visibility.")]
-        public int ViewId { get; set; } = -1;
+        public virtual int ViewId { get; set; } = -1;
 
         /***************************************************/
     }

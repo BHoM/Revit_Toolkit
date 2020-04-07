@@ -34,13 +34,13 @@ namespace BH.oM.Adapters.Revit.Settings
         /***************************************************/
 
         [Description("Library of Revit families that can be loaded to the model.")]
-        public FamilyLibrary FamilyLibrary { get; set; } = new FamilyLibrary();
+        public virtual FamilyLibrary FamilyLibrary { get; set; } = new FamilyLibrary();
 
         [Description("If true, Revit family will be overwritten on load, if false it will not be changed.")]
-        public bool OverwriteFamily { get; set; } = true;
+        public virtual bool OverwriteFamily { get; set; } = true;
 
         [Description("If true, Revit family parameters will be overwritten on load, if false they will not be changed.")]
-        public bool OverwriteParameterValues { get; set; } = true;
+        public virtual bool OverwriteParameterValues { get; set; } = true;
 
         /***************************************************/
     }
