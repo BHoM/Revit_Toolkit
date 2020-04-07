@@ -34,22 +34,22 @@ namespace BH.oM.Adapters.Revit.Settings
         /****             Public Properties             ****/
         /***************************************************/
         
-        public ConnectionSettings ConnectionSettings { get; set; } = new ConnectionSettings();
+        public virtual ConnectionSettings ConnectionSettings { get; set; } = new ConnectionSettings();
         
-        public FamilyLoadSettings FamilyLoadSettings { get; set; } = new FamilyLoadSettings();
+        public virtual FamilyLoadSettings FamilyLoadSettings { get; set; } = new FamilyLoadSettings();
         
-        public MapSettings MapSettings { get; set; } = new MapSettings();
+        public virtual MapSettings MapSettings { get; set; } = new MapSettings();
         
         [Description("Name of Revit parameter to be used to store BHoM tags.")]
-        public string TagsParameterName { get; set; } = "BHE_Tags";
+        public virtual string TagsParameterName { get; set; } = "BHE_Tags";
 
         [Length]
         [Description("Distance tolerance to be used in geometry processing.")]
-        public double DistanceTolerance { get; set; } = BH.oM.Geometry.Tolerance.Distance;
+        public virtual double DistanceTolerance { get; set; } = BH.oM.Geometry.Tolerance.Distance;
 
         [Angle]
         [Description("Angle tolerance to be used in geometry processing.")]
-        public double AngleTolerance { get; set; } = BH.oM.Geometry.Tolerance.Angle;
+        public virtual double AngleTolerance { get; set; } = BH.oM.Geometry.Tolerance.Angle;
         
         /***************************************************/
     }

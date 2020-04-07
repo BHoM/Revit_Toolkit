@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -33,13 +33,13 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
 
         [Description("Name of Revit family as shown in Revit UI.")]
-        public string FamilyName { get; set; } = "";
+        public virtual string FamilyName { get; set; } = "";
 
         [Description("Name of Revit family type as shown in the UI. Optional: allows to narrow the pull down to elements of specific family type.")]
-        public string FamilyTypeName { get; set; } = "";
+        public virtual string FamilyTypeName { get; set; } = "";
 
         [Description("If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
-        public bool CaseSensitive { get; set; } = true;
+        public virtual bool CaseSensitive { get; set; } = true;
 
         /***************************************************/
     }

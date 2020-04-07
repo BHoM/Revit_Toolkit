@@ -35,10 +35,10 @@ namespace BH.oM.Adapters.Revit.Elements
         /***************************************************/
 
         [Description("An entity storing the information about Revit viewport type.")]
-        public InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
+        public virtual InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
 
         [Description("Location of the viewport in Revit sheet space.")]
-        public Point Location { get; set; } = new Point() { X = 0, Y = 0, Z = 0 };
+        public virtual Point Location { get; set; } = new Point() { X = 0, Y = 0, Z = 0 };
 
         /***************************************************/
     }

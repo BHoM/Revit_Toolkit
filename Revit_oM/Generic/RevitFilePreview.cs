@@ -33,7 +33,7 @@ namespace BH.oM.Adapters.Revit.Generic
         /***************************************************/
 
         [Description("Path to the Revit family file wrapped by this object.")]
-        public string Path { get; set; } = null;
+        public virtual string Path { get; set; } = null;
 
         /***************************************************/
     }

@@ -34,7 +34,7 @@ namespace BH.oM.Adapters.Revit.Elements
         /***************************************************/
 
         [Description("An entity storing the information about Revit sheet type.")]
-        public InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
+        public virtual InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
 
         /***************************************************/
     }

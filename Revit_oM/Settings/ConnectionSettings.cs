@@ -34,13 +34,13 @@ namespace BH.oM.Adapters.Revit.Settings
         /***************************************************/
 
         [Description("Socket push port - this value needs to be equal to push port set in Revit Listener located in Add-Ins tab of Revit ribbon.")]
-        public int PushPort { get; set; } = 14128;
+        public virtual int PushPort { get; set; } = 14128;
 
         [Description("Socket pull port - this value needs to be equal to pull port set in Revit Listener located in Add-Ins tab of Revit ribbon.")]
-        public int PullPort { get; set; } = 14129;
+        public virtual int PullPort { get; set; } = 14129;
 
         [Description("Maximum number of minutes per adapter action, after which the adapter will automatically stop exchanging data with Revit. Increase this number if push/pull action is expected to take longer.")]
-        public int MaxMinutesToWait { get; set; } = 10;
+        public virtual int MaxMinutesToWait { get; set; } = 10;
 
         /***************************************************/
     }

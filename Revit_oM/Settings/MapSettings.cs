@@ -35,7 +35,7 @@ namespace BH.oM.Adapters.Revit.Settings
         /***************************************************/
 
         [Description("A collection of entities defining relationships between property names of each BHoM type and parameter names of correspondent Revit elements.")]
-        public List<TypeMap> TypeMaps { get; set; } = new List<TypeMap>();
+        public virtual List<TypeMap> TypeMaps { get; set; } = new List<TypeMap>();
 
         /***************************************************/
     }

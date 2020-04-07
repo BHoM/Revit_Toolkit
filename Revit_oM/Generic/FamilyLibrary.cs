@@ -33,7 +33,7 @@ namespace BH.oM.Adapters.Revit.Generic
         /****             Public Properties             ****/
         /***************************************************/
         
-        public Dictionary<string, Dictionary<string, Dictionary<string, string>>> Dictionary { get; set; } = null;
+        public virtual Dictionary<string, Dictionary<string, Dictionary<string, string>>> Dictionary { get; set; } = null;
 
         /***************************************************/
     }

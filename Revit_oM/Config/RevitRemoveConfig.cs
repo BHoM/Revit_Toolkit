@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -35,13 +35,13 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         [Description("If true, Revit warnings and failure messages will be suppressed (not shown to the user). Whilst this option may speed the pushing process up in case of multiple warnings, it may lead to important issues.")]
-        public bool SuppressFailureMessages { get; set; } = false;
+        public virtual bool SuppressFailureMessages { get; set; } = false;
 
         [Description("Elements from closed worksets will be processed if true.")]
-        public bool IncludeClosedWorksets { get; set; } = false;
+        public virtual bool IncludeClosedWorksets { get; set; } = false;
 
         [Description("Pinned elements will be processed if true.")]
-        public bool RemovePinned { get; set; } = false;
+        public virtual bool RemovePinned { get; set; } = false;
 
         /***************************************************/
     }
