@@ -38,7 +38,7 @@ namespace BH.oM.Adapters.Revit.Generic
         public virtual Type Type { get; set; } = null;
 
         [Description("A collection of BHoM type property names and sets of their correspondent Revit parameter names.")]
-        public Dictionary<string, HashSet<string>> Map = new Dictionary<string, HashSet<string>>();
+        public virtual Dictionary<string, HashSet<string>> Map { get; set; } = new Dictionary<string, HashSet<string>>();
 
         /***************************************************/
     }
