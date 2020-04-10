@@ -415,7 +415,6 @@
     <Compile Include="Query\MaterialGrade.cs" />
     <Compile Include="Query\Outlines.cs" />
     <Compile Include="Query\SpatialElementId.cs" />
-    <Compile Include="Query\HostedBuildingElements.cs" />
     <Compile Include="Query\Level.cs" />
     <Compile Include="Query\LookupParameter.cs" />
     <Compile Include="Query\Profiles.cs" />
