@@ -171,9 +171,6 @@
     <Compile Include="Query\Names.cs" />
     <Compile Include="Query\TypeMap.cs" />
     <Compile Include="Query\OuterPolyCurves.cs" />
-    <Compile Include="Query\IsShade.cs" />
-    <Compile Include="Query\IsInternal.cs" />
-    <Compile Include="Query\IsExternal.cs" />
     <Compile Include="Query\FilterByType.cs" />
     <Compile Include="Query\AdjacentSpaceId.cs" />
     <Compile Include="Query\Plane.cs" />
