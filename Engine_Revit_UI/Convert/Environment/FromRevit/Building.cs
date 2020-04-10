@@ -87,20 +87,13 @@ namespace BH.UI.Revit.Engine
             building = BH.Engine.Environment.Create.Building(elevation: elevation, latitude: latitude, longitude: longitude);
 
             //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment();
-            originContext.ElementID = projectInfo.Id.IntegerValue.ToString();
-            originContext.Description = projectInfo.OrganizationDescription;
-            originContext.TypeName = projectInfo.Name;
+            OriginContextFragment originContext = new OriginContextFragment() { ElementID = projectInfo.Id.IntegerValue.ToString(), Description = projectInfo.OrganizationDescription, TypeName = projectInfo.Name };
             building.AddFragment(originContext);
 
-            BuildingAnalyticalFragment buildingAnalytical = new BuildingAnalyticalFragment();
-            buildingAnalytical.GMTOffset = timeZone;
-            buildingAnalytical.NorthAngle = projectAngle;
+            BuildingAnalyticalFragment buildingAnalytical = new BuildingAnalyticalFragment() { GMTOffset = timeZone, NorthAngle = projectAngle };
             building.AddFragment(buildingAnalytical);
 
-            BuildingContextFragment buildingContext = new BuildingContextFragment();
-            buildingContext.PlaceName = placeName;
-            buildingContext.WeatherStation = weatherStationName;
+            BuildingContextFragment buildingContext = new BuildingContextFragment() { PlaceName = placeName, WeatherStation = weatherStationName };
             building.AddFragment(buildingContext);
 
             //Set identifiers & custom data

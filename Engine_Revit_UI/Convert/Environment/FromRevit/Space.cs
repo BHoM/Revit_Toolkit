@@ -83,9 +83,7 @@ namespace BH.UI.Revit.Engine
                 space.Location = ((LocationPoint)spatialElement.Location).FromRevit();
 
             //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment();
-            originContext.ElementID = spatialElement.Id.IntegerValue.ToString();
-            originContext.TypeName = Query.Name(spatialElement);
+            OriginContextFragment originContext = new OriginContextFragment() { ElementID = spatialElement.Id.IntegerValue.ToString(), TypeName = Query.Name(spatialElement) };
             originContext.UpdateValues(settings, spatialElement);
             space.AddFragment(originContext);
 
@@ -130,9 +128,7 @@ namespace BH.UI.Revit.Engine
                 space.Location = (spatialElement.Location as LocationPoint).FromRevit();
 
             //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment();
-            originContext.ElementID = spatialElement.Id.IntegerValue.ToString();
-            originContext.TypeName = Query.Name(spatialElement);
+            OriginContextFragment originContext = new OriginContextFragment() { ElementID = spatialElement.Id.IntegerValue.ToString(), TypeName = Query.Name(spatialElement) };
             originContext.UpdateValues(settings, energyAnalysisSpace);
             originContext.UpdateValues(settings, spatialElement);
             space.AddFragment(originContext);
@@ -145,9 +141,8 @@ namespace BH.UI.Revit.Engine
             SpaceContextFragment spaceContext = new SpaceContextFragment();
             List<string> connectedElements = new List<string>();
             foreach (EnergyAnalysisSurface energyAnalysisSurface in energyAnalysisSpace.GetAnalyticalSurfaces())
-            {
                 connectedElements.Add(energyAnalysisSurface.CADObjectUniqueId);
-            }
+
             spaceContext.ConnectedElements = connectedElements;
             spaceContext.UpdateValues(settings, energyAnalysisSpace);
             spaceContext.UpdateValues(settings, spatialElement);

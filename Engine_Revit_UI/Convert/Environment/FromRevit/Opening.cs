@@ -55,9 +55,7 @@ namespace BH.UI.Revit.Engine
                 ICurve curve = energyAnalysisOpening.GetPolyloop().FromRevit();
                 result = BH.Engine.Environment.Create.Opening(externalEdges: curve.ToEdges());
 
-                OriginContextFragment originContext = new OriginContextFragment();
-                originContext.ElementID = energyAnalysisOpening.Id.IntegerValue.ToString();
-                originContext.TypeName = energyAnalysisOpening.OpeningName;
+                OriginContextFragment originContext = new OriginContextFragment() { ElementID = energyAnalysisOpening.Id.IntegerValue.ToString(), TypeName = energyAnalysisOpening.OpeningName };
                 originContext.UpdateValues(settings, energyAnalysisOpening);
                 result.AddFragment(originContext);
 
@@ -84,9 +82,7 @@ namespace BH.UI.Revit.Engine
                 result = BH.Engine.Environment.Create.Opening(externalEdges: curve.ToEdges());
                 result.Name = element.FamilyTypeFullName();
 
-                OriginContextFragment originContext = new OriginContextFragment();
-                originContext.ElementID = element.Id.IntegerValue.ToString();
-                originContext.TypeName = element.FamilyTypeFullName();
+                OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
                 originContext.UpdateValues(settings, element);
                 originContext.UpdateValues(settings, elementType);
                 result.AddFragment(originContext);
