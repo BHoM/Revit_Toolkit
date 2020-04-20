@@ -66,7 +66,7 @@ namespace BH.UI.Revit.Engine
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Unit type {0} has not been recognized and has not been converted - as a result, the value in BHoM can be wrong.", LabelUtils.GetLabelFor(unitType)));
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Unit type {0} has not been recognized and has not been converted - as a result, the output value can be wrong.", LabelUtils.GetLabelFor(unitType)));
                 return DisplayUnitType.DUT_GENERAL;
             }
         }
