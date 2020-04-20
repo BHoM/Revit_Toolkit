@@ -21,6 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -32,57 +35,125 @@ namespace BH.UI.Revit.Engine
 
         public static DisplayUnitType BHoMUnitType(this UnitType unitType)
         {
-            switch (unitType)
+            // Check if any display unit type applicable to given unit type is acceptable BHoM unit type.
+            IEnumerable<DisplayUnitType> duts = UnitUtils.GetValidDisplayUnits(unitType);
+            foreach (DisplayUnitType dut in duts)
             {
-                case UnitType.UT_Length:
-                case UnitType.UT_Bar_Diameter:
-                case UnitType.UT_Section_Dimension:
-                case UnitType.UT_Section_Property:
-                case UnitType.UT_PipeSize:
-                case UnitType.UT_HVAC_DuctSize:
-                case UnitType.UT_HVAC_DuctLiningThickness:
-                case UnitType.UT_HVAC_DuctInsulationThickness:
-                case UnitType.UT_PipeInsulationThickness:
-                case UnitType.UT_SheetLength:
-                case UnitType.UT_WireSize:
-                case UnitType.UT_Crack_Width:
-                case UnitType.UT_DecSheetLength:
-                case UnitType.UT_Electrical_CableTraySize:
-                case UnitType.UT_Electrical_ConduitSize:
-                case UnitType.UT_Reinforcement_Spacing:
-                case UnitType.UT_Reinforcement_Length:
-                    return DisplayUnitType.DUT_METERS;
-                case UnitType.UT_Electrical_Current:
-                    return DisplayUnitType.DUT_AMPERES;
-                case UnitType.UT_HVAC_Temperature:
-                    return DisplayUnitType.DUT_KELVIN;
-                case UnitType.UT_Mass:
-                case UnitType.UT_Weight:
-                    return DisplayUnitType.DUT_KILOGRAMS_MASS;
-                case UnitType.UT_HVAC_Pressure:
-                case UnitType.UT_Piping_Pressure:
-                case UnitType.UT_Stress:
-                    return DisplayUnitType.DUT_PASCALS;
-                case UnitType.UT_HVAC_Velocity:
-                    return DisplayUnitType.DUT_METERS_PER_SECOND;
-                case UnitType.UT_Area:
-                    return DisplayUnitType.DUT_SQUARE_METERS;
-                case UnitType.UT_Volume:
-                    return DisplayUnitType.DUT_CUBIC_METERS;
-                case UnitType.UT_HVAC_Airflow:
-                    return DisplayUnitType.DUT_CUBIC_METERS_PER_SECOND;
-                case UnitType.UT_HVAC_Cooling_Load:
-                case UnitType.UT_HVAC_Heating_Load:
-                    return DisplayUnitType.DUT_WATTS;
-                case UnitType.UT_MassDensity:
-                    return DisplayUnitType.DUT_KILOGRAMS_PER_CUBIC_METER;
-                case UnitType.UT_ThermalExpansion:
-                    return DisplayUnitType.DUT_INV_CELSIUS;
-                default:
-                    return DisplayUnitType.DUT_GENERAL;
+                if (BHoMUnits.Contains(dut))
+                    return dut;
+            }
+
+            // Check if any display unit type applicable to given unit type has acceptable BHoM equivalent unit type.
+            foreach (DisplayUnitType dut in duts)
+            {
+                if (BHoMEquivalents.ContainsKey(dut))
+                    return BHoMEquivalents[dut];
+            }
+
+            // Find any SI display unit types.
+            List<DisplayUnitType> acceptable = duts.Where(x =>
+            {
+                string lower = x.ToString().ToLower();
+                return !NonSIUnitNames.Any(y => lower.Contains(y));
+            }).ToList();
+
+            // Return first SI display unit type or record error.
+            if (acceptable.Count != 0)
+            {
+                DisplayUnitType dut = acceptable.First();
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Unit type {0} does not have a unitless SI convert - instead, it has been converted to {1}.", LabelUtils.GetLabelFor(unitType), LabelUtils.GetLabelFor(dut)));
+                return dut;
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Unit type {0} has not been recognized and has not been converted - as a result, the value in BHoM can be wrong.", LabelUtils.GetLabelFor(unitType)));
+                return DisplayUnitType.DUT_GENERAL;
             }
         }
+
+
+        /***************************************************/
+        /****            Private collections            ****/
+        /***************************************************/
+
+        private static readonly string[] NonSIUnitNames = new string[]
+        {
+            "inch",
+            "feet",
+            "foot",
+            "yard",
+            "fahrenheit",
+            "pound",
+            "gallon",
+            "kip",
+            "ustonne",
+            "mile",
+            "rankine",
+            "horsepower"
+        };
+
+        /***************************************************/
+
+        private static readonly DisplayUnitType[] BHoMUnits = new DisplayUnitType[]
+        {
+            DisplayUnitType.DUT_METERS,
+            DisplayUnitType.DUT_SQUARE_METERS,
+            DisplayUnitType.DUT_CUBIC_METERS,
+            DisplayUnitType.DUT_JOULES,
+            DisplayUnitType.DUT_PASCALS_PER_METER,
+            DisplayUnitType.DUT_WATTS,
+            DisplayUnitType.DUT_WATTS_PER_SQUARE_METER,
+            DisplayUnitType.DUT_PASCALS,
+            DisplayUnitType.DUT_CELSIUS,
+            DisplayUnitType.DUT_METERS_PER_SECOND,
+            DisplayUnitType.DUT_CUBIC_METERS_PER_SECOND,
+            DisplayUnitType.DUT_AMPERES,
+            DisplayUnitType.DUT_KILOGRAMS_MASS,
+            DisplayUnitType.DUT_VOLTS,
+            DisplayUnitType.DUT_HERTZ,
+            DisplayUnitType.DUT_LUX,
+            DisplayUnitType.DUT_CANDELAS_PER_SQUARE_METER,
+            DisplayUnitType.DUT_CANDELAS,
+            DisplayUnitType.DUT_LUMENS,
+            DisplayUnitType.DUT_NEWTONS,
+            DisplayUnitType.DUT_NEWTONS_PER_METER,
+            DisplayUnitType.DUT_NEWTON_METERS,
+            DisplayUnitType.DUT_PASCAL_SECONDS,
+            DisplayUnitType.DUT_INV_CELSIUS,
+            DisplayUnitType.DUT_NEWTON_METERS_PER_METER,
+            DisplayUnitType.DUT_WATTS_PER_SQUARE_METER_KELVIN,
+            DisplayUnitType.DUT_WATTS_PER_CUBIC_METER,
+            DisplayUnitType.DUT_LUMENS_PER_WATT,
+            DisplayUnitType.DUT_SQUARE_METER_KELVIN_PER_WATT,
+            DisplayUnitType.DUT_JOULES_PER_KELVIN,
+            DisplayUnitType.DUT_METERS_PER_SECOND_SQUARED,
+            DisplayUnitType.DUT_METERS_TO_THE_FOURTH_POWER,
+            DisplayUnitType.DUT_METERS_TO_THE_SIXTH_POWER,
+            DisplayUnitType.DUT_RADIANS,
+            DisplayUnitType.DUT_RADIANS_PER_SECOND,
+            DisplayUnitType.DUT_SECONDS,
+            DisplayUnitType.DUT_WATTS_PER_METER_KELVIN,
+            DisplayUnitType.DUT_OHM_METERS,
+            DisplayUnitType.DUT_KELVIN_DIFFERENCE,
+            DisplayUnitType.DUT_KILOGRAMS_PER_CUBIC_METER,
+            DisplayUnitType.DUT_KILOGRAMS_MASS_PER_METER,
+            DisplayUnitType.DUT_KILOGRAMS_MASS_PER_SQUARE_METER,
+            DisplayUnitType.DUT_JOULES_PER_KILOGRAM_CELSIUS,
+            DisplayUnitType.DUT_GENERAL
+        };
+
+        /***************************************************/
+
+        private static readonly Dictionary<DisplayUnitType, DisplayUnitType> BHoMEquivalents = new Dictionary<DisplayUnitType, DisplayUnitType>
+        {
+            { DisplayUnitType.DUT_CURRENCY,  DisplayUnitType.DUT_GENERAL },
+            { DisplayUnitType.DUT_KELVIN,  DisplayUnitType.DUT_CELSIUS },
+            { DisplayUnitType.DUT_PERCENTAGE,  DisplayUnitType.DUT_FIXED },
+            { DisplayUnitType.DUT_SQUARE_METERS_PER_METER,  DisplayUnitType.DUT_METERS },
+            { DisplayUnitType.DUT_MILLIMETERS,  DisplayUnitType.DUT_METERS }
+        };
 
         /***************************************************/
     }
 }
+
