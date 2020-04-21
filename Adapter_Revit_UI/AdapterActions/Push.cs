@@ -111,6 +111,11 @@ namespace BH.UI.Revit.Adapter
 
                 if (pushType == PushType.CreateOnly)
                     pushed = Create(objectsToPush, pushConfig);
+                else if (pushType == PushType.CreateNonExisting)
+                {
+                    IEnumerable<IBHoMObject> toCreate = objectsToPush.Where(x => x.Element(document) == null);
+                    pushed = Create(toCreate, pushConfig);
+                }
                 else if (pushType == PushType.DeleteThenCreate)
                 {
                     List<IBHoMObject> toCreate = new List<IBHoMObject>();
