@@ -32,6 +32,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Deprecated("3.2", "This method is a duplicate of GetProperty.")]
         [Description("Returns integer representation of WorksetId of Revit workset correspondent to given BHoMObject. This value is stored in CustomData under key Revit_worksetId.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
         [Output("worksetId")]
