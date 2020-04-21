@@ -73,6 +73,8 @@ namespace BH.UI.Revit.Engine
                 case StorageType.Integer:
                     if (parameter.Definition.ParameterType == ParameterType.YesNo)
                         value = parameter.AsInteger() == 1;
+                    else if (parameter.Definition.ParameterType == ParameterType.Invalid)
+                        value = parameter.AsValueString();
                     else
                         value = parameter.AsInteger();
                     break;
