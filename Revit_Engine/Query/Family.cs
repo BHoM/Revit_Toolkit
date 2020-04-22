@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Adapter.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
@@ -61,7 +62,7 @@ namespace BH.Engine.Adapters.Revit
                         continue;
 
                     oM.Adapters.Revit.Properties.InstanceProperties instanceProps = Create.InstanceProperties(familyName, familyTypeName);
-                    instanceProps.CustomData[Convert.CategoryName] = categoryName;
+                    instanceProps.CustomData[RevitAdapter.CategoryName] = categoryName;
                     instanceProperties.Add(instanceProps);
                 }
             }
@@ -71,9 +72,9 @@ namespace BH.Engine.Adapters.Revit
                 PropertiesList = instanceProperties
             };
 
-            family.CustomData[Convert.FamilyName] = familyName;
-            family.CustomData[Convert.CategoryName] = categoryName;
-            family.CustomData[Convert.FamilyPlacementTypeName] = revitFilePreview.CustomDataValue(Convert.FamilyPlacementTypeName);
+            family.CustomData[RevitAdapter.FamilyName] = familyName;
+            family.CustomData[RevitAdapter.CategoryName] = categoryName;
+            family.CustomData[RevitAdapter.FamilyPlacementTypeName] = revitFilePreview.CustomDataValue(RevitAdapter.FamilyPlacementTypeName);
 
             return family;
         }

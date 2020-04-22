@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Adapter.Revit;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
@@ -42,7 +43,7 @@ namespace BH.Engine.Adapters.Revit
                 return -1;
 
             object value = null;
-            if (bHoMObject.CustomData.TryGetValue(Convert.WorksetId, out value))
+            if (bHoMObject.CustomData.TryGetValue("Revit_worksetId", out value))
             {
                 if (value is string)
                 {

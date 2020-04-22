@@ -22,8 +22,7 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
-
-using BH.oM.Environment.Elements;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.UI.Revit.Engine
 {
@@ -32,14 +31,15 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
+
+        [Deprecated("3.2", "BH.UI.Revit.Engine.Modify.AddAdjacentSpaceId is not used any more.")]
         public static oM.Environment.Elements.Panel AddAdjacentSpaceId(this oM.Environment.Elements.Panel panel, EnergyAnalysisSurface energyAnalysisSurface)
         {
             if (panel == null)
                 return null;
 
             oM.Environment.Elements.Panel returnPanel = panel.GetShallowClone() as oM.Environment.Elements.Panel;
-            returnPanel.CustomData.Add(BH.Engine.Adapters.Revit.Convert.AdjacentSpaceId, -1);
+            returnPanel.CustomData.Add("AdjacentSpaceID", -1);
 
             if (energyAnalysisSurface == null)
                 return returnPanel;
@@ -52,7 +52,7 @@ namespace BH.UI.Revit.Engine
             if (spatialElement == null)
                 return returnPanel;
 
-            returnPanel.CustomData[BH.Engine.Adapters.Revit.Convert.AdjacentSpaceId] = spatialElement.Id.IntegerValue;
+            returnPanel.CustomData["AdjacentSpaceID"] = spatialElement.Id.IntegerValue;
 
             return returnPanel;
         }

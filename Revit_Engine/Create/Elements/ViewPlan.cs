@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Adapter.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
@@ -47,8 +48,8 @@ namespace BH.Engine.Adapters.Revit
 
             viewPlan.CustomData.Add("View Name", name);
 
-            viewPlan.CustomData.Add(Convert.CategoryName, "Views");
-            viewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
+            viewPlan.CustomData.Add(RevitAdapter.CategoryName, "Views");
+            viewPlan.CustomData.Add(RevitAdapter.FamilyName, "Floor Plan");
 
             return viewPlan;
         }
@@ -69,8 +70,8 @@ namespace BH.Engine.Adapters.Revit
 
             viewPlan.CustomData.Add("View Name", name);
 
-            viewPlan.CustomData.Add(Convert.CategoryName, "Views");
-            viewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
+            viewPlan.CustomData.Add(RevitAdapter.CategoryName, "Views");
+            viewPlan.CustomData.Add(RevitAdapter.FamilyName, "Floor Plan");
 
             return viewPlan;
         }
@@ -93,9 +94,9 @@ namespace BH.Engine.Adapters.Revit
 
             viewPlan.CustomData.Add("View Name", name);
 
-            viewPlan.CustomData.Add(Convert.CategoryName, "Views");
-            viewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
-            viewPlan.CustomData.Add(Convert.ViewTemplate, viewTemplateName);
+            viewPlan.CustomData.Add(RevitAdapter.CategoryName, "Views");
+            viewPlan.CustomData.Add(RevitAdapter.FamilyName, "Floor Plan");
+            viewPlan.CustomData.Add(RevitAdapter.ViewTemplate, viewTemplateName);
 
             return viewPlan;
         }

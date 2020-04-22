@@ -50,7 +50,7 @@ namespace BH.UI.Revit.Adapter
         public RevitUIAdapter(UIControlledApplication uIControlledApplication, Document document)
             : base()
         {
-            AdapterIdName = BH.Engine.Adapters.Revit.Convert.AdapterIdName;
+            AdapterIdName = RevitAdapter.AdapterIdName;
             m_AdapterSettings.UseAdapterId = false;
 
             m_Document = document;
