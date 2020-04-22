@@ -33,6 +33,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Deprecated("3.2", "BH.Engine.Adapters.Revit.Query.SpaceId is not used any more.")]
         [Description("Gets integer representation of ElementId of Revit space element correspondent to given BHoMObject. This value is stored in CustomData under key SpaceID.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
         [Output("elementId")]
@@ -42,7 +43,7 @@ namespace BH.Engine.Adapters.Revit
                 return -1;
 
             object value = null;
-            if (bHoMObject.CustomData.TryGetValue(Convert.SpaceId, out value))
+            if (bHoMObject.CustomData.TryGetValue("SpaceID", out value))
             {
                 if (value is string)
                 {

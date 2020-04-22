@@ -22,14 +22,14 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
+using BH.Adapter.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
-using BH.oM.Structure.Elements;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
 
 namespace BH.UI.Revit.Engine
 {
@@ -398,8 +398,8 @@ namespace BH.UI.Revit.Engine
             {
                 message = string.Format("{0} BHoM Guid: {1}", message, viewPlan.BHoM_Guid);
 
-                if(viewPlan.CustomData.ContainsKey(BH.Engine.Adapters.Revit.Convert.ViewTemplate))
-                    message = string.Format("{0} View Template Name: {1}", message, viewPlan.CustomData[BH.Engine.Adapters.Revit.Convert.ViewTemplate]);
+                if(viewPlan.CustomData.ContainsKey(RevitAdapter.ViewTemplate))
+                    message = string.Format("{0} View Template Name: {1}", message, viewPlan.CustomData[RevitAdapter.ViewTemplate]);
             }
 
             BH.Engine.Reflection.Compute.RecordError(message);

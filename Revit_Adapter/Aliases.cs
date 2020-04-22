@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,27 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Adapter.Revit
 {
-    public static partial class Convert
+    public partial class RevitAdapter
     {
-        /***************************************************/
-        /****             Public Properties             ****/
-        /***************************************************/
-        
-        public const string AdapterIdName = "Revit_id";
-        public const string ElementId = "Revit_elementId";
-        public const string WorksetId = "Revit_worksetId";
-        public const string SpaceId = "SpaceID"; //FG Change per #191 - ongoing discussion on best use of this still ongoing
-        public const string AdjacentSpaceId = "AdjacentSpaceID"; //FG Change per #191 - ongoing discussion on best use of this still ongoing
-        public const string FamilyName = "Revit_familyName";
-        public const string FamilyTypeName = "Revit_familyTypeName";
-        public const string CategoryName = "Revit_categoryName";
-        public const string ViewName = "Revit_viewName";
-        public const string Edges = "Revit_edges";
-        public const string ViewTemplate = "View Template";
-        public const string FamilyPlacementTypeName = "Revit_familyPlacementTypeName";
 
         /***************************************************/
+        /****           Public Fields                   ****/
+        /***************************************************/
+        
+        public new const string AdapterIdName = "Revit_id";
+        public const string ElementId = "Revit_elementId";
+        public const string FamilyName = "Revit_familyName";
+        public const string FamilyTypeName = "Revit_familyTypeName";
+        public const string FamilyPlacementTypeName = "Revit_familyPlacementTypeName";
+        public const string CategoryName = "Revit_categoryName";
+        public const string ViewName = "Revit_viewName";
+        public const string ViewTemplate = "View Template";
+        public const string Edges = "Revit_edges";
+
+        /***************************************************/
+
     }
 }

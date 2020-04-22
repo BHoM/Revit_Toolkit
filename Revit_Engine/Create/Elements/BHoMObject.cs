@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Adapter.Revit;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
@@ -40,7 +41,7 @@ namespace BH.Engine.Adapters.Revit
         {
             BHoMObject obj = new BHoMObject();
 
-            obj.CustomData.Add(Convert.ElementId, elementId);
+            obj.CustomData.Add(RevitAdapter.ElementId, elementId);
 
             return obj;
         }
@@ -55,7 +56,7 @@ namespace BH.Engine.Adapters.Revit
         {
             BHoMObject obj = new BHoMObject();
 
-            obj.CustomData.Add(Convert.AdapterIdName, uniqueId);
+            obj.CustomData.Add(RevitAdapter.AdapterIdName, uniqueId);
 
             return obj;
         }

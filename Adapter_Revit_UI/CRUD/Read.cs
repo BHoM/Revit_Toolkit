@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Adapter.Revit;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
@@ -102,7 +103,7 @@ namespace BH.UI.Revit.Adapter
                         List<ICurve> edges = element.Curves(options, revitSettings);
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
-                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Edges] = edges;
+                            iBHoMObject.CustomData[RevitAdapter.Edges] = edges;
                         }
                     }
 

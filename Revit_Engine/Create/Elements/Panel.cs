@@ -30,6 +30,7 @@ using BH.oM.Environment.Elements;
 using BH.oM.Environment.Fragments;
 using System.Linq;
 
+using BH.Adapter.Revit;
 using BH.Engine.Environment;
 
 namespace BH.Engine.Adapters.Revit
@@ -65,12 +66,12 @@ namespace BH.Engine.Adapters.Revit
             PolyCurve polycurve = Geometry.Create.PolyCurve(new ICurve[] { curve, Geometry.Create.Line(minPoint1, maxPoint1) , crv, Geometry.Create.Line(maxPoint2, minPoint2) });
 
             OriginContextFragment originContext = new OriginContextFragment();
-            originContext.Origin = Convert.AdapterIdName;
+            originContext.Origin = RevitAdapter.AdapterIdName;
             originContext.TypeName = familyTypeName;
 
             Panel panel = Environment.Create.Panel(type: PanelType.Wall, externalEdges: polycurve.ToEdges());
             panel.Name = familyTypeName;
-            panel.CustomData.Add(Convert.CategoryName, "Walls");
+            panel.CustomData.Add(RevitAdapter.CategoryName, "Walls");
 
             panel.AddFragment(originContext);
 

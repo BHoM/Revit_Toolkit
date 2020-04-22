@@ -22,6 +22,7 @@
 
 using System.ComponentModel;
 
+using BH.Adapter.Revit;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Properties;
 
@@ -44,8 +45,8 @@ namespace BH.Engine.Adapters.Revit
                 Name = Query.FamilyTypeFullName(familyName, familyTypeName),
             };
 
-            instanceProperties.CustomData.Add(Convert.FamilyName, familyName);
-            instanceProperties.CustomData.Add(Convert.FamilyTypeName, familyTypeName);
+            instanceProperties.CustomData.Add(RevitAdapter.FamilyName, familyName);
+            instanceProperties.CustomData.Add(RevitAdapter.FamilyTypeName, familyTypeName);
 
             return instanceProperties;
         }

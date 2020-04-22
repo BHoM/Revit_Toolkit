@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Adapter.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Properties;
@@ -110,7 +111,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             InstanceProperties instanceProperties = new InstanceProperties();
-            instanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
+            instanceProperties.CustomData.Add(RevitAdapter.CategoryName, "Lines");
 
             DraftingInstance draftingInstance = new DraftingInstance()
             {
@@ -119,7 +120,7 @@ namespace BH.Engine.Adapters.Revit
                 ViewName = viewName,
                 Location = location
             };
-            draftingInstance.CustomData.Add(Convert.CategoryName, "Lines");
+            draftingInstance.CustomData.Add(RevitAdapter.CategoryName, "Lines");
 
             return draftingInstance;
         }
@@ -138,7 +139,7 @@ namespace BH.Engine.Adapters.Revit
 
             InstanceProperties instanceProperties = new InstanceProperties();
             instanceProperties.Name = name;
-            instanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
+            instanceProperties.CustomData.Add(RevitAdapter.CategoryName, "Lines");
 
             DraftingInstance draftingInstance = new DraftingInstance()
             {
@@ -147,7 +148,7 @@ namespace BH.Engine.Adapters.Revit
                 ViewName = viewName,
                 Location = location
             };
-            draftingInstance.CustomData.Add(Convert.CategoryName, "Lines");
+            draftingInstance.CustomData.Add(RevitAdapter.CategoryName, "Lines");
 
             return draftingInstance;
         }

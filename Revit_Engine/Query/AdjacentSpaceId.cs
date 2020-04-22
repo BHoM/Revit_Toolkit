@@ -32,6 +32,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Deprecated("3.2", "BH.Engine.Adapters.Revit.Query.AdjacentSpaceId is not used any more.")]
         [Description("Gets integer representation of adjacent space Revit ElementId (stored in CustomData) for given BHoMObject.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
         [Output("elementId")]
@@ -41,7 +42,7 @@ namespace BH.Engine.Adapters.Revit
                 return -1;
 
             object value = null;
-            if (bHoMObject.CustomData.TryGetValue(Convert.AdjacentSpaceId, out value))
+            if (bHoMObject.CustomData.TryGetValue("AdjacentSpaceID", out value))
             {
                 if (value is string)
                 {

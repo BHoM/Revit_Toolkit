@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Adapter.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
@@ -48,8 +49,8 @@ namespace BH.Engine.Adapters.Revit
             viewport.CustomData.Add("Sheet Number", sheetNumber);
             viewport.CustomData.Add("View Name", viewName);
 
-            viewport.CustomData.Add(Convert.FamilyName, "Viewport");
-            viewport.CustomData.Add(Convert.CategoryName, "Viewports");
+            viewport.CustomData.Add(RevitAdapter.FamilyName, "Viewport");
+            viewport.CustomData.Add(RevitAdapter.CategoryName, "Viewports");
 
             return viewport;
         }

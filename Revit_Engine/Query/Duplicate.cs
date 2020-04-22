@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Adapter.Revit;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
@@ -43,8 +44,8 @@ namespace BH.Engine.Adapters.Revit
 
             IBHoMObject obj = bHoMObject.GetShallowClone();
 
-            obj.CustomData.Remove(Convert.ElementId);
-            obj.CustomData.Remove(Convert.AdapterIdName);
+            obj.CustomData.Remove(RevitAdapter.ElementId);
+            obj.CustomData.Remove(RevitAdapter.AdapterIdName);
 
 
             return obj;

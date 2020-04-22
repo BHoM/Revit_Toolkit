@@ -38,7 +38,7 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             object value = null;
-            if (bHoMObject.CustomData.TryGetValue(BH.Engine.Adapters.Revit.Convert.WorksetId, out value))
+            if (bHoMObject.CustomData.TryGetValue("Revit_worksetId", out value))
             {
                 if (value is string)
                 {
