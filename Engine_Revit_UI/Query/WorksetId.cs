@@ -31,35 +31,6 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        public static WorksetId WorksetId(this BHoMObject bHoMObject)
-        {
-            if (bHoMObject == null)
-                return null;
-
-            object value = null;
-            if (bHoMObject.CustomData.TryGetValue("Revit_worksetId", out value))
-            {
-                if (value is string)
-                {
-                    int num = -1;
-                    if (int.TryParse((string)value, out num))
-                        return new WorksetId(num);
-                }
-                else if (value is int)
-                {
-                    return new WorksetId((int)value);
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            return null;
-        }
-
-        /***************************************************/
 
         public static WorksetId WorksetId(this Document document, string worksetName)
         {
