@@ -491,16 +491,8 @@ namespace BH.UI.Revit.Engine
             //Set identifiers & custom data
             panel.SetIdentifiers(element);
             panel.SetCustomData(element);
-            double height = energyAnalysisSurface.Height.ToSI(UnitType.UT_Length);
-            double width = energyAnalysisSurface.Width.ToSI(UnitType.UT_Length);
-            double azimuth = energyAnalysisSurface.Azimuth;
-
-            panel.CustomData["Height"] = height;
-            panel.CustomData["Width"] = width;
-            panel.CustomData["Azimuth"] = azimuth;
+            
             panel.SetCustomData(elementType, BuiltInParameter.ALL_MODEL_FAMILY_NAME);
-            panel = panel.AddSpaceId(energyAnalysisSurface);
-            panel = panel.AddAdjacentSpaceId(energyAnalysisSurface);
 
             if (elementType != null)
                 panel.SetCustomData(elementType, "Type ");
