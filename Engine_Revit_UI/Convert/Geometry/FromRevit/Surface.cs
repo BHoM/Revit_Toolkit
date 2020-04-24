@@ -37,27 +37,50 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Geometry.PlanarSurface FromRevit(this Face face)
+        public static oM.Geometry.PlanarSurface FromRevit(this PlanarFace face)
         {
             if (face == null)
                 return null;
 
             IList<CurveLoop> crvLoop = face.GetEdgesAsCurveLoops();
             oM.Geometry.ICurve externalBoundary = crvLoop[0].FromRevit();
+            List<oM.Geometry.ICurve> internalBoundary = crvLoop.Skip(1).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();                           
 
-            //oM.Geometry.ICurve externalBoundary = crvLoop[0] as oM.Geometry.ICurve;
-            List<oM.Geometry.ICurve> internalBoundary = new List<oM.Geometry.ICurve>();
+            return new oM.Geometry.PlanarSurface { ExternalBoundary = externalBoundary, InternalBoundaries = internalBoundary };
+        }
 
-            if (crvLoop.Count() >1)
-            {
-                for (int i = 1; i < crvLoop.Count(); i++)
-                {
-                    internalBoundary.Add(crvLoop[i].FromRevit());
-                }
-            }                     
+        /***************************************************/
 
-            return new BH.oM.Geometry.PlanarSurface { ExternalBoundary = externalBoundary, InternalBoundaries = internalBoundary };
-        }       
+        //public static oM.Geometry.Loft FromRevit(this CylindricalFace face)
+        //{
+        //    if (face == null)
+        //        return null;
+
+        //    EdgeArrayArray edgeArrays = face.EdgeLoops;
+        //    EdgeArray edgeArray = edgeArrays.get_Item(0);
+
+        //    List<oM.Geometry.ICurve> edges = new List<oM.Geometry.ICurve>();
+
+        //    foreach(Edge edge in edgeArray)
+        //    {
+        //        if(edge.AsCurve() is Arc)
+        //        {
+        //            edges.Add(edge.FromRevit());
+        //        }
+        //    }
+
+        //    return new oM.Geometry.Loft { Curves = edges };
+            
+
+        //    //CylindricalSurface cylinder = face.GetSurface() as CylindricalSurface;
+        //    //oM.Geometry.Point start = new oM.Geometry.Point { X = cylinder.Origin.X, Y = cylinder.Origin.Y, Z = cylinder.Origin.Z };
+        //    //oM.Geometry.Vector axis = new oM.Geometry.Vector { X = cylinder.Axis.X, Y = cylinder.Axis.Y, Z = cylinder.Axis.Z };
+        //    //double radius = cylinder.Radius;
+        //    //double height = (face.GetBoundingBox()).Max.V;
+        //    //oM.Geometry.Line centreLine = new oM.Geometry.Line { Start = start, End = start + (height * axis) };
+
+        //    //return new oM.Geometry.Pipe { Centreline = centreLine, Radius = radius, Capped = true };
+        //}
 
         /***************************************************/
         /****             Interface Methods             ****/
@@ -65,14 +88,17 @@ namespace BH.UI.Revit.Engine
 
         public static oM.Geometry.ISurface IFromRevit(this Face face)
         {
-            oM.Geometry.ISurface result = FromRevit(face as dynamic);
+            return FromRevit(face as dynamic);                        
+        }        
 
-            if (result == null)
-            {
-                result = null;
-            }
+        /***************************************************/
+        /****              Fallback Methods             ****/
+        /***************************************************/
 
-            return result;
+        public static oM.Geometry.ISurface FromRevit(this Face face)
+        {
+            BH.Engine.Reflection.Compute.RecordError(String.Format("Revit face of type {0} could not be converted to BHoM due to a missing convert method.", face.GetType()));
+            return null;
         }
 
         /***************************************************/

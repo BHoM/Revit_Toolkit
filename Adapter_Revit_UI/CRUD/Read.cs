@@ -83,7 +83,7 @@ namespace BH.UI.Revit.Adapter
                 mapSettings = BH.Engine.Adapters.Revit.Query.DefaultMapSettings();
 
             Options options = null;
-            if (pullConfig.PullEdges||pullConfig.PullSurfaces)
+            if (pullConfig.PullEdges || pullConfig.PullSurfaces)
                 options = BH.UI.Revit.Engine.Create.Options(ViewDetailLevel.Fine, pullConfig.IncludeNonVisible, false);
 
             List<IBHoMObject> result = new List<IBHoMObject>();
