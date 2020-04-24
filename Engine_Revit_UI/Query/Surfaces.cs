@@ -42,7 +42,22 @@ namespace BH.UI.Revit.Engine
             {
                 if (geometryObject is GeometryInstance)
                 {
-                    BH.Engine.Reflection.Compute.RecordWarning("Failed, this thing is a GeometryInstance.");
+                    GeometryInstance geometryInstance = (GeometryInstance)geometryObject;
+
+                    Transform geometryTransform = geometryInstance.Transform;
+                    if (transform != null)
+                        geometryTransform = geometryTransform.Multiply(transform.Inverse);
+
+                    List<oM.Geometry.ISurface> surfaces = null;
+                    GeometryElement geomElement = null;
+
+                    geomElement = geometryInstance.GetInstanceGeometry(geometryTransform);
+                    if (geomElement == null)
+                        continue;
+
+                    surfaces = geomElement.Surfaces(null, settings);
+                    if (surfaces != null && surfaces.Count != 0)
+                        result.AddRange(surfaces);                  
                 }
                 else if (geometryObject is Solid)
                 {

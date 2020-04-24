@@ -37,7 +37,8 @@ namespace BH.Adapter.Revit
         public const string CategoryName = "Revit_categoryName";
         public const string ViewName = "Revit_viewName";
         public const string ViewTemplate = "View Template";
-        public const string Edges = "Revit_edges";
+        public const string Edges = "Revit_edges";        
+        public const string Surfaces = "Revit_surfaces";
 
         /***************************************************/
 
