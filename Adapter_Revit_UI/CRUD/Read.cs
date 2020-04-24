@@ -106,6 +106,15 @@ namespace BH.UI.Revit.Adapter
                             iBHoMObject.CustomData[RevitAdapter.Edges] = edges;
                         }
                     }
+                    if(pullConfig.PullSurfaces)
+                    {
+                        List<ISurface> surfaces = element.Surfaces(options, revitSettings);
+                        foreach (IBHoMObject iBHoMObject in iBHoMObjects)
+                        {
+                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Surfaces] = surfaces;
+                        }
+                    }
+                    
 
                     result.AddRange(iBHoMObjects);
                 }

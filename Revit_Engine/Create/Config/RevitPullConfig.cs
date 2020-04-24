@@ -39,9 +39,9 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("pullEdges")]
         [InputFromProperty("includeNonVisible")]
         [Output("revitPullConfig")]
-        public static RevitPullConfig RevitPullConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, bool pullEdges = false, bool includeNonVisible = false)
+        public static RevitPullConfig RevitPullConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, bool pullEdges = false, bool pullSurfaces = false, bool includeNonVisible = false)
         {
-            return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, PullEdges = pullEdges, IncludeNonVisible = includeNonVisible };
+            return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, PullEdges = pullEdges, PullSurfaces = pullSurfaces, IncludeNonVisible = includeNonVisible };
         }
 
         /***************************************************/

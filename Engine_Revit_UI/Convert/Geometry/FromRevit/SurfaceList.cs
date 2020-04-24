@@ -20,36 +20,41 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
-using BH.oM.Adapter;
-using BH.oM.Adapters.Revit.Enums;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Linq;
 
-namespace BH.oM.Adapters.Revit
+using Autodesk.Revit.DB;
+
+namespace BH.UI.Revit.Engine
 {
-    [Description("Configuration used for adapter interaction with Revit on Pull action.")]
-    public class RevitPullConfig: ActionConfig
+    public static partial class Convert
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Discipline used on pull action. Default is Physical.")]
-        public virtual Discipline Discipline { get; set; } = Discipline.Undefined;
+        public static List<oM.Geometry.ISurface> FromRevit(this List<Face> faces)
+        {
+            if (faces == null)
+                return null;
 
-        [Description("Elements from closed worksets will be processed if true.")]
-        public virtual bool IncludeClosedWorksets { get; set; } = false;
-
-        [Description("If true, edges of elements will be pulled and stored under Revit_edges in CustomData.")]
-        public virtual bool PullEdges { get; set; } = false;
-
-        [Description("If true, surfaces of elements will be pulled and stored under Revit_surfaces in CustomData.")]
-        public virtual bool PullSurfaces { get; set; } = false;
-
-        [Description("Invisible element edges will be pulled and passed to CustomData if true. PullEdges switched to true needed for this to activate.")]
-        public virtual bool IncludeNonVisible { get; set; } = false;
+            return faces.Select(f => f.IFromRevit()).ToList();
+        }
 
         /***************************************************/
+
+        public static List<oM.Geometry.ISurface> FromRevit(this FaceArray faceArray)
+        {
+            if (faceArray == null)
+                return null;
+
+            List<oM.Geometry.ISurface> result = new List<oM.Geometry.ISurface>();
+            foreach (Face face in faceArray)
+            {
+                result.Add(face.IFromRevit());
+            }
+
+            return result;
+        }       
     }
 }
