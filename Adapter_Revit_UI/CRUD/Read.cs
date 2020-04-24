@@ -83,7 +83,7 @@ namespace BH.UI.Revit.Adapter
                 mapSettings = BH.Engine.Adapters.Revit.Query.DefaultMapSettings();
 
             Options options = null;
-            if (pullConfig.PullEdges)
+            if (pullConfig.PullEdges||pullConfig.PullSurfaces)
                 options = BH.UI.Revit.Engine.Create.Options(ViewDetailLevel.Fine, pullConfig.IncludeNonVisible, false);
 
             List<IBHoMObject> result = new List<IBHoMObject>();
@@ -111,11 +111,9 @@ namespace BH.UI.Revit.Adapter
                         List<ISurface> surfaces = element.Surfaces(options, revitSettings);
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
-                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Surfaces] = surfaces;
+                            iBHoMObject.CustomData[RevitAdapter.Surfaces] = surfaces;
                         }
-                    }
-                    
-
+                    } 
                     result.AddRange(iBHoMObjects);
                 }
             }
