@@ -47,40 +47,8 @@ namespace BH.UI.Revit.Engine
             List<oM.Geometry.ICurve> internalBoundary = crvLoop.Skip(1).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();                           
 
             return new oM.Geometry.PlanarSurface { ExternalBoundary = externalBoundary, InternalBoundaries = internalBoundary };
-        }
+        }        
 
-        /***************************************************/
-
-        //public static oM.Geometry.Loft FromRevit(this CylindricalFace face)
-        //{
-        //    if (face == null)
-        //        return null;
-
-        //    EdgeArrayArray edgeArrays = face.EdgeLoops;
-        //    EdgeArray edgeArray = edgeArrays.get_Item(0);
-
-        //    List<oM.Geometry.ICurve> edges = new List<oM.Geometry.ICurve>();
-
-        //    foreach(Edge edge in edgeArray)
-        //    {
-        //        if(edge.AsCurve() is Arc)
-        //        {
-        //            edges.Add(edge.FromRevit());
-        //        }
-        //    }
-
-        //    return new oM.Geometry.Loft { Curves = edges };
-            
-
-        //    //CylindricalSurface cylinder = face.GetSurface() as CylindricalSurface;
-        //    //oM.Geometry.Point start = new oM.Geometry.Point { X = cylinder.Origin.X, Y = cylinder.Origin.Y, Z = cylinder.Origin.Z };
-        //    //oM.Geometry.Vector axis = new oM.Geometry.Vector { X = cylinder.Axis.X, Y = cylinder.Axis.Y, Z = cylinder.Axis.Z };
-        //    //double radius = cylinder.Radius;
-        //    //double height = (face.GetBoundingBox()).Max.V;
-        //    //oM.Geometry.Line centreLine = new oM.Geometry.Line { Start = start, End = start + (height * axis) };
-
-        //    //return new oM.Geometry.Pipe { Centreline = centreLine, Radius = radius, Capped = true };
-        //}
 
         /***************************************************/
         /****             Interface Methods             ****/
@@ -91,6 +59,7 @@ namespace BH.UI.Revit.Engine
             return FromRevit(face as dynamic);                        
         }        
 
+
         /***************************************************/
         /****              Fallback Methods             ****/
         /***************************************************/
@@ -100,7 +69,7 @@ namespace BH.UI.Revit.Engine
             BH.Engine.Reflection.Compute.RecordError(String.Format("Revit face of type {0} could not be converted to BHoM due to a missing convert method.", face.GetType()));
             return null;
         }
-
+        
         /***************************************************/
     }
 }
