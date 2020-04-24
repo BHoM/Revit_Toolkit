@@ -20,36 +20,62 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
-using BH.oM.Adapter;
-using BH.oM.Adapters.Revit.Enums;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Linq;
 
-namespace BH.oM.Adapters.Revit
+using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Analysis;
+using BH.Engine.Geometry;
+using BH.oM.Reflection.Attributes;
+
+namespace BH.UI.Revit.Engine
 {
-    [Description("Configuration used for adapter interaction with Revit on Pull action.")]
-    public class RevitPullConfig: ActionConfig
+    public static partial class Convert
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Discipline used on pull action. Default is Physical.")]
-        public virtual Discipline Discipline { get; set; } = Discipline.Undefined;
+        public static oM.Geometry.PlanarSurface FromRevit(this Face face)
+        {
+            if (face == null)
+                return null;
 
-        [Description("Elements from closed worksets will be processed if true.")]
-        public virtual bool IncludeClosedWorksets { get; set; } = false;
+            IList<CurveLoop> crvLoop = face.GetEdgesAsCurveLoops();
+            oM.Geometry.ICurve externalBoundary = crvLoop[0].FromRevit();
 
-        [Description("If true, edges of elements will be pulled and stored under Revit_edges in CustomData.")]
-        public virtual bool PullEdges { get; set; } = false;
+            //oM.Geometry.ICurve externalBoundary = crvLoop[0] as oM.Geometry.ICurve;
+            List<oM.Geometry.ICurve> internalBoundary = new List<oM.Geometry.ICurve>();
 
-        [Description("If true, surfaces of elements will be pulled and stored under Revit_surfaces in CustomData.")]
-        public virtual bool PullSurfaces { get; set; } = false;
+            if (crvLoop.Count() >1)
+            {
+                for (int i = 1; i < crvLoop.Count(); i++)
+                {
+                    internalBoundary.Add(crvLoop[i].FromRevit());
+                }
+            }                     
 
-        [Description("Invisible element edges will be pulled and passed to CustomData if true. PullEdges switched to true needed for this to activate.")]
-        public virtual bool IncludeNonVisible { get; set; } = false;
+            return new BH.oM.Geometry.PlanarSurface { ExternalBoundary = externalBoundary, InternalBoundaries = internalBoundary };
+        }       
+
+        /***************************************************/
+        /****             Interface Methods             ****/
+        /***************************************************/
+
+        public static oM.Geometry.ISurface IFromRevit(this Face face)
+        {
+            oM.Geometry.ISurface result = FromRevit(face as dynamic);
+
+            if (result == null)
+            {
+                result = null;
+            }
+
+            return result;
+        }
 
         /***************************************************/
     }
 }
+
