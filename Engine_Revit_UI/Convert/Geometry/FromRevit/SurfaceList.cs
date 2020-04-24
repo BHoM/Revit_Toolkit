@@ -50,18 +50,7 @@ namespace BH.UI.Revit.Engine
 
             List<oM.Geometry.ISurface> result = new List<oM.Geometry.ISurface>();
             foreach (Face face in faceArray)
-            {
-                //bool isCylinder = false;
-
-                //if(face is CylindricalFace) //cylinders in revit are formed of two half-cylinders, need to exclude one of them to create cylinder in bhom.
-                //{
-                //    if (isCylinder)
-                //        continue;
-
-                //    result.Add(face.IFromRevit());
-                //    isCylinder = true;
-                //}
-
+            {        
                 result.Add(face.IFromRevit());
             }
 
