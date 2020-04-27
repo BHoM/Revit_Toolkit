@@ -38,6 +38,15 @@ namespace BH.UI.Revit.Engine
         /****      Convert Revit elements to BHoM       ****/
         /***************************************************/
 
+        public static IBHoMObject FromRevit(this IndependentTag tag, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            switch (discipline)
+            {
+                default:
+                    return tag.TagInformationFromRevit(settings, refObjects);
+            }
+        }
+
         public static IBHoMObject FromRevit(this ProjectInfo projectInfo, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)

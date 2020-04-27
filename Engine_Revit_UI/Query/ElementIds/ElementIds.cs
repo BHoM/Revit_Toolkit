@@ -243,6 +243,13 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static IEnumerable<ElementId> ElementIds(this TagInformationRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsOfTags(request.ViewId, ids);
+        }
+
+        /***************************************************/
+
         public static IEnumerable<ElementId> ElementIds(this LogicalAndRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             IEnumerable<ElementId> result;

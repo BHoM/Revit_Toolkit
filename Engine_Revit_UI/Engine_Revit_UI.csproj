@@ -278,6 +278,7 @@
     <Compile Include="Convert\Geometry\ToRevit\CurveList.cs" />
     <Compile Include="Convert\Revit\FromRevit\Family.cs" />
     <Compile Include="Convert\Revit\FromRevit\IInstance.cs" />
+    <Compile Include="Convert\Revit\FromRevit\TagInformation.cs" />
     <Compile Include="Convert\Revit\ToRevit\ElementType.cs" />
     <Compile Include="Convert\Revit\ToRevit\Family.cs" />
     <Compile Include="Convert\Revit\ToRevit\CurveElement.cs" />
@@ -345,6 +346,7 @@
     <Compile Include="Query\ElementIds\ElementIdsOfActiveView.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfFamilies.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfFamilyTypes.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsOfTags.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfViews.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByViewSpecific.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfViewTemplates.cs" />

@@ -136,6 +136,7 @@
     <Compile Include="Create\Requests\FilterByVisibleInView.cs" />
     <Compile Include="Create\Requests\FilterFamilyTypesOfFamily.cs" />
     <Compile Include="Create\Requests\FilterViewsByTemplate.cs" />
+    <Compile Include="Create\Requests\TagInformationRequest.cs" />
     <Compile Include="Create\Settings\MapSettings.cs" />
     <Compile Include="Create\Generic\FamilyLibrary.cs" />
     <Compile Include="Create\Generic\TypeMap.cs" />

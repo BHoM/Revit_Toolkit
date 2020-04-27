@@ -83,6 +83,7 @@
     <Compile Include="Enums\RevitViewType.cs" />
     <Compile Include="Enums\TextComparisonType.cs" />
     <Compile Include="Generic\FamilyLibrary.cs" />
+    <Compile Include="Generic\TagInformation.cs" />
     <Compile Include="Interface\IParameterRequest.cs" />
     <Compile Include="Interface\IView.cs" />
     <Compile Include="Interface\IInstance.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="Requests\FilterViewsByTemplate.cs" />
     <Compile Include="Requests\FilterViewsByType.cs" />
     <Compile Include="Requests\FilterViewTemplateByName.cs" />
+    <Compile Include="Requests\TagInformationRequest.cs" />
     <Compile Include="_Properties\AssemblyInfo.cs" />
     <Compile Include="Generic\RevitFilePreview.cs" />
     <Compile Include="Settings\FamilyLoadSettings.cs" />
