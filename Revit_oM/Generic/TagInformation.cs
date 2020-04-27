@@ -36,6 +36,8 @@ namespace BH.oM.Adapters.Revit.Generic
 
         public double Height { get; set; }
 
+        public bool IsVertical { get; set; }
+
         public int TaggedElementId { get; set; }
 
         public List<ICurve> TaggedElementCurves { get; set; }

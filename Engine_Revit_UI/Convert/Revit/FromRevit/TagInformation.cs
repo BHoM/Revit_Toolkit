@@ -57,6 +57,7 @@ namespace BH.UI.Revit.Engine
                 tagInformation.Name = tag.Name;
                 tagInformation.ViewId = tag.OwnerViewId.IntegerValue;
                 tagInformation.HasLeader = tag.HasLeader;
+                tagInformation.IsVertical = tag.TagOrientation == TagOrientation.Vertical;
 
                 if (tag.Pinned)
                     tag.Pinned = false;
@@ -71,8 +72,10 @@ namespace BH.UI.Revit.Engine
                 tag.Document.Regenerate();
 
                 BoundingBoxXYZ tagBox = tag.get_BoundingBox(view);
-                tagInformation.Width = (tagBox.Max.X - tagBox.Min.X).ToSI(UnitType.UT_Length);
-                tagInformation.Height = (tagBox.Max.Y - tagBox.Min.Y).ToSI(UnitType.UT_Length);
+                double width = (tagBox.Max.X - tagBox.Min.X).ToSI(UnitType.UT_Length);
+                double height = (tagBox.Max.Y - tagBox.Min.Y).ToSI(UnitType.UT_Length);
+                tagInformation.Width = tagInformation.IsVertical ? height : width;
+                tagInformation.Height = tagInformation.IsVertical ? width : height;
                 tagInformation.Location = (tagBox.Max.PointFromRevit() + tagBox.Min.PointFromRevit()) / 2;
 
                 Element element = tag.Document.GetElement(tag.TaggedLocalElementId);
