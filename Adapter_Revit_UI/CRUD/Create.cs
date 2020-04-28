@@ -71,7 +71,7 @@ namespace BH.UI.Revit.Adapter
                 //Assign Tags
                 string tagsParameterName = null;
                 if (settings != null)
-                    tagsParameterName = settings.TagsParameterName;
+                    tagsParameterName = settings.ParameterSettings.TagsParameter;
                 
                 if (!string.IsNullOrEmpty(tagsParameterName))
                     element.SetTags(bHoMObject, tagsParameterName);

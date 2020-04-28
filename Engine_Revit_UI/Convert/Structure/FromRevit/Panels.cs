@@ -65,7 +65,7 @@ namespace BH.UI.Revit.Engine
 
             //TODO: check if the attributes != null
             HostObjAttributes hostObjAttributes = hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes;
-            string materialGrade = hostObject.MaterialGrade();
+            string materialGrade = hostObject.MaterialGrade(settings);
             ISurfaceProperty property2D = hostObjAttributes.SurfacePropertyFromRevit(materialGrade, settings, refObjects);
 
             List<oM.Geometry.ICurve> outlines = hostObject.Outlines(settings);

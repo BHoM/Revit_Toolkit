@@ -83,11 +83,6 @@ namespace BH.UI.Revit.Adapter
 
             RevitSettings revitSettings = RevitSettings.DefaultIfNull();
 
-            //TODO: this should happen somewhere else!
-            MapSettings mapSettings = RevitSettings.MapSettings;
-            if (mapSettings.TypeMaps == null || mapSettings.TypeMaps.Count == 0)
-                mapSettings = BH.Engine.Adapters.Revit.Query.DefaultMapSettings();
-
             PullGeometryConfig geometryConfig = pullConfig.GeometryConfig;
             if (geometryConfig == null)
                 geometryConfig = new PullGeometryConfig();
@@ -191,7 +186,7 @@ namespace BH.UI.Revit.Adapter
             //Assign Tags
             string tagsParameterName = null;
             if (settings != null)
-                tagsParameterName = settings.TagsParameterName;
+                tagsParameterName = settings.ParameterSettings.TagsParameter;
 
             if (!string.IsNullOrEmpty(tagsParameterName))
             {

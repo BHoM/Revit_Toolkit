@@ -51,7 +51,7 @@ namespace BH.UI.Revit.Engine
             if (material == null)
                 material = revitMaterial.EmptyMaterialFromRevit(settings, refObjects);
 
-            string materialGrade = familyInstance.MaterialGrade();
+            string materialGrade = familyInstance.MaterialGrade(settings);
             material = material.UpdateMaterialProperties(revitMaterial, materialGrade, familyInstance.StructuralMaterialType, settings);
             
             IProfile profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);

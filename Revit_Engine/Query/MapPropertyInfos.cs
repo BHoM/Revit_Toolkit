@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns a collection of PropertyInfo objects owned by given type, which can be used to map parameters with MapSettings.")]
+        [Description("Returns a collection of PropertyInfo objects owned by given type, which can be used to map parameters with ParameterSettings.")]
         [Input("type", "Type to be queried.")]
         [Output("mapPropertyInfos")]
         public static IEnumerable<PropertyInfo> MapPropertyInfos(this Type type)

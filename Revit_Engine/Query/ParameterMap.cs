@@ -23,33 +23,35 @@
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel;
+
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Create
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates a collection of relationships between property names of BHoM types and parameter names of correspondent Revit elements")]
-        [InputFromProperty("typeMaps")]
-        [Output("mapSettings")]
-        public static MapSettings MapSettings(IEnumerable<TypeMap> typeMaps)
+        [Description("Returns ParameterMap for given type inside ParameterSettings.")]
+        [Input("parameterSettings", "ParameterSettings to be queried.")]
+        [Input("type", "Type to be sought for.")]
+        [Output("parameterMap")]
+        public static ParameterMap ParameterMap(this ParameterSettings parameterSettings, Type type)
         {
-            MapSettings mapSettings = new MapSettings();
-            if (typeMaps != null)
-            {
-                foreach (TypeMap typeMap in typeMaps)
-                    mapSettings = mapSettings.AddTypeMap(typeMap);
-            }
+            if (parameterSettings == null)
+                return null;
 
-            return mapSettings;
+            if (type == null || parameterSettings.ParameterMaps == null)
+                return null;
+
+            return parameterSettings.ParameterMaps.Find(x => type.Equals(x.Type));
         }
 
         /***************************************************/
     }
 }
+
 

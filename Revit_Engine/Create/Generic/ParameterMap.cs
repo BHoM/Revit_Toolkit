@@ -21,21 +21,32 @@
  */
 
 using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Base;
-using System.Collections.Generic;
+using BH.oM.Reflection.Attributes;
+using System;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Settings
+
+namespace BH.Engine.Adapters.Revit
 {
-    [Description("A collection of relationships between property names of BHoM types and parameter names of correspondent Revit elements.")]
-    public class MapSettings : BHoMObject
+    public static partial class Create
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("A collection of entities defining relationships between property names of each BHoM type and parameter names of correspondent Revit elements.")]
-        public virtual List<TypeMap> TypeMaps { get; set; } = new List<TypeMap>();
+        [Description("Creates an object that contains the information about the relationship between BHoM property names and Revit parameter names.")]
+        [InputFromProperty("type")]
+        [Output("parameterMap")]
+        public static ParameterMap ParameterMap(Type type)
+        {
+            if (type == null)
+                return null;
+
+            return new ParameterMap()
+            {
+                Type = type
+            };
+        }
 
         /***************************************************/
     }

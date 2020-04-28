@@ -46,7 +46,7 @@ namespace BH.UI.Revit.Engine
 
             HostObjAttributes hostObjAttributes = roofBase.Document.GetElement(roofBase.GetTypeId()) as HostObjAttributes;
             oM.Physical.Constructions.Construction construction = hostObjAttributes.ConstructionFromRevit(settings, refObjects);
-            string materialGrade = roofBase.MaterialGrade();
+            string materialGrade = roofBase.MaterialGrade(settings);
             construction = construction.UpdateMaterialProperties(hostObjAttributes, materialGrade, settings, refObjects);
 
             Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> dictionary = roofBase.PlanarSurfaceDictionary(true, settings);

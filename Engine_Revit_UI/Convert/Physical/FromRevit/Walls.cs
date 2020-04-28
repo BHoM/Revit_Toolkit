@@ -49,7 +49,7 @@ namespace BH.UI.Revit.Engine
             
             HostObjAttributes hostObjAttributes = wall.Document.GetElement(wall.GetTypeId()) as HostObjAttributes;
             oM.Physical.Constructions.Construction construction = hostObjAttributes.ConstructionFromRevit(settings, refObjects);
-            string materialGrade = wall.MaterialGrade();
+            string materialGrade = wall.MaterialGrade(settings);
             construction = construction.UpdateMaterialProperties(hostObjAttributes, materialGrade, settings, refObjects);
 
             Dictionary<PlanarSurface, List<oM.Physical.Elements.IOpening>> dictionary = wall.PlanarSurfaceDictionary(true, settings);

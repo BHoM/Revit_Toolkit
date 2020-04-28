@@ -21,10 +21,10 @@
  */
 
 using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
-using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,18 +34,24 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an object that contains the information about the relationship between BHoM property names and Revit parameter names.")]
-        [InputFromProperty("type")]
-        [Output("typeMap")]
-        public static TypeMap TypeMap(Type type)
+        [Description("Creates a collection of relationships between property names of BHoM types and parameter names of correspondent Revit elements.")]
+        [InputFromProperty("parameterMaps")]
+        [InputFromProperty("tagsParameter")]
+        [InputFromProperty("materialGradeParameter")]
+        [Output("parameterSettings")]
+        public static ParameterSettings ParameterSettings(IEnumerable<ParameterMap> parameterMaps, string tagsParameter = "", string materialGradeParameter = "")
         {
-            if (type == null)
-                return null;
-
-            return new TypeMap()
+            ParameterSettings parameterSettings = new ParameterSettings();
+            if (parameterMaps != null)
             {
-                Type = type
-            };
+                foreach (ParameterMap parameterMap in parameterMaps)
+                    parameterSettings = parameterSettings.AddParameterMap(parameterMap);
+            }
+
+            parameterSettings.TagsParameter = tagsParameter;
+            parameterSettings.MaterialGradeParameter = materialGradeParameter;
+
+            return parameterSettings;
         }
 
         /***************************************************/

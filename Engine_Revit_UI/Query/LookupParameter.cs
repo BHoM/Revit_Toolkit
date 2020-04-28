@@ -138,6 +138,21 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static string LookupParameterString(this Element element, IEnumerable<string> parameterNames)
+        {
+            string value = null;
+            foreach (string name in parameterNames)
+            {
+                value = element.LookupParameterString(name);
+                if (!string.IsNullOrEmpty(value))
+                    return value;
+            }
+
+            return value;
+        }
+
+        /***************************************************/
+
         public static string LookupParameterString(this Element element, string parameterName)
         {
             return element.LookupParameter(parameterName).StringValue();
@@ -152,12 +167,12 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Parameter LookupParameter(this Element element, MapSettings mapSettings, Type type, string name, bool hasValue = true)
+        public static Parameter LookupParameter(this Element element, ParameterSettings parameterSettings, Type type, string name, bool hasValue = true)
         {
-            if (element == null || mapSettings == null || type == null)
+            if (element == null || parameterSettings == null || type == null)
                 return null;
 
-            IEnumerable<string> names = BH.Engine.Adapters.Revit.Query.Names(mapSettings, type, name);
+            IEnumerable<string> names = BH.Engine.Adapters.Revit.Query.Names(parameterSettings, type, name);
             if (names == null || names.Count() == 0)
                 return null;
 

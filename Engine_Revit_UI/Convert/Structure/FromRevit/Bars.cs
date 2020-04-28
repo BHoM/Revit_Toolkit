@@ -65,7 +65,7 @@ namespace BH.UI.Revit.Engine
                 locationCurve = familyInstance.FramingElementLocation(settings);
 
             // Get bar material
-            string materialGrade = familyInstance.MaterialGrade();
+            string materialGrade = familyInstance.MaterialGrade(settings);
             IMaterialFragment materialFragment = familyInstance.StructuralMaterialType.LibraryMaterial(materialGrade);
 
             if (materialFragment == null)

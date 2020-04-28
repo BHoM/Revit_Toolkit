@@ -20,38 +20,27 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Generic
 {
-    public static partial class Query
+    [Description("An entity defining the relationship between property names of BHoM type and parameter names of correspondent Revit elements.")]
+    public class ParameterMap : BHoMObject
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Returns TypeMap for given type inside MapSettings.")]
-        [Input("mapSettings", "MapSettings to be queried.")]
-        [Input("type", "Type to be sought for.")]
-        [Output("typeMap")]
-        public static TypeMap TypeMap(this MapSettings mapSettings, Type type)
-        {
-            if (mapSettings == null)
-                return null;
+        [Description("BHoM type, which property names are being mapped with Revit element parameters.")]
+        public virtual Type Type { get; set; } = null;
 
-            if (type == null && mapSettings.TypeMaps == null)
-                return null;
-
-            return mapSettings.TypeMaps.Find(x => type.Equals(x.Type));
-        }
+        [Description("A collection of BHoM type property names and sets of their correspondent Revit parameter names.")]
+        public virtual Dictionary<string, HashSet<string>> ParameterLinks { get; set; } = new Dictionary<string, HashSet<string>>();
 
         /***************************************************/
     }
 }
-
 

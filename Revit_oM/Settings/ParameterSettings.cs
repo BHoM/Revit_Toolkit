@@ -20,25 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Base;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Generic
+namespace BH.oM.Adapters.Revit.Settings
 {
-    [Description("An entity defining the relationship between property names of BHoM type and parameter names of correspondent Revit elements.")]
-    public class TypeMap : BHoMObject
+    [Description("A collection of relationships between property names of BHoM types and parameter names of correspondent Revit elements.")]
+    public class ParameterSettings : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("BHoM type, which property names are being mapped with Revit element parameters.")]
-        public virtual Type Type { get; set; } = null;
+        [Description("A collection of entities defining relationships between property names of each BHoM type and parameter names of correspondent Revit elements.")]
+        public virtual List<ParameterMap> ParameterMaps { get; set; } = new List<ParameterMap>();
+        
+        public virtual string TagsParameter { get; set; } = "";
 
-        [Description("A collection of BHoM type property names and sets of their correspondent Revit parameter names.")]
-        public virtual Dictionary<string, HashSet<string>> Map { get; set; } = new Dictionary<string, HashSet<string>>();
+        public virtual string MaterialGradeParameter { get; set; } = "";
 
         /***************************************************/
     }
