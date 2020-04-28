@@ -37,13 +37,13 @@ namespace BH.Engine.Adapters.Revit
         [Input("revitSettings", "RevitSettings")]
         [Input("mapSettings", "MapSettings")]
         [Output("RevitSettings")]
-        public static RevitSettings SetMapSettings(this RevitSettings revitSettings, MapSettings mapSettings)
+        public static RevitSettings SetMapSettings(this RevitSettings revitSettings, ParameterSettings mapSettings)
         {
             if (revitSettings == null || mapSettings == null)
                 return revitSettings;
 
             RevitSettings settings = revitSettings.GetShallowClone() as RevitSettings;
-            settings.MapSettings = mapSettings;
+            settings.ParameterSettings = mapSettings;
 
             return settings;
         }

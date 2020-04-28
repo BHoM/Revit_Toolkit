@@ -36,8 +36,8 @@ namespace BH.UI.Revit.Adapter
 
         public static bool Update(Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
-            string tagsParameterName = settings.TagsParameterName;
-            
+            string tagsParameterName = settings.ParameterSettings.TagsParameter;
+
             try
             {
                 element.IUpdate(bHoMObject, settings);

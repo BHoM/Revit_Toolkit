@@ -41,7 +41,7 @@ namespace BH.UI.Revit.Engine
 
         internal static void UpdateValues(this IObject iObject, RevitSettings settings, Element element)
         {
-            if (iObject == null || settings == null || settings.MapSettings == null || element == null)
+            if (iObject == null || settings == null || settings.ParameterSettings == null || element == null)
                 return;
 
             Type type = iObject.GetType();
@@ -50,11 +50,9 @@ namespace BH.UI.Revit.Engine
             if (propertyInfos == null || propertyInfos.Count() == 0)
                 return;
 
-            MapSettings mapSettings = settings.MapSettings;
-
             foreach (PropertyInfo pInfo in propertyInfos)
             {
-                Parameter parameter = element.LookupParameter(mapSettings, type, pInfo.Name, false);
+                Parameter parameter = element.LookupParameter(settings.ParameterSettings, type, pInfo.Name, false);
                 if (parameter == null)
                     continue;
 

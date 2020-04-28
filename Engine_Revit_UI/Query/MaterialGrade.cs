@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Revit.Engine
 {
@@ -30,19 +31,12 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static string MaterialGrade(this Element element)
+        public static string MaterialGrade(this Element element, RevitSettings settings)
         {
             if (element == null)
                 return null;
 
-            string materialGrade = element.LookupParameterString("BHE_Material Grade");
-            if (string.IsNullOrWhiteSpace(materialGrade))
-                materialGrade = element.LookupParameterString("BHE_Material");
-
-            if (!string.IsNullOrWhiteSpace(materialGrade))
-                materialGrade = materialGrade.Replace(" ", "");
-
-            return materialGrade;
+            return element.LookupParameterString(settings.ParameterSettings.MaterialGradeParameter).Replace(" ", "");
         }
 
         /***************************************************/

@@ -38,10 +38,7 @@ namespace BH.oM.Adapters.Revit.Settings
         
         public virtual FamilyLoadSettings FamilyLoadSettings { get; set; } = new FamilyLoadSettings();
         
-        public virtual MapSettings MapSettings { get; set; } = new MapSettings();
-        
-        [Description("Name of Revit parameter to be used to store BHoM tags.")]
-        public virtual string TagsParameterName { get; set; } = "BHE_Tags";
+        public virtual ParameterSettings ParameterSettings { get; set; } = new ParameterSettings();
 
         [Length]
         [Description("Distance tolerance to be used in geometry processing.")]

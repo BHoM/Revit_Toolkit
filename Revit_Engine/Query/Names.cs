@@ -35,24 +35,21 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns a collection of Revit parameter names associated with a given type property inside MapSettings.")]
-        [Input("mapSettings", "MapSettings to be queried.")]
+        [Description("Returns a collection of Revit parameter names associated with a given type property inside ParameterSettings.")]
+        [Input("parameterSettings", "ParameterSettings to be queried.")]
         [Input("type", "Type to be sought for.")]
         [Input("name", "Property name to be sought for.")]
         [Output("names")]
-        public static IEnumerable<string> Names(this MapSettings mapSettings, Type type, string name)
+        public static IEnumerable<string> Names(this ParameterSettings parameterSettings, Type type, string name)
         {
-            if (mapSettings == null || type == null || string.IsNullOrWhiteSpace(name))
+            if (parameterSettings == null || type == null || string.IsNullOrWhiteSpace(name))
                 return null;
 
-            TypeMap typeMap = mapSettings.TypeMap(type);
-            if (typeMap == null)
+            ParameterMap parameterMap = parameterSettings.ParameterMap(type);
+            if (parameterMap == null || parameterMap.ParameterLinks == null || !parameterMap.ParameterLinks.ContainsKey(name))
                 return null;
 
-            if (typeMap.Map == null || !typeMap.Map.ContainsKey(name))
-                return null;
-
-            return typeMap.Map[name];
+            return parameterMap.ParameterLinks[name];
         }
 
         /***************************************************/

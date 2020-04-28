@@ -34,43 +34,43 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Adds TypeMap to existing MapSettings.")]
-        [Input("mapSettings", "MapSettings to be extended.")]
-        [Input("typeMap", "TypeMap to be added.")]
-        [Input("merge", "If there is an existing TypeMap in MapSettings that maps same BHoM type, if true: merge the one to be added with it, if false: leave both TypeMaps separate.")]
-        [Output("mapSettings")]
-        public static MapSettings AddTypeMap(this MapSettings mapSettings, TypeMap typeMap, bool merge = true)
+        [Description("Adds ParameterMap to existing ParameterSettings.")]
+        [Input("parameterSettings", "ParameterSettings to be extended.")]
+        [Input("parameterMap", "ParameterMap to be added.")]
+        [Input("merge", "If there is an existing ParameterMap in ParameterSettings that maps same BHoM type, if true: merge the one to be added with it, if false: leave both ParameterMaps separate.")]
+        [Output("parameterSettings")]
+        public static ParameterSettings AddParameterMap(this ParameterSettings parameterSettings, ParameterMap parameterMap, bool merge = true)
         {
-            if (mapSettings == null)
+            if (parameterSettings == null)
                 return null;
 
-            if (typeMap == null || typeMap.Type == null)
-                return mapSettings;
+            if (parameterMap == null || parameterMap.Type == null)
+                return parameterSettings;
 
-            MapSettings typeMapSettings = mapSettings.GetShallowClone() as MapSettings;
-            if (typeMapSettings.TypeMaps == null)
-                typeMapSettings.TypeMaps = new List<TypeMap>();
+            ParameterSettings cloneSettings = parameterSettings.GetShallowClone() as ParameterSettings;
+            if (cloneSettings.ParameterMaps == null)
+                cloneSettings.ParameterMaps = new List<ParameterMap>();
 
-            TypeMap mapType = typeMapSettings.TypeMaps.Find(x => typeMap.Type.Equals(x.Type));
-            if(mapType == null)
+            ParameterMap cloneMap = cloneSettings.ParameterMaps.Find(x => parameterMap.Type.Equals(x.Type));
+            if(cloneMap == null)
             {
-                typeMapSettings.TypeMaps.Add(typeMap);
+                cloneSettings.ParameterMaps.Add(parameterMap);
             }
             else
             {
-                TypeMap tempTypeMap = typeMap;
+                ParameterMap tempMap = parameterMap;
 
                 if (merge)
                 {
-                    tempTypeMap = typeMap.GetShallowClone() as TypeMap;
+                    tempMap = parameterMap.GetShallowClone() as ParameterMap;
 
-                    foreach (KeyValuePair<string, HashSet<string>> keyValuePair in mapType.Map)
+                    foreach (KeyValuePair<string, HashSet<string>> keyValuePair in cloneMap.ParameterLinks)
                     {
                         HashSet<string> hashSet = null;
-                        if(!tempTypeMap.Map.TryGetValue(keyValuePair.Key, out hashSet))
+                        if(!tempMap.ParameterLinks.TryGetValue(keyValuePair.Key, out hashSet))
                         {
                             hashSet = new HashSet<string>();
-                            tempTypeMap.Map[keyValuePair.Key] = hashSet;
+                            tempMap.ParameterLinks[keyValuePair.Key] = hashSet;
                         }
 
                         foreach (string name in keyValuePair.Value)
@@ -78,11 +78,11 @@ namespace BH.Engine.Adapters.Revit
                     }
                 }
 
-                typeMapSettings.TypeMaps.Remove(mapType);
-                typeMapSettings.TypeMaps.Add(tempTypeMap);
+                cloneSettings.ParameterMaps.Remove(cloneMap);
+                cloneSettings.ParameterMaps.Add(tempMap);
             }
 
-            return typeMapSettings;
+            return cloneSettings;
         }
 
         /***************************************************/

@@ -36,12 +36,11 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates an object that carries general settings that are applicable to all actions performed by the instance of Revit adapter.")]
         [InputFromProperty("connectionSettings")]
         [InputFromProperty("familyLoadSettings")]
-        [InputFromProperty("mapSettings")]
-        [InputFromProperty("tagsParameterName")]
+        [InputFromProperty("parameterSettings")]
         [InputFromProperty("distanceTolerance")]
         [InputFromProperty("angleTolerance")]
         [Output("revitSettings")]
-        public static RevitSettings RevitSettings(ConnectionSettings connectionSettings = null, FamilyLoadSettings familyLoadSettings = null, MapSettings mapSettings = null, string tagsParameterName = null, double distanceTolerance = BH.oM.Geometry.Tolerance.Distance, double angleTolerance = BH.oM.Geometry.Tolerance.Angle)
+        public static RevitSettings RevitSettings(ConnectionSettings connectionSettings = null, FamilyLoadSettings familyLoadSettings = null, ParameterSettings parameterSettings = null, double distanceTolerance = BH.oM.Geometry.Tolerance.Distance, double angleTolerance = BH.oM.Geometry.Tolerance.Angle)
         {
             RevitSettings settings = new RevitSettings();
 
@@ -51,11 +50,8 @@ namespace BH.Engine.Adapters.Revit
             if (familyLoadSettings != null)
                 settings.FamilyLoadSettings = familyLoadSettings;
 
-            if (mapSettings != null)
-                settings.MapSettings = mapSettings;
-
-            if (!string.IsNullOrWhiteSpace(tagsParameterName))
-                settings.TagsParameterName = tagsParameterName;
+            if (parameterSettings != null)
+                settings.ParameterSettings = parameterSettings;
 
             if (!double.IsNaN(distanceTolerance))
                 settings.DistanceTolerance = distanceTolerance;

@@ -37,12 +37,12 @@ namespace BH.Engine.Adapters.Revit
         [Description("Returns MapSettings from RevitSettings")]
         [Input("revitSettings", "RevitSettings")]
         [Output("MapSettings")]
-        public static MapSettings MapSettings(this RevitSettings revitSettings)
+        public static ParameterSettings MapSettings(this RevitSettings revitSettings)
         {
             if (revitSettings == null)
                 return null;
 
-            return revitSettings.MapSettings;
+            return revitSettings.ParameterSettings;
         }
 
         /***************************************************/
