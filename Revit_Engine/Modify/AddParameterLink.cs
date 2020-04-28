@@ -37,64 +37,50 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        [Description("Links Revit parameter with BHoM type property or CustomData inside existing ParameterMap.")]
-        [Input("parameterMap", "ParameterMap to be extended.")]
-        [Input("sourceName", "BHoM type property or CustomData name.")]
-        [Input("destinationName", "Revit parameter name to be mapped.")]
-        [Output("parameterMap")]
-        public static ParameterMap AddParameterLink(this ParameterMap parameterMap, string sourceName, string destinationName)
-        {
-            if (string.IsNullOrWhiteSpace(destinationName))
-                return parameterMap;
 
-            return AddParameterLink(parameterMap, sourceName, new string[] { destinationName });
-        }
-
-        /***************************************************/
-        
         [Description("Links Revit parameters with BHoM type property or CustomData inside existing ParameterMap. In case of multiple destinationNames, first found will be considered correspondent with given type property.")]
         [Input("parameterMap", "ParameterMap to be extended.")]
-        [Input("sourceName", "BHoM type property or CustomData name.")]
-        [Input("destinationNames", "Revit parameter names to be mapped.")]
+        [Input("propertyName", "BHoM type property or CustomData name.")]
+        [Input("parameterNames", "Revit parameter names to be mapped.")]
+        [Input("merge", "In case when propertyName already exists in parameterMap: if true, the parameterNames will be added to the existing collection of parameter names, if false, it will overwrite it.")]
         [Output("parameterMap")]
-        public static ParameterMap AddParameterLink(this ParameterMap parameterMap, string sourceName, IEnumerable<string> destinationNames)
+        public static ParameterMap AddParameterLinks(this ParameterMap parameterMap, IEnumerable<ParameterLink> parameterLinks, bool merge = true)
         {
             if (parameterMap == null)
                 return null;
 
-            if (string.IsNullOrWhiteSpace(sourceName) || destinationNames == null || destinationNames.Count() == 0)
+            if (parameterMap.Type == null || parameterLinks == null || parameterLinks.Count() == 0)
                 return parameterMap;
 
-            Type type = parameterMap.Type;
-
-            if (type == null)
+            IEnumerable<PropertyInfo> propertyInfos = Query.MapPropertyInfos(parameterMap.Type);
+            if (propertyInfos == null)
                 return parameterMap;
 
             ParameterMap clonedMap = parameterMap.GetShallowClone() as ParameterMap;
-            IEnumerable<PropertyInfo> propertyInfos = Query.MapPropertyInfos(type);
-            if (propertyInfos == null || propertyInfos.Count() == 0)
-                return parameterMap;
+            if (clonedMap.ParameterLinks == null)
+                clonedMap.ParameterLinks = new List<ParameterLink>();
+            else
+                clonedMap.ParameterLinks = new List<ParameterLink>(parameterMap.ParameterLinks);
 
-            foreach (PropertyInfo pInfo in propertyInfos)
-                if (pInfo.Name == sourceName)
+            foreach (ParameterLink parameterLink in parameterLinks)
+            {
+                ParameterLink existingLink = clonedMap.ParameterLinks.Find(x => x.PropertyName == parameterLink.PropertyName);
+                if (existingLink == null)
+                    clonedMap.ParameterLinks.Add(parameterLink);
+                else
                 {
-                    if (clonedMap.ParameterLinks == null)
-                        clonedMap.ParameterLinks = new Dictionary<string, HashSet<string>>();
-
-                    HashSet<string> hashSet = null;
-                    if (!clonedMap.ParameterLinks.TryGetValue(sourceName, out hashSet))
+                    clonedMap.ParameterLinks.Remove(existingLink);
+                    if (merge)
                     {
-                        hashSet = new HashSet<string>();
-                        clonedMap.ParameterLinks[sourceName] = hashSet;
+                        ParameterLink newLink = existingLink.GetShallowClone() as ParameterLink;
+                        newLink.ParameterNames = new HashSet<string>(existingLink.ParameterNames);
+                        newLink.ParameterNames.UnionWith(parameterLink.ParameterNames);
+                        clonedMap.ParameterLinks.Add(newLink);
                     }
-
-                    foreach (string destinationName in destinationNames)
-                        if (!string.IsNullOrWhiteSpace(destinationName))
-                            hashSet.Add(destinationName);
-
-                    return clonedMap;
+                    else
+                        clonedMap.ParameterLinks.Add(parameterLink);
                 }
+            }
 
             return clonedMap;
         }
@@ -104,23 +90,30 @@ namespace BH.Engine.Adapters.Revit
         [Description("Links Revit parameter with BHoM type property or CustomData inside existing ParameterSettings.")]
         [Input("parameterSettings", "ParameterSettings to be extended.")]
         [Input("type", "BHoM type to be mapped.")]
-        [Input("sourceName", "BHoM type property or CustomData name.")]
-        [Input("destinationName", "Revit parameter name to be mapped.")]
+        [Input("propertyName", "BHoM type property or CustomData name.")]
+        [Input("parameterName", "Revit parameter name to be mapped.")]
         [Output("parameterSettings")]
-        public static ParameterSettings AddParameterLink(this ParameterSettings parameterSettings, Type type, string sourceName, string destinationName)
+        public static ParameterSettings AddParameterLinks(this ParameterSettings parameterSettings, Type type, IEnumerable<ParameterLink> parameterLinks, bool merge = true)
         {
             if (parameterSettings == null)
                 return null;
 
-            if (type == null || string.IsNullOrWhiteSpace(sourceName) || string.IsNullOrWhiteSpace(destinationName))
+            if (type == null || parameterLinks == null || parameterLinks.Count() == 0)
                 return parameterSettings;
 
-            ParameterMap parameterMap = Create.ParameterMap(type);
-            parameterMap = parameterMap.AddParameterLink(sourceName, destinationName);
+            ParameterSettings cloneSettings = parameterSettings.GetShallowClone() as ParameterSettings;
+            cloneSettings.ParameterMaps = new List<ParameterMap>(parameterSettings.ParameterMaps);
+
+            ParameterMap parameterMap = cloneSettings.ParameterMap(type);
             if (parameterMap == null)
-                return parameterSettings;
+                cloneSettings.ParameterMaps.Add(new ParameterMap { Type = type, ParameterLinks = new List<ParameterLink>(parameterLinks) });
+            else
+            {
+                cloneSettings.ParameterMaps.Remove(parameterMap);
+                cloneSettings.ParameterMaps.Add(parameterMap.AddParameterLinks(parameterLinks, merge));
+            }
 
-            return parameterSettings.AddParameterMap(parameterMap, true);            
+            return cloneSettings;
         }
 
         /***************************************************/

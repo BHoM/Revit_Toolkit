@@ -41,37 +41,39 @@ namespace BH.Engine.Adapters.Revit
         [Output("mapSettings")]
         public static ParameterSettings DefaultMapSettings()
         {
-            //TODO: To be moved to DataSets??
-
             List<ParameterMap> typeMaps = new List<ParameterMap>();
 
             ParameterMap typeMap = null;
 
             typeMap = Create.ParameterMap(typeof(PanelContextFragment));
-            typeMap = typeMap.AddParameterLink("IsAir", new string[] { "IsAir", "BHE_IsAir", "SAM_BuildingElementAir" });
-            typeMap = typeMap.AddParameterLink("Colour", new string[] { "Colour", "BHE_Colour", "SAM_BuildingElementColour" });
-            typeMap = typeMap.AddParameterLink("IsGround", "SAM_BuildingElementGround");
+            typeMap.ParameterLinks.Add(new ParameterLink { PropertyName = "IsAir", ParameterNames = new HashSet<string> { "IsAir", "BHE_IsAir", "SAM_BuildingElementAir" } });
+            typeMap.ParameterLinks.Add(new ParameterLink { PropertyName = "Colour", ParameterNames = new HashSet<string> { "Colour", "BHE_Colour", "SAM_BuildingElementColour" } });
+            typeMap.ParameterLinks.Add(new ParameterLink { PropertyName = "IsGround", ParameterNames = new HashSet<string> { "SAM_BuildingElementGround" } });
             typeMaps.Add(typeMap);
 
             typeMap = Create.ParameterMap(typeof(OriginContextFragment));
-            typeMap = typeMap.AddParameterLink("Description", "SAM_BuildingElementDescription");
+            typeMap.ParameterLinks.Add(new ParameterLink { PropertyName = "Description", ParameterNames = new HashSet<string> { "SAM_BuildingElementDescription" } });
             typeMaps.Add(typeMap);
 
             typeMap = Create.ParameterMap(typeof(PanelAnalyticalFragment));
-            typeMap = typeMap.AddParameterLink("UValue", "SAM_UValue");
-            typeMap = typeMap.AddParameterLink("GValue", "SAM_gValue");
-            typeMap = typeMap.AddParameterLink("LTValue", "SAM_LtValue");
+            typeMap.ParameterLinks.Add(new ParameterLink { PropertyName = "UValue", ParameterNames = new HashSet<string> { "SAM_UValue" } });
+            typeMap.ParameterLinks.Add(new ParameterLink { PropertyName = "GValue", ParameterNames = new HashSet<string> { "SAM_gValue" } });
+            typeMap.ParameterLinks.Add(new ParameterLink { PropertyName = "LTValue", ParameterNames = new HashSet<string> { "SAM_LtValue" } });
             typeMaps.Add(typeMap);
 
             typeMap = Create.ParameterMap(typeof(BuildingAnalyticalFragment));
-            typeMap = typeMap.AddParameterLink("NorthAngle", "SAM_NorthAngle");
+            typeMap.ParameterLinks.Add(new ParameterLink { PropertyName = "NorthAngle", ParameterNames = new HashSet<string> { "SAM_NorthAngle" } });
             typeMaps.Add(typeMap);
 
             typeMap = Create.ParameterMap(typeof(SpaceContextFragment));
-            typeMap = typeMap.AddParameterLink("IsExternal", "SAM_ExternalZone");
+            typeMap.ParameterLinks.Add(new ParameterLink { PropertyName = "IsExternal", ParameterNames = new HashSet<string> { "SAM_ExternalZone" } });
             typeMaps.Add(typeMap);
-            
-            return Create.ParameterSettings(typeMaps);
+
+            ParameterSettings result = Create.ParameterSettings(typeMaps);
+            result.Name = "BH Default Parameter Settings";
+            result.MaterialGradeParameter = "BHE_Material Grade";
+            result.TagsParameter = "BHE_Tags";
+            return result;
         }
 
         /***************************************************/

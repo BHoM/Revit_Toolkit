@@ -86,6 +86,7 @@
     <Compile Include="Enums\RevitViewType.cs" />
     <Compile Include="Enums\TextComparisonType.cs" />
     <Compile Include="Generic\FamilyLibrary.cs" />
+    <Compile Include="Generic\ParameterLink.cs" />
     <Compile Include="Interface\IParameterRequest.cs" />
     <Compile Include="Interface\IView.cs" />
     <Compile Include="Interface\IInstance.cs" />

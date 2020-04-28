@@ -37,7 +37,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Adds ParameterMap to existing ParameterSettings.")]
         [Input("parameterSettings", "ParameterSettings to be extended.")]
         [Input("parameterMap", "ParameterMap to be added.")]
-        [Input("merge", "If there is an existing ParameterMap in ParameterSettings that maps same BHoM type, if true: merge the one to be added with it, if false: leave both ParameterMaps separate.")]
+        [Input("merge", "In case when a ParameterMap with type equal to parameterMap already exists in parameterSettings: if true, parameterMap will be merged into the existing one, if false, it will overwrite it.")]
         [Output("parameterSettings")]
         public static ParameterSettings AddParameterMap(this ParameterSettings parameterSettings, ParameterMap parameterMap, bool merge = true)
         {
@@ -50,36 +50,19 @@ namespace BH.Engine.Adapters.Revit
             ParameterSettings cloneSettings = parameterSettings.GetShallowClone() as ParameterSettings;
             if (cloneSettings.ParameterMaps == null)
                 cloneSettings.ParameterMaps = new List<ParameterMap>();
+            else
+                cloneSettings.ParameterMaps = new List<ParameterMap>(cloneSettings.ParameterMaps);
 
-            ParameterMap cloneMap = cloneSettings.ParameterMaps.Find(x => parameterMap.Type.Equals(x.Type));
+            ParameterMap cloneMap = cloneSettings.ParameterMaps.Find(x => parameterMap.Type == x.Type);
             if(cloneMap == null)
-            {
                 cloneSettings.ParameterMaps.Add(parameterMap);
-            }
             else
             {
-                ParameterMap tempMap = parameterMap;
-
                 if (merge)
-                {
-                    tempMap = parameterMap.GetShallowClone() as ParameterMap;
-
-                    foreach (KeyValuePair<string, HashSet<string>> keyValuePair in cloneMap.ParameterLinks)
-                    {
-                        HashSet<string> hashSet = null;
-                        if(!tempMap.ParameterLinks.TryGetValue(keyValuePair.Key, out hashSet))
-                        {
-                            hashSet = new HashSet<string>();
-                            tempMap.ParameterLinks[keyValuePair.Key] = hashSet;
-                        }
-
-                        foreach (string name in keyValuePair.Value)
-                            hashSet.Add(name);
-                    }
-                }
+                    parameterMap = parameterMap.AddParameterLinks(cloneMap.ParameterLinks, true);
 
                 cloneSettings.ParameterMaps.Remove(cloneMap);
-                cloneSettings.ParameterMaps.Add(tempMap);
+                cloneSettings.ParameterMaps.Add(parameterMap);
             }
 
             return cloneSettings;

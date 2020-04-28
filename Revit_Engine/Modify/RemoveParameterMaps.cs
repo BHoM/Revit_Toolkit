@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,7 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using System;
@@ -30,33 +29,30 @@ using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Modify
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns a collection of Revit parameter names associated with a given type property inside ParameterSettings.")]
-        [Input("parameterSettings", "ParameterSettings to be queried.")]
-        [Input("type", "Type to be sought for.")]
-        [Input("name", "Property name to be sought for.")]
-        [Output("names")]
-        public static IEnumerable<string> Names(this ParameterSettings parameterSettings, Type type, string name)
+        [Description("Removes ParameterMap from existing ParameterSettings.")]
+        [Input("parameterSettings", "ParameterSettings to be extended.")]
+        [Input("type", "Type related to ParameterMap meant to be remved.")]
+        [Output("parameterSettings")]
+        public static ParameterSettings RemoveParameterMaps(this ParameterSettings parameterSettings, IEnumerable<Type> types)
         {
-            if (parameterSettings == null || type == null || string.IsNullOrWhiteSpace(name))
+            if (parameterSettings == null)
                 return null;
 
-            ParameterMap parameterMap = parameterSettings.ParameterMap(type);
-            if (parameterMap == null || parameterMap.ParameterLinks == null)
-                return null;
+            if (parameterSettings.ParameterMaps == null)
+                return parameterSettings;
 
-            ParameterLink parameterLink = parameterMap.ParameterLinks.Find(x => x.PropertyName == name);
-            if (parameterLink == null)
-                return null;
-            else
-                return parameterLink.ParameterNames;
+            ParameterSettings cloneSettings = parameterSettings.GetShallowClone() as ParameterSettings;
+            cloneSettings.ParameterMaps = parameterSettings.ParameterMaps.Where(x => types.All(y=> x.Type != y)).ToList();
+            return cloneSettings;
         }
 
         /***************************************************/
     }
 }
+

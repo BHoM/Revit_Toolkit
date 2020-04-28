@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,43 +20,27 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Generic
 {
-    public static partial class Query
+    //[Description("")]
+    public class ParameterLink : BHoMObject
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Returns a collection of Revit parameter names associated with a given type property inside ParameterSettings.")]
-        [Input("parameterSettings", "ParameterSettings to be queried.")]
-        [Input("type", "Type to be sought for.")]
-        [Input("name", "Property name to be sought for.")]
-        [Output("names")]
-        public static IEnumerable<string> Names(this ParameterSettings parameterSettings, Type type, string name)
-        {
-            if (parameterSettings == null || type == null || string.IsNullOrWhiteSpace(name))
-                return null;
+        //[Description("BHoM type, which property names are being mapped with Revit element parameters.")]
+        public virtual string PropertyName { get; set; } = "";
 
-            ParameterMap parameterMap = parameterSettings.ParameterMap(type);
-            if (parameterMap == null || parameterMap.ParameterLinks == null)
-                return null;
-
-            ParameterLink parameterLink = parameterMap.ParameterLinks.Find(x => x.PropertyName == name);
-            if (parameterLink == null)
-                return null;
-            else
-                return parameterLink.ParameterNames;
-        }
+        //[Description("A collection of BHoM type property names and sets of their correspondent Revit parameter names.")]
+        public virtual HashSet<string> ParameterNames { get; set; } = null;
 
         /***************************************************/
     }
 }
+
