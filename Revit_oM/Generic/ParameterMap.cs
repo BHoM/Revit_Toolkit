@@ -37,8 +37,8 @@ namespace BH.oM.Adapters.Revit.Generic
         [Description("BHoM type, which property names are being mapped with Revit element parameters.")]
         public virtual Type Type { get; set; } = null;
 
-        [Description("A collection of BHoM type property names and sets of their correspondent Revit parameter names.")]
-        public virtual Dictionary<string, HashSet<string>> ParameterLinks { get; set; } = new Dictionary<string, HashSet<string>>();
+        //[Description("A collection of BHoM type property names and sets of their correspondent Revit parameter names.")]
+        public virtual List<ParameterLink> ParameterLinks { get; set; } = null;
 
         /***************************************************/
     }

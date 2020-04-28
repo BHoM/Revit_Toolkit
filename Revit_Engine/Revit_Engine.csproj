@@ -148,6 +148,8 @@
     <Compile Include="Modify\AddParameterMap.cs" />
     <Compile Include="Modify\AddParameterLink.cs" />
     <Compile Include="Modify\DefaultIfNull.cs" />
+    <Compile Include="Modify\RemoveParameterLinks.cs" />
+    <Compile Include="Modify\RemoveParameterMaps.cs" />
     <Compile Include="Modify\SetFamilyTypeName.cs" />
     <Compile Include="Modify\SetFamilyName.cs" />
     <Compile Include="Modify\SetMapSettings.cs" />
@@ -156,6 +158,7 @@
     <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\InnerPolyCurves.cs" />
     <Compile Include="Query\Family.cs" />
+    <Compile Include="Query\ParameterLink.cs" />
     <Compile Include="Query\XDocument.cs" />
     <Compile Include="Query\RevitFilePreviews.cs" />
     <Compile Include="Query\CurrentDomainAssembly.cs" />
