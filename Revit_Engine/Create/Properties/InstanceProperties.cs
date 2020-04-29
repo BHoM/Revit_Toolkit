@@ -20,11 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
-using BH.Adapter.Revit;
-using BH.oM.Reflection.Attributes;
 using BH.oM.Adapters.Revit.Properties;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -45,8 +43,8 @@ namespace BH.Engine.Adapters.Revit
                 Name = Query.FamilyTypeFullName(familyName, familyTypeName),
             };
 
-            instanceProperties.CustomData.Add(RevitAdapter.FamilyName, familyName);
-            instanceProperties.CustomData.Add(RevitAdapter.FamilyTypeName, familyTypeName);
+            instanceProperties.CustomData.Add(Convert.FamilyName, familyName);
+            instanceProperties.CustomData.Add(Convert.FamilyTypeName, familyTypeName);
 
             return instanceProperties;
         }

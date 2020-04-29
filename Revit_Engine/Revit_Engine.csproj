@@ -119,6 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compute\SortByPerformance.cs" />
+    <Compile Include="Convert\Aliases.cs" />
     <Compile Include="Create\Config\RevitPushConfig.cs" />
     <Compile Include="Create\Config\RevitPullConfig.cs" />
     <Compile Include="Create\Config\RevitRemoveConfig.cs" />
@@ -158,7 +159,6 @@
     <Compile Include="Query\Family.cs" />
     <Compile Include="Query\XDocument.cs" />
     <Compile Include="Query\RevitFilePreviews.cs" />
-    <Compile Include="Query\IsValid.cs" />
     <Compile Include="Query\CurrentDomainAssembly.cs" />
     <Compile Include="Query\DefaultMapSettings.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
@@ -200,20 +200,13 @@
     <Compile Include="Query\WorksetId.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
-      <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
-      <Name>Revit_Adapter</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
       <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
       <Name>Revit_oM</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Convert\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

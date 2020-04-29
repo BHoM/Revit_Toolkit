@@ -19,8 +19,7 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-
-using BH.Adapter.Revit;
+ 
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
@@ -41,7 +40,7 @@ namespace BH.Engine.Adapters.Revit
         {
             BHoMObject obj = new BHoMObject();
 
-            obj.CustomData.Add(RevitAdapter.ElementId, elementId);
+            obj.CustomData.Add(Convert.ElementId, elementId);
 
             return obj;
         }
@@ -56,7 +55,7 @@ namespace BH.Engine.Adapters.Revit
         {
             BHoMObject obj = new BHoMObject();
 
-            obj.CustomData.Add(RevitAdapter.AdapterIdName, uniqueId);
+            obj.CustomData.Add(Convert.AdapterIdName, uniqueId);
 
             return obj;
         }

@@ -21,7 +21,6 @@
  */
 
 
-using BH.Adapter.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
@@ -43,7 +42,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             object value = null;
-            if (!revitFilePreview.CustomData.TryGetValue(RevitAdapter.FamilyPlacementTypeName, out value))
+            if (!revitFilePreview.CustomData.TryGetValue(Convert.FamilyPlacementTypeName, out value))
                 return null;
 
             return value as string;
@@ -60,7 +59,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             object value = null;
-            if (!family.CustomData.TryGetValue(RevitAdapter.FamilyPlacementTypeName, out value))
+            if (!family.CustomData.TryGetValue(Convert.FamilyPlacementTypeName, out value))
                 return null;
 
             return value as string;

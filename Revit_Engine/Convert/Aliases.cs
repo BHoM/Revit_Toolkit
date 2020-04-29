@@ -20,16 +20,15 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-namespace BH.Adapter.Revit
+namespace BH.Engine.Adapters.Revit
 {
-    public partial class RevitAdapter
+    public partial class Convert
     {
-
         /***************************************************/
         /****           Public Fields                   ****/
         /***************************************************/
         
-        public new const string AdapterIdName = "Revit_id";
+        public const string AdapterIdName = "Revit_id";
         public const string ElementId = "Revit_elementId";
         public const string FamilyName = "Revit_familyName";
         public const string FamilyTypeName = "Revit_familyTypeName";
@@ -41,6 +40,5 @@ namespace BH.Adapter.Revit
         public const string Surfaces = "Revit_surfaces";
 
         /***************************************************/
-
     }
 }

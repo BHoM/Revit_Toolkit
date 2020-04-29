@@ -38,8 +38,8 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null || element == null)
                 return;
 
-            bHoMObject.CustomData[RevitAdapter.ElementId] = element.Id.IntegerValue;
-            bHoMObject.CustomData[RevitAdapter.AdapterIdName] = element.UniqueId;
+            bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId] = element.Id.IntegerValue;
+            bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.AdapterIdName] = element.UniqueId;
 
             int worksetID = WorksetId.InvalidWorksetId.IntegerValue;
             if (element.Document != null && element.Document.IsWorkshared)
@@ -55,26 +55,26 @@ namespace BH.UI.Revit.Engine
             {
                 Family family = (Family)element;
 
-                bHoMObject.CustomData[RevitAdapter.FamilyName] = family.Name;
+                bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = family.Name;
 
                 if (family.FamilyCategory != null)
-                    bHoMObject.CustomData[RevitAdapter.CategoryName] = family.FamilyCategory.Name;
+                    bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = family.FamilyCategory.Name;
 
-                bHoMObject.CustomData[RevitAdapter.FamilyPlacementTypeName] = family.FamilyPlacementTypeName();
+                bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName] = family.FamilyPlacementTypeName();
             }
             else
             {
                 parameter = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM);
                 if (parameter != null)
-                    bHoMObject.CustomData[RevitAdapter.FamilyName] = parameter.AsValueString();
+                    bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = parameter.AsValueString();
 
                 parameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
                 if (parameter != null)
-                    bHoMObject.CustomData[RevitAdapter.FamilyTypeName] = parameter.AsValueString();
+                    bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = parameter.AsValueString();
 
                 parameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
                 if (parameter != null)
-                    bHoMObject.CustomData[RevitAdapter.CategoryName] = parameter.AsValueString();
+                    bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = parameter.AsValueString();
             }
         }
 

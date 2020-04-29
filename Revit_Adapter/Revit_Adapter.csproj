@@ -89,13 +89,17 @@
     <Compile Include="AdapterActions\Remove.cs" />
     <Compile Include="AdapterActions\Pull.cs" />
     <Compile Include="AdapterActions\Push.cs" />
-    <Compile Include="Aliases.cs" />
     <Compile Include="IInternalRevitAdapter.cs" />
     <Compile Include="PackageType.cs" />
     <Compile Include="RevitAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj">
+      <Project>{75a99ac5-fe80-45a4-b456-1aa3b1c4bb74}</Project>
+      <Name>Revit_Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
       <Project>{B97DBF34-761D-4AB7-B122-D05408B34D0F}</Project>
       <Name>Revit_oM</Name>

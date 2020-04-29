@@ -90,7 +90,7 @@ namespace BH.UI.Revit.Engine
             revitViewPlan.SetParameters(viewPlan, null);
 
             object value = null;
-            if (viewPlan.CustomData.TryGetValue(RevitAdapter.ViewTemplate, out value))
+            if (viewPlan.CustomData.TryGetValue(BH.Engine.Adapters.Revit.Convert.ViewTemplate, out value))
             {
                 if (value is string)
                 {

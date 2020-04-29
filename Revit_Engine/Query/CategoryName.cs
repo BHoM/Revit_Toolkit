@@ -20,7 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Adapter.Revit;
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
@@ -95,7 +94,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             object value = null;
-            if (bHoMObject.CustomData.TryGetValue(RevitAdapter.CategoryName, out value))
+            if (bHoMObject.CustomData.TryGetValue(Convert.CategoryName, out value))
             {
                 if (value == null)
                     return null;
