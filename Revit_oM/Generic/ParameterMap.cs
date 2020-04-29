@@ -38,7 +38,7 @@ namespace BH.oM.Adapters.Revit.Generic
         public virtual Type Type { get; set; } = null;
 
         //[Description("A collection of BHoM type property names and sets of their correspondent Revit parameter names.")]
-        public virtual List<ParameterLink> ParameterLinks { get; set; } = null;
+        public virtual List<ParameterLink> ParameterLinks { get; set; } = new List<ParameterLink>();
 
         /***************************************************/
     }
