@@ -47,7 +47,7 @@ namespace BH.Engine.Adapters.Revit
             if (type == null || parameterSettings.ParameterMaps == null)
                 return null;
 
-            return parameterSettings.ParameterMaps.Find(x => type.Equals(x.Type));
+            return parameterSettings.ParameterMaps.Find(x => x.Type == type);
         }
 
         /***************************************************/
