@@ -20,18 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-using System.Collections.Generic;
-
+using BH.Engine.Environment;
+using BH.oM.Environment.Elements;
+using BH.oM.Environment.Fragments;
 using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
-using BH.oM.Environment.Elements;
-
-using BH.oM.Environment.Fragments;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-
-using BH.Adapter.Revit;
-using BH.Engine.Environment;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -66,12 +62,12 @@ namespace BH.Engine.Adapters.Revit
             PolyCurve polycurve = Geometry.Create.PolyCurve(new ICurve[] { curve, Geometry.Create.Line(minPoint1, maxPoint1) , crv, Geometry.Create.Line(maxPoint2, minPoint2) });
 
             OriginContextFragment originContext = new OriginContextFragment();
-            originContext.Origin = RevitAdapter.AdapterIdName;
+            originContext.Origin = Convert.AdapterIdName;
             originContext.TypeName = familyTypeName;
 
             Panel panel = Environment.Create.Panel(type: PanelType.Wall, externalEdges: polycurve.ToEdges());
             panel.Name = familyTypeName;
-            panel.CustomData.Add(RevitAdapter.CategoryName, "Walls");
+            panel.CustomData.Add(Convert.CategoryName, "Walls");
 
             panel.AddFragment(originContext);
 

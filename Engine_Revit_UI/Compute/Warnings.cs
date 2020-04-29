@@ -398,8 +398,8 @@ namespace BH.UI.Revit.Engine
             {
                 message = string.Format("{0} BHoM Guid: {1}", message, viewPlan.BHoM_Guid);
 
-                if(viewPlan.CustomData.ContainsKey(RevitAdapter.ViewTemplate))
-                    message = string.Format("{0} View Template Name: {1}", message, viewPlan.CustomData[RevitAdapter.ViewTemplate]);
+                if(viewPlan.CustomData.ContainsKey(BH.Engine.Adapters.Revit.Convert.ViewTemplate))
+                    message = string.Format("{0} View Template Name: {1}", message, viewPlan.CustomData[BH.Engine.Adapters.Revit.Convert.ViewTemplate]);
             }
 
             BH.Engine.Reflection.Compute.RecordError(message);

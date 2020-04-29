@@ -39,17 +39,17 @@ namespace BH.UI.Revit.Adapter
             if (bHoMObject == null || element == null)
                 return;
 
-            bHoMObject.CustomData[RevitAdapter.ElementId] = element.Id.IntegerValue;
-            bHoMObject.CustomData[RevitAdapter.AdapterIdName] = element.UniqueId;
+            bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.ElementId] = element.Id.IntegerValue;
+            bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.AdapterIdName] = element.UniqueId;
 
             if (element is Family)
             {
                 Family family = (Family)element;
 
-                bHoMObject.CustomData[RevitAdapter.FamilyPlacementTypeName] = family.FamilyPlacementTypeName();
-                bHoMObject.CustomData[RevitAdapter.FamilyName] = family.Name;
+                bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyPlacementTypeName] = family.FamilyPlacementTypeName();
+                bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = family.Name;
                 if (family.FamilyCategory != null)
-                    bHoMObject.CustomData[RevitAdapter.CategoryName] = family.FamilyCategory.Name;
+                    bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = family.FamilyCategory.Name;
             }
             else
             {
@@ -68,7 +68,7 @@ namespace BH.UI.Revit.Adapter
                 {
                     string value = parameter.AsValueString();
                     if (!string.IsNullOrEmpty(value))
-                        bHoMObject.CustomData[RevitAdapter.FamilyName] = value;
+                        bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = value;
                 }
 
 
@@ -77,7 +77,7 @@ namespace BH.UI.Revit.Adapter
                 {
                     string value = parameter.AsValueString();
                     if (!string.IsNullOrEmpty(value))
-                        bHoMObject.CustomData[RevitAdapter.FamilyTypeName] = value;
+                        bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = value;
                 }
 
 
@@ -86,7 +86,7 @@ namespace BH.UI.Revit.Adapter
                 {
                     string value = parameter.AsValueString();
                     if (!string.IsNullOrEmpty(value))
-                        bHoMObject.CustomData[RevitAdapter.CategoryName] = value;
+                        bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = value;
                 }
             }
 

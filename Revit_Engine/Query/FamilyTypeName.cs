@@ -19,8 +19,7 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-
-using BH.Adapter.Revit;
+ 
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
@@ -42,7 +41,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             object value = null;
-            if (bHoMObject.CustomData.TryGetValue(RevitAdapter.FamilyTypeName, out value))
+            if (bHoMObject.CustomData.TryGetValue(Convert.FamilyTypeName, out value))
             {
                 if (value == null)
                     return null;

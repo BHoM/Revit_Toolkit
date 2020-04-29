@@ -103,7 +103,7 @@ namespace BH.UI.Revit.Adapter
                         List<ICurve> edges = element.Curves(options, revitSettings);
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
-                            iBHoMObject.CustomData[RevitAdapter.Edges] = edges;
+                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Edges] = edges;
                         }
                     }
                     if(pullConfig.PullSurfaces)
@@ -111,7 +111,7 @@ namespace BH.UI.Revit.Adapter
                         List<ISurface> surfaces = element.Surfaces(options, revitSettings);
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
-                            iBHoMObject.CustomData[RevitAdapter.Surfaces] = surfaces;
+                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Surfaces] = surfaces;
                         }
                     } 
                     result.AddRange(iBHoMObjects);
