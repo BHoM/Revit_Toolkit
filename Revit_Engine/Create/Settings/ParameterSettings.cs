@@ -39,7 +39,7 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("tagsParameter")]
         [InputFromProperty("materialGradeParameter")]
         [Output("parameterSettings")]
-        public static ParameterSettings ParameterSettings(IEnumerable<ParameterMap> parameterMaps, string tagsParameter = "", string materialGradeParameter = "")
+        public static ParameterSettings ParameterSettings(IEnumerable<ParameterMap> parameterMaps = null, string tagsParameter = "", string materialGradeParameter = "")
         {
             ParameterSettings parameterSettings = new ParameterSettings();
             if (parameterMaps != null)
