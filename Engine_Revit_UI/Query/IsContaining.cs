@@ -90,7 +90,7 @@ namespace BH.UI.Revit.Engine
 
             foreach (oM.Geometry.Point pt in points)
             {
-                if (BH.Engine.Geometry.Query.IIsContaining(bbox, pt))
+                if (BH.Engine.Geometry.Query.IsContaining(bbox, pt))
                     return true;
             }
 
