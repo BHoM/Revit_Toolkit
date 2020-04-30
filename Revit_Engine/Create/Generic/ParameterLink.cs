@@ -20,25 +20,29 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Generic
+
+namespace BH.Engine.Adapters.Revit
 {
-    //[Description("")]
-    public class ParameterLink : BHoMObject
+    public static partial class Create
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("BHoM type, which property names are being mapped with Revit element parameters.")]
-        public virtual string PropertyName { get; set; } = "";
-
-        //[Description("A collection of BHoM type property names and sets of their correspondent Revit parameter names.")]
-        public virtual HashSet<string> ParameterNames { get; set; } = new HashSet<string>();
+        //[Description("Creates an object that contains the information about the relationship between BHoM property names and Revit parameter names.")]
+        [InputFromProperty("propertyName")]
+        [InputFromProperty("parameterNames")]
+        [Output("parameterLink")]
+        public static ParameterLink ParameterLink(string propertyName, IEnumerable<string> parameterNames)
+        {
+            return new ParameterLink { PropertyName = propertyName, ParameterNames = new HashSet<string>(parameterNames) };
+        }
 
         /***************************************************/
     }

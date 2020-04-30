@@ -86,6 +86,10 @@
       <HintPath>..\..\BHoM\Build\Geometry_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Library_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\Library_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Physical_oM">
       <HintPath>..\..\BHoM\Build\Physical_oM.dll</HintPath>
       <Private>False</Private>
@@ -125,6 +129,7 @@
     <Compile Include="Create\Elements\DraftingInstance.cs" />
     <Compile Include="Create\Elements\ViewPlan.cs" />
     <Compile Include="Create\Elements\ModelInstance.cs" />
+    <Compile Include="Create\Generic\ParameterLink.cs" />
     <Compile Include="Create\Properties\InstanceProperties.cs" />
     <Compile Include="Create\Requests\FilterByFamilyType.cs" />
     <Compile Include="Create\Requests\FilterMemberElements.cs" />
@@ -145,8 +150,8 @@
     <Compile Include="Create\Settings\RevitSettings.cs" />
     <Compile Include="Create\Elements\Viewport.cs" />
     <Compile Include="Create\Elements\Sheet.cs" />
-    <Compile Include="Modify\AddParameterMap.cs" />
-    <Compile Include="Modify\AddParameterLink.cs" />
+    <Compile Include="Modify\AddParameterMaps.cs" />
+    <Compile Include="Modify\AddParameterLinks.cs" />
     <Compile Include="Modify\DefaultIfNull.cs" />
     <Compile Include="Modify\RemoveParameterLinks.cs" />
     <Compile Include="Modify\RemoveParameterMaps.cs" />
@@ -155,6 +160,7 @@
     <Compile Include="Modify\SetMapSettings.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
+    <Compile Include="Query\DefaultParameterSettings.cs" />
     <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\InnerPolyCurves.cs" />
     <Compile Include="Query\Family.cs" />

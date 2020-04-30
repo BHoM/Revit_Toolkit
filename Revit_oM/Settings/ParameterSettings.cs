@@ -37,9 +37,9 @@ namespace BH.oM.Adapters.Revit.Settings
         [Description("A collection of entities defining relationships between property names of each BHoM type and parameter names of correspondent Revit elements.")]
         public virtual List<ParameterMap> ParameterMaps { get; set; } = new List<ParameterMap>();
         
-        public virtual string TagsParameter { get; set; } = "";
+        public virtual string TagsParameter { get; set; } = "BHE_Tags";
 
-        public virtual string MaterialGradeParameter { get; set; } = "";
+        public virtual string MaterialGradeParameter { get; set; } = "BHE_Material Grade";
 
         /***************************************************/
     }

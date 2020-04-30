@@ -25,30 +25,52 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Create
+    public static partial class Modify
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates a collection of relationships between property names of BHoM types and parameter names of correspondent Revit elements.")]
-        [InputFromProperty("parameterMaps")]
-        [InputFromProperty("tagsParameter")]
-        [InputFromProperty("materialGradeParameter")]
+        [Description("Adds ParameterMap to existing ParameterSettings.")]
+        [Input("parameterSettings", "ParameterSettings to be extended.")]
+        [Input("parameterMap", "ParameterMap to be added.")]
+        [Input("merge", "In case when a ParameterMap with type equal to parameterMap already exists in parameterSettings: if true, parameterMap will be merged into the existing one, if false, it will overwrite it.")]
         [Output("parameterSettings")]
-        public static ParameterSettings ParameterSettings(IEnumerable<ParameterMap> parameterMaps, string tagsParameter = "", string materialGradeParameter = "")
+        public static ParameterSettings AddParameterMaps(this ParameterSettings parameterSettings, IEnumerable<ParameterMap> parameterMaps, bool merge = true)
         {
-            ParameterSettings parameterSettings = new ParameterSettings();
-            if (parameterMaps != null)
-                parameterSettings = parameterSettings.AddParameterMaps(parameterMaps);
+            if (parameterSettings == null)
+                return null;
 
-            parameterSettings.TagsParameter = tagsParameter;
-            parameterSettings.MaterialGradeParameter = materialGradeParameter;
+            if (parameterMaps == null || parameterMaps.Count() == 0)
+                return parameterSettings;
 
-            return parameterSettings;
+            ParameterSettings cloneSettings = parameterSettings.GetShallowClone() as ParameterSettings;
+            if (cloneSettings.ParameterMaps == null)
+                cloneSettings.ParameterMaps = new List<ParameterMap>();
+            else
+                cloneSettings.ParameterMaps = new List<ParameterMap>(cloneSettings.ParameterMaps);
+
+            foreach(ParameterMap parameterMap in parameterMaps)
+            {
+                ParameterMap cloneMap = cloneSettings.ParameterMaps.Find(x => parameterMap.Type == x.Type);
+                if (cloneMap == null)
+                    cloneSettings.ParameterMaps.Add(parameterMap);
+                else
+                {
+                    if (merge)
+                        cloneSettings.ParameterMaps.Add(cloneMap.AddParameterLinks(parameterMap.ParameterLinks, true));
+                    else
+                        cloneSettings.ParameterMaps.Add(parameterMap);
+
+                    cloneSettings.ParameterMaps.Remove(cloneMap);
+                }
+            }
+
+            return cloneSettings;
         }
 
         /***************************************************/

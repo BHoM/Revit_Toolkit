@@ -21,6 +21,7 @@
  */
 
 using BH.Adapter.Socket;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Reflection.Debugging;
@@ -38,7 +39,7 @@ namespace BH.Adapter.Revit
         /***************************************************/
 
         public static IInternalRevitAdapter InternalAdapter { get; set; } = null;
-        public RevitSettings RevitSettings { get; set; } = new RevitSettings();
+        public RevitSettings RevitSettings { get; set; } = null;
 
 
         /***************************************************/
@@ -54,11 +55,7 @@ namespace BH.Adapter.Revit
             if (!active)
                 return;
 
-            if (revitSettings != null)
-                RevitSettings = revitSettings;
-
-            if (RevitSettings.ConnectionSettings == null)
-                RevitSettings.ConnectionSettings = new ConnectionSettings();
+            RevitSettings = revitSettings.DefaultIfNull();
 
             m_LinkIn = new SocketLink_Tcp(RevitSettings.ConnectionSettings.PushPort);
             m_LinkOut = new SocketLink_Tcp(RevitSettings.ConnectionSettings.PullPort);
