@@ -293,7 +293,7 @@ namespace BH.UI.Revit.Engine
                     if (tempCurves == null || tempCurves.Count == 0)
                         continue;
 
-                    List<PolyCurve> result = BH.Engine.Geometry.Modify.IJoin(tempCurves);
+                    List<PolyCurve> result = BH.Engine.Geometry.Compute.IJoin(tempCurves);
                     if (result == null || result.Count == 0)
                         continue;
 
