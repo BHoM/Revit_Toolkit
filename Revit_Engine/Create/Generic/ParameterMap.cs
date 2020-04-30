@@ -23,6 +23,7 @@
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 
@@ -37,15 +38,17 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates an object that contains the information about the relationship between BHoM property names and Revit parameter names.")]
         [InputFromProperty("type")]
         [Output("parameterMap")]
-        public static ParameterMap ParameterMap(Type type)
+        public static ParameterMap ParameterMap(Type type, IEnumerable<ParameterLink> parameterLinks = null)
         {
             if (type == null)
                 return null;
 
-            return new ParameterMap()
-            {
-                Type = type
-            };
+            ParameterMap parameterMap = new ParameterMap { Type = type };
+
+            if (parameterLinks != null)
+                parameterMap = parameterMap.AddParameterLinks(parameterLinks);
+
+            return parameterMap;
         }
 
         /***************************************************/
