@@ -40,7 +40,8 @@ namespace BH.Engine.Adapters.Revit
             if (settings == null)
             {
                 BH.Engine.Reflection.Compute.RecordNote("Revit settings are not set. Default settings are used.");
-                return new RevitSettings();
+                settings = new RevitSettings();
+                settings.ParameterSettings = Query.DefaultParameterSettings();
             }
 
             return settings;
