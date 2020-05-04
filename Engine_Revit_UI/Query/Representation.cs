@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -31,13 +32,16 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        public static List<oM.Geometry.ISurface> Surfaces(this GeometryElement geometryElement, Transform transform = null, RevitSettings settings = null)
+
+        public static List<oM.Geometry.IGeometry> Representation(this GeometryElement geometryElement, Transform transform = null, Options options = null, RevitSettings settings = null)
         {
             if (geometryElement == null)
                 return null;
 
-            List<oM.Geometry.ISurface> result = new List<oM.Geometry.ISurface>();
+            if (options == null)
+                options = new Options();
+
+            List<oM.Geometry.IGeometry> result = new List<oM.Geometry.IGeometry>();
             foreach (GeometryObject geometryObject in geometryElement)
             {
                 if (geometryObject is GeometryInstance)
@@ -48,16 +52,16 @@ namespace BH.UI.Revit.Engine
                     if (transform != null)
                         geometryTransform = geometryTransform.Multiply(transform.Inverse);
 
-                    List<oM.Geometry.ISurface> surfaces = null;
+                    List<oM.Geometry.IGeometry> representation = null;
                     GeometryElement geomElement = null;
 
                     geomElement = geometryInstance.GetInstanceGeometry(geometryTransform);
                     if (geomElement == null)
                         continue;
 
-                    surfaces = geomElement.Surfaces(null, settings);
-                    if (surfaces != null && surfaces.Count != 0)
-                        result.AddRange(surfaces);
+                    representation = geomElement.Representation(null, options, settings);
+                    if (representation != null && representation.Count != 0)
+                        result.AddRange(representation);
                 }
                 else if (geometryObject is Solid)
                 {
@@ -66,22 +70,32 @@ namespace BH.UI.Revit.Engine
                     if (faces == null)
                         continue;
 
-                    List<oM.Geometry.ISurface> surfaces = faces.FromRevit();
-                    if (surfaces != null && surfaces.Count != 0)
-                        result.AddRange(surfaces);
+                    foreach(Face face in faces)
+                    {
+                        result.Add(face.Triangulate(options.DetailLevel.FaceTriangulationFactor()).FromRevit());
+                    }
                 }
                 else if (geometryObject is Face)
                 {
                     Face face = (Face)geometryObject;
-                    result.Add(face.FromRevit());
+                    result.Add(face.Triangulate(options.DetailLevel.FaceTriangulationFactor()).FromRevit());
+                }
+                else if (geometryObject is Curve)
+                {
+                    Curve curve = (Curve)geometryObject;
+                    if (curve.IsBound)
+                    {
+                        result.Add(new BH.oM.Geometry.Polyline { ControlPoints = curve.Tessellate().Select(x => x.PointFromRevit()).ToList() });
+                    }
                 }
             }
+
             return result;
         }
 
         /***************************************************/
 
-        public static List<oM.Geometry.ISurface> Surfaces(this Element element, Options options, RevitSettings settings = null)
+        public static List<oM.Geometry.IGeometry> Representation(this Element element, Options options, RevitSettings settings = null)
         {
             GeometryElement geometryElement = element.get_Geometry(options);
 
@@ -89,7 +103,7 @@ namespace BH.UI.Revit.Engine
             if (element is FamilyInstance)
                 transform = ((FamilyInstance)element).GetTotalTransform();
 
-            return geometryElement.Surfaces(transform, settings);
+            return geometryElement.Representation(transform, options, settings);
         }
 
         /***************************************************/

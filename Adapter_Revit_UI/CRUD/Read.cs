@@ -55,6 +55,11 @@ namespace BH.UI.Revit.Adapter
             }
 
             RevitPullConfig pullConfig = actionConfig as RevitPullConfig;
+            if (pullConfig == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided actionConfig is not a valid RevitPullConfig.");
+                return new List<IBHoMObject>();
+            }
 
             Discipline? requestDiscipline = request.Discipline(pullConfig.Discipline);
             if (requestDiscipline == null)
@@ -82,9 +87,16 @@ namespace BH.UI.Revit.Adapter
             if (mapSettings.TypeMaps == null || mapSettings.TypeMaps.Count == 0)
                 mapSettings = BH.Engine.Adapters.Revit.Query.DefaultMapSettings();
 
-            Options options = null;
-            if (pullConfig.PullEdges || pullConfig.PullSurfaces)
-                options = BH.UI.Revit.Engine.Create.Options(ViewDetailLevel.Fine, pullConfig.IncludeNonVisible, false);
+            PullGeometryConfig geometryConfig = pullConfig.GeometryConfig;
+            if (geometryConfig == null)
+                geometryConfig = new PullGeometryConfig();
+
+            PullRepresentationConfig representationConfig = pullConfig.RepresentationConfig;
+            if (representationConfig == null)
+                representationConfig = new PullRepresentationConfig();
+
+            Options geometryOptions = BH.UI.Revit.Engine.Create.Options(ViewDetailLevel.Fine, geometryConfig.IncludeNonVisible, false);
+            Options representationOptions = BH.UI.Revit.Engine.Create.Options(representationConfig.DetailLevel.ViewDetailLevel(), representationConfig.IncludeNonVisible, false);
 
             List<IBHoMObject> result = new List<IBHoMObject>();
             Dictionary<string, List<IBHoMObject>> refObjects = new Dictionary<string, List<IBHoMObject>>();
@@ -98,22 +110,33 @@ namespace BH.UI.Revit.Adapter
                 IEnumerable<IBHoMObject> iBHoMObjects = Read(element, discipline, revitSettings, refObjects);
                 if (iBHoMObjects != null && iBHoMObjects.Count() != 0)
                 { 
-                    if (pullConfig.PullEdges)
+                    if (geometryConfig.PullEdges)
                     {
-                        List<ICurve> edges = element.Curves(options, revitSettings);
+                        List<ICurve> edges = element.Curves(geometryOptions, revitSettings);
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
                             iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Edges] = edges;
                         }
                     }
-                    if(pullConfig.PullSurfaces)
+
+                    if (geometryConfig.PullSurfaces)
                     {
-                        List<ISurface> surfaces = element.Surfaces(options, revitSettings);
+                        List<ISurface> surfaces = element.Surfaces(geometryOptions, revitSettings);
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
                             iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Surfaces] = surfaces;
                         }
-                    } 
+                    }
+
+                    if (representationConfig.PullRepresentation)
+                    {
+                        List<IGeometry> representation = element.Representation(representationOptions, revitSettings);
+                        foreach (IBHoMObject iBHoMObject in iBHoMObjects)
+                        {
+                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Representation] = representation;
+                        }
+                    }
+
                     result.AddRange(iBHoMObjects);
                 }
             }

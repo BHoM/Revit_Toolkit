@@ -20,25 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-namespace BH.Engine.Adapters.Revit
+using BH.oM.Adapter;
+using System.ComponentModel;
+
+namespace BH.oM.Adapters.Revit
 {
-    public partial class Convert
+    [Description("Configuration used to specify which geometry should be pulled and passed to CustomData.")]
+    public class PullGeometryConfig
     {
         /***************************************************/
-        /****           Public Fields                   ****/
+        /****             Public Properties             ****/
         /***************************************************/
-        
-        public const string AdapterIdName = "Revit_id";
-        public const string ElementId = "Revit_elementId";
-        public const string FamilyName = "Revit_familyName";
-        public const string FamilyTypeName = "Revit_familyTypeName";
-        public const string FamilyPlacementTypeName = "Revit_familyPlacementTypeName";
-        public const string CategoryName = "Revit_categoryName";
-        public const string ViewName = "Revit_viewName";
-        public const string ViewTemplate = "View Template";
-        public const string Edges = "Revit_edges";
-        public const string Surfaces = "Revit_surfaces";
-        public const string Representation = "MeshRepresentation";
+
+        [Description("If true, edges of elements will be pulled and stored under Revit_edges in CustomData.")]
+        public virtual bool PullEdges { get; set; } = false;
+
+        [Description("If true, surfaces of elements will be pulled and stored under Revit_surfaces in CustomData.")]
+        public virtual bool PullSurfaces { get; set; } = false;
+
+        [Description("Invisible element parts will be pulled and passed to CustomData if true. PullEdges or PullSurfaces switched to true needed for this to activate.")]
+        public virtual bool IncludeNonVisible { get; set; } = false;
 
         /***************************************************/
     }

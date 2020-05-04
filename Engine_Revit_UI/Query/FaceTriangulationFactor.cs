@@ -20,26 +20,30 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-namespace BH.Engine.Adapters.Revit
+using Autodesk.Revit.DB;
+
+namespace BH.UI.Revit.Engine
 {
-    public partial class Convert
+    public static partial class Query
     {
         /***************************************************/
-        /****           Public Fields                   ****/
+        /****              Public methods               ****/
         /***************************************************/
-        
-        public const string AdapterIdName = "Revit_id";
-        public const string ElementId = "Revit_elementId";
-        public const string FamilyName = "Revit_familyName";
-        public const string FamilyTypeName = "Revit_familyTypeName";
-        public const string FamilyPlacementTypeName = "Revit_familyPlacementTypeName";
-        public const string CategoryName = "Revit_categoryName";
-        public const string ViewName = "Revit_viewName";
-        public const string ViewTemplate = "View Template";
-        public const string Edges = "Revit_edges";
-        public const string Surfaces = "Revit_surfaces";
-        public const string Representation = "MeshRepresentation";
+
+        public static double FaceTriangulationFactor(this ViewDetailLevel viewDetailLevel)
+        {
+            switch (viewDetailLevel)
+            {
+                case Autodesk.Revit.DB.ViewDetailLevel.Coarse:
+                    return 0;
+                case Autodesk.Revit.DB.ViewDetailLevel.Fine:
+                    return 1;
+                default:
+                    return 0.5;
+            }
+        }
 
         /***************************************************/
     }
 }
+

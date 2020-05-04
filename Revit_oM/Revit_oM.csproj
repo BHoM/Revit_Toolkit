@@ -71,6 +71,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\PullGeometryConfig.cs" />
+    <Compile Include="Config\PullRepresentationConfig.cs" />
     <Compile Include="Config\RevitRemoveConfig.cs" />
     <Compile Include="Elements\DraftingInstance.cs" />
     <Compile Include="Elements\Family.cs" />
@@ -78,6 +80,7 @@
     <Compile Include="Elements\ModelInstance.cs" />
     <Compile Include="Elements\Viewport.cs" />
     <Compile Include="Enums\AdapterMode.cs" />
+    <Compile Include="Enums\DetailLevel.cs" />
     <Compile Include="Enums\Discipline.cs" />
     <Compile Include="Enums\NumberComparisonType.cs" />
     <Compile Include="Enums\RevitViewType.cs" />

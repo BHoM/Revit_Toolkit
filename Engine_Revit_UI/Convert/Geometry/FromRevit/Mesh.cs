@@ -20,25 +20,30 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-namespace BH.Engine.Adapters.Revit
+using Autodesk.Revit.DB;
+using System.Linq;
+
+namespace BH.UI.Revit.Engine
 {
-    public partial class Convert
+    public static partial class Convert
     {
         /***************************************************/
-        /****           Public Fields                   ****/
+        /****               Public Methods              ****/
         /***************************************************/
-        
-        public const string AdapterIdName = "Revit_id";
-        public const string ElementId = "Revit_elementId";
-        public const string FamilyName = "Revit_familyName";
-        public const string FamilyTypeName = "Revit_familyTypeName";
-        public const string FamilyPlacementTypeName = "Revit_familyPlacementTypeName";
-        public const string CategoryName = "Revit_categoryName";
-        public const string ViewName = "Revit_viewName";
-        public const string ViewTemplate = "View Template";
-        public const string Edges = "Revit_edges";
-        public const string Surfaces = "Revit_surfaces";
-        public const string Representation = "MeshRepresentation";
+
+        public static oM.Geometry.Mesh FromRevit(this Mesh mesh)
+        {
+            if (mesh == null)
+                return null;
+
+            oM.Geometry.Mesh bHoMMesh = new oM.Geometry.Mesh { Vertices = mesh.Vertices.Select(x => x.PointFromRevit()).ToList() };
+            for (int i = 0; i < mesh.NumTriangles; i++)
+            {
+                bHoMMesh.Faces.Add(mesh.get_Triangle(i).FromRevit());
+            }
+
+            return bHoMMesh;
+        }
 
         /***************************************************/
     }

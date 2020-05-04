@@ -41,14 +41,11 @@ namespace BH.oM.Adapters.Revit
         [Description("Elements from closed worksets will be processed if true.")]
         public virtual bool IncludeClosedWorksets { get; set; } = false;
 
-        [Description("If true, edges of elements will be pulled and stored under Revit_edges in CustomData.")]
-        public virtual bool PullEdges { get; set; } = false;
+        [Description("Configuration specifying which geometry should be pulled and passed to CustomData.")]
+        public virtual PullGeometryConfig GeometryConfig { get; set; } = new PullGeometryConfig();
 
-        [Description("If true, surfaces of elements will be pulled and stored under Revit_surfaces in CustomData.")]
-        public virtual bool PullSurfaces { get; set; } = false;
-
-        [Description("Invisible element edges will be pulled and passed to CustomData if true. PullEdges switched to true needed for this to activate.")]
-        public virtual bool IncludeNonVisible { get; set; } = false;
+        [Description("Configuration specifying representation to be pulled and passed to CustomData.")]
+        public virtual PullRepresentationConfig RepresentationConfig { get; set; } = new PullRepresentationConfig();
 
         /***************************************************/
     }
