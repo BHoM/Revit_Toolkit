@@ -333,7 +333,7 @@
     <Compile Include="Objects\WarningSwallower.cs" />
     <Compile Include="Query\ArbitraryPlane.cs" />
     <Compile Include="Query\BoundingBox.cs" />
-    <Compile Include="Query\LevelOfDetail.cs" />
+    <Compile Include="Query\FaceTriangulationFactor.cs" />
     <Compile Include="Query\Representation.cs" />
     <Compile Include="Query\Surfaces.cs" />
     <Compile Include="Query\ElementIds\ElementIds.cs" />
