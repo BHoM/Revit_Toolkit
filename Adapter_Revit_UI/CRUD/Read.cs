@@ -162,7 +162,7 @@ namespace BH.UI.Revit.Adapter
 
             bool[] activePulls = new bool[] { geometryConfig.PullEdges, geometryConfig.PullSurfaces, geometryConfig.PullMeshes, representationConfig.PullRenderMesh };
             if (activePulls.Count(x => x == true) > 1)
-                BH.Engine.Reflection.Compute.RecordError("Pull of more than one geometry/representation type has been specified in RevitPullConfig. Please consider this can be time consuming due to the amount of conversions.");
+                BH.Engine.Reflection.Compute.RecordWarning("Pull of more than one geometry/representation type has been specified in RevitPullConfig. Please consider this can be time consuming due to the amount of conversions.");
 
             return result;
         }
