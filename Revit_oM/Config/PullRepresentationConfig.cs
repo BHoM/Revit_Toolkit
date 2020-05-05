@@ -33,8 +33,8 @@ namespace BH.oM.Adapters.Revit
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("If true, representation of elements will be pulled and stored under MeshRepresentation in CustomData.")]
-        public virtual bool PullRepresentation { get; set; } = false;
+        [Description("If true, representation of elements will be pulled and stored under RenderMesh in CustomData.")]
+        public virtual bool PullRenderMesh { get; set; } = false;
 
         [Description("Detail level of representation, correspondent to level of detail in Revit.")]
         public virtual DetailLevel DetailLevel { get; set; } = DetailLevel.Medium;
