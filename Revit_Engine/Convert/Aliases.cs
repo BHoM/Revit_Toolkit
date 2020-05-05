@@ -22,7 +22,7 @@
 
 namespace BH.Engine.Adapters.Revit
 {
-    public partial class Convert
+    public static partial class Convert
     {
         /***************************************************/
         /****           Public Fields                   ****/
