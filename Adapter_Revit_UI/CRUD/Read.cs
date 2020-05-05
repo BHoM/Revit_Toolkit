@@ -30,6 +30,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Data.Requests;
 using BH.oM.Geometry;
+using BH.oM.Graphics;
 using BH.UI.Revit.Engine;
 using System;
 using System.Collections.Generic;
@@ -96,11 +97,12 @@ namespace BH.UI.Revit.Adapter
                 representationConfig = new PullRepresentationConfig();
 
             Options geometryOptions = BH.UI.Revit.Engine.Create.Options(ViewDetailLevel.Fine, geometryConfig.IncludeNonVisible, false);
-            Options representationOptions = BH.UI.Revit.Engine.Create.Options(representationConfig.DetailLevel.ViewDetailLevel(), representationConfig.IncludeNonVisible, false);
+            Options meshOptions = BH.UI.Revit.Engine.Create.Options(geometryConfig.MeshDetailLevel.ViewDetailLevel(), geometryConfig.IncludeNonVisible, false);
+            Options renderMeshOptions = BH.UI.Revit.Engine.Create.Options(representationConfig.DetailLevel.ViewDetailLevel(), representationConfig.IncludeNonVisible, false);
 
             List<IBHoMObject> result = new List<IBHoMObject>();
             Dictionary<string, List<IBHoMObject>> refObjects = new Dictionary<string, List<IBHoMObject>>();
-
+            
             foreach (ElementId id in elementIds)
             {
                 Element element = document.GetElement(id);
@@ -128,18 +130,39 @@ namespace BH.UI.Revit.Adapter
                         }
                     }
 
-                    if (representationConfig.PullRepresentation)
+                    if (geometryConfig.PullMeshes)
                     {
-                        List<IGeometry> representation = element.Representation(representationOptions, revitSettings);
+                        List<IGeometry> meshes = element.Meshes(meshOptions, revitSettings);
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
-                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Representation] = representation;
+                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Meshes] = meshes;
+                        }
+                    }
+
+                    if (representationConfig.PullRenderMesh)
+                    {
+                        List<IGeometry> meshes = element.Meshes(renderMeshOptions, revitSettings);
+                        for (int i = 0; i < meshes.Count; i++)
+                        {
+                            if (meshes[i] is BH.oM.Geometry.Mesh)
+                            {
+                                BH.oM.Geometry.Mesh mesh = ((BH.oM.Geometry.Mesh)meshes[i]);
+                                meshes[i] = new BH.oM.Graphics.RenderMesh() { Faces = mesh.Faces, Vertices = mesh.Vertices.Select(pt => (Vertex)pt).ToList() };
+                            }
+                        }
+                        foreach (IBHoMObject iBHoMObject in iBHoMObjects)
+                        {
+                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.RenderMesh] = meshes;
                         }
                     }
 
                     result.AddRange(iBHoMObjects);
                 }
             }
+
+            bool[] activePulls = new bool[] { geometryConfig.PullEdges, geometryConfig.PullSurfaces, geometryConfig.PullMeshes, representationConfig.PullRenderMesh };
+            if (activePulls.Count(x => x == true) > 1)
+                BH.Engine.Reflection.Compute.RecordError("Pull of more than one geometry/representation type has been specified in RevitPullConfig. Please consider this can be time consuming due to the amount of conversions.");
 
             return result;
         }

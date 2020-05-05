@@ -38,7 +38,8 @@ namespace BH.Engine.Adapters.Revit
         public const string ViewTemplate = "View Template";
         public const string Edges = "Revit_edges";
         public const string Surfaces = "Revit_surfaces";
-        public const string Representation = "MeshRepresentation";
+        public const string Meshes = "Revit_meshes";
+        public const string RenderMesh = "RenderMesh";
 
         /***************************************************/
     }

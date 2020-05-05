@@ -33,7 +33,7 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<oM.Geometry.IGeometry> Representation(this GeometryElement geometryElement, Transform transform = null, Options options = null, RevitSettings settings = null)
+        public static List<oM.Geometry.IGeometry> Meshes(this GeometryElement geometryElement, Transform transform = null, Options options = null, RevitSettings settings = null)
         {
             if (geometryElement == null)
                 return null;
@@ -52,16 +52,16 @@ namespace BH.UI.Revit.Engine
                     if (transform != null)
                         geometryTransform = geometryTransform.Multiply(transform.Inverse);
 
-                    List<oM.Geometry.IGeometry> representation = null;
+                    List<oM.Geometry.IGeometry> mesh = null;
                     GeometryElement geomElement = null;
 
                     geomElement = geometryInstance.GetInstanceGeometry(geometryTransform);
                     if (geomElement == null)
                         continue;
 
-                    representation = geomElement.Representation(null, options, settings);
-                    if (representation != null && representation.Count != 0)
-                        result.AddRange(representation);
+                    mesh = geomElement.Meshes(null, options, settings);
+                    if (mesh != null && mesh.Count != 0)
+                        result.AddRange(mesh);
                 }
                 else if (geometryObject is Solid)
                 {
@@ -95,7 +95,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static List<oM.Geometry.IGeometry> Representation(this Element element, Options options, RevitSettings settings = null)
+        public static List<oM.Geometry.IGeometry> Meshes(this Element element, Options options, RevitSettings settings = null)
         {
             GeometryElement geometryElement = element.get_Geometry(options);
 
@@ -103,7 +103,7 @@ namespace BH.UI.Revit.Engine
             if (element is FamilyInstance)
                 transform = ((FamilyInstance)element).GetTotalTransform();
 
-            return geometryElement.Representation(transform, options, settings);
+            return geometryElement.Meshes(transform, options, settings);
         }
 
         /***************************************************/
