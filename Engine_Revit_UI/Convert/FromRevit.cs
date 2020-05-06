@@ -27,6 +27,7 @@ using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -442,7 +443,7 @@ namespace BH.UI.Revit.Engine
             }
 
             var result = FromRevit(element as dynamic, discipline, settings, refObjects);
-            if (result == null)
+            if (result == null || (typeof(IEnumerable<object>).IsAssignableFrom(result.GetType()) && ((IEnumerable<object>)result).Count(x => x != null) == 0))
             {
                 result = element.ObjectFromRevit(discipline, settings, refObjects);
                 element.NotConvertedWarning(discipline);
