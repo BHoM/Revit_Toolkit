@@ -38,7 +38,7 @@ You will need the following to build Revit_Toolkit:
 - [BHoM_Adapter](https://github.com/BHoM/BHoM_Adapter)
 - [Socket_Toolkit](https://github.com/BHoM/Socket_Toolkit)
 
-To switch between Revit_Toolkit for specific Revit version use Configuration Manager:
+Revit_Toolkit needs to be built separately for each version of Revit. To switch between version-specific Revit_Toolkit configurations use Configuration Manager:  
 Debug2018 -> Revit 2018  
 Debug2019 -> Revit 2019  
 Debug2020 -> Revit 2020  
