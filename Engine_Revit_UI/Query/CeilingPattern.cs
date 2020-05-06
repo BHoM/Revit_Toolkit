@@ -47,10 +47,21 @@ namespace BH.UI.Revit.Engine
                     {
                         double offset = grid.Offset;
 
-                        BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = lowestX, Y = lowestY + offset, Z = z };
-                        BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = highestX, Y = lowestY + offset, Z = z };
+                        double currentY = lowestY;
 
-                        patterns.Add(new Polyline { ControlPoints = new List<oM.Geometry.Point> { pt, pt2 } });
+                        while((currentY + offset) < highestY)
+                        {
+                            BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = lowestX, Y = currentY + offset, Z = z };
+                            BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = highestX, Y = currentY + offset, Z = z };
+
+                            Polyline pline = new Polyline { ControlPoints = new List<oM.Geometry.Point> { pt, pt2 } };
+
+                            pline = pline.Rotate(pt, Vector.ZAxis, grid.Angle);
+
+                            patterns.Add(pline);
+
+                            currentY += offset;
+                        }
                     }
                 }
             }
