@@ -2,22 +2,19 @@
 
 # Revit_Toolkit
 
-A set of tools enabling exchange of information between BHoM and Revit:
-- communication between BHoM and Revit via `RevitListener` and sockets
+A set of tools enabling exchange of information between BHoM and [Revit](https://www.autodesk.com/products/revit/overview):
+- communication between BHoM and Revit via the Adapter, `RevitListener` plugin and sockets
 - `ToRevit` and `FromRevit` conversion
 - a set of utility methods supporting conversion and processing of Revit elements
 
-https://www.autodesk.com/products/revit/overview
-
 ### Known Versions of Software Supported
-Autodesk Revit 2018
-Autodesk Revit 2019
-Autodesk Revit 2020
+Autodesk Revit 2018  
+Autodesk Revit 2019  
+Autodesk Revit 2020  
 
 ### Documentation
 For more information about functionality see [Revit_Toolkit Wiki](https://github.com/BHoM/Revit_Toolkit/wiki).
 
----
 This toolkit is part of the Buildings and Habitats object Model. Find out more on our [wiki](https://github.com/BHoM/documentation/wiki) or at [https://bhom.xyz](https://bhom.xyz/)
 
 ## Quick Start 🚀 
@@ -32,7 +29,6 @@ Do take a look at our specific wiki pages here: [Getting Started for Developers]
 
 You will need the following to build Revit_Toolkit:
 - Microsoft Visual Studio 2015 or higher
-- [GitHub for Windows](https://windows.github.com/)
 - Microsoft .NET Framework
     - .NET Framework 4.5.2 for Revit 2018
     - .NET Framework 4.7.2 for Revit 2019
@@ -43,9 +39,9 @@ You will need the following to build Revit_Toolkit:
 - [Socket_Toolkit](https://github.com/BHoM/Socket_Toolkit)
 
 To switch between Revit_Toolkit for specific Revit version use Configuration Manager:
-Debug2018 -> Revit 2018
-Debug2019 -> Revit 2019
-Debug2020 -> Revit 2020
+Debug2018 -> Revit 2018  
+Debug2019 -> Revit 2019  
+Debug2020 -> Revit 2020  
 
 
 ## Want to Contribute? ##
