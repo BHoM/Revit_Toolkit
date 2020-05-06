@@ -48,6 +48,7 @@ namespace BH.UI.Revit.Engine
                         double offset = grid.Offset;
 
                         double currentY = lowestY;
+                        double currentX = lowestX;
 
                         while((currentY + offset) < highestY)
                         {
@@ -56,7 +57,12 @@ namespace BH.UI.Revit.Engine
 
                             Polyline pline = new Polyline { ControlPoints = new List<oM.Geometry.Point> { pt, pt2 } };
 
-                            pline = pline.Rotate(pt, Vector.ZAxis, grid.Angle);
+                            if (grid.Angle > 0)
+                            {
+                                BH.oM.Geometry.Point rotatePt = new oM.Geometry.Point { X = currentX + offset, Y = currentY + offset, Z = z };
+                                pline = pline.Rotate(rotatePt, Vector.ZAxis, grid.Angle);
+                                currentX += offset;
+                            }
 
                             patterns.Add(pline);
 
