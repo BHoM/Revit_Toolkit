@@ -58,6 +58,7 @@
     </Reference>
     <Reference Include="Data_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Data_Engine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Data_oM">
       <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
