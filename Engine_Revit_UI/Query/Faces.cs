@@ -33,13 +33,13 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<Solid> Solids(this Element element, Options options, RevitSettings settings = null)
+        public static List<Face> Faces(this Element element, Options options, RevitSettings settings = null)
         {
             List<GeometryObject> geometryPrimitives = element.GeometryPrimitives(options, settings);
             if (geometryPrimitives == null)
                 return null;
 
-            return geometryPrimitives.Where(x => x is Solid).Cast<Solid>().ToList();
+            return geometryPrimitives.Where(x => x is Face).Cast<Face>().ToList();
         }
 
         /***************************************************/

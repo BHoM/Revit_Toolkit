@@ -160,6 +160,14 @@
       <HintPath>..\..\BHoM\Build\Geometry_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Graphics_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\Graphics_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Graphics_oM">
+      <HintPath>..\..\BHoM\Build\Graphics_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Library_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Library_Engine.dll</HintPath>
       <Private>False</Private>
@@ -231,6 +239,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -271,6 +280,7 @@
     <Compile Include="Convert\Physical\ToRevit\FamilyInstance.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilySymbol.cs" />
     <Compile Include="Convert\Revit\FromRevit\BHoMObject.cs" />
+    <Compile Include="Convert\Revit\FromRevit\Color.cs" />
     <Compile Include="Convert\Revit\FromRevit\DraftingInstance.cs" />
     <Compile Include="Convert\Environment\FromRevit\SolidMaterial.cs" />
     <Compile Include="Convert\Physical\ToRevit\RoofBase.cs" />
@@ -331,11 +341,12 @@
     <Compile Include="Modify\UpdateValues.cs" />
     <Compile Include="Objects\FamilyLoadOptions.cs" />
     <Compile Include="Objects\WarningSwallower.cs" />
+    <Compile Include="Query\Color.cs" />
+    <Compile Include="Query\EdgeCurves.cs" />
+    <Compile Include="Query\GeometryPrimitives.cs" />
     <Compile Include="Query\ArbitraryPlane.cs" />
-    <Compile Include="Query\BoundingBox.cs" />
     <Compile Include="Query\FaceTriangulationFactor.cs" />
-    <Compile Include="Query\Meshes.cs" />
-    <Compile Include="Query\Surfaces.cs" />
+    <Compile Include="Query\Faces.cs" />
     <Compile Include="Query\ElementIds\ElementIds.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByBHoMType.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByCategory.cs" />
@@ -364,8 +375,10 @@
     <Compile Include="Query\IsContaining.cs" />
     <Compile Include="Query\IsSupportedAPIType.cs" />
     <Compile Include="Query\IsVerticalNonLinearCurve.cs" />
+    <Compile Include="Query\MeshedGeometry.cs" />
     <Compile Include="Query\OriginContext.cs" />
     <Compile Include="Query\PlanarSurfaceDictionary.cs" />
+    <Compile Include="Query\RenderMeshes.cs" />
     <Compile Include="Query\RevitTypes.cs" />
     <Compile Include="Query\SectionShape.cs" />
     <Compile Include="Query\Solids.cs" />

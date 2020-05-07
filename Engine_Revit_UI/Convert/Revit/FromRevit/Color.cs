@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -19,35 +19,23 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-
+ 
 using Autodesk.Revit.DB;
-using BH.Engine.Geometry;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
-using System.Collections.Generic;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Query
+    public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        public static BoundingBox BoundingBox(this Element element, Options options, RevitSettings settings = null)
+        public static System.Drawing.Color FromRevit(this Color color)
         {
-            List<ICurve> curves = element.Curves(options, settings);
-
-            if (curves == null || curves.Count == 0)
-                return null;
-
-            BoundingBox bbox = curves[0].IBounds();
-            for (int i = 1; i < curves.Count; i++)
-                bbox += curves[i].IBounds();
-
-            return bbox;
+            return System.Drawing.Color.FromArgb(255, color.Red, color.Green, color.Blue);
         }
 
         /***************************************************/
     }
 }
+

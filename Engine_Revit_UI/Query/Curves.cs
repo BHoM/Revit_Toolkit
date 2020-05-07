@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -31,67 +32,19 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        public static List<oM.Geometry.ICurve> Curves(this GeometryElement geometryElement, Transform transform = null, RevitSettings settings = null)
+
+        public static List<Curve> Curves(this Element element, Options options, RevitSettings settings = null, bool includeEdges = false)
         {
-            if (geometryElement == null)
+            List<GeometryObject> geometryPrimitives = element.GeometryPrimitives(options, settings);
+            if (geometryPrimitives == null)
                 return null;
 
-            List<oM.Geometry.ICurve> result = new List<oM.Geometry.ICurve>();
-            foreach (GeometryObject geometryObject in geometryElement)
-            {
-                if (geometryObject is GeometryInstance)
-                {
-                    GeometryInstance geometryInstance = (GeometryInstance)geometryObject;
+            List<Curve> result = geometryPrimitives.Where(x => x is Curve).Cast<Curve>().ToList();
 
-                    Transform geometryTransform = geometryInstance.Transform;
-                    if (transform != null)
-                        geometryTransform = geometryTransform.Multiply(transform.Inverse);
+            if (includeEdges)
+                result.AddRange(geometryPrimitives.Where(x => x is Solid).Cast<Solid>().SelectMany(x => x.EdgeCurves()));
 
-                    List<oM.Geometry.ICurve> curves = null;
-                    GeometryElement geomElement = null;
-
-                    geomElement = geometryInstance.GetInstanceGeometry(geometryTransform);
-                    if (geomElement == null)
-                        continue;
-
-                    curves = geomElement.Curves(null, settings);
-                    if (curves != null && curves.Count != 0)
-                        result.AddRange(curves);
-                }
-                else if (geometryObject is Solid)
-                {
-                    Solid solid = (Solid)geometryObject;
-                    EdgeArray edges = solid.Edges;
-                    if (edges == null)
-                        continue;
-
-                    List<oM.Geometry.ICurve> curves = edges.FromRevit();
-                    if (curves != null && curves.Count != 0)
-                        result.AddRange(curves);                        
-                }
-                else if(geometryObject is Curve)
-                {
-                    oM.Geometry.ICurve curve = ((Curve)geometryObject).IFromRevit();
-                    if (curve != null)
-                        result.Add(curve);
-                }
-
-            }
             return result;
-        }
-
-        /***************************************************/
-
-        public static List<oM.Geometry.ICurve> Curves(this Element element, Options options, RevitSettings settings = null)
-        {
-            GeometryElement geometryElement = element.get_Geometry(options);
-
-            Transform transform = null;
-            if (element is FamilyInstance)
-                transform = ((FamilyInstance)element).GetTotalTransform();
-
-            return geometryElement.Curves(transform, settings);
         }
 
         /***************************************************/

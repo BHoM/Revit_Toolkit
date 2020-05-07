@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -31,7 +32,7 @@ namespace BH.UI.Revit.Engine
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Geometry.Mesh FromRevit(this Mesh mesh)
+        public static oM.Geometry.Mesh MeshFromRevit(this Mesh mesh)
         {
             if (mesh == null)
                 return null;
@@ -43,6 +44,23 @@ namespace BH.UI.Revit.Engine
             }
 
             return bHoMMesh;
+        }
+
+        /***************************************************/
+
+        public static oM.Geometry.Mesh MeshFromRevit(this Curve curve)
+        {
+            if (curve == null)
+                return null;
+
+            List<XYZ> vertices = curve.Tessellate().ToList();
+            oM.Geometry.Mesh mesh = new oM.Geometry.Mesh { Vertices = vertices.Select(x => x.PointFromRevit()).ToList() };
+            for (int i = 0; i < vertices.Count - 1; i++)
+            {
+                mesh.Faces.Add(new oM.Geometry.Face { A = i, B = i + 1 });
+            }
+
+            return mesh;
         }
 
         /***************************************************/

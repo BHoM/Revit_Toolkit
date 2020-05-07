@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -21,9 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Settings;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -33,13 +31,18 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<Solid> Solids(this Element element, Options options, RevitSettings settings = null)
+        public static List<Curve> EdgeCurves(this Solid solid)
         {
-            List<GeometryObject> geometryPrimitives = element.GeometryPrimitives(options, settings);
-            if (geometryPrimitives == null)
+            if (solid == null)
                 return null;
 
-            return geometryPrimitives.Where(x => x is Solid).Cast<Solid>().ToList();
+            List<Curve> result = new List<Curve>();
+            foreach (Edge edge in solid.Edges)
+            {
+                result.Add(edge.AsCurve());
+            }
+
+            return result;
         }
 
         /***************************************************/

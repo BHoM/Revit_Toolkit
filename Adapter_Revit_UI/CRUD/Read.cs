@@ -114,7 +114,7 @@ namespace BH.UI.Revit.Adapter
                 { 
                     if (geometryConfig.PullEdges)
                     {
-                        List<ICurve> edges = element.Curves(geometryOptions, revitSettings);
+                        List<ICurve> edges = element.Curves(geometryOptions, revitSettings, true).FromRevit();
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
                             iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Edges] = edges;
@@ -123,7 +123,7 @@ namespace BH.UI.Revit.Adapter
 
                     if (geometryConfig.PullSurfaces)
                     {
-                        List<ISurface> surfaces = element.Surfaces(geometryOptions, revitSettings);
+                        List<ISurface> surfaces = element.Faces(geometryOptions, revitSettings).Select(x => x.IFromRevit()).ToList();
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
                             iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Surfaces] = surfaces;
@@ -132,7 +132,7 @@ namespace BH.UI.Revit.Adapter
 
                     if (geometryConfig.PullMeshes)
                     {
-                        List<IGeometry> meshes = element.Meshes(meshOptions, revitSettings);
+                        List<oM.Geometry.Mesh> meshes = element.MeshedGeometry(meshOptions, revitSettings);
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
                             iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Meshes] = meshes;
@@ -141,18 +141,10 @@ namespace BH.UI.Revit.Adapter
 
                     if (representationConfig.PullRenderMesh)
                     {
-                        List<IGeometry> meshes = element.Meshes(renderMeshOptions, revitSettings);
-                        for (int i = 0; i < meshes.Count; i++)
-                        {
-                            if (meshes[i] is BH.oM.Geometry.Mesh)
-                            {
-                                BH.oM.Geometry.Mesh mesh = ((BH.oM.Geometry.Mesh)meshes[i]);
-                                meshes[i] = new BH.oM.Graphics.RenderMesh() { Faces = mesh.Faces, Vertices = mesh.Vertices.Select(pt => (Vertex)pt).ToList() };
-                            }
-                        }
+                        List<RenderMesh> renderMeshes = element.RenderMeshes(renderMeshOptions, revitSettings);
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
-                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.RenderMesh] = meshes;
+                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.RenderMesh] = renderMeshes;
                         }
                     }
 
