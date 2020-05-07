@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -21,9 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Settings;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -33,16 +30,26 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<Solid> Solids(this Element element, Options options, RevitSettings settings = null)
+        public static Color Color(this Face face, Document document)
         {
-            List<GeometryObject> geometryPrimitives = element.GeometryPrimitives(options, settings);
-            if (geometryPrimitives == null)
-                return null;
+            Material material = document.GetElement(face.MaterialElementId) as Material;
+            if (material != null)
+                return material.Color;
 
-            return geometryPrimitives.Where(x => x is Solid).Cast<Solid>().ToList();
+            return null;
+        }
+
+        /***************************************************/
+
+        public static Color Color(this Curve curve, Document document)
+        {
+            GraphicsStyle gs = document.GetElement(curve.GraphicsStyleId) as GraphicsStyle;
+            if (gs != null && gs.GraphicsStyleCategory != null)
+                return gs.GraphicsStyleCategory.LineColor;
+
+            return null;
         }
 
         /***************************************************/
     }
 }
-

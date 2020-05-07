@@ -74,7 +74,7 @@ namespace BH.UI.Revit.Engine
             }
 
             //TODO: Get geometry from Host
-            List<ICurve> curves = familyInstance.Curves(new Options(), settings);
+            List<ICurve> curves = familyInstance.Curves(new Options(), settings, true).Select(x => x.IFromRevit()).ToList();
             if (curves == null || curves.Count == 0)
             {
                 if (hostObject == null)

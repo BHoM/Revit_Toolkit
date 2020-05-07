@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Graphics;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,13 +35,34 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<Solid> Solids(this Element element, Options options, RevitSettings settings = null)
+        public static List<RenderMesh> RenderMeshes(this Element element, Options options, RevitSettings settings = null)
         {
-            List<GeometryObject> geometryPrimitives = element.GeometryPrimitives(options, settings);
-            if (geometryPrimitives == null)
+            if (element == null)
                 return null;
 
-            return geometryPrimitives.Where(x => x is Solid).Cast<Solid>().ToList();
+            List<RenderMesh> result = new List<RenderMesh>();
+            foreach (Face face in element.Faces(options, settings))
+            {
+                RenderMesh renderMesh = face.Triangulate(options.DetailLevel.FaceTriangulationFactor()).MeshFromRevit().ToRenderMesh();
+                System.Drawing.Color color = face.Color(element.Document).FromRevit();
+                foreach (Vertex vertex in renderMesh.Vertices)
+                {
+                    vertex.Color = color;
+                }
+            }
+
+            foreach (Curve curve in element.Curves(options, settings, false))
+            {
+                RenderMesh renderMesh = curve.MeshFromRevit().ToRenderMesh();
+                System.Drawing.Color color = curve.Color(element.Document).FromRevit();
+                foreach (Vertex vertex in renderMesh.Vertices)
+                {
+                    vertex.Color = color;
+                }
+            }
+
+            result.AddRange(element.GeometryPrimitives(options, settings).Where(x => x is Mesh).Cast<Mesh>().Select(x => x.MeshFromRevit().ToRenderMesh()));
+            return result;
         }
 
         /***************************************************/

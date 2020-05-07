@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -33,13 +33,15 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<Solid> Solids(this Element element, Options options, RevitSettings settings = null)
+        public static List<oM.Geometry.Mesh> MeshedGeometry(this Element element, Options options, RevitSettings settings = null)
         {
-            List<GeometryObject> geometryPrimitives = element.GeometryPrimitives(options, settings);
-            if (geometryPrimitives == null)
+            if (element == null)
                 return null;
 
-            return geometryPrimitives.Where(x => x is Solid).Cast<Solid>().ToList();
+            List<oM.Geometry.Mesh> result = element.Faces(options, settings).Select(x => x.Triangulate(options.DetailLevel.FaceTriangulationFactor()).MeshFromRevit()).ToList();
+            result.AddRange(element.GeometryPrimitives(options, settings).Where(x => x is Mesh).Cast<Mesh>().Select(x => x.MeshFromRevit()));
+            result.AddRange(element.Curves(options, settings, false).Select(x => x.MeshFromRevit()));
+            return result;
         }
 
         /***************************************************/

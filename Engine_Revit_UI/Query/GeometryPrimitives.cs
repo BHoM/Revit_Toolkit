@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -31,13 +32,13 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        public static List<oM.Geometry.ISurface> Surfaces(this GeometryElement geometryElement, Transform transform = null, RevitSettings settings = null)
+
+        public static List<GeometryObject> GeometryPrimitives(this GeometryElement geometryElement, Transform transform = null, RevitSettings settings = null)
         {
             if (geometryElement == null)
                 return null;
 
-            List<oM.Geometry.ISurface> result = new List<oM.Geometry.ISurface>();
+            List<GeometryObject> result = new List<GeometryObject>();
             foreach (GeometryObject geometryObject in geometryElement)
             {
                 if (geometryObject is GeometryInstance)
@@ -48,48 +49,35 @@ namespace BH.UI.Revit.Engine
                     if (transform != null)
                         geometryTransform = geometryTransform.Multiply(transform.Inverse);
 
-                    List<oM.Geometry.ISurface> surfaces = null;
-                    GeometryElement geomElement = null;
-
-                    geomElement = geometryInstance.GetInstanceGeometry(geometryTransform);
+                    GeometryElement geomElement = geometryInstance.GetInstanceGeometry(geometryTransform);
                     if (geomElement == null)
                         continue;
 
-                    surfaces = geomElement.Surfaces(null, settings);
-                    if (surfaces != null && surfaces.Count != 0)
-                        result.AddRange(surfaces);
+                    List<GeometryObject> instanceGeometries = geomElement.GeometryPrimitives(null, settings);
+                    if (instanceGeometries != null)
+                        result.AddRange(instanceGeometries);
                 }
-                else if (geometryObject is Solid)
-                {
-                    Solid solid = (Solid)geometryObject;
-                    FaceArray faces = solid.Faces;
-                    if (faces == null)
-                        continue;
-
-                    List<oM.Geometry.ISurface> surfaces = faces.FromRevit();
-                    if (surfaces != null && surfaces.Count != 0)
-                        result.AddRange(surfaces);
-                }
-                else if (geometryObject is Face)
-                {
-                    Face face = (Face)geometryObject;
-                    result.Add(face.FromRevit());
-                }
+                else
+                    result.Add(geometryObject);
             }
+
             return result;
         }
 
         /***************************************************/
 
-        public static List<oM.Geometry.ISurface> Surfaces(this Element element, Options options, RevitSettings settings = null)
+        public static List<GeometryObject> GeometryPrimitives(this Element element, Options options, RevitSettings settings = null)
         {
+            if (element == null)
+                return null;
+
             GeometryElement geometryElement = element.get_Geometry(options);
 
             Transform transform = null;
             if (element is FamilyInstance)
                 transform = ((FamilyInstance)element).GetTotalTransform();
 
-            return geometryElement.Surfaces(transform, settings);
+            return geometryElement.GeometryPrimitives(transform, settings);
         }
 
         /***************************************************/
