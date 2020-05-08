@@ -57,7 +57,7 @@ namespace BH.UI.Revit.Engine
             oM.Geometry.Mesh mesh = new oM.Geometry.Mesh { Vertices = vertices.Select(x => x.PointFromRevit()).ToList() };
             for (int i = 0; i < vertices.Count - 1; i++)
             {
-                mesh.Faces.Add(new oM.Geometry.Face { A = i, B = i + 1, C = i + 1 });
+                mesh.Faces.Add(new oM.Geometry.Face { A = i, B = i + 1, C = -1 });
             }
 
             return mesh;
