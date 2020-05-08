@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using System;
 
 namespace BH.UI.Revit.Engine
 {
@@ -30,24 +31,24 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Color Color(this Face face, Document document)
+        public static System.Drawing.Color Color(this Face face, Document document)
         {
             Material material = document.GetElement(face.MaterialElementId) as Material;
             if (material != null)
-                return material.Color;
-
-            return null;
+                return System.Drawing.Color.FromArgb((int)(Math.Round((100.0 - material.Transparency) / 100 * 255)), material.Color.Red, material.Color.Green, material.Color.Blue);
+            else
+                return System.Drawing.Color.Black;
         }
 
         /***************************************************/
 
-        public static Color Color(this Curve curve, Document document)
+        public static System.Drawing.Color Color(this Curve curve, Document document)
         {
             GraphicsStyle gs = document.GetElement(curve.GraphicsStyleId) as GraphicsStyle;
             if (gs != null && gs.GraphicsStyleCategory != null)
-                return gs.GraphicsStyleCategory.LineColor;
-
-            return null;
+                return System.Drawing.Color.FromArgb(255, gs.GraphicsStyleCategory.LineColor.Red, gs.GraphicsStyleCategory.LineColor.Green, gs.GraphicsStyleCategory.LineColor.Blue);
+            else
+                return System.Drawing.Color.Black;
         }
 
         /***************************************************/

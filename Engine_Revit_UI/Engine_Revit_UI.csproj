@@ -280,7 +280,6 @@
     <Compile Include="Convert\Physical\ToRevit\FamilyInstance.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilySymbol.cs" />
     <Compile Include="Convert\Revit\FromRevit\BHoMObject.cs" />
-    <Compile Include="Convert\Revit\FromRevit\Color.cs" />
     <Compile Include="Convert\Revit\FromRevit\DraftingInstance.cs" />
     <Compile Include="Convert\Environment\FromRevit\SolidMaterial.cs" />
     <Compile Include="Convert\Physical\ToRevit\RoofBase.cs" />
