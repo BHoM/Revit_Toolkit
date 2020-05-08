@@ -49,6 +49,8 @@ namespace BH.UI.Revit.Engine
                 {
                     vertex.Color = color;
                 }
+
+                result.Add(renderMesh);
             }
 
             foreach (Curve curve in element.Curves(options, settings, false))
@@ -59,6 +61,8 @@ namespace BH.UI.Revit.Engine
                 {
                     vertex.Color = color;
                 }
+
+                result.Add(renderMesh);
             }
 
             result.AddRange(element.GeometryPrimitives(options, settings).Where(x => x is Mesh).Cast<Mesh>().Select(x => x.MeshFromRevit().ToRenderMesh()));

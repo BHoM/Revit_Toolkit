@@ -32,6 +32,9 @@ namespace BH.UI.Revit.Engine
 
         public static System.Drawing.Color FromRevit(this Color color)
         {
+            if (color == null)
+                return System.Drawing.Color.Black;
+
             return System.Drawing.Color.FromArgb(255, color.Red, color.Green, color.Blue);
         }
 
