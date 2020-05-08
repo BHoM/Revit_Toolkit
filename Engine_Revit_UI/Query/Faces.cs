@@ -39,7 +39,19 @@ namespace BH.UI.Revit.Engine
             if (geometryPrimitives == null)
                 return null;
 
-            return geometryPrimitives.Where(x => x is Face).Cast<Face>().ToList();
+            List<Face> result = geometryPrimitives.Where(x => x is Face).Cast<Face>().ToList();
+            foreach (Solid solid in geometryPrimitives.Where(x => x is Solid))
+            {
+                if (solid.Faces != null)
+                {
+                    foreach (Face face in solid.Faces)
+                    {
+                        result.Add(face);
+                    }
+                }
+            }
+
+            return result;
         }
 
         /***************************************************/
