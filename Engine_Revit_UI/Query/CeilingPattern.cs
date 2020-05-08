@@ -39,6 +39,8 @@ namespace BH.UI.Revit.Engine
                 End = new oM.Geometry.Point { X = highestX, Y = highestY, Z = z },
             };
 
+            List<BH.oM.Geometry.Line> boundarySegments = surface.ExternalBoundary.ISplitAtPoints(surface.ExternalBoundary.IControlPoints()).SelectMany(x => (x as PolyCurve).Curves.Select(y => y as BH.oM.Geometry.Line)).ToList();
+
             List<BH.oM.Geometry.Line> patterns = new List<BH.oM.Geometry.Line>();
 
             List<ElementId> materialIds = ceiling.GetMaterialIds(false).ToList();
@@ -89,7 +91,25 @@ namespace BH.UI.Revit.Engine
                                 currentX += offset;
                             }
 
-                            patterns.Add(pline);
+                            List<BH.oM.Geometry.Point> intersections = new List<oM.Geometry.Point>();
+                            foreach(BH.oM.Geometry.Line l in boundarySegments)
+                            {
+                                BH.oM.Geometry.Point p = pline.LineIntersection(l);
+                                if (p != null)
+                                    intersections.Add(p);
+                            }
+
+                            if(intersections.Count > 0)
+                            {
+                                List<BH.oM.Geometry.Line> lines = pline.SplitAtPoints(intersections);
+                                foreach(BH.oM.Geometry.Line l in lines)
+                                {
+                                    if (surface.ExternalBoundary.IIsContaining(l.IControlPoints(), true))
+                                        patterns.Add(l);
+                                }
+                            }
+
+                            //patterns.Add(pline);
 
                             currentY += offset;
                         }
@@ -97,7 +117,7 @@ namespace BH.UI.Revit.Engine
                 }
             }
 
-            List<BH.oM.Geometry.Line> keepLines = new List<oM.Geometry.Line>();
+            /*List<BH.oM.Geometry.Line> keepLines = new List<oM.Geometry.Line>();
 
             for(int x = 0; x < patterns.Count; x++)
             {
@@ -117,7 +137,9 @@ namespace BH.UI.Revit.Engine
                 }
             }
 
-            return keepLines;
+            return keepLines;*/
+
+            return patterns;
         }
     }
 }
