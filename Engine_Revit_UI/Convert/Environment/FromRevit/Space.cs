@@ -30,6 +30,10 @@ using BH.oM.Environment.Elements;
 using BH.oM.Environment.Fragments;
 using System.Collections.Generic;
 
+using BH.oM.Geometry;
+using BH.Engine.Geometry;
+using System.Linq;
+
 namespace BH.UI.Revit.Engine
 {
     public static partial class Convert
@@ -74,12 +78,15 @@ namespace BH.UI.Revit.Engine
             if (space != null)
                 return space;
 
-            string name = Query.Name(spatialElement);
-
             //Create the Space
-            space = BH.Engine.Environment.Create.Space(name);
+            space = new Space();
+            space.Name = Query.Name(spatialElement);
 
-            if(spatialElement.Location != null && spatialElement.Location is LocationPoint)
+            PolyCurve pcurve = spatialElement.Profiles(settings).First();
+
+            if (pcurve != null)
+                space.Location = pcurve.Centroid();
+            else if (spatialElement.Location != null && spatialElement.Location is LocationPoint)
                 space.Location = ((LocationPoint)spatialElement.Location).FromRevit();
 
             //Set ExtendedProperties
@@ -121,10 +128,14 @@ namespace BH.UI.Revit.Engine
 
             SpatialElement spatialElement = energyAnalysisSpace.Document.Element(energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
 
-            string name = Query.Name(spatialElement);
-            space = BH.Engine.Environment.Create.Space(name);
+            space = new Space();
+            space.Name = Query.Name(spatialElement);
 
-            if (spatialElement != null && spatialElement.Location != null)
+            Polyline pline = energyAnalysisSpace.GetBoundary().Select(x => x.FromRevit()).ToList().Join().First();
+
+            if (pline != null)
+                space.Location = pline.Centroid();
+            else if (spatialElement != null && spatialElement.Location != null)
                 space.Location = (spatialElement.Location as LocationPoint).FromRevit();
 
             //Set ExtendedProperties
