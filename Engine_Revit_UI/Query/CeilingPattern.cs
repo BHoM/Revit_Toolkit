@@ -31,6 +31,8 @@ using Autodesk.Revit.DB;
 using BH.Engine.Geometry;
 using BH.oM.Geometry;
 using BH.oM.Adapters.Revit.Settings;
+using Autodesk.Revit.UI;
+using System.Xml.Schema;
 
 namespace BH.UI.Revit.Engine
 {
@@ -47,7 +49,7 @@ namespace BH.UI.Revit.Engine
 
             Material material = null;
             if (comStruct != null && comStruct.GetLayers().Count > 0)
-                material = ceiling.Document.GetElement(comStruct.GetLayers()[0].MaterialId) as Material;
+                material = ceiling.Document.GetElement(comStruct.GetLayers().Last().MaterialId) as Material;
             else
             {
                 List<ElementId> materialIds = ceiling.GetMaterialIds(false).ToList();
@@ -84,6 +86,8 @@ namespace BH.UI.Revit.Engine
             BoundingBox box = surface.IBounds();
             double z = surface.ExternalBoundary.IControlPoints().Max(x => x.Z);
             double yLength = box.Max.Y - box.Min.Y;
+            double xLength = box.Max.X - box.Min.X;
+            double maxBoxLength = box.Min.Distance(box.Max) * 2;
 
             BH.oM.Geometry.Line leftLine = new oM.Geometry.Line
             {
@@ -121,17 +125,29 @@ namespace BH.UI.Revit.Engine
                     double currentY = box.Min.Y - (yLength / 2);
                     double currentX = box.Min.X;
 
-                    while ((currentY + offset) < (box.Max.Y + (yLength / 2)))
+                    double minNum = currentY;
+                    double maxNum = (box.Max.Y + (yLength / 2));
+
+                    if(grid.Angle.ToSI(UnitType.UT_Angle) > settings.AngleTolerance)
                     {
-                        BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = box.Min.X, Y = currentY + offset, Z = z };
-                        BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = box.Max.X, Y = currentY + offset, Z = z };
+                        minNum = currentX - (xLength / 2);
+                        maxNum = (box.Max.X + (xLength / 2));
+                    }
+
+                    while ((minNum + offset) < maxNum)
+                    {
+                        BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = box.Min.X, Y = minNum + offset, Z = z };
+                        BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = box.Max.X, Y = minNum + offset, Z = z };
 
                         BH.oM.Geometry.Line pline = new oM.Geometry.Line { Start = pt, End = pt2 };
 
                         if (grid.Angle > settings.AngleTolerance)
                         {
-                            BH.oM.Geometry.Point rotatePt = new oM.Geometry.Point { X = currentX, Y = currentY + offset, Z = z };
+                            BH.oM.Geometry.Point rotatePt = pline.Centroid();
                             pline = pline.Rotate(rotatePt, Vector.ZAxis, grid.Angle.ToSI(UnitType.UT_Angle));
+
+                            pline.Start.X = minNum + offset;
+                            pline.End.X = minNum + offset;
 
                             BH.oM.Geometry.Point intersect = pline.LineIntersection(leftLine, true);
                             if (intersect != null)
@@ -141,7 +157,13 @@ namespace BH.UI.Revit.Engine
                             if (intersect != null)
                                 pline.End = intersect;
 
-                            currentX += offset;
+                            Vector v1 = pline.End - pline.Start; //From start TO end
+                            v1 *= maxBoxLength / 2;
+                            Vector v2 = pline.Start - pline.End;  //From end TO start
+                            v2 *= maxBoxLength / 2;
+
+                            pline.Start = pline.Start.Translate(v2);
+                            pline.End = pline.End.Translate(v1);
                         }
 
                         List<BH.oM.Geometry.Point> intersections = new List<oM.Geometry.Point>();
@@ -152,17 +174,20 @@ namespace BH.UI.Revit.Engine
                                 intersections.Add(p);
                         }
 
+                        List<BH.oM.Geometry.Line> lines = new List<oM.Geometry.Line>();
+
                         if (intersections.Count > 0)
+                            lines = pline.SplitAtPoints(intersections);
+                        else
+                            lines.Add(pline);
+
+                        foreach (BH.oM.Geometry.Line l in lines)
                         {
-                            List<BH.oM.Geometry.Line> lines = pline.SplitAtPoints(intersections);
-                            foreach (BH.oM.Geometry.Line l in lines)
-                            {
-                                if (surface.ExternalBoundary.IIsContaining(l.IControlPoints(), true))
-                                    patterns.Add(l);
-                            }
+                            if (surface.ExternalBoundary.IIsContaining(l.IControlPoints(), true))
+                                patterns.Add(l);
                         }
 
-                        currentY += offset;
+                        minNum += offset;
                     }
                 }
             }
