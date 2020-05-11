@@ -346,9 +346,7 @@
     <Compile Include="Query\ArbitraryPlane.cs" />
     <Compile Include="Query\FaceTriangulationFactor.cs" />
     <Compile Include="Query\Faces.cs" />
-    <Compile Include="Query\Meshes.cs" />
     <Compile Include="Query\CeilingPattern.cs" />
-    <Compile Include="Query\Surfaces.cs" />
     <Compile Include="Query\ElementIds\ElementIds.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByBHoMType.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByCategory.cs" />
