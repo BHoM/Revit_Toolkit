@@ -192,6 +192,8 @@ namespace BH.UI.Revit.Engine
                 }
             }
 
+            patterns.AddRange(boundarySegments); //Close off the ceiling pattern for its own use
+
             return patterns;
         }
     }
