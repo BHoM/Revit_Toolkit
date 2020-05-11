@@ -62,20 +62,19 @@ namespace BH.UI.Revit.Engine
         public static List<BH.oM.Geometry.Line> CeilingPattern(this Material revitMaterial, PlanarSurface surface)
         {
             BoundingBox box = surface.IBounds();
-            double z = surface.ExternalBoundary.IControlPoints().Max(x => x.Z);
 
             double yLength = box.Max.Y - box.Min.Y;
 
             BH.oM.Geometry.Line leftLine = new oM.Geometry.Line
             {
-                Start = new oM.Geometry.Point { X = box.Min.X, Y = box.Min.Y, Z = z },
-                End = new oM.Geometry.Point { X = box.Min.X, Y = box.Max.Y, Z = z },
+                Start = new oM.Geometry.Point { X = box.Min.X, Y = box.Min.Y, Z = box.Min.Z },
+                End = new oM.Geometry.Point { X = box.Min.X, Y = box.Max.Y, Z = box.Max.Z },
             };
 
             BH.oM.Geometry.Line rightLine = new oM.Geometry.Line
             {
-                Start = new oM.Geometry.Point { X = box.Max.X, Y = box.Min.Y, Z = z },
-                End = new oM.Geometry.Point { X = box.Max.X, Y = box.Max.Y, Z = z },
+                Start = new oM.Geometry.Point { X = box.Max.X, Y = box.Min.Y, Z = box.Min.Z },
+                End = new oM.Geometry.Point { X = box.Max.X, Y = box.Max.Y, Z = box.Max.Z },
             };
 
             List<BH.oM.Geometry.Line> boundarySegments = surface.ExternalBoundary.ICollapseToPolyline(BH.oM.Geometry.Tolerance.Angle).ISubParts().Select(x => x as BH.oM.Geometry.Line).ToList();
@@ -105,8 +104,8 @@ namespace BH.UI.Revit.Engine
 
                     while ((currentY + offset) < (box.Max.Y + (yLength + 2)))
                     {
-                        BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = box.Min.X, Y = currentY + offset, Z = z };
-                        BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = box.Max.X, Y = currentY + offset, Z = z };
+                        BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = box.Min.X, Y = currentY + offset, Z = box.Min.Z };
+                        BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = box.Max.X, Y = currentY + offset, Z = box.Max.Z };
 
                         BH.oM.Geometry.Line pline = new oM.Geometry.Line { Start = pt, End = pt2 };
 
