@@ -77,7 +77,7 @@ namespace BH.UI.Revit.Engine
 
                 newCeiling.UpdateValues(settings, ceiling);
 
-                newCeiling.CustomData.Add("CeilingPattern", ceiling.CeilingPattern(planarSurface));
+                newCeiling.CustomData.Add("CeilingPattern", ceiling.CeilingPattern(settings, planarSurface));
                 ceilingList.Add(newCeiling);
             }
 
