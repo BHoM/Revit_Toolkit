@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 using Autodesk.Revit.DB;
 using BH.Engine.Geometry;
 using BH.oM.Geometry;
+using BH.oM.Adapters.Revit.Settings;
 
 namespace BH.UI.Revit.Engine
 {
@@ -39,48 +40,66 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<BH.oM.Geometry.Line> CeilingPattern(this Ceiling ceiling, PlanarSurface surface)
+        public static List<BH.oM.Geometry.Line> CeilingPattern(this Ceiling ceiling, RevitSettings settings, PlanarSurface surface = null)
         {
             CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
             CompoundStructure comStruct = ceilingType.GetCompoundStructure();
 
+            Material material = null;
             if (comStruct != null && comStruct.GetLayers().Count > 0)
-                return (ceiling.Document.GetElement(comStruct.GetLayers()[0].MaterialId) as Material).CeilingPattern(surface);
-
-            List<ElementId> materialIds = ceiling.GetMaterialIds(false).ToList();
-            if (materialIds.Count == 0)
+                material = ceiling.Document.GetElement(comStruct.GetLayers()[0].MaterialId) as Material;
+            else
             {
-                BH.Engine.Reflection.Compute.RecordError("Ceiling patterns could not be pulled for ceiling element with the ID " + ceiling.Id);
-                return new List<oM.Geometry.Line>();
+                List<ElementId> materialIds = ceiling.GetMaterialIds(false).ToList();
+                if (materialIds.Count == 0)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Ceiling patterns could not be pulled for ceiling element with the ID " + ceiling.Id);
+                    return new List<oM.Geometry.Line>();
+                }
+                material = ceiling.Document.GetElement(materialIds[0]) as Material;
             }
 
-            return (ceiling.Document.GetElement(materialIds[0]) as Material).CeilingPattern(surface);
+            List<oM.Geometry.Line> result = new List<oM.Geometry.Line>();
+            if (surface == null)
+            {
+                //This would need to be extended to take openings from Values into account
+                foreach (PlanarSurface srf in ceiling.PlanarSurfaceDictionary(false, settings).Keys)
+                {
+                    result.AddRange(material.CeilingPattern(srf, settings));
+                }
+            }
+            else
+                result.AddRange(material.CeilingPattern(surface, settings));
+
+            return result;
         }
 
         /***************************************************/
 
-        public static List<BH.oM.Geometry.Line> CeilingPattern(this Material revitMaterial, PlanarSurface surface)
+        public static List<BH.oM.Geometry.Line> CeilingPattern(this Material revitMaterial, PlanarSurface surface, RevitSettings settings)
         {
-            BoundingBox box = surface.IBounds();
+            if (surface.InternalBoundaries.Count > 0)
+                BH.Engine.Reflection.Compute.RecordWarning("Currently ceiling openings are not taken into account when generating ceiling patterns.");
 
+            BoundingBox box = surface.IBounds();
+            double z = surface.ExternalBoundary.IControlPoints().Max(x => x.Z);
             double yLength = box.Max.Y - box.Min.Y;
 
             BH.oM.Geometry.Line leftLine = new oM.Geometry.Line
             {
-                Start = new oM.Geometry.Point { X = box.Min.X, Y = box.Min.Y, Z = box.Min.Z },
-                End = new oM.Geometry.Point { X = box.Min.X, Y = box.Max.Y, Z = box.Max.Z },
+                Start = new oM.Geometry.Point { X = box.Min.X, Y = box.Min.Y, Z = z },
+                End = new oM.Geometry.Point { X = box.Min.X, Y = box.Max.Y, Z = z },
             };
 
             BH.oM.Geometry.Line rightLine = new oM.Geometry.Line
             {
-                Start = new oM.Geometry.Point { X = box.Max.X, Y = box.Min.Y, Z = box.Min.Z },
-                End = new oM.Geometry.Point { X = box.Max.X, Y = box.Max.Y, Z = box.Max.Z },
+                Start = new oM.Geometry.Point { X = box.Max.X, Y = box.Min.Y, Z = z },
+                End = new oM.Geometry.Point { X = box.Max.X, Y = box.Max.Y, Z = z },
             };
 
             List<BH.oM.Geometry.Line> boundarySegments = surface.ExternalBoundary.ICollapseToPolyline(BH.oM.Geometry.Tolerance.Angle).ISubParts().Select(x => x as BH.oM.Geometry.Line).ToList();
 
             List<BH.oM.Geometry.Line> patterns = new List<BH.oM.Geometry.Line>();
-
             FillPatternElement fillPatternElement = null;
 
 #if REVIT2020
@@ -99,24 +118,27 @@ namespace BH.UI.Revit.Engine
                 foreach (FillGrid grid in fillGridList)
                 {
                     double offset = grid.Offset.ToSI(UnitType.UT_Length);
-
                     double currentY = box.Min.Y - (yLength / 2);
 
                     while ((currentY + offset) < (box.Max.Y + (yLength + 2)))
                     {
-                        BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = box.Min.X, Y = currentY + offset, Z = box.Min.Z };
-                        BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = box.Max.X, Y = currentY + offset, Z = box.Max.Z };
+                        BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = box.Min.X, Y = currentY + offset, Z = z };
+                        BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = box.Max.X, Y = currentY + offset, Z = z };
 
                         BH.oM.Geometry.Line pline = new oM.Geometry.Line { Start = pt, End = pt2 };
 
-                        if (grid.Angle > BH.oM.Geometry.Tolerance.Angle)
+                        if (grid.Angle > settings.AngleTolerance)
                         {
                             BH.oM.Geometry.Point rotatePt = pline.Centroid();
                             pline = pline.Rotate(rotatePt, Vector.ZAxis, grid.Angle.ToSI(UnitType.UT_Angle));
 
+
+
                             BH.oM.Geometry.Point intersect = pline.LineIntersection(leftLine, true);
                             if (intersect != null)
                                 pline.Start = intersect;
+
+
 
                             intersect = pline.LineIntersection(rightLine, true);
                             if (intersect != null)
@@ -148,7 +170,5 @@ namespace BH.UI.Revit.Engine
 
             return patterns;
         }
-
-        /***************************************************/
     }
 }
