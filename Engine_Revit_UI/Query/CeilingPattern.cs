@@ -37,6 +37,24 @@ namespace BH.UI.Revit.Engine
     {
         public static List<BH.oM.Geometry.Line> CeilingPattern(this Ceiling ceiling, PlanarSurface surface)
         {
+            CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
+            CompoundStructure comStruct = ceilingType.GetCompoundStructure();
+
+            if (comStruct != null)
+                return (ceiling.Document.GetElement(comStruct.GetLayers()[0].MaterialId) as Material).CeilingPattern(surface);
+
+            List<ElementId> materialIds = ceiling.GetMaterialIds(false).ToList();
+            if (materialIds.Count == 0)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Ceiling patterns could not be pulled for ceiling element with the ID " + ceiling.Id);
+                return new List<oM.Geometry.Line>();
+            }
+
+            return (ceiling.Document.GetElement(materialIds[0]) as Material).CeilingPattern(surface);
+        }
+
+        public static List<BH.oM.Geometry.Line> CeilingPattern(this Material revitMaterial, PlanarSurface surface)
+        {
             BoundingBox box = surface.IBounds();
             double z = surface.ExternalBoundary.IControlPoints().Max(x => x.Z);
 
@@ -58,76 +76,67 @@ namespace BH.UI.Revit.Engine
 
             List<BH.oM.Geometry.Line> patterns = new List<BH.oM.Geometry.Line>();
 
-            CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
-            CompoundStructure comStruct = ceilingType.GetCompoundStructure();
-
-            List<ElementId> materialIds = ceiling.GetMaterialIds(false).ToList();
-
-            foreach(ElementId e in materialIds)
-            {
-                Material revitMaterial = ceiling.Document.GetElement(e) as Material;
-                FillPatternElement fillPatternElement = null;
+            FillPatternElement fillPatternElement = null;
 
 #if REVIT2020
-                fillPatternElement = revitMaterial.Document.GetElement(revitMaterial.SurfaceForegroundPatternId) as FillPatternElement;
+            fillPatternElement = revitMaterial.Document.GetElement(revitMaterial.SurfaceForegroundPatternId) as FillPatternElement;
 #else
                 fillPatternElement = revitMaterial.Document.GetElement(revitMaterial.SurfacePatternId) as FillPatternElement;
 #endif
 
-                if (fillPatternElement != null)
+            if (fillPatternElement != null)
+            {
+                FillPattern fillPattern = fillPatternElement.GetFillPattern();
+                if (fillPattern == null || fillPattern.IsSolidFill)
+                    return new List<oM.Geometry.Line>(); //Skip solid filled patterns
+
+                IList<FillGrid> fillGridList = fillPattern.GetFillGrids();
+                foreach (FillGrid grid in fillGridList)
                 {
-                    FillPattern fillPattern = fillPatternElement.GetFillPattern();
-                    if (fillPattern == null || fillPattern.IsSolidFill)
-                        continue; //Skip solid filled patterns
+                    double offset = grid.Offset.ToSI(UnitType.UT_Length);
 
-                    IList<FillGrid> fillGridList = fillPattern.GetFillGrids();
-                    foreach(FillGrid grid in fillGridList)
+                    double currentY = box.Min.Y - (yLength / 2);
+
+                    while ((currentY + offset) < (box.Max.Y + (yLength + 2)))
                     {
-                        double offset = grid.Offset.ToSI(UnitType.UT_Length);
+                        BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = box.Min.X, Y = currentY + offset, Z = z };
+                        BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = box.Max.X, Y = currentY + offset, Z = z };
 
-                        double currentY = box.Min.Y - (yLength / 2);
+                        BH.oM.Geometry.Line pline = new oM.Geometry.Line { Start = pt, End = pt2 };
 
-                        while((currentY + offset) < (box.Max.Y + (yLength + 2)))
+                        if (grid.Angle > BH.oM.Geometry.Tolerance.Angle)
                         {
-                            BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = box.Min.X, Y = currentY + offset, Z = z };
-                            BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = box.Max.X, Y = currentY + offset, Z = z };
+                            BH.oM.Geometry.Point rotatePt = pline.Centroid();
+                            pline = pline.Rotate(rotatePt, Vector.ZAxis, grid.Angle.ToSI(UnitType.UT_Angle));
 
-                            BH.oM.Geometry.Line pline = new oM.Geometry.Line { Start = pt, End = pt2 };
+                            BH.oM.Geometry.Point intersect = pline.LineIntersection(leftLine, true);
+                            if (intersect != null)
+                                pline.Start = intersect;
 
-                            if (grid.Angle > BH.oM.Geometry.Tolerance.Angle)
-                            {
-                                BH.oM.Geometry.Point rotatePt = pline.Centroid();
-                                pline = pline.Rotate(rotatePt, Vector.ZAxis, grid.Angle.ToSI(UnitType.UT_Angle));
-
-                                BH.oM.Geometry.Point intersect = pline.LineIntersection(leftLine, true);
-                                if (intersect != null)
-                                    pline.Start = intersect;
-
-                                intersect = pline.LineIntersection(rightLine, true);
-                                if (intersect != null)
-                                    pline.End = intersect;
-                            }
-
-                            List<BH.oM.Geometry.Point> intersections = new List<oM.Geometry.Point>();
-                            foreach(BH.oM.Geometry.Line l in boundarySegments)
-                            {
-                                BH.oM.Geometry.Point p = pline.LineIntersection(l);
-                                if (p != null)
-                                    intersections.Add(p);
-                            }
-
-                            if(intersections.Count > 0)
-                            {
-                                List<BH.oM.Geometry.Line> lines = pline.SplitAtPoints(intersections);
-                                foreach(BH.oM.Geometry.Line l in lines)
-                                {
-                                    if (surface.ExternalBoundary.IIsContaining(l.IControlPoints(), true))
-                                        patterns.Add(l);
-                                }
-                            }
-
-                            currentY += offset;
+                            intersect = pline.LineIntersection(rightLine, true);
+                            if (intersect != null)
+                                pline.End = intersect;
                         }
+
+                        List<BH.oM.Geometry.Point> intersections = new List<oM.Geometry.Point>();
+                        foreach (BH.oM.Geometry.Line l in boundarySegments)
+                        {
+                            BH.oM.Geometry.Point p = pline.LineIntersection(l);
+                            if (p != null)
+                                intersections.Add(p);
+                        }
+
+                        if (intersections.Count > 0)
+                        {
+                            List<BH.oM.Geometry.Line> lines = pline.SplitAtPoints(intersections);
+                            foreach (BH.oM.Geometry.Line l in lines)
+                            {
+                                if (surface.ExternalBoundary.IIsContaining(l.IControlPoints(), true))
+                                    patterns.Add(l);
+                            }
+                        }
+
+                        currentY += offset;
                     }
                 }
             }
