@@ -35,6 +35,10 @@ namespace BH.UI.Revit.Engine
 {
     public static partial class Query
     {
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
         public static List<BH.oM.Geometry.Line> CeilingPattern(this Ceiling ceiling, PlanarSurface surface)
         {
             CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
@@ -52,6 +56,8 @@ namespace BH.UI.Revit.Engine
 
             return (ceiling.Document.GetElement(materialIds[0]) as Material).CeilingPattern(surface);
         }
+
+        /***************************************************/
 
         public static List<BH.oM.Geometry.Line> CeilingPattern(this Material revitMaterial, PlanarSurface surface)
         {
