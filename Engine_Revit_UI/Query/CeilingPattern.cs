@@ -40,7 +40,7 @@ namespace BH.UI.Revit.Engine
             CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
             CompoundStructure comStruct = ceilingType.GetCompoundStructure();
 
-            if (comStruct != null)
+            if (comStruct != null && comStruct.GetLayers().Count > 0)
                 return (ceiling.Document.GetElement(comStruct.GetLayers()[0].MaterialId) as Material).CeilingPattern(surface);
 
             List<ElementId> materialIds = ceiling.GetMaterialIds(false).ToList();
