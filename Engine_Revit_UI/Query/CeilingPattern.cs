@@ -37,33 +37,29 @@ namespace BH.UI.Revit.Engine
     {
         public static List<BH.oM.Geometry.Line> CeilingPattern(this Ceiling ceiling, PlanarSurface surface)
         {
-            CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
-
-            CompoundStructure comStruct = ceilingType.GetCompoundStructure();
-
-            double lowestX = surface.ExternalBoundary.IControlPoints().Min(x => x.X);
-            double lowestY = surface.ExternalBoundary.IControlPoints().Min(x => x.Y);
-            double highestX = surface.ExternalBoundary.IControlPoints().Max(x => x.X);
-            double highestY = surface.ExternalBoundary.IControlPoints().Max(x => x.Y);
+            BoundingBox box = surface.IBounds();
             double z = surface.ExternalBoundary.IControlPoints().Max(x => x.Z);
 
-            double yLength = highestY - lowestY;
+            double yLength = box.Max.Y - box.Min.Y;
 
             BH.oM.Geometry.Line leftLine = new oM.Geometry.Line
             {
-                Start = new oM.Geometry.Point { X = lowestX, Y = lowestY, Z = z },
-                End = new oM.Geometry.Point { X = lowestX, Y = highestY, Z = z },
+                Start = new oM.Geometry.Point { X = box.Min.X, Y = box.Min.Y, Z = z },
+                End = new oM.Geometry.Point { X = box.Min.X, Y = box.Max.Y, Z = z },
             };
 
             BH.oM.Geometry.Line rightLine = new oM.Geometry.Line
             {
-                Start = new oM.Geometry.Point { X = highestX, Y = lowestY, Z = z },
-                End = new oM.Geometry.Point { X = highestX, Y = highestY, Z = z },
+                Start = new oM.Geometry.Point { X = box.Max.X, Y = box.Min.Y, Z = z },
+                End = new oM.Geometry.Point { X = box.Max.X, Y = box.Max.Y, Z = z },
             };
 
-            List<BH.oM.Geometry.Line> boundarySegments = surface.ExternalBoundary.ISplitAtPoints(surface.ExternalBoundary.IControlPoints()).SelectMany(x => (x as PolyCurve).Curves.Select(y => y as BH.oM.Geometry.Line)).ToList();
+            List<BH.oM.Geometry.Line> boundarySegments = surface.ExternalBoundary.ICollapseToPolyline(BH.oM.Geometry.Tolerance.Angle).ISubParts().Select(x => x as BH.oM.Geometry.Line).ToList();
 
             List<BH.oM.Geometry.Line> patterns = new List<BH.oM.Geometry.Line>();
+
+            CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
+            CompoundStructure comStruct = ceilingType.GetCompoundStructure();
 
             List<ElementId> materialIds = ceiling.GetMaterialIds(false).ToList();
 
@@ -89,27 +85,27 @@ namespace BH.UI.Revit.Engine
                     {
                         double offset = grid.Offset.ToSI(UnitType.UT_Length);
 
-                        double currentY = lowestY - (yLength / 2);
+                        double currentY = box.Min.Y - (yLength / 2);
 
-                        while((currentY + offset) < (highestY + (yLength + 2)))
+                        while((currentY + offset) < (box.Max.Y + (yLength + 2)))
                         {
-                            BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = lowestX, Y = currentY + offset, Z = z };
-                            BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = highestX, Y = currentY + offset, Z = z };
+                            BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = box.Min.X, Y = currentY + offset, Z = z };
+                            BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = box.Max.X, Y = currentY + offset, Z = z };
 
                             BH.oM.Geometry.Line pline = new oM.Geometry.Line { Start = pt, End = pt2 };
 
-                            if (grid.Angle > 0)
+                            if (grid.Angle > BH.oM.Geometry.Tolerance.Angle)
                             {
-                                BH.oM.Geometry.Point rotatePt = new BH.oM.Geometry.Line { Start = pt, End = pt2 }.Centroid();
+                                BH.oM.Geometry.Point rotatePt = pline.Centroid();
                                 pline = pline.Rotate(rotatePt, Vector.ZAxis, grid.Angle.ToSI(UnitType.UT_Angle));
 
-                                BH.oM.Geometry.Point intersect = pline.LineIntersections(leftLine, true).FirstOrDefault();
-                                if(intersect != null)
-                                    pline = pline.Extend(pline.Start.Distance(intersect));
-
-                                intersect = pline.LineIntersections(rightLine, true).FirstOrDefault();
+                                BH.oM.Geometry.Point intersect = pline.LineIntersection(leftLine, true);
                                 if (intersect != null)
-                                    pline = pline.Extend(0, pline.End.Distance(intersect));
+                                    pline.Start = intersect;
+
+                                intersect = pline.LineIntersection(rightLine, true);
+                                if (intersect != null)
+                                    pline.End = intersect;
                             }
 
                             List<BH.oM.Geometry.Point> intersections = new List<oM.Geometry.Point>();
