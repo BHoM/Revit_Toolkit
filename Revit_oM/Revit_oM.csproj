@@ -116,6 +116,7 @@
     <Compile Include="Requests\FilterViewsByTemplate.cs" />
     <Compile Include="Requests\FilterViewsByType.cs" />
     <Compile Include="Requests\FilterViewTemplateByName.cs" />
+    <Compile Include="Requests\MemberElementsRequest.cs" />
     <Compile Include="_Properties\AssemblyInfo.cs" />
     <Compile Include="Generic\RevitFilePreview.cs" />
     <Compile Include="Settings\FamilyLoadSettings.cs" />
