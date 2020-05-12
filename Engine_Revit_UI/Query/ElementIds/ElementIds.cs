@@ -236,6 +236,21 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static IEnumerable<ElementId> ElementIds(this FilterMemberElements request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsOfMemberElements(request.ParentId, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this FilterModelElements request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsOfModelElements(ids);
+        }
+
+        /***************************************************/
+
+
         public static IEnumerable<ElementId> ElementIds(this LogicalAndRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             IEnumerable<ElementId> result;
