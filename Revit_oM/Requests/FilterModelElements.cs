@@ -20,46 +20,19 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-using BH.oM.Reflection.Attributes;
-using System.Collections.Generic;
+using BH.oM.Data.Requests;
 using System.ComponentModel;
-using System.Linq;
 
-namespace BH.UI.Revit.Engine
+namespace BH.oM.Adapters.Revit.Requests
 {
-    public static partial class Query
+    [Description("IRequest that filters elements that have geometrical representation in the Revit model.")]
+    public class FilterModelElements : IRequest
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Filters ElementIds of currently selected elements and types in a Revit document.")]
-        [Input("UIdocument", "Revit UI document to be processed.")]
-        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
-        [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> ElementIdsBySelection(this UIDocument uIDocument, IEnumerable<ElementId> ids = null)
-        {
-            if (uIDocument == null || uIDocument.Document == null)
-                return null;
 
-            if (uIDocument.Selection == null)
-                return new List<ElementId>();
-
-            HashSet<ElementId> result = new HashSet<ElementId>(uIDocument.Selection.GetElementIds());
-            foreach (ElementId elementId in new List<ElementId>(result))
-            {
-                Element element = uIDocument.Document.GetElement(elementId);
-                if (element is Group)
-                    result.UnionWith(((Group)element).ElementIdsOfMemberElements());
-            }
-
-            if (ids != null)
-                result.IntersectWith(ids);
-
-            return result;
-        }
 
         /***************************************************/
     }

@@ -34,13 +34,11 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Filters ElementIds of Revit view templates that have a given name. If view name is left blank, ElementIds of all view templates in the document will be filtered.")]
+        [Description("Filters ElementIds of Revit elements that have geometrical representation in the Revit model.")]
         [Input("document", "Revit document to be processed.")]
-        [Input("viewTemplateName", "Name used to filter the Revit view templates. Optional: if left blank, ElementIds of all view templates in the document will be filtered.")]
-        [Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> ElementIdsOfViewTemplates(this Document document, string viewTemplateName = null, bool caseSensitive = true, IEnumerable <ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsOfModelElements(this Document document, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
@@ -48,27 +46,23 @@ namespace BH.UI.Revit.Engine
             if (ids != null && ids.Count() == 0)
                 return new List<ElementId>();
 
+            Options options = new Options();
+            options.ComputeReferences = false;
+            options.IncludeNonVisibleObjects = false;
+            options.DetailLevel = Autodesk.Revit.DB.ViewDetailLevel.Coarse;
+
+            List<ElementId> result = new List<ElementId>();
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-
-            if (!string.IsNullOrEmpty(viewTemplateName))
+            foreach(Element element in collector.WhereElementIsNotElementType().WhereElementIsViewIndependent())
             {
-                IEnumerable<ElementId> result;
-                if (caseSensitive)
-                    result = collector.OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate && x.Name == viewTemplateName).Select(x => x.Id);
-                else
-                    result = collector.OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate && x.Name.ToUpper() == viewTemplateName.ToUpper()).Select(x => x.Id);
-
-                if (result.Count() == 0)
-                    BH.Engine.Reflection.Compute.RecordWarning("Couldn't find any View Template named " + viewTemplateName + ".");
-                else if (result.Count() != 1)
-                    BH.Engine.Reflection.Compute.RecordWarning("More than one View Template named " + viewTemplateName + " has been found.");
-
-                return result;
+                GeometryElement ge = element.get_Geometry(options);
+                if (ge != null && ge.Count() != 0)
+                    result.Add(element.Id);
             }
-            else
-                return collector.OfClass(typeof(View)).Cast<View>().Where(x => x.IsTemplate).Select(x => x.Id);
-        }
-    }
 
-    /***************************************************/
+            return result;
+        }
+
+        /***************************************************/
+    }
 }

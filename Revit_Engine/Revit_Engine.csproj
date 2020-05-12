@@ -126,6 +126,7 @@
     <Compile Include="Create\Elements\ViewPlan.cs" />
     <Compile Include="Create\Elements\ModelInstance.cs" />
     <Compile Include="Create\Properties\InstanceProperties.cs" />
+    <Compile Include="Create\Requests\FilterMemberElements.cs" />
     <Compile Include="Create\Requests\FilterRequest.cs" />
     <Compile Include="Create\Requests\FilterByElementIds.cs" />
     <Compile Include="Create\Requests\FilterByParameterElementId.cs" />

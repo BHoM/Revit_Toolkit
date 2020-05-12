@@ -20,53 +20,33 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure;
+using BH.oM.Adapters.Revit.Requests;
+using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel;
 
-namespace BH.UI.Revit.Engine
+namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Create
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Filters ElementIds of elements being members of multielement  in a Revit document.")]
-        [Input("element", "Element to be queried for its member element ElementIds.")]
-        [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> MemberElementIds(this Element element)
+        [Description("Creates an IRequest that filters elements being members of selection sets, assemblies, systems etc.")]
+        [Input("bHoMObject", "BHoMObject that contains ElementId of a correspondent Revit element under Revit_elementId CustomData key - usually previously pulled from Revit.")]
+        [Output("F", "IRequest to be used to filter views that implement a given template.")]
+        public static FilterMemberElements FilterMemberElements(IBHoMObject bHoMObject)
         {
-            if (element == null)
+            int elementId = bHoMObject.ElementId();
+            if (elementId == -1)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
                 return null;
-
-            HashSet<ElementId> elementIds = new HashSet<ElementId>();
-            if (element is Group)
-            {
-                IEnumerable<ElementId> memberIds = ((Group)element).GetMemberIds();
-                foreach (ElementId elementId in memberIds)
-                {
-                    Element e = element.Document.GetElement(elementId);
-                    if (e.Category != null && e.Category.Id.IntegerValue != (int)Autodesk.Revit.DB.BuiltInCategory.OST_WeakDims && e.Category.Id.IntegerValue != (int)Autodesk.Revit.DB.BuiltInCategory.OST_SketchLines && !typeof(AnalyticalModel).IsAssignableFrom(e.GetType()))
-                        elementIds.Add(e.Id);
-
-                    if (e is Group)
-                        elementIds.UnionWith(e.MemberElementIds());
-                }
             }
-            else if (element is AssemblyInstance)
-                elementIds.UnionWith(((AssemblyInstance)element).GetMemberIds());
-            else if (element is MEPSystem)
-            {
-                foreach (Element e in ((MEPSystem)element).Elements)
-                {
-                    elementIds.Add(e.Id);
-                }
-            }
-
-            return elementIds;
+            else
+                return new FilterMemberElements { ParentId = elementId };
         }
 
         /***************************************************/
