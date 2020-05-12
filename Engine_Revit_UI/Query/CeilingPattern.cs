@@ -123,21 +123,27 @@ namespace BH.UI.Revit.Engine
                 {
                     double offset = grid.Offset.ToSI(UnitType.UT_Length);
                     double currentY = box.Min.Y - (yLength / 2);
-                    double currentX = box.Min.X;
+                    double currentX = box.Min.X - (xLength / 2);
 
-                    double minNum = currentY;
-                    double maxNum = (box.Max.Y + (yLength / 2));
+                    //double minNum = currentY;
+                    //double maxNum = (box.Max.Y + (yLength / 2));
 
-                    if(grid.Angle.ToSI(UnitType.UT_Angle) > settings.AngleTolerance)
+                    double minNum = currentX;
+                    double maxNum = (box.Max.X + (xLength / 2));
+
+                    if (grid.Angle.ToSI(UnitType.UT_Angle) > settings.AngleTolerance)
                     {
-                        minNum = currentX - (xLength / 2);
-                        maxNum = (box.Max.X + (xLength / 2));
+                        minNum = currentY;
+                        maxNum = (box.Max.Y + (yLength / 2));
                     }
 
                     while ((minNum + offset) < maxNum)
                     {
-                        BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = box.Min.X, Y = minNum + offset, Z = z };
-                        BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = box.Max.X, Y = minNum + offset, Z = z };
+                        //BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = box.Min.X, Y = minNum + offset, Z = z };
+                        //BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = box.Max.X, Y = minNum + offset, Z = z };
+
+                        BH.oM.Geometry.Point pt = new oM.Geometry.Point { X = minNum + offset, Y = box.Min.Y, Z = z };
+                        BH.oM.Geometry.Point pt2 = new oM.Geometry.Point { X = minNum + offset, Y = box.Max.Y, Z = z };
 
                         BH.oM.Geometry.Line pline = new oM.Geometry.Line { Start = pt, End = pt2 };
 
@@ -146,8 +152,11 @@ namespace BH.UI.Revit.Engine
                             BH.oM.Geometry.Point rotatePt = pline.Centroid();
                             pline = pline.Rotate(rotatePt, Vector.ZAxis, grid.Angle.ToSI(UnitType.UT_Angle));
 
-                            pline.Start.X = minNum + offset;
-                            pline.End.X = minNum + offset;
+                            //pline.Start.X = minNum + offset;
+                            //pline.End.X = minNum + offset;
+
+                            pline.Start.Y = minNum + offset;
+                            pline.End.Y = minNum + offset;
 
                             BH.oM.Geometry.Point intersect = pline.LineIntersection(leftLine, true);
                             if (intersect != null)
@@ -183,7 +192,10 @@ namespace BH.UI.Revit.Engine
 
                         foreach (BH.oM.Geometry.Line l in lines)
                         {
-                            if (surface.ExternalBoundary.IIsContaining(l.IControlPoints(), true))
+                            List<BH.oM.Geometry.Point> pts = l.IControlPoints();
+                            pts.Add(l.Centroid());
+                            
+                            if (surface.ExternalBoundary.IIsContaining(pts, true))
                                 patterns.Add(l);
                         }
 
