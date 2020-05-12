@@ -105,14 +105,7 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<ElementId> ElementIds(this SelectionRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
-            if (uIDocument.Selection == null)
-                return new List<ElementId>();
-
-            HashSet<ElementId> result = new HashSet<ElementId>(uIDocument.Selection.GetElementIds());
-            if (ids != null)
-                result.IntersectWith(ids);
-
-            return result;
+            return uIDocument.ElementIdsBySelection(ids);
         }
 
         /***************************************************/
