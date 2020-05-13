@@ -48,26 +48,18 @@ namespace BH.UI.Revit.Engine
             if (ids != null && ids.Count() == 0)
                 return new List<ElementId>();
 
-            if (familyId == -1)
+            Family family = document.GetElement(new ElementId(familyId)) as Family;
+            if (family == null)
             {
-                FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-                return collector.WhereElementIsElementType().ToElementIds();
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Couldn't find a Family under ElementId {0}", familyId));
+                return new List<ElementId>();
             }
-            else
-            {
-                Family family = document.GetElement(new ElementId(familyId)) as Family;
-                if (family == null)
-                {
-                    BH.Engine.Reflection.Compute.RecordError(String.Format("Couldn't find a Family under ElementId {0}", familyId));
-                    return new List<ElementId>();
-                }
-                
-                HashSet<ElementId> result = new HashSet<ElementId>(family.GetFamilySymbolIds());
-                if (ids != null)
-                    result.IntersectWith(ids);
 
-                return result;
-            }            
+            HashSet<ElementId> result = new HashSet<ElementId>(family.GetFamilySymbolIds());
+            if (ids != null)
+                result.IntersectWith(ids);
+
+            return result;
         }
 
         /***************************************************/

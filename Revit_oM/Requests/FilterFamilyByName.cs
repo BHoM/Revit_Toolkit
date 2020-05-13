@@ -32,7 +32,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /****                Properties                 ****/
         /***************************************************/
         
-        [Description("Revit Family name matching one displayed in Revit UI. Optional: if left blank, all families will be filtered.")]
+        [Description("Revit family name matching one displayed in Revit UI. Optional: if left blank, all families will be filtered.")]
         public virtual string FamilyName { get; set; } = "";
 
         [Description("If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
