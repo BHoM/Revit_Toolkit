@@ -25,7 +25,7 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Convert
     {
         /***************************************************/
-        /****           Public Fields                   ****/
+        /****          Public Fields - General          ****/
         /***************************************************/
         
         public const string AdapterIdName = "Revit_id";
@@ -40,6 +40,12 @@ namespace BH.Engine.Adapters.Revit
         public const string Surfaces = "Revit_surfaces";
         public const string Meshes = "Revit_meshes";
         public const string RenderMesh = "RenderMesh";
+
+
+        /***************************************************/
+        /****           Public Fields - BEnv            ****/
+        /***************************************************/
+
         public const string CeilingPattern = "CeilingPattern";
 
         /***************************************************/
