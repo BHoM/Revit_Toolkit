@@ -20,12 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.ComponentModel;
 using Autodesk.Revit.DB;
 using BH.oM.Reflection.Attributes;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -35,30 +35,24 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Filters ElementIds of elements and types in a Revit document based on Revit family criterion, optionally narrowing the search to a specific family type.")]
+        [Description("Filters ElementIds of used/unused elements in a Revit document.")]
         [Input("document", "Revit document to be processed.")]
-        [Input("familyName", "Name of the Revit family to be used as a filter.")]
-        [Input("familyTypeName", "Optional, the name of Revit family type to be used to narrow down the search.")]
-        [Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        [Input("used", "Value that specifies whether used or unused elements are meant to be filtered out.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> ElementIdsByFamilyAndType(this Document document, string familyName, string familyTypeName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsByUsage(this Document document, bool used, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
 
-            List<ElementId> result = new List<ElementId>();
-            if (string.IsNullOrEmpty(familyName) && string.IsNullOrEmpty(familyTypeName))
-            {
-                BH.Engine.Reflection.Compute.RecordError("Family type query could not be executed because neither family name nor family type name has been provided.");
-                return result;
-            }
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
 
-            foreach (ElementId elementId in document.ElementIdsOfFamilyTypes(familyName, familyTypeName, caseSensitive))
-            {
-                ElementType elementType = (ElementType)document.GetElement(elementId);
-                result.AddRange(document.ElementIdsByElementType(elementType, ids));
-            }
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+            HashSet<ElementId> result = new HashSet<ElementId>(collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))).Where(x => x.IIsUsed()).Select(x => x.Id));
+
+            if (ids != null)
+                result.IntersectWith(ids);
 
             return result;
         }

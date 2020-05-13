@@ -20,49 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Interface;
-using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Requests
 {
-    public static partial class Compute
+    [Description("IRequest that filters used/unused elements in a Revit document.")]
+    public class FilterByUsage : IRequest
     {
         /***************************************************/
-        /****              Public Methods               ****/
+        /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Groups and sorts IRequests by their estimated execution time in order to execute fastest first. Order from slowest to fastest: IParameterRequest, IlogicalRequests, others. ")]
-        [Input("requests", "A collection of IRequests to be sorted.")]
-        [Output("sortedRequests")]
-        public static List<IRequest> SortByPerformance(this List<IRequest> requests)
-        {
-            List<IRequest> allRequests = new List<IRequest>();
-            List<IRequest> logicalRequests = new List<IRequest>();
-            List<IRequest> eachElementRequests = new List<IRequest>();
-            List<IRequest> parameterRequests = new List<IRequest>();
-
-            foreach (IRequest request in requests)
-            {
-                if (request is IParameterRequest)
-                    parameterRequests.Add(request);
-                else if (request is ILogicalRequest)
-                    logicalRequests.Add(request);
-                else if (request is FilterByUsage)
-                    eachElementRequests.Add(request);
-                else
-                    allRequests.Add(request);
-            }
-
-            allRequests.AddRange(logicalRequests);
-            allRequests.AddRange(eachElementRequests);
-            allRequests.AddRange(parameterRequests);
-
-            return allRequests;
-        }
+        [Description("Value that specifies whether used or unused elements are meant to be filtered out.")]
+        public virtual bool Used { get; set; } = false;
 
         /***************************************************/
     }
