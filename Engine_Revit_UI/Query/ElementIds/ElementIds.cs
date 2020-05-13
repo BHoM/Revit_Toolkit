@@ -173,7 +173,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this FilterFamilyTypesOfFamily request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIds(this FilterFamilyTypes request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             return uIDocument.Document.ElementIdsOfFamilyTypes(request.FamilyId, ids);
         }

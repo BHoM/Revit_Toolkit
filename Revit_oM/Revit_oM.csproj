@@ -111,7 +111,7 @@
     <Compile Include="Requests\FilterByVisibleInView.cs" />
     <Compile Include="Requests\FilterByWorkset.cs" />
     <Compile Include="Requests\FilterFamilyByName.cs" />
-    <Compile Include="Requests\FilterFamilyTypesOfFamily.cs" />
+    <Compile Include="Requests\FilterFamilyTypes.cs" />
     <Compile Include="Requests\FilterModelElements.cs" />
     <Compile Include="Requests\FilterViewByName.cs" />
     <Compile Include="Requests\FilterViewsByTemplate.cs" />
@@ -126,6 +126,9 @@
     <Compile Include="Settings\MapSettings.cs" />
     <Compile Include="Settings\RevitSettings.cs" />
     <Compile Include="Elements\Sheet.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Versioning_32.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
