@@ -49,7 +49,7 @@ namespace BH.UI.Revit.Engine
                 return new List<ElementId>();
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            HashSet<ElementId> result = new HashSet<ElementId>(collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))).Where(x => x.IIsUsed()).Select(x => x.Id));
+            HashSet<ElementId> result = new HashSet<ElementId>(collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))).Where(x => x.IIsUsed() == used).Select(x => x.Id));
 
             if (ids != null)
                 result.IntersectWith(ids);
