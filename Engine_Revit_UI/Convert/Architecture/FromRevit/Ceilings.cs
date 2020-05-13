@@ -78,8 +78,8 @@ namespace BH.UI.Revit.Engine
                 newCeiling.UpdateValues(settings, ceiling);
 
                 newCeiling.CustomData.Add(BH.Engine.Adapters.Revit.Convert.CeilingPattern, ceiling.CeilingPattern(settings, planarSurface));
-                if (disctionary.Values.Sum(x => x.Count) != 0)
-                    BH.Engine.Reflection.Compute.RecordWarning("Currently ceiling openings are not taken into account when generating ceiling patterns.");
+                if (disctionary.Values.Where(x => x != null).Sum(x => x.Count) != 0)
+                    BH.Engine.Reflection.Compute.RecordWarning("Currently ceiling openings are not taken into account when generating ceilings.");
 
                 ceilingList.Add(newCeiling);
             }
