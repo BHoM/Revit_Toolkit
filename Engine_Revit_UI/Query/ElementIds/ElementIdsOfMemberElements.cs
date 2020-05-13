@@ -90,7 +90,7 @@ namespace BH.UI.Revit.Engine
             foreach (ElementId elementId in memberIds)
             {
                 Element e = group.Document.GetElement(elementId);
-                if (e.Category != null && e.Category.Id.IntegerValue != (int)Autodesk.Revit.DB.BuiltInCategory.OST_WeakDims && e.Category.Id.IntegerValue != (int)Autodesk.Revit.DB.BuiltInCategory.OST_SketchLines && !typeof(AnalyticalModel).IsAssignableFrom(e.GetType()))
+                if (e.Category != null && e.Category.Id.IntegerValue != (int)Autodesk.Revit.DB.BuiltInCategory.OST_WeakDims && e.Category.Id.IntegerValue != (int)Autodesk.Revit.DB.BuiltInCategory.OST_SketchLines && !e.IsAnalytical())
                     elementIds.Add(e.Id);
 
                 if (e is Group)
