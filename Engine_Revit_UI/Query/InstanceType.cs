@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,27 +20,49 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Data.Requests;
-using System.ComponentModel;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Electrical;
+using Autodesk.Revit.DB.Mechanical;
+using Autodesk.Revit.DB.Plumbing;
+using System;
+using System.Collections.Generic;
 
-namespace BH.oM.Adapters.Revit.Requests
+namespace BH.UI.Revit.Engine
 {
-    [Description("IRequest that filters all elements of given Revit family and type, with option to loose the search by leaving one of the input names blank.")]
-    public class FilterByFamilyAndTypeName : IRequest
+    public static partial class Query
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Name of Revit family as shown in Revit UI. Optional: if left blank, all families will be filtered in search for specified family type name.")]
-        public virtual string FamilyName { get; set; } = "";
-
-        [Description("Revit family type name matching one displayed in Revit UI. Optional: if left blank, elements of all types within family will be returned.")]
-        public virtual string FamilyTypeName { get; set; } = "";
-
-        [Description("If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
-        public virtual bool CaseSensitive { get; set; } = true;
+        public static Type InstanceType(this ElementType elementType)
+        {
+            Type type = elementType.GetType();
+            if (InstanceTypes.ContainsKey(type))
+                return InstanceTypes[type];
+            else
+                return null;
+        }
 
         /***************************************************/
+
+        private static Dictionary<Type, Type> InstanceTypes = new Dictionary<Type, Type>
+        {
+            { typeof(WallType), typeof(Wall) },
+            { typeof(FloorType), typeof(Floor) },
+            { typeof(RoofType), typeof(RoofBase) },
+            { typeof(CeilingType), typeof(Ceiling) },
+            { typeof(CurtainSystemType), typeof(CurtainSystem) },
+            { typeof(PanelType), typeof(Panel) },
+            { typeof(MullionType), typeof(Mullion) },
+            { typeof(DuctType), typeof(Duct) },
+            { typeof(FlexDuctType), typeof(FlexDuctType) },
+            { typeof(DuctInsulationType), typeof(DuctInsulation) },
+            { typeof(PipeType), typeof(Pipe) },
+            { typeof(FlexPipeType), typeof(FlexPipe) },
+            { typeof(PipeInsulationType), typeof(PipeInsulation) },
+            { typeof(ConduitType), typeof(Conduit) },
+            { typeof(CableTrayType), typeof(CableTray) },
+        };
     }
 }
