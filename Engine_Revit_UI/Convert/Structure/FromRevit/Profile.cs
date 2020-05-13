@@ -32,6 +32,7 @@ using BH.oM.Structure.SectionProperties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.Base;
 using BHG = BH.Engine.Geometry;
 
 namespace BH.UI.Revit.Engine
@@ -52,55 +53,58 @@ namespace BH.UI.Revit.Engine
 
             IGeometricalSection property = BH.Engine.Library.Query.Match("SectionProperties", familySymbol.Name) as IGeometricalSection;
             if (property != null)
-                return property.SectionProfile;
+                profile = property.SectionProfile.DeepClone();
 
-            Parameter sectionShapeParam = familySymbol.get_Parameter(BuiltInParameter.STRUCTURAL_SECTION_SHAPE);
-            StructuralSectionShape sectionShape = sectionShapeParam == null ? sectionShape = StructuralSectionShape.NotDefined : (StructuralSectionShape)sectionShapeParam.AsInteger();
-
-            if (sectionShape == StructuralSectionShape.NotDefined)
-                sectionShape = familySymbol.Family.Name.SectionShape();
-
-            switch (sectionShape)
+            if (profile == null)
             {
-                case StructuralSectionShape.RoundBar:
-                case StructuralSectionShape.ConcreteRound:
-                    profile = familySymbol.CircleProfileFromRevit();
-                    break;
-                case StructuralSectionShape.IWelded:
-                    profile = familySymbol.FabricatedISectionProfileFromRevit();
-                    break;
-                case StructuralSectionShape.RectangleParameterized:
-                case StructuralSectionShape.RectangularBar:
-                case StructuralSectionShape.ConcreteRectangle:
-                    profile = familySymbol.RectangleProfileFromRevit();
-                    break;
-                case StructuralSectionShape.LAngle:
-                case StructuralSectionShape.LProfile:
-                    profile = familySymbol.AngleProfileFromRevit();
-                    break;
-                case StructuralSectionShape.RectangleHSS:
-                    profile = familySymbol.BoxProfileFromRevit();
-                    break;
-                case StructuralSectionShape.CParallelFlange:
-                case StructuralSectionShape.CProfile:
-                    profile = familySymbol.ChannelProfileFromRevit();
-                    break;
-                case StructuralSectionShape.IParallelFlange:
-                case StructuralSectionShape.IWideFlange:
-                    profile = familySymbol.ISectionProfileFromRevit();
-                    break;
-                case StructuralSectionShape.ISplitParallelFlange:
-                case StructuralSectionShape.StructuralTees:
-                case StructuralSectionShape.ConcreteT:
-                    profile = familySymbol.TSectionProfileFromRevit();
-                    break;
-                case StructuralSectionShape.ZProfile:
-                    profile = familySymbol.ZSectionProfileFromRevit();
-                    break;
-                case StructuralSectionShape.PipeStandard:
-                case StructuralSectionShape.RoundHSS:
-                    profile = familySymbol.TubeProfileFromRevit();
-                    break;
+                Parameter sectionShapeParam = familySymbol.get_Parameter(BuiltInParameter.STRUCTURAL_SECTION_SHAPE);
+                StructuralSectionShape sectionShape = sectionShapeParam == null ? sectionShape = StructuralSectionShape.NotDefined : (StructuralSectionShape)sectionShapeParam.AsInteger();
+
+                if (sectionShape == StructuralSectionShape.NotDefined)
+                    sectionShape = familySymbol.Family.Name.SectionShape();
+
+                switch (sectionShape)
+                {
+                    case StructuralSectionShape.RoundBar:
+                    case StructuralSectionShape.ConcreteRound:
+                        profile = familySymbol.CircleProfileFromRevit();
+                        break;
+                    case StructuralSectionShape.IWelded:
+                        profile = familySymbol.FabricatedISectionProfileFromRevit();
+                        break;
+                    case StructuralSectionShape.RectangleParameterized:
+                    case StructuralSectionShape.RectangularBar:
+                    case StructuralSectionShape.ConcreteRectangle:
+                        profile = familySymbol.RectangleProfileFromRevit();
+                        break;
+                    case StructuralSectionShape.LAngle:
+                    case StructuralSectionShape.LProfile:
+                        profile = familySymbol.AngleProfileFromRevit();
+                        break;
+                    case StructuralSectionShape.RectangleHSS:
+                        profile = familySymbol.BoxProfileFromRevit();
+                        break;
+                    case StructuralSectionShape.CParallelFlange:
+                    case StructuralSectionShape.CProfile:
+                        profile = familySymbol.ChannelProfileFromRevit();
+                        break;
+                    case StructuralSectionShape.IParallelFlange:
+                    case StructuralSectionShape.IWideFlange:
+                        profile = familySymbol.ISectionProfileFromRevit();
+                        break;
+                    case StructuralSectionShape.ISplitParallelFlange:
+                    case StructuralSectionShape.StructuralTees:
+                    case StructuralSectionShape.ConcreteT:
+                        profile = familySymbol.TSectionProfileFromRevit();
+                        break;
+                    case StructuralSectionShape.ZProfile:
+                        profile = familySymbol.ZSectionProfileFromRevit();
+                        break;
+                    case StructuralSectionShape.PipeStandard:
+                    case StructuralSectionShape.RoundHSS:
+                        profile = familySymbol.TubeProfileFromRevit();
+                        break;
+                }
             }
 
             if (profile == null)
