@@ -111,7 +111,8 @@
     <Compile Include="Requests\FilterByVisibleInView.cs" />
     <Compile Include="Requests\FilterByWorkset.cs" />
     <Compile Include="Requests\FilterFamilyByName.cs" />
-    <Compile Include="Requests\FilterFamilyTypes.cs" />
+    <Compile Include="Requests\FilterFamilyTypeByName.cs" />
+    <Compile Include="Requests\FilterTypesOfFamily.cs" />
     <Compile Include="Requests\FilterModelElements.cs" />
     <Compile Include="Requests\FilterViewByName.cs" />
     <Compile Include="Requests\FilterViewsByTemplate.cs" />

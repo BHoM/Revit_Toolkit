@@ -12,11 +12,11 @@
   "Type": {
     "ToNew": 
 	{
-      "BH.oM.Adapters.Revit.Requests.FilterFamilyTypesOfFamily":  "BH.oM.Adapters.Revit.Requests.FilterFamilyTypes"
+      "BH.oM.Adapters.Revit.Requests.FilterFamilyTypesOfFamily":  "BH.oM.Adapters.Revit.Requests.FilterTypesOfFamily"
     },
     "ToOld": 
 	{
-      "BH.oM.Adapters.Revit.Requests.FilterFamilyTypes": "BH.oM.Adapters.Revit.Requests.FilterFamilyTypesOfFamily"
+      "BH.oM.Adapters.Revit.Requests.FilterTypesOfFamily": "BH.oM.Adapters.Revit.Requests.FilterFamilyTypesOfFamily"
     }
   }
 }
