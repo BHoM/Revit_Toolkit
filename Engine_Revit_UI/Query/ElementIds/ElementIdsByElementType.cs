@@ -35,29 +35,47 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Filters ElementIds of elements and types in a Revit document based on Revit family criterion, optionally narrowing the search to a specific family type.")]
+        [Description("Filters ElementIds of elements of given element type in a Revit document.")]
         [Input("document", "Revit document to be processed.")]
-        [Input("familyName", "Name of the Revit family to be used as a filter.")]
-        [Input("familyTypeName", "Optional, the name of Revit family type to be used to narrow down the search.")]
-        [Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        [Input("elementTypeId", "ElementId of the family type to be sought for.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> ElementIdsByFamilyAndType(this Document document, string familyName, string familyTypeName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsByElementType(this Document document, int elementTypeId, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
 
-            List<ElementId> result = new List<ElementId>();
-            if (string.IsNullOrEmpty(familyName) && string.IsNullOrEmpty(familyTypeName))
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
+            ElementType elementType = document.GetElement(new ElementId(elementTypeId)) as ElementType;
+            if (elementType == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Family type query could not be executed because neither family name nor family type name has been provided.");
-                return result;
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Active Revit model does not contain a family type under ElementId {0}.", elementTypeId));
+                return new List<ElementId>();
             }
 
-            foreach (ElementId elementId in document.ElementIdsOfFamilyTypes(familyName, familyTypeName, caseSensitive))
+            return document.ElementIdsByElementType(elementType, ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIdsByElementType(this Document document, ElementType elementType, IEnumerable<ElementId> ids = null)
+        {
+            List<ElementId> result = new List<ElementId>();
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+
+            if (elementType is FamilySymbol)
+                result.AddRange(collector.WherePasses(new FamilyInstanceFilter(document, elementType.Id)).ToElementIds());
+            else
             {
-                ElementType elementType = (ElementType)document.GetElement(elementId);
-                result.AddRange(document.ElementIdsByElementType(elementType, ids));
+                Type instanceType = elementType.InstanceType();
+                if (instanceType != null)
+                    collector = collector.OfClass(instanceType);
+                else
+                    collector = collector.WhereElementIsNotElementType();
+
+                result.AddRange(collector.Where(x => x.GetTypeId() == elementType.Id).Select(x => x.Id));
             }
 
             return result;

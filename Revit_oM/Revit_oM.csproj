@@ -99,6 +99,7 @@
     <Compile Include="Requests\FilterByDBTypeName.cs" />
     <Compile Include="Requests\FilterByElementIds.cs" />
     <Compile Include="Requests\FilterByFamilyAndTypeName.cs" />
+    <Compile Include="Requests\FilterByFamilyType.cs" />
     <Compile Include="Requests\FilterByParameterBool.cs" />
     <Compile Include="Requests\FilterByParameterElementId.cs" />
     <Compile Include="Requests\FilterByParameterExistence.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Requests\FilterByParameterText.cs" />
     <Compile Include="Requests\FilterBySelectionSet.cs" />
     <Compile Include="Requests\FilterByUniqueIds.cs" />
+    <Compile Include="Requests\FilterByUsage.cs" />
     <Compile Include="Requests\FilterByViewSpecific.cs" />
     <Compile Include="Requests\FilterByVisibleInView.cs" />
     <Compile Include="Requests\FilterByWorkset.cs" />

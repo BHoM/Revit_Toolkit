@@ -342,7 +342,9 @@
     <Compile Include="Objects\WarningSwallower.cs" />
     <Compile Include="Query\Color.cs" />
     <Compile Include="Query\EdgeCurves.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsByElementType.cs" />
     <Compile Include="Query\ElementIds\ElementIdsBySelection.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsByUsage.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfMemberElements.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfModelElements.cs" />
     <Compile Include="Query\GeometryPrimitives.cs" />
@@ -378,6 +380,7 @@
     <Compile Include="Query\InstanceType.cs" />
     <Compile Include="Query\IsContaining.cs" />
     <Compile Include="Query\IsSupportedAPIType.cs" />
+    <Compile Include="Query\IsUsed.cs" />
     <Compile Include="Query\IsVerticalNonLinearCurve.cs" />
     <Compile Include="Query\MeshedGeometry.cs" />
     <Compile Include="Query\OriginContext.cs" />

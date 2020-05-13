@@ -41,6 +41,9 @@ namespace BH.UI.Revit.Engine
         [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByIdObjects(this Document document, IList idObjects, IEnumerable<ElementId> ids = null)
         {
+            if (document == null)
+                return null;
+
             List<int> elementIds = new List<int>();
             List<string> uniqueIds = new List<string>();
             if (idObjects != null && idObjects.Count != 0)

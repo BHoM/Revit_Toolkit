@@ -166,6 +166,13 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        public static IEnumerable<ElementId> ElementIds(this FilterByFamilyType request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsByElementType(request.FamilyTypeId, ids);
+        }
+
+        /***************************************************/
+
         public static IEnumerable<ElementId> ElementIds(this FilterFamilyTypeByName request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             return uIDocument.Document.ElementIdsOfFamilyTypes(request.FamilyName, request.FamilyTypeName, request.CaseSensitive, ids);
@@ -253,6 +260,13 @@ namespace BH.UI.Revit.Engine
         public static IEnumerable<ElementId> ElementIds(this FilterModelElements request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
         {
             return uIDocument.Document.ElementIdsOfModelElements(ids);
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this FilterByUsage request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            return uIDocument.Document.ElementIdsByUsage(request.Used, ids);
         }
 
         /***************************************************/

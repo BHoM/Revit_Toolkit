@@ -21,54 +21,75 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Electrical;
-using Autodesk.Revit.DB.Mechanical;
-using Autodesk.Revit.DB.Plumbing;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
     public static partial class Query
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Interface methods             ****/
         /***************************************************/
 
-        public static Type InstanceType(this ElementType elementType)
+        public static bool IIsUsed(this Element element)
         {
-            Type type = elementType.GetType();
-            if (InstanceTypes.ContainsKey(type))
-                return InstanceTypes[type];
-            else
-                return null;
+            if (element == null)
+                return false;
+
+            return IsUsed(element as dynamic);
         }
 
 
         /***************************************************/
-        /****            Private collection             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        private static Dictionary<Type, Type> InstanceTypes = new Dictionary<Type, Type>
+        public static bool IsUsed(this Family family)
         {
-            { typeof(WallType), typeof(Wall) },
-            { typeof(FloorType), typeof(Floor) },
-            { typeof(RoofType), typeof(RoofBase) },
-            { typeof(CeilingType), typeof(Ceiling) },
-            { typeof(CurtainSystemType), typeof(CurtainSystem) },
-            { typeof(PanelType), typeof(Panel) },
-            { typeof(MullionType), typeof(Mullion) },
-            { typeof(DuctType), typeof(Duct) },
-            { typeof(FlexDuctType), typeof(FlexDuctType) },
-            { typeof(DuctInsulationType), typeof(DuctInsulation) },
-            { typeof(PipeType), typeof(Pipe) },
-            { typeof(FlexPipeType), typeof(FlexPipe) },
-            { typeof(PipeInsulationType), typeof(PipeInsulation) },
-            { typeof(ConduitType), typeof(Conduit) },
-            { typeof(CableTrayType), typeof(CableTray) },
-            { typeof(GroupType), typeof(Group) },
-        };
-        
+            return new FilteredElementCollector(family.Document).OfClass(typeof(ElementType)).Cast<ElementType>().Count(x => x.FamilyName == family.Name) != 0;
+        }
+
+        /***************************************************/
+
+        public static bool IsUsed(this ElementType elementType)
+        {
+            FilteredElementCollector collector = new FilteredElementCollector(elementType.Document);
+            if (elementType is FamilySymbol)
+                return collector.WherePasses(new FamilyInstanceFilter(elementType.Document, elementType.Id)).Count() != 0;
+            else
+            {
+                Type instanceType = elementType.InstanceType();
+                if (instanceType != null)
+                    collector = collector.OfClass(instanceType);
+                else
+                    collector = collector.WhereElementIsNotElementType();
+
+                return collector.Where(x => x.GetTypeId() == elementType.Id).Count() != 0;
+            }
+        }
+
+        /***************************************************/
+
+        public static bool IsUsed(this View viewTemplate)
+        {
+            if (!viewTemplate.IsTemplate)
+                return true;
+
+            return new FilteredElementCollector(viewTemplate.Document).OfClass(typeof(View)).Cast<View>().Count(x => x.ViewTemplateId == viewTemplate.Id) != 0;
+        }
+
+
+        /***************************************************/
+        /****             Fallback methods              ****/
+        /***************************************************/
+
+        public static bool IsUsed(this Element element)
+        {
+            return true;
+        }
+
         /***************************************************/
     }
 }
