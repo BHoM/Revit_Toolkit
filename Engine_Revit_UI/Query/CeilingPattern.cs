@@ -80,14 +80,11 @@ namespace BH.UI.Revit.Engine
 
         public static List<BH.oM.Geometry.Line> CeilingPattern(this Material revitMaterial, PlanarSurface surface, RevitSettings settings)
         {
-            if (surface.InternalBoundaries.Count > 0)
-                BH.Engine.Reflection.Compute.RecordWarning("Currently ceiling openings are not taken into account when generating ceiling patterns.");
-
             BoundingBox box = surface.IBounds();
             double z = surface.ExternalBoundary.IControlPoints().Max(x => x.Z);
-            double yLength = box.Max.Y - box.Min.Y;
-            double xLength = box.Max.X - box.Min.X;
-            double maxBoxLength = box.Min.Distance(box.Max) * 2;
+            double yLength = (box.Max.Y - box.Min.Y) / 2;
+            double xLength = (box.Max.X - box.Min.X) / 2;
+            double maxBoxLength = box.Min.Distance(box.Max);
 
             BH.oM.Geometry.Line leftLine = new oM.Geometry.Line
             {
@@ -101,7 +98,7 @@ namespace BH.UI.Revit.Engine
                 End = new oM.Geometry.Point { X = box.Max.X, Y = box.Max.Y, Z = z },
             };
 
-            List<BH.oM.Geometry.Line> boundarySegments = surface.ExternalBoundary.ICollapseToPolyline(BH.oM.Geometry.Tolerance.Angle).ISubParts().Select(x => x as BH.oM.Geometry.Line).ToList();
+            List<BH.oM.Geometry.Line> boundarySegments = surface.ExternalBoundary.ICollapseToPolyline(BH.oM.Geometry.Tolerance.Angle).SubParts().ToList();
 
             List<BH.oM.Geometry.Line> patterns = new List<BH.oM.Geometry.Line>();
             FillPatternElement fillPatternElement = null;
@@ -122,16 +119,16 @@ namespace BH.UI.Revit.Engine
                 foreach (FillGrid grid in fillGridList)
                 {
                     double offset = grid.Offset.ToSI(UnitType.UT_Length);
-                    double currentY = box.Min.Y - (yLength / 2);
-                    double currentX = box.Min.X - (xLength / 2);
+                    double currentY = box.Min.Y - yLength;
+                    double currentX = box.Min.X - xLength;
 
                     double minNum = currentX;
-                    double maxNum = (box.Max.X + (xLength / 2));
+                    double maxNum = (box.Max.X + xLength);
 
                     if (grid.Angle.ToSI(UnitType.UT_Angle) > settings.AngleTolerance)
                     {
                         minNum = currentY;
-                        maxNum = (box.Max.Y + (yLength / 2));
+                        maxNum = (box.Max.Y + yLength);
                     }
 
                     while ((minNum + offset) < maxNum)
@@ -141,7 +138,7 @@ namespace BH.UI.Revit.Engine
 
                         BH.oM.Geometry.Line pline = new oM.Geometry.Line { Start = pt, End = pt2 };
 
-                        if (grid.Angle > settings.AngleTolerance)
+                        if (grid.Angle.ToSI(UnitType.UT_Angle) > settings.AngleTolerance)
                         {
                             BH.oM.Geometry.Point rotatePt = pline.Centroid();
                             pline = pline.Rotate(rotatePt, Vector.ZAxis, grid.Angle.ToSI(UnitType.UT_Angle));
@@ -158,9 +155,9 @@ namespace BH.UI.Revit.Engine
                                 pline.End = intersect;
 
                             Vector v1 = pline.End - pline.Start; //From start TO end
-                            v1 *= maxBoxLength / 2;
+                            v1 *= maxBoxLength;
                             Vector v2 = pline.Start - pline.End;  //From end TO start
-                            v2 *= maxBoxLength / 2;
+                            v2 *= maxBoxLength;
 
                             pline.Start = pline.Start.Translate(v2);
                             pline.End = pline.End.Translate(v1);
@@ -183,7 +180,7 @@ namespace BH.UI.Revit.Engine
 
                         foreach (BH.oM.Geometry.Line l in lines)
                         {
-                            List<BH.oM.Geometry.Point> pts = l.IControlPoints();
+                            List<BH.oM.Geometry.Point> pts = l.ControlPoints();
                             pts.Add(l.Centroid());
                             
                             if (surface.ExternalBoundary.IIsContaining(pts, true))
@@ -199,5 +196,7 @@ namespace BH.UI.Revit.Engine
 
             return patterns;
         }
+
+        /***************************************************/
     }
 }

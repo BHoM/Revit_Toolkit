@@ -40,6 +40,7 @@ namespace BH.Engine.Adapters.Revit
         public const string Surfaces = "Revit_surfaces";
         public const string Meshes = "Revit_meshes";
         public const string RenderMesh = "RenderMesh";
+        public const string CeilingPattern = "CeilingPattern";
 
         /***************************************************/
     }
