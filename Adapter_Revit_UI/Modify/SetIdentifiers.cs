@@ -71,7 +71,6 @@ namespace BH.UI.Revit.Adapter
                         bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = value;
                 }
 
-
                 parameter = element.get_Parameter(BuiltInParameter.ELEM_TYPE_PARAM);
                 if (parameter != null)
                 {
@@ -80,6 +79,13 @@ namespace BH.UI.Revit.Adapter
                         bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = value;
                 }
 
+                parameter = element.get_Parameter(BuiltInParameter.SYMBOL_ID_PARAM);
+                if (parameter != null)
+                {
+                    string value = parameter.AsValueString();
+                    if (!string.IsNullOrEmpty(value))
+                        bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeId] = value;
+                }
 
                 parameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
                 if (parameter != null)
