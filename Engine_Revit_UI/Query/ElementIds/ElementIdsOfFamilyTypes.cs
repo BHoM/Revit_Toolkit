@@ -63,5 +63,58 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
+        
+        public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, string familyName = null, string familyTypeName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
+        {
+            if (document == null)
+                return null;
+
+            HashSet<ElementId> result = new HashSet<ElementId>();
+            IEnumerable<ElementType> elementTypes = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>();
+            if (!string.IsNullOrEmpty(familyName))
+            {
+                if (caseSensitive)
+                    elementTypes = elementTypes.Where(x => x.FamilyName == familyName);
+                else
+                    elementTypes = elementTypes.Where(x => !string.IsNullOrEmpty(x.FamilyName) && x.FamilyName.ToUpper() == familyName.ToUpper());
+
+                if (elementTypes.Count() == 0)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Couldn't find any family named " + familyName + ".");
+                    return result;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(familyTypeName))
+            {
+                if (caseSensitive)
+                    elementTypes = elementTypes.Where(x => x.Name == familyTypeName);
+                else
+                    elementTypes = elementTypes.Where(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper() == familyTypeName.ToUpper());
+
+                if (elementTypes.Count() > 1)
+                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("More than one family type named {0} has been found. It may be desirable to narrow down the search by specifying family name explicitly."));
+            }
+
+            if (elementTypes.Count() == 0)
+            {
+                string error = "Couldn't find any family type named " + familyTypeName;
+                if (!string.IsNullOrEmpty(familyName))
+                    error += " in the family " + familyName + ".";
+                else
+                    error += ".";
+
+                BH.Engine.Reflection.Compute.RecordError(error);
+                return result;
+            }
+
+            result = new HashSet<ElementId>(elementTypes.Select(x => x.Id));
+            if (ids != null)
+                result.IntersectWith(ids);
+
+            return result;
+        }
+
+        /***************************************************/
     }
 }

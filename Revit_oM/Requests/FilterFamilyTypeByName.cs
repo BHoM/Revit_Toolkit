@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -25,8 +25,8 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements of given Revit family and type, with option to loose the search by leaving one of the input names blank.")]
-    public class FilterByFamilyAndTypeName : IRequest
+    [Description("IRequest that filters Revit family types by names of theirs and their parent family, with option to loose the search by leaving one or both of the input names blank.")]
+    public class FilterFamilyTypeByName : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
@@ -35,7 +35,7 @@ namespace BH.oM.Adapters.Revit.Requests
         [Description("Name of Revit family as shown in Revit UI. Optional: if left blank, all families will be filtered in search for specified family type name.")]
         public virtual string FamilyName { get; set; } = "";
 
-        [Description("Revit family type name matching one displayed in Revit UI. Optional: if left blank, elements of all types within family will be returned.")]
+        [Description("Revit family type name matching one displayed in Revit UI. Optional: if left blank, all types within family will be returned. If family name is left blank too, all family types in model will be returned.")]
         public virtual string FamilyTypeName { get; set; } = "";
 
         [Description("If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]

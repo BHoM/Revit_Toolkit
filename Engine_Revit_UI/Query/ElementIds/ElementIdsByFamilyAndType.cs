@@ -46,88 +46,30 @@ namespace BH.UI.Revit.Engine
         {
             if (document == null)
                 return null;
-            
+
             List<ElementId> result = new List<ElementId>();
-
-            List<ElementType> elementTypes = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>().ToList();
-            if (!string.IsNullOrEmpty(familyName))
+            if (string.IsNullOrEmpty(familyName) && string.IsNullOrEmpty(familyTypeName))
             {
-                if (caseSensitive)
-                    elementTypes = elementTypes.FindAll(x => x.FamilyName == familyName);
-                else
-                    elementTypes = elementTypes.FindAll(x => !string.IsNullOrEmpty(x.FamilyName) && x.FamilyName.ToUpper() == familyName.ToUpper());
-            }
-
-            if (elementTypes == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family named " + familyName + ".");
+                BH.Engine.Reflection.Compute.RecordError("Family type query could not be executed because neither family name nor family type name has been provided.");
                 return result;
             }
 
-            if (!string.IsNullOrEmpty(familyTypeName))
+            foreach (ElementId elementId in document.ElementIdsOfFamilyTypes(familyName, familyTypeName, caseSensitive))
             {
-                if (caseSensitive)
-                    elementTypes = elementTypes.FindAll(x => x.Name == familyTypeName);
-                else
-                    elementTypes = elementTypes.FindAll(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper() == familyTypeName.ToUpper());
-            }
-
-            if (elementTypes == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Couldn't find any Family Type named " + familyTypeName + " in the Family " + familyName);
-                return result;
-            }
-
-            if (ids != null && ids.Count() == 0)
-                return result;
-
-            foreach (ElementType elementType in elementTypes)
-            {
+                ElementType elementType = (ElementType)document.GetElement(elementId);
                 FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
 
                 if (elementType is FamilySymbol)
                     result.AddRange(collector.WherePasses(new FamilyInstanceFilter(document, elementType.Id)).ToElementIds());
                 else
                 {
-                    Type type = null;
+                    Type instanceType = elementType.InstanceType();
+                    if (instanceType != null)
+                        collector = collector.OfClass(instanceType);
+                    else
+                        collector = collector.WhereElementIsNotElementType();
 
-                    if (elementType is WallType)
-                        type = typeof(Wall);
-                    else if (elementType is FloorType)
-                        type = typeof(Floor);
-                    else if (elementType is CeilingType)
-                        type = typeof(Ceiling);
-                    else if (elementType is CurtainSystemType)
-                        type = typeof(CurtainSystem);
-                    else if (elementType is PanelType)
-                        type = typeof(Panel);
-                    else if (elementType is MullionType)
-                        type = typeof(Mullion);
-                    else if (elementType is Autodesk.Revit.DB.Mechanical.DuctType)
-                        type = typeof(Autodesk.Revit.DB.Mechanical.Duct);
-                    else if (elementType is Autodesk.Revit.DB.Mechanical.FlexDuctType)
-                        type = typeof(Autodesk.Revit.DB.Mechanical.FlexDuct);
-                    else if (elementType is Autodesk.Revit.DB.Mechanical.DuctInsulationType)
-                        type = typeof(Autodesk.Revit.DB.Mechanical.DuctInsulation);
-                    else if (elementType is Autodesk.Revit.DB.Plumbing.PipeType)
-                        type = typeof(Autodesk.Revit.DB.Plumbing.Pipe);
-                    else if (elementType is Autodesk.Revit.DB.Plumbing.FlexPipeType)
-                        type = typeof(Autodesk.Revit.DB.Plumbing.FlexPipe);
-                    else if (elementType is Autodesk.Revit.DB.Plumbing.PipeInsulationType)
-                        type = typeof(Autodesk.Revit.DB.Plumbing.PipeInsulation);
-                    else if (elementType is Autodesk.Revit.DB.Electrical.ConduitType)
-                        type = typeof(Autodesk.Revit.DB.Electrical.Conduit);
-                    else if (elementType is Autodesk.Revit.DB.Electrical.CableTrayType)
-                        type = typeof(Autodesk.Revit.DB.Electrical.CableTray);
-
-                    if (type == null)
-                        continue;
-
-                    List<Element> elements = collector.OfClass(type).ToList();
-                    if (elements == null || elements.Count == 0)
-                        continue;
-
-                    result.AddRange(elements.Where(x => x.GetTypeId() == elementType.Id).Select(x => x.Id));
+                    result.AddRange(collector.Where(x => x.GetTypeId() == elementType.Id).Select(x => x.Id));
                 }
             }
 

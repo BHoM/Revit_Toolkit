@@ -375,6 +375,7 @@
     <Compile Include="Query\FramingElementRotation.cs" />
     <Compile Include="Query\FramingElementProperty.cs" />
     <Compile Include="Query\GetValues.cs" />
+    <Compile Include="Query\InstanceType.cs" />
     <Compile Include="Query\IsContaining.cs" />
     <Compile Include="Query\IsSupportedAPIType.cs" />
     <Compile Include="Query\IsVerticalNonLinearCurve.cs" />
