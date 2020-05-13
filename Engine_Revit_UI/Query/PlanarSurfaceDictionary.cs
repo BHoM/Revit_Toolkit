@@ -71,11 +71,7 @@ namespace BH.UI.Revit.Engine
                     curves = innerPolycurves.ConvertAll(x => (ICurve)x);
 
                 //TODO: Create method in Geometry Engine shall be used however IsClosed method returns false for some of the PolyCurves pulled from Revit
-                PlanarSurface planarSurface = new PlanarSurface()
-                {
-                    ExternalBoundary = polycurve,
-                    InternalBoundaries = curves
-                };
+                PlanarSurface planarSurface = new PlanarSurface(polycurve, curves);
 
                 if (!BH.Engine.Geometry.Query.IIsPlanar(planarSurface.ExternalBoundary))
                 {
