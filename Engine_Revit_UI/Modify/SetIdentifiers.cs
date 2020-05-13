@@ -72,6 +72,10 @@ namespace BH.UI.Revit.Engine
                 if (parameter != null)
                     bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = parameter.AsValueString();
 
+                parameter = element.get_Parameter(BuiltInParameter.SYMBOL_ID_PARAM);
+                if (parameter != null)
+                    bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeId] = parameter.AsValueString();
+
                 parameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
                 if (parameter != null)
                     bHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = parameter.AsValueString();
