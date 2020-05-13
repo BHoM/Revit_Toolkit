@@ -109,10 +109,49 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIdsOfMemberElements(this MEPSystem mEPSystem)
+        public static IEnumerable<ElementId> ElementIdsOfMemberElements(this Autodesk.Revit.DB.Mechanical.MechanicalSystem mechanicalSystem)
         {
-            List<ElementId> elementIds = new List<ElementId>();
-            foreach (Element element in mEPSystem.Elements)
+
+            HashSet<ElementId> elementIds = new HashSet<ElementId>();
+            foreach (Element element in mechanicalSystem.DuctNetwork)
+            {
+                elementIds.Add(element.Id);
+            }
+
+            foreach (Element element in mechanicalSystem.Elements)
+            {
+                elementIds.Add(element.Id);
+            }
+
+            return elementIds;
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIdsOfMemberElements(this Autodesk.Revit.DB.Plumbing.PipingSystem pipingSystem)
+        {
+
+            HashSet<ElementId> elementIds = new HashSet<ElementId>();
+            foreach (Element element in pipingSystem.PipingNetwork)
+            {
+                elementIds.Add(element.Id);
+            }
+
+            foreach (Element element in pipingSystem.Elements)
+            {
+                elementIds.Add(element.Id);
+            }
+
+            return elementIds;
+        }
+
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIdsOfMemberElements(this Autodesk.Revit.DB.Electrical.ElectricalSystem electricalSystem)
+        {
+
+            HashSet<ElementId> elementIds = new HashSet<ElementId>();
+            foreach (Element element in electricalSystem.Elements)
             {
                 elementIds.Add(element.Id);
             }
