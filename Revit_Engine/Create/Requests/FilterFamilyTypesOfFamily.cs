@@ -37,7 +37,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates an IRequest that filters Revit Family Types of input Family.")]
         [Input("bHoMObject", "BHoMObject that contains ElementId of a correspondent Revit element under Revit_elementId CustomData key - usually previously pulled from Revit.")]
         [Output("F", "IRequest to be used to filter Revit Family Types of a Family.")]
-        public static FilterFamilyTypesOfFamily FilterFamilyTypesOfFamily(IBHoMObject bHoMObject)
+        public static FilterFamilyTypes FilterFamilyTypesOfFamily(IBHoMObject bHoMObject)
         {
             int elementId = bHoMObject.ElementId();
             if (elementId == -1)
@@ -46,7 +46,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
             }
             else
-                return new FilterFamilyTypesOfFamily { FamilyId = elementId };
+                return new FilterFamilyTypes { FamilyId = elementId };
         }
 
         /***************************************************/
