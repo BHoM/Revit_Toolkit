@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Structure;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -55,8 +56,11 @@ namespace BH.UI.Revit.Engine
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             foreach(Element element in collector.WhereElementIsNotElementType().WhereElementIsViewIndependent())
             {
+                if (element.IsAnalytical())
+                    continue;
+
                 GeometryElement ge = element.get_Geometry(options);
-                if (ge != null && ge.Count() != 0)
+                if (ge != null && ge.Count() != 0 && !ge.All(x => x is Solid && ((Solid)x).Edges.IsEmpty && ((Solid)x).Faces.IsEmpty))
                     result.Add(element.Id);
             }
 

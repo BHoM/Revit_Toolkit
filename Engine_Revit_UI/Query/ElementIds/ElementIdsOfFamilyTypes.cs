@@ -93,7 +93,7 @@ namespace BH.UI.Revit.Engine
                     elementTypes = elementTypes.Where(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper() == familyTypeName.ToUpper());
 
                 if (elementTypes.Count() > 1)
-                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("More than one family type named {0} has been found. It may be desirable to narrow down the search by specifying family name explicitly."));
+                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("More than one family type named {0} has been found. It may be desirable to narrow down the search by specifying family name explicitly.", familyTypeName));
             }
 
             if (elementTypes.Count() == 0)
