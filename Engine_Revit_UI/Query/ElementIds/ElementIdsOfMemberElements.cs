@@ -21,7 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure;
 using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
@@ -37,7 +36,7 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
 
         [Description("Filters ElementIds of elements being members of selection sets, assemblies, systems etc.")]
-        [Input("element", "Element to be queried for its member element ElementIds.")]
+        [Input("element", "Revit element to be queried for its member elements.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> IElementIdsOfMemberElements(this Element element)
         {
@@ -54,7 +53,7 @@ namespace BH.UI.Revit.Engine
 
         [Description("Filters ElementIds of elements being members of selection sets, assemblies, systems etc.")]
         [Input("document", "Revit document to be processed.")]
-        [Input("parentId", "Integer value of ElementId of the Revit element that contains member elements.")]
+        [Input("parentId", "Integer value of ElementId of the Revit element to be queried for its member elements.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfMemberElements(this Document document, int parentId, IEnumerable<ElementId> ids = null)
@@ -83,6 +82,9 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        [Description("Filters ElementIds of elements being members of a given Revit group.")]
+        [Input("document", "Revit group to be queried for its member elements.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfMemberElements(this Group group)
         {
             HashSet<ElementId> elementIds = new HashSet<ElementId>();
@@ -102,6 +104,9 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        [Description("Filters ElementIds of elements being members of a given Revit assembly.")]
+        [Input("document", "Revit assembly to be queried for its member elements.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfMemberElements(this AssemblyInstance assemblyInstance)
         {
             return assemblyInstance.GetMemberIds();
@@ -109,6 +114,9 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        [Description("Filters ElementIds of elements being members of a given Revit mechanical system.")]
+        [Input("document", "Revit mechanical system to be queried for its member elements.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfMemberElements(this Autodesk.Revit.DB.Mechanical.MechanicalSystem mechanicalSystem)
         {
 
@@ -128,6 +136,9 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        [Description("Filters ElementIds of elements being members of a given Revit piping system.")]
+        [Input("document", "Revit piping system to be queried for its member elements.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfMemberElements(this Autodesk.Revit.DB.Plumbing.PipingSystem pipingSystem)
         {
 
@@ -147,6 +158,9 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        [Description("Filters ElementIds of elements being members of a given Revit electrical system.")]
+        [Input("document", "Revit electrical system to be queried for its member elements.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfMemberElements(this Autodesk.Revit.DB.Electrical.ElectricalSystem electricalSystem)
         {
 
@@ -161,6 +175,9 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
+        [Description("Filters ElementIds of elements being members of a given Revit selection set.")]
+        [Input("document", "Revit selection set to be queried for its member elements.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfMemberElements(this SelectionFilterElement selectionSet)
         {
             return selectionSet.GetElementIds();

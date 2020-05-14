@@ -59,7 +59,12 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-
+        
+        [Description("Filters ElementIds of elements of given element type in a Revit document.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("elementType", "Family type to be sought for.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByElementType(this Document document, ElementType elementType, IEnumerable<ElementId> ids = null)
         {
             List<ElementId> result = new List<ElementId>();
