@@ -64,7 +64,7 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        [Description("Filters ElementIds of Revit family types based on names of theirs and their parent family, with option to loose the search by leaving one or both of the input names blank..")]
+        [Description("Filters ElementIds of Revit family types based on names of theirs and their parent family, with option to loose the search by leaving one or both of the input names blank.")]
         [Input("document", "Revit document to be processed.")]
         [Input("familyName", "Name of Revit family to be used as a filter. Optional: if left blank, all families will be filtered in search for specified family type name.")]
         [Input("familyTypeName", "Optional, the name of Revit family type to be used to narrow down the search. If left blank, all types within family will be returned. If family name is left blank too, all family types in model will be returned.")]
