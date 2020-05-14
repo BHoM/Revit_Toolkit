@@ -36,7 +36,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates an IRequest that filters elements being members of selection sets, assemblies, systems etc.")]
         [Input("bHoMObject", "BHoMObject that contains ElementId of a correspondent Revit element under Revit_elementId CustomData key - usually previously pulled from Revit.")]
-        [Output("F", "IRequest to be used to filter views that implement a given template.")]
+        [Output("F", "IRequest to be used to filter elements being members of selection sets, assemblies, systems etc.")]
         public static FilterMemberElements FilterMemberElements(IBHoMObject bHoMObject)
         {
             int elementId = bHoMObject.ElementId();

@@ -63,7 +63,14 @@ namespace BH.UI.Revit.Engine
         }
 
         /***************************************************/
-        
+
+        [Description("Filters ElementIds of Revit family types based on names of theirs and their parent family, with option to loose the search by leaving one or both of the input names blank..")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("familyName", "Name of Revit family to be used as a filter. Optional: if left blank, all families will be filtered in search for specified family type name.")]
+        [Input("familyTypeName", "Optional, the name of Revit family type to be used to narrow down the search. If left blank, all types within family will be returned. If family name is left blank too, all family types in model will be returned.")]
+        [Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, string familyName = null, string familyTypeName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
