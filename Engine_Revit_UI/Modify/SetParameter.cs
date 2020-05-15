@@ -133,6 +133,19 @@ namespace BH.UI.Revit.Engine
 
         public static bool SetParameter(this Parameter parameter, object value, Document document = null)
         {
+            // Skip non-workshared documents because they can't contain worksets
+            if (document.IsWorkshared == false)
+                return false;
+
+            // Skip non-string workset names
+            string worksetName = value as string;
+            if (worksetName is string == false)
+                return false;
+
+            // Skip null or empty workset names
+            if (string.IsNullOrWhiteSpace(worksetName))
+                return false;
+
             // Skip null and read-only parameters
             if (parameter == null || parameter.IsReadOnly)
                 return false;
@@ -141,39 +154,17 @@ namespace BH.UI.Revit.Engine
             // Filter for worksets
             if (parameter.Id.IntegerValue == (int)BuiltInParameter.ELEM_PARTITION_PARAM)
             {
-                // Skip empty values
-                if (string.IsNullOrWhiteSpace(value as string))
-                    return false;
+                FilteredWorksetCollector worksets = new FilteredWorksetCollector(document).OfKind(WorksetKind.UserWorkset); // Find all user worksets
 
-                // Find all user worksets
-                FilteredWorksetCollector worksets =
-                    new FilteredWorksetCollector(document)
-                    .OfKind(WorksetKind.UserWorkset);
+                Workset workset = worksets.Where(x => x.Name == worksetName).FirstOrDefault(); // Find the specified workset if it exists
 
-                // Does a workspace with the specified name exist?
-                foreach (Workset workset in worksets)
-                {
-                    if (workset.Name == value as string)
-                    {
-                        // Workset found
-                        // Switch the dropdown menu to the required workset based on its index number
-                        int worksetIndex = workset.Id.IntegerValue; // Index number of the existing workset
-                        return parameter.Set(worksetIndex); // Select a dropdown list item
-                    }
-                }
+                // Set the dropdown parameter to the specified workset if it exists
+                if (workset != null)
+                    return parameter.Set(workset.Id.IntegerValue);
 
                 // Workset doesn't exist
-                if (document.IsWorkshared) // Skip non-workshared documents
-                {
-                    // Create a new workset
-                    Workset newWorkset = null;
-                    string worksetName = value as string;
-                    newWorkset = Workset.Create(document, worksetName);
-
-                    // Select the newly created workset from the dropdown list
-                    int worksetIndex = newWorkset.Id.IntegerValue; // Index number of the new workset
-                    return parameter.Set(worksetIndex); // Select a dropdown list item
-                }
+                // Create a new workset and set the "Workset" dropdown parameter to it
+                Create.Workset(document, parameter, worksetName);
             }
 
             switch (parameter.StorageType)
