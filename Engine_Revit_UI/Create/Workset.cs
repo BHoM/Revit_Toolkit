@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.UI.Revit.Engine
@@ -32,13 +34,11 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        /// <summary>
-        /// Creates a new workset with a specified name and sets the "Workset" dropdown parameter to it.
-        /// </summary>
-        /// <param name="document"></param>
-        /// <param name="parameter"></param>
-        /// <param name="worksetName"></param>
-        /// <returns></returns>
+        [Description("Creates a new workset with a specified name and sets the 'Workset' dropdown parameter to it.")]
+        [Input("document", "Revit model file")]
+        [Input("parameter", "Revit parameter")]
+        [Input("worksetName", "Name of the new workset")]
+        [Output("bool", "true for success, false for failure")]
         public static bool Workset(Document document, Parameter parameter, string worksetName)
         {
             // Skip non-workshared documents because they can't contain worksets
