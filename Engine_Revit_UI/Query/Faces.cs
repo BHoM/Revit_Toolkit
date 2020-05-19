@@ -37,7 +37,7 @@ namespace BH.UI.Revit.Engine
         {
             List<GeometryObject> geometryPrimitives = element.GeometryPrimitives(options, settings);
             if (geometryPrimitives == null)
-                return null;
+                return new List<Face>();
 
             List<Face> result = geometryPrimitives.Where(x => x is Face).Cast<Face>().ToList();
             foreach (Solid solid in geometryPrimitives.Where(x => x is Solid))
