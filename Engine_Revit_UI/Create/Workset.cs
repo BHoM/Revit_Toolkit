@@ -34,19 +34,18 @@ namespace BH.UI.Revit.Engine
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates a new workset with a specified name.")]
+        [Description("Creates a new workset if one does not exist under the specified name, otherwise returns the existing one.")]
         [Input("document", "Revit model file.")]
         [Input("worksetName", "Name of the new workset to be added.")]
         [Output("workset", "Existing workset if it exists or a newly created workset.")]
         public static Workset Workset(Document document, string worksetName)
         {
-            // Skip non-workshared documents because they can't contain worksets
-            if (document.IsWorkshared == false)
+            // Skip non-workshared documents and null/empty workset names
+            if (!document.IsWorkshared || string.IsNullOrWhiteSpace(worksetName))
+            {
+                BH.Engine.Reflection.Compute.RecordError("Document must be work shared, and workset name cannot be null or empty.");
                 return null;
-
-            // Skip null or empty workset names            
-            if (string.IsNullOrWhiteSpace(worksetName))
-                return null;
+            }
 
             // Avoid recreating a workset if one with the same name already exists
             FilteredWorksetCollector worksets = new FilteredWorksetCollector(document).OfKind(WorksetKind.UserWorkset); // Find all user worksets
@@ -54,6 +53,7 @@ namespace BH.UI.Revit.Engine
             if (workset != null)
             {
                 // The specified workset already exists
+                BH.Engine.Reflection.Compute.RecordWarning("A workset with the same name already exists and is therefore reused.");
                 return workset; // Return the existing workset
             }
             else
