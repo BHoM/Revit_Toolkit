@@ -133,24 +133,20 @@ namespace BH.UI.Revit.Engine
 
         public static bool SetParameter(this Parameter parameter, object value, Document document = null)
         {
+            // Skip null and read-only parameters
+            if (parameter == null || parameter.IsReadOnly)
+                return false;
+            
             // Workset parameters
             // Filter for worksets
             if (parameter.Id.IntegerValue == (int)BuiltInParameter.ELEM_PARTITION_PARAM)
             {
                 // Skip non-workshared documents because they can't contain worksets
-                if (document.IsWorkshared == false)
-                    return false;
-
-                // Skip null or empty workset names
-                string worksetName = value as string;
-                if (string.IsNullOrWhiteSpace(worksetName))
-                    return false;
-
-                // Skip null and read-only parameters
-                if (parameter == null || parameter.IsReadOnly)
+                if (!document.IsWorkshared)
                     return false;
 
                 // Create a new workset with a specified name or return an existing one if it already exists
+                string worksetName = value as string;
                 Workset workset = Create.Workset(document, worksetName);
 
                 // Set the "Workset" parameter to the newly created workset
