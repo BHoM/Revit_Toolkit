@@ -21,6 +21,7 @@
  */
 
 using BH.oM.Base;
+using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -37,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Returns edges of given BHoMObject captured on Pull. This value is stored in CustomData under key Revit_edges.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
         [Output("edges")]
-        public static List<oM.Geometry.ICurve> Edges(this IBHoMObject bHoMObject)
+        public static List<ICurve> Edges(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
                 return null;
@@ -45,8 +46,9 @@ namespace BH.Engine.Adapters.Revit
             object value = null;
             if (bHoMObject.CustomData.TryGetValue(Convert.Edges, out value))
             {
-                if(value is IEnumerable<oM.Geometry.ICurve>)
-                    return (value as IEnumerable<oM.Geometry.ICurve>).ToList();
+                IEnumerable<object> curves = value as IEnumerable<object>;
+                if (curves != null && curves.All(x => x is ICurve))
+                    return curves.Cast<ICurve>().ToList();
             }
 
             return null;
