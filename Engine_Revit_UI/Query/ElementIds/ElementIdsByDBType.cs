@@ -44,12 +44,15 @@ namespace BH.UI.Revit.Engine
         [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByDBType(this Document document, string currentDomainAssembly, string typeName, IEnumerable<ElementId> ids = null)
         {
-            if (document == null || string.IsNullOrEmpty(currentDomainAssembly) || string.IsNullOrEmpty(typeName))
+            if (document == null || string.IsNullOrWhiteSpace(currentDomainAssembly) || string.IsNullOrWhiteSpace(typeName))
                 return null;
             
             Assembly assembly = BH.Engine.Adapters.Revit.Query.CurrentDomainAssembly(currentDomainAssembly);
             if (assembly == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Assembly {0} could not be found.", currentDomainAssembly));
                 return null;
+            }
 
             string fullTypeName = null; ;
 
@@ -60,9 +63,6 @@ namespace BH.UI.Revit.Engine
                 else
                     fullTypeName = typeName;
             }
-
-            if (string.IsNullOrEmpty(fullTypeName))
-                return null;
 
             Type type = null;
 
@@ -85,6 +85,12 @@ namespace BH.UI.Revit.Engine
                         break;
                     }
                 }
+            }
+
+            if (type == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Type {0} could not be found in the assembly.", typeName));
+                return new List<ElementId>();
             }
 
             if (ids != null && ids.Count() == 0)
