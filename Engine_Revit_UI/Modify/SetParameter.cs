@@ -136,21 +136,28 @@ namespace BH.UI.Revit.Engine
             // Skip null and read-only parameters
             if (parameter == null || parameter.IsReadOnly)
                 return false;
-            
+
             // Workset parameters
             // Filter for worksets
             if (parameter.Id.IntegerValue == (int)BuiltInParameter.ELEM_PARTITION_PARAM)
             {
-                // Skip non-workshared documents because they can't contain worksets
-                if (!document.IsWorkshared)
-                    return false;
-
-                // Create a new workset with a specified name or return an existing one if it already exists
+                // Find an existing workset with a specified name if it exists
                 string worksetName = value as string;
-                Workset workset = Create.Workset(document, worksetName);
+                Workset workset = Query.Workset(document, worksetName);
 
-                // Set the "Workset" parameter to the newly created workset
-                return parameter.Set(workset.Id.IntegerValue);
+                // Set the "Workset" parameter to the specified existing workset
+                // Ensure the Query method hasn't returned a null, which can happen if the document is not workshared or the workset name is empty
+                if (workset != null)
+                {
+                    // Set the parameter to a workset with the specified name if it exists
+                    return parameter.Set(workset.Id.IntegerValue);
+                }
+                else
+                {
+                    // A workset with the specified name doesn't exist
+                    BH.Engine.Reflection.Compute.RecordError("Cannot set the Workset parameter because a workset with the specified name doesn't exist.");
+                    return false;
+                }
             }
 
             switch (parameter.StorageType)
