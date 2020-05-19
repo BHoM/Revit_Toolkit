@@ -299,7 +299,7 @@
     <Compile Include="Convert\Revit\ToRevit\Family.cs" />
     <Compile Include="Convert\Revit\ToRevit\CurveElement.cs" />
     <Compile Include="Convert\Structure\FromRevit\Bars.cs" />
-    <Compile Include="Create\Workset.cs" />
+    <Compile Include="Query\Workset.cs" />
     <Compile Include="Create\CurveArray.cs" />
     <Compile Include="Create\Options.cs" />
     <Compile Include="Modify\AddAdjacentSpaceId.cs" />

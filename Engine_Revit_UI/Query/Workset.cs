@@ -28,42 +28,28 @@ using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Create
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates a new workset if one does not exist under the specified name, otherwise returns the existing one.")]
+        [Description("Find and return an existing workset with a specified name or return null if it doesn't exist.")]
         [Input("document", "Revit model file.")]
-        [Input("worksetName", "Name of the new workset to be added.")]
-        [Output("workset", "Existing workset if it exists or a newly created workset.")]
+        [Input("worksetName", "Name of the required workset.")]
+        [Output("workset", "Existing workset with a specified name if it exists or null if it doesn't.")]
         public static Workset Workset(Document document, string worksetName)
         {
             // Skip non-workshared documents and null/empty workset names
             if (!document.IsWorkshared || string.IsNullOrWhiteSpace(worksetName))
             {
-                BH.Engine.Reflection.Compute.RecordError("Document must be work shared, and workset name cannot be null or empty.");
+                BH.Engine.Reflection.Compute.RecordError("Document must be work shared to contain worksets, and workset name cannot be null or empty.");
                 return null;
             }
-
-            // Avoid recreating a workset if one with the same name already exists
+            
+            // Find a workset with a specified name if it exists
             FilteredWorksetCollector worksets = new FilteredWorksetCollector(document).OfKind(WorksetKind.UserWorkset); // Find all user worksets
-            Workset workset = worksets.Where(x => x.Name == worksetName).FirstOrDefault(); // Find the specified workset if it exists
-            if (workset != null)
-            {
-                // The specified workset already exists
-                BH.Engine.Reflection.Compute.RecordWarning("A workset with the same name already exists and is therefore reused.");
-                return workset; // Return the existing workset
-            }
-            else
-            {
-                // No existing workset with the same name was found
-                // Create a new workset
-                workset = Autodesk.Revit.DB.Workset.Create(document, worksetName); // Full namespace path specified to avoid a name clash with "BH.UI.Revit.Engine.Create", which cannot be omitted with "using Autodesk.Revit.DB;"
-
-                return workset; // Return the newly created workset
-            }
+            return worksets.Where(x => x.Name == worksetName).FirstOrDefault(); // Return the specified workset if it exists or null if it doesn't
         }
 
         /***************************************************/
