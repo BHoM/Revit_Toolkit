@@ -72,6 +72,8 @@ namespace BH.UI.Revit.Engine
                 return null;
 
             GeometryElement geometryElement = element.get_Geometry(options);
+            if (geometryElement == null)
+                return new List<GeometryObject>();
 
             Transform transform = null;
             if (element is FamilyInstance)
