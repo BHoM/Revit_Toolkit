@@ -36,7 +36,7 @@ namespace BH.UI.Revit.Engine
 
         [Description("Find and return an existing workset with a specified name or return null if it doesn't exist.")]
         [Input("document", "Revit model file.")]
-        [Input("worksetName", "Name of the required workset.")]
+        [Input("worksetName", "Name of the requested workset as it is shown in the UI of Revit.")]
         [Output("workset", "Existing workset with a specified name if it exists or null if it doesn't.")]
         public static Workset Workset(Document document, string worksetName)
         {
@@ -55,4 +55,3 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
     }
 }
-
