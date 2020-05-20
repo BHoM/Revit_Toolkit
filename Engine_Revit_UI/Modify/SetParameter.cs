@@ -155,7 +155,7 @@ namespace BH.UI.Revit.Engine
                 else
                 {
                     // A workset with the specified name doesn't exist
-                    BH.Engine.Reflection.Compute.RecordError("Cannot set the Workset parameter because a workset with the specified name doesn't exist.");
+                    BH.Engine.Reflection.Compute.RecordWarning("Cannot set the Workset parameter because a workset with the specified name doesn't exist.");
                     return false;
                 }
             }
