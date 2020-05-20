@@ -143,7 +143,7 @@ namespace BH.UI.Revit.Engine
             {
                 // Find an existing workset with a specified name if it exists
                 string worksetName = value as string;
-                Workset workset = Query.Workset(document, worksetName);
+                Workset workset = document.Workset(worksetName);
 
                 // Set the "Workset" parameter to the specified existing workset
                 // Ensure the Query method hasn't returned a null, which can happen if the document is not workshared or the workset name is empty
