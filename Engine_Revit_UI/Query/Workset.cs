@@ -38,7 +38,7 @@ namespace BH.UI.Revit.Engine
         [Input("document", "Revit model file.")]
         [Input("worksetName", "Name of the requested workset as it is shown in the UI of Revit.")]
         [Output("workset", "Existing workset with a specified name if it exists or null if it doesn't.")]
-        public static Workset Workset(Document document, string worksetName)
+        public static Workset Workset(this Document document, string worksetName)
         {
             // Skip non-workshared documents and null/empty workset names
             if (!document.IsWorkshared || string.IsNullOrWhiteSpace(worksetName))
