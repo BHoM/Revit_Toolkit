@@ -112,9 +112,10 @@ namespace BH.UI.Revit.Engine
 
             ConstantThickness property2D = new ConstantThickness { PanelType = panelType, Thickness = thickness, Material = materialFragment, Name = hostObjAttributes.Name };
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             property2D.SetIdentifiers(hostObjAttributes);
-            property2D.SetCustomData(hostObjAttributes);
+            property2D.SetCustomData(hostObjAttributes, settings.ParameterSettings);
+            property2D.SetParameters(hostObjAttributes, settings.ParameterSettings);
 
             refObjects.AddOrReplace(hostObjAttributes.Id, property2D);
             return property2D;

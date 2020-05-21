@@ -66,10 +66,10 @@ namespace BH.UI.Revit.Engine
                 //BEnv origin context fragment
                 OriginContextFragment originContext = roofBase.OriginContext(settings);
 
-                //Set identifiers & custom data
+                //Set identifiers, parameters & custom data
                 bHoMRoof.SetIdentifiers(roofBase);
-                bHoMRoof.SetCustomData(roofBase);
-                bHoMRoof.UpdateValues(settings, roofBase);
+                bHoMRoof.SetCustomData(roofBase, settings.ParameterSettings);
+                bHoMRoof.SetParameters(roofBase, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(roofBase.Id, bHoMRoof);
                 roofs.Add(bHoMRoof);

@@ -94,25 +94,25 @@ namespace BH.UI.Revit.Engine
 
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment() { ElementID = spatialElement.Id.IntegerValue.ToString(), TypeName = Query.Name(spatialElement) };
-            originContext.UpdateValues(settings, spatialElement);
+            originContext.SetParameters(spatialElement, settings.ParameterSettings);
             space.AddFragment(originContext);
 
             SpaceAnalyticalFragment spaceAnalytical = new SpaceAnalyticalFragment();
-            spaceAnalytical.UpdateValues(settings, spatialElement);
+            spaceAnalytical.SetParameters(spatialElement, settings.ParameterSettings);
             space.AddFragment(spaceAnalytical);
 
             SpaceContextFragment spaceContext = new SpaceContextFragment();
-            spaceContext.UpdateValues(settings, spatialElement);
+            spaceContext.SetParameters(spatialElement, settings.ParameterSettings);
             
             //TODO: Implement ConnectedElements
             space.AddFragment(spaceContext);
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             space.SetIdentifiers(spatialElement);
-            space.SetCustomData(spatialElement);
+            space.SetCustomData(spatialElement, settings.ParameterSettings);
+            space.SetParameters(spatialElement, settings.ParameterSettings);
 
             refObjects.AddOrReplace(spatialElement.Id, space);
-            space.UpdateValues(settings, spatialElement);
             return space;
         }
 
@@ -146,13 +146,13 @@ namespace BH.UI.Revit.Engine
 
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment() { ElementID = spatialElement.Id.IntegerValue.ToString(), TypeName = Query.Name(spatialElement) };
-            originContext.UpdateValues(settings, energyAnalysisSpace);
-            originContext.UpdateValues(settings, spatialElement);
+            originContext.SetParameters(energyAnalysisSpace, settings.ParameterSettings);
+            originContext.SetParameters(spatialElement, settings.ParameterSettings);
             space.AddFragment(originContext);
 
             SpaceAnalyticalFragment spaceAnalytical = new SpaceAnalyticalFragment();
-            spaceAnalytical.UpdateValues(settings, energyAnalysisSpace);
-            spaceAnalytical.UpdateValues(settings, spatialElement);
+            spaceAnalytical.SetParameters(energyAnalysisSpace, settings.ParameterSettings);
+            spaceAnalytical.SetParameters(spatialElement, settings.ParameterSettings);
             space.AddFragment(spaceAnalytical);
 
             SpaceContextFragment spaceContext = new SpaceContextFragment();
@@ -161,17 +161,17 @@ namespace BH.UI.Revit.Engine
                 connectedElements.Add(energyAnalysisSurface.CADObjectUniqueId);
 
             spaceContext.ConnectedElements = connectedElements;
-            spaceContext.UpdateValues(settings, energyAnalysisSpace);
-            spaceContext.UpdateValues(settings, spatialElement);
+            spaceContext.SetParameters(energyAnalysisSpace, settings.ParameterSettings);
+            spaceContext.SetParameters(spatialElement, settings.ParameterSettings);
             space.AddFragment(spaceContext);
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             space.SetIdentifiers(spatialElement);
-            space.SetCustomData(spatialElement);
+            space.SetCustomData(spatialElement, settings.ParameterSettings);
+            space.SetParameters(spatialElement, settings.ParameterSettings);
+            space.SetParameters(energyAnalysisSpace, settings.ParameterSettings);
 
             refObjects.AddOrReplace(energyAnalysisSpace.Id, space);
-            space.UpdateValues(settings, energyAnalysisSpace);
-            space.UpdateValues(settings, spatialElement);
             return space;
         }
 

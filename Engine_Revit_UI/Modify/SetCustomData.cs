@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 
 namespace BH.UI.Revit.Engine
@@ -31,33 +32,35 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static void SetCustomData(this IBHoMObject bHoMObject, Element element, string namePrefix = null)
+        internal static void SetCustomData(this IBHoMObject bHoMObject, Element element, ParameterSettings settings = null, string namePrefix = null)
         {
             if (bHoMObject == null || element == null)
                 return;
 
             foreach (Parameter parameter in element.ParametersMap)
             {
-                bHoMObject.SetCustomData(parameter, namePrefix);
+                bHoMObject.SetCustomData(parameter, settings, namePrefix);
             }
         }
 
         /***************************************************/
 
-        public static void SetCustomData(this IBHoMObject bHoMObject, Element element, BuiltInParameter builtInParameter)
+        public static void SetCustomData(this IBHoMObject bHoMObject, Element element, BuiltInParameter builtInParameter, ParameterSettings settings = null)
         {
             if (bHoMObject == null || element == null)
                 return;
 
-            bHoMObject.SetCustomData(element.get_Parameter(builtInParameter));
+            bHoMObject.SetCustomData(element.get_Parameter(builtInParameter), settings);
         }
 
         /***************************************************/
 
-        public static void SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, string namePrefix = null)
+        public static void SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, ParameterSettings settings = null, string namePrefix = null)
         {
             if (bHoMObject == null || parameter == null)
                 return;
+
+            //TODO: handle parameterSettings here
 
             object value = null;
             switch (parameter.StorageType)

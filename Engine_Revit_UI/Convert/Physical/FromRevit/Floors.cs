@@ -66,10 +66,10 @@ namespace BH.UI.Revit.Engine
                 //BEnv origin context fragment
                 OriginContextFragment originContext = floor.OriginContext(settings);
 
-                //Set identifiers & custom data
+                //Set identifiers, parameters & custom data
                 bHoMFloor.SetIdentifiers(floor);
-                bHoMFloor.SetCustomData(floor);
-                bHoMFloor.UpdateValues(settings, floor);
+                bHoMFloor.SetCustomData(floor, settings.ParameterSettings);
+                bHoMFloor.SetParameters(floor, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(floor.Id, bHoMFloor);
                 floors.Add(bHoMFloor);

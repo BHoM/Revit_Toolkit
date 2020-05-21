@@ -72,7 +72,8 @@ namespace BH.UI.Revit.Engine
 
             iBHoMObject.Name = element.Name;
             iBHoMObject.SetIdentifiers(element);
-            iBHoMObject.SetCustomData(element);
+            iBHoMObject.SetCustomData(element, settings.ParameterSettings);
+            iBHoMObject.SetParameters(element, settings.ParameterSettings);
 
             refObjects.AddOrReplace(element.Id, iBHoMObject);
 

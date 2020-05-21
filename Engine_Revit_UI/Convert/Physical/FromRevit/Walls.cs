@@ -79,10 +79,10 @@ namespace BH.UI.Revit.Engine
                 //BEnv origin context fragment
                 OriginContextFragment originContext = wall.OriginContext(settings);
 
-                //Set identifiers & custom data
+                //Set identifiers, parameters & custom data
                 bHoMWall.SetIdentifiers(wall);
-                bHoMWall.SetCustomData(wall);
-                bHoMWall.UpdateValues(settings, wall);
+                bHoMWall.SetCustomData(wall, settings.ParameterSettings);
+                bHoMWall.SetParameters(wall, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(wall.Id, bHoMWall);
                 walls.Add(bHoMWall);

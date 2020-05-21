@@ -53,11 +53,10 @@ namespace BH.UI.Revit.Engine
 
             viewPlan.Name = revitViewPlan.Name;
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             viewPlan.SetIdentifiers(revitViewPlan);
-            viewPlan.SetCustomData(revitViewPlan);
-
-            viewPlan.UpdateValues(settings, revitViewPlan);
+            viewPlan.SetCustomData(revitViewPlan, settings.ParameterSettings);
+            viewPlan.SetParameters(revitViewPlan, settings.ParameterSettings);
 
             refObjects.AddOrReplace(revitViewPlan.Id, viewPlan);
             return viewPlan;

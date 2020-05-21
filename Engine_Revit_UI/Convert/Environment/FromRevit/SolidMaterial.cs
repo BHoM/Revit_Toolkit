@@ -55,7 +55,7 @@ namespace BH.UI.Revit.Engine
 
             result.Update(material, settings);
 
-            result.UpdateValues(settings, material);
+            result.SetParameters(material, settings.ParameterSettings);
 
             refObjects.AddOrReplace(material.Id, result);
             return result;

@@ -96,9 +96,10 @@ namespace BH.UI.Revit.Engine
             BuildingContextFragment buildingContext = new BuildingContextFragment() { PlaceName = placeName, WeatherStation = weatherStationName };
             building.AddFragment(buildingContext);
 
-            //Set identifiers & custom data
-            building.SetIdentifiers(document.ProjectInformation);
-            building.SetCustomData(document.ProjectInformation);
+            //Set identifiers, parameters & custom data
+            building.SetIdentifiers(projectInfo);
+            building.SetCustomData(projectInfo, settings.ParameterSettings);
+            building.SetParameters(projectInfo, settings.ParameterSettings);
 
             refObjects.AddOrReplace(projectInfo.Id, building);
             return building;

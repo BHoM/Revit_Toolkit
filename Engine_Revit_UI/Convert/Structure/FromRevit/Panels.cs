@@ -106,9 +106,10 @@ namespace BH.UI.Revit.Engine
                 oM.Structure.Elements.Panel panel = result[i] as oM.Structure.Elements.Panel;
                 panel.Property = property2D;
 
-                //Set identifiers & custom data
+                //Set identifiers, parameters & custom data
                 panel.SetIdentifiers(hostObject);
-                panel.SetCustomData(hostObject);
+                panel.SetCustomData(hostObject, settings.ParameterSettings);
+                panel.SetParameters(hostObject, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(hostObject.Id, panel);
                 result[i] = panel;
