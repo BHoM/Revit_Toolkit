@@ -45,14 +45,13 @@ namespace BH.UI.Revit.Engine
 
             instanceProperties = BH.Engine.Adapters.Revit.Create.InstanceProperties(elementType.FamilyName, elementType.Name);
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             instanceProperties.SetIdentifiers(elementType);
-            instanceProperties.SetCustomData(elementType);
+            instanceProperties.SetCustomData(elementType, settings.ParameterSettings);
+            instanceProperties.SetParameters(elementType, settings.ParameterSettings);
             instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = elementType.FamilyName;
             instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = elementType.Name;
-
-            instanceProperties.UpdateValues(settings, elementType);
-
+            
             refObjects.AddOrReplace(elementType.Id, instanceProperties);
             return instanceProperties;
         }
@@ -70,13 +69,12 @@ namespace BH.UI.Revit.Engine
             instanceProperties = BH.Engine.Adapters.Revit.Create.InstanceProperties(null, null);
             instanceProperties.Name = graphicStyle.Name;
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             instanceProperties.SetIdentifiers(graphicStyle);
-            instanceProperties.SetCustomData(graphicStyle);
+            instanceProperties.SetCustomData(graphicStyle, settings.ParameterSettings);
+            instanceProperties.SetParameters(graphicStyle, settings.ParameterSettings);
             instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = graphicStyle.GraphicsStyleCategory.Parent.Name;
-
-            instanceProperties.UpdateValues(settings, graphicStyle);
-
+            
             refObjects.AddOrReplace(graphicStyle.Id, instanceProperties);
             return instanceProperties;
         }

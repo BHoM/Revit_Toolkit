@@ -39,9 +39,9 @@ namespace BH.UI.Revit.Engine
         /****             Internal methods              ****/
         /***************************************************/
 
-        internal static void UpdateValues(this IObject iObject, RevitSettings settings, Element element)
+        internal static void SetParameters(this IObject iObject, Element element, ParameterSettings settings = null)
         {
-            if (iObject == null || settings == null || settings.ParameterSettings == null || element == null)
+            if (iObject == null || settings == null || element == null)
                 return;
 
             Type type = iObject.GetType();
@@ -52,7 +52,7 @@ namespace BH.UI.Revit.Engine
 
             foreach (PropertyInfo pInfo in propertyInfos)
             {
-                Parameter parameter = element.LookupParameter(settings.ParameterSettings, type, pInfo.Name, false);
+                Parameter parameter = element.LookupParameter(settings, type, pInfo.Name, false);
                 if (parameter == null)
                     continue;
 

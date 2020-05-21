@@ -343,7 +343,7 @@
     <Compile Include="Modify\SetLocation.cs" />
     <Compile Include="Modify\Update.cs" />
     <Compile Include="Modify\UpdateMaterialProperties.cs" />
-    <Compile Include="Modify\UpdateValues.cs" />
+    <Compile Include="Modify\SetParameters.cs" />
     <Compile Include="Objects\FamilyLoadOptions.cs" />
     <Compile Include="Objects\WarningSwallower.cs" />
     <Compile Include="Query\Color.cs" />

@@ -47,9 +47,10 @@ namespace BH.UI.Revit.Engine
             grid = BH.Engine.Geometry.SettingOut.Create.Grid(revitGrid.Curve.IFromRevit());
             grid.Name = revitGrid.Name;
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             grid.SetIdentifiers(revitGrid);
-            grid.SetCustomData(revitGrid);
+            grid.SetCustomData(revitGrid, settings.ParameterSettings);
+            grid.SetParameters(revitGrid, settings.ParameterSettings);
 
             refObjects.AddOrReplace(revitGrid.Id, grid);
             return grid;
@@ -83,9 +84,10 @@ namespace BH.UI.Revit.Engine
                 grid.Name = revitGrid.Name;
             }
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             grid.SetIdentifiers(revitGrid);
-            grid.SetCustomData(revitGrid);
+            grid.SetCustomData(revitGrid, settings.ParameterSettings);
+            grid.SetParameters(revitGrid, settings.ParameterSettings);
 
             refObjects.AddOrReplace(revitGrid.Id, grid);
             return grid;

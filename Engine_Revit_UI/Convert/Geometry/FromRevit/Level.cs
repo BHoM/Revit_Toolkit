@@ -45,9 +45,10 @@ namespace BH.UI.Revit.Engine
             level = BH.Engine.Geometry.Create.Level(revitLevel.ProjectElevation.ToSI(UnitType.UT_Length));
             level.Name = revitLevel.Name;
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             level.SetIdentifiers(revitLevel);
-            level.SetCustomData(revitLevel);
+            level.SetCustomData(revitLevel, settings.ParameterSettings);
+            level.SetParameters(revitLevel, settings.ParameterSettings);
 
             refObjects.AddOrReplace(revitLevel.Id, level);
             return level;

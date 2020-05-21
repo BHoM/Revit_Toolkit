@@ -40,8 +40,8 @@ namespace BH.UI.Revit.Engine
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.ElementID = hostObject.Id.IntegerValue.ToString();
             originContext.TypeName = hostObject.FamilyTypeFullName();
-            originContext.UpdateValues(settings, hostObject);
-            originContext.UpdateValues(settings, hostObject.Document.GetElement(hostObject.GetTypeId()) as ElementType);
+            originContext.SetParameters(hostObject, settings.ParameterSettings);
+            originContext.SetParameters(hostObject.Document.GetElement(hostObject.GetTypeId()) as ElementType, settings.ParameterSettings);
             return originContext;
         }
 

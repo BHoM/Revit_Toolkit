@@ -61,13 +61,14 @@ namespace BH.UI.Revit.Engine
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.ElementID = familyInstance.Id.IntegerValue.ToString();
             originContext.TypeName = familyInstance.FamilyTypeFullName();
-            originContext.UpdateValues(settings, familyInstance);
-            originContext.UpdateValues(settings, elementType);
+            originContext.SetParameters(familyInstance, settings.ParameterSettings);
+            originContext.SetParameters(elementType, settings.ParameterSettings);
             window.Fragments.Add(originContext);
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             window.SetIdentifiers(familyInstance);
-            window.SetCustomData(familyInstance);
+            window.SetCustomData(familyInstance, settings.ParameterSettings);
+            window.SetParameters(familyInstance, settings.ParameterSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, window);
             return window;
@@ -99,13 +100,14 @@ namespace BH.UI.Revit.Engine
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.ElementID = panel.Id.IntegerValue.ToString();
             originContext.TypeName = panel.FamilyTypeFullName();
-            originContext.UpdateValues(settings, panel);
-            originContext.UpdateValues(settings, elementType);
+            originContext.SetParameters(panel, settings.ParameterSettings);
+            originContext.SetParameters(elementType, settings.ParameterSettings);
             window.Fragments.Add(originContext);
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             window.SetIdentifiers(panel);
-            window.SetCustomData(panel);
+            window.SetCustomData(panel, settings.ParameterSettings);
+            window.SetParameters(panel, settings.ParameterSettings);
 
             refObjects.AddOrReplace(panel.Id, window);
             return window;

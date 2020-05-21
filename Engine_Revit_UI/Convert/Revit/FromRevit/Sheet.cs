@@ -51,11 +51,10 @@ namespace BH.UI.Revit.Engine
 
             sheet.Name = viewSheet.Name;
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             sheet.SetIdentifiers(viewSheet);
-            sheet.SetCustomData(viewSheet);
-
-            sheet.UpdateValues(settings, viewSheet);
+            sheet.SetCustomData(viewSheet, settings.ParameterSettings);
+            sheet.SetParameters(viewSheet, settings.ParameterSettings);
 
             refObjects.AddOrReplace(viewSheet.Id, sheet);
             return sheet;

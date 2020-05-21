@@ -56,18 +56,18 @@ namespace BH.UI.Revit.Engine
                 result = BH.Engine.Environment.Create.Opening(externalEdges: curve.ToEdges());
 
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = energyAnalysisOpening.Id.IntegerValue.ToString(), TypeName = energyAnalysisOpening.OpeningName };
-                originContext.UpdateValues(settings, energyAnalysisOpening);
+                originContext.SetParameters(energyAnalysisOpening, settings.ParameterSettings);
                 result.AddFragment(originContext);
 
                 result.OpeningConstruction = energyAnalysisOpening.Construction(settings);
                 result.Type = OpeningType.Undefined;
 
-                //Set identifiers & custom data
+                //Set identifiers, parameters & custom data
                 result.SetIdentifiers(energyAnalysisOpening);
-                result.SetCustomData(energyAnalysisOpening);
+                result.SetCustomData(energyAnalysisOpening, settings.ParameterSettings);
+                result.SetParameters(energyAnalysisOpening, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(energyAnalysisOpening.Id, result);
-                result.UpdateValues(settings, energyAnalysisOpening);
                 return result;
             }
             else
@@ -83,8 +83,8 @@ namespace BH.UI.Revit.Engine
                 result.Name = element.FamilyTypeFullName();
 
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
-                originContext.UpdateValues(settings, element);
-                originContext.UpdateValues(settings, elementType);
+                originContext.SetParameters(element, settings.ParameterSettings);
+                originContext.SetParameters(elementType, settings.ParameterSettings);
                 result.AddFragment(originContext);
 
                 result.OpeningConstruction = energyAnalysisOpening.Construction(settings);
@@ -95,16 +95,16 @@ namespace BH.UI.Revit.Engine
                 else
                     result.Type = OpeningType.Undefined;
 
-                //Set identifiers & custom data
+                //Set identifiers, parameters & custom data
                 result.SetIdentifiers(element);
-                result.SetCustomData(element);
+                result.SetCustomData(element, settings.ParameterSettings);
+                result.SetParameters(element, settings.ParameterSettings);
+                result.SetParameters(elementType, settings.ParameterSettings);
 
                 if (elementType != null)
-                    result.SetCustomData(elementType, "Type ");
+                    result.SetCustomData(elementType, settings.ParameterSettings, "Type ");
 
                 refObjects.AddOrReplace(energyAnalysisOpening.Id, result);
-                result.UpdateValues(settings, element);
-                result.UpdateValues(settings, elementType);
                 return result;
             }
         }

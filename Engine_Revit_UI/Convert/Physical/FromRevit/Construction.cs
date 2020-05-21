@@ -59,11 +59,10 @@ namespace BH.UI.Revit.Engine
 
             construction = BH.Engine.Physical.Create.Construction(hostObjAttributes.FamilyTypeFullName(), layers);
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             construction.SetIdentifiers(hostObjAttributes);
-            construction.SetCustomData(hostObjAttributes);
-
-            construction.UpdateValues(settings, hostObjAttributes);
+            construction.SetCustomData(hostObjAttributes, settings.ParameterSettings);
+            construction.SetParameters(hostObjAttributes, settings.ParameterSettings);
 
             refObjects.AddOrReplace(hostObjAttributes.Id, construction);
             return construction;

@@ -48,9 +48,10 @@ namespace BH.UI.Revit.Engine
             IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
             bracing = BH.Engine.Physical.Create.Bracing(locationCurve, property, familyInstance.Name);
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             bracing.SetIdentifiers(familyInstance);
-            bracing.SetCustomData(familyInstance);
+            bracing.SetCustomData(familyInstance, settings.ParameterSettings);
+            bracing.SetParameters(familyInstance, settings.ParameterSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, bracing);
             return bracing;

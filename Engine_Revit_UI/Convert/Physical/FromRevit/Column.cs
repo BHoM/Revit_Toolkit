@@ -48,9 +48,10 @@ namespace BH.UI.Revit.Engine
             IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
             column = BH.Engine.Physical.Create.Column(locationCurve, property, familyInstance.Name);
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             column.SetIdentifiers(familyInstance);
-            column.SetCustomData(familyInstance);
+            column.SetCustomData(familyInstance, settings.ParameterSettings);
+            column.SetParameters(familyInstance, settings.ParameterSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, column);
             return column;

@@ -48,9 +48,10 @@ namespace BH.UI.Revit.Engine
             IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
             beam = BH.Engine.Physical.Create.Beam(locationCurve, property, familyInstance.Name);
 
-            //Set identifiers & custom data
+            //Set identifiers, parameters & custom data
             beam.SetIdentifiers(familyInstance);
-            beam.SetCustomData(familyInstance);
+            beam.SetCustomData(familyInstance, settings.ParameterSettings);
+            beam.SetParameters(familyInstance, settings.ParameterSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, beam);
             return beam;
