@@ -67,14 +67,14 @@ namespace BH.UI.Revit.Engine
                 OriginContextFragment originContext = new OriginContextFragment();
                 originContext.ElementID = ceiling.Id.IntegerValue.ToString();
                 originContext.TypeName = ceiling.FamilyTypeFullName();
-                originContext.SetParameters(ceiling, settings.ParameterSettings);
-                originContext.SetParameters(elementType, settings.ParameterSettings);
+                originContext.SetProperties(ceiling, settings.ParameterSettings);
+                originContext.SetProperties(elementType, settings.ParameterSettings);
                 newCeiling.Fragments.Add(originContext);
 
                 //Set identifiers, parameters & custom data
                 newCeiling.SetIdentifiers(ceiling);
                 newCeiling.SetCustomData(ceiling, settings.ParameterSettings);
-                newCeiling.SetParameters(ceiling, settings.ParameterSettings);
+                newCeiling.SetProperties(ceiling, settings.ParameterSettings);
 
                 newCeiling.CustomData.Add(BH.Engine.Adapters.Revit.Convert.CeilingPattern, ceiling.CeilingPattern(settings, planarSurface));
                 if (disctionary.Values.Where(x => x != null).Sum(x => x.Count) != 0)

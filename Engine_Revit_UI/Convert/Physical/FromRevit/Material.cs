@@ -50,7 +50,7 @@ namespace BH.UI.Revit.Engine
             //Set identifiers, parameters & custom data
             material.SetIdentifiers(revitMaterial);
             material.SetCustomData(revitMaterial, settings.ParameterSettings);
-            material.SetParameters(revitMaterial, settings.ParameterSettings);
+            material.SetProperties(revitMaterial, settings.ParameterSettings);
 
             refObjects.AddOrReplace(revitMaterial.Id, material);
             return material;

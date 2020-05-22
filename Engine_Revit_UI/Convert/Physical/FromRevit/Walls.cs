@@ -82,7 +82,7 @@ namespace BH.UI.Revit.Engine
                 //Set identifiers, parameters & custom data
                 bHoMWall.SetIdentifiers(wall);
                 bHoMWall.SetCustomData(wall, settings.ParameterSettings);
-                bHoMWall.SetParameters(wall, settings.ParameterSettings);
+                bHoMWall.SetProperties(wall, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(wall.Id, bHoMWall);
                 walls.Add(bHoMWall);

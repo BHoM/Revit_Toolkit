@@ -60,14 +60,14 @@ namespace BH.UI.Revit.Engine
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.ElementID = familyInstance.Id.IntegerValue.ToString();
             originContext.TypeName = familyInstance.FamilyTypeFullName();
-            originContext.SetParameters(familyInstance, settings.ParameterSettings);
-            originContext.SetParameters(elementType, settings.ParameterSettings);
+            originContext.SetProperties(familyInstance, settings.ParameterSettings);
+            originContext.SetProperties(elementType, settings.ParameterSettings);
             door.Fragments.Add(originContext);
 
             //Set identifiers, parameters & custom data
             door.SetIdentifiers(familyInstance);
             door.SetCustomData(familyInstance, settings.ParameterSettings);
-            door.SetParameters(familyInstance, settings.ParameterSettings);
+            door.SetProperties(familyInstance, settings.ParameterSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, door);
             return door;

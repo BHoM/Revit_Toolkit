@@ -109,7 +109,7 @@ namespace BH.UI.Revit.Engine
                 //Set identifiers, parameters & custom data
                 panel.SetIdentifiers(hostObject);
                 panel.SetCustomData(hostObject, settings.ParameterSettings);
-                panel.SetParameters(hostObject, settings.ParameterSettings);
+                panel.SetProperties(hostObject, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(hostObject.Id, panel);
                 result[i] = panel;

@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 
@@ -29,38 +31,35 @@ namespace BH.UI.Revit.Engine
     public static partial class Modify
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        internal static void SetCustomData(this IBHoMObject bHoMObject, Element element, ParameterSettings settings = null, string namePrefix = null)
+        public static void SetCustomData(this IBHoMObject bHoMObject, Element element, ParameterSettings settings = null)
         {
             if (bHoMObject == null || element == null)
                 return;
 
+            oM.Adapters.Revit.Generic.ParameterMap parameterMap = settings.ParameterMap(bHoMObject.GetType());
             foreach (Parameter parameter in element.ParametersMap)
             {
-                bHoMObject.SetCustomData(parameter, settings, namePrefix);
+                bHoMObject.SetCustomData(parameter, parameterMap);
             }
         }
 
         /***************************************************/
 
-        public static void SetCustomData(this IBHoMObject bHoMObject, Element element, BuiltInParameter builtInParameter, ParameterSettings settings = null)
+        public static void SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, ParameterSettings settings = null)
         {
-            if (bHoMObject == null || element == null)
-                return;
-
-            bHoMObject.SetCustomData(element.get_Parameter(builtInParameter), settings);
+            oM.Adapters.Revit.Generic.ParameterMap parameterMap = settings?.ParameterMap(bHoMObject.GetType());
+            bHoMObject.SetCustomData(parameter, parameterMap);
         }
 
         /***************************************************/
 
-        public static void SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, ParameterSettings settings = null, string namePrefix = null)
+        public static void SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, oM.Adapters.Revit.Generic.ParameterMap parameterMap = null)
         {
             if (bHoMObject == null || parameter == null)
                 return;
-
-            //TODO: handle parameterSettings here
 
             object value = null;
             switch (parameter.StorageType)
@@ -90,8 +89,12 @@ namespace BH.UI.Revit.Engine
             }
 
             string name = parameter.Definition.Name;
-            if (!string.IsNullOrEmpty(namePrefix))
-                name = namePrefix + name;
+            if (parameterMap != null)
+            {
+                ParameterLink parameterLink = parameterMap.ParameterLink(parameter);
+                if (parameterLink != null)
+                    name = parameterLink.PropertyName;
+            }
 
             bHoMObject.CustomData[name] = value;
         }

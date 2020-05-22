@@ -99,7 +99,7 @@ namespace BH.UI.Revit.Engine
             //Set identifiers, parameters & custom data
             building.SetIdentifiers(projectInfo);
             building.SetCustomData(projectInfo, settings.ParameterSettings);
-            building.SetParameters(projectInfo, settings.ParameterSettings);
+            building.SetProperties(projectInfo, settings.ParameterSettings);
 
             refObjects.AddOrReplace(projectInfo.Id, building);
             return building;

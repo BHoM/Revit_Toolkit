@@ -128,7 +128,7 @@ namespace BH.UI.Revit.Engine
                 //Set identifiers, parameters & custom data
                 bars[i].SetIdentifiers(familyInstance);
                 bars[i].SetCustomData(familyInstance, settings.ParameterSettings);
-                bars[i].SetParameters(familyInstance, settings.ParameterSettings);
+                bars[i].SetProperties(familyInstance, settings.ParameterSettings);
             }
 
             refObjects.AddOrReplace(familyInstance.Id, bars);

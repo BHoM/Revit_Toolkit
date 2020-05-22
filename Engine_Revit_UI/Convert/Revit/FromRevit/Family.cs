@@ -75,7 +75,7 @@ namespace BH.UI.Revit.Engine
             //Set identifiers, parameters & custom data
             family.SetIdentifiers(revitFamily);
             family.SetCustomData(revitFamily, settings.ParameterSettings);
-            family.SetParameters(revitFamily, settings.ParameterSettings);
+            family.SetProperties(revitFamily, settings.ParameterSettings);
 
             refObjects.AddOrReplace(revitFamily.Id, family);
             return family;
