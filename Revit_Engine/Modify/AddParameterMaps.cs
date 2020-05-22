@@ -35,10 +35,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Adds ParameterMap to existing ParameterSettings.")]
+        [Description("Adds ParameterMaps to existing ParameterSettings.")]
         [Input("parameterSettings", "ParameterSettings to be extended.")]
-        [Input("parameterMap", "ParameterMap to be added.")]
-        [Input("merge", "In case when a ParameterMap with type equal to parameterMap already exists in parameterSettings: if true, parameterMap will be merged into the existing one, if false, it will overwrite it.")]
+        [Input("parameterMaps", "ParameterMaps to be added.")]
+        [Input("merge", "In case when a ParameterMap with type equal to the input ParameterMap already exists in parameterSettings: if true, parameterMap will be merged into the existing one, if false, it will overwrite it.")]
         [Output("parameterSettings")]
         public static ParameterSettings AddParameterMaps(this ParameterSettings parameterSettings, IEnumerable<ParameterMap> parameterMaps, bool merge = true)
         {

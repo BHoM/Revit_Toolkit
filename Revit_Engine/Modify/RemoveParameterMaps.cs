@@ -35,9 +35,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Removes ParameterMap from existing ParameterSettings.")]
-        [Input("parameterSettings", "ParameterSettings to be extended.")]
-        [Input("type", "Type related to ParameterMap meant to be remved.")]
+        [Description("Removes ParameterMaps correspondent to given types from existing ParameterSettings.")]
+        [Input("parameterSettings", "ParameterSettings to be modified.")]
+        [Input("type", "Type related to ParameterMap meant to be removed.")]
         [Output("parameterSettings")]
         public static ParameterSettings RemoveParameterMaps(this ParameterSettings parameterSettings, IEnumerable<Type> types)
         {

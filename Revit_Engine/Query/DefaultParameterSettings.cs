@@ -22,9 +22,7 @@
 
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
@@ -36,11 +34,13 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an instance of ParameterSettings with default values.")]
+        [Description("Creates an instance of ParameterSettings with default values stored in BHoM datasets.")]
         [Output("parameterSettings")]
         public static ParameterSettings DefaultParameterSettings()
         {
-            return new ParameterSettings().AddParameterMaps(BH.Engine.Library.Query.Library("ParameterMaps").Where(x => x is ParameterMap).Cast<ParameterMap>());
+            ParameterSettings settings = new ParameterSettings().AddParameterMaps(BH.Engine.Library.Query.Library("ParameterMaps").Where(x => x is ParameterMap).Cast<ParameterMap>());
+            settings.Name = "BH Default Parameter Settings";
+            return settings;
         }
 
         /***************************************************/

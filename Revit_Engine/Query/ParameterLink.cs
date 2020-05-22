@@ -35,10 +35,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns ParameterLink inside ParameterSettings for given type and property name.")]
+        [Description("Returns ParameterLink inside ParameterSettings for given type and property name (or CustomData key).")]
         [Input("parameterSettings", "ParameterSettings to be queried.")]
         [Input("type", "Type to be sought for.")]
-        [Input("propertyName", "Name of the property to be sought for.")]
+        [Input("propertyName", "Name of the property (or CustomData key) to be sought for.")]
         [Output("parameterLink")]
         public static ParameterLink ParameterLink(this ParameterSettings parameterSettings, Type type, string propertyName)
         {
@@ -54,9 +54,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns ParameterLink inside ParameterMap for given property name.")]
+        [Description("Returns ParameterLink inside ParameterMap for given property name (or CustomData key).")]
         [Input("parameterMap", "ParameterMap to be queried.")]
-        [Input("propertyName", "Name of the property to be sought for.")]
+        [Input("propertyName", "Name of the property (or CustomData key) to be sought for.")]
         [Output("parameterLink")]
         public static ParameterLink ParameterLink(this ParameterMap parameterMap, string propertyName)
         {

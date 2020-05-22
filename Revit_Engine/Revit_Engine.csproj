@@ -168,7 +168,6 @@
     <Compile Include="Query\XDocument.cs" />
     <Compile Include="Query\RevitFilePreviews.cs" />
     <Compile Include="Query\CurrentDomainAssembly.cs" />
-    <Compile Include="Query\DefaultMapSettings.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
     <Compile Include="Query\MapSettings.cs" />
     <Compile Include="Query\MapPropertyInfos.cs" />
