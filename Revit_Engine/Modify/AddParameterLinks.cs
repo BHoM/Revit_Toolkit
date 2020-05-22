@@ -38,11 +38,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Links Revit parameters with BHoM type property or CustomData inside existing ParameterMap. In case of multiple destinationNames, first found will be considered correspondent with given type property.")]
+        [Description("Adds ParameterLinks to existing ParameterMap.")]
         [Input("parameterMap", "ParameterMap to be extended.")]
-        [Input("propertyName", "BHoM type property or CustomData name.")]
-        [Input("parameterNames", "Revit parameter names to be mapped.")]
-        [Input("merge", "In case when propertyName already exists in parameterMap: if true, the parameterNames will be added to the existing collection of parameter names, if false, it will overwrite it.")]
+        [Input("parameterLinks", "ParameterLinks to be added.")]
+        [Input("merge", "In case when PropertyName of input ParameterLink already exists in a ParameterMap: if true, the parameterNames will be added to the existing collection of parameter names, if false, they will overwrite it.")]
         [Output("parameterMap")]
         public static ParameterMap AddParameterLinks(this ParameterMap parameterMap, IEnumerable<ParameterLink> parameterLinks, bool merge = true)
         {
@@ -87,11 +86,11 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Links Revit parameter with BHoM type property or CustomData inside existing ParameterSettings.")]
+        [Description("Adds ParameterLinks to existing ParameterSettings.")]
         [Input("parameterSettings", "ParameterSettings to be extended.")]
-        [Input("type", "BHoM type to be mapped.")]
-        [Input("propertyName", "BHoM type property or CustomData name.")]
-        [Input("parameterName", "Revit parameter name to be mapped.")]
+        [Input("type", "Type, for which the ParameterLinks are meant to be added.")]
+        [Input("parameterLinks", "ParameterLinks to be added.")]
+        [Input("merge", "In case when PropertyName of input ParameterLink already exists in a ParameterMap of given type: if true, the parameterNames will be added to the existing collection of parameter names, if false, they will overwrite it.")]
         [Output("parameterSettings")]
         public static ParameterSettings AddParameterLinks(this ParameterSettings parameterSettings, Type type, IEnumerable<ParameterLink> parameterLinks, bool merge = true)
         {

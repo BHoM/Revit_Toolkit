@@ -36,10 +36,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns a collection of Revit parameter names associated with a given type property inside ParameterSettings.")]
+        [Description("Returns a collection of Revit parameter names associated with a given type property (or CustomData key) inside ParameterSettings.")]
         [Input("parameterSettings", "ParameterSettings to be queried.")]
         [Input("type", "Type to be sought for.")]
-        [Input("name", "Property name to be sought for.")]
+        [Input("name", "Property name (or CustomData key) to be sought for.")]
         [Output("names")]
         public static HashSet<string> Names(this ParameterSettings parameterSettings, Type type, string name)
         {

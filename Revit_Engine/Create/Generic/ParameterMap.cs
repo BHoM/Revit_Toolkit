@@ -35,8 +35,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an object that contains the information about the relationship between BHoM property names and Revit parameter names.")]
+        [Description("Creates an object that contains the information about the relationship between type property names (or CustomData keys) and Revit parameter names.")]
         [InputFromProperty("type")]
+        [InputFromProperty("parameterLinks")]
         [Output("parameterMap")]
         public static ParameterMap ParameterMap(Type type, IEnumerable<ParameterLink> parameterLinks = null)
         {

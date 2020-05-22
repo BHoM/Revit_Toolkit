@@ -27,17 +27,17 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Generic
 {
-    [Description("An entity defining the relationship between property names of BHoM type and parameter names of correspondent Revit elements.")]
+    [Description("An entity defining the relationship between type property names (or CustomData keys) and parameter names of correspondent Revit elements.")]
     public class ParameterMap : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("BHoM type, which property names are being mapped with Revit element parameters.")]
+        [Description("Type, which property names (or CustomData keys) are being mapped with Revit element parameters.")]
         public virtual Type Type { get; set; } = null;
 
-        //[Description("A collection of BHoM type property names and sets of their correspondent Revit parameter names.")]
+        [Description("A collection of type property names (or CustomData keys) and sets of their correspondent Revit parameter names.")]
         public virtual List<ParameterLink> ParameterLinks { get; set; } = new List<ParameterLink>();
 
         /***************************************************/
