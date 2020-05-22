@@ -48,7 +48,7 @@ namespace BH.UI.Revit.Engine
             //Set identifiers, parameters & custom data
             instanceProperties.SetIdentifiers(elementType);
             instanceProperties.SetCustomData(elementType, settings.ParameterSettings);
-            instanceProperties.SetParameters(elementType, settings.ParameterSettings);
+            instanceProperties.SetProperties(elementType, settings.ParameterSettings);
             instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = elementType.FamilyName;
             instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = elementType.Name;
             
@@ -72,7 +72,7 @@ namespace BH.UI.Revit.Engine
             //Set identifiers, parameters & custom data
             instanceProperties.SetIdentifiers(graphicStyle);
             instanceProperties.SetCustomData(graphicStyle, settings.ParameterSettings);
-            instanceProperties.SetParameters(graphicStyle, settings.ParameterSettings);
+            instanceProperties.SetProperties(graphicStyle, settings.ParameterSettings);
             instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = graphicStyle.GraphicsStyleCategory.Parent.Name;
             
             refObjects.AddOrReplace(graphicStyle.Id, instanceProperties);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,26 +20,23 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Collections.Generic;
-
-using Autodesk.Revit.DB;
-
-using BH.oM.Base;
-using BH.oM.Adapters.Revit.Settings;
-
 
 namespace BH.UI.Revit.Engine
 {
     public static partial class Modify
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        internal static void SetParameters(this IObject iObject, Element element, ParameterSettings settings = null)
+        public static void SetProperties(this IObject iObject, Element element, ParameterSettings settings = null)
         {
             if (iObject == null || settings == null || element == null)
                 return;
@@ -67,7 +64,7 @@ namespace BH.UI.Revit.Engine
                     double value = parameter.AsDouble();
                     pInfo.SetValue(iObject, value);
                 }
-                    
+
                 else if (typePropertyInfo == typeof(int) || typePropertyInfo == typeof(short) || typePropertyInfo == typeof(long))
                 {
                     if (parameter.StorageType == StorageType.ElementId)
@@ -79,11 +76,10 @@ namespace BH.UI.Revit.Engine
                 {
                     pInfo.SetValue(iObject, parameter.AsInteger() == 1);
                 }
-                    
+
             }
         }
 
         /***************************************************/
     }
 }
-

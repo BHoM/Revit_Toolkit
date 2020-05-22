@@ -25,7 +25,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using System;
 using System.ComponentModel;
-
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -35,10 +35,11 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns ParameterMap for given type inside ParameterSettings.")]
+        [Description("Returns ParameterLink inside ParameterSettings for given type and property name.")]
         [Input("parameterSettings", "ParameterSettings to be queried.")]
         [Input("type", "Type to be sought for.")]
-        [Output("parameterMap")]
+        [Input("propertyName", "Name of the property to be sought for.")]
+        [Output("parameterLink")]
         public static ParameterLink ParameterLink(this ParameterSettings parameterSettings, Type type, string propertyName)
         {
             if (parameterSettings == null || parameterSettings.ParameterMaps == null || type == null || string.IsNullOrWhiteSpace(propertyName))
@@ -53,10 +54,10 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns ParameterMap for given type inside ParameterSettings.")]
-        [Input("parameterSettings", "ParameterSettings to be queried.")]
-        [Input("type", "Type to be sought for.")]
-        [Output("parameterMap")]
+        [Description("Returns ParameterLink inside ParameterMap for given property name.")]
+        [Input("parameterMap", "ParameterMap to be queried.")]
+        [Input("propertyName", "Name of the property to be sought for.")]
+        [Output("parameterLink")]
         public static ParameterLink ParameterLink(this ParameterMap parameterMap, string propertyName)
         {
             if (parameterMap == null || parameterMap.ParameterLinks == null || string.IsNullOrWhiteSpace(propertyName))

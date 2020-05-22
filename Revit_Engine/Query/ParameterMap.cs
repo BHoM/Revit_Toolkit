@@ -41,10 +41,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("parameterMap")]
         public static ParameterMap ParameterMap(this ParameterSettings parameterSettings, Type type)
         {
-            if (parameterSettings == null)
-                return null;
-
-            if (type == null || parameterSettings.ParameterMaps == null)
+            if (parameterSettings == null || parameterSettings.ParameterMaps == null)
                 return null;
 
             return parameterSettings.ParameterMaps.Find(x => x.Type == type);

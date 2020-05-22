@@ -70,7 +70,7 @@ namespace BH.UI.Revit.Engine
             //Set identifiers, parameters & custom data
             draftingInstance.SetIdentifiers(filledRegion);
             draftingInstance.SetCustomData(filledRegion, settings.ParameterSettings);
-            draftingInstance.SetParameters(filledRegion, settings.ParameterSettings);
+            draftingInstance.SetProperties(filledRegion, settings.ParameterSettings);
 
             refObjects.AddOrReplace(filledRegion.Id, draftingInstance);
             return draftingInstance;

@@ -115,7 +115,7 @@ namespace BH.UI.Revit.Engine
             //Set identifiers, parameters & custom data
             property2D.SetIdentifiers(hostObjAttributes);
             property2D.SetCustomData(hostObjAttributes, settings.ParameterSettings);
-            property2D.SetParameters(hostObjAttributes, settings.ParameterSettings);
+            property2D.SetProperties(hostObjAttributes, settings.ParameterSettings);
 
             refObjects.AddOrReplace(hostObjAttributes.Id, property2D);
             return property2D;

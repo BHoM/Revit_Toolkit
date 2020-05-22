@@ -30,7 +30,7 @@ namespace BH.UI.Revit.Engine
     public static partial class Modify
     {
         /***************************************************/
-        /****             Internal methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
         
         public static void SetIdentifiers(this IBHoMObject bHoMObject, Element element)

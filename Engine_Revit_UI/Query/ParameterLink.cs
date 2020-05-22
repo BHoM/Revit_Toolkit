@@ -21,42 +21,33 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Physical.Elements;
-using BH.oM.Physical.FramingProperties;
-using System.Collections.Generic;
+using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public static Beam BeamFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Returns first ParameterLink inside ParameterMap for given parameter.")]
+        [Input("parameterMap", "ParameterMap to be queried.")]
+        [Input("parameter", "Property, which name is to be sought for.")]
+        [Output("parameterLink")]
+        public static ParameterLink ParameterLink(this oM.Adapters.Revit.Generic.ParameterMap parameterMap, Parameter parameter)
         {
-            settings = settings.DefaultIfNull();
+            if (parameterMap == null || parameterMap.ParameterLinks == null || parameter == null || string.IsNullOrWhiteSpace(parameter.Definition.Name))
+                return null;
 
-            Beam beam = refObjects.GetValue<Beam>(familyInstance.Id);
-            if (beam != null)
-                return beam;
-
-            oM.Geometry.ICurve locationCurve = familyInstance.FramingElementLocation(settings);
-            IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
-            beam = BH.Engine.Physical.Create.Beam(locationCurve, property, familyInstance.Name);
-
-            //Set identifiers, parameters & custom data
-            beam.SetIdentifiers(familyInstance);
-            beam.SetCustomData(familyInstance, settings.ParameterSettings);
-            beam.SetProperties(familyInstance, settings.ParameterSettings);
-
-            refObjects.AddOrReplace(familyInstance.Id, beam);
-            return beam;
+            return parameterMap.ParameterLinks.Find(x => x.ParameterNames.Any(y => y == parameter.Definition.Name));
         }
 
         /***************************************************/
     }
 }
+
+

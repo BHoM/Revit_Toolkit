@@ -51,7 +51,7 @@ namespace BH.UI.Revit.Engine
             //Set identifiers, parameters & custom data
             column.SetIdentifiers(familyInstance);
             column.SetCustomData(familyInstance, settings.ParameterSettings);
-            column.SetParameters(familyInstance, settings.ParameterSettings);
+            column.SetProperties(familyInstance, settings.ParameterSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, column);
             return column;

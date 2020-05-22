@@ -48,7 +48,7 @@ namespace BH.UI.Revit.Engine
             //Set identifiers, parameters & custom data
             level.SetIdentifiers(revitLevel);
             level.SetCustomData(revitLevel, settings.ParameterSettings);
-            level.SetParameters(revitLevel, settings.ParameterSettings);
+            level.SetProperties(revitLevel, settings.ParameterSettings);
 
             refObjects.AddOrReplace(revitLevel.Id, level);
             return level;

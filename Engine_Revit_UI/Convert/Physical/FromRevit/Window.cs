@@ -61,14 +61,14 @@ namespace BH.UI.Revit.Engine
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.ElementID = familyInstance.Id.IntegerValue.ToString();
             originContext.TypeName = familyInstance.FamilyTypeFullName();
-            originContext.SetParameters(familyInstance, settings.ParameterSettings);
-            originContext.SetParameters(elementType, settings.ParameterSettings);
+            originContext.SetProperties(familyInstance, settings.ParameterSettings);
+            originContext.SetProperties(elementType, settings.ParameterSettings);
             window.Fragments.Add(originContext);
 
             //Set identifiers, parameters & custom data
             window.SetIdentifiers(familyInstance);
             window.SetCustomData(familyInstance, settings.ParameterSettings);
-            window.SetParameters(familyInstance, settings.ParameterSettings);
+            window.SetProperties(familyInstance, settings.ParameterSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, window);
             return window;
@@ -100,14 +100,14 @@ namespace BH.UI.Revit.Engine
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.ElementID = panel.Id.IntegerValue.ToString();
             originContext.TypeName = panel.FamilyTypeFullName();
-            originContext.SetParameters(panel, settings.ParameterSettings);
-            originContext.SetParameters(elementType, settings.ParameterSettings);
+            originContext.SetProperties(panel, settings.ParameterSettings);
+            originContext.SetProperties(elementType, settings.ParameterSettings);
             window.Fragments.Add(originContext);
 
             //Set identifiers, parameters & custom data
             window.SetIdentifiers(panel);
             window.SetCustomData(panel, settings.ParameterSettings);
-            window.SetParameters(panel, settings.ParameterSettings);
+            window.SetProperties(panel, settings.ParameterSettings);
 
             refObjects.AddOrReplace(panel.Id, window);
             return window;

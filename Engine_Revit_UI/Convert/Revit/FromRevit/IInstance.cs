@@ -63,7 +63,7 @@ namespace BH.UI.Revit.Engine
             //Set identifiers, parameters & custom data
             instance.SetIdentifiers(curveElement);
             instance.SetCustomData(curveElement, settings.ParameterSettings);
-            instance.SetParameters(curveElement, settings.ParameterSettings);
+            instance.SetProperties(curveElement, settings.ParameterSettings);
 
             refObjects.AddOrReplace(curveElement.Id, instance);
             return instance;
