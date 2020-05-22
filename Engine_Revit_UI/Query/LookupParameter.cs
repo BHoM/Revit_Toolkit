@@ -27,7 +27,7 @@ using System.Linq;
 using BH.oM.Adapters.Revit.Settings;
 
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
 
 namespace BH.UI.Revit.Engine
 {
@@ -167,33 +167,26 @@ namespace BH.UI.Revit.Engine
 
         /***************************************************/
 
-        public static Parameter LookupParameter(this Element element, ParameterSettings parameterSettings, Type type, string name, bool hasValue = true)
+        public static Parameter LookupParameter(this Element element, ParameterSettings parameterSettings, Type type, string name, bool mustHaveValue = true)
         {
             if (element == null || parameterSettings == null || type == null)
                 return null;
 
-            IEnumerable<string> names = BH.Engine.Adapters.Revit.Query.Names(parameterSettings, type, name);
-            if (names == null || names.Count() == 0)
+            HashSet<string> names = parameterSettings.Names(type, name);
+            if (names == null)
                 return null;
-
-            Parameter result = null;
+            
             foreach (string val in names)
             {
                 Parameter parameter = element.LookupParameter(val);
                 if (parameter == null)
                     continue;
 
-                if (!hasValue && !parameter.HasValue)
-                    continue;
-
-                if (result == null)
-                    result = parameter;
-
-                if (parameter.HasValue)
+                if (parameter.HasValue || !mustHaveValue)
                     return parameter;
             }
 
-            return result;
+            return null;
         }
 
         /***************************************************/

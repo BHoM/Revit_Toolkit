@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using System;
@@ -38,45 +39,60 @@ namespace BH.UI.Revit.Engine
 
         public static void SetProperties(this IObject iObject, Element element, ParameterSettings settings = null)
         {
-            if (iObject == null || settings == null || element == null)
+            if (iObject == null || settings == null || settings.ParameterMaps.Count == 0 || element == null)
                 return;
 
             Type type = iObject.GetType();
 
-            IEnumerable<PropertyInfo> propertyInfos = BH.Engine.Adapters.Revit.Query.MapPropertyInfos(type);
+            IEnumerable<PropertyInfo> propertyInfos = type.MapPropertyInfos();
             if (propertyInfos == null || propertyInfos.Count() == 0)
                 return;
 
             foreach (PropertyInfo pInfo in propertyInfos)
             {
-                Parameter parameter = element.LookupParameter(settings, type, pInfo.Name, false);
-                if (parameter == null)
+                HashSet<string> names = settings.Names(type, pInfo.Name);
+                if (names == null)
                     continue;
 
-                Type typePropertyInfo = pInfo.PropertyType;
+                foreach (string name in names)
+                {
+                    Parameter parameter = element.LookupParameter(name);
+                    if (parameter == null)
+                        continue;
 
-                if (typePropertyInfo == typeof(string))
-                {
-                    pInfo.SetValue(iObject, parameter.AsString());
-                }
-                else if (typePropertyInfo == typeof(double))
-                {
-                    double value = parameter.AsDouble();
-                    pInfo.SetValue(iObject, value);
-                }
+                    Type typePropertyInfo = pInfo.PropertyType;
 
-                else if (typePropertyInfo == typeof(int) || typePropertyInfo == typeof(short) || typePropertyInfo == typeof(long))
-                {
-                    if (parameter.StorageType == StorageType.ElementId)
-                        pInfo.SetValue(iObject, parameter.AsElementId());
-                    else
-                        pInfo.SetValue(iObject, parameter.AsInteger());
-                }
-                else if (typePropertyInfo == typeof(bool))
-                {
-                    pInfo.SetValue(iObject, parameter.AsInteger() == 1);
-                }
+                    if (typePropertyInfo == typeof(string))
+                    {
+                        if (parameter.StorageType == StorageType.String)
+                            pInfo.SetValue(iObject, parameter.AsString());
+                        else
+                            pInfo.SetValue(iObject, parameter.AsValueString());
 
+                        break;
+                    }
+                    else if (typePropertyInfo == typeof(double))
+                    {
+                        double value = parameter.AsDouble().ToSI(parameter.Definition.UnitType);
+                        pInfo.SetValue(iObject, value);
+                        break;
+                    }
+
+                    else if (typePropertyInfo == typeof(int) || typePropertyInfo == typeof(short) || typePropertyInfo == typeof(long))
+                    {
+                        if (parameter.StorageType == StorageType.ElementId)
+                            pInfo.SetValue(iObject, parameter.AsElementId());
+                        else
+                            pInfo.SetValue(iObject, parameter.AsInteger());
+
+                        break;
+                    }
+                    else if (typePropertyInfo == typeof(bool))
+                    {
+                        pInfo.SetValue(iObject, parameter.AsInteger() == 1);
+                        break;
+                    }
+                }
             }
         }
 

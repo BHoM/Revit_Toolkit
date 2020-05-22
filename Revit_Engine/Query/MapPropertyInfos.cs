@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
@@ -43,23 +44,38 @@ namespace BH.Engine.Adapters.Revit
             if (type == null)
                 return null;
 
-            PropertyInfo[] propertyInfos = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            if (propertyInfos == null || propertyInfos.Length == 0)
-                return propertyInfos;
+            if (m_PropertyInfos.ContainsKey(type))
+                return m_PropertyInfos[type];
 
-            List<PropertyInfo> result = new List<PropertyInfo>();
-            foreach(PropertyInfo pInfo in propertyInfos)
+            List<PropertyInfo> propertyInfos = new List<PropertyInfo>();
+            if (typeof(IBHoMObject).IsAssignableFrom(type))
+                propertyInfos.Add(type.GetProperty("Name"));
+
+            propertyInfos.AddRange(type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            for (int i = propertyInfos.Count - 1; i >= 0; i--)
             {
+                PropertyInfo pInfo = propertyInfos[i];
                 if (pInfo.GetSetMethod() == null)
+                {
+                    propertyInfos.RemoveAt(i);
                     continue;
+                }
 
                 Type propertyType = pInfo.PropertyType;
-                if (propertyType == typeof(double) || propertyType == typeof(int) || propertyType == typeof(string) || propertyType == typeof(long) || propertyType == typeof(bool) || propertyType == typeof(short))
-                    result.Add(pInfo);
+                if (!(propertyType == typeof(double) || propertyType == typeof(int) || propertyType == typeof(string) || propertyType == typeof(long) || propertyType == typeof(bool) || propertyType == typeof(short)))
+                    propertyInfos.RemoveAt(i);
             }
 
-            return result;
+            m_PropertyInfos.Add(type, propertyInfos);
+            return propertyInfos;
         }
+
+
+        /***************************************************/
+        /**** Private Fields                            ****/
+        /***************************************************/
+
+        private static Dictionary<Type, IEnumerable<PropertyInfo>> m_PropertyInfos = new Dictionary<Type, IEnumerable<PropertyInfo>>();
 
         /***************************************************/
     }
