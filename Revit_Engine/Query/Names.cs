@@ -41,7 +41,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("type", "Type to be sought for.")]
         [Input("name", "Property name to be sought for.")]
         [Output("names")]
-        public static IEnumerable<string> Names(this ParameterSettings parameterSettings, Type type, string name)
+        public static HashSet<string> Names(this ParameterSettings parameterSettings, Type type, string name)
         {
             if (parameterSettings == null || type == null || string.IsNullOrWhiteSpace(name))
                 return null;
