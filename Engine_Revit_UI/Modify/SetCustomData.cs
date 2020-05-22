@@ -39,7 +39,7 @@ namespace BH.UI.Revit.Engine
             if (bHoMObject == null || element == null)
                 return;
 
-            oM.Adapters.Revit.Generic.ParameterMap parameterMap = settings.ParameterMap(bHoMObject.GetType());
+            oM.Adapters.Revit.Generic.ParameterMap parameterMap = settings?.ParameterMap(bHoMObject.GetType());
             foreach (Parameter parameter in element.ParametersMap)
             {
                 bHoMObject.SetCustomData(parameter, parameterMap);
