@@ -78,7 +78,7 @@ namespace BH.UI.Revit.Engine
                 return new oM.Geometry.Ellipse { Centre = curve.Center.PointFromRevit(), Axis1 = curve.XDirection.VectorFromRevit().Normalise(), Radius1 = curve.RadiusX.ToSI(UnitType.UT_Length), Axis2 = curve.YDirection.VectorFromRevit().Normalise(), Radius2 = curve.RadiusY.ToSI(UnitType.UT_Length) };
             else
             {
-                BH.Engine.Reflection.Compute.RecordError("Conversion of open ellipses to BHoM is currently not supported.");
+                BH.Engine.Reflection.Compute.RecordWarning("Conversion of open ellipses is currently not supported because of lack of support for such type in BHoM.");
                 return null;
             }
         }
@@ -191,14 +191,13 @@ namespace BH.UI.Revit.Engine
 
             if (result == null)
             {
+                BH.Engine.Reflection.Compute.RecordWarning("Curve types without conversion support have been tesellated and converted into Polylines.");
+
                 IList<XYZ> xyzList = curve.Tessellate();
                 if (xyzList == null || xyzList.Count < 2)
                     result = null;
                 else
-                {
-                    BH.Engine.Reflection.Compute.RecordWarning("The curve types without conversion support have been tesellated and converted into Polylines.");
                     result = new BH.oM.Geometry.Polyline { ControlPoints = xyzList.Select(x => x.PointFromRevit()).ToList() };
-                }
             }
 
             return result;

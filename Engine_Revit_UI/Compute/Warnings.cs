@@ -470,7 +470,7 @@ namespace BH.UI.Revit.Engine
 
         internal static void CurveToBHoMNotImplemented(this Curve curve)
         {
-            BH.Engine.Reflection.Compute.RecordError(string.Format("Conversion of curve type {0} to BHoM is not implemented, an approximated Polyline is returned instead.", curve.GetType().ToString().Split('.').Last()));
+            BH.Engine.Reflection.Compute.RecordError(string.Format("Conversion for curve type {0} to BHoM is not implemented.", curve.GetType().ToString().Split('.').Last()));
         }
 
         /***************************************************/
