@@ -36,7 +36,10 @@ namespace BH.UI.Revit.Engine
 
         public static IEnumerable<Type> RevitTypes(this Type type)
         {
-            HashSet<Type> types = new HashSet<Type>();
+            if (m_revitTypes.ContainsKey(type))
+                return m_revitTypes[type];
+
+            HashSet<Type> revitTypes = new HashSet<Type>();
             BindingFlags bindingBHoM = BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static;
             foreach (Type t in Assembly.GetExecutingAssembly().GetTypes())
             {
@@ -51,13 +54,21 @@ namespace BH.UI.Revit.Engine
                     {
                         Type parameterType = mi.GetParameters().First().ParameterType;
                         if (parameterType != typeof(Element) && typeof(Element).IsAssignableFrom(parameterType))
-                            types.Add(parameterType);
+                            revitTypes.Add(parameterType);
                     }
                 }
             }
 
-            return types;
+            m_revitTypes.Add(type, revitTypes);
+            return revitTypes;
         }
+
+
+        /***************************************************/
+        /****              Private Fields               ****/
+        /***************************************************/
+
+        private static Dictionary<Type, HashSet<Type>> m_revitTypes = new Dictionary<Type, HashSet<Type>>();
 
         /***************************************************/
     }
