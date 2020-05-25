@@ -26,6 +26,7 @@ using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using System;
 using System.ComponentModel;
+using BH.Engine.Data;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -69,7 +70,7 @@ namespace BH.Engine.Adapters.Revit
             Discipline? discipline = defaultDiscipline;
             if (request is ILogicalRequest)
             {
-                foreach (IRequest subRequest in (request as ILogicalRequest).Requests)
+                foreach (IRequest subRequest in (request as ILogicalRequest).IRequests())
                 {
                     discipline = subRequest.Discipline(discipline);
                     if (discipline == null)

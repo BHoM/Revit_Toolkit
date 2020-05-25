@@ -301,6 +301,14 @@ namespace BH.UI.Revit.Engine
             return result;
         }
 
+        /***************************************************/
+
+        public static IEnumerable<ElementId> ElementIds(this LogicalNotRequest request, UIDocument uIDocument, IEnumerable<ElementId> ids = null)
+        {
+            IEnumerable<ElementId> toExclude = request.Request.IElementIds(uIDocument);
+            return uIDocument.Document.ElementIdsByExclusion(toExclude, ids);
+        }
+
 
         /***************************************************/
         /****        Interface methods - Requests       ****/
