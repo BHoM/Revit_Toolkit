@@ -134,7 +134,7 @@ namespace BH.UI.Revit.Engine
             space = new Space();
             space.Name = Query.Name(spatialElement);
 
-            Polyline pline = energyAnalysisSpace.GetBoundary().Select(x => x.FromRevit()).ToList().Join().First();
+            Polyline pline = energyAnalysisSpace.GetBoundary().Select(x => x.FromRevit()).ToList().Join().FirstOrDefault();
 
             if (pline != null)
             {
