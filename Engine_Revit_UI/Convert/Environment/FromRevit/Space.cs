@@ -82,7 +82,7 @@ namespace BH.UI.Revit.Engine
             space = new Space();
             space.Name = Query.Name(spatialElement);
 
-            PolyCurve pcurve = spatialElement.Profiles(settings).First();
+            PolyCurve pcurve = spatialElement.Profiles(settings).FirstOrDefault();
 
             if (pcurve != null)
             {
