@@ -27,7 +27,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Generic
 {
-    [Description("An entity defining the relationship between property names of a BHoM type (or CustomData keys) and sets of their correspondent Revit parameter names.")]
+    [Description("An entity defining the relationship between property names of a BHoM type (or CustomData keys) and sets of their correspondent Revit parameter names. If parameter name starts with prefix 'Type:', parameter will be sought for in element's type.")]
     public class ParameterLink : BHoMObject
     {
         /***************************************************/
@@ -37,7 +37,7 @@ namespace BH.oM.Adapters.Revit.Generic
         [Description("BHoM type, which property names are being mapped with Revit element parameters.")]
         public virtual string PropertyName { get; set; } = "";
 
-        [Description("A collection of BHoM type property names (or CustomData keys) and sets of their correspondent Revit parameter names.")]
+        [Description("A collection of BHoM type property names (or CustomData keys) and sets of their correspondent Revit parameter names. If parameter name starts with prefix 'Type:', parameter will be sought for in element's type.")]
         public virtual HashSet<string> ParameterNames { get; set; } = new HashSet<string>();
 
         /***************************************************/
