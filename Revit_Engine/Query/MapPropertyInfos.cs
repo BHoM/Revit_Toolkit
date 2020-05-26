@@ -62,7 +62,7 @@ namespace BH.Engine.Adapters.Revit
                 }
 
                 Type propertyType = pInfo.PropertyType;
-                if (!(propertyType == typeof(double) || propertyType == typeof(int) || propertyType == typeof(string) || propertyType == typeof(long) || propertyType == typeof(bool) || propertyType == typeof(short)))
+                if (!(propertyType.IsEnum || propertyType == typeof(double) || propertyType == typeof(int) || propertyType == typeof(string) || propertyType == typeof(long) || propertyType == typeof(bool) || propertyType == typeof(short)))
                     propertyInfos.RemoveAt(i);
             }
 

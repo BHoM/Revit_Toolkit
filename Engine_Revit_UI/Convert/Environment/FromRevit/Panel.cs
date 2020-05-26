@@ -88,8 +88,6 @@ namespace BH.UI.Revit.Engine
             panel.SetProperties(familyInstance.Symbol, settings.ParameterSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, panel);
-
-            panel = panel.UpdateBuildingElementTypeByCustomData();
             return panel;
         }
 
@@ -152,8 +150,7 @@ namespace BH.UI.Revit.Engine
                 refObjects.AddOrReplace(ceiling.Id, panel);
                 panels.Add(panel);
             }
-
-            panels = panels.UpdateBuildingElementTypeByCustomData();
+            
             return panels;
         }
 
@@ -218,8 +215,7 @@ namespace BH.UI.Revit.Engine
 
                 panels.Add(panel);
             }
-
-            panels = panels.UpdateBuildingElementTypeByCustomData();
+            
             return panels;
         }
 
@@ -282,8 +278,7 @@ namespace BH.UI.Revit.Engine
 
                 panels.Add(panel);
             }
-
-            panels = panels.UpdateBuildingElementTypeByCustomData();
+            
             return panels;
         }
 
@@ -347,8 +342,7 @@ namespace BH.UI.Revit.Engine
 
                 panels.Add(panel);
             }
-
-            panels = panels.UpdateBuildingElementTypeByCustomData();
+            
             return panels;
         }
 
@@ -404,8 +398,6 @@ namespace BH.UI.Revit.Engine
             panel.SetProperties(elementType, settings.ParameterSettings);
 
             refObjects.AddOrReplace(element.Id, panel);
-
-            panel = panel.UpdateBuildingElementTypeByCustomData();
             return panel;
         }
 
@@ -495,8 +487,6 @@ namespace BH.UI.Revit.Engine
             panel.SetProperties(elementType, settings.ParameterSettings);
 
             refObjects.AddOrReplace(energyAnalysisSurface.Id, panel);
-
-            panel = panel.UpdateBuildingElementTypeByCustomData();
             return panel;
         }
 
