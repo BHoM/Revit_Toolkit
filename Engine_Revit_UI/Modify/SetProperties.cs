@@ -48,6 +48,8 @@ namespace BH.UI.Revit.Engine
             if (propertyInfos == null || propertyInfos.Count() == 0)
                 return;
 
+            Element elementType = element.Document.GetElement(element.GetTypeId());
+
             foreach (PropertyInfo pInfo in propertyInfos)
             {
                 HashSet<string> names = settings.Names(type, pInfo.Name);
@@ -56,26 +58,56 @@ namespace BH.UI.Revit.Engine
 
                 foreach (string name in names)
                 {
-                    Parameter parameter = element.LookupParameter(name);
+                    Parameter parameter;
+                    if (name.Replace(" ", "").ToLower().StartsWith("type:"))
+                    {
+                        if (elementType == null)
+                            continue;
+
+                        string[] splitName = name.Split(new[] { ':' }, 2);
+                        if (splitName.Length != 2)
+                            continue;
+                        
+                        parameter = elementType.LookupParameter(splitName[1].TrimStart());
+                    }
+                    else
+                        parameter = element.LookupParameter(name);
+
                     if (parameter == null)
                         continue;
 
                     Type typePropertyInfo = pInfo.PropertyType;
 
-                    if (typePropertyInfo == typeof(string))
+                    if (typePropertyInfo.IsEnum)
+                    {
+                        string value;
+                        if (parameter.StorageType == StorageType.String)
+                            value = parameter.AsString();
+                        else
+                            value = parameter.AsValueString();
+
+                        string[] splitValue = value.ToLower().Split(new[] { ' ' });
+                        foreach(object enumValue in Enum.GetValues(typePropertyInfo))
+                        {
+                            string valueString = enumValue.ToString().ToLower();
+                            if (splitValue.All(x => valueString.Contains(x)))
+                            {
+                                pInfo.SetValue(iObject, enumValue /*Enum.Parse(typePropertyInfo, value, true)*/);
+                                break;
+                            }
+                        }
+                    }
+                    else if (typePropertyInfo == typeof(string))
                     {
                         if (parameter.StorageType == StorageType.String)
                             pInfo.SetValue(iObject, parameter.AsString());
                         else
                             pInfo.SetValue(iObject, parameter.AsValueString());
-
-                        break;
                     }
                     else if (typePropertyInfo == typeof(double))
                     {
                         double value = parameter.AsDouble().ToSI(parameter.Definition.UnitType);
                         pInfo.SetValue(iObject, value);
-                        break;
                     }
 
                     else if (typePropertyInfo == typeof(int) || typePropertyInfo == typeof(short) || typePropertyInfo == typeof(long))
@@ -84,14 +116,13 @@ namespace BH.UI.Revit.Engine
                             pInfo.SetValue(iObject, parameter.AsElementId());
                         else
                             pInfo.SetValue(iObject, parameter.AsInteger());
-
-                        break;
                     }
                     else if (typePropertyInfo == typeof(bool))
                     {
                         pInfo.SetValue(iObject, parameter.AsInteger() == 1);
-                        break;
                     }
+
+                    break;
                 }
             }
         }
