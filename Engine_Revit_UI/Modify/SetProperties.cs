@@ -92,7 +92,7 @@ namespace BH.UI.Revit.Engine
                             string valueString = enumValue.ToString().ToLower();
                             if (splitValue.All(x => valueString.Contains(x)))
                             {
-                                pInfo.SetValue(iObject, enumValue /*Enum.Parse(typePropertyInfo, value, true)*/);
+                                pInfo.SetValue(iObject, enumValue);
                                 break;
                             }
                         }
