@@ -191,7 +191,7 @@ namespace BH.UI.Revit.Engine
 
             if (result == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("Curve types without conversion support have been tesellated and converted into Polylines.");
+                BH.Engine.Reflection.Compute.RecordWarning("Curve types without conversion support have been tessellated and converted into Polylines.");
 
                 IList<XYZ> xyzList = curve.Tessellate();
                 if (xyzList == null || xyzList.Count < 2)
