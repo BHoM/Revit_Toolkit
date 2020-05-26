@@ -89,8 +89,9 @@ namespace BH.UI.Revit.Engine
                         string[] splitValue = value.ToLower().Split(new[] { ' ' });
                         foreach(object enumValue in Enum.GetValues(typePropertyInfo))
                         {
-                            string valueString = enumValue.ToString().ToLower();
-                            if (splitValue.All(x => valueString.Contains(x)))
+                            string valueString = enumValue.ToString();
+                            string lowerValueString = enumValue.ToString().ToLower();
+                            if (valueString.Count(x => char.IsUpper(x)) == splitValue.Length && splitValue.All(x => lowerValueString.Contains(x)))
                             {
                                 pInfo.SetValue(iObject, enumValue);
                                 break;
