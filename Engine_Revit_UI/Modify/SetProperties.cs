@@ -39,7 +39,7 @@ namespace BH.UI.Revit.Engine
 
         public static void SetProperties(this IObject iObject, Element element, ParameterSettings settings = null)
         {
-            if (iObject == null || settings == null || settings.ParameterMaps.Count == 0 || element == null)
+            if (iObject == null || settings == null || settings.ParameterMaps == null || settings.ParameterMaps.Count == 0 || element == null)
                 return;
 
             Type type = iObject.GetType();

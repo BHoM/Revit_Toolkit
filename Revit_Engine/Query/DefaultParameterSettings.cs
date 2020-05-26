@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an instance of ParameterSettings with default values stored in BHoM datasets.")]
+        [Description("Creates an instance of ParameterSettings with all ParameterMaps stored in BHoM\\DataSets\\Revit\\ParameterMaps folder.")]
         [Output("parameterSettings")]
         public static ParameterSettings DefaultParameterSettings()
         {
