@@ -85,7 +85,10 @@ namespace BH.UI.Revit.Engine
             PolyCurve pcurve = spatialElement.Profiles(settings).First();
 
             if (pcurve != null)
+            {
                 space.Location = pcurve.Centroid();
+                space.Perimeter = pcurve;
+            }
             else if (spatialElement.Location != null && spatialElement.Location is LocationPoint)
                 space.Location = ((LocationPoint)spatialElement.Location).FromRevit();
 
@@ -134,7 +137,10 @@ namespace BH.UI.Revit.Engine
             Polyline pline = energyAnalysisSpace.GetBoundary().Select(x => x.FromRevit()).ToList().Join().First();
 
             if (pline != null)
+            {
                 space.Location = pline.Centroid();
+                space.Perimeter = pline;
+            }
             else if (spatialElement != null && spatialElement.Location != null)
                 space.Location = (spatialElement.Location as LocationPoint).FromRevit();
 
