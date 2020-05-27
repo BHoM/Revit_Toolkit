@@ -172,13 +172,34 @@ namespace BH.UI.Revit.Engine
             if (element == null || parameterSettings == null || type == null)
                 return null;
 
-            HashSet<string> names = parameterSettings.Names(type, name);
-            if (names == null)
-                return null;
+            // Lookup element parameter.
+            List<string> names = new List<string> { name };
+            HashSet<string> paramNames = parameterSettings.ParameterNames(type, name, false);
+            if (paramNames != null)
+                names.AddRange(paramNames);
             
             foreach (string val in names)
             {
                 Parameter parameter = element.LookupParameter(val);
+                if (parameter == null)
+                    continue;
+
+                if (parameter.HasValue || !mustHaveValue)
+                    return parameter;
+            }
+
+            // Lookup element type parameter (if specified in parameterSettings).
+            paramNames = parameterSettings.ParameterNames(type, name, true);
+            if (paramNames == null || paramNames.Count == 0)
+                return null;
+
+            Element elementType = element.Document.GetElement(element.GetTypeId());
+            if (elementType == null)
+                return null;
+
+            foreach (string val in paramNames)
+            {
+                Parameter parameter = elementType.LookupParameter(val);
                 if (parameter == null)
                     continue;
 

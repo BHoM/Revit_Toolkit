@@ -38,7 +38,7 @@ namespace BH.oM.Adapters.Revit.Generic
         public virtual Type Type { get; set; } = null;
 
         [Description("A collection of type property names (or CustomData keys) and sets of their correspondent Revit parameter names.")]
-        public virtual List<ParameterLink> ParameterLinks { get; set; } = new List<ParameterLink>();
+        public virtual List<IParameterLink> ParameterLinks { get; set; } = new List<IParameterLink>();
 
         /***************************************************/
     }

@@ -43,7 +43,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("parameterLinks", "ParameterLinks to be added.")]
         [Input("merge", "In case when PropertyName of input ParameterLink already exists in a ParameterMap: if true, the parameterNames will be added to the existing collection of parameter names, if false, they will overwrite it.")]
         [Output("parameterMap")]
-        public static ParameterMap AddParameterLinks(this ParameterMap parameterMap, IEnumerable<ParameterLink> parameterLinks, bool merge = true)
+        public static ParameterMap AddParameterLinks(this ParameterMap parameterMap, IEnumerable<IParameterLink> parameterLinks, bool merge = true)
         {
             if (parameterMap == null)
                 return null;
@@ -57,13 +57,14 @@ namespace BH.Engine.Adapters.Revit
 
             ParameterMap clonedMap = parameterMap.GetShallowClone() as ParameterMap;
             if (clonedMap.ParameterLinks == null)
-                clonedMap.ParameterLinks = new List<ParameterLink>();
+                clonedMap.ParameterLinks = new List<IParameterLink>();
             else
-                clonedMap.ParameterLinks = new List<ParameterLink>(parameterMap.ParameterLinks);
+                clonedMap.ParameterLinks = new List<IParameterLink>(parameterMap.ParameterLinks);
 
-            foreach (ParameterLink parameterLink in parameterLinks)
+            foreach (IParameterLink parameterLink in parameterLinks)
             {
-                ParameterLink existingLink = clonedMap.ParameterLinks.Find(x => x.PropertyName == parameterLink.PropertyName);
+                Type linkType = parameterLink.GetType();
+                IParameterLink existingLink = clonedMap.ParameterLinks.Find(x => x.PropertyName == parameterLink.PropertyName && x.GetType() == linkType);
                 if (existingLink == null)
                     clonedMap.ParameterLinks.Add(parameterLink);
                 else
@@ -71,7 +72,7 @@ namespace BH.Engine.Adapters.Revit
                     clonedMap.ParameterLinks.Remove(existingLink);
                     if (merge)
                     {
-                        ParameterLink newLink = existingLink.GetShallowClone() as ParameterLink;
+                        IParameterLink newLink = existingLink.GetShallowClone() as IParameterLink;
                         newLink.ParameterNames = new HashSet<string>(existingLink.ParameterNames);
                         newLink.ParameterNames.UnionWith(parameterLink.ParameterNames);
                         clonedMap.ParameterLinks.Add(newLink);
@@ -92,7 +93,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("parameterLinks", "ParameterLinks to be added.")]
         [Input("merge", "In case when PropertyName of input ParameterLink already exists in a ParameterMap of given type: if true, the parameterNames will be added to the existing collection of parameter names, if false, they will overwrite it.")]
         [Output("parameterSettings")]
-        public static ParameterSettings AddParameterLinks(this ParameterSettings parameterSettings, Type type, IEnumerable<ParameterLink> parameterLinks, bool merge = true)
+        public static ParameterSettings AddParameterLinks(this ParameterSettings parameterSettings, Type type, IEnumerable<IParameterLink> parameterLinks, bool merge = true)
         {
             if (parameterSettings == null)
                 return null;
@@ -105,7 +106,7 @@ namespace BH.Engine.Adapters.Revit
 
             ParameterMap parameterMap = cloneSettings.ParameterMap(type);
             if (parameterMap == null)
-                cloneSettings.ParameterMaps.Add(new ParameterMap { Type = type, ParameterLinks = new List<ParameterLink>(parameterLinks) });
+                cloneSettings.ParameterMaps.Add(new ParameterMap { Type = type, ParameterLinks = new List<IParameterLink>(parameterLinks) });
             else
             {
                 cloneSettings.ParameterMaps.Remove(parameterMap);

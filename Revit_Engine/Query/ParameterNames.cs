@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -24,6 +24,7 @@ using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
@@ -35,39 +36,25 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns ParameterLink inside ParameterSettings for given type and property name (or CustomData key).")]
+        [Description("Returns a collection of Revit parameter names associated with a given type property (or CustomData key) inside ParameterSettings.")]
         [Input("parameterSettings", "ParameterSettings to be queried.")]
         [Input("type", "Type to be sought for.")]
-        [Input("propertyName", "Name of the property (or CustomData key) to be sought for.")]
-        [Output("parameterLink")]
-        public static ParameterLink ParameterLink(this ParameterSettings parameterSettings, Type type, string propertyName)
+        [Input("name", "Property name (or CustomData key) to be sought for.")]
+        [Output("names")]
+        public static HashSet<string> ParameterNames(this ParameterSettings parameterSettings, Type type, string name, bool typeParameters = false)
         {
-            if (parameterSettings == null || parameterSettings.ParameterMaps == null || type == null || string.IsNullOrWhiteSpace(propertyName))
+            if (parameterSettings == null || type == null || string.IsNullOrWhiteSpace(name))
                 return null;
 
             ParameterMap parameterMap = parameterSettings.ParameterMap(type);
-            if (parameterMap == null)
+            if (parameterMap == null || parameterMap.ParameterLinks == null)
                 return null;
 
-            return parameterMap.ParameterLink(propertyName);
-        }
-
-        /***************************************************/
-
-        [Description("Returns ParameterLink inside ParameterMap for given property name (or CustomData key).")]
-        [Input("parameterMap", "ParameterMap to be queried.")]
-        [Input("propertyName", "Name of the property (or CustomData key) to be sought for.")]
-        [Output("parameterLink")]
-        public static ParameterLink ParameterLink(this ParameterMap parameterMap, string propertyName)
-        {
-            if (parameterMap == null || parameterMap.ParameterLinks == null || string.IsNullOrWhiteSpace(propertyName))
-                return null;
-
-            return parameterMap.ParameterLinks.Find(x => x.PropertyName == propertyName);
+            Type linkType = typeParameters ? typeof(ElementTypeParameterLink) : typeof(ElementParameterLink);
+            IEnumerable<IParameterLink> parameterLinks = parameterMap.ParameterLinks.Where(x => x.PropertyName == name && x.GetType() == linkType);
+            return new HashSet<string>(parameterLinks.SelectMany(x => x.ParameterNames));
         }
 
         /***************************************************/
     }
 }
-
-
