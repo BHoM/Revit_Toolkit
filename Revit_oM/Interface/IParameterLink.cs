@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,37 +20,25 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Generic
 {
-    public static partial class Create
+    [Description("An interface for classes defining the relationship between property names of a type (or CustomData keys) and sets of their correspondent Revit parameter names.")]
+    public interface IParameterLink : IBHoMObject
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Creates an object that contains the information about the relationship between type property names (or CustomData keys) and Revit parameter names.")]
-        [InputFromProperty("type")]
-        [InputFromProperty("parameterLinks")]
-        [Output("parameterMap")]
-        public static ParameterMap ParameterMap(Type type, IEnumerable<IParameterLink> parameterLinks = null)
-        {
-            if (type == null)
-                return null;
+        [Description("Name of the property (or CustomData key) to be linked with Revit parameters.")]
+        string PropertyName { get; set; }
 
-            ParameterMap parameterMap = new ParameterMap { Type = type };
-
-            if (parameterLinks != null)
-                parameterMap = parameterMap.AddParameterLinks(parameterLinks);
-
-            return parameterMap;
-        }
+        [Description("A collecation of Revit parameter names to be linked with the type property.")]
+        HashSet<string> ParameterNames { get; set; }
 
         /***************************************************/
     }

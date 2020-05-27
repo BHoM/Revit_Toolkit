@@ -25,6 +25,8 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.UI.Revit.Engine
 {
@@ -40,23 +42,31 @@ namespace BH.UI.Revit.Engine
                 return;
 
             oM.Adapters.Revit.Generic.ParameterMap parameterMap = settings?.ParameterMap(bHoMObject.GetType());
+            IEnumerable<IParameterLink> parameterLinks = null;
+            if (parameterMap != null)
+            {
+                Element elementType = element.Document.GetElement(element.GetTypeId());
+                IEnumerable<IParameterLink> typeParameterLinks = parameterMap.ParameterLinks.Where(x => x is ElementTypeParameterLink);
+                if (elementType != null && typeParameterLinks.Count() != 0)
+                {
+                    foreach (Parameter parameter in elementType.ParametersMap)
+                    {
+                        bHoMObject.SetCustomData(parameter, typeParameterLinks);
+                    }
+                }
+
+                parameterLinks = parameterMap.ParameterLinks.Where(x => !(x is ElementTypeParameterLink));
+            }
+
             foreach (Parameter parameter in element.ParametersMap)
             {
-                bHoMObject.SetCustomData(parameter, parameterMap);
+                bHoMObject.SetCustomData(parameter, parameterLinks);
             }
         }
-
+        
         /***************************************************/
 
-        public static void SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, ParameterSettings settings = null)
-        {
-            oM.Adapters.Revit.Generic.ParameterMap parameterMap = settings?.ParameterMap(bHoMObject.GetType());
-            bHoMObject.SetCustomData(parameter, parameterMap);
-        }
-
-        /***************************************************/
-
-        public static void SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, oM.Adapters.Revit.Generic.ParameterMap parameterMap = null)
+        public static void SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, IEnumerable<IParameterLink> parameterLinks = null)
         {
             if (bHoMObject == null || parameter == null)
                 return;
@@ -89,12 +99,10 @@ namespace BH.UI.Revit.Engine
             }
 
             string name = parameter.Definition.Name;
-            if (parameterMap != null)
-            {
-                ParameterLink parameterLink = parameterMap.ParameterLink(parameter);
-                if (parameterLink != null)
-                    name = parameterLink.PropertyName;
-            }
+
+            IParameterLink parameterLink = parameterLinks.ParameterLink(parameter);
+            if (parameterLink != null)
+                name = parameterLink.PropertyName;
 
             bHoMObject.CustomData[name] = value;
         }

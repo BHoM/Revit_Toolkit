@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
@@ -35,15 +36,15 @@ namespace BH.UI.Revit.Engine
         /***************************************************/
 
         [Description("Returns first ParameterLink inside ParameterMap for given parameter.")]
-        [Input("parameterMap", "ParameterMap to be queried.")]
+        [Input("parameterLinks", "Collection of ParameterLinks to be searched.")]
         [Input("parameter", "Property, which name is to be sought for.")]
         [Output("parameterLink")]
-        public static ParameterLink ParameterLink(this oM.Adapters.Revit.Generic.ParameterMap parameterMap, Parameter parameter)
+        public static IParameterLink ParameterLink(this IEnumerable<IParameterLink> parameterLinks, Parameter parameter)
         {
-            if (parameterMap == null || parameterMap.ParameterLinks == null || parameter == null || string.IsNullOrWhiteSpace(parameter.Definition.Name))
+            if (parameterLinks == null || parameter == null || string.IsNullOrWhiteSpace(parameter.Definition.Name))
                 return null;
 
-            return parameterMap.ParameterLinks.Find(x => x.ParameterNames.Any(y => y == parameter.Definition.Name));
+            return parameterLinks.FirstOrDefault(x => x.ParameterNames.Any(y => y == parameter.Definition.Name));
         }
 
         /***************************************************/
