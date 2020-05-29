@@ -28,7 +28,7 @@ using BH.Revit.Engine.Core;
 
 namespace BH.Revit.Adapter.Core
 {
-    public partial class RevitAdapterPlugin
+    public partial class RevitListenerAdapter
     {
         /***************************************************/
         /****               Public Methods              ****/

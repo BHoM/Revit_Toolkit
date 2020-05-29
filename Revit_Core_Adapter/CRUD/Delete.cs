@@ -34,7 +34,7 @@ using System.Linq;
 
 namespace BH.Revit.Adapter.Core
 {
-    public partial class RevitAdapterPlugin
+    public partial class RevitListenerAdapter
     {
         /***************************************************/
         /****             Protected methods             ****/

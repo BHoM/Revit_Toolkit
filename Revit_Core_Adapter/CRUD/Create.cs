@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace BH.Revit.Adapter.Core
 {
-    public partial class RevitAdapterPlugin
+    public partial class RevitListenerAdapter
     {
         /***************************************************/
         /****               Public Methods              ****/

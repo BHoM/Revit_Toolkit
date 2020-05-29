@@ -52,7 +52,7 @@ namespace BH.Revit.Adapter.Core
                     else
                     {
                         //Get the revit adapter
-                        RevitAdapterPlugin adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
+                        RevitListenerAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
 
                         //Remove the elements
                         count = adapter.Remove(listener.LatestRequest, listener.LatestConfig);
