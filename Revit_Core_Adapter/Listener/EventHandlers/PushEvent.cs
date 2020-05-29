@@ -55,7 +55,7 @@ namespace BH.Revit.Adapter.Core
                     else
                     {
                         //Get the revit adapter
-                        RevitAdapterPlugin adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
+                        RevitListenerAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
 
                         //Push the data
                         objs = adapter.Push(listener.LatestPackage, listener.LatestTag, listener.LatestPushType, listener.LatestConfig);

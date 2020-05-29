@@ -67,13 +67,13 @@ namespace BH.Revit.Adapter.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public RevitAdapterPlugin GetAdapter(Document document)
+        public RevitListenerAdapter GetAdapter(Document document)
         {
-            RevitAdapterPlugin adapter;
+            RevitListenerAdapter adapter;
 
             if (!m_Adapters.TryGetValue(document, out adapter))
             {
-                adapter = new RevitAdapterPlugin(UIControlledApplication, document);
+                adapter = new RevitListenerAdapter(UIControlledApplication, document);
                 m_Adapters[document] = adapter;
             }
 
@@ -331,7 +331,7 @@ namespace BH.Revit.Adapter.Core
         private ExternalEvent m_PullEvent;
         private ExternalEvent m_RemoveEvent;
         private ExternalEvent m_UpdateTagsEvent;
-        private Dictionary<Document, RevitAdapterPlugin> m_Adapters = new Dictionary<Document, RevitAdapterPlugin>();
+        private Dictionary<Document, RevitListenerAdapter> m_Adapters = new Dictionary<Document, RevitListenerAdapter>();
         
         public object m_PackageLock = new object();
 

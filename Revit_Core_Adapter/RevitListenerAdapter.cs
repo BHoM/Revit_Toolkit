@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace BH.Revit.Adapter.Core
 {
-    public partial class RevitAdapterPlugin : BHoMAdapter,  IInternalRevitAdapter
+    public partial class RevitListenerAdapter : BHoMAdapter,  IInternalRevitAdapter
     {
         /***************************************************/
         /****               Private Fields              ****/
@@ -45,7 +45,7 @@ namespace BH.Revit.Adapter.Core
         /****            Public Constructors            ****/
         /***************************************************/
         
-        public RevitAdapterPlugin(UIControlledApplication uIControlledApplication, Document document)
+        public RevitListenerAdapter(UIControlledApplication uIControlledApplication, Document document)
             : base()
         {
             AdapterIdName = BH.Engine.Adapters.Revit.Convert.AdapterIdName;

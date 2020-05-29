@@ -220,7 +220,7 @@
     <Compile Include="Messages\Errors.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Listener\RevitListener.cs" />
-    <Compile Include="RevitAdapterPlugin.cs" />
+    <Compile Include="RevitListenerAdapter.cs" />
     <Compile Include="Listener\UpdatePorts.cs" />
   </ItemGroup>
   <ItemGroup>
