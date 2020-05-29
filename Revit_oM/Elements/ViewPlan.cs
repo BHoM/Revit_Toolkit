@@ -21,7 +21,6 @@
  */
 
 using BH.oM.Base;
-using BH.oM.Adapters.Revit.Interface;
 using BH.oM.Adapters.Revit.Properties;
 using System.ComponentModel;
 
