@@ -63,7 +63,7 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             room.SetIdentifiers(spatialElement);
-            room.SetCustomData(spatialElement, settings.ParameterSettings);
+            room.CopyParameters(spatialElement, settings.ParameterSettings);
             room.SetProperties(spatialElement, settings.ParameterSettings);
 
             refObjects.AddOrReplace(spatialElement.Id, room);

@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
 
         public static bool Update(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
-            element.SetParameters(bHoMObject);
+            element.CopyParameters(bHoMObject);
             if (!string.IsNullOrWhiteSpace(bHoMObject.Name) && element.Name != bHoMObject.Name)
             {
                 try

@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             bracing.SetIdentifiers(familyInstance);
-            bracing.SetCustomData(familyInstance, settings.ParameterSettings);
+            bracing.CopyParameters(familyInstance, settings.ParameterSettings);
             bracing.SetProperties(familyInstance, settings.ParameterSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, bracing);

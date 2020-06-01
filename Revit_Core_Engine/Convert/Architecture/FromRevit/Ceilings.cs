@@ -73,7 +73,7 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 newCeiling.SetIdentifiers(ceiling);
-                newCeiling.SetCustomData(ceiling, settings.ParameterSettings);
+                newCeiling.CopyParameters(ceiling, settings.ParameterSettings);
                 newCeiling.SetProperties(ceiling, settings.ParameterSettings);
 
                 newCeiling.CustomData.Add(BH.Engine.Adapters.Revit.Convert.CeilingPattern, ceiling.CeilingPattern(settings, planarSurface));

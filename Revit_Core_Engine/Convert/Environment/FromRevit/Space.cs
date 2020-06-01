@@ -109,7 +109,7 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             space.SetIdentifiers(spatialElement);
-            space.SetCustomData(spatialElement, settings.ParameterSettings);
+            space.CopyParameters(spatialElement, settings.ParameterSettings);
             space.SetProperties(spatialElement, settings.ParameterSettings);
 
             refObjects.AddOrReplace(spatialElement.Id, space);
@@ -170,7 +170,7 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             space.SetIdentifiers(spatialElement);
-            space.SetCustomData(spatialElement, settings.ParameterSettings);
+            space.CopyParameters(spatialElement, settings.ParameterSettings);
             space.SetProperties(spatialElement, settings.ParameterSettings);
             space.SetProperties(energyAnalysisSpace, settings.ParameterSettings);
 

@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 result.SetIdentifiers(energyAnalysisOpening);
-                result.SetCustomData(energyAnalysisOpening, settings.ParameterSettings);
+                result.CopyParameters(energyAnalysisOpening, settings.ParameterSettings);
                 result.SetProperties(energyAnalysisOpening, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(energyAnalysisOpening.Id, result);
@@ -97,7 +97,7 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 result.SetIdentifiers(element);
-                result.SetCustomData(element, settings.ParameterSettings);
+                result.CopyParameters(element, settings.ParameterSettings);
                 result.SetProperties(element, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(energyAnalysisOpening.Id, result);

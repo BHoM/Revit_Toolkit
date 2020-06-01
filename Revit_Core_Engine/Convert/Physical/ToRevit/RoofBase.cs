@@ -133,7 +133,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             // Copy parameters from BHoM CustomData to Revit Element
-            roofBase.SetParameters(roof, new BuiltInParameter[] { BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM, BuiltInParameter.ROOF_BASE_LEVEL_PARAM, BuiltInParameter.ROOF_UPTO_LEVEL_PARAM });
+            roofBase.CopyParameters(roof, new BuiltInParameter[] { BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM, BuiltInParameter.ROOF_BASE_LEVEL_PARAM, BuiltInParameter.ROOF_UPTO_LEVEL_PARAM });
 
             refObjects.AddOrReplace(roof, roofBase);
             return roofBase;

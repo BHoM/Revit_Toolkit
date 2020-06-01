@@ -290,11 +290,13 @@
     <Compile Include="Convert\Geometry\ToRevit\CurveList.cs" />
     <Compile Include="Convert\Revit\FromRevit\Family.cs" />
     <Compile Include="Convert\Revit\FromRevit\IInstance.cs" />
+    <Compile Include="Convert\Revit\FromRevit\Parameter.cs" />
     <Compile Include="Convert\Revit\ToRevit\ElementType.cs" />
     <Compile Include="Convert\Revit\ToRevit\Family.cs" />
     <Compile Include="Convert\Revit\ToRevit\CurveElement.cs" />
     <Compile Include="Convert\Structure\FromRevit\Bars.cs" />
     <Compile Include="Modify\RemoveDuplicateAnalyticalElements.cs" />
+    <Compile Include="Modify\CopyParameters.cs" />
     <Compile Include="Modify\SetProperties.cs" />
     <Compile Include="Modify\SetTags.cs" />
     <Compile Include="Query\ParameterLink.cs" />
@@ -424,7 +426,6 @@
     <Compile Include="Query\IsSimilar.cs" />
     <Compile Include="Query\OpenWorksetIds.cs" />
     <Compile Include="Compute\LoadFamilySymbol.cs" />
-    <Compile Include="Modify\SetCustomData.cs" />
     <Compile Include="Modify\SetIdentifiers.cs" />
     <Compile Include="Modify\SetParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -21,55 +21,21 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Parameters;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Modify
+    public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        public static void SetCustomData(this IBHoMObject bHoMObject, Element element, ParameterSettings settings = null)
+        public static RevitParameter ParameterFromRevit(this Parameter parameter, IEnumerable<IParameterLink> parameterLinks = null)
         {
-            if (bHoMObject == null || element == null)
-                return;
-
-            oM.Adapters.Revit.Parameters.ParameterMap parameterMap = settings?.ParameterMap(bHoMObject.GetType());
-            IEnumerable<IParameterLink> parameterLinks = null;
-            if (parameterMap != null)
-            {
-                Element elementType = element.Document.GetElement(element.GetTypeId());
-                IEnumerable<IParameterLink> typeParameterLinks = parameterMap.ParameterLinks.Where(x => x is ElementTypeParameterLink);
-                if (elementType != null && typeParameterLinks.Count() != 0)
-                {
-                    foreach (Parameter parameter in elementType.ParametersMap)
-                    {
-                        bHoMObject.SetCustomData(parameter, typeParameterLinks);
-                    }
-                }
-
-                parameterLinks = parameterMap.ParameterLinks.Where(x => !(x is ElementTypeParameterLink));
-            }
-
-            foreach (Parameter parameter in element.ParametersMap)
-            {
-                bHoMObject.SetCustomData(parameter, parameterLinks);
-            }
-        }
-        
-        /***************************************************/
-
-        public static void SetCustomData(this IBHoMObject bHoMObject, Parameter parameter, IEnumerable<IParameterLink> parameterLinks = null)
-        {
-            if (bHoMObject == null || parameter == null)
-                return;
+            if (parameter == null)
+                return null;
 
             object value = null;
             switch (parameter.StorageType)
@@ -104,9 +70,10 @@ namespace BH.Revit.Engine.Core
             if (parameterLink != null)
                 name = parameterLink.PropertyName;
 
-            bHoMObject.CustomData[name] = value;
+            return new RevitParameter { Name = name, Value = value, ElementId = parameter.Id.IntegerValue };
         }
 
         /***************************************************/
     }
 }
+
