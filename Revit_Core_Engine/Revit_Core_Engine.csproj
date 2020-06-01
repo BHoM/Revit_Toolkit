@@ -298,6 +298,7 @@
     <Compile Include="Convert\Revit\ToRevit\Family.cs" />
     <Compile Include="Convert\Revit\ToRevit\CurveElement.cs" />
     <Compile Include="Convert\Structure\FromRevit\Bars.cs" />
+    <Compile Include="Modify\RemoveDuplicateAnalyticalElements.cs" />
     <Compile Include="Modify\SetProperties.cs" />
     <Compile Include="Modify\SetTags.cs" />
     <Compile Include="Query\ParameterLink.cs" />

@@ -105,6 +105,10 @@ namespace BH.Revit.Engine.Core
             if (type == typeof(BH.oM.Structure.Elements.Panel))
                 elementIds = elementIds.RemoveNonStructuralPanels(document);
 
+            // Filter out analytical spaces that are already pulled as non-analytical
+            if (type == typeof(BH.oM.Environment.Elements.Space) || type == typeof(BH.oM.Environment.Elements.Panel))
+                elementIds = new HashSet<ElementId>(elementIds.RemoveDuplicateAnalyticalElements(document));
+
             // Filter out walls that are parts of stacked wall
             if (types.Any(x => typeof(Autodesk.Revit.DB.Wall).IsAssignableFrom(x)))
                 elementIds = elementIds.RemoveStackedWallParts(document);
