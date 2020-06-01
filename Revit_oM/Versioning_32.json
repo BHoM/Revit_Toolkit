@@ -16,6 +16,10 @@
 		"BH.oM.Adapters.Revit.Interface.IInstance": "BH.oM.Adapters.Revit.Elements.IInstance",
 		"BH.oM.Adapters.Revit.Interface.IView": "BH.oM.Adapters.Revit.Elements.IView",
 		"BH.oM.Adapters.Revit.Interface.IParameterRequest": "BH.oM.Adapters.Revit.Requests.IParameterRequest"
+		"BH.oM.Adapters.Revit.Generic.ParameterMap": "BH.oM.Adapters.Revit.Parameters.ParameterMap"
+		"BH.oM.Adapters.Revit.Generic.IParameterLink": "BH.oM.Adapters.Revit.Parameters.IParameterLink"
+		"BH.oM.Adapters.Revit.Generic.ElementParameterLink": "BH.oM.Adapters.Revit.Parameters.ElementParameterLink"
+		"BH.oM.Adapters.Revit.Generic.ElementTypeParameterLink": "BH.oM.Adapters.Revit.Parameters.ElementTypeParameterLink"
     },
     "ToOld": 
 	{
@@ -23,6 +27,10 @@
 		"BH.oM.Adapters.Revit.Elements.IInstance": "BH.oM.Adapters.Revit.Interface.IInstance",
 		"BH.oM.Adapters.Revit.Elements.IView": "BH.oM.Adapters.Revit.Interface.IView",
 		"BH.oM.Adapters.Revit.Requests.IParameterRequest": "BH.oM.Adapters.Revit.Interface.IParameterRequest"
+		"BH.oM.Adapters.Revit.Parameters.ParameterMap": "BH.oM.Adapters.Revit.Generic.ParameterMap"
+		"BH.oM.Adapters.Revit.Parameters.IParameterLink": "BH.oM.Adapters.Revit.Generic.IParameterLink"
+		"BH.oM.Adapters.Revit.Parameters.ElementParameterLink": "BH.oM.Adapters.Revit.Generic.ElementParameterLink"
+		"BH.oM.Adapters.Revit.Parameters.ElementTypeParameterLink": "BH.oM.Adapters.Revit.Generic.ElementTypeParameterLink"
     }
   }
 }

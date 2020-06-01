@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,35 +20,33 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Parameters;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Parameters
 {
-    public static partial class Create
+    [Description("")]
+    public class RevitPulledParameters : BHoMObject, IRevitParameterFragment, IImmutable
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Created an entity holding information about conversion-specific Revit parameter names as well as relationships between type property names (or CustomData keys) and Revit parameter names.")]
-        [InputFromProperty("parameterMaps")]
-        [InputFromProperty("tagsParameter")]
-        [InputFromProperty("materialGradeParameter")]
-        [Output("parameterSettings")]
-        public static ParameterSettings ParameterSettings(IEnumerable<ParameterMap> parameterMaps = null, string tagsParameter = "", string materialGradeParameter = "")
+        [Description("")]
+        public virtual IList<RevitParameter> Parameters { get; }
+
+
+        /***************************************************/
+        /****            Public Constructors            ****/
+        /***************************************************/
+
+        public RevitPulledParameters(IEnumerable<RevitParameter> parameters)
         {
-            ParameterSettings parameterSettings = new ParameterSettings();
-            if (parameterMaps != null)
-                parameterSettings = parameterSettings.AddParameterMaps(parameterMaps);
-
-            parameterSettings.TagsParameter = tagsParameter;
-            parameterSettings.MaterialGradeParameter = materialGradeParameter;
-
-            return parameterSettings;
+            Parameters = new ReadOnlyCollection<RevitParameter>(parameters.ToList());
         }
 
         /***************************************************/
