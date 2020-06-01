@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             beam.SetIdentifiers(familyInstance);
-            beam.SetCustomData(familyInstance, settings.ParameterSettings);
+            beam.CopyParameters(familyInstance, settings.ParameterSettings);
             beam.SetProperties(familyInstance, settings.ParameterSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, beam);

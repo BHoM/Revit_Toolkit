@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             sheet.SetIdentifiers(viewSheet);
-            sheet.SetCustomData(viewSheet, settings.ParameterSettings);
+            sheet.CopyParameters(viewSheet, settings.ParameterSettings);
             sheet.SetProperties(viewSheet, settings.ParameterSettings);
 
             refObjects.AddOrReplace(viewSheet.Id, sheet);

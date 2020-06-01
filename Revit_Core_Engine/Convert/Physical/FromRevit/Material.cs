@@ -49,7 +49,7 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             material.SetIdentifiers(revitMaterial);
-            material.SetCustomData(revitMaterial, settings.ParameterSettings);
+            material.CopyParameters(revitMaterial, settings.ParameterSettings);
             material.SetProperties(revitMaterial, settings.ParameterSettings);
 
             refObjects.AddOrReplace(revitMaterial.Id, material);

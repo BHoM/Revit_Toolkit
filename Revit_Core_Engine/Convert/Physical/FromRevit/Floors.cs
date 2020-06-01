@@ -68,7 +68,7 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 bHoMFloor.SetIdentifiers(floor);
-                bHoMFloor.SetCustomData(floor, settings.ParameterSettings);
+                bHoMFloor.CopyParameters(floor, settings.ParameterSettings);
                 bHoMFloor.SetProperties(floor, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(floor.Id, bHoMFloor);

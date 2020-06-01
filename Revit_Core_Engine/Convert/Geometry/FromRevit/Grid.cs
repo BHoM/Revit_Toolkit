@@ -49,7 +49,7 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             grid.SetIdentifiers(revitGrid);
-            grid.SetCustomData(revitGrid, settings.ParameterSettings);
+            grid.CopyParameters(revitGrid, settings.ParameterSettings);
             grid.SetProperties(revitGrid, settings.ParameterSettings);
 
             refObjects.AddOrReplace(revitGrid.Id, grid);
@@ -86,7 +86,7 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             grid.SetIdentifiers(revitGrid);
-            grid.SetCustomData(revitGrid, settings.ParameterSettings);
+            grid.CopyParameters(revitGrid, settings.ParameterSettings);
             grid.SetProperties(revitGrid, settings.ParameterSettings);
 
             refObjects.AddOrReplace(revitGrid.Id, grid);

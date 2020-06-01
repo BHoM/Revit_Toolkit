@@ -83,7 +83,7 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             panel.SetIdentifiers(familyInstance);
-            panel.SetCustomData(familyInstance, settings.ParameterSettings);
+            panel.CopyParameters(familyInstance, settings.ParameterSettings);
             panel.SetProperties(familyInstance, settings.ParameterSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, panel);
@@ -142,7 +142,7 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 panel.SetIdentifiers(ceiling);
-                panel.SetCustomData(ceiling, settings.ParameterSettings);
+                panel.CopyParameters(ceiling, settings.ParameterSettings);
                 panel.SetProperties(ceiling, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(ceiling.Id, panel);
@@ -205,7 +205,7 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 panel.SetIdentifiers(floor);
-                panel.SetCustomData(floor, settings.ParameterSettings);
+                panel.CopyParameters(floor, settings.ParameterSettings);
                 panel.SetProperties(floor, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(floor.Id, panel);
@@ -267,7 +267,7 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 panel.SetIdentifiers(roofBase);
-                panel.SetCustomData(roofBase, settings.ParameterSettings);
+                panel.CopyParameters(roofBase, settings.ParameterSettings);
                 panel.SetProperties(roofBase, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(roofBase.Id, panel);
@@ -330,7 +330,7 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 panel.SetIdentifiers(wall);
-                panel.SetCustomData(wall, settings.ParameterSettings);
+                panel.CopyParameters(wall, settings.ParameterSettings);
                 panel.SetProperties(wall, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(wall.Id, panel);
@@ -388,7 +388,7 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             panel.SetIdentifiers(element);
-            panel.SetCustomData(element, settings.ParameterSettings);
+            panel.CopyParameters(element, settings.ParameterSettings);
             panel.SetProperties(element, settings.ParameterSettings);
 
             refObjects.AddOrReplace(element.Id, panel);
@@ -477,7 +477,7 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             panel.SetIdentifiers(element);
-            panel.SetCustomData(element, settings.ParameterSettings);
+            panel.CopyParameters(element, settings.ParameterSettings);
             panel.SetProperties(element, settings.ParameterSettings);
 
             refObjects.AddOrReplace(energyAnalysisSurface.Id, panel);

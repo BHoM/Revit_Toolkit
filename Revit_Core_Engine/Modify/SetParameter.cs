@@ -320,31 +320,5 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-
-        public static void SetParameters(this Element element, IBHoMObject bHoMObject, IEnumerable<BuiltInParameter> builtInParametersIgnore = null)
-        {
-            if (bHoMObject == null || element == null)
-                return;
-
-            foreach (KeyValuePair<string, object> kvp in bHoMObject.CustomData)
-            {
-                IList<Parameter> parameters = element.GetParameters(kvp.Key);
-                if (parameters == null || parameters.Count == 0)
-                    continue;
-
-                foreach (Parameter parameter in parameters)
-                {
-                    if (parameter == null || parameter.IsReadOnly)
-                        continue;
-
-                    if (builtInParametersIgnore != null && parameter.Id.IntegerValue < 0 && builtInParametersIgnore.Contains((BuiltInParameter)parameter.Id.IntegerValue))
-                        continue;
-
-                    SetParameter(parameter, kvp.Value, element.Document);
-                }
-            }
-        }
-
-        /***************************************************/
     }
 }

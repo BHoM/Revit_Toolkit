@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
             revitViewPort = Viewport.Create(document, viewSheet.Id, view.Id, viewport.Location.ToRevit());
 
             // Copy parameters from BHoM CustomData to Revit Element
-            revitViewPort.SetParameters(viewport, null);
+            revitViewPort.CopyParameters(viewport, null);
 
             refObjects.AddOrReplace(viewport, revitViewPort);
             return revitViewPort;
