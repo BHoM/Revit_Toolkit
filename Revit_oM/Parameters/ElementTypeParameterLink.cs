@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,36 +20,25 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Parameters;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Parameters
 {
-    public static partial class Create
+    [Description("An entity defining the relationship between property names of a type (or CustomData keys) and sets of their correspondent Revit element type parameter names.")]
+    public class ElementTypeParameterLink : BHoMObject, IParameterLink
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Created an entity holding information about conversion-specific Revit parameter names as well as relationships between type property names (or CustomData keys) and Revit parameter names.")]
-        [InputFromProperty("parameterMaps")]
-        [InputFromProperty("tagsParameter")]
-        [InputFromProperty("materialGradeParameter")]
-        [Output("parameterSettings")]
-        public static ParameterSettings ParameterSettings(IEnumerable<ParameterMap> parameterMaps = null, string tagsParameter = "", string materialGradeParameter = "")
-        {
-            ParameterSettings parameterSettings = new ParameterSettings();
-            if (parameterMaps != null)
-                parameterSettings = parameterSettings.AddParameterMaps(parameterMaps);
+        [Description("Name of the property (or CustomData key) to be linked with Revit parameters.")]
+        public virtual string PropertyName { get; set; } = "";
 
-            parameterSettings.TagsParameter = tagsParameter;
-            parameterSettings.MaterialGradeParameter = materialGradeParameter;
-
-            return parameterSettings;
-        }
+        [Description("A collecation of Revit element type parameter names to be linked with the type property.")]
+        public virtual HashSet<string> ParameterNames { get; set; } = new HashSet<string>();
 
         /***************************************************/
     }

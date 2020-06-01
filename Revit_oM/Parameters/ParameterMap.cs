@@ -20,36 +20,25 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Parameters;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Parameters
 {
-    public static partial class Create
+    [Description("An entity defining the relationship between type property names (or CustomData keys) and parameter names of correspondent Revit elements.")]
+    public class ParameterMap : BHoMObject
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Created an entity holding information about conversion-specific Revit parameter names as well as relationships between type property names (or CustomData keys) and Revit parameter names.")]
-        [InputFromProperty("parameterMaps")]
-        [InputFromProperty("tagsParameter")]
-        [InputFromProperty("materialGradeParameter")]
-        [Output("parameterSettings")]
-        public static ParameterSettings ParameterSettings(IEnumerable<ParameterMap> parameterMaps = null, string tagsParameter = "", string materialGradeParameter = "")
-        {
-            ParameterSettings parameterSettings = new ParameterSettings();
-            if (parameterMaps != null)
-                parameterSettings = parameterSettings.AddParameterMaps(parameterMaps);
+        [Description("Type, which property names (or CustomData keys) are being mapped with Revit element parameters.")]
+        public virtual Type Type { get; set; } = null;
 
-            parameterSettings.TagsParameter = tagsParameter;
-            parameterSettings.MaterialGradeParameter = materialGradeParameter;
-
-            return parameterSettings;
-        }
+        [Description("A collection of type property names (or CustomData keys) and sets of their correspondent Revit parameter names.")]
+        public virtual List<IParameterLink> ParameterLinks { get; set; } = new List<IParameterLink>();
 
         /***************************************************/
     }

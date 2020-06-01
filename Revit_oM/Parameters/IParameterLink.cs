@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -25,20 +25,20 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Generic
+namespace BH.oM.Adapters.Revit.Parameters
 {
-    [Description("An entity defining the relationship between type property names (or CustomData keys) and parameter names of correspondent Revit elements.")]
-    public class ParameterMap : BHoMObject
+    [Description("An interface for classes defining the relationship between property names of a type (or CustomData keys) and sets of their correspondent Revit parameter names.")]
+    public interface IParameterLink : IBHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Type, which property names (or CustomData keys) are being mapped with Revit element parameters.")]
-        public virtual Type Type { get; set; } = null;
+        [Description("Name of the property (or CustomData key) to be linked with Revit parameters.")]
+        string PropertyName { get; set; }
 
-        [Description("A collection of type property names (or CustomData keys) and sets of their correspondent Revit parameter names.")]
-        public virtual List<IParameterLink> ParameterLinks { get; set; } = new List<IParameterLink>();
+        [Description("A collecation of Revit parameter names to be linked with the type property.")]
+        HashSet<string> ParameterNames { get; set; }
 
         /***************************************************/
     }

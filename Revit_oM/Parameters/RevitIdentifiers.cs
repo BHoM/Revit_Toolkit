@@ -25,20 +25,43 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Generic
+namespace BH.oM.Adapters.Revit.Parameters
 {
-    [Description("An entity defining the relationship between property names of a type (or CustomData keys) and sets of their correspondent Revit element parameter names.")]
-    public class ElementParameterLink : BHoMObject, IParameterLink
+    [Description("")]
+    public class RevitIdentifiers : BHoMObject, IFragment, IImmutable
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Name of the property (or CustomData key) to be linked with Revit parameters.")]
-        public virtual string PropertyName { get; set; } = "";
+        [Description("")]
+        public virtual string UniqueId { get; } = "";
 
-        [Description("A collecation of Revit element parameter names to be linked with the type property.")]
-        public virtual HashSet<string> ParameterNames { get; set; } = new HashSet<string>();
+        [Description("")]
+        public virtual int ElementId { get; } = -1;
+
+        [Description("")]
+        public virtual string CategoryName { get; } = "";
+
+        [Description("")]
+        public virtual string FamilyName { get; } = "";
+
+        [Description("")]
+        public virtual string FamilyTypeName { get; } = "";
+        
+
+        /***************************************************/
+        /****            Public Constructors            ****/
+        /***************************************************/
+
+        public RevitIdentifiers(string uniqueId = "", int elementId = -1, string categoryName = "", string familyName = "", string familyTypeName = "")
+        {
+            UniqueId = uniqueId;
+            ElementId = elementId;
+            CategoryName = categoryName;
+            FamilyName = familyName;
+            FamilyTypeName = familyTypeName;
+        }
 
         /***************************************************/
     }
