@@ -41,22 +41,6 @@ namespace BH.Revit.Engine.Core
             for (int i = result.Count - 1; i >= 0; i--)
             {
                 Element element = elements[i];
-
-                //if (element is EnergyAnalysisSpace)
-                //{
-                //    Element e = document.GetElement(((EnergyAnalysisSpace)element).CADObjectUniqueId);
-                //    if (e != null)
-                //    {
-                //        int id = e.Id.IntegerValue;
-                //        bool foo = elements.Any(x => x.Id.IntegerValue == id);
-
-                //        if (foo == true)
-                //        {
-                //            //
-                //        }
-                //    }
-                //}
-
                 
                 if (element is EnergyAnalysisOpening && elements.Any(x => x.UniqueId == ((EnergyAnalysisOpening)element).CADObjectUniqueId))
                 {
