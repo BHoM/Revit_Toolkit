@@ -32,48 +32,48 @@
   <ItemGroup>
     <Reference Include="Adapter_Engine">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Adapter_Engine.dll</HintPath>
+      <HintPath>..\..\BHoM_Adapter\Build\Adapter_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Adapter_oM">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Adapter_oM.dll</HintPath>
+      <HintPath>..\..\BHoM_Adapter\Build\Adapter_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="BHoM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
+      <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="BHoM_Adapter">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Adapter.dll</HintPath>
+      <HintPath>..\..\BHoM_Adapter\Build\BHoM_Adapter.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="BHoM_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
+      <HintPath>..\..\BHoM_Engine\Build\BHoM_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Data_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
+      <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Reflection_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_Engine.dll</HintPath>
+      <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Reflection_oM">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_oM.dll</HintPath>
+      <HintPath>..\..\BHoM\Build\Reflection_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Socket_Adapter">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Socket_Adapter.dll</HintPath>
+      <HintPath>..\..\Socket_Toolkit\Build\Socket_Adapter.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Socket_oM">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Socket_oM.dll</HintPath>
+      <HintPath>..\..\Socket_Toolkit\Build\Socket_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
