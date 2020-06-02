@@ -28,7 +28,7 @@ using System.ComponentModel;
 namespace BH.oM.Adapters.Revit.Parameters
 {
     [Description("An entity defining the relationship between property names of a type (or CustomData keys) and sets of their correspondent Revit element parameter names.")]
-    public class ElementParameterLink : BHoMObject, IParameterLink
+    public class ElementParameterLink : IParameterLink
     {
         /***************************************************/
         /****             Public Properties             ****/
