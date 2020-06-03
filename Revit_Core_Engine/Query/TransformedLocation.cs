@@ -25,6 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
 using BH.oM.Geometry;
 using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.Physical.Elements;
@@ -47,14 +48,30 @@ namespace BH.Revit.Engine.Core
             if (curve == null)
                 curve = (familyInstance.Location as LocationCurve)?.Curve?.IFromRevit();
 
-            if (curve == null)
+            if (curve == null || curve.ILength() <= settings.DistanceTolerance)
             {
                 familyInstance.BarCurveNotFoundWarning();
                 return null;
             }
 
+            BH.oM.Geometry.Line line = curve as BH.oM.Geometry.Line;
+            if (line == null)
+            {
+                string message = "Offset/justification of nonlinear framing is currently not supported. Revit justification and offset has been ignored.";
+                if (familyInstance != null)
+                    message += string.Format(" Revit ElementId: {0}", familyInstance.Id.IntegerValue);
+
+                if (framingElement != null)
+                    message += string.Format(" BHoM Guid: {0}", framingElement.BHoM_Guid);
+
+                BH.Engine.Reflection.Compute.RecordWarning(message);
+                return curve;
+            }
+
+            IEnumerable<IParameterLink> parameterLinks = null;
             RevitParametersToPush bHoMParameters = framingElement?.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
-            IEnumerable<IParameterLink> parameterLinks = settings?.ParameterSettings?.ParameterMap(framingElement.GetType())?.ParameterLinks.Where(x => x is ElementParameterLink);
+            if (bHoMParameters != null)
+                parameterLinks = settings?.ParameterSettings?.ParameterMap(framingElement.GetType())?.ParameterLinks.Where(x => x is ElementParameterLink);
 
             Vector startOffset = new Vector { X = 0, Y = 0, Z = 0 };
             Vector endOffset = new Vector { X = 0, Y = 0, Z = 0 };
@@ -155,6 +172,7 @@ namespace BH.Revit.Engine.Core
 
                 if (yJustificationStart == 0 || yJustificationStart == 3 || yJustificationEnd == 0 || yJustificationEnd == 3 || zJustificationStart == 0 || zJustificationStart == 3 || zJustificationEnd == 0 || zJustificationEnd == 3)
                 {
+                    //TODO: this should use RefObjects!
                     double profileHeight = 0;
                     double profileWidth = 0;
                     if (familyInstance?.Symbol != null)
@@ -206,24 +224,22 @@ namespace BH.Revit.Engine.Core
                 startOffset *= -1;
                 endOffset *= -1;
             }
-
-            //TODO: for nonlinear bars this should be actual offset, not translation?
+            
             double startOffsetLength = startOffset.Length();
             double endOffsetLength = endOffset.Length();
             if (startOffsetLength > Tolerance.Distance || endOffsetLength > Tolerance.Distance)
             {
-                Transform transform = familyInstance.GetTotalTransform();
-                if (curve is BH.oM.Geometry.Line)
-                {
-                    BH.oM.Geometry.Line l = curve as BH.oM.Geometry.Line;
-                    Vector yOffsetStart = new Vector { X = transform.BasisY.X * startOffset.Y, Y = transform.BasisY.Y * startOffset.Y, Z = transform.BasisY.Z * startOffset.Y };
-                    Vector zOffsetStart = new Vector { X = transform.BasisZ.X * startOffset.Z, Y = transform.BasisZ.Y * startOffset.Z, Z = transform.BasisZ.Z * startOffset.Z };
-                    Vector yOffsetEnd = new Vector { X = transform.BasisY.X * endOffset.Y, Y = transform.BasisY.Y * endOffset.Y, Z = transform.BasisY.Z * endOffset.Y };
-                    Vector zOffsetEnd = new Vector { X = transform.BasisZ.X * endOffset.Z, Y = transform.BasisZ.Y * endOffset.Z, Z = transform.BasisZ.Z * endOffset.Z };
-                    curve = new BH.oM.Geometry.Line { Start = l.Start.Translate(yOffsetStart - zOffsetStart), End = l.End.Translate(yOffsetEnd - zOffsetEnd) };
-                }
-                else
-                    BH.Engine.Reflection.Compute.RecordWarning(string.Format("Offset/justification of nonlinear framing is currently not supported. Revit justification and offset has been ignored. Element Id: {0}", familyInstance.Id.IntegerValue));
+                BH.oM.Geometry.TransformMatrix transform = BH.oM.Geometry.CoordinateSystem.Cartesian.GlobalXYZ.OrientationMatrix();
+                //if (framingElement != null)
+                //    transform
+                //else
+                //    transform = familyInstance.GetTotalTransform();
+
+                Vector yOffsetStart = new Vector { X = transform.Matrix[1, 0] * startOffset.Y, Y = transform.Matrix[1, 1] * startOffset.Y, Z = transform.Matrix[1, 2] * startOffset.Y };
+                Vector zOffsetStart = new Vector { X = transform.Matrix[2, 0] * startOffset.Z, Y = transform.Matrix[2, 1] * startOffset.Z, Z = transform.Matrix[2, 2] * startOffset.Z };
+                Vector yOffsetEnd = new Vector { X = transform.Matrix[1, 0] * endOffset.Y, Y = transform.Matrix[1, 1] * endOffset.Y, Z = transform.Matrix[1, 2] * endOffset.Y };
+                Vector zOffsetEnd = new Vector { X = transform.Matrix[2, 0] * endOffset.Z, Y = transform.Matrix[2, 1] * endOffset.Z, Z = transform.Matrix[2, 2] * endOffset.Z };
+                curve = new BH.oM.Geometry.Line { Start = line.Start.Translate(yOffsetStart - zOffsetStart), End = line.End.Translate(yOffsetEnd - zOffsetEnd) };
             }
 
             return curve;
