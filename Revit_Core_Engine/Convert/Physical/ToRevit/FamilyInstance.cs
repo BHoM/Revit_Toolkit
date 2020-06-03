@@ -380,7 +380,7 @@ namespace BH.Revit.Engine.Core
             }
 
             // Copy parameters from BHoM CustomData to Revit Element
-            familyInstance.CopyParameters(framingElement, paramsToIgnore);
+            //familyInstance.CopyParameters(framingElement, paramsToIgnore);
 
             refObjects.AddOrReplace(framingElement, familyInstance);
             return familyInstance;

@@ -21,12 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Physical.Elements;
-using BH.oM.Physical.FramingProperties;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -36,25 +32,17 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static Bracing BracingFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static Transform TransformToRevit(this oM.Geometry.TransformMatrix transformMatrix)
         {
-            settings = settings.DefaultIfNull();
-
-            Bracing bracing = refObjects.GetValue<Bracing>(familyInstance.Id);
-            if (bracing != null)
-                return bracing;
-
-            oM.Geometry.ICurve locationCurve = familyInstance.TransformedFramingLocation(null, false, settings);
-            IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
-            bracing = BH.Engine.Physical.Create.Bracing(locationCurve, property, familyInstance.Name);
-
-            //Set identifiers, parameters & custom data
-            bracing.SetIdentifiers(familyInstance);
-            bracing.CopyParameters(familyInstance, settings.ParameterSettings);
-            bracing.SetProperties(familyInstance, settings.ParameterSettings);
-
-            refObjects.AddOrReplace(familyInstance.Id, bracing);
-            return bracing;
+            XYZ translation = new XYZ(transformMatrix.Matrix[3, 0].FromSI(UnitType.UT_Length), transformMatrix.Matrix[3, 1].FromSI(UnitType.UT_Length), transformMatrix.Matrix[3, 2].FromSI(UnitType.UT_Length));
+            XYZ basisX = new XYZ(transformMatrix.Matrix[0, 0], transformMatrix.Matrix[0, 1], transformMatrix.Matrix[0, 2]);
+            XYZ basisY = new XYZ(transformMatrix.Matrix[1, 0], transformMatrix.Matrix[1, 1], transformMatrix.Matrix[1, 2]);
+            XYZ basisZ = new XYZ(transformMatrix.Matrix[2, 0], transformMatrix.Matrix[2, 1], transformMatrix.Matrix[2, 2]);
+            Transform transform = Transform.CreateTranslation(translation);
+            transform.BasisX = basisX;
+            transform.BasisY = basisY;
+            transform.BasisZ = basisZ;
+            return transform;
         }
 
         /***************************************************/
