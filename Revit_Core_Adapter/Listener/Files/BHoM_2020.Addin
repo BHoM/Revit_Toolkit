@@ -2,7 +2,7 @@
 <RevitAddIns>
   <AddIn Type="Application">
     <Name>BHoM Revit</Name>
-    <Assembly>..\..\..\..\BHoM\Assemblies\Revit_Core_Adapter_2020.dll</Assembly>
+    <Assembly>C:\ProgramData\BHoM\Assemblies\Revit_Core_Adapter_2020.dll</Assembly>
     <FullClassName>BH.Revit.Adapter.Core.RevitListener</FullClassName> |
     <AddInId>05D16C68-EA24-4E38-A9D9-6029E2F8C760</AddInId>
     <Text>Buildings and Habitats object Model (BHoM) Revit Addin</Text>
