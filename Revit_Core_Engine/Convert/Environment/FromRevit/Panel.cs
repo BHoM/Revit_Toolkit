@@ -419,11 +419,12 @@ namespace BH.Revit.Engine.Core
             //Get the name and element type
             Element element = energyAnalysisSurface.Document.Element(energyAnalysisSurface.CADObjectUniqueId, energyAnalysisSurface.CADLinkUniqueId);
             ElementType elementType = null;
-            if (element != null)
-            {
-                elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-                panel = BH.Engine.Environment.Create.Panel(name: element.FamilyTypeFullName(), externalEdges: curve.ToEdges());
-            }
+            if (element == null)
+                return panel;
+            
+            elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
+            panel = BH.Engine.Environment.Create.Panel(name: element.FamilyTypeFullName(), externalEdges: curve.ToEdges());
+
 
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };

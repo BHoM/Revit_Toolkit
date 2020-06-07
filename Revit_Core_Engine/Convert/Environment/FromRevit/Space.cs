@@ -131,6 +131,9 @@ namespace BH.Revit.Engine.Core
 
             SpatialElement spatialElement = energyAnalysisSpace.Document.Element(energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
 
+            if (spatialElement == null)
+                return space; //If we can't get data from it let's not waste our time
+
             space = new Space();
             space.Name = Query.Name(spatialElement);
 
