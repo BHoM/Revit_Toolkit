@@ -135,7 +135,7 @@ namespace BH.Revit.Engine.Core
 
         public static Element ToRevit(this BH.oM.Physical.Elements.IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            return framingElement.ToRevitFamilyInstance(document, settings, refObjects);
+            return framingElement.IToRevitFamilyInstance(document, settings, refObjects);
         }
 
         /***************************************************/

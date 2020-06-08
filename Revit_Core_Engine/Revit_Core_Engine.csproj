@@ -301,6 +301,7 @@
     <Compile Include="Modify\CopyParameters.cs" />
     <Compile Include="Modify\SetProperties.cs" />
     <Compile Include="Modify\SetTags.cs" />
+    <Compile Include="Modify\UpdateType.cs" />
     <Compile Include="Query\ParameterLink.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByExclusion.cs" />
     <Compile Include="Query\TransformedLocation.cs" />

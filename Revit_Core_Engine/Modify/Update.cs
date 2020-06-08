@@ -35,7 +35,12 @@ namespace BH.Revit.Engine.Core
 
         public static bool Update(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
+            bool isElement = new ElementIsElementTypeFilter(true).PassesFilter(element);
+            if (isElement)
+                element.IUpdateType(bHoMObject, settings);
+
             element.CopyParameters(bHoMObject, settings);
+
             if (!string.IsNullOrWhiteSpace(bHoMObject.Name) && element.Name != bHoMObject.Name)
             {
                 try
@@ -48,19 +53,10 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            if (new ElementIsElementTypeFilter(true).PassesFilter(element))
+            if (isElement)
                 element.ISetLocation(bHoMObject, settings);
 
             return true;
-        }
-
-        /***************************************************/
-
-        public static bool Update(this Level level, BH.oM.Geometry.SettingOut.Level bHoMLevel, RevitSettings settings)
-        {
-            bool success = Update(level as Element, bHoMLevel, settings);
-            success &= level.SetParameter(BuiltInParameter.LEVEL_ELEV, bHoMLevel.Elevation);
-            return success;
         }
 
 

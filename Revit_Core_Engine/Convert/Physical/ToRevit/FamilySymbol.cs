@@ -32,10 +32,10 @@ namespace BH.Revit.Engine.Core
     {
 
         /***************************************************/
-        /****              Private methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        private static FamilySymbol ToRevitFamilySymbol_Column(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilySymbol ToRevitFamilySymbol_Column(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (framingElementProperty == null || document == null)
                 return null;
@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static FamilySymbol ToRevitFamilySymbol_Framing(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilySymbol ToRevitFamilySymbol_Framing(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (framingElementProperty == null || document == null)
                 return null;
