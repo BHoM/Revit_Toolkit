@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static FamilySymbol ToRevitFamilySymbol_Column(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilySymbol ToRevitFamilySymbol(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, BuiltInCategory category, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (framingElementProperty == null || document == null)
                 return null;
@@ -46,33 +46,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            familySymbol = framingElementProperty.ElementType(document, BuiltInCategory.OST_StructuralColumns, settings.FamilyLoadSettings) as FamilySymbol;
-
-            familySymbol.CheckIfNullPush(framingElementProperty);
-            if (familySymbol == null)
-                return null;
-
-            // Copy parameters from BHoM object to Revit element
-            familySymbol.CopyParameters(framingElementProperty, settings);
-
-            refObjects.AddOrReplace(framingElementProperty, familySymbol);
-            return familySymbol;
-        }
-
-        /***************************************************/
-
-        public static FamilySymbol ToRevitFamilySymbol_Framing(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
-        {
-            if (framingElementProperty == null || document == null)
-                return null;
-
-            FamilySymbol familySymbol = refObjects.GetValue<FamilySymbol>(document, framingElementProperty.BHoM_Guid);
-            if (familySymbol != null)
-                return familySymbol;
-
-            settings = settings.DefaultIfNull();
-
-            familySymbol = framingElementProperty.ElementType(document, BuiltInCategory.OST_StructuralFraming, settings.FamilyLoadSettings) as FamilySymbol;
+            familySymbol = framingElementProperty.ElementType(document, category, settings.FamilyLoadSettings) as FamilySymbol;
 
             familySymbol.CheckIfNullPush(framingElementProperty);
             if (familySymbol == null)
