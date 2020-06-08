@@ -36,7 +36,7 @@ namespace BH.Revit.Engine.Core
 
         public static bool UpdateType(this FamilyInstance element, IFramingElement bHoMObject, RevitSettings settings)
         {
-            FamilySymbol familySymbol = bHoMObject.Property.ToRevitFamilySymbol_Framing(element.Document, settings);
+            FamilySymbol familySymbol = bHoMObject.Property.ToRevitFamilySymbol(BuiltInCategory.OST_StructuralFraming, element.Document, settings);
             if (familySymbol == null)
                 familySymbol = Query.ElementType(bHoMObject, element.Document, BuiltInCategory.OST_StructuralFraming, settings.FamilyLoadSettings) as FamilySymbol;
 
@@ -45,15 +45,32 @@ namespace BH.Revit.Engine.Core
                 Compute.ElementTypeNotFoundWarning(bHoMObject);
                 return false;
             }
-            else
-                return element.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, familySymbol.Id);
+
+            return element.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, familySymbol.Id);
+        }
+
+        /***************************************************/
+
+        public static bool UpdateType(this FamilyInstance element, Column bHoMObject, RevitSettings settings)
+        {
+            FamilySymbol familySymbol = bHoMObject.Property.ToRevitFamilySymbol(BuiltInCategory.OST_StructuralColumns, element.Document, settings);
+            if (familySymbol == null)
+                familySymbol = Query.ElementType(bHoMObject, element.Document, BuiltInCategory.OST_StructuralColumns, settings.FamilyLoadSettings) as FamilySymbol;
+
+            if (familySymbol == null)
+            {
+                Compute.ElementTypeNotFoundWarning(bHoMObject);
+                return false;
+            }
+
+            return element.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, familySymbol.Id);
         }
 
 
         /***************************************************/
         /****              Fallback Methods             ****/
         /***************************************************/
-        
+
         public static bool UpdateType(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
             BH.Engine.Reflection.Compute.RecordWarning(String.Format("Element type has not been updated based on the BHoM object due to the lacking convert method. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, bHoMObject.BHoM_Guid));

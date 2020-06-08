@@ -78,7 +78,7 @@ namespace BH.Revit.Engine.Core
             Line columnLine = framingElement.Location.IToRevit() as Line;
             Level level = framingElement.Location.BottomLevel(document);
             
-            FamilySymbol familYSymbol = framingElement.Property.ToRevitFamilySymbol_Column(document, settings, refObjects);
+            FamilySymbol familYSymbol = framingElement.Property.ToRevitFamilySymbol(BuiltInCategory.OST_StructuralColumns, document, settings, refObjects);
             if (familYSymbol == null)
             {
                 familYSymbol = framingElement.ElementType(document, BuiltInCategory.OST_StructuralColumns, settings.FamilyLoadSettings) as FamilySymbol;
@@ -175,7 +175,7 @@ namespace BH.Revit.Engine.Core
 
             Level level = framingElement.Location.BottomLevel(document);
 
-            FamilySymbol familySymbol = framingElement.Property.ToRevitFamilySymbol_Framing(document, settings, refObjects);
+            FamilySymbol familySymbol = framingElement.Property.ToRevitFamilySymbol(BuiltInCategory.OST_StructuralFraming, document, settings, refObjects);
             if (familySymbol == null)
             {
                 familySymbol = framingElement.ElementType(document, BuiltInCategory.OST_StructuralFraming, settings.FamilyLoadSettings) as FamilySymbol;
@@ -247,7 +247,7 @@ namespace BH.Revit.Engine.Core
 
         private static double ToRevitOrientationAngleColumn(this double bhomOrientationAngle, BH.oM.Geometry.Line centreLine)
         {
-            //For vertical columns orientation angles are following similar rules between Revit and BHoM but flipped 90 degrees
+            //For vertical columns orientation angles are following similar rules between Revit and BHoM but flipped 90 degrees.
             if (centreLine.IsVertical())
                 return CheckOrientationAngleDomain((Math.PI * 0.5 - bhomOrientationAngle));
             else
