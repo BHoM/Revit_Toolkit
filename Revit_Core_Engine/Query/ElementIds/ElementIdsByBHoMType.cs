@@ -25,6 +25,7 @@ using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Base;
 using BH.oM.Physical.Elements;
+using BH.oM.Physical.FramingProperties;
 using BH.oM.Physical.Materials;
 using System;
 using System.Collections.Generic;
@@ -46,13 +47,19 @@ namespace BH.Revit.Engine.Core
             HashSet<ElementId> elementIds = new HashSet<ElementId>();
             if (!typeof(IBHoMObject).IsAssignableFrom(type))
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Input type {0} is not a BHoM type", type));
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Input type {0} is not a BHoM type.", type));
                 return elementIds;
             }
 
             if (type == typeof(ModelInstance) || type == typeof(IInstance) || type == typeof(InstanceProperties) || type == typeof(IBHoMObject) || type == typeof(BHoMObject) || type == typeof(IMaterialProperties))
             {
                 BH.Engine.Reflection.Compute.RecordError(String.Format("It is not allowed to pull elements of type {0} because it is too general, please try to narrow the filter down.", type));
+                return elementIds;
+            }
+
+            if (typeof(IFramingElementProperty).IsAssignableFrom(type))
+            {
+                BH.Engine.Reflection.Compute.RecordError("It is impossible to pull objects of types that inherit from IFramingElementProperty because they do not have equivalents in Revit. To pull Revit framing types, try pulling IProfiles instead.");
                 return elementIds;
             }
 
