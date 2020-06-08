@@ -25,7 +25,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Autodesk.Revit.DB;
-using BH.oM.Common.Interface;
 
 namespace BH.Revit.Engine.Core
 {
@@ -64,14 +63,6 @@ namespace BH.Revit.Engine.Core
         public static Level HighLevel(this Document document, oM.Geometry.ICurve curve)
         {
             double elevation = curve.HighElevation();
-            return document.HighLevel(elevation);
-        }
-
-        /***************************************************/
-
-        public static Level HighLevel(this Document document, IObject2D object2D)
-        {
-            double elevation = object2D.HighElevation();
             return document.HighLevel(elevation);
         }
 
