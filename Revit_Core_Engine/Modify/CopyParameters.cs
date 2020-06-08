@@ -126,25 +126,6 @@ namespace BH.Revit.Engine.Core
                         element.SetParameters(param.Name, param.Value);
                 }
             }
-
-
-            //foreach (KeyValuePair<string, object> kvp in bHoMObject.CustomData)
-            //{
-            //    IList<Parameter> parameters = element.GetParameters(kvp.Key);
-            //    if (parameters == null || parameters.Count == 0)
-            //        continue;
-
-            //    foreach (Parameter parameter in parameters)
-            //    {
-            //        if (parameter == null || parameter.IsReadOnly)
-            //            continue;
-
-            //        if (builtInParametersIgnore != null && parameter.Id.IntegerValue < 0 && builtInParametersIgnore.Contains((BuiltInParameter)parameter.Id.IntegerValue))
-            //            continue;
-
-            //        SetParameter(parameter, kvp.Value, element.Document);
-            //    }
-            //}
         }
 
         /***************************************************/

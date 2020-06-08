@@ -192,7 +192,7 @@ namespace BH.Revit.Engine.Core
                 BuiltInParameter.STRUCTURAL_MATERIAL_PARAM
             };
 
-            // Copy parameters from BHoM CustomData to Revit Element
+            // Copy parameters from BHoM object to Revit element
             familyInstance.CopyParameters(framingElement, paramsToIgnore);
 
             refObjects.AddOrReplace(framingElement, familyInstance);
@@ -328,7 +328,6 @@ namespace BH.Revit.Engine.Core
             }
 
             //Sets the insertion point to the centroid. 
-            //TODO: Remove this once FramingElement.AdjustedLocation() query method is added.
             Parameter zJustification = familyInstance.get_Parameter(BuiltInParameter.Z_JUSTIFICATION);
             if (zJustification != null && !zJustification.IsReadOnly)
                 zJustification.Set((int)Autodesk.Revit.DB.Structure.ZJustification.Origin);
@@ -336,57 +335,6 @@ namespace BH.Revit.Engine.Core
             familyInstance.CopyParameters(framingElement, settings);
             //TODO: regenerate needed?
             familyInstance.SetLocation(framingElement, settings);
-
-            // Copy custom data and set parameters
-            //BuiltInParameter[] paramsToIgnore = new BuiltInParameter[]
-            //    {
-            //        BuiltInParameter.STRUCTURAL_BEAM_END0_ELEVATION,
-            //        BuiltInParameter.STRUCTURAL_BEAM_END1_ELEVATION,
-            //        BuiltInParameter.ELEM_FAMILY_PARAM,
-            //        BuiltInParameter.ELEM_FAMILY_AND_TYPE_PARAM,
-            //        BuiltInParameter.ELEM_TYPE_PARAM,
-            //        BuiltInParameter.ALL_MODEL_IMAGE,
-            //        BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE,
-            //        BuiltInParameter.STRUCTURAL_MATERIAL_PARAM
-            //    };
-
-            //TODO: this is a hack, should be removed once the offset/justification  is implemented for curved framing.
-            //if (framingElement.Location is BH.oM.Geometry.Line)
-            //{
-            //    List<BuiltInParameter> paramsToIgnoreList = new List<BuiltInParameter>
-            //        {
-            //            BuiltInParameter.Y_OFFSET_VALUE,
-            //            BuiltInParameter.Z_OFFSET_VALUE,
-            //            BuiltInParameter.START_Y_OFFSET_VALUE,
-            //            BuiltInParameter.END_Y_OFFSET_VALUE,
-            //            BuiltInParameter.START_Z_OFFSET_VALUE,
-            //            BuiltInParameter.END_Z_OFFSET_VALUE,
-            //        };
-
-            //    paramsToIgnoreList.AddRange(paramsToIgnore);
-            //    paramsToIgnore = paramsToIgnoreList.ToArray();
-            //}
-
-            //TODO: this is a hack, should be removed once the offset/justification  is properly implemented.
-            //if (!adjusted)
-            //{
-            //    List<BuiltInParameter> paramsToIgnoreList = new List<BuiltInParameter>
-            //        {
-            //            BuiltInParameter.YZ_JUSTIFICATION,
-            //            BuiltInParameter.Y_JUSTIFICATION,
-            //            BuiltInParameter.Z_JUSTIFICATION,
-            //            BuiltInParameter.START_Y_JUSTIFICATION,
-            //            BuiltInParameter.END_Y_JUSTIFICATION,
-            //            BuiltInParameter.START_Z_JUSTIFICATION,
-            //            BuiltInParameter.END_Z_JUSTIFICATION
-            //        };
-
-            //    paramsToIgnoreList.AddRange(paramsToIgnore);
-            //    paramsToIgnore = paramsToIgnoreList.ToArray();
-            //}
-
-            // Copy parameters from BHoM CustomData to Revit Element
-            //familyInstance.CopyParameters(framingElement, paramsToIgnore);
 
             refObjects.AddOrReplace(framingElement, familyInstance);
             return familyInstance;
@@ -447,142 +395,6 @@ namespace BH.Revit.Engine.Core
 
             return orientationAngle;
         }
-
-
-        /***************************************************/
-        /****              Private Methods              ****/
-        /***************************************************/
-
-        //private static bool AdjustLocation(this IFramingElement framingElement, out BH.oM.Geometry.ICurve adjustedLocation)
-        //{
-        //    adjustedLocation = framingElement.Location;
-            
-        //    if (framingElement.Location == null)
-        //    {
-        //        BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element has no curve assigned. BHoM Guid: {0}", framingElement.BHoM_Guid));
-        //        return false;
-        //    }
-
-        //    if (!framingElement.CustomData.ContainsKey("yz Justification"))
-        //        return false;
-
-        //    BH.oM.Geometry.Line locationLine = framingElement.Location as BH.oM.Geometry.Line;
-        //    if (locationLine == null)
-        //    {
-        //        BH.Engine.Reflection.Compute.RecordWarning(string.Format("Offset/justification of nonlinear bars is currently not supported. Revit justification and offset has been ignored. BHoM Guid: {0}", framingElement.BHoM_Guid));
-        //        return false;
-        //    }
-
-        //    if (locationLine.Length() < BH.oM.Geometry.Tolerance.Distance)
-        //    {
-        //        BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element has zero length. BHoM Guid: {0}", framingElement.BHoM_Guid));
-        //        return false;
-        //    }
-
-        //    BH.oM.Physical.FramingProperties.ConstantFramingProperty property = framingElement.Property as BH.oM.Physical.FramingProperties.ConstantFramingProperty;
-        //    if (property == null || property.Profile == null)
-        //    {
-        //        BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element does not have a profile. BHoM Guid: {0}", framingElement.BHoM_Guid));
-        //        return false;
-        //    }
-
-        //    List<BH.oM.Geometry.PolyCurve> outlines = BH.Engine.Geometry.Compute.IJoin(property.Profile.Edges.ToList());
-        //    BH.oM.Geometry.PolyCurve profileCurve = outlines.FirstOrDefault();
-        //    if (outlines.Count != 1 || profileCurve == null || !profileCurve.IIsClosed())
-        //    {
-        //        BH.Engine.Reflection.Compute.RecordWarning(string.Format("Framing element's profile is not supported or incorrect. BHoM Guid: {0}", framingElement.BHoM_Guid));
-        //        return false;
-        //    }
-
-        //    BH.oM.Geometry.BoundingBox bbox = profileCurve.Bounds();
-        //    double dY = (bbox.Max.X - bbox.Min.X) * 0.5;
-        //    double dZ = (bbox.Max.Y - bbox.Min.Y) * 0.5;
-        //    BH.oM.Geometry.Point centre = (bbox.Min + bbox.Max) * 0.5;
-
-        //    BH.oM.Geometry.Vector xDir = locationLine.Direction();
-        //    BH.oM.Geometry.Vector yDir = 1 - Math.Abs(xDir.DotProduct(BH.oM.Geometry.Vector.ZAxis)) < BH.oM.Geometry.Tolerance.Angle ? BH.oM.Geometry.Vector.XAxis.CrossProduct(xDir) : BH.oM.Geometry.Vector.ZAxis.CrossProduct(xDir).Normalise().Rotate(property.OrientationAngle, xDir);
-        //    BH.oM.Geometry.Vector zDir = yDir.CrossProduct(xDir);
-
-        //    int yzJustification = (int)framingElement.CustomData["yz Justification"];
-        //    if (yzJustification == 0)
-        //    {
-        //        if (!framingElement.CustomData.ContainsKey("y Justification") || !framingElement.CustomData.ContainsKey("z Justification"))
-        //        {
-        //            BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element does not have justification properties. BHoM Guid: {0}", framingElement.BHoM_Guid));
-        //            return false;
-        //        }
-
-        //        int yJustification = (int)framingElement.CustomData["y Justification"];
-        //        int zJustification = (int)framingElement.CustomData["z Justification"];
-
-        //        double yAdjustment = 0;
-        //        if (yJustification == 0)
-        //            yAdjustment = centre.Y + dY;
-        //        else if (yJustification == 1)
-        //            yAdjustment = centre.Y;
-        //        else if (yJustification == 3)
-        //            yAdjustment = centre.Y - dY;
-
-        //        double zAdjustment = 0;
-        //        if (zJustification == 0)
-        //            zAdjustment = centre.Z - dZ;
-        //        else if (zJustification == 1)
-        //            zAdjustment = centre.Z;
-        //        else if (zJustification == 3)
-        //            zAdjustment = centre.Z + dZ;
-
-        //        adjustedLocation = locationLine.Translate(yDir * yAdjustment + zDir * zAdjustment);
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        if (!framingElement.CustomData.ContainsKey("Start y Justification") || !framingElement.CustomData.ContainsKey("Start z Justification") || !framingElement.CustomData.ContainsKey("End y Justification") || !framingElement.CustomData.ContainsKey("End z Justification"))
-        //        {
-        //            BH.Engine.Reflection.Compute.RecordWarning(string.Format("The framing element does not have justification properties. BHoM Guid: {0}", framingElement.BHoM_Guid));
-        //            return false;
-        //        }
-
-        //        int startYJustification = (int)framingElement.CustomData["Start y Justification"];
-        //        int startZJustification = (int)framingElement.CustomData["Start z Justification"];
-        //        int endYJustification = (int)framingElement.CustomData["End y Justification"];
-        //        int endZJustification = (int)framingElement.CustomData["End z Justification"];
-
-        //        double startYAdjustment = 0;
-        //        if (startYJustification == 0)
-        //            startYAdjustment = centre.Y + dY;
-        //        else if (startYJustification == 1)
-        //            startYAdjustment = centre.Y;
-        //        else if (startYJustification == 3)
-        //            startYAdjustment = centre.Y - dY;
-
-        //        double startZAdjustment = 0;
-        //        if (startZJustification == 0)
-        //            startZAdjustment = centre.Z - dZ;
-        //        else if (startZJustification == 1)
-        //            startZAdjustment = centre.Z;
-        //        else if (startZJustification == 3)
-        //            startZAdjustment = centre.Z + dZ;
-
-        //        double endYAdjustment = 0;
-        //        if (endYJustification == 0)
-        //            endYAdjustment = centre.Y + dY;
-        //        else if (endYJustification == 1)
-        //            endYAdjustment = centre.Y;
-        //        else if (endYJustification == 3)
-        //            endYAdjustment = centre.Y - dY;
-
-        //        double endZAdjustment = 0;
-        //        if (endZJustification == 0)
-        //            endZAdjustment = centre.Z - dZ;
-        //        else if (endZJustification == 1)
-        //            endZAdjustment = centre.Z;
-        //        else if (endZJustification == 3)
-        //            endZAdjustment = centre.Z + dZ;
-
-        //        adjustedLocation = new BH.oM.Geometry.Line { Start = locationLine.Start.Translate(yDir * startYAdjustment + zDir * startZAdjustment), End = locationLine.End.Translate(yDir * endYAdjustment + zDir * endZAdjustment) };
-        //        return true;
-        //    }
-        //}
         
         /***************************************************/
     }

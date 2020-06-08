@@ -122,7 +122,7 @@ namespace BH.Revit.Engine.Core
             if (element == null)
                 return null;
 
-            // Copy parameters from BHoM CustomData to Revit Element
+            // Copy parameters from BHoM object to Revit element
             element.CopyParameters(modelInstance, settings);
 
             refObjects.AddOrReplace(modelInstance, element);
@@ -234,7 +234,7 @@ namespace BH.Revit.Engine.Core
             if (element == null)
                 return null;
 
-            // Copy parameters from BHoM CustomData to Revit Element
+            // Copy parameters from BHoM object to Revit element
             element.CopyParameters(draftingInstance, settings);
 
             refObjects.AddOrReplace(draftingInstance, element);
