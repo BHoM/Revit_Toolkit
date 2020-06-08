@@ -39,9 +39,9 @@ namespace BH.Revit.Engine.Core
             XYZ basisY = new XYZ(transformMatrix.Matrix[1, 0], transformMatrix.Matrix[1, 1], transformMatrix.Matrix[1, 2]);
             XYZ basisZ = new XYZ(transformMatrix.Matrix[2, 0], transformMatrix.Matrix[2, 1], transformMatrix.Matrix[2, 2]);
             Transform transform = Transform.CreateTranslation(translation);
-            transform.BasisX = basisX;
-            transform.BasisY = basisY;
-            transform.BasisZ = basisZ;
+            transform.set_Basis(0, basisX);
+            transform.set_Basis(1, basisY);
+            transform.set_Basis(2, basisZ);
             return transform;
         }
 

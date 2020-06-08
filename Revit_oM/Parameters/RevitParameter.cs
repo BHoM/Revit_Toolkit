@@ -40,9 +40,6 @@ namespace BH.oM.Adapters.Revit.Parameters
         [Description("")]
         public virtual object Value { get; set; } = null;
 
-        [Description("")]
-        public virtual int ElementId { get; set; } = -1;
-
         /***************************************************/
     }
 }

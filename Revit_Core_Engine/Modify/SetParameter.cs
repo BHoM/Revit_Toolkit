@@ -320,5 +320,33 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        public static bool SetParameters(this Element element, string name, object value)
+        {
+            bool success = false;
+            foreach (Parameter param in element.Parameters)
+            {
+                if (param.Definition.Name == name)
+                    success |= param.SetParameter(value, element.Document);
+            }
+
+            return success;
+        }
+
+        /***************************************************/
+
+        public static bool SetParameters(this Element element, IEnumerable<string> names, object value)
+        {
+            bool success = false;
+            foreach (Parameter param in element.Parameters)
+            {
+                if (names.Any(x => param.Definition.Name == x))
+                    success |= param.SetParameter(value, element.Document);
+            }
+
+            return success;
+        }
+
+        /***************************************************/
     }
 }

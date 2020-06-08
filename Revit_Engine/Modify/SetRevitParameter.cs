@@ -20,57 +20,56 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
+using BH.oM.Base;
 using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
-namespace BH.Revit.Engine.Core
+namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Convert
+    public static partial class Modify
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public static RevitParameter ParameterFromRevit(this Parameter parameter, IEnumerable<IParameterLink> parameterLinks = null)
+        //[Description("Sets tag to BHoMObject.")]
+        //[Input("bHoMObject", "BHoMObject to be modified.")]
+        //[Input("tag", "Tag to be set.")]
+        //[Output("bHoMObject")]
+        public static IBHoMObject SetRevitParameters(this IBHoMObject bHoMObject, List<string> names, List<object> values)
         {
-            if (parameter == null)
+            if (bHoMObject == null)
                 return null;
 
-            object value = null;
-            switch (parameter.StorageType)
+            if (names.Count != values.Count)
             {
-                case StorageType.Double:
-                    value = parameter.AsDouble().ToSI(parameter.Definition.UnitType);
-                    break;
-                case StorageType.ElementId:
-                    ElementId elementID = parameter.AsElementId();
-                    if (elementID != null)
-                        value = elementID.IntegerValue;
-                    break;
-                case StorageType.Integer:
-                    if (parameter.Definition.ParameterType == ParameterType.YesNo)
-                        value = parameter.AsInteger() == 1;
-                    else if (parameter.Definition.ParameterType == ParameterType.Invalid)
-                        value = parameter.AsValueString();
-                    else
-                        value = parameter.AsInteger();
-                    break;
-                case StorageType.String:
-                    value = parameter.AsString();
-                    break;
-                case StorageType.None:
-                    value = parameter.AsValueString();
-                    break;
+                BH.Engine.Reflection.Compute.RecordError("Number of input names needs to be equal to the number of input values. Parameters have not been set.");
+                return bHoMObject;
             }
 
-            string name = parameter.Definition.Name;
+            IBHoMObject obj = bHoMObject.GetShallowClone();
+            RevitParametersToPush fragment = obj.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
+            if (fragment == null)
+            {
+                fragment = new RevitParametersToPush();
+                obj.Fragments.Add(fragment);
+            }
 
-            IParameterLink parameterLink = parameterLinks.ParameterLink(parameter);
-            if (parameterLink != null)
-                name = parameterLink.PropertyName;
+            for (int i = 0; i < names.Count; i++)
+            {
+                RevitParameter param = new RevitParameter { Name = names[i], Value = values[i] };
 
-            return new RevitParameter { Name = name, Value = value };
+                RevitParameter existingParam = fragment.Parameters.FirstOrDefault(x => x.Name == names[i]);
+                if (existingParam != null)
+                    fragment.Parameters[fragment.Parameters.IndexOf(existingParam)] = param;
+                else
+                    fragment.Parameters.Add(param);
+            }
+
+            return obj;
         }
 
         /***************************************************/

@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
             revitSpace.Name = space.Name;
 
             // Copy parameters from BHoM CustomData to Revit Element
-            revitSpace.CopyParameters(space, null);
+            revitSpace.CopyParameters(space, settings);
 
             refObjects.AddOrReplace(space, revitSpace);
             return revitSpace;
