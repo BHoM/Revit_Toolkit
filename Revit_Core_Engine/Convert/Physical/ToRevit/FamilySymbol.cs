@@ -52,7 +52,7 @@ namespace BH.Revit.Engine.Core
             if (familySymbol == null)
                 return null;
 
-            // Copy parameters from BHoM CustomData to Revit Element
+            // Copy parameters from BHoM object to Revit element
             familySymbol.CopyParameters(framingElementProperty, settings);
 
             refObjects.AddOrReplace(framingElementProperty, familySymbol);
@@ -78,7 +78,7 @@ namespace BH.Revit.Engine.Core
             if (familySymbol == null)
                 return null;
 
-            // Copy parameters from BHoM CustomData to Revit Element
+            // Copy parameters from BHoM object to Revit element
             familySymbol.CopyParameters(framingElementProperty, settings);
 
             refObjects.AddOrReplace(framingElementProperty, familySymbol);

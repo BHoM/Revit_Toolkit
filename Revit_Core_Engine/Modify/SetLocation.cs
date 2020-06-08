@@ -153,23 +153,12 @@ namespace BH.Revit.Engine.Core
         public static bool SetLocation(this Element element, ICurve curve, RevitSettings settings)
         {
             LocationCurve location = element.Location as LocationCurve;
-            if (/*location == null ||*/ location.IsReadOnly)
+            if (location.IsReadOnly)
                 return false;
-
-            //Curve bHoMCurve = curve.IToRevit();
+            
             ICurve transformedCurve = ((FamilyInstance)element).TransformedFramingLocation(curve, true, settings);
             location.Curve = transformedCurve.IToRevit();
             return true;
-
-
-            //TODO: better without this check?
-            //if (!location.Curve.IsSimilar(bHoMCurve, settings))
-            //{
-            //    location.Curve = bHoMCurve;
-            //    return true;
-            //}
-            //else
-            //    return false;
         }
 
         /***************************************************/

@@ -121,7 +121,7 @@ namespace BH.Revit.Engine.Core
             if (revitWall == null)
                 return null;
 
-            // Copy parameters from BHoM CustomData to Revit Element
+            // Copy parameters from BHoM object to Revit element
             revitWall.CopyParameters(wall, new BuiltInParameter[] { BuiltInParameter.WALL_BASE_CONSTRAINT, BuiltInParameter.WALL_BASE_OFFSET, BuiltInParameter.WALL_HEIGHT_TYPE, BuiltInParameter.WALL_USER_HEIGHT_PARAM });
 
             refObjects.AddOrReplace(wall, revitWall);
