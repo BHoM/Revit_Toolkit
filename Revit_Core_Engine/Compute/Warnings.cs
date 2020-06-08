@@ -26,6 +26,8 @@ using BH.Adapter.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
+using BH.oM.Physical.Elements;
+using BH.oM.Physical.FramingProperties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -491,6 +493,28 @@ namespace BH.Revit.Engine.Core
             string message = "Revit does not support closed nurbs curves.";
             if (iBHoMObject != null)
                 message = string.Format("{0} BHoM Guid: {1}", message, iBHoMObject.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordWarning(message);
+        }
+
+        /***************************************************/
+
+        internal static void NonLinearFramingOffsetWarning(this FamilyInstance familyInstance)
+        {
+            string message = "Offset/justification of nonlinear framing is currently not supported. Revit justification and offset has been ignored.";
+            if (familyInstance != null)
+                message += string.Format(" Revit ElementId: {0}", familyInstance.Id.IntegerValue);
+
+            BH.Engine.Reflection.Compute.RecordWarning(message);
+        }
+
+        /***************************************************/
+
+        internal static void NoProfileWarning(this FamilyInstance familyInstance)
+        {
+            string message = "Profile of the framing element could not be retrieved. Revit justification and offset has been ignored.";
+            if (familyInstance != null)
+                message += string.Format(" Revit ElementId: {0}", familyInstance.Id.IntegerValue);
 
             BH.Engine.Reflection.Compute.RecordWarning(message);
         }

@@ -49,7 +49,7 @@ namespace BH.Revit.Engine.Core
             viewSheet = ViewSheet.Create(document, ElementId.InvalidElementId);
 
             // Copy parameters from BHoM CustomData to Revit Element
-            viewSheet.CopyParameters(sheet, null);
+            viewSheet.CopyParameters(sheet, settings);
 
             refObjects.AddOrReplace(sheet, viewSheet);
             return viewSheet;

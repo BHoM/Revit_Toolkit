@@ -153,6 +153,7 @@
     <Compile Include="Modify\SetFamilyTypeName.cs" />
     <Compile Include="Modify\SetFamilyName.cs" />
     <Compile Include="Modify\SetMapSettings.cs" />
+    <Compile Include="Modify\SetRevitParameter.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Query\DefaultParameterSettings.cs" />

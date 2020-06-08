@@ -113,7 +113,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             // Copy parameters from BHoM CustomData to Revit Element
-            revitGrid.CopyParameters(grid, null);
+            revitGrid.CopyParameters(grid, settings);
 
             refObjects.AddOrReplace(grid, revitGrid);
             return revitGrid;

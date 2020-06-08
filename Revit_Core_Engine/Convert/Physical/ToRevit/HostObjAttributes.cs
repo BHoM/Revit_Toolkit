@@ -62,7 +62,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             // Copy parameters from BHoM CustomData to Revit Element
-            elementType.CopyParameters(construction, null);
+            elementType.CopyParameters(construction, settings);
 
             refObjects.AddOrReplace(construction, elementType);
             return elementType;

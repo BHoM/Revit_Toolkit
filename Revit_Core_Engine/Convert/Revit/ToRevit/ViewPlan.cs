@@ -87,7 +87,7 @@ namespace BH.Revit.Engine.Core
 #endif
 
             // Copy parameters from BHoM CustomData to Revit Element
-            revitViewPlan.CopyParameters(viewPlan, null);
+            revitViewPlan.CopyParameters(viewPlan, settings);
 
             object value = null;
             if (viewPlan.CustomData.TryGetValue(BH.Engine.Adapters.Revit.Convert.ViewTemplate, out value))

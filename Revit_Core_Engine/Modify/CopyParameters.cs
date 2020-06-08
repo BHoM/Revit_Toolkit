@@ -94,5 +94,59 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        public static void CopyParameters(this Element element, IBHoMObject bHoMObject, RevitSettings settings = null)
+        {
+            if (bHoMObject == null || element == null)
+                return;
+
+            settings = settings.DefaultIfNull();
+
+            RevitParametersToPush fragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
+            if (fragment == null)
+                return;
+
+            ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
+            BH.oM.Adapters.Revit.Parameters.ParameterMap parameterMap = settings?.ParameterSettings?.ParameterMap(bHoMObject.GetType());
+            {
+                foreach (RevitParameter param in fragment.Parameters)
+                {
+                    IEnumerable<IParameterLink> parameterLinks = parameterMap.ParameterLinks(param.Name);
+                    if (parameterLinks != null)
+                    {
+                        foreach (IParameterLink parameterLink in parameterLinks)
+                        {
+                            if (parameterLink is ElementParameterLink)
+                                element.SetParameters(parameterLink.ParameterNames, param.Value);
+                            else if (elementType != null)
+                                elementType.SetParameters(parameterLink.ParameterNames, param.Value);
+                        }
+                    }
+                    else
+                        element.SetParameters(param.Name, param.Value);
+                }
+            }
+
+
+            //foreach (KeyValuePair<string, object> kvp in bHoMObject.CustomData)
+            //{
+            //    IList<Parameter> parameters = element.GetParameters(kvp.Key);
+            //    if (parameters == null || parameters.Count == 0)
+            //        continue;
+
+            //    foreach (Parameter parameter in parameters)
+            //    {
+            //        if (parameter == null || parameter.IsReadOnly)
+            //            continue;
+
+            //        if (builtInParametersIgnore != null && parameter.Id.IntegerValue < 0 && builtInParametersIgnore.Contains((BuiltInParameter)parameter.Id.IntegerValue))
+            //            continue;
+
+            //        SetParameter(parameter, kvp.Value, element.Document);
+            //    }
+            //}
+        }
+
+        /***************************************************/
     }
 }
