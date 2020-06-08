@@ -417,7 +417,6 @@
     <Compile Include="Query\Layer.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
     <Compile Include="Query\Construction.cs" />
-    <Compile Include="Query\MaterialType.cs" />
     <Compile Include="Query\PolyCurve.cs" />
     <Compile Include="Query\StructuralMaterialType.cs" />
     <Compile Include="Query\NextLevel.cs" />
