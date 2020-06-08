@@ -20,7 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Common.Interface;
 using BH.oM.Environment.Elements;
 using BH.oM.Geometry;
 
@@ -53,18 +52,6 @@ namespace BH.Revit.Engine.Core
             }
 
             return result;
-        }
-
-        /***************************************************/
-
-        public static double LowElevation(this IObject2D object2D)
-        {
-            if (object2D == null || object2D.Surface == null)
-                return double.NaN;
-
-            BoundingBox bbox = BH.Engine.Geometry.Query.Bounds(object2D.Surface as dynamic);
-
-            return bbox.Min.Z;
         }
 
         /***************************************************/

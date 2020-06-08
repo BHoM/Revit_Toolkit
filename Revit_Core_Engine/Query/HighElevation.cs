@@ -21,7 +21,6 @@
  */
 
 using BH.oM.Geometry;
-using BH.oM.Common.Interface;
 using BH.oM.Environment.Elements;
 
 namespace BH.Revit.Engine.Core
@@ -35,18 +34,6 @@ namespace BH.Revit.Engine.Core
         public static double HighElevation(this ICurve curve)
         {
             return BH.Engine.Geometry.Query.Bounds(curve as dynamic).Max.Z;
-        }
-
-        /***************************************************/
-
-        public static double HighElevation(this IObject2D object2D)
-        {
-            if (object2D == null || object2D.Surface == null)
-                return double.NaN;
-
-            BoundingBox bbox = BH.Engine.Geometry.Query.Bounds(object2D.Surface as dynamic);
-
-            return bbox.Max.Z;
         }
 
         /***************************************************/
