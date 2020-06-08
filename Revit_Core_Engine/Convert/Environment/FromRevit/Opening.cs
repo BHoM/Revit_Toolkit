@@ -99,7 +99,6 @@ namespace BH.Revit.Engine.Core
                 result.SetIdentifiers(element);
                 result.SetCustomData(element, settings.ParameterSettings);
                 result.SetProperties(element, settings.ParameterSettings);
-                result.SetProperties(elementType, settings.ParameterSettings);
 
                 refObjects.AddOrReplace(energyAnalysisOpening.Id, result);
                 return result;
