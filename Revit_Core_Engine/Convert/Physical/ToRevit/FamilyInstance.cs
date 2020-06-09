@@ -78,26 +78,26 @@ namespace BH.Revit.Engine.Core
             Line columnLine = framingElement.Location.IToRevit() as Line;
             Level level = framingElement.Location.BottomLevel(document);
             
-            FamilySymbol familYSymbol = framingElement.Property.ToRevitFamilySymbol(BuiltInCategory.OST_StructuralColumns, document, settings, refObjects);
-            if (familYSymbol == null)
+            FamilySymbol familySymbol = framingElement.Property.ToRevitFamilySymbol(BuiltInCategory.OST_StructuralColumns, document, settings, refObjects);
+            if (familySymbol == null)
             {
-                familYSymbol = framingElement.ElementType(document, BuiltInCategory.OST_StructuralColumns, settings.FamilyLoadSettings) as FamilySymbol;
+                familySymbol = framingElement.ElementType(document, BuiltInCategory.OST_StructuralColumns, settings.FamilyLoadSettings) as FamilySymbol;
 
-                if (familYSymbol == null)
+                if (familySymbol == null)
                 {
                     Compute.ElementTypeNotFoundWarning(framingElement);
                     return null;
                 }
             }
 
-            FamilyPlacementType familyPlacementType = familYSymbol.Family.FamilyPlacementType;
+            FamilyPlacementType familyPlacementType = familySymbol.Family.FamilyPlacementType;
             if (familyPlacementType != FamilyPlacementType.CurveBased && familyPlacementType != FamilyPlacementType.CurveBasedDetail && familyPlacementType != FamilyPlacementType.CurveDrivenStructural && familyPlacementType != FamilyPlacementType.TwoLevelsBased)
             {
-                Compute.InvalidFamilyPlacementTypeWarning(framingElement, familYSymbol);
+                Compute.InvalidFamilyPlacementTypeWarning(framingElement, familySymbol);
                 return null;
             }
 
-            familyInstance = document.Create.NewFamilyInstance(columnLine, familYSymbol, level, Autodesk.Revit.DB.Structure.StructuralType.Column);
+            familyInstance = document.Create.NewFamilyInstance(columnLine, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.Column);
 
             familyInstance.CheckIfNullPush(framingElement);
             if (familyInstance == null)

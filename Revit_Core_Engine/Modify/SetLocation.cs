@@ -67,22 +67,20 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
+            columnLine = ((FamilyInstance)element).AdjustedColumnLocation(columnLine, true, settings);
+
             if (columnLine.Start.Z >= columnLine.End.Z)
             {
                 BH.Engine.Reflection.Compute.RecordError(String.Format("Location of the column has not been updated because BHoM column has start above end. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
                 return false;
             }
 
-            if (columnLine.IsVertical())
+            if (element.IsSlantedColumn)
+                return element.SetLocation(columnLine, settings);
+            else
             {
-                bool slanted =  element.SetLocation(columnLine, settings);
-                if (slanted)
-                {
-                    element.Document.Regenerate();
-                    element.SetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 0);
-                }
-
-                element.SetLocation(new oM.Geometry.Point { X = columnLine.Start.X, Y = columnLine.Start.Y, Z = 0 }, settings);
+                double locationZ = ((LocationPoint)element.Location).Point.Z.ToSI(UnitType.UT_Length);
+                bool updated = element.SetLocation(new oM.Geometry.Point { X = columnLine.Start.X, Y = columnLine.Start.Y, Z = locationZ }, settings);
 
                 Parameter baseLevelParam = element.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_PARAM);
                 Parameter topLevelParam = element.get_Parameter(BuiltInParameter.FAMILY_TOP_LEVEL_PARAM);
@@ -90,21 +88,22 @@ namespace BH.Revit.Engine.Core
                 Parameter topOffsetParam = element.get_Parameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM);
                 Level baseLevel = element.Document.GetElement(baseLevelParam.AsElementId()) as Level;
                 Level topLevel = element.Document.GetElement(topLevelParam.AsElementId()) as Level;
-                double baseElevation = baseLevel.ProjectElevation + baseOffsetParam.AsDouble().ToSI(UnitType.UT_Length);
-                double topElevation = topLevel.ProjectElevation + topOffsetParam.AsDouble().ToSI(UnitType.UT_Length);
+                double baseElevation = (baseLevel.ProjectElevation + baseOffsetParam.AsDouble()).ToSI(UnitType.UT_Length);
+                double topElevation = (topLevel.ProjectElevation + topOffsetParam.AsDouble()).ToSI(UnitType.UT_Length);
 
                 if (Math.Abs(baseElevation - columnLine.Start.Z) > settings.DistanceTolerance)
+                {
                     element.SetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM, columnLine.Start.Z.FromSI(UnitType.UT_Length) - baseLevel.ProjectElevation, false);
+                    updated = true;
+                }
 
                 if (Math.Abs(topElevation - columnLine.End.Z) > settings.DistanceTolerance)
+                {
                     element.SetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.End.Z.FromSI(UnitType.UT_Length) - topLevel.ProjectElevation, false);
+                    updated = true;
+                }
 
-                return true;
-            }
-            else
-            {
-                element.SetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 2);
-                return element.SetLocation(columnLine, settings);
+                return updated;
             }
         }
 
@@ -122,7 +121,8 @@ namespace BH.Revit.Engine.Core
             if (!(typeof(IFramingElement).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.IntegerValue)))
                 return false;
 
-            return element.SetLocation(framingElement.Location, settings);
+            ICurve transformedCurve = ((FamilyInstance)element).AdjustedFramingLocation(framingElement.Location, true, settings);
+            return element.SetLocation(transformedCurve, settings);
         }
 
         /***************************************************/
@@ -160,12 +160,17 @@ namespace BH.Revit.Engine.Core
         public static bool SetLocation(this Element element, ICurve curve, RevitSettings settings)
         {
             LocationCurve location = element.Location as LocationCurve;
-            if (location.IsReadOnly)
+            if (location == null || location.IsReadOnly)
                 return false;
-            
-            ICurve transformedCurve = ((FamilyInstance)element).TransformedFramingLocation(curve, true, settings);
-            location.Curve = transformedCurve.IToRevit();
-            return true;
+
+            Curve bHoMCurve = curve.IToRevit();
+            if (!location.Curve.IsSimilar(bHoMCurve, settings))
+            {
+                location.Curve = bHoMCurve;
+                return true;
+            }
+            else
+                return false;
         }
 
         /***************************************************/
@@ -178,9 +183,12 @@ namespace BH.Revit.Engine.Core
 
             XYZ bHoMPoint = point.ToRevit();
             if (!location.Point.IsAlmostEqualTo(bHoMPoint, settings.DistanceTolerance))
+            {
                 location.Point = bHoMPoint;
+                return true;
+            }
 
-            return true;
+            return false;
         }
 
         /***************************************************/
