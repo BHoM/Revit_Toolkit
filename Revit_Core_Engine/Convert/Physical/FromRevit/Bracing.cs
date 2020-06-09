@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
             if (bracing != null)
                 return bracing;
 
-            oM.Geometry.ICurve locationCurve = familyInstance.TransformedFramingLocation(null, false, settings);
+            oM.Geometry.ICurve locationCurve = familyInstance.AdjustedFramingLocation(null, false, settings);
             IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
             bracing = BH.Engine.Physical.Create.Bracing(locationCurve, property, familyInstance.Name);
 

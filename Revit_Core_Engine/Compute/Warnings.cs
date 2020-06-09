@@ -199,12 +199,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        internal static void BarCurveNotFoundWarning(this FamilyInstance bar)
+        internal static void FramingCurveNotFoundWarning(this FamilyInstance framing)
         {
-            string message = "Bar curve could not be retrieved, the object is returned with empty geometry.";
+            string message = "Driving curve of a framing element could not be retrieved.";
 
-            if (bar != null)
-                message = string.Format("{0} Element Id: {1}", message, bar.Id.IntegerValue);
+            if (framing != null)
+                message = string.Format("{0} Element Id: {1}", message, framing.Id.IntegerValue);
 
             BH.Engine.Reflection.Compute.RecordWarning(message);
         }

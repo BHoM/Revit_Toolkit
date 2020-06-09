@@ -304,7 +304,7 @@
     <Compile Include="Modify\UpdateType.cs" />
     <Compile Include="Query\ParameterLink.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByExclusion.cs" />
-    <Compile Include="Query\TransformedLocation.cs" />
+    <Compile Include="Query\AdjustedLocation.cs" />
     <Compile Include="Query\Workset.cs" />
     <Compile Include="Create\CurveArray.cs" />
     <Compile Include="Create\Options.cs" />
