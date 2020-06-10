@@ -128,10 +128,15 @@ namespace BH.Revit.Engine.Core
                 //TODO warning and no rotation added
             }
 
+            ICurve transformedCurve = ((FamilyInstance)element).AdjustedLocationFraming(framingElement.Location, true, settings);
+            element.SetLocation(transformedCurve, settings);
+            element.Document.Regenerate();
+
             double rotation = element.AdjustedRotationFraming(framingProperty.OrientationAngle, true, settings);
             bool updated = element.SetParameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, rotation);
+            element.Document.Regenerate();
 
-            ICurve transformedCurve = ((FamilyInstance)element).AdjustedLocationFraming(framingElement.Location, true, settings);
+            /*ICurve*/ transformedCurve = ((FamilyInstance)element).AdjustedLocationFraming(framingElement.Location, true, settings);
             updated |= element.SetLocation(transformedCurve, settings);
 
             return updated;

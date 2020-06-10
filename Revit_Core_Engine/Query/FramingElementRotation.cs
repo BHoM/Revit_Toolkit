@@ -90,7 +90,7 @@ namespace BH.Revit.Engine.Core
             if (locationCurve is BH.oM.Geometry.Line)
             {
                 Transform transform = familyInstance.GetTotalTransform();
-                if ((locationCurve as BH.oM.Geometry.Line).IsVertical())
+                if (1 - Math.Abs(transform.BasisX.DotProduct(XYZ.BasisZ)) <= settings.AngleTolerance)
                     rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisY, transform.BasisX);
                 else
                     rotation = XYZ.BasisZ.AngleOnPlaneTo(transform.BasisZ, transform.BasisX);
@@ -112,7 +112,7 @@ namespace BH.Revit.Engine.Core
                     rotation *= -1;
             }
 
-            return rotation;
+            return rotation.CheckOrientationAngleDomain();
         }
 
 
@@ -138,21 +138,18 @@ namespace BH.Revit.Engine.Core
 
         ///***************************************************/
 
-        //public static double CheckOrientationAngleDomain(double orientationAngle)
-        //{
-        //    //Fixes orientation angle excedening +- 2 PI
-        //    orientationAngle = orientationAngle % (2 * Math.PI);
+        private static double CheckOrientationAngleDomain(this double orientationAngle)
+        {
+            orientationAngle = orientationAngle % (2 * Math.PI);
 
-        //    //The above should be enough, but bue to some tolerance issues going into revit it can sometimes still give errors.
-        //    //The below is added as an extra saftey check
-        //    if (orientationAngle - BH.oM.Geometry.Tolerance.Angle < -Math.PI * 2)
-        //        return orientationAngle + Math.PI * 2;
-        //    else if (orientationAngle + BH.oM.Geometry.Tolerance.Angle > Math.PI * 2)
-        //        return orientationAngle - Math.PI * 2;
+            if (orientationAngle - BH.oM.Geometry.Tolerance.Angle < -Math.PI * 2)
+                orientationAngle += Math.PI * 2;
+            else if (orientationAngle + BH.oM.Geometry.Tolerance.Angle > Math.PI * 2)
+                orientationAngle -= Math.PI * 2;
 
-        //    return orientationAngle;
-        //}
+            return orientationAngle;
+        }
 
-        ///***************************************************/
+        /***************************************************/
     }
 }
