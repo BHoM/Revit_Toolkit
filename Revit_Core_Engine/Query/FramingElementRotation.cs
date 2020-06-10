@@ -84,8 +84,6 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             double rotation;
-            //if (double.IsNaN(rotation))
-            //{
             Curve location = ((LocationCurve)familyInstance.Location).Curve;
 
             BH.oM.Geometry.ICurve locationCurve = location.IFromRevit();
@@ -96,11 +94,9 @@ namespace BH.Revit.Engine.Core
                     rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisY, transform.BasisX);
                 else
                     rotation = XYZ.BasisZ.AngleOnPlaneTo(transform.BasisZ, transform.BasisX);
-
+                
                 if (inverse && !double.IsNaN(bhomRotation))
-                {
                     rotation = familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE) - bhomRotation + rotation;
-                }
             }
             else
             {
@@ -108,17 +104,13 @@ namespace BH.Revit.Engine.Core
                     rotation = Math.PI * 0.5 - familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
                 else
                     rotation = -familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+                
+                if (inverse && !double.IsNaN(bhomRotation))
+                    rotation = familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE) - bhomRotation + rotation;
 
                 if (familyInstance.Mirrored)
                     rotation *= -1;
             }
-            //}
-
-            //if (inverse)
-            //{
-            //    rotation *= -1;
-            //    rotation += familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
-            //}
 
             return rotation;
         }
