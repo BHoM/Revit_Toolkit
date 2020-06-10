@@ -58,7 +58,8 @@ namespace BH.Revit.Engine.Core
             if (profile == null)
                 familyInstance.Symbol.NotConvertedWarning();
 
-            double rotation = familyInstance.FramingElementRotation(settings);
+            //TODO: check category of familyInstance to recognize which rotation query to use
+            double rotation = familyInstance.AdjustedRotationFraming(double.NaN, false, settings);
             
             return BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, familyInstance.Symbol.Name);
         }

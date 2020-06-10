@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using System;
@@ -77,5 +78,89 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        public static double AdjustedRotationFraming(this FamilyInstance familyInstance, double bhomRotation = double.NaN, bool inverse = false, RevitSettings settings = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            double rotation;
+            //if (double.IsNaN(rotation))
+            //{
+            Curve location = ((LocationCurve)familyInstance.Location).Curve;
+
+            BH.oM.Geometry.ICurve locationCurve = location.IFromRevit();
+            if (locationCurve is BH.oM.Geometry.Line)
+            {
+                Transform transform = familyInstance.GetTotalTransform();
+                if ((locationCurve as BH.oM.Geometry.Line).IsVertical())
+                    rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisY, transform.BasisX);
+                else
+                    rotation = XYZ.BasisZ.AngleOnPlaneTo(transform.BasisZ, transform.BasisX);
+
+                if (inverse && !double.IsNaN(bhomRotation))
+                {
+                    rotation = familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE) - bhomRotation + rotation;
+                }
+            }
+            else
+            {
+                if (location.IsVerticalNonLinearCurve())
+                    rotation = Math.PI * 0.5 - familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+                else
+                    rotation = -familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+
+                if (familyInstance.Mirrored)
+                    rotation *= -1;
+            }
+            //}
+
+            //if (inverse)
+            //{
+            //    rotation *= -1;
+            //    rotation += familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+            //}
+
+            return rotation;
+        }
+
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        //public static double ToRevitOrientationAngleColumn(this double bhomOrientationAngle, BH.oM.Geometry.Line centreLine)
+        //{
+        //    //For vertical columns orientation angles are following similar rules between Revit and BHoM but flipped 90 degrees.
+        //    if (centreLine.IsVertical())
+        //        return CheckOrientationAngleDomain((Math.PI * 0.5 - bhomOrientationAngle));
+        //    else
+        //        return CheckOrientationAngleDomain(-bhomOrientationAngle);
+        //}
+
+        ///***************************************************/
+
+        //public static double ToRevitOrientationAngleBeams(this double bhomOrientationAngle)
+        //{
+        //    return CheckOrientationAngleDomain(-bhomOrientationAngle);
+        //}
+
+        ///***************************************************/
+
+        //public static double CheckOrientationAngleDomain(double orientationAngle)
+        //{
+        //    //Fixes orientation angle excedening +- 2 PI
+        //    orientationAngle = orientationAngle % (2 * Math.PI);
+
+        //    //The above should be enough, but bue to some tolerance issues going into revit it can sometimes still give errors.
+        //    //The below is added as an extra saftey check
+        //    if (orientationAngle - BH.oM.Geometry.Tolerance.Angle < -Math.PI * 2)
+        //        return orientationAngle + Math.PI * 2;
+        //    else if (orientationAngle + BH.oM.Geometry.Tolerance.Angle > Math.PI * 2)
+        //        return orientationAngle - Math.PI * 2;
+
+        //    return orientationAngle;
+        //}
+
+        ///***************************************************/
     }
 }

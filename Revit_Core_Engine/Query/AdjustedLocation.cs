@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
@@ -35,8 +36,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static ICurve AdjustedFramingLocation(this FamilyInstance familyInstance, ICurve curve = null, bool inverse = false, RevitSettings settings = null)
+        public static ICurve AdjustedLocationFraming(this FamilyInstance familyInstance, ICurve curve = null, bool inverse = false, RevitSettings settings = null)
         {
+            settings = settings.DefaultIfNull();
+
             if (curve == null)
                 curve = (familyInstance.Location as LocationCurve)?.Curve?.IFromRevit();
 
@@ -80,8 +83,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static BH.oM.Geometry.Line AdjustedColumnLocation(this FamilyInstance familyInstance, BH.oM.Geometry.Line curve = null, bool inverse = false, RevitSettings settings = null)
+        public static BH.oM.Geometry.Line AdjustedLocationColumn(this FamilyInstance familyInstance, BH.oM.Geometry.Line curve = null, bool inverse = false, RevitSettings settings = null)
         {
+            settings = settings.DefaultIfNull();
+
             if (curve == null)
             {
                 if (familyInstance.IsSlantedColumn)
@@ -119,8 +124,7 @@ namespace BH.Revit.Engine.Core
                 }
 
                 Vector direction = curve.Direction();
-                curve.Start -= direction * startExtension;
-                curve.End += direction * endExtension;
+                curve = new oM.Geometry.Line { Start = curve.Start - direction * startExtension, End = curve.End + direction * endExtension };
             }
 
             if (curve.Length() <= settings.DistanceTolerance)
