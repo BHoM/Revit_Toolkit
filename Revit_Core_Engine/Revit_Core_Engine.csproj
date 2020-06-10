@@ -383,7 +383,6 @@
     <Compile Include="Query\ElementIds\ElementIdsOfViewTemplates.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByVisibleInView.cs" />
     <Compile Include="Query\EmptyMaterialFragment.cs" />
-    <Compile Include="Query\FramingElementLocation.cs" />
     <Compile Include="Query\FramingElementRotation.cs" />
     <Compile Include="Query\FramingElementProperty.cs" />
     <Compile Include="Query\GetValues.cs" />

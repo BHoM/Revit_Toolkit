@@ -106,10 +106,10 @@ namespace BH.Revit.Engine.Core
             oM.Physical.FramingProperties.ConstantFramingProperty barProperty = framingElement.Property as oM.Physical.FramingProperties.ConstantFramingProperty;
             if (barProperty != null)
             {
-                double orientationAngle = barProperty.OrientationAngle.ToRevitOrientationAngleColumn(framingElement.Location as oM.Geometry.Line);
-                Parameter parameter = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
-                if (parameter != null && !parameter.IsReadOnly)
-                    parameter.Set(orientationAngle);
+                //double orientationAngle = barProperty.OrientationAngle.ToRevitOrientationAngleColumn(framingElement.Location as oM.Geometry.Line);
+                //Parameter parameter = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+                //if (parameter != null && !parameter.IsReadOnly)
+                //    parameter.Set(orientationAngle);
 
                 //TODO: if the material does not get assigned an error should be thrown?
                 if (barProperty.Material != null)
@@ -208,10 +208,10 @@ namespace BH.Revit.Engine.Core
             oM.Physical.FramingProperties.ConstantFramingProperty barProperty = framingElement.Property as oM.Physical.FramingProperties.ConstantFramingProperty;
             if (barProperty != null)
             {
-                double orientationAngle = barProperty.OrientationAngle.ToRevitOrientationAngleBeams();
-                Parameter parameter = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
-                if (parameter != null && !parameter.IsReadOnly)
-                    parameter.Set(orientationAngle);
+                //double orientationAngle = barProperty.OrientationAngle.ToRevitOrientationAngleBeams();
+                //Parameter parameter = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+                //if (parameter != null && !parameter.IsReadOnly)
+                //    parameter.Set(orientationAngle);
 
                 //TODO: if the material does not get assigned an error should be thrown?
                 if (barProperty.Material != null)
@@ -238,44 +238,6 @@ namespace BH.Revit.Engine.Core
 
             refObjects.AddOrReplace(framingElement, familyInstance);
             return familyInstance;
-        }
-
-
-        /***************************************************/
-        /****              Private methods              ****/
-        /***************************************************/
-
-        private static double ToRevitOrientationAngleColumn(this double bhomOrientationAngle, BH.oM.Geometry.Line centreLine)
-        {
-            //For vertical columns orientation angles are following similar rules between Revit and BHoM but flipped 90 degrees.
-            if (centreLine.IsVertical())
-                return CheckOrientationAngleDomain((Math.PI * 0.5 - bhomOrientationAngle));
-            else
-                return CheckOrientationAngleDomain(-bhomOrientationAngle);
-        }
-
-        /***************************************************/
-
-        private static double ToRevitOrientationAngleBeams(this double bhomOrientationAngle)
-        {
-            return CheckOrientationAngleDomain(-bhomOrientationAngle);
-        }
-
-        /***************************************************/
-
-        private static double CheckOrientationAngleDomain(double orientationAngle)
-        {
-            //Fixes orientation angle excedening +- 2 PI
-            orientationAngle = orientationAngle % (2 * Math.PI);
-
-            //The above should be enough, but bue to some tolerance issues going into revit it can sometimes still give errors.
-            //The below is added as an extra saftey check
-            if (orientationAngle - BH.oM.Geometry.Tolerance.Angle < -Math.PI * 2)
-                return orientationAngle + Math.PI * 2;
-            else if (orientationAngle + BH.oM.Geometry.Tolerance.Angle > Math.PI * 2)
-                return orientationAngle - Math.PI * 2;
-
-            return orientationAngle;
         }
         
         /***************************************************/

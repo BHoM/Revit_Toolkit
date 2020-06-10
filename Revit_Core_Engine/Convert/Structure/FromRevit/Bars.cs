@@ -62,7 +62,7 @@ namespace BH.Revit.Engine.Core
             if (locationCurve != null)
                 familyInstance.AnalyticalPullWarning();
             else
-                locationCurve = familyInstance.AdjustedFramingLocation(null, false, settings);
+                locationCurve = familyInstance.AdjustedLocationFraming(null, false, settings);
 
             // Get bar material
             string materialGrade = familyInstance.MaterialGrade(settings);
@@ -112,6 +112,7 @@ namespace BH.Revit.Engine.Core
             bars = new List<Bar>();
             if (locationCurve != null)
             {
+                //TODO: check category of familyInstance to recognize which rotation query to use
                 double rotation = familyInstance.FramingElementRotation(settings);
                 foreach (BH.oM.Geometry.Line line in locationCurve.ICollapseToPolyline(Math.PI / 12).SubParts())
                 {

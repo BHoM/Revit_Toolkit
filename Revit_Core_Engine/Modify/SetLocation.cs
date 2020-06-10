@@ -30,6 +30,7 @@ using BH.oM.Physical.Elements;
 using BH.Engine.Geometry;
 using System;
 using System.Linq;
+using BH.oM.Physical.FramingProperties;
 
 namespace BH.Revit.Engine.Core
 {
@@ -67,7 +68,7 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            columnLine = ((FamilyInstance)element).AdjustedColumnLocation(columnLine, true, settings);
+            columnLine = ((FamilyInstance)element).AdjustedLocationColumn(columnLine, true, settings);
 
             if (columnLine.Start.Z >= columnLine.End.Z)
             {
@@ -121,8 +122,19 @@ namespace BH.Revit.Engine.Core
             if (!(typeof(IFramingElement).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.IntegerValue)))
                 return false;
 
-            ICurve transformedCurve = ((FamilyInstance)element).AdjustedFramingLocation(framingElement.Location, true, settings);
-            return element.SetLocation(transformedCurve, settings);
+            ConstantFramingProperty framingProperty = framingElement.Property as ConstantFramingProperty;
+            if (framingProperty == null)
+            {
+                //TODO warning and no rotation added
+            }
+
+            double rotation = element.AdjustedRotationFraming(framingProperty.OrientationAngle, true, settings);
+            bool updated = element.SetParameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, rotation);
+
+            ICurve transformedCurve = ((FamilyInstance)element).AdjustedLocationFraming(framingElement.Location, true, settings);
+            updated |= element.SetLocation(transformedCurve, settings);
+
+            return updated;
         }
 
         /***************************************************/
