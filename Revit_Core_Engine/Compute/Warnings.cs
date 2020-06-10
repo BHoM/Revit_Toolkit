@@ -501,7 +501,7 @@ namespace BH.Revit.Engine.Core
 
         internal static void NonLinearFramingOffsetWarning(this FamilyInstance familyInstance)
         {
-            string message = "Offset/justification of nonlinear framing is currently not supported. Revit justification and offset has been ignored.";
+            string message = "Handling of offset/justification is currently not supported for nonlinear framing. Revit justification and offset has been ignored.";
             if (familyInstance != null)
                 message += string.Format(" Revit ElementId: {0}", familyInstance.Id.IntegerValue);
 
