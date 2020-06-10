@@ -32,7 +32,7 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Geometry.TransformMatrix TransformFromRevit(this Transform transform)
+        public static oM.Geometry.TransformMatrix FromRevit(this Transform transform)
         {
             oM.Geometry.TransformMatrix transformMatrix = new oM.Geometry.TransformMatrix();
             transformMatrix.Matrix[0, 0] = transform.BasisX.X;

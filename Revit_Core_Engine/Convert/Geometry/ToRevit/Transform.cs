@@ -32,12 +32,12 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static Transform TransformToRevit(this oM.Geometry.TransformMatrix transformMatrix)
+        public static Transform ToRevit(this oM.Geometry.TransformMatrix transformMatrix)
         {
             XYZ translation = new XYZ(transformMatrix.Matrix[3, 0].FromSI(UnitType.UT_Length), transformMatrix.Matrix[3, 1].FromSI(UnitType.UT_Length), transformMatrix.Matrix[3, 2].FromSI(UnitType.UT_Length));
-            XYZ basisX = new XYZ(transformMatrix.Matrix[0, 0], transformMatrix.Matrix[0, 1], transformMatrix.Matrix[0, 2]);
-            XYZ basisY = new XYZ(transformMatrix.Matrix[1, 0], transformMatrix.Matrix[1, 1], transformMatrix.Matrix[1, 2]);
-            XYZ basisZ = new XYZ(transformMatrix.Matrix[2, 0], transformMatrix.Matrix[2, 1], transformMatrix.Matrix[2, 2]);
+            XYZ basisX = new XYZ(transformMatrix.Matrix[0, 0], transformMatrix.Matrix[1, 0], transformMatrix.Matrix[2, 0]);
+            XYZ basisY = new XYZ(transformMatrix.Matrix[0, 1], transformMatrix.Matrix[1, 1], transformMatrix.Matrix[2, 1]);
+            XYZ basisZ = new XYZ(transformMatrix.Matrix[0, 2], transformMatrix.Matrix[1, 2], transformMatrix.Matrix[2, 2]);
             Transform transform = Transform.CreateTranslation(translation);
             transform.set_Basis(0, basisX);
             transform.set_Basis(1, basisY);

@@ -25,6 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using BH.oM.Geometry.CoordinateSystem;
 using BH.oM.Reflection;
 using System;
 
@@ -70,7 +71,25 @@ namespace BH.Revit.Engine.Core
             double endOffsetLength = endOffset.Length();
             if (startOffsetLength > Tolerance.Distance || endOffsetLength > Tolerance.Distance)
             {
-                Transform transform = familyInstance.GetTotalTransform();
+                Transform transform;
+                if ((startOffset - endOffset).Length() <= settings.DistanceTolerance)
+                    transform = familyInstance.GetTotalTransform();
+                else
+                {
+                    double rotation;
+                    Transform revitTransform = familyInstance.GetTotalTransform();
+
+                    XYZ dir = line.Direction().ToRevit().Normalize();
+                    if (1 - Math.Abs(dir.DotProduct(XYZ.BasisZ)) <= settings.AngleTolerance)
+                        rotation = XYZ.BasisY.AngleOnPlaneTo(revitTransform.BasisY, dir);
+                    else
+                        rotation = XYZ.BasisZ.AngleOnPlaneTo(revitTransform.BasisZ, dir);
+
+                    rotation = rotation.CheckOrientationAngleDomain();
+                    //double rotation = familyInstance.AdjustedRotationFraming();
+                    transform = Cartesian.GlobalXYZ.OrientationMatrix(line.FramingCS(rotation, settings)).ToRevit();
+                }
+
                 Vector yOffsetStart = new Vector { X = transform.BasisY.X * startOffset.Y, Y = transform.BasisY.Y * startOffset.Y, Z = transform.BasisY.Z * startOffset.Y };
                 Vector zOffsetStart = new Vector { X = transform.BasisZ.X * startOffset.Z, Y = transform.BasisZ.Y * startOffset.Z, Z = transform.BasisZ.Z * startOffset.Z };
                 Vector yOffsetEnd = new Vector { X = transform.BasisY.X * endOffset.Y, Y = transform.BasisY.Y * endOffset.Y, Z = transform.BasisY.Z * endOffset.Y };
@@ -116,7 +135,6 @@ namespace BH.Revit.Engine.Core
 
             if (Math.Abs(startExtension) > settings.DistanceTolerance || Math.Abs(endExtension) > settings.DistanceTolerance)
             {
-
                 if (inverse)
                 {
                     startExtension *= -1;
@@ -343,6 +361,35 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        public static Cartesian FramingCS(this BH.oM.Geometry.Line curve, double rotation, RevitSettings settings)
+        {
+            Vector localX = curve.Direction();
+            Vector localY;
+            Vector localZ;
+
+            double dotProduct = localX.DotProduct(Vector.ZAxis);
+            if (1 - dotProduct <= settings.AngleTolerance)
+            {
+                localY = Vector.YAxis;
+                localZ = -Vector.XAxis;
+            }
+            else if (1 + dotProduct <= settings.AngleTolerance)
+            {
+                localY = -Vector.YAxis;
+                localZ = Vector.XAxis;
+            }
+            else
+            {
+                localY = Vector.ZAxis.CrossProduct(localX).Normalise();
+                localZ = localX.CrossProduct(localY);
+            }
+
+            localY = localY.Rotate(rotation, localX);
+            localZ = localZ.Rotate(rotation, localX);
+
+            return new Cartesian(curve.Start, localX, localY, localZ);
+        }
     }
 }
 
