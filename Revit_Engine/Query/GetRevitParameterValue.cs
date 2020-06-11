@@ -20,8 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
 using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,48 +29,38 @@ using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Attaches parameters to a BHoM object, which will be applied to a correspondent Revit element on Push.")]
+        [Description("Retrieves value of a parameter attached to a BHoM object. If a parameter with given name exists in both collections of pulled parameters and the ones to push, the latter is returned.")]
         [Input("bHoMObject", "BHoMObject to which the parameters will be attached.")]
-        [Input("names", "Names of the parameters to be attached.")]
-        [Input("values", "Values of the parameters to be attached.")]
-        [Output("bHoMObject")]
-        public static IBHoMObject SetRevitParameters(this IBHoMObject bHoMObject, List<string> names, List<object> values)
+        [Input("parameterName", "Name of the parameter to be sought for.")]
+        [Output("value")]
+        public static object GetRevitParameterValue(this BHoMObject bHoMObject, string parameterName)
         {
             if (bHoMObject == null)
                 return null;
-
-            if (names.Count != values.Count)
+            
+            RevitParametersToPush pushFragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
+            if (pushFragment?.Parameters != null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Number of input names needs to be equal to the number of input values. Parameters have not been set.");
-                return bHoMObject;
+                RevitParameter param = pushFragment.Parameters.FirstOrDefault(x => x.Name == parameterName);
+                if (param != null)
+                    return param.Value;
             }
 
-            IBHoMObject obj = bHoMObject.GetShallowClone();
-            obj.Fragments = new FragmentSet(bHoMObject.Fragments.Where(x => !(x is RevitParametersToPush)).ToList());
-
-            RevitParametersToPush fragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
-            if (fragment == null)
-                fragment = new RevitParametersToPush();
-
-            for (int i = 0; i < names.Count; i++)
+            RevitPulledParameters pullFragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
+            if (pullFragment?.Parameters != null)
             {
-                RevitParameter param = new RevitParameter { Name = names[i], Value = values[i] };
-
-                RevitParameter existingParam = fragment.Parameters.FirstOrDefault(x => x.Name == names[i]);
-                if (existingParam != null)
-                    fragment.Parameters[fragment.Parameters.IndexOf(existingParam)] = param;
-                else
-                    fragment.Parameters.Add(param);
+                RevitParameter param = pullFragment.Parameters.FirstOrDefault(x => x.Name == parameterName);
+                if (param != null)
+                    return param.Value;
             }
 
-            obj.Fragments.Add(fragment);
-            return obj;
+            return null;
         }
 
         /***************************************************/
