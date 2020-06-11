@@ -38,14 +38,14 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Retrieves parameters that are attached to a BHoM object. If a parameter with given name exists in both collections of pulled parameters and the ones to push, the latter is returned.")]
         [Input("bHoMObject", "BHoMObject to which the parameters will be attached.")]
-        [Output("bHoMObject")]
-        public static List<RevitParameter> GetRevitParameters(this BHoMObject bHoMObject)
+        [Output("revitParameters")]
+        public static List<RevitParameter> GetRevitParameters(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
                 return null;
 
-            RevitPulledParameters pullFragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
-            RevitParametersToPush pushFragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
+            RevitPulledParameters pullFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
+            RevitParametersToPush pushFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
 
             List<RevitParameter> result = new List<RevitParameter>();
             if (pullFragment?.Parameters != null)

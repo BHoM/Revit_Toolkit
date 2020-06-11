@@ -27,14 +27,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Parameters
 {
-    [Description("")]
+    [Description("An entity containing parameters attached to the BHoM object that will be set to a correspondent Revit element on push.")]
     public class RevitParametersToPush : BHoMObject, IRevitParameterFragment
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("")]
+        [Description("Collection of parameters to be pushed to a Revit element.")]
         public virtual IList<RevitParameter> Parameters { get; set; } = new List<RevitParameter>();
 
         /***************************************************/

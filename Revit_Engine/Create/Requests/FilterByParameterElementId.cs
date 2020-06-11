@@ -36,7 +36,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates an IRequest that filters elements by given parameter value criterion.")]
         [InputFromProperty("parameterName")]
-        [Input("bHoMObject", "BHoMObject that contains ElementId of a correspondent Revit element under Revit_elementId CustomData key - usually previously pulled from Revit.")]
+        [Input("bHoMObject", "BHoMObject that contains (in its RevitIdentifiers) an ElementId of a correspondent Revit element that has been previously pulled.")]
         [Output("F", "IRequest to be used to filter elements by given parameter value criterion.")]
         public static FilterByParameterElementId FilterByParameterElementId(string parameterName, IBHoMObject bHoMObject)
         {

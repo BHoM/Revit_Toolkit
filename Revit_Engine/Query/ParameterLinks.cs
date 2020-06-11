@@ -36,10 +36,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns ParameterLinks inside ParameterSettings for given type and property name (or CustomData key).")]
+        [Description("Returns ParameterLinks inside ParameterSettings for given type and property name (or RevitParameter).")]
         [Input("parameterSettings", "ParameterSettings to be queried.")]
         [Input("type", "Type to be sought for.")]
-        [Input("propertyName", "Name of the property (or CustomData key) to be sought for.")]
+        [Input("propertyName", "Name of the property (or RevitParameter) to be sought for.")]
         [Output("parameterLink")]
         public static IEnumerable<IParameterLink> ParameterLinks(this ParameterSettings parameterSettings, Type type, string propertyName)
         {
@@ -55,9 +55,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns ParameterLinks inside ParameterMap for given property name (or CustomData key).")]
+        [Description("Returns ParameterLinks inside ParameterMap for given property name (or RevitParameter).")]
         [Input("parameterMap", "ParameterMap to be queried.")]
-        [Input("propertyName", "Name of the property (or CustomData key) to be sought for.")]
+        [Input("propertyName", "Name of the property (or RevitParameter) to be sought for.")]
         [Output("parameterLink")]
         public static IEnumerable<IParameterLink> ParameterLinks(this ParameterMap parameterMap, string propertyName)
         {

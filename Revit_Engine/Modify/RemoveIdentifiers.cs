@@ -20,9 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -32,7 +34,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Removes Revit-related identifiers (CustomData keys such as Revit_id, Revit_elementId etc.) from BHoM object.")]
+        [Description("Removes Revit-related identifiers fragment from a BHoM object.")]
         [Input("bHoMObject", "BHoMObject to be cleaned.")]
         [Output("bHoMObject")]
         public static IBHoMObject RemoveIdentifiers(this IBHoMObject bHoMObject)
@@ -40,12 +42,17 @@ namespace BH.Engine.Adapters.Revit
             if (bHoMObject == null)
                 return null;
 
-            IBHoMObject obj = bHoMObject.GetShallowClone();
+            if (bHoMObject.Fragments == null)
+                return bHoMObject;
 
-            obj.CustomData.Remove(Convert.AdapterIdName);
-            obj.CustomData.Remove(Convert.ElementId);
-
-            return obj;
+            if (bHoMObject.Fragments.Any(x => x is RevitIdentifiers))
+            {
+                IBHoMObject obj = bHoMObject.GetShallowClone();
+                obj.Fragments = new FragmentSet(bHoMObject.Fragments.Where(x => !(x is RevitIdentifiers)).ToList());
+                return obj;
+            }
+            else
+                return bHoMObject;
         }
 
         /***************************************************/

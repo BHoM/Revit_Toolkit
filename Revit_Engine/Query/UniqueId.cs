@@ -19,7 +19,8 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-
+ 
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
@@ -31,26 +32,13 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
-
-        [Description("Returns UniqueId of Revit element correspondent to given BHoMObject. This value is stored in CustomData under key Revit_id.")]
+        
+        [Description("Returns UniqueId of Revit element correspondent to given BHoMObject. This value is stored in RevitIdentifiers fragment.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
         [Output("uniqueId")]
         public static string UniqueId(this IBHoMObject bHoMObject)
         {
-            if (bHoMObject == null)
-                return null;
-
-            object value = null;
-            if (bHoMObject.CustomData.TryGetValue(Convert.AdapterIdName, out value))
-            {
-                if (value is string)
-                    return (string)value;
-                else
-                    return null;
-            }
-
-            return null;
+            return bHoMObject?.GetRevitIdentifiers()?.UniqueId;
         }
 
         /***************************************************/

@@ -29,14 +29,14 @@ using System.Linq;
 
 namespace BH.oM.Adapters.Revit.Parameters
 {
-    [Description("")]
+    [Description("An entity containing parameters attached to the BHoM object on pull from Revit, when a Revit element was converted to that object.")]
     public class RevitPulledParameters : BHoMObject, IRevitParameterFragment, IImmutable
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("")]
+        [Description("Collection of parameters pulled from Revit.")]
         public virtual IList<RevitParameter> Parameters { get; }
 
 

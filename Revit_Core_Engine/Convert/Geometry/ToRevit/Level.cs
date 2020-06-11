@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             // Copy parameters from BHoM object to Revit element
-            revitLevel.CopyParameters(level, new BuiltInParameter[] { BuiltInParameter.DATUM_TEXT, BuiltInParameter.LEVEL_ELEV });
+            revitLevel.CopyParameters(level);
 
             refObjects.AddOrReplace(level, revitLevel);
             return revitLevel;

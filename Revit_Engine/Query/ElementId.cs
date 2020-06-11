@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
@@ -32,7 +33,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns integer representation of ElementId of Revit element correspondent to given BHoMObject. This value is stored in CustomData under key Revit_elementId.")]
+        [Description("Returns integer representation of ElementId of Revit element correspondent to given BHoMObject. This value is stored in RevitIdentifiers fragment.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
         [Output("elementId")]
         public static int ElementId(this IBHoMObject bHoMObject)
@@ -40,26 +41,11 @@ namespace BH.Engine.Adapters.Revit
             if (bHoMObject == null)
                 return -1;
 
-            object value = null;
-            if (bHoMObject.CustomData.TryGetValue(Convert.ElementId, out value))
-            {
-                if (value is string)
-                {
-                    int num = -1;
-                    if (int.TryParse((string)value, out num))
-                        return num;
-                }
-                else if (value is int)
-                {
-                    return (int)value;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-
-            return -1;
+            RevitIdentifiers identifiers = bHoMObject.GetRevitIdentifiers();
+            if (identifiers != null)
+                return identifiers.ElementId;
+            else
+                return -1;
         }
 
         /***************************************************/

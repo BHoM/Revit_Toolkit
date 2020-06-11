@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an object that contains the information about the relationship between type property names (or CustomData keys) and Revit parameter names.")]
+        [Description("Creates an object that contains the information about the relationship between object's property names (or names of RevitParameters attached to it) and Revit parameter names.")]
         [InputFromProperty("type")]
         [InputFromProperty("parameterLinks")]
         [Output("parameterMap")]

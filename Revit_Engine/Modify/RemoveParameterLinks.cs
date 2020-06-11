@@ -38,9 +38,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Removes links between Revit parameters and type properties (or CustomData keys) inside existing ParameterMap.")]
+        [Description("Removes links between Revit parameters and object's properties (or name of a RevitParameter attached to it) inside existing ParameterMap.")]
         [Input("parameterMap", "ParameterMap to be modified.")]
-        [Input("propertyNames", "Type property names (or CustomData keys), for which the ParameterLinks are meant to be removed.")]
+        [Input("propertyNames", "Names of type properties (or RevitParameters), for which the ParameterLinks are meant to be removed.")]
         [Output("parameterMap")]
         public static ParameterMap RemoveParameterLinks(this ParameterMap parameterMap, IEnumerable<string> propertyNames)
         {
@@ -57,10 +57,10 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Removes links between Revit parameters and type properties (or CustomData keys) inside existing ParameterSettings.")]
+        [Description("Removes links between Revit parameters and object's properties (or name of a RevitParameter attached to it) inside existing ParameterSettings.")]
         [Input("parameterSettings", "ParameterSettings to be modified.")]
         [Input("type", "Type related to ParameterMap meant to be modified.")]
-        [Input("propertyNames", "Type property names (or CustomData keys), for which the ParameterLinks are meant to be removed.")]
+        [Input("propertyNames", "Names of type properties (or RevitParameters), for which the ParameterLinks are meant to be removed.")]
         [Output("parameterSettings")]
         public static ParameterSettings RemoveParameterLinks(this ParameterSettings parameterSettings, Type type, IEnumerable<string> propertyNames)
         {
