@@ -126,6 +126,8 @@ namespace BH.Revit.Engine.Core
                         element.SetParameters(param.Name, param.Value);
                 }
             }
+
+            element.Document.Regenerate();
         }
 
         /***************************************************/

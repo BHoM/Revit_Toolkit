@@ -98,6 +98,7 @@ namespace BH.Revit.Engine.Core
             }
 
             familyInstance = document.Create.NewFamilyInstance(columnLine, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.Column);
+            document.Regenerate();
 
             familyInstance.CheckIfNullPush(framingElement);
             if (familyInstance == null)
@@ -200,6 +201,8 @@ namespace BH.Revit.Engine.Core
                 familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.Brace);
             else
                 familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.UnknownFraming);
+
+            document.Regenerate();
 
             familyInstance.CheckIfNullPush(framingElement);
             if (familyInstance == null)
