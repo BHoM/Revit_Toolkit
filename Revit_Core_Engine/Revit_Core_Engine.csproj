@@ -302,7 +302,7 @@
     <Compile Include="Modify\CopyParameters.cs" />
     <Compile Include="Modify\SetProperties.cs" />
     <Compile Include="Modify\SetTags.cs" />
-    <Compile Include="Modify\UpdateType.cs" />
+    <Compile Include="Modify\SetType.cs" />
     <Compile Include="Query\AdjustedLocationCurve.cs" />
     <Compile Include="Query\ColumnExtensions.cs" />
     <Compile Include="Query\FramingOffsetVectors.cs" />

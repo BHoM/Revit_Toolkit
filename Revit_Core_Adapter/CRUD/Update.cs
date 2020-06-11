@@ -22,6 +22,8 @@
 
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.Revit.Engine.Core;
@@ -34,13 +36,14 @@ namespace BH.Revit.Adapter.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static bool Update(Element element, IBHoMObject bHoMObject, RevitSettings settings)
+        public bool Update(Element element, IBHoMObject bHoMObject, RevitPushConfig pushConfig)
         {
+            RevitSettings settings = this.RevitSettings.DefaultIfNull();
             string tagsParameterName = settings.ParameterSettings.TagsParameter;
 
             try
             {
-                element.IUpdate(bHoMObject, settings);
+                element.IUpdate(bHoMObject, settings, pushConfig.SetLocationOnUpdate);
 
                 //Assign Tags
                 if (!string.IsNullOrEmpty(tagsParameterName))

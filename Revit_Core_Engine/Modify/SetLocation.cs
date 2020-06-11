@@ -144,13 +144,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static bool SetLocation(this Level level, BH.oM.Geometry.SettingOut.Level bHoMLevel, RevitSettings settings)
-        {
-            return  level.SetParameter(BuiltInParameter.LEVEL_ELEV, bHoMLevel.Elevation);
-        }
-
-        /***************************************************/
-
         public static bool SetLocation(this FamilyInstance element, IFramingElement framingElement, RevitSettings settings)
         {
             if (!(typeof(IFramingElement).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.IntegerValue)))
@@ -202,9 +195,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static bool SetLocation(this Element element, BH.oM.Geometry.SettingOut.Level level, RevitSettings settings)
+        public static bool SetLocation(this Level level, BH.oM.Geometry.SettingOut.Level bHoMLevel, RevitSettings settings)
         {
-            return true;
+            return level.SetParameter(BuiltInParameter.LEVEL_ELEV, bHoMLevel.Elevation);
         }
 
         /***************************************************/
