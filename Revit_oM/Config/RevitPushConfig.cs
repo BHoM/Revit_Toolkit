@@ -40,6 +40,9 @@ namespace BH.oM.Adapters.Revit
         [Description("Elements from closed worksets will be processed if true.")]
         public virtual bool IncludeClosedWorksets { get; set; } = false;
 
+        [Description("If false, only parameters of a Revit element will be updated.")]
+        public virtual bool SetLocationOnUpdate { get; set; } = true;
+
         /***************************************************/
     }
 }

@@ -36,9 +36,24 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("suppressFailureMessages")]
         [InputFromProperty("includeClosedWorksets")]
         [Output("revitPushConfig")]
+        public static RevitPushConfig RevitPushConfig(bool suppressFailureMessages = false, bool includeClosedWorksets = false, bool setLocationOnUpdate = true)
+        {
+            return new RevitPushConfig { SuppressFailureMessages = suppressFailureMessages, IncludeClosedWorksets = includeClosedWorksets, SetLocationOnUpdate = setLocationOnUpdate };
+        }
+
+
+        /***************************************************/
+        /****            Deprecated methods             ****/
+        /***************************************************/
+
+        [Deprecated("3.2", "Inputs of this methods have changed.")]
+        [Description("Creates a push action-specific configuration used for adapter interaction with Revit.")]
+        [InputFromProperty("suppressFailureMessages")]
+        [InputFromProperty("includeClosedWorksets")]
+        [Output("revitPushConfig")]
         public static RevitPushConfig RevitPushConfig(bool suppressFailureMessages = false, bool includeClosedWorksets = false)
         {
-            return new RevitPushConfig { SuppressFailureMessages = suppressFailureMessages, IncludeClosedWorksets = includeClosedWorksets };
+            return RevitPushConfig(suppressFailureMessages, includeClosedWorksets);
         }
 
         /***************************************************/

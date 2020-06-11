@@ -30,68 +30,10 @@ namespace BH.Revit.Engine.Core
     public static partial class Modify
     {
         /***************************************************/
-        /****               Public Methods              ****/
-        /***************************************************/
-
-        public static bool Update(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
-        {
-            bool isElement = new ElementIsElementTypeFilter(true).PassesFilter(element);
-            if (isElement)
-                element.IUpdateType(bHoMObject, settings);
-
-            element.CopyParameters(bHoMObject, settings);
-
-            if (!string.IsNullOrWhiteSpace(bHoMObject.Name) && element.Name != bHoMObject.Name)
-            {
-                try
-                {
-                    element.Name = bHoMObject.Name;
-                }
-                catch
-                {
-
-                }
-            }
-
-            if (isElement)
-                element.ISetLocation(bHoMObject, settings);
-
-            return true;
-        }
-
-
-        /***************************************************/
-        /****             Disallowed Types              ****/
-        /***************************************************/
-
-        public static bool Update(this Element element, oM.Structure.Elements.Bar bar, RevitSettings settings)
-        {
-            bar.ConvertBeforePushError(typeof(oM.Physical.Elements.IFramingElement));
-            return false;
-        }
-
-        /***************************************************/
-
-        public static bool Update(this Element element, oM.Structure.Elements.Panel panel, RevitSettings settings)
-        {
-            panel.ConvertBeforePushError(typeof(oM.Physical.Elements.ISurface));
-            return false;
-        }
-
-        /***************************************************/
-
-        public static bool Update(this Element element, oM.Environment.Elements.Panel panel, RevitSettings settings)
-        {
-            panel.ConvertBeforePushError(typeof(oM.Physical.Elements.ISurface));
-            return false;
-        }
-
-
-        /***************************************************/
         /****             Interface Methods             ****/
         /***************************************************/
 
-        public static bool IUpdate(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
+        public static bool IUpdate(this Element element, IBHoMObject bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
             if (element == null)
             {
@@ -111,9 +53,67 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            return Update(element as dynamic, bHoMObject as dynamic, settings);
+            return Update(element as dynamic, bHoMObject as dynamic, settings, setLocationOnUpdate);
         }
 
+
+        /***************************************************/
+        /****               Public Methods              ****/
+        /***************************************************/
+
+        public static bool Update(this Element element, IBHoMObject bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            bool isElement = new ElementIsElementTypeFilter(true).PassesFilter(element);
+            if (isElement)
+                element.ISetType(bHoMObject, settings);
+
+            element.CopyParameters(bHoMObject, settings);
+
+            if (!string.IsNullOrWhiteSpace(bHoMObject.Name) && element.Name != bHoMObject.Name)
+            {
+                try
+                {
+                    element.Name = bHoMObject.Name;
+                }
+                catch
+                {
+
+                }
+            }
+
+            if (setLocationOnUpdate && isElement)
+                element.ISetLocation(bHoMObject, settings);
+
+            return true;
+        }
+
+
+        /***************************************************/
+        /****             Disallowed Types              ****/
+        /***************************************************/
+
+        public static bool Update(this Element element, oM.Structure.Elements.Bar bar, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            bar.ConvertBeforePushError(typeof(oM.Physical.Elements.IFramingElement));
+            return false;
+        }
+
+        /***************************************************/
+
+        public static bool Update(this Element element, oM.Structure.Elements.Panel panel, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            panel.ConvertBeforePushError(typeof(oM.Physical.Elements.ISurface));
+            return false;
+        }
+
+        /***************************************************/
+
+        public static bool Update(this Element element, oM.Environment.Elements.Panel panel, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            panel.ConvertBeforePushError(typeof(oM.Physical.Elements.ISurface));
+            return false;
+        }
+        
         /***************************************************/
     }
 }

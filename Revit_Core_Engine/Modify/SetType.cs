@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Physical.Elements;
@@ -34,7 +35,7 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static bool UpdateType(this FamilyInstance element, IFramingElement bHoMObject, RevitSettings settings)
+        public static bool SetType(this FamilyInstance element, IFramingElement bHoMObject, RevitSettings settings)
         {
             FamilySymbol familySymbol = bHoMObject.Property.ToRevitFamilySymbol(BuiltInCategory.OST_StructuralFraming, element.Document, settings);
             if (familySymbol == null)
@@ -51,7 +52,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static bool UpdateType(this FamilyInstance element, Column bHoMObject, RevitSettings settings)
+        public static bool SetType(this FamilyInstance element, Column bHoMObject, RevitSettings settings)
         {
             FamilySymbol familySymbol = bHoMObject.Property.ToRevitFamilySymbol(BuiltInCategory.OST_StructuralColumns, element.Document, settings);
             if (familySymbol == null)
@@ -66,12 +67,44 @@ namespace BH.Revit.Engine.Core
             return element.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, familySymbol.Id);
         }
 
+        /***************************************************/
+
+        public static bool SetType(this HostObject element, ISurface bHoMObject, RevitSettings settings)
+        {
+            HostObjAttributes hostObjAttr = bHoMObject?.Construction.ToRevitHostObjAttributes(element.Document, settings);
+            if (hostObjAttr != null && hostObjAttr.Id.IntegerValue != element.GetTypeId().IntegerValue)
+                return element.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, hostObjAttr.Id);
+
+            return false;
+        }
+
+        /***************************************************/
+
+        public static bool SetType(this Element element, IInstance instance, RevitSettings settings)
+        {
+            BuiltInCategory builtInCategory = instance.Properties.BuiltInCategory(element.Document, settings.FamilyLoadSettings);
+            ElementType elementType = instance.Properties.ElementType(element.Document, builtInCategory, settings.FamilyLoadSettings);
+            if (elementType != null)
+            {
+                try
+                {
+                    return element.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, elementType.Id);
+                }
+                catch
+                {
+
+                }
+            }
+
+            return false;
+        }
+
 
         /***************************************************/
         /****              Fallback Methods             ****/
         /***************************************************/
 
-        public static bool UpdateType(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
+        public static bool SetType(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
             BH.Engine.Reflection.Compute.RecordWarning(String.Format("Element type has not been updated based on the BHoM object due to the lacking convert method. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, bHoMObject.BHoM_Guid));
             return false;
@@ -82,9 +115,9 @@ namespace BH.Revit.Engine.Core
         /****             Interface Methods             ****/
         /***************************************************/
 
-        public static bool IUpdateType(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
+        public static bool ISetType(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
-            return UpdateType(element as dynamic, bHoMObject as dynamic, settings);
+            return SetType(element as dynamic, bHoMObject as dynamic, settings);
         }
 
         /***************************************************/

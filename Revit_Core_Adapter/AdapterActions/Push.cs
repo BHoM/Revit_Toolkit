@@ -133,7 +133,7 @@ namespace BH.Revit.Adapter.Core
                     foreach (IBHoMObject obj in objectsToPush)
                     {
                         Element element = obj.Element(document);
-                        if (element != null && Update(element, obj, RevitSettings))
+                        if (element != null && Update(element, obj, pushConfig))
                             pushed.Add(obj);
                     }
                 }
