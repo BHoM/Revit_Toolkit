@@ -86,7 +86,7 @@ namespace BH.Revit.Engine.Core
             if (element.IsSlantedColumn)
             {
                 updated |= element.SetLocation(columnLine, settings);
-                Output<double, double> extensions = element.ColumnExtensions();
+                Output<double, double> extensions = element.ColumnExtensions(settings);
                 double startExtension = -extensions.Item1;
                 double endExtension = -extensions.Item2;
 
@@ -123,7 +123,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
             
-            double rotationDifference = element.AdjustedRotationColumn(settings) - ((ConstantFramingProperty)column.Property).OrientationAngle;
+            double rotationDifference = element.OrientationAngleColumn(settings) - ((ConstantFramingProperty)column.Property).OrientationAngle;
             if (Math.Abs(rotationDifference) > settings.AngleTolerance)
             {
                 double rotationParamValue = element.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
@@ -167,7 +167,7 @@ namespace BH.Revit.Engine.Core
             bool updated = element.SetLocation(framingElement.Location, settings);
             element.Document.Regenerate();
             
-            double rotationDifference = element.AdjustedRotationFraming(settings) - ((ConstantFramingProperty)framingElement.Property).OrientationAngle;
+            double rotationDifference = element.OrientationAngleFraming(settings) - ((ConstantFramingProperty)framingElement.Property).OrientationAngle;
             if (Math.Abs(rotationDifference) > settings.AngleTolerance)
             {
                 double newRotation = (element.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE) + rotationDifference).NormalizeAngleDomain(settings);
@@ -175,7 +175,7 @@ namespace BH.Revit.Engine.Core
                 element.Document.Regenerate();
             }
 
-            ICurve transformedCurve = framingElement.AdjustedLocationFraming((FamilyInstance)element, settings);
+            ICurve transformedCurve = framingElement.AdjustedLocationCurveFraming((FamilyInstance)element, settings);
             updated |= element.SetLocation(transformedCurve, settings);
 
             return updated;

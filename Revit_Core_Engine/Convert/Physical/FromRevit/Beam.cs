@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
             if (beam != null)
                 return beam;
 
-            oM.Geometry.ICurve locationCurve = familyInstance.AdjustedLocationFraming(settings);
+            oM.Geometry.ICurve locationCurve = familyInstance.LocationCurveFraming(settings);
             IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
             beam = BH.Engine.Physical.Create.Beam(locationCurve, property, familyInstance.Name);
 
