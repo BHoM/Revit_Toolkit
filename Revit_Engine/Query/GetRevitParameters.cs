@@ -20,8 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
 using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,48 +29,49 @@ using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Attaches parameters to a BHoM object, which will be applied to a correspondent Revit element on Push.")]
+
+        [Description("Retrieves parameters that are attached to a BHoM object. If a parameter with given name exists in both collections of pulled parameters and the ones to push, the latter is returned.")]
         [Input("bHoMObject", "BHoMObject to which the parameters will be attached.")]
-        [Input("names", "Names of the parameters to be attached.")]
-        [Input("values", "Values of the parameters to be attached.")]
         [Output("bHoMObject")]
-        public static IBHoMObject SetRevitParameters(this IBHoMObject bHoMObject, List<string> names, List<object> values)
+        public static List<RevitParameter> GetRevitParameters(this BHoMObject bHoMObject)
         {
             if (bHoMObject == null)
                 return null;
 
-            if (names.Count != values.Count)
+            RevitPulledParameters pullFragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
+            RevitParametersToPush pushFragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
+
+            List<RevitParameter> result = new List<RevitParameter>();
+            if (pullFragment?.Parameters != null)
+                result.AddRange(pullFragment.Parameters);
+
+            if (pushFragment?.Parameters != null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Number of input names needs to be equal to the number of input values. Parameters have not been set.");
-                return bHoMObject;
+                bool mixed = false;
+                foreach (RevitParameter param in pushFragment.Parameters)
+                {
+                    int index = result.FindIndex(x => x.Name == param.Name);
+                    if (index == -1)
+                        result.Add(param);
+                    else
+                    {
+                        mixed = true;
+                        result.RemoveAt(index);
+                        result.Add(param);
+                    }
+                }
+
+                if (mixed)
+                    BH.Engine.Reflection.Compute.RecordNote("Some of the parameters were retrieved from collection of pulled ones, some from the ones meant to be pushed.");
             }
 
-            IBHoMObject obj = bHoMObject.GetShallowClone();
-            obj.Fragments = new FragmentSet(bHoMObject.Fragments.Where(x => !(x is RevitParametersToPush)).ToList());
-
-            RevitParametersToPush fragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
-            if (fragment == null)
-                fragment = new RevitParametersToPush();
-
-            for (int i = 0; i < names.Count; i++)
-            {
-                RevitParameter param = new RevitParameter { Name = names[i], Value = values[i] };
-
-                RevitParameter existingParam = fragment.Parameters.FirstOrDefault(x => x.Name == names[i]);
-                if (existingParam != null)
-                    fragment.Parameters[fragment.Parameters.IndexOf(existingParam)] = param;
-                else
-                    fragment.Parameters.Add(param);
-            }
-
-            obj.Fragments.Add(fragment);
-            return obj;
+            return result;
         }
 
         /***************************************************/

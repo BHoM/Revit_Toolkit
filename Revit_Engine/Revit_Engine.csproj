@@ -158,6 +158,8 @@
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Query\DefaultParameterSettings.cs" />
     <Compile Include="Query\FamilyPlacementTypeName.cs" />
+    <Compile Include="Query\GetRevitParameters.cs" />
+    <Compile Include="Query\GetRevitParameterValue.cs" />
     <Compile Include="Query\InnerPolyCurves.cs" />
     <Compile Include="Query\Family.cs" />
     <Compile Include="Query\ParameterLinks.cs" />
