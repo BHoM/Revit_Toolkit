@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an entity defining the relationship between property name of a type (or CustomData key) and sets of their correspondent Revit element parameter names.")]
+        [Description("Creates an entity defining the relationship between property name of an object (or name of a RevitParameter attached to it) and sets of their correspondent Revit element parameter names.")]
         [InputFromProperty("propertyName")]
         [InputFromProperty("parameterNames")]
         [Output("parameterLink")]
@@ -46,7 +46,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Creates an entity defining the relationship between property name of a type (or CustomData key) and sets of their correspondent Revit element type parameter names.")]
+        [Description("Creates an entity defining the relationship between property name of an object (or name of a RevitParameter attached to it) and sets of their correspondent Revit element type parameter names.")]
         [InputFromProperty("propertyName")]
         [InputFromProperty("parameterNames")]
         [Output("parameterLink")]
@@ -57,8 +57,8 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Creates a collection of entities defining the relationship between property names of a BHoM type (or CustomData keys) and sets of their correspondent Revit parameter names. If parameter name starts with prefix 'Type:', parameter will be sought for in element's type.")]
-        [InputFromProperty("Name of the property (or CustomData key) to be linked with Revit parameters.")]
+        [Description("Creates a collection of entities defining the relationship between property name of an object (or name of a RevitParameter attached to it) and sets of their correspondent Revit parameter names. If parameter name starts with prefix 'Type:', parameter will be sought for in element's type.")]
+        [InputFromProperty("Name of the property (or RevitParameter) to be linked with Revit parameters.")]
         [InputFromProperty("A collecation of Revit parameter names to be linked with a given type property. If parameter name starts with prefix 'Type:', parameter will be sought for in element's type (ElementTypeParameterLink will be created).")]
         [Output("parameterLinks")]
         public static IEnumerable<IParameterLink> ParameterLinks(string propertyName, IEnumerable<string> parameterNames)

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,43 +20,33 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Analysis;
+using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
+using System.Linq;
 
-namespace BH.Revit.Engine.Core
+namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Deprecated("3.2", "BH.UI.Revit.Engine.Modify.AddSpaceId is not used any more.")]
-        public static oM.Environment.Elements.Panel AddSpaceId(this oM.Environment.Elements.Panel panel, EnergyAnalysisSurface energyAnalysisSurface)
+
+        [Description("Retrieves identifiers of the Revit element correspondent to a BHoM object.")]
+        [Input("bHoMObject", "BHoMObject to be queried for identifiers of correspondent Revit element.")]
+        [Output("revitIdentifiers")]
+        public static RevitIdentifiers GetRevitIdentifiers(this IBHoMObject bHoMObject)
         {
-            if (panel == null)
+            if (bHoMObject == null)
                 return null;
 
-            oM.Environment.Elements.Panel returnPanel = panel.GetShallowClone() as oM.Environment.Elements.Panel;
-            returnPanel.CustomData.Add("SpaceID", -1);
-
-            if (energyAnalysisSurface == null)
-                return returnPanel;
-
-            EnergyAnalysisSpace energyAnalysisSpace = energyAnalysisSurface.GetAnalyticalSpace();
-            if (energyAnalysisSpace == null)
-                return returnPanel;
-
-            SpatialElement spatialElement = Query.Element(energyAnalysisSpace.Document, energyAnalysisSpace.CADObjectUniqueId) as SpatialElement;
-            if (spatialElement == null)
-                return returnPanel;
-
-            returnPanel.CustomData["SpaceID"] = spatialElement.Id.IntegerValue;
-
-            return returnPanel;
+            return bHoMObject.Fragments?.FirstOrDefault(x => x is RevitIdentifiers) as RevitIdentifiers;
         }
 
         /***************************************************/
     }
 }
+

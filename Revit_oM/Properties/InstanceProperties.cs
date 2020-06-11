@@ -25,7 +25,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Properties
 {
-    [Description("A generic wrapper BHoM type corresponding to any Revit family type. Name of InstanceProperties corresponds to family type name, type parameter values are stored in CustomData under corresponding keys.")]
+    [Description("A generic wrapper BHoM type corresponding to any Revit family type. Name of InstanceProperties corresponds to family type name, type parameter values are stored in RevitParametersToPush.")]
     public class InstanceProperties : BHoMObject
     {
         /***************************************************/

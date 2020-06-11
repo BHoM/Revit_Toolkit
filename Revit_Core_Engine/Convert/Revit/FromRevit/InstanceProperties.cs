@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Adapter.Revit;
+using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static InstanceProperties InstancePropertiesFromRevit(this Autodesk.Revit.DB.ElementType elementType, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static InstanceProperties InstancePropertiesFromRevit(this ElementType elementType, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
@@ -49,8 +49,6 @@ namespace BH.Revit.Engine.Core
             instanceProperties.SetIdentifiers(elementType);
             instanceProperties.CopyParameters(elementType, settings.ParameterSettings);
             instanceProperties.SetProperties(elementType, settings.ParameterSettings);
-            instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyName] = elementType.FamilyName;
-            instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.FamilyTypeName] = elementType.Name;
             
             refObjects.AddOrReplace(elementType.Id, instanceProperties);
             return instanceProperties;
@@ -58,7 +56,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static InstanceProperties InstancePropertiesFromRevit(this Autodesk.Revit.DB.GraphicsStyle graphicStyle, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static InstanceProperties InstancePropertiesFromRevit(this GraphicsStyle graphicStyle, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
@@ -73,7 +71,6 @@ namespace BH.Revit.Engine.Core
             instanceProperties.SetIdentifiers(graphicStyle);
             instanceProperties.CopyParameters(graphicStyle, settings.ParameterSettings);
             instanceProperties.SetProperties(graphicStyle, settings.ParameterSettings);
-            instanceProperties.CustomData[BH.Engine.Adapters.Revit.Convert.CategoryName] = graphicStyle.GraphicsStyleCategory.Parent.Name;
             
             refObjects.AddOrReplace(graphicStyle.Id, instanceProperties);
             return instanceProperties;

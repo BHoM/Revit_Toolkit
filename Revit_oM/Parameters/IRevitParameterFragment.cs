@@ -27,14 +27,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Parameters
 {
-    [Description("")]
+    [Description("Interface for all fragments that carry information about Revit parameters that have been pulled or are meant to be pushed.")]
     public interface IRevitParameterFragment : IFragment
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("")]
+        [Description("Collection of parameters pulled from or meant to be pushed to Revit.")]
         IList<RevitParameter> Parameters { get; }
 
         /***************************************************/

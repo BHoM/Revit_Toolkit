@@ -23,7 +23,6 @@
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
@@ -39,12 +38,12 @@ namespace BH.Engine.Adapters.Revit
         [Input("bHoMObject", "BHoMObject to which the parameters will be attached.")]
         [Input("parameterName", "Name of the parameter to be sought for.")]
         [Output("value")]
-        public static object GetRevitParameterValue(this BHoMObject bHoMObject, string parameterName)
+        public static object GetRevitParameterValue(this IBHoMObject bHoMObject, string parameterName)
         {
             if (bHoMObject == null)
                 return null;
             
-            RevitParametersToPush pushFragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
+            RevitParametersToPush pushFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
             if (pushFragment?.Parameters != null)
             {
                 RevitParameter param = pushFragment.Parameters.FirstOrDefault(x => x.Name == parameterName);
@@ -52,7 +51,7 @@ namespace BH.Engine.Adapters.Revit
                     return param.Value;
             }
 
-            RevitPulledParameters pullFragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
+            RevitPulledParameters pullFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
             if (pullFragment?.Parameters != null)
             {
                 RevitParameter param = pullFragment.Parameters.FirstOrDefault(x => x.Name == parameterName);

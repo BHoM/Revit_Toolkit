@@ -27,40 +27,44 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Parameters
 {
-    [Description("")]
+    [Description("An entity containing identifiers of Revit element correspondent to the BHoM object that carries it.")]
     public class RevitIdentifiers : BHoMObject, IFragment, IImmutable
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("")]
+        [Description("UniqueId of the Revit element correspondent to the BHoM object that owns this.")]
         public virtual string UniqueId { get; } = "";
 
-        [Description("")]
+        [Description("ElementId of the Revit element correspondent to the BHoM object that owns this.")]
         public virtual int ElementId { get; } = -1;
 
-        [Description("")]
+        [Description("Category of the Revit element correspondent to the BHoM object that owns this.")]
         public virtual string CategoryName { get; } = "";
 
-        [Description("")]
+        [Description("Family of the Revit element correspondent to the BHoM object that owns this.")]
         public virtual string FamilyName { get; } = "";
 
-        [Description("")]
+        [Description("Family type of the Revit element correspondent to the BHoM object that owns this.")]
         public virtual string FamilyTypeName { get; } = "";
-        
+
+        [Description("ElementId of family type of the Revit element correspondent to the BHoM object that owns this.")]
+        public virtual int FamilyTypeId { get; } = -1;
+
 
         /***************************************************/
         /****            Public Constructors            ****/
         /***************************************************/
 
-        public RevitIdentifiers(string uniqueId = "", int elementId = -1, string categoryName = "", string familyName = "", string familyTypeName = "")
+        public RevitIdentifiers(string uniqueId = "", int elementId = -1, string categoryName = "", string familyName = "", string familyTypeName = "", int familyTypeId = -1)
         {
             UniqueId = uniqueId;
             ElementId = elementId;
             CategoryName = categoryName;
             FamilyName = familyName;
             FamilyTypeName = familyTypeName;
+            FamilyTypeId = familyTypeId;
         }
 
         /***************************************************/

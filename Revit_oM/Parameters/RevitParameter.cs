@@ -27,17 +27,17 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Parameters
 {
-    [Description("")]
+    [Description("A BHoM wrapper class for a Revit parameter.")]
     public class RevitParameter : IObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("")]
+        [Description("Name of the Revit parameter as seen in the UI.")]
         public virtual string Name { get; set; } = "";
 
-        [Description("")]
+        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
         public virtual object Value { get; set; } = null;
 
         /***************************************************/

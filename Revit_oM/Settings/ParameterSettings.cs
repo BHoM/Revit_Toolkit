@@ -27,14 +27,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Settings
 {
-    [Description("An entity holding information about conversion-specific Revit parameter names as well as relationships between type property names (or CustomData keys) and Revit parameter names.")]
+    [Description("An entity holding information about conversion-specific Revit parameter names as well as relationships between object property names (or names of RevitParameters attached to it) and Revit parameter names.")]
     public class ParameterSettings : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("A collection of entities defining relationships between property names of BHoM types (or CustomData keys) and parameter names of correspondent Revit elements.")]
+        [Description("A collection of entities defining relationships between property names of BHoM types (or RevitParameters) and parameter names of correspondent Revit elements.")]
         public virtual List<ParameterMap> ParameterMaps { get; set; } = new List<ParameterMap>();
 
         [Description("Name of the Revit parameter to be used as a source (on Pull) and target (on Push) of information for BHoM tags.")]

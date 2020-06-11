@@ -32,24 +32,12 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets the name of Revit family correspondent to given BHoMObject. This value is stored in CustomData under key Revit_familyName.")]
+        [Description("Gets the name of Revit family correspondent to given BHoMObject. This value is stored in  RevitIdentifiers fragment.")]
         [Input("bHoMObject", "BHoMObject")]
         [Output("familyName")]
         public static string FamilyName(this IBHoMObject bHoMObject)
         {
-            if (bHoMObject == null)
-                return null;
-
-            object value = null;
-            if (bHoMObject.CustomData.TryGetValue(Convert.FamilyName, out value))
-            {
-                if (value == null)
-                    return null;
-
-                return value.ToString();
-            }
-
-            return null;
+            return bHoMObject?.GetRevitIdentifiers()?.FamilyName;
         }
 
         /***************************************************/

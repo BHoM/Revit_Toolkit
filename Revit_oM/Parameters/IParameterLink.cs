@@ -27,14 +27,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Parameters
 {
-    [Description("An interface for classes defining the relationship between property names of a type (or CustomData keys) and sets of their correspondent Revit parameter names.")]
+    [Description("An interface for classes defining the relationship between property names of an object (or names of RevitParameters attached to it) and sets of their correspondent Revit parameter names.")]
     public interface IParameterLink : IBHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Name of the property (or CustomData key) to be linked with Revit parameters.")]
+        [Description("Name of the property (or RevitParameter) to be linked with Revit parameters.")]
         string PropertyName { get; set; }
 
         [Description("A collecation of Revit parameter names to be linked with the type property.")]

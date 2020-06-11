@@ -99,7 +99,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             // Copy parameters from BHoM object to Revit element
-            revitFloor.CopyParameters(floor, new BuiltInParameter[] { BuiltInParameter.LEVEL_PARAM });
+            revitFloor.CopyParameters(floor, settings);
 
             refObjects.AddOrReplace(floor, revitFloor);
             return revitFloor;

@@ -306,13 +306,13 @@
     <Compile Include="Query\AdjustedLocationCurve.cs" />
     <Compile Include="Query\ColumnExtensions.cs" />
     <Compile Include="Query\FramingOffsetVectors.cs" />
+    <Compile Include="Query\Identifiers.cs" />
     <Compile Include="Query\ParameterLink.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByExclusion.cs" />
     <Compile Include="Query\LocationCurve.cs" />
     <Compile Include="Query\Workset.cs" />
     <Compile Include="Create\CurveArray.cs" />
     <Compile Include="Create\Options.cs" />
-    <Compile Include="Modify\AddAdjacentSpaceId.cs" />
     <Compile Include="Compute\LoadFamily.cs" />
     <Compile Include="Modify\AddOrReplace.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Ceilings.cs" />
@@ -343,7 +343,6 @@
     <Compile Include="Convert\ToRevit.cs" />
     <Compile Include="Convert\ToSI.cs" />
     <Compile Include="Convert\FromSI.cs" />
-    <Compile Include="Modify\AddSpaceId.cs" />
     <Compile Include="Modify\RemoveEmptyPanelIds.cs" />
     <Compile Include="Modify\RemoveGridSegmentIds.cs" />
     <Compile Include="Modify\RemoveNonStructuralFraming.cs" />
