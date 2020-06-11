@@ -297,15 +297,18 @@
     <Compile Include="Convert\Revit\ToRevit\Family.cs" />
     <Compile Include="Convert\Revit\ToRevit\CurveElement.cs" />
     <Compile Include="Convert\Structure\FromRevit\Bars.cs" />
+    <Compile Include="Modify\NormalizeAngleDomain.cs" />
     <Compile Include="Modify\RemoveDuplicateAnalyticalElements.cs" />
     <Compile Include="Modify\CopyParameters.cs" />
     <Compile Include="Modify\SetProperties.cs" />
     <Compile Include="Modify\SetTags.cs" />
     <Compile Include="Modify\UpdateType.cs" />
+    <Compile Include="Query\AdjustedLocationCurve.cs" />
+    <Compile Include="Query\ColumnExtensions.cs" />
     <Compile Include="Query\FramingOffsetVectors.cs" />
     <Compile Include="Query\ParameterLink.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByExclusion.cs" />
-    <Compile Include="Query\AdjustedLocation.cs" />
+    <Compile Include="Query\LocationCurve.cs" />
     <Compile Include="Query\Workset.cs" />
     <Compile Include="Create\CurveArray.cs" />
     <Compile Include="Create\Options.cs" />
@@ -384,7 +387,7 @@
     <Compile Include="Query\ElementIds\ElementIdsOfViewTemplates.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByVisibleInView.cs" />
     <Compile Include="Query\EmptyMaterialFragment.cs" />
-    <Compile Include="Query\FramingElementRotation.cs" />
+    <Compile Include="Query\OrientationAngle.cs" />
     <Compile Include="Query\FramingElementProperty.cs" />
     <Compile Include="Query\GetValues.cs" />
     <Compile Include="Query\InstanceType.cs" />
@@ -426,7 +429,6 @@
     <Compile Include="Query\PolyCurve.cs" />
     <Compile Include="Query\StructuralMaterialType.cs" />
     <Compile Include="Query\NextLevel.cs" />
-    <Compile Include="Query\Location.cs" />
     <Compile Include="Query\IsSimilar.cs" />
     <Compile Include="Query\OpenWorksetIds.cs" />
     <Compile Include="Compute\LoadFamilySymbol.cs" />

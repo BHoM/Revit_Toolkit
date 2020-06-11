@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,27 +20,27 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
+using System;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Modify
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        public static ICurve Location(this Wall wall, RevitSettings settings = null)
+        public static double NormalizeAngleDomain(this double orientationAngle, RevitSettings settings)
         {
-            if (wall == null)
-                return null;
+            orientationAngle = orientationAngle % (2 * Math.PI);
 
-            settings = settings.DefaultIfNull();
+            if (orientationAngle < -Math.PI)
+                orientationAngle += Math.PI * 2;
+            else if (orientationAngle > Math.PI)
+                orientationAngle -= Math.PI * 2;
 
-            return (wall.Location as LocationCurve).FromRevit();
+            return orientationAngle;
         }
 
         /***************************************************/

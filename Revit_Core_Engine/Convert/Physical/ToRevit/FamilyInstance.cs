@@ -107,11 +107,6 @@ namespace BH.Revit.Engine.Core
             oM.Physical.FramingProperties.ConstantFramingProperty barProperty = framingElement.Property as oM.Physical.FramingProperties.ConstantFramingProperty;
             if (barProperty != null)
             {
-                //double orientationAngle = barProperty.OrientationAngle.ToRevitOrientationAngleColumn(framingElement.Location as oM.Geometry.Line);
-                //Parameter parameter = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
-                //if (parameter != null && !parameter.IsReadOnly)
-                //    parameter.Set(orientationAngle);
-
                 //TODO: if the material does not get assigned an error should be thrown?
                 if (barProperty.Material != null)
                 {
@@ -211,11 +206,6 @@ namespace BH.Revit.Engine.Core
             oM.Physical.FramingProperties.ConstantFramingProperty barProperty = framingElement.Property as oM.Physical.FramingProperties.ConstantFramingProperty;
             if (barProperty != null)
             {
-                //double orientationAngle = barProperty.OrientationAngle.ToRevitOrientationAngleBeams();
-                //Parameter parameter = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
-                //if (parameter != null && !parameter.IsReadOnly)
-                //    parameter.Set(orientationAngle);
-
                 //TODO: if the material does not get assigned an error should be thrown?
                 if (barProperty.Material != null)
                 {

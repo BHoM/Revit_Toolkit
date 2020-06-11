@@ -24,9 +24,7 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
-using BH.oM.Physical.FramingProperties;
 using System;
 using System.Linq;
 
@@ -38,22 +36,22 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static double AdjustedRotation(this FamilyInstance familyInstance, RevitSettings settings = null)
+        public static double OrientationAngle(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
             double rotation = double.NaN;
 
             if (typeof(Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                rotation = familyInstance.AdjustedRotationColumn(settings);
+                rotation = familyInstance.OrientationAngleColumn(settings);
             else if (typeof(IFramingElement).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                rotation = familyInstance.AdjustedRotationFraming(settings);
+                rotation = familyInstance.OrientationAngleFraming(settings);
 
             return rotation;
         }
         
         /***************************************************/
 
-        public static double AdjustedRotationColumn(this FamilyInstance familyInstance, RevitSettings settings)
+        public static double OrientationAngleColumn(this FamilyInstance familyInstance, RevitSettings settings)
         {
             double rotation = double.NaN;
             Location location = familyInstance.Location;
@@ -62,7 +60,6 @@ namespace BH.Revit.Engine.Core
                 rotation = Math.PI * 0.5 + (location as LocationPoint).Rotation;
             else if (location is LocationCurve)
             {
-                //TODO: is it possible to create a fully horizontal slanted column??
                 BH.oM.Geometry.ICurve locationCurve = (location as LocationCurve).Curve.IFromRevit();
                 Transform transform = familyInstance.GetTotalTransform();
                 if ((locationCurve as BH.oM.Geometry.Line).IsVertical())
@@ -76,7 +73,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         
-        public static double AdjustedRotationFraming(this FamilyInstance familyInstance, RevitSettings settings = null)
+        public static double OrientationAngleFraming(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             double rotation;
             Curve locationCurve = ((LocationCurve)familyInstance.Location).Curve;
@@ -102,22 +99,7 @@ namespace BH.Revit.Engine.Core
 
             return rotation.NormalizeAngleDomain(settings);
         }
-
-        /***************************************************/
-
-        //TODO: move this over
-        public static double NormalizeAngleDomain(this double orientationAngle, RevitSettings settings)
-        {
-            orientationAngle = orientationAngle % (2 * Math.PI);
-
-            if (orientationAngle < -Math.PI)
-                orientationAngle += Math.PI * 2;
-            else if (orientationAngle > Math.PI)
-                orientationAngle -= Math.PI * 2;
-
-            return orientationAngle;
-        }
-
+        
         /***************************************************/
     }
 }

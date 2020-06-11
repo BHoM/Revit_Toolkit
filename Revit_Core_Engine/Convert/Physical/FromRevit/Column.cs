@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
             if (column != null)
                 return column;
 
-            oM.Geometry.ICurve locationCurve = familyInstance.AdjustedLocationColumn(settings);
+            oM.Geometry.ICurve locationCurve = familyInstance.LocationCurveColumn(settings);
             IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
             column = BH.Engine.Physical.Create.Column(locationCurve, property, familyInstance.Name);
 
