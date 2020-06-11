@@ -24,7 +24,11 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Geometry;
+using BH.oM.Physical.Elements;
+using BH.oM.Physical.FramingProperties;
 using System;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -64,7 +68,7 @@ namespace BH.Revit.Engine.Core
                 }
                 else
                 {
-                    if (IsVerticalNonLinearCurve((location as LocationCurve).Curve))
+                    if (IsVerticalNonLinearCurve((location as LocationCurve).Curve, settings))
                         rotation = Math.PI * 0.5 - familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
                     else
                         rotation = -familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
@@ -79,40 +83,101 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static double AdjustedRotationFraming(this FamilyInstance familyInstance, double bhomRotation = double.NaN, bool inverse = false, RevitSettings settings = null)
+        //public static double AdjustedRotationFraming(this FamilyInstance familyInstance, IFramingElement framingElement, bool local, RevitSettings settings = null)
+        //{
+        //    settings = settings.DefaultIfNull();
+
+        //    double rotation;
+        //    //Curve location = ((LocationCurve)familyInstance.Location).Curve;
+
+        //    //TODO: global rotation as a separate method?
+
+        //    BH.oM.Geometry.ICurve locationCurve = framingElement?.Location;
+        //    if (locationCurve == null)
+        //        locationCurve = ((LocationCurve)familyInstance.Location).Curve.IFromRevit();
+
+        //    if (locationCurve is BH.oM.Geometry.Line)
+        //    {
+        //        Transform transform = familyInstance.GetTotalTransform();
+        //        XYZ axis;
+        //        if (local)
+        //            axis = transform.BasisX;
+        //        else
+        //            axis = ((BH.oM.Geometry.Line)locationCurve).Direction().ToRevit().Normalize();
+
+        //        if (1 - Math.Abs(axis.DotProduct(XYZ.BasisZ)) <= settings.AngleTolerance)
+        //            rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisY, axis);
+        //        else
+        //            rotation = XYZ.BasisZ.AngleOnPlaneTo(transform.BasisZ, axis);
+
+        //        if (framingElement?.Property as ConstantFramingProperty != null)
+        //            rotation = familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE) - ((ConstantFramingProperty)framingElement.Property).OrientationAngle + rotation;
+        //    }
+        //    else
+        //    {
+        //        if (locationCurve.IsVerticalNonLinearCurve(settings))
+        //            rotation = Math.PI * 0.5 - familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+        //        else
+        //            rotation = -familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+
+        //        if (framingElement?.Property as ConstantFramingProperty != null)
+        //            rotation = familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE) - ((ConstantFramingProperty)framingElement.Property).OrientationAngle + rotation;
+
+        //        if (familyInstance.Mirrored)
+        //            rotation *= -1;
+        //    }
+
+        //    return rotation.NormalizeAngleDomain();
+        //}
+
+        /***************************************************/
+
+        //TODO: THIS WILL NEED TO BE MADE PRIVATE AND MANAGED BY A DISPATCHER FOR ANALYTICALS!
+        public static double AdjustedRotation(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
 
             double rotation;
-            Curve location = ((LocationCurve)familyInstance.Location).Curve;
+            Curve locationCurve = ((LocationCurve)familyInstance.Location).Curve;
 
-            BH.oM.Geometry.ICurve locationCurve = location.IFromRevit();
-            if (locationCurve is BH.oM.Geometry.Line)
+            if (locationCurve is Autodesk.Revit.DB.Line)
             {
                 Transform transform = familyInstance.GetTotalTransform();
                 if (1 - Math.Abs(transform.BasisX.DotProduct(XYZ.BasisZ)) <= settings.AngleTolerance)
                     rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisY, transform.BasisX);
                 else
                     rotation = XYZ.BasisZ.AngleOnPlaneTo(transform.BasisZ, transform.BasisX);
-                
-                if (inverse && !double.IsNaN(bhomRotation))
-                    rotation = familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE) - bhomRotation + rotation;
             }
             else
             {
-                if (location.IsVerticalNonLinearCurve())
+                if (locationCurve.IsVerticalNonLinearCurve(settings))
                     rotation = Math.PI * 0.5 - familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
                 else
                     rotation = -familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
-                
-                if (inverse && !double.IsNaN(bhomRotation))
-                    rotation = familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE) - bhomRotation + rotation;
 
                 if (familyInstance.Mirrored)
                     rotation *= -1;
             }
 
-            return rotation.CheckOrientationAngleDomain();
+            return rotation.NormalizeAngleDomain();
+        }
+
+        public static double AdjustedRotation(this IFramingElement framingElement, FamilyInstance familyInstance, RevitSettings settings = null)
+        {
+            double rotation = familyInstance.AdjustedRotation(settings);
+            rotation = familyInstance.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE) - ((ConstantFramingProperty)framingElement.Property).OrientationAngle + rotation;
+            return rotation.NormalizeAngleDomain();
+        }
+
+        /***************************************************/
+
+        private static bool IsVerticalNonLinearCurve(this ICurve curve, RevitSettings settings)
+        {
+            BH.oM.Geometry.Plane plane = curve.IFitPlane();
+            if (plane == null)
+                return false;
+
+            return Math.Abs(plane.Normal.DotProduct(Vector.ZAxis)) <= settings.AngleTolerance;
         }
 
 
@@ -138,7 +203,7 @@ namespace BH.Revit.Engine.Core
 
         ///***************************************************/
 
-        private static double CheckOrientationAngleDomain(this double orientationAngle)
+        private static double NormalizeAngleDomain(this double orientationAngle)
         {
             orientationAngle = orientationAngle % (2 * Math.PI);
 

@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
                 familyInstance.Symbol.NotConvertedWarning();
 
             //TODO: check category of familyInstance to recognize which rotation query to use
-            double rotation = familyInstance.AdjustedRotationFraming(double.NaN, false, settings);
+            double rotation = familyInstance.AdjustedRotation(settings);
             
             return BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, familyInstance.Symbol.Name);
         }

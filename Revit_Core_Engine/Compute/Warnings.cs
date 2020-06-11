@@ -201,10 +201,22 @@ namespace BH.Revit.Engine.Core
 
         internal static void FramingCurveNotFoundWarning(this FamilyInstance framing)
         {
-            string message = "Driving curve of a framing element could not be retrieved.";
+            string message = "Driving curve of a Revit framing element could not be retrieved.";
 
             if (framing != null)
-                message = string.Format("{0} Element Id: {1}", message, framing.Id.IntegerValue);
+                message = string.Format("{0} ElementId: {1}", message, framing.Id.IntegerValue);
+
+            BH.Engine.Reflection.Compute.RecordWarning(message);
+        }
+
+        /***************************************************/
+
+        internal static void FramingCurveNotFoundWarning(this IFramingElement framingElement)
+        {
+            string message = "Driving curve of a BHoM framing element could not be retrieved.";
+
+            if (framingElement != null)
+                message = string.Format("{0} BHoM_Guid: {1}", message, framingElement.BHoM_Guid);
 
             BH.Engine.Reflection.Compute.RecordWarning(message);
         }

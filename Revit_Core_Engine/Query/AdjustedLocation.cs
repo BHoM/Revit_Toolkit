@@ -26,6 +26,7 @@ using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 using BH.oM.Geometry.CoordinateSystem;
+using BH.oM.Physical.Elements;
 using BH.oM.Reflection;
 using System;
 
@@ -37,13 +38,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static ICurve AdjustedLocationFraming(this FamilyInstance familyInstance, ICurve curve = null, bool inverse = false, RevitSettings settings = null)
+        //TODO: THIS WILL NEED TO BE MADE PRIVATE AND MANAGED BY A DISPATCHER FOR ANALYTICALS!
+        public static ICurve AdjustedLocation(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
 
-            if (curve == null)
-                curve = (familyInstance.Location as LocationCurve)?.Curve?.IFromRevit();
-
+            ICurve curve = (familyInstance.Location as LocationCurve)?.Curve?.IFromRevit();
             if (curve == null || curve.ILength() <= settings.DistanceTolerance)
             {
                 familyInstance.FramingCurveNotFoundWarning();
@@ -57,44 +57,87 @@ namespace BH.Revit.Engine.Core
                 return curve;
             }
 
-            Output<Vector, Vector> offsets = familyInstance.FramingOffsetVectors();
-            Vector startOffset = offsets.Item1;
-            Vector endOffset = offsets.Item2;
+            Transform transform = familyInstance.GetTotalTransform();
+            Vector dir = line.Direction();
+            BH.oM.Geometry.Plane startPlane = new oM.Geometry.Plane { Origin = line.Start, Normal = dir };
+            BH.oM.Geometry.Plane endPlane = new oM.Geometry.Plane { Origin = line.End, Normal = dir };
+            BH.oM.Geometry.Line transformedLine = BH.Engine.Geometry.Create.Line(transform.Origin.PointFromRevit(), transform.BasisX.VectorFromRevit());
+            return new BH.oM.Geometry.Line { Start = transformedLine.PlaneIntersection(startPlane, true), End = transformedLine.PlaneIntersection(endPlane, true) };
 
-            if (inverse)
+            //Output<Vector, Vector> offsets = familyInstance.FramingOffsetVectors();
+            //Vector startOffset = offsets.Item1;
+            //Vector endOffset = offsets.Item2;
+
+            //double startOffsetLength = startOffset.Length();
+            //double endOffsetLength = endOffset.Length();
+            //if (startOffsetLength > Tolerance.Distance || endOffsetLength > Tolerance.Distance)
+            //{
+
+
+
+            //    //Transform transform;
+            //    //if ((startOffset - endOffset).Length() <= settings.DistanceTolerance)
+            //    //    transform = familyInstance.GetTotalTransform();
+            //    //else
+            //    //{
+            //    //    Cartesian localCS = line.FramingCS(settings);
+            //    //    if (1 - Math.Abs(localCS.X.DotProduct(Vector.ZAxis)) <= settings.AngleTolerance)
+            //    //    {
+            //    //        //orient around local X
+            //    //    }
+
+            //    //    transform = Cartesian.GlobalXYZ.OrientationMatrix(localCS).ToRevit();
+            //    //}
+
+            //    //Vector yOffsetStart = new Vector { X = transform.BasisY.X * startOffset.Y, Y = transform.BasisY.Y * startOffset.Y, Z = transform.BasisY.Z * startOffset.Y };
+            //    //Vector zOffsetStart = new Vector { X = transform.BasisZ.X * startOffset.Z, Y = transform.BasisZ.Y * startOffset.Z, Z = transform.BasisZ.Z * startOffset.Z };
+            //    //Vector yOffsetEnd = new Vector { X = transform.BasisY.X * endOffset.Y, Y = transform.BasisY.Y * endOffset.Y, Z = transform.BasisY.Z * endOffset.Y };
+            //    //Vector zOffsetEnd = new Vector { X = transform.BasisZ.X * endOffset.Z, Y = transform.BasisZ.Y * endOffset.Z, Z = transform.BasisZ.Z * endOffset.Z };
+            //    //curve = new BH.oM.Geometry.Line { Start = line.Start.Translate(yOffsetStart + zOffsetStart), End = line.End.Translate(yOffsetEnd + zOffsetEnd) };
+            //}
+
+            //return curve;
+        }
+
+        /***************************************************/
+
+        public static ICurve AdjustedLocation(this IFramingElement framingElement, FamilyInstance familyInstance, RevitSettings settings = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            ICurve curve = framingElement?.Location;
+            if (curve == null || curve.ILength() <= settings.DistanceTolerance)
             {
-                startOffset *= -1;
-                endOffset *= -1;
+                framingElement.FramingCurveNotFoundWarning();
+                return null;
             }
+
+            BH.oM.Geometry.Line line = curve as BH.oM.Geometry.Line;
+            if (line == null)
+            {
+                familyInstance.NonLinearFramingOffsetWarning();
+                return curve;
+            }
+
+            Output<Vector, Vector> offsets = familyInstance.FramingOffsetVectors();
+            Vector startOffset = -offsets.Item1;
+            Vector endOffset = -offsets.Item2;
 
             double startOffsetLength = startOffset.Length();
             double endOffsetLength = endOffset.Length();
             if (startOffsetLength > Tolerance.Distance || endOffsetLength > Tolerance.Distance)
             {
-                Transform transform;
-                if ((startOffset - endOffset).Length() <= settings.DistanceTolerance)
-                    transform = familyInstance.GetTotalTransform();
-                else
+                if ((startOffset - endOffset).Length() > settings.DistanceTolerance)
                 {
-                    double rotation;
-                    Transform revitTransform = familyInstance.GetTotalTransform();
-
-                    XYZ dir = line.Direction().ToRevit().Normalize();
-                    if (1 - Math.Abs(dir.DotProduct(XYZ.BasisZ)) <= settings.AngleTolerance)
-                        rotation = XYZ.BasisY.AngleOnPlaneTo(revitTransform.BasisY, dir);
-                    else
-                        rotation = XYZ.BasisZ.AngleOnPlaneTo(revitTransform.BasisZ, dir);
-
-                    rotation = rotation.CheckOrientationAngleDomain();
-                    //double rotation = familyInstance.AdjustedRotationFraming();
-                    transform = Cartesian.GlobalXYZ.OrientationMatrix(line.FramingCS(rotation, settings)).ToRevit();
+                    //throw warning and reset offsets
                 }
 
+                Transform transform = familyInstance.GetTotalTransform();
                 Vector yOffsetStart = new Vector { X = transform.BasisY.X * startOffset.Y, Y = transform.BasisY.Y * startOffset.Y, Z = transform.BasisY.Z * startOffset.Y };
                 Vector zOffsetStart = new Vector { X = transform.BasisZ.X * startOffset.Z, Y = transform.BasisZ.Y * startOffset.Z, Z = transform.BasisZ.Z * startOffset.Z };
                 Vector yOffsetEnd = new Vector { X = transform.BasisY.X * endOffset.Y, Y = transform.BasisY.Y * endOffset.Y, Z = transform.BasisY.Z * endOffset.Y };
                 Vector zOffsetEnd = new Vector { X = transform.BasisZ.X * endOffset.Z, Y = transform.BasisZ.Y * endOffset.Z, Z = transform.BasisZ.Z * endOffset.Z };
-                curve = new BH.oM.Geometry.Line { Start = line.Start.Translate(yOffsetStart - zOffsetStart), End = line.End.Translate(yOffsetEnd - zOffsetEnd) };
+                curve = new BH.oM.Geometry.Line { Start = line.Start.Translate(yOffsetStart + zOffsetStart), End = line.End.Translate(yOffsetEnd + zOffsetEnd) };
             }
 
             return curve;
@@ -171,7 +214,7 @@ namespace BH.Revit.Engine.Core
                 if (double.IsNaN(yOffset))
                     yOffset = 0;
 
-                double zOffset = -familyInstance.LookupParameterDouble(BuiltInParameter.Z_OFFSET_VALUE);
+                double zOffset = familyInstance.LookupParameterDouble(BuiltInParameter.Z_OFFSET_VALUE);
                 if (double.IsNaN(zOffset))
                     zOffset = 0;
 
@@ -199,9 +242,9 @@ namespace BH.Revit.Engine.Core
                                 yOffset += profileWidth * 0.5;
 
                             if (zJustification == 0)
-                                zOffset += profileHeight * 0.5;
-                            else if (zJustification == 3)
                                 zOffset -= profileHeight * 0.5;
+                            else if (zJustification == 3)
+                                zOffset += profileHeight * 0.5;
                         }
                     }
                     else
@@ -224,11 +267,11 @@ namespace BH.Revit.Engine.Core
                 if (double.IsNaN(yOffsetEnd))
                     yOffsetEnd = 0;
 
-                double zOffsetStart = -familyInstance.LookupParameterDouble(BuiltInParameter.START_Z_OFFSET_VALUE);
+                double zOffsetStart = familyInstance.LookupParameterDouble(BuiltInParameter.START_Z_OFFSET_VALUE);
                 if (double.IsNaN(zOffsetStart))
                     zOffsetStart = 0;
 
-                double zOffsetEnd = -familyInstance.LookupParameterDouble(BuiltInParameter.END_Z_OFFSET_VALUE);
+                double zOffsetEnd = familyInstance.LookupParameterDouble(BuiltInParameter.END_Z_OFFSET_VALUE);
                 if (double.IsNaN(zOffsetEnd))
                     zOffsetEnd = 0;
 
@@ -269,14 +312,14 @@ namespace BH.Revit.Engine.Core
                                 yOffsetEnd += profileWidth * 0.5;
 
                             if (zJustificationStart == 0)
-                                zOffsetStart += profileHeight * 0.5;
-                            else if (zJustificationStart == 3)
                                 zOffsetStart -= profileHeight * 0.5;
+                            else if (zJustificationStart == 3)
+                                zOffsetStart += profileHeight * 0.5;
 
                             if (zJustificationEnd == 0)
-                                zOffsetEnd += profileHeight * 0.5;
-                            else if (zJustificationEnd == 3)
                                 zOffsetEnd -= profileHeight * 0.5;
+                            else if (zJustificationEnd == 3)
+                                zOffsetEnd += profileHeight * 0.5;
                         }
                     }
                     else
@@ -362,7 +405,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static Cartesian FramingCS(this BH.oM.Geometry.Line curve, double rotation, RevitSettings settings)
+        public static Cartesian FramingCS(this BH.oM.Geometry.Line curve, RevitSettings settings)
         {
             Vector localX = curve.Direction();
             Vector localY;
@@ -384,9 +427,6 @@ namespace BH.Revit.Engine.Core
                 localY = Vector.ZAxis.CrossProduct(localX).Normalise();
                 localZ = localX.CrossProduct(localY);
             }
-
-            localY = localY.Rotate(rotation, localX);
-            localZ = localZ.Rotate(rotation, localX);
 
             return new Cartesian(curve.Start, localX, localY, localZ);
         }
