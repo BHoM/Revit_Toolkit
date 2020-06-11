@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Settings;
 using System;
 
 namespace BH.Revit.Engine.Core
@@ -31,7 +32,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static bool IsVerticalNonLinearCurve(this Curve revitCurve)
+        public static bool IsVerticalNonLinearCurve(this Curve revitCurve, RevitSettings settings)
         {
             if (!(revitCurve is Line))
             {
@@ -40,7 +41,7 @@ namespace BH.Revit.Engine.Core
                 {
                     Plane curvePlane = curveLoop.GetPlane();
                     //Orientation angles are handled slightly differently for framing elements that have a curve fits in a plane that contains the z-vector
-                    if (Math.Abs(curvePlane.Normal.DotProduct(XYZ.BasisZ)) < BH.oM.Geometry.Tolerance.Angle)
+                    if (Math.Abs(curvePlane.Normal.DotProduct(XYZ.BasisZ)) < settings.AngleTolerance)
                         return true;
                 }
             }

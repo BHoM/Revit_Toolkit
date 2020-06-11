@@ -62,7 +62,7 @@ namespace BH.Revit.Engine.Core
             if (locationCurve != null)
                 familyInstance.AnalyticalPullWarning();
             else
-                locationCurve = familyInstance.AdjustedLocationFraming(null, false, settings);
+                locationCurve = familyInstance.AdjustedLocation(settings);
 
             // Get bar material
             string materialGrade = familyInstance.MaterialGrade(settings);
