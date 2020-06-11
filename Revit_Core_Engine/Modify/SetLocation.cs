@@ -156,18 +156,24 @@ namespace BH.Revit.Engine.Core
             if (!(typeof(IFramingElement).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.IntegerValue)))
                 return false;
 
+            double rotation = 0;
             ConstantFramingProperty framingProperty = framingElement.Property as ConstantFramingProperty;
             if (framingProperty == null)
-            {
-                //TODO warning and no rotation added
-            }
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("BHoM object's property is not a ConstantFramingProperty, therefore its orientation angle could not be retrieved. BHoM_Guid: {0}", framingElement.BHoM_Guid));
+            else
+                rotation = ((ConstantFramingProperty)framingElement.Property).OrientationAngle;
 
-            //TODO: block nonuniform offsets here!
+            if (element.LookupParameterInteger(BuiltInParameter.YZ_JUSTIFICATION) == 1)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Pushing of framing elements with non-uniform offsets at ends is currently not supported. yz Justification parameter has been set to Uniform. Revit ElementId: {0}", element.Id));
+                element.SetParameter(BuiltInParameter.YZ_JUSTIFICATION, 0);
+                element.Document.Regenerate();
+            }
 
             bool updated = element.SetLocation(framingElement.Location, settings);
             element.Document.Regenerate();
             
-            double rotationDifference = element.OrientationAngleFraming(settings) - ((ConstantFramingProperty)framingElement.Property).OrientationAngle;
+            double rotationDifference = element.OrientationAngleFraming(settings) - rotation;
             if (Math.Abs(rotationDifference) > settings.AngleTolerance)
             {
                 double newRotation = (element.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE) + rotationDifference).NormalizeAngleDomain(settings);
