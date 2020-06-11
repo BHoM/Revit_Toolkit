@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Created an entity holding information about conversion-specific Revit parameter names as well as relationships between object's property names (or names of a RevitParameter attached to it) and Revit parameter names.")]
+        [Description("Created an entity holding information about conversion-specific Revit parameter names as well as relationships between object's property names (or names of RevitParameters attached to it) and Revit parameter names.")]
         [InputFromProperty("parameterMaps")]
         [InputFromProperty("tagsParameter")]
         [InputFromProperty("materialGradeParameter")]

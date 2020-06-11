@@ -34,7 +34,7 @@ namespace BH.oM.Adapters.Revit.Settings
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("A collection of entities defining relationships between property names of BHoM types (or RevitParameters) and parameter names of correspondent Revit elements.")]
+        [Description("A collection of entities defining relationships between property names of BHoM types (or RevitParameters attached to objects of these types) and parameter names of correspondent Revit elements.")]
         public virtual List<ParameterMap> ParameterMaps { get; set; } = new List<ParameterMap>();
 
         [Description("Name of the Revit parameter to be used as a source (on Pull) and target (on Push) of information for BHoM tags.")]

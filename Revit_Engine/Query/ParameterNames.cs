@@ -36,7 +36,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns a collection of Revit parameter names associated with a given object's property (or RevitParameter) inside ParameterSettings.")]
+        [Description("Returns a collection of Revit parameter names associated with a given object's property (or RevitParameter attached to this object) inside ParameterSettings.")]
         [Input("parameterSettings", "ParameterSettings to be queried.")]
         [Input("type", "Type to be sought for.")]
         [Input("name", "Name of property (or RevitParameter) to be sought for.")]
