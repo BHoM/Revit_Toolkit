@@ -36,7 +36,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns ParameterLinks inside ParameterSettings for given type and property name (or RevitParameter).")]
+        [Description("Returns ParameterLinks inside ParameterSettings for given type and property name (or RevitParameter name).")]
         [Input("parameterSettings", "ParameterSettings to be queried.")]
         [Input("type", "Type to be sought for.")]
         [Input("propertyName", "Name of the property (or RevitParameter) to be sought for.")]
@@ -55,7 +55,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns ParameterLinks inside ParameterMap for given property name (or RevitParameter).")]
+        [Description("Returns ParameterLinks inside ParameterMap for given property name (or RevitParameter name).")]
         [Input("parameterMap", "ParameterMap to be queried.")]
         [Input("propertyName", "Name of the property (or RevitParameter) to be sought for.")]
         [Output("parameterLink")]
