@@ -28,7 +28,7 @@ using System.ComponentModel;
 namespace BH.oM.Adapters.Revit.Parameters
 {
     [Description("An entity containing identifiers of Revit element correspondent to the BHoM object that carries it.")]
-    public class RevitIdentifiers : BHoMObject, IFragment, IImmutable
+    public class RevitIdentifiers : IObject, IFragment, IImmutable
     {
         /***************************************************/
         /****             Public Properties             ****/
