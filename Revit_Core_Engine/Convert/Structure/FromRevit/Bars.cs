@@ -113,7 +113,7 @@ namespace BH.Revit.Engine.Core
             if (locationCurve != null)
             {
                 //TODO: check category of familyInstance to recognize which rotation query to use
-                double rotation = familyInstance.FramingElementRotation(settings);
+                double rotation = familyInstance.AdjustedRotation(settings);
                 foreach (BH.oM.Geometry.Line line in locationCurve.ICollapseToPolyline(Math.PI / 12).SubParts())
                 {
                     bars.Add(BH.Engine.Structure.Create.Bar(line, property, rotation));

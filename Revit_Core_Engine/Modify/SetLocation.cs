@@ -31,6 +31,7 @@ using BH.Engine.Geometry;
 using System;
 using System.Linq;
 using BH.oM.Physical.FramingProperties;
+using BH.oM.Reflection;
 
 namespace BH.Revit.Engine.Core
 {
@@ -68,20 +69,37 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            columnLine = ((FamilyInstance)element).AdjustedLocationColumn(columnLine, true, settings);
-
             if (columnLine.Start.Z >= columnLine.End.Z)
             {
                 BH.Engine.Reflection.Compute.RecordError(String.Format("Location of the column has not been updated because BHoM column has start above end. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
                 return false;
             }
 
+            if (1 - columnLine.Direction().DotProduct(Vector.ZAxis) > settings.AngleTolerance && element.LookupParameterInteger(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM) == 0)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Column style has been set to Vertical, but its driving curve is slanted. Column style changed to Slanted. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
+                element.SetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 2);
+                element.Document.Regenerate();
+            }
+
+            bool updated = false;
             if (element.IsSlantedColumn)
-                return element.SetLocation(columnLine, settings);
+            {
+                updated |= element.SetLocation(columnLine, settings);
+                Output<double, double> extensions = element.ColumnExtensions();
+                double startExtension = -extensions.Item1;
+                double endExtension = -extensions.Item2;
+
+                if (Math.Abs(startExtension) > settings.DistanceTolerance || Math.Abs(endExtension) > settings.DistanceTolerance)
+                {
+                    element.SetLocation(columnLine.Extend(startExtension, endExtension), settings);
+                    updated = true;
+                }
+            }
             else
             {
                 double locationZ = ((LocationPoint)element.Location).Point.Z.ToSI(UnitType.UT_Length);
-                bool updated = element.SetLocation(new oM.Geometry.Point { X = columnLine.Start.X, Y = columnLine.Start.Y, Z = locationZ }, settings);
+                updated |= element.SetLocation(new oM.Geometry.Point { X = columnLine.Start.X, Y = columnLine.Start.Y, Z = locationZ }, settings);
 
                 Parameter baseLevelParam = element.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_PARAM);
                 Parameter topLevelParam = element.get_Parameter(BuiltInParameter.FAMILY_TOP_LEVEL_PARAM);
@@ -103,9 +121,25 @@ namespace BH.Revit.Engine.Core
                     element.SetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.End.Z.FromSI(UnitType.UT_Length) - topLevel.ProjectElevation, false);
                     updated = true;
                 }
-
-                return updated;
             }
+            
+            double rotationDifference = element.AdjustedRotationColumn(settings) - ((ConstantFramingProperty)column.Property).OrientationAngle;
+            if (Math.Abs(rotationDifference) > settings.AngleTolerance)
+            {
+                double rotationParamValue = element.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+                if (double.IsNaN(rotationParamValue))
+                {
+                    ElementTransformUtils.RotateElement(element.Document, element.Id, columnLine.ToRevit(), -rotationDifference);
+                    updated = true;
+                }
+                else
+                {
+                    double newRotation = (rotationParamValue + rotationDifference).NormalizeAngleDomain(settings);
+                    updated |= element.SetParameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, newRotation);
+                }
+            }
+
+            return updated;
         }
 
         /***************************************************/
@@ -128,18 +162,20 @@ namespace BH.Revit.Engine.Core
                 //TODO warning and no rotation added
             }
 
-            //ICurve transformedCurve = ((FamilyInstance)element).AdjustedLocationFraming(framingElement, settings);
-            //element.SetLocation(transformedCurve, settings);
-            //element.Document.Regenerate();
+            //TODO: block nonuniform offsets here!
 
-            element.SetLocation(framingElement.Location, settings);
+            bool updated = element.SetLocation(framingElement.Location, settings);
             element.Document.Regenerate();
+            
+            double rotationDifference = element.AdjustedRotationFraming(settings) - ((ConstantFramingProperty)framingElement.Property).OrientationAngle;
+            if (Math.Abs(rotationDifference) > settings.AngleTolerance)
+            {
+                double newRotation = (element.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE) + rotationDifference).NormalizeAngleDomain(settings);
+                updated |= element.SetParameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, newRotation);
+                element.Document.Regenerate();
+            }
 
-            double rotation = framingElement.AdjustedRotation(element, settings);
-            bool updated = element.SetParameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, rotation);
-            element.Document.Regenerate();
-
-            ICurve transformedCurve = framingElement.AdjustedLocation((FamilyInstance)element, settings);
+            ICurve transformedCurve = framingElement.AdjustedLocationFraming((FamilyInstance)element, settings);
             updated |= element.SetLocation(transformedCurve, settings);
 
             return updated;
