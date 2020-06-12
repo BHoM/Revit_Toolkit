@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
@@ -228,6 +229,12 @@ namespace BH.Revit.Engine.Core
 
             familyInstance.CopyParameters(framingElement, settings);
             familyInstance.SetLocation(framingElement, settings);
+
+            if (familyInstance.StructuralMaterialType != StructuralMaterialType.Concrete && familyInstance.StructuralMaterialType != StructuralMaterialType.PrecastConcrete)
+            {
+                StructuralFramingUtils.DisallowJoinAtEnd(familyInstance, 0);
+                StructuralFramingUtils.DisallowJoinAtEnd(familyInstance, 1);
+            }
 
             refObjects.AddOrReplace(framingElement, familyInstance);
             return familyInstance;
