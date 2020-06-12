@@ -258,14 +258,12 @@
     <Compile Include="Convert\Geometry\FromRevit\Curve.cs" />
     <Compile Include="Convert\Geometry\FromRevit\Grid.cs" />
     <Compile Include="Convert\Geometry\FromRevit\Level.cs" />
-    <Compile Include="Convert\Geometry\FromRevit\Transform.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Brep.cs" />
     <Compile Include="Convert\Geometry\ToRevit\CurveLoop.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Grid.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Level.cs" />
     <Compile Include="Convert\Architecture\ToRevit\Ceiling.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Plane.cs" />
-    <Compile Include="Convert\Geometry\ToRevit\Transform.cs" />
     <Compile Include="Convert\Physical\FromRevit\Beam.cs" />
     <Compile Include="Convert\Physical\FromRevit\Bracing.cs" />
     <Compile Include="Convert\Physical\FromRevit\Column.cs" />

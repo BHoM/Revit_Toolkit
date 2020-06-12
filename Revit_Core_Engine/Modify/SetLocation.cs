@@ -129,7 +129,7 @@ namespace BH.Revit.Engine.Core
                 double rotationParamValue = element.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
                 if (double.IsNaN(rotationParamValue))
                 {
-                    ElementTransformUtils.RotateElement(element.Document, element.Id, columnLine.ToRevit(), -rotationDifference);
+                    ElementTransformUtils.RotateElement(element.Document, element.Id, columnLine.ToRevit(), -rotationDifference.NormalizeAngleDomain(settings));
                     updated = true;
                 }
                 else
