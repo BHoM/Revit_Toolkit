@@ -122,7 +122,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             // Copy parameters from BHoM object to Revit element
-            revitWall.CopyParameters(wall);
+            revitWall.CopyParameters(wall, settings);
 
             refObjects.AddOrReplace(wall, revitWall);
             return revitWall;

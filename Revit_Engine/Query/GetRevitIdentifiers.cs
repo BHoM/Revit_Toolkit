@@ -33,8 +33,7 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
-
+        
         [Description("Retrieves identifiers of the Revit element correspondent to a BHoM object.")]
         [Input("bHoMObject", "BHoMObject to be queried for identifiers of correspondent Revit element.")]
         [Output("revitIdentifiers")]

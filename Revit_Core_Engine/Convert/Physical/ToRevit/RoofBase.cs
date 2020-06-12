@@ -133,7 +133,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             // Copy parameters from BHoM object to Revit element
-            roofBase.CopyParameters(roof);
+            roofBase.CopyParameters(roof, settings);
 
             refObjects.AddOrReplace(roof, roofBase);
             return roofBase;
