@@ -250,7 +250,7 @@ namespace BH.Revit.Engine.Core
 
         public static bool SetLocation(this HostObject element, BH.oM.Physical.Elements.ISurface bHoMObject, RevitSettings settings)
         {
-            BH.Engine.Reflection.Compute.RecordError(String.Format("Update of location of surface-based elements is currently not supported. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, bHoMObject.BHoM_Guid));
+            BH.Engine.Reflection.Compute.RecordWarning(String.Format("Update of location of surface-based elements is currently not supported. Possibly DeleteThenCreate PushType could be used instead. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, bHoMObject.BHoM_Guid));
             return false;
         }
 

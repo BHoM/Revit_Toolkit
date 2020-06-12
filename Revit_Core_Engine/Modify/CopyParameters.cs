@@ -25,8 +25,10 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace BH.Revit.Engine.Core
 {
@@ -81,24 +83,46 @@ namespace BH.Revit.Engine.Core
                 return;
 
             ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-            BH.oM.Adapters.Revit.Parameters.ParameterMap parameterMap = settings?.ParameterSettings?.ParameterMap(bHoMObject.GetType());
+            
+            Type type = bHoMObject.GetType();
+            BH.oM.Adapters.Revit.Parameters.ParameterMap parameterMap = settings?.ParameterSettings?.ParameterMap(type);
+
+            IEnumerable<PropertyInfo> propertyInfos = type.MapPropertyInfos();
+
+            if (propertyInfos != null)
             {
-                foreach (RevitParameter param in fragment.Parameters)
+                foreach (PropertyInfo pInfo in propertyInfos)
                 {
-                    IEnumerable<IParameterLink> parameterLinks = parameterMap.ParameterLinks(param.Name);
-                    if (parameterLinks != null)
-                    {
-                        foreach (IParameterLink parameterLink in parameterLinks)
-                        {
-                            if (parameterLink is ElementParameterLink)
-                                element.SetParameters(parameterLink.ParameterNames, param.Value);
-                            else if (elementType != null)
-                                elementType.SetParameters(parameterLink.ParameterNames, param.Value);
-                        }
-                    }
-                    else
-                        element.SetParameters(param.Name, param.Value);
+                    object value = pInfo.GetValue(bHoMObject);
+
+                    HashSet<string> parameterNames = settings.ParameterSettings.ParameterNames(type, pInfo.Name, false);
+                    if (parameterNames != null && element.SetParameters(parameterNames, value))
+                        continue;
+
+                    if (elementType == null)
+                        continue;
+
+                    parameterNames = settings.ParameterSettings.ParameterNames(type, pInfo.Name, true);
+                    if (parameterNames != null)
+                        element.SetParameters(parameterNames, value);
                 }
+            }
+
+            foreach (RevitParameter param in fragment.Parameters)
+            {
+                IEnumerable<IParameterLink> parameterLinks = parameterMap.ParameterLinks(param.Name);
+                if (parameterLinks != null)
+                {
+                    foreach (IParameterLink parameterLink in parameterLinks)
+                    {
+                        if (parameterLink is ElementParameterLink)
+                            element.SetParameters(parameterLink.ParameterNames, param.Value);
+                        else if (elementType != null)
+                            elementType.SetParameters(parameterLink.ParameterNames, param.Value);
+                    }
+                }
+                else
+                    element.SetParameters(param.Name, param.Value);
             }
 
             element.Document.Regenerate();
