@@ -35,9 +35,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an IRequest that filters elements by their ElementIds.")]
+        [Description("Creates IRequest that filters elements by their ElementIds.")]
         [Input("bHoMObjects", "BHoMObjects that contain (in their RevitIdentifiers) an ElementId of a correspondent Revit element that has been previously pulled.")]
-        [Output("F", "IRequest to be used to filter elements by their ElementIds.")]
+        [Output("request")]
         public static FilterByElementIds FilterByElementIds(IEnumerable<IBHoMObject> bHoMObjects)
         {
             List<int> elementIds = new List<int>();

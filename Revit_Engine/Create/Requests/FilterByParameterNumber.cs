@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,10 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
-using System;
 using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
@@ -34,19 +33,15 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates IRequest that filters elements being members of selection sets, assemblies, systems etc.")]
-        [Input("bHoMObject", "BHoMObject that contains (in its RevitIdentifiers) an ElementId of a correspondent Revit element that has been previously pulled.")]
+        [Description("Creates IRequest that filters elements based on given floating point number parameter value criterion.")]
+        [InputFromProperty("parameterName")]
+        [InputFromProperty("numberComparisonType")]
+        [InputFromProperty("value")]
+        [InputFromProperty("tolerance")]
         [Output("request")]
-        public static FilterMemberElements FilterMemberElements(IBHoMObject bHoMObject)
+        public static FilterByParameterNumber FilterByParameterNumber(string parameterName, NumberComparisonType numberComparisonType, double value, double tolerance)
         {
-            int elementId = bHoMObject.ElementId();
-            if (elementId == -1)
-            {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
-                return null;
-            }
-            else
-                return new FilterMemberElements { ParentId = elementId };
+            return new FilterByParameterNumber { ParameterName = parameterName, NumberComparisonType = numberComparisonType, Value = value, Tolerance = tolerance };
         }
 
         /***************************************************/
