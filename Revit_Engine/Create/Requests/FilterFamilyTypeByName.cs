@@ -21,9 +21,7 @@
  */
 
 using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
-using System;
 using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
@@ -34,19 +32,14 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates IRequest that filters elements being members of selection sets, assemblies, systems etc.")]
-        [Input("bHoMObject", "BHoMObject that contains (in its RevitIdentifiers) an ElementId of a correspondent Revit element that has been previously pulled.")]
+        [Description("Creates IRequest that filters Revit family types by names of theirs and their parent family, with option to loose the search by leaving one or both of the input names blank.")]
+        [InputFromProperty("familyName")]
+        [InputFromProperty("familyTypeName")]
+        [InputFromProperty("caseSensitive")]
         [Output("request")]
-        public static FilterMemberElements FilterMemberElements(IBHoMObject bHoMObject)
+        public static FilterFamilyTypeByName FilterFamilyTypeByName(string familyName, string familyTypeName, bool caseSensitive)
         {
-            int elementId = bHoMObject.ElementId();
-            if (elementId == -1)
-            {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
-                return null;
-            }
-            else
-                return new FilterMemberElements { ParentId = elementId };
+            return new FilterFamilyTypeByName { FamilyName = familyName, FamilyTypeName = familyTypeName, CaseSensitive = caseSensitive };
         }
 
         /***************************************************/

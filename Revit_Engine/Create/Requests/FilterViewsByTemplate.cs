@@ -34,9 +34,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an IRequest that filters views that implement a given template.")]
+        [Description("Creates IRequest that filters views that implement a given template.")]
         [Input("bHoMObject", "BHoMObject that contains (in its RevitIdentifiers) an ElementId of a correspondent Revit element that has been previously pulled.")]
-        [Output("F", "IRequest to be used to filter views that implement a given template.")]
+        [Output("request")]
         public static FilterViewsByTemplate FilterViewsByTemplate(IBHoMObject bHoMObject)
         {
             int elementId = bHoMObject.ElementId();

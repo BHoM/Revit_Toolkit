@@ -32,8 +32,8 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an IRequest that filters elements selected in Revit. Wrapper for BH.oM.Data.Requests.SelectionRequest.")]
-        [Output("F", "SelectionRequest, an IRequest to be used to filter elements selected in Revit.")]
+        [Description("Creates IRequest that filters elements selected in Revit. Wrapper for BH.oM.Data.Requests.SelectionRequest.")]
+        [Output("request")]
         public static SelectionRequest FilterBySelection()
         {
             return new SelectionRequest();
