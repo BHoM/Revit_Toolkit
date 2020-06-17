@@ -37,7 +37,7 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("parameterName")]
         [InputFromProperty("numberComparisonType")]
         [InputFromProperty("value")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterByParameterInteger FilterByParameterInteger(string parameterName, NumberComparisonType numberComparisonType, int value)
         {
             return new FilterByParameterInteger { ParameterName = parameterName, NumberComparisonType = numberComparisonType, Value = value };

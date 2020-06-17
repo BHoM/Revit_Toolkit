@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates IRequest that filters all views of given type.")]
         [InputFromProperty("revitViewType")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterViewsByType FilterViewsByType(RevitViewType revitViewType)
         {
             return new FilterViewsByType { RevitViewType = revitViewType };

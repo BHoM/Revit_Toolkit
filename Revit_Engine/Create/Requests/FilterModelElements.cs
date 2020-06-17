@@ -33,7 +33,7 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates IRequest that filters elements that have geometrical representation in the Revit model.")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterModelElements FilterModelElements()
         {
             return new FilterModelElements();

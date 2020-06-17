@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates IRequest that filters used/unused elements in a Revit document.")]
         [InputFromProperty("used")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterByUsage FilterByUsage(bool used)
         {
             return new FilterByUsage { Used = used };

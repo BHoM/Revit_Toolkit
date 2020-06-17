@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates IRequest that filters elements the have (or do not have) a parameter with given name.")]
         [InputFromProperty("parameterName")]
         [InputFromProperty("parameterExists")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterByParameterExistence FilterByParameterExistence(string parameterName, bool parameterExists)
         {
             return new FilterByParameterExistence { ParameterName = parameterName, ParameterExists = parameterExists };

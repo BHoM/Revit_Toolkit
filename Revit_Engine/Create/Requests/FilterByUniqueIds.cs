@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates IRequest that filters elements by their UniqueIds.")]
         [InputFromProperty("uniqueIds")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterByUniqueIds FilterByUniqueIds(List<string> uniqueIds)
         {
             return new FilterByUniqueIds { UniqueIds = uniqueIds };

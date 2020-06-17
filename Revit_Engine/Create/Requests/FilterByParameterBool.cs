@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates IRequest that filters elements based on given Boolean parameter value criterion.")]
         [InputFromProperty("parameterName")]
         [InputFromProperty("value")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterByParameterBool FilterByParameterBool(string parameterName, bool value)
         {
             return new FilterByParameterBool { ParameterName = parameterName, Value = value };

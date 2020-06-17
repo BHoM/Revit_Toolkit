@@ -33,7 +33,7 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates IRequest that filters all elements that are contained in an energy analysis model.")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static EnergyAnalysisModelRequest EnergyAnalysisModelRequest()
         {
             return new EnergyAnalysisModelRequest();

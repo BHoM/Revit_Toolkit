@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates IRequest that filters Revit view templates by name. If the template name is left blank, all view templates will be filtered.")]
         [InputFromProperty("templateName")]
         [InputFromProperty("caseSensitive")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterViewTemplateByName FilterViewTemplateByName(string templateName, bool caseSensitive)
         {
             return new FilterViewTemplateByName { TemplateName = templateName, CaseSensitive = caseSensitive };

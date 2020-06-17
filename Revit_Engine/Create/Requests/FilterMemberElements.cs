@@ -36,7 +36,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates IRequest that filters elements being members of selection sets, assemblies, systems etc.")]
         [Input("bHoMObject", "BHoMObject that contains (in its RevitIdentifiers) an ElementId of a correspondent Revit element that has been previously pulled.")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterMemberElements FilterMemberElements(IBHoMObject bHoMObject)
         {
             int elementId = bHoMObject.ElementId();

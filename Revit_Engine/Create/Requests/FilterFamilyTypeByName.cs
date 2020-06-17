@@ -36,7 +36,7 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("familyName")]
         [InputFromProperty("familyTypeName")]
         [InputFromProperty("caseSensitive")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterFamilyTypeByName FilterFamilyTypeByName(string familyName, string familyTypeName, bool caseSensitive)
         {
             return new FilterFamilyTypeByName { FamilyName = familyName, FamilyTypeName = familyTypeName, CaseSensitive = caseSensitive };

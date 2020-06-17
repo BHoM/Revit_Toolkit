@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates IRequest that filters Revit families by name. If the family name is left blank, all families will be filtered.")]
         [InputFromProperty("familyName")]
         [InputFromProperty("caseSensitive")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterFamilyByName FilterFamilyByName(string familyName, bool caseSensitive)
         {
             return new FilterFamilyByName { FamilyName = familyName, CaseSensitive = caseSensitive };

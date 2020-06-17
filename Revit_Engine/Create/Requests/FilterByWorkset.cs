@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates IRequest that filters all elements in a given Revit workset.")]
         [InputFromProperty("worksetName")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterByWorkset FilterByWorkset(string worksetName)
         {
             return new FilterByWorkset { WorksetName = worksetName };
