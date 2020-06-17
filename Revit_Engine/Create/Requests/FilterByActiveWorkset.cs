@@ -33,7 +33,7 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("IRequest that filters all elements in active Revit workset.")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterByActiveWorkset FilterByActiveWorkset()
         {
             return new FilterByActiveWorkset();

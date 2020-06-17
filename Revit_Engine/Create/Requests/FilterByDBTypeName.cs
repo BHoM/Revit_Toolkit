@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates IRequest that filters all elements of given Autodesk.Revit.DB type. Information about types can be found in the Revit API documentation.")]
         [InputFromProperty("typeName")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterByDBTypeName FilterByDBTypeName(string typeName)
         {
             return new FilterByDBTypeName { TypeName = typeName };

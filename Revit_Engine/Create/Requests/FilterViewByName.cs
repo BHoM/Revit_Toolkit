@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates IRequest that filters Revit views by name. If the view name is left blank, all families will be filtered.")]
         [InputFromProperty("viewName")]
         [InputFromProperty("caseSensitive")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterViewByName FilterViewByName(string viewName, bool caseSensitive)
         {
             return new FilterViewByName { ViewName = viewName, CaseSensitive = caseSensitive };

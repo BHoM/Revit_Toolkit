@@ -33,7 +33,7 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates IRequest that filters the active view in Revit.")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterActiveView FilterActiveView()
         {
             return new FilterActiveView();

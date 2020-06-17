@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates IRequest that filters Revit elements based on their correspondent BHoM Type. Wrapper for BH.oM.Data.Requests.FilterRequest.")]
         [Input("bHoMType", "BHoM type, which correspondent Revit types are meant to be filtered.")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterRequest FilterByBHoMType(Type bHoMType)
         {
             return new FilterRequest { Type = bHoMType };

@@ -37,7 +37,7 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("parameterName")]
         [InputFromProperty("textComparisonType")]
         [InputFromProperty("value")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterByParameterText FilterByParameterText(string parameterName, TextComparisonType textComparisonType, string value)
         {
             return new FilterByParameterText { ParameterName = parameterName, TextComparisonType = textComparisonType, Value = value };

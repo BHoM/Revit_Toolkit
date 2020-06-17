@@ -38,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("numberComparisonType")]
         [InputFromProperty("value")]
         [InputFromProperty("tolerance")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterByParameterNumber FilterByParameterNumber(string parameterName, NumberComparisonType numberComparisonType, double value, double tolerance)
         {
             return new FilterByParameterNumber { ParameterName = parameterName, NumberComparisonType = numberComparisonType, Value = value, Tolerance = tolerance };

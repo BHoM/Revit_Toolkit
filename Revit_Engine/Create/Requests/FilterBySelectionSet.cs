@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates IRequest that filters elements contained in a given Revit Selection Set.")]
         [InputFromProperty("selectionSetName")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterBySelectionSet FilterBySelectionSet(string selectionSetName)
         {
             return new FilterBySelectionSet { SelectionSetName = selectionSetName };

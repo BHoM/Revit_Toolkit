@@ -35,7 +35,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates IRequest that filters all elements of a Revit category.")]
         [InputFromProperty("categoryName")]
         [InputFromProperty("caseSensitive")]
-        [Output("request")]
+        [Output("request", "Created request.")]
         public static FilterByCategory FilterByCategory(string categoryName, bool caseSensitive)
         {
             return new FilterByCategory { CategoryName = categoryName, CaseSensitive = caseSensitive };
