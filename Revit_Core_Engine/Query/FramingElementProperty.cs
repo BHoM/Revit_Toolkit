@@ -21,13 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.Physical.FramingProperties;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
