@@ -32,9 +32,17 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static RevitParameter ParameterFromRevit(this Parameter parameter, IEnumerable<IParameterLink> parameterLinks = null)
+        public static RevitParameter ParameterFromRevit(this Parameter parameter, IEnumerable<IParameterLink> parameterLinks = null, bool onlyLinked = false)
         {
             if (parameter == null)
+                return null;
+
+            string name = parameter.Definition.Name;
+
+            IParameterLink parameterLink = parameterLinks.ParameterLink(parameter);
+            if (parameterLink != null)
+                name = parameterLink.PropertyName;
+            else if (onlyLinked)
                 return null;
 
             object value = null;
@@ -63,12 +71,6 @@ namespace BH.Revit.Engine.Core
                     value = parameter.AsValueString();
                     break;
             }
-
-            string name = parameter.Definition.Name;
-
-            IParameterLink parameterLink = parameterLinks.ParameterLink(parameter);
-            if (parameterLink != null)
-                name = parameterLink.PropertyName;
 
             return new RevitParameter { Name = name, Value = value };
         }
