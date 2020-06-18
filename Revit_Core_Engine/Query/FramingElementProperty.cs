@@ -21,11 +21,13 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.Physical.FramingProperties;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -57,11 +59,17 @@ namespace BH.Revit.Engine.Core
             IProfile profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
             if (profile == null)
                 familyInstance.Symbol.NotConvertedWarning();
-
-            //TODO: check category of familyInstance to recognize which rotation query to use
+            
             double rotation = familyInstance.OrientationAngle(settings);
             
-            return BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, familyInstance.Symbol.Name);
+            ConstantFramingProperty framingProperty = BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, familyInstance.Symbol.Name);
+
+            //Set identifiers, parameters & custom data
+            framingProperty.SetIdentifiers(familyInstance.Symbol);
+            framingProperty.CopyParameters(familyInstance.Symbol, settings.ParameterSettings);
+            framingProperty.SetProperties(familyInstance.Symbol, settings.ParameterSettings);
+
+            return framingProperty;
         }
 
         /***************************************************/
