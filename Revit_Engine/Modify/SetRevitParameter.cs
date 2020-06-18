@@ -35,17 +35,48 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Attaches parameter to a BHoM object, which will be applied to a correspondent Revit element on Push.")]
+        [Input("bHoMObject", "BHoMObject to which the parameter will be attached.")]
+        [Input("name", "Name of the parameter to be attached.")]
+        [Input("value", "Value of the parameter to be attached.")]
+        [Output("bHoMObject")]
+        public static IBHoMObject SetRevitParameter(this IBHoMObject bHoMObject, string paramName, object value)
+        {
+            if (bHoMObject == null)
+                return null;
+
+            IBHoMObject obj = bHoMObject.GetShallowClone();
+            obj.Fragments = new FragmentSet(bHoMObject.Fragments.Where(x => !(x is RevitParametersToPush)).ToList());
+
+            RevitParametersToPush fragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
+            if (fragment == null)
+                fragment = new RevitParametersToPush();
+
+            RevitParameter param = new RevitParameter { Name = paramName, Value = value };
+
+            RevitParameter existingParam = fragment.Parameters.FirstOrDefault(x => x.Name == paramName);
+            if (existingParam != null)
+                fragment.Parameters[fragment.Parameters.IndexOf(existingParam)] = param;
+            else
+                fragment.Parameters.Add(param);
+
+            obj.Fragments.Add(fragment);
+            return obj;
+        }
+        
+        /***************************************************/
+
         [Description("Attaches parameters to a BHoM object, which will be applied to a correspondent Revit element on Push.")]
         [Input("bHoMObject", "BHoMObject to which the parameters will be attached.")]
         [Input("names", "Names of the parameters to be attached.")]
         [Input("values", "Values of the parameters to be attached.")]
         [Output("bHoMObject")]
-        public static IBHoMObject SetRevitParameters(this IBHoMObject bHoMObject, List<string> names, List<object> values)
+        public static IBHoMObject SetRevitParameters(this IBHoMObject bHoMObject, List<string> paramNames, List<object> values)
         {
             if (bHoMObject == null)
                 return null;
 
-            if (names.Count != values.Count)
+            if (paramNames.Count != values.Count)
             {
                 BH.Engine.Reflection.Compute.RecordError("Number of input names needs to be equal to the number of input values. Parameters have not been set.");
                 return bHoMObject;
@@ -58,11 +89,11 @@ namespace BH.Engine.Adapters.Revit
             if (fragment == null)
                 fragment = new RevitParametersToPush();
 
-            for (int i = 0; i < names.Count; i++)
+            for (int i = 0; i < paramNames.Count; i++)
             {
-                RevitParameter param = new RevitParameter { Name = names[i], Value = values[i] };
+                RevitParameter param = new RevitParameter { Name = paramNames[i], Value = values[i] };
 
-                RevitParameter existingParam = fragment.Parameters.FirstOrDefault(x => x.Name == names[i]);
+                RevitParameter existingParam = fragment.Parameters.FirstOrDefault(x => x.Name == paramNames[i]);
                 if (existingParam != null)
                     fragment.Parameters[fragment.Parameters.IndexOf(existingParam)] = param;
                 else
