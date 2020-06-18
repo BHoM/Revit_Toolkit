@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             ICurve curve = framingElement?.Location;
-            if (curve == null || curve.ILength() <= settings.DistanceTolerance)
+            if (curve == null || (!(curve is NurbsCurve) && curve.ILength() <= settings.DistanceTolerance))
             {
                 framingElement.FramingCurveNotFoundWarning();
                 return null;
