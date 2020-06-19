@@ -45,21 +45,22 @@ namespace BH.Engine.Adapters.Revit
             if (bHoMObject == null)
                 return null;
 
+            List<RevitParameter> parameters = new List<RevitParameter> { new RevitParameter { Name = paramName, Value = value } };
+
+            RevitParametersToPush existingFragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
+            if (existingFragment != null)
+            {
+                foreach (RevitParameter parameter in existingFragment.Parameters)
+                {
+                    if (parameter.Name != paramName)
+                        parameters.Add(parameter);
+                }
+            }
+            
+            RevitParametersToPush fragment = new RevitParametersToPush { Parameters = parameters };
+
             IBHoMObject obj = bHoMObject.GetShallowClone();
             obj.Fragments = new FragmentSet(bHoMObject.Fragments.Where(x => !(x is RevitParametersToPush)).ToList());
-
-            RevitParametersToPush fragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
-            if (fragment == null)
-                fragment = new RevitParametersToPush();
-
-            RevitParameter param = new RevitParameter { Name = paramName, Value = value };
-
-            RevitParameter existingParam = fragment.Parameters.FirstOrDefault(x => x.Name == paramName);
-            if (existingParam != null)
-                fragment.Parameters[fragment.Parameters.IndexOf(existingParam)] = param;
-            else
-                fragment.Parameters.Add(param);
-
             obj.Fragments.Add(fragment);
             return obj;
         }
@@ -82,25 +83,44 @@ namespace BH.Engine.Adapters.Revit
                 return bHoMObject;
             }
 
-            IBHoMObject obj = bHoMObject.GetShallowClone();
-            obj.Fragments = new FragmentSet(bHoMObject.Fragments.Where(x => !(x is RevitParametersToPush)).ToList());
+            List<RevitParameter> parameters = paramNames.Zip(values, (x, y) => new RevitParameter { Name = x, Value = y }).ToList();
 
-            RevitParametersToPush fragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
-            if (fragment == null)
-                fragment = new RevitParametersToPush();
-
-            for (int i = 0; i < paramNames.Count; i++)
+            RevitParametersToPush existingFragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
+            if (existingFragment != null)
             {
-                RevitParameter param = new RevitParameter { Name = paramNames[i], Value = values[i] };
-
-                RevitParameter existingParam = fragment.Parameters.FirstOrDefault(x => x.Name == paramNames[i]);
-                if (existingParam != null)
-                    fragment.Parameters[fragment.Parameters.IndexOf(existingParam)] = param;
-                else
-                    fragment.Parameters.Add(param);
+                foreach (RevitParameter parameter in existingFragment.Parameters)
+                {
+                    if (paramNames.All(x => parameter.Name != x))
+                        parameters.Add(parameter);
+                }
             }
 
+            RevitParametersToPush fragment = new RevitParametersToPush { Parameters = parameters };
+
+            IBHoMObject obj = bHoMObject.GetShallowClone();
+            obj.Fragments = new FragmentSet(bHoMObject.Fragments.Where(x => !(x is RevitParametersToPush)).ToList());
             obj.Fragments.Add(fragment);
+            return obj;
+
+            //IBHoMObject obj = bHoMObject.GetShallowClone();
+            //obj.Fragments = new FragmentSet(bHoMObject.Fragments.Where(x => !(x is RevitParametersToPush)).ToList());
+
+            //RevitParametersToPush fragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
+            //if (fragment == null)
+            //    fragment = new RevitParametersToPush();
+
+            //for (int i = 0; i < paramNames.Count; i++)
+            //{
+            //    RevitParameter param = new RevitParameter { Name = paramNames[i], Value = values[i] };
+
+            //    RevitParameter existingParam = fragment.Parameters.FirstOrDefault(x => x.Name == paramNames[i]);
+            //    if (existingParam != null)
+            //        fragment.Parameters[fragment.Parameters.IndexOf(existingParam)] = param;
+            //    else
+            //        fragment.Parameters.Add(param);
+            //}
+
+            //obj.Fragments.Add(fragment);
             return obj;
         }
 
