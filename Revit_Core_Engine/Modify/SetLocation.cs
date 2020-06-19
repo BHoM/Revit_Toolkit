@@ -129,12 +129,12 @@ namespace BH.Revit.Engine.Core
                 double rotationParamValue = element.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
                 if (double.IsNaN(rotationParamValue))
                 {
-                    ElementTransformUtils.RotateElement(element.Document, element.Id, columnLine.ToRevit(), -rotationDifference.NormalizeAngleDomain(settings));
+                    ElementTransformUtils.RotateElement(element.Document, element.Id, columnLine.ToRevit(), -rotationDifference.NormalizeAngleDomain());
                     updated = true;
                 }
                 else
                 {
-                    double newRotation = (rotationParamValue + rotationDifference).NormalizeAngleDomain(settings);
+                    double newRotation = (rotationParamValue + rotationDifference).NormalizeAngleDomain();
                     updated |= element.SetParameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, newRotation);
                 }
             }
@@ -169,7 +169,7 @@ namespace BH.Revit.Engine.Core
             double rotationDifference = element.OrientationAngleFraming(settings) - rotation;
             if (Math.Abs(rotationDifference) > settings.AngleTolerance)
             {
-                double newRotation = (element.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE) + rotationDifference).NormalizeAngleDomain(settings);
+                double newRotation = (element.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE) + rotationDifference).NormalizeAngleDomain();
                 updated |= element.SetParameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, newRotation);
                 element.Document.Regenerate();
             }

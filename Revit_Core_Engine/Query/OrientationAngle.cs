@@ -68,7 +68,7 @@ namespace BH.Revit.Engine.Core
                     rotation = XYZ.BasisZ.AngleOnPlaneTo(transform.BasisY, transform.BasisZ);
             }
 
-            return rotation;
+            return rotation.NormalizeAngleDomain();
         }
 
         /***************************************************/
@@ -97,7 +97,7 @@ namespace BH.Revit.Engine.Core
                     rotation *= -1;
             }
 
-            return rotation.NormalizeAngleDomain(settings);
+            return rotation.NormalizeAngleDomain();
         }
         
         /***************************************************/
