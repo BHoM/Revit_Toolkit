@@ -123,9 +123,13 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
+            // Make sure the top is above base, otherwise Revit will complain for no reason.
+            familyInstance.get_Parameter((BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM)).Set(-1e+3);
+            familyInstance.get_Parameter((BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM)).Set(1e+3);
+
             familyInstance.CopyParameters(framingElement, settings);
             familyInstance.SetLocation(framingElement, settings);
-
+            
             refObjects.AddOrReplace(framingElement, familyInstance);
             return familyInstance;
         }
