@@ -195,7 +195,12 @@ namespace BH.Revit.Engine.Core
                             }
 
                             if (!double.IsNaN(dbl))
+                            {
+                                if (parameter.Id.IntegerValue == (int)BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE)
+                                    dbl = dbl.NormalizeAngleDomain();
+
                                 return parameter.Set(dbl);
+                            }
                         }
                         break;
                     }

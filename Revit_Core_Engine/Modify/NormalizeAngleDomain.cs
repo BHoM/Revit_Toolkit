@@ -31,7 +31,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static double NormalizeAngleDomain(this double orientationAngle, RevitSettings settings)
+        public static double NormalizeAngleDomain(this double orientationAngle)
         {
             orientationAngle = orientationAngle % (2 * Math.PI);
 
