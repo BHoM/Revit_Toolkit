@@ -91,6 +91,7 @@ namespace BH.Revit.Engine.Core
 
             if (propertyInfos != null)
             {
+                propertyInfos = propertyInfos.Where(x => x.PropertyType != typeof(double)).Union(propertyInfos.Where(x => x.PropertyType == typeof(double)));
                 foreach (PropertyInfo pInfo in propertyInfos)
                 {
                     object value = pInfo.GetValue(bHoMObject);
@@ -108,7 +109,8 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            foreach (RevitParameter param in fragment.Parameters)
+            // Sort the parameters so that doubles get assigned last, to make sure all reference levels etc. go first.
+            foreach (RevitParameter param in fragment.Parameters.Where(x => !(x.Value is double)).Union(fragment.Parameters.Where(x => x.Value is double)))
             {
                 IEnumerable<IParameterLink> parameterLinks = parameterMap.ParameterLinks(param.Name);
                 if (parameterLinks != null)
