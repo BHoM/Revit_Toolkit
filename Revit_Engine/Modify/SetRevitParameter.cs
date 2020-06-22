@@ -101,27 +101,6 @@ namespace BH.Engine.Adapters.Revit
             obj.Fragments = new FragmentSet(bHoMObject.Fragments.Where(x => !(x is RevitParametersToPush)).ToList());
             obj.Fragments.Add(fragment);
             return obj;
-
-            //IBHoMObject obj = bHoMObject.GetShallowClone();
-            //obj.Fragments = new FragmentSet(bHoMObject.Fragments.Where(x => !(x is RevitParametersToPush)).ToList());
-
-            //RevitParametersToPush fragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
-            //if (fragment == null)
-            //    fragment = new RevitParametersToPush();
-
-            //for (int i = 0; i < paramNames.Count; i++)
-            //{
-            //    RevitParameter param = new RevitParameter { Name = paramNames[i], Value = values[i] };
-
-            //    RevitParameter existingParam = fragment.Parameters.FirstOrDefault(x => x.Name == paramNames[i]);
-            //    if (existingParam != null)
-            //        fragment.Parameters[fragment.Parameters.IndexOf(existingParam)] = param;
-            //    else
-            //        fragment.Parameters.Add(param);
-            //}
-
-            //obj.Fragments.Add(fragment);
-            return obj;
         }
 
         /***************************************************/
