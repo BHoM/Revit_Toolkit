@@ -305,6 +305,7 @@
     <Compile Include="Query\ColumnExtensions.cs" />
     <Compile Include="Query\FramingOffsetVectors.cs" />
     <Compile Include="Query\Identifiers.cs" />
+    <Compile Include="Query\MaterialTakeoff.cs" />
     <Compile Include="Query\ParameterLink.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByExclusion.cs" />
     <Compile Include="Query\LocationCurve.cs" />

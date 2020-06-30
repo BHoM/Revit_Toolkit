@@ -105,7 +105,15 @@ namespace BH.Revit.Adapter.Core
                 
                 IEnumerable<IBHoMObject> iBHoMObjects = Read(element, discipline, revitSettings, refObjects);
                 if (iBHoMObjects != null && iBHoMObjects.Count() != 0)
-                { 
+                {
+                    if (discipline == Discipline.Physical)
+                    {
+                        foreach (IBHoMObject iBHoMObject in iBHoMObjects)
+                        {
+                            iBHoMObject.Fragments.AddOrReplace(element.MaterialTakeoff());
+                        }
+                    }
+
                     if (geometryConfig.PullEdges)
                     {
                         List<ICurve> edges = element.Curves(geometryOptions, revitSettings, true).FromRevit();

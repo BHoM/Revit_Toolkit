@@ -185,6 +185,7 @@
     <Compile Include="Query\Family.cs" />
     <Compile Include="Query\ParameterLinks.cs" />
     <Compile Include="Query\GetRevitIdentifiers.cs" />
+    <Compile Include="Query\RevitMaterialTakeoff.cs" />
     <Compile Include="Query\XDocument.cs" />
     <Compile Include="Query\RevitFilePreviews.cs" />
     <Compile Include="Query\CurrentDomainAssembly.cs" />
