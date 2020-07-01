@@ -71,6 +71,14 @@ namespace BH.Revit.Engine.Core
             if (element == null)
                 return null;
 
+            if (element.ViewSpecific)
+            {
+                bool includeNonVisible = options.IncludeNonVisibleObjects;
+                options = new Options();
+                options.IncludeNonVisibleObjects = includeNonVisible;
+                options.View = element.Document.GetElement(element.OwnerViewId) as View;
+            }
+
             GeometryElement geometryElement = element.get_Geometry(options);
             if (geometryElement == null)
                 return new List<GeometryObject>();
