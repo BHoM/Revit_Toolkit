@@ -53,6 +53,46 @@ namespace BH.Revit.Engine.Core
 
             Document doc = wall.Document;
 
+            if (wall.CurtainGrid != null)
+            {
+                CurtainGrid cg = wall.CurtainGrid;
+
+                List<Element> panels = cg.GetPanelIds().Select(x => doc.GetElement(x)).ToList();
+                List<CurtainCell> cells = cg.GetCurtainCells().ToList();
+
+                //TODO: check if same counts and error if not!
+                //TODO: SetIdentifiers and all that stuff, plus check if WindowFromPanel still useful?
+                //TODO: why originContextFragment on physical convert? 
+
+                List<BH.oM.Physical.Elements.IOpening> curtainPanels = new List<oM.Physical.Elements.IOpening>();
+                for (int i = 0; i < panels.Count; i++)
+                {
+                    foreach (PolyCurve pc in cells[i].PlanarizedCurveLoops.FromRevit())
+                    {
+                        if (panels[i].Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors)
+                            curtainPanels.Add(new BH.oM.Physical.Elements.Door { Location = new PlanarSurface(pc, null), Name = panels[i].FamilyTypeFullName() });
+                        else
+                            curtainPanels.Add(new BH.oM.Physical.Elements.Window { Location = new PlanarSurface(pc, null), Name = panels[i].FamilyTypeFullName() });
+                    }
+                }
+
+                //TODO: name, identifiers etc.
+
+                ISurface location;
+                if (curtainPanels.Count == 0)
+                {
+                    //TODO: return without geometry?
+                    location = null;
+                }
+                else if (curtainPanels.Count == 1)
+                    location = curtainPanels[0].Location;
+                else
+                    location = new PolySurface { Surfaces = curtainPanels.Select(x => x.Location).ToList() };
+
+                //TODO: some construction
+                return new oM.Physical.Elements.Wall { Location = location, Openings = curtainPanels };
+            }
+
             HostObjAttributes hostObjAttributes = doc.GetElement(wall.GetTypeId()) as HostObjAttributes;
             oM.Physical.Constructions.Construction construction = hostObjAttributes.ConstructionFromRevit(settings, refObjects);
             string materialGrade = wall.MaterialGrade(settings);
