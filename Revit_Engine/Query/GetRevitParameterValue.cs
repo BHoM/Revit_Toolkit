@@ -25,6 +25,7 @@ using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -65,6 +66,19 @@ namespace BH.Engine.Adapters.Revit
                 string paramName = string.Concat(parameterName.Where(c => !char.IsWhiteSpace(c)));
                 if (Reflection.Query.PropertyNames(identifierFragment).Contains(paramName))
                     return Reflection.Query.PropertyValue(identifierFragment, paramName);
+            }
+
+            List<object> bHoMPropList = Reflection.Query.PropertyObjects(bHoMObject);
+            List<IBHoMObject> bHoMProps = bHoMPropList.OfType<IBHoMObject>().ToList();
+            foreach (IBHoMObject bHoMProp in bHoMProps)
+            {
+                RevitPulledParameters typePullFragment = bHoMProp.Fragments?.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
+                if (typePullFragment?.Parameters != null)
+                {
+                    RevitParameter param = typePullFragment.Parameters.FirstOrDefault(x => x.Name == parameterName);
+                    if (param != null)
+                        return param.Value;
+                }
             }
 
             return null;
