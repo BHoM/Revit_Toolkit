@@ -59,6 +59,14 @@ namespace BH.Engine.Adapters.Revit
                     return param.Value;
             }
 
+            RevitIdentifiers identifierFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitIdentifiers) as RevitIdentifiers;
+            if (identifierFragment != null)
+            {
+                string paramName = string.Concat(parameterName.Where(c => !char.IsWhiteSpace(c)));
+                if (Reflection.Query.PropertyNames(identifierFragment).Contains(paramName))
+                    return Reflection.Query.PropertyValue(identifierFragment, paramName);
+            }
+
             return null;
         }
 
