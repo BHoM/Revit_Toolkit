@@ -136,7 +136,7 @@ namespace BH.Revit.Engine.Core
                     return wall.StructuralPanelsFromRevit(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return wall.WallsFromRevit(settings, refObjects);
+                    return new List<IBHoMObject> { wall.WallFromRevit(settings, refObjects) };
                 default:
                     return null;
             }

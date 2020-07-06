@@ -44,17 +44,15 @@ namespace BH.Revit.Engine.Core
             Window window = refObjects.GetValue<Window>(familyInstance.Id);
             if (window != null)
                 return window;
-
-            PolyCurve polycurve = familyInstance.PolyCurve(settings);
-            if (polycurve == null)
-                return null;
-
-            window = new Window()
-            {
-                Name = Query.FamilyTypeFullName(familyInstance),
-                Location = BH.Engine.Geometry.Create.PlanarSurface(polycurve)
-            };
             
+            PlanarSurface location = familyInstance.OpeningSurface(settings);
+            if (location == null)
+            {
+                //TODO: add to refobjects, throw warning, maybe return without geometry?
+                return null;
+            }
+
+            window = new Window { Location = location, Name = familyInstance.FamilyTypeFullName() };
             ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
 
             //Set ExtendedProperties
