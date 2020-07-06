@@ -45,17 +45,16 @@ namespace BH.Revit.Engine.Core
             if (door != null)
                 return door;
 
-            PolyCurve polycurve = familyInstance.PolyCurve(settings);
-            if (polycurve == null)
-                return null;
-
-            door = new Door()
+            PlanarSurface location = familyInstance.OpeningSurface(settings);
+            if (location == null)
             {
-                Name = familyInstance.FamilyTypeFullName(),
-                Location = BH.Engine.Geometry.Create.PlanarSurface(polycurve)
-            };
+                //TODO: add to refobjects, throw warning, maybe return without geometry?
+                return null;
+            }
 
+            door = new Door { Location = location, Name = familyInstance.FamilyTypeFullName() };
             ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
+
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment();
             originContext.ElementID = familyInstance.Id.IntegerValue.ToString();
