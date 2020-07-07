@@ -67,7 +67,10 @@ namespace BH.Revit.Engine.Core
                 List<BH.oM.Physical.Elements.IOpening> curtainPanels = new List<oM.Physical.Elements.IOpening>();
                 for (int i = 0; i < panels.Count; i++)
                 {
-                    foreach (PolyCurve pc in cells[i].PlanarizedCurveLoops.FromRevit())
+                    if (panels[i].get_BoundingBox(null) == null)
+                        continue;
+
+                    foreach (PolyCurve pc in cells[i].CurveLoops.FromRevit())
                     {
                         if (panels[i].Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors)
                             curtainPanels.Add(new BH.oM.Physical.Elements.Door { Location = new PlanarSurface(pc, null), Name = panels[i].FamilyTypeFullName() });
@@ -230,6 +233,7 @@ namespace BH.Revit.Engine.Core
             doc.Delete(inserts);
             doc.Regenerate();
 
+            //TODO: merge this with the method below?
             List<Solid> fullSolids = host.Solids(new Options()).SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
             if (!planeOnFace)
                 fullSolids = fullSolids.Select(x => BooleanOperationsUtils.CutWithHalfSpace(x, openingPlane)).ToList();
@@ -305,7 +309,12 @@ namespace BH.Revit.Engine.Core
 
             List<Solid> fullSolids = hostObject.Solids(new Options()).SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
             if (!planeOnFace)
-                fullSolids = fullSolids.Select(x => BooleanOperationsUtils.CutWithHalfSpace(x, plane)).ToList();
+            {
+                fullSolids.ForEach(x => BooleanOperationsUtils.CutWithHalfSpaceModifyingOriginalSolid(x, plane));
+                Autodesk.Revit.DB.Plane flippedPlane = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(-plane.Normal, plane.Origin + plane.Normal * 1e-3);
+                fullSolids.ForEach(x => BooleanOperationsUtils.CutWithHalfSpaceModifyingOriginalSolid(x, flippedPlane));
+                fullSolids = fullSolids.SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
+            }
 
             XYZ normal = plane.Normal;
             if (!planeOnFace)
