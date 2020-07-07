@@ -273,7 +273,7 @@
     <Compile Include="Convert\Physical\FromRevit\Material.cs" />
     <Compile Include="Convert\Physical\FromRevit\MaterialProperties.cs" />
     <Compile Include="Convert\Physical\FromRevit\Roofs.cs" />
-    <Compile Include="Convert\Physical\FromRevit\Walls.cs" />
+    <Compile Include="Convert\Physical\FromRevit\Wall.cs" />
     <Compile Include="Convert\Physical\FromRevit\Window.cs" />
     <Compile Include="Convert\Physical\ToRevit\HostObjAttributes.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilyInstance.cs" />
@@ -305,6 +305,9 @@
     <Compile Include="Query\ColumnExtensions.cs" />
     <Compile Include="Query\FramingOffsetVectors.cs" />
     <Compile Include="Query\Identifiers.cs" />
+    <Compile Include="Query\OpeningPlane.cs" />
+    <Compile Include="Query\OpeningSurface.cs" />
+    <Compile Include="Query\PanelSurfaces.cs" />
     <Compile Include="Query\ParameterLink.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByExclusion.cs" />
     <Compile Include="Query\LocationCurve.cs" />
