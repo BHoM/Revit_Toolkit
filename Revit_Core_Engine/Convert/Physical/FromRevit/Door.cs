@@ -27,6 +27,7 @@ using BH.oM.Base;
 using BH.oM.Environment.Fragments;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
+using System;
 using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
@@ -46,11 +47,7 @@ namespace BH.Revit.Engine.Core
                 return door;
 
             PlanarSurface location = familyInstance.OpeningSurface(settings);
-            if (location == null)
-            {
-                //TODO: add to refobjects, throw warning, maybe return without geometry?
-                return null;
-            }
+            BH.Engine.Reflection.Compute.RecordWarning(String.Format("Location of the door could not be retrieved from the model. A window object without location has been returned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
 
             door = new Door { Location = location, Name = familyInstance.FamilyTypeFullName() };
             ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;

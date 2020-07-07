@@ -300,14 +300,25 @@ namespace BH.Revit.Engine.Core
             doc.Regenerate();
 
             List<Solid> solidsWithOpenings = hostObject.Solids(new Options());
-            if (!planeOnFace)
-                solidsWithOpenings = solidsWithOpenings.Select(x => BooleanOperationsUtils.CutWithHalfSpace(x, plane)).ToList();
-            
-            //TODO: not needed if no insterts!
-            doc.Delete(inserts);
-            doc.Regenerate();
+            //if (!planeOnFace)
+            //    solidsWithOpenings = solidsWithOpenings.Select(x => BooleanOperationsUtils.CutWithHalfSpace(x, plane)).ToList();
 
-            List<Solid> fullSolids = hostObject.Solids(new Options()).SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
+            //TODO: not needed if no insterts!
+            List<Solid> fullSolids;
+
+            if (inserts.Count != 0)
+            {
+                solidsWithOpenings = solidsWithOpenings.Select(x => SolidUtils.Clone(x)).ToList();
+
+                doc.Delete(inserts);
+                doc.Regenerate();
+
+                fullSolids = hostObject.Solids(new Options());
+            }
+            else
+                fullSolids = solidsWithOpenings;
+
+            fullSolids = fullSolids.SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
             if (!planeOnFace)
             {
                 fullSolids.ForEach(x => BooleanOperationsUtils.CutWithHalfSpaceModifyingOriginalSolid(x, plane));
@@ -344,22 +355,25 @@ namespace BH.Revit.Engine.Core
                     }
                 }
 
-                foreach (Solid s2 in solidsWithOpenings)
+                if (inserts.Count != 0)
                 {
-                    BooleanOperationsUtils.ExecuteBooleanOperationModifyingOriginalSolid(s, s2, BooleanOperationsType.Difference);
-                }
-
-                foreach (Autodesk.Revit.DB.Face f in BooleanOperationsUtils.CutWithHalfSpace(s, plane).Faces)
-                {
-                    PlanarFace pf = f as PlanarFace;
-                    if (pf == null)
-                        continue;
-
-                    if (Math.Abs(1 - pf.FaceNormal.DotProduct(normal)) <= settings.AngleTolerance && Math.Abs((pf.Origin - plane.Origin).DotProduct(normal)) <= settings.AngleTolerance)
+                    foreach (Solid s2 in solidsWithOpenings)
                     {
-                        foreach (CurveLoop loop in pf.GetEdgesAsCurveLoops())
+                        BooleanOperationsUtils.ExecuteBooleanOperationModifyingOriginalSolid(s, s2, BooleanOperationsType.Difference);
+                    }
+
+                    foreach (Autodesk.Revit.DB.Face f in BooleanOperationsUtils.CutWithHalfSpace(s, plane).Faces)
+                    {
+                        PlanarFace pf = f as PlanarFace;
+                        if (pf == null)
+                            continue;
+
+                        if (Math.Abs(1 - pf.FaceNormal.DotProduct(normal)) <= settings.AngleTolerance && Math.Abs((pf.Origin - plane.Origin).DotProduct(normal)) <= settings.AngleTolerance)
                         {
-                            openings.Add(new PlanarSurface(loop.FromRevit(), null));
+                            foreach (CurveLoop loop in pf.GetEdgesAsCurveLoops())
+                            {
+                                openings.Add(new PlanarSurface(loop.FromRevit(), null));
+                            }
                         }
                     }
                 }
