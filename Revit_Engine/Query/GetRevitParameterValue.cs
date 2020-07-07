@@ -68,16 +68,22 @@ namespace BH.Engine.Adapters.Revit
                     return Reflection.Query.PropertyValue(identifierFragment, paramName);
             }
 
-            List<object> bHoMPropList = Reflection.Query.PropertyObjects(bHoMObject);
-            List<IBHoMObject> bHoMProps = bHoMPropList.OfType<IBHoMObject>().ToList();
-            foreach (IBHoMObject bHoMProp in bHoMProps)
+            Dictionary <string, object> bHoMPropDic = Reflection.Query.PropertyDictionary(bHoMObject);
+            foreach (KeyValuePair<string, object> bHoMPropEntry in bHoMPropDic)
             {
-                RevitPulledParameters typePullFragment = bHoMProp.Fragments?.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
-                if (typePullFragment?.Parameters != null)
+                IBHoMObject bHoMProp = bHoMPropEntry.Value as IBHoMObject;
+                if (bHoMProp != null)
                 {
-                    RevitParameter param = typePullFragment.Parameters.FirstOrDefault(x => x.Name == parameterName);
-                    if (param != null)
-                        return param.Value;
+                    RevitPulledParameters typePullFragment = bHoMProp.Fragments?.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
+                    if (typePullFragment?.Parameters != null)
+                    {
+                        RevitParameter param = typePullFragment.Parameters.FirstOrDefault(x => x.Name == parameterName);
+                        if (param != null)
+                        {
+                            Engine.Reflection.Compute.RecordWarning("The value for parameter " + parameterName + " for the object with BHoM_Guid " + bHoMObject.BHoM_Guid + " has been retrieved from its property " + bHoMPropEntry.Key + ".");
+                            return param.Value;
+                        }
+                    }
                 }
             }
 
