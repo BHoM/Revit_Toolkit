@@ -39,6 +39,9 @@ namespace BH.Revit.Engine.Core
 
         public static oM.Physical.Elements.Wall WallFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (wall == null)
+                return null;
+
             settings = settings.DefaultIfNull();
 
             oM.Physical.Elements.Wall bHoMWall = refObjects.GetValue<oM.Physical.Elements.Wall>(wall.Id);
@@ -121,34 +124,11 @@ namespace BH.Revit.Engine.Core
 
         private static oM.Physical.Elements.Wall CurtainWallFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            CurtainGrid cg = wall.CurtainGrid;
-
-            List<BH.oM.Physical.Elements.IOpening> curtainPanels = new List<oM.Physical.Elements.IOpening>();
-
-            List<Element> panels = cg.GetPanelIds().Select(x => wall.Document.GetElement(x)).ToList();
-            List<CurtainCell> cells = cg.GetCurtainCells().ToList();
-            if (panels.Count == cells.Count)
-            {
-                for (int i = 0; i < panels.Count; i++)
-                {
-                    if (panels[i].get_BoundingBox(null) == null)
-                        continue;
-
-                    foreach (PolyCurve pc in cells[i].CurveLoops.FromRevit())
-                    {
-                        if (panels[i].Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors)
-                            curtainPanels.Add(new BH.oM.Physical.Elements.Door { Location = new PlanarSurface(pc, null), Name = panels[i].FamilyTypeFullName() });
-                        else
-                            curtainPanels.Add(new BH.oM.Physical.Elements.Window { Location = new PlanarSurface(pc, null), Name = panels[i].FamilyTypeFullName() });
-                    }
-                }
-            }
-            else
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM wall without location has been returned. Revit ElementId: {0}", wall.Id.IntegerValue));
+            List<BH.oM.Physical.Elements.IOpening> curtainPanels = wall.CurtainGrid.CurtainPanels(wall.Document, settings, refObjects);
             
-            ISurface location;
-            if (curtainPanels.Count == 0)
-                location = null;
+            ISurface location = null;
+            if (curtainPanels == null || curtainPanels.Count == 0)
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM wall without location has been returned. Revit ElementId: {0}", wall.Id.IntegerValue));
             else if (curtainPanels.Count == 1)
                 location = curtainPanels[0].Location;
             else

@@ -65,21 +65,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this Panel panel, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            switch (discipline)
-            {
-                case Discipline.Architecture:
-                case Discipline.Environmental:
-                case Discipline.Physical:
-                    return panel.WindowFromRevit(settings, refObjects);
-                default:
-                    return null;
-            }
-        }
-
-        /***************************************************/
-
         public static IEnumerable<IBHoMObject> FromRevit(this FamilyInstance familyInstance, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)

@@ -38,6 +38,9 @@ namespace BH.Revit.Engine.Core
 
         public static oM.Physical.Elements.Floor FloorFromRevit(this Floor floor, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (floor == null)
+                return null;
+
             settings = settings.DefaultIfNull();
 
             oM.Physical.Elements.Floor bHoMFloor = refObjects.GetValue<oM.Physical.Elements.Floor>(floor.Id);

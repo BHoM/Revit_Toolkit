@@ -38,6 +38,9 @@ namespace BH.Revit.Engine.Core
 
         public static oM.Architecture.Elements.Ceiling CeilingFromRevit(this Ceiling ceiling, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (ceiling == null)
+                return null;
+
             settings = settings.DefaultIfNull();
 
             oM.Architecture.Elements.Ceiling bHoMCeiling = refObjects.GetValue<oM.Architecture.Elements.Ceiling>(ceiling.Id);
