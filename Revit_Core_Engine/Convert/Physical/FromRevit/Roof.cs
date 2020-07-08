@@ -25,6 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -38,17 +39,48 @@ namespace BH.Revit.Engine.Core
 
         public static oM.Physical.Elements.Roof RoofFromRevit(this RoofBase roof, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (roof == null)
+                return null;
+
             settings = settings.DefaultIfNull();
 
             oM.Physical.Elements.Roof bHoMRoof = refObjects.GetValue<oM.Physical.Elements.Roof>(roof.Id);
             if (bHoMRoof != null)
                 return bHoMRoof;
 
+            List<CurtainGrid> curtainGrids = roof.ICurtainGrids();
+            if (curtainGrids.Count != 0)
+                bHoMRoof = roof.CurtainRoofFromRevit(settings, refObjects);
+            else
+                bHoMRoof = roof.SolidRoofFromRevit(settings, refObjects);
+
+            if (bHoMRoof == null)
+                return null;
+
             HostObjAttributes hostObjAttributes = roof.Document.GetElement(roof.GetTypeId()) as HostObjAttributes;
             oM.Physical.Constructions.Construction construction = hostObjAttributes.ConstructionFromRevit(settings, refObjects);
             string materialGrade = roof.MaterialGrade(settings);
             construction = construction.UpdateMaterialProperties(hostObjAttributes, materialGrade, settings, refObjects);
+            bHoMRoof.Construction = construction;
 
+            bHoMRoof.Name = roof.FamilyTypeFullName();
+
+            //Set identifiers, parameters & custom data
+            bHoMRoof.SetIdentifiers(roof);
+            bHoMRoof.CopyParameters(roof, settings.ParameterSettings);
+            bHoMRoof.SetProperties(roof, settings.ParameterSettings);
+
+            refObjects.AddOrReplace(roof.Id, bHoMRoof);
+            return bHoMRoof;
+        }
+
+
+        /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
+
+        private static oM.Physical.Elements.Roof SolidRoofFromRevit(this RoofBase roof, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
             ISurface location = null;
             List<BH.oM.Physical.Elements.IOpening> openings = new List<oM.Physical.Elements.IOpening>();
 
@@ -83,16 +115,41 @@ namespace BH.Revit.Engine.Core
             else
                 roof.NoPanelLocationError();
 
-            bHoMRoof = new oM.Physical.Elements.Roof { Location = location, Openings = openings, Construction = construction };
-            bHoMRoof.Name = roof.FamilyTypeFullName();
+            return new oM.Physical.Elements.Roof { Location = location, Openings = openings };
+        }
 
-            //Set identifiers, parameters & custom data
-            bHoMRoof.SetIdentifiers(roof);
-            bHoMRoof.CopyParameters(roof, settings.ParameterSettings);
-            bHoMRoof.SetProperties(roof, settings.ParameterSettings);
+        /***************************************************/
 
-            refObjects.AddOrReplace(roof.Id, bHoMRoof);
-            return bHoMRoof;
+        private static oM.Physical.Elements.Roof CurtainRoofFromRevit(this RoofBase roof, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            List<BH.oM.Physical.Elements.IOpening> openings = new List<oM.Physical.Elements.IOpening>();
+            List<CurtainGrid> curtainGrids = roof.ICurtainGrids();
+
+            bool partFailed = false;
+            foreach (CurtainGrid cg in curtainGrids)
+            {
+                List<BH.oM.Physical.Elements.IOpening> curtainPanels = cg.CurtainPanels(roof.Document, settings, refObjects);
+                if (curtainPanels == null)
+                    partFailed = true;
+                else
+                    openings.AddRange(curtainPanels);
+            }
+
+            ISurface location = null;
+            if (openings == null || openings.Count == 0)
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Processing of panels of Revit curtain roof failed. BHoM roof without location has been returned. Revit ElementId: {0}", roof.Id.IntegerValue));
+            else
+            {
+                if (partFailed)
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Processing of panels of a Revit curtain roof failed. Parts of the geometry of the BHoM roof may be missing. Revit ElementId: {0}", roof.Id.IntegerValue));
+
+                if (openings.Count == 1)
+                    location = openings[0].Location;
+                else
+                    location = new PolySurface { Surfaces = openings.Select(x => x.Location).ToList() };
+            }
+
+            return new oM.Physical.Elements.Roof { Location = location, Openings = openings };
         }
 
         /***************************************************/

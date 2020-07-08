@@ -25,7 +25,6 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.Fragments;
-using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
@@ -40,6 +39,9 @@ namespace BH.Revit.Engine.Core
 
         public static Window WindowFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (familyInstance == null)
+                return null;
+
             settings = settings.DefaultIfNull();
 
             Window window = refObjects.GetValue<Window>(familyInstance.Id);
@@ -48,7 +50,7 @@ namespace BH.Revit.Engine.Core
 
             BH.oM.Geometry.ISurface location = familyInstance.OpeningSurface(settings);
             if (location == null)
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Location of the window could not be retrieved from the model (possibly it lies on a non-planar face). A window object without location has been returned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Location of the window could not be retrieved from the model (possibly it has zero area or lies on a non-planar face). A window object without location has been returned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
 
             window = new Window { Location = location, Name = familyInstance.FamilyTypeFullName() };
             ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
@@ -67,45 +69,6 @@ namespace BH.Revit.Engine.Core
             window.SetProperties(familyInstance, settings.ParameterSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, window);
-            return window;
-        }
-
-        /***************************************************/
-
-        public static Window WindowFromRevit(this Panel panel, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            settings = settings.DefaultIfNull();
-
-            Window window = refObjects.GetValue<Window>(panel.Id.IntegerValue);
-            if (window != null)
-                return window;
-
-            PolyCurve polycurve = panel.PolyCurve(settings);
-            if (polycurve == null)
-                return null;
-            
-            window = new Window()
-            {
-                Name = panel.FamilyTypeFullName(),
-                Location = BH.Engine.Geometry.Create.PlanarSurface(polycurve)
-            };
-            
-            ElementType elementType = panel.Document.GetElement(panel.GetTypeId()) as ElementType;
-
-            //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment();
-            originContext.ElementID = panel.Id.IntegerValue.ToString();
-            originContext.TypeName = panel.FamilyTypeFullName();
-            originContext.SetProperties(panel, settings.ParameterSettings);
-            originContext.SetProperties(elementType, settings.ParameterSettings);
-            window.Fragments.Add(originContext);
-
-            //Set identifiers, parameters & custom data
-            window.SetIdentifiers(panel);
-            window.CopyParameters(panel, settings.ParameterSettings);
-            window.SetProperties(panel, settings.ParameterSettings);
-
-            refObjects.AddOrReplace(panel.Id, window);
             return window;
         }
 

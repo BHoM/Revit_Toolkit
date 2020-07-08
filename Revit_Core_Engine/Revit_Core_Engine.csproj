@@ -303,6 +303,8 @@
     <Compile Include="Modify\SetType.cs" />
     <Compile Include="Query\AdjustedLocationCurve.cs" />
     <Compile Include="Query\ColumnExtensions.cs" />
+    <Compile Include="Query\CurtainGrids.cs" />
+    <Compile Include="Query\CurtainPanels.cs" />
     <Compile Include="Query\FramingOffsetVectors.cs" />
     <Compile Include="Query\Identifiers.cs" />
     <Compile Include="Query\OpeningSurface.cs" />

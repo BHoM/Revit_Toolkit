@@ -25,7 +25,6 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.Fragments;
-using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
@@ -40,6 +39,9 @@ namespace BH.Revit.Engine.Core
 
         public static Door DoorFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (familyInstance == null)
+                return null;
+
             settings = settings.DefaultIfNull();
 
             Door door = refObjects.GetValue<Door>(familyInstance.Id);
@@ -48,7 +50,7 @@ namespace BH.Revit.Engine.Core
 
             BH.oM.Geometry.ISurface location = familyInstance.OpeningSurface(settings);
             if (location == null)
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Location of the door could not be retrieved from the model (possibly it lies on a non-planar face). A door object without location has been returned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Location of the door could not be retrieved from the model (possibly it has zero area or lies on a non-planar face). A door object without location has been returned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
 
             door = new Door { Location = location, Name = familyInstance.FamilyTypeFullName() };
             ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
