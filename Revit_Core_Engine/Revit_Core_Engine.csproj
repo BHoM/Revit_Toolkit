@@ -268,11 +268,11 @@
     <Compile Include="Convert\Physical\FromRevit\Bracing.cs" />
     <Compile Include="Convert\Physical\FromRevit\Column.cs" />
     <Compile Include="Convert\Physical\FromRevit\Door.cs" />
-    <Compile Include="Convert\Physical\FromRevit\Floors.cs" />
+    <Compile Include="Convert\Physical\FromRevit\Floor.cs" />
     <Compile Include="Convert\Physical\FromRevit\Construction.cs" />
     <Compile Include="Convert\Physical\FromRevit\Material.cs" />
     <Compile Include="Convert\Physical\FromRevit\MaterialProperties.cs" />
-    <Compile Include="Convert\Physical\FromRevit\Roofs.cs" />
+    <Compile Include="Convert\Physical\FromRevit\Roof.cs" />
     <Compile Include="Convert\Physical\FromRevit\Wall.cs" />
     <Compile Include="Convert\Physical\FromRevit\Window.cs" />
     <Compile Include="Convert\Physical\ToRevit\HostObjAttributes.cs" />
@@ -316,7 +316,7 @@
     <Compile Include="Create\Options.cs" />
     <Compile Include="Compute\LoadFamily.cs" />
     <Compile Include="Modify\AddOrReplace.cs" />
-    <Compile Include="Convert\Architecture\FromRevit\Ceilings.cs" />
+    <Compile Include="Convert\Architecture\FromRevit\Ceiling.cs" />
     <Compile Include="Convert\Revit\FromRevit\ViewPlan.cs" />
     <Compile Include="Convert\Structure\FromRevit\MaterialFragment.cs" />
     <Compile Include="Convert\Revit\FromRevit\Viewport.cs" />

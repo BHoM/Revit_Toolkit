@@ -83,43 +83,36 @@ namespace BH.Revit.Engine.Core
             ISurface location = null;
             List<BH.oM.Physical.Elements.IOpening> openings = new List<oM.Physical.Elements.IOpening>();
 
-            Autodesk.Revit.DB.Line wallLine = (wall.Location as LocationCurve)?.Curve as Autodesk.Revit.DB.Line;
-            if (wallLine != null)
+            List<Element> inserts = (wall as HostObject).FindInserts(true, true, true, true).Select(x => wall.Document.GetElement(x)).ToList();
+            List<FamilyInstance> windows = inserts.Where(x => x is FamilyInstance && x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Windows).Cast<FamilyInstance>().ToList();
+            List<FamilyInstance> doors = inserts.Where(x => x is FamilyInstance && x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors).Cast<FamilyInstance>().ToList();
+
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = wall.PanelSurfaces(windows.Union(doors).Select(x => x.Id), settings);
+            if (surfaces != null && surfaces.Count != 0)
             {
-                XYZ normal = wallLine.Direction.CrossProduct(XYZ.BasisZ).Normalize();
-                Autodesk.Revit.DB.Plane plane = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(normal, wallLine.Origin);
-
-                List<Element> inserts = (wall as HostObject).FindInserts(true, true, true, true).Select(x => wall.Document.GetElement(x)).ToList();
-                List<FamilyInstance> windows = inserts.Where(x => x is FamilyInstance && x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Windows).Cast<FamilyInstance>().ToList();
-                List<FamilyInstance> doors = inserts.Where(x => x is FamilyInstance && x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors).Cast<FamilyInstance>().ToList();
-
-                Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = wall.PanelSurfaces(plane, false, windows.Union(doors).Select(x => x.Id), settings);
                 List<ISurface> locations = new List<ISurface>(surfaces.Keys);
-                if (locations.Count != 0)
+                if (locations.Count == 1)
+                    location = locations[0];
+                else
+                    location = new PolySurface { Surfaces = locations };
+
+                foreach (List<PlanarSurface> ps in surfaces.Values)
                 {
-                    foreach (List<PlanarSurface> ps in surfaces.Values)
-                    {
-                        openings.AddRange(ps.Select(x => new BH.oM.Physical.Elements.Void { Location = x }));
-                    }
+                    openings.AddRange(ps.Select(x => new BH.oM.Physical.Elements.Void { Location = x }));
+                }
 
-                    foreach (FamilyInstance window in windows)
-                    {
-                        openings.Add(window.WindowFromRevit(settings, refObjects));
-                    }
+                foreach (FamilyInstance window in windows)
+                {
+                    openings.Add(window.WindowFromRevit(settings, refObjects));
+                }
 
-                    foreach (FamilyInstance door in doors)
-                    {
-                        openings.Add(door.DoorFromRevit(settings, refObjects));
-                    }
-
-                    if (locations.Count == 1)
-                        location = locations[0];
-                    else
-                        location = new PolySurface { Surfaces = locations };
+                foreach (FamilyInstance door in doors)
+                {
+                    openings.Add(door.DoorFromRevit(settings, refObjects));
                 }
             }
             else
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Conversion of curved walls to BHoM is currently not supported. A BHoM wall without location has been returned. Revit ElementId: {0}", wall.Id.IntegerValue));
+                wall.NoPanelLocationError();
 
             return new oM.Physical.Elements.Wall { Location = location, Openings = openings };
         }
