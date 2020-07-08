@@ -305,8 +305,8 @@
     <Compile Include="Query\ColumnExtensions.cs" />
     <Compile Include="Query\FramingOffsetVectors.cs" />
     <Compile Include="Query\Identifiers.cs" />
-    <Compile Include="Query\OpeningPlane.cs" />
     <Compile Include="Query\OpeningSurface.cs" />
+    <Compile Include="Query\PanelPlanes.cs" />
     <Compile Include="Query\PanelSurfaces.cs" />
     <Compile Include="Query\ParameterLink.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByExclusion.cs" />
