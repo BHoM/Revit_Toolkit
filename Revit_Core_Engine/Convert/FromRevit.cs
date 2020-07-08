@@ -152,7 +152,7 @@ namespace BH.Revit.Engine.Core
                     return ceiling.EnvironmentPanelsFromRevit(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return ceiling.CeilingsFromRevit(settings, refObjects);
+                    return new List<IBHoMObject> { ceiling.CeilingFromRevit(settings, refObjects) };
                 default:
                     return null;
             }
@@ -170,7 +170,7 @@ namespace BH.Revit.Engine.Core
                     return floor.StructuralPanelsFromRevit(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return floor.FloorsFromRevit(settings, refObjects);
+                    return new List<IBHoMObject> { floor.FloorFromRevit(settings, refObjects) };
                 default:
                     return null;
             }
@@ -188,7 +188,7 @@ namespace BH.Revit.Engine.Core
                     return roofBase.StructuralPanelsFromRevit(settings, refObjects);
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return roofBase.RoofsFromRevit(settings, refObjects);
+                    return new List<IBHoMObject> { roofBase.RoofFromRevit(settings, refObjects) };
                 default:
                     return null;
             }
