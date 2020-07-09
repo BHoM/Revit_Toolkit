@@ -53,6 +53,7 @@ namespace BH.Revit.Engine.Core
                 inserts = inserts.Where(x => insertsToIgnore.All(y => x.IntegerValue != y.IntegerValue)).ToList();
 
             Transaction t = new Transaction(doc);
+            FailureHandlingOptions failureHandlingOptions = t.GetFailureHandlingOptions().SetClearAfterRollback(true);
             t.Start("Temp Delete Inserts And Unjoin Geometry");
 
             foreach (ElementId id in JoinGeometryUtils.GetJoinedElements(doc, hostObject))
@@ -137,7 +138,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            t.RollBack();
+            t.RollBack(failureHandlingOptions);
             return result;
         }
 
