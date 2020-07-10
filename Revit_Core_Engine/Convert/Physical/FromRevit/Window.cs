@@ -49,7 +49,8 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            Window window = refObjects.GetValue<Window>(familyInstance.Id);
+            string refId = familyInstance.Id.ReferenceIdentifier(host);
+            Window window = refObjects.GetValue<Window>(refId);
             if (window != null)
                 return window;
 
@@ -78,7 +79,7 @@ namespace BH.Revit.Engine.Core
             window.CopyParameters(familyInstance, settings.ParameterSettings);
             window.SetProperties(familyInstance, settings.ParameterSettings);
 
-            refObjects.AddOrReplace(familyInstance.Id, window);
+            refObjects.AddOrReplace(refId, window);
             return window;
         }
 

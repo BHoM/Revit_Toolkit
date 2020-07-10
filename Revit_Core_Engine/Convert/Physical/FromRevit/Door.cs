@@ -49,7 +49,8 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            Door door = refObjects.GetValue<Door>(familyInstance.Id);
+            string refId = familyInstance.Id.ReferenceIdentifier(host);
+            Door door = refObjects.GetValue<Door>(refId);
             if (door != null)
                 return door;
 
@@ -78,7 +79,7 @@ namespace BH.Revit.Engine.Core
             door.CopyParameters(familyInstance, settings.ParameterSettings);
             door.SetProperties(familyInstance, settings.ParameterSettings);
 
-            refObjects.AddOrReplace(familyInstance.Id, door);
+            refObjects.AddOrReplace(refId, door);
             return door;
         }
 
