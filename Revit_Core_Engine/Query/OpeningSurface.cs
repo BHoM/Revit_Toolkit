@@ -114,43 +114,51 @@ namespace BH.Revit.Engine.Core
                 t.Start();
 
                 List<CurveLoop> loops = new List<CurveLoop>();
-                inserts.Add(familyInstance.Id);
-                doc.Delete(inserts);
-                doc.Regenerate();
-
-                for (int i = 0; i < hosts.Count; i++)
+                try
                 {
-                    HostObject h = hosts[i];
+                    inserts.Add(familyInstance.Id);
+                    doc.Delete(inserts);
+                    doc.Regenerate();
 
-                    List<Autodesk.Revit.DB.Plane> planes = h.IPanelPlanes();
-                    if (planes.Count == 0)
-                        continue;
-
-                    List<Solid> fullSolids = h.Solids(new Options()).SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
-                    if (h is Wall)
+                    for (int i = 0; i < hosts.Count; i++)
                     {
-                        fullSolids = fullSolids.Select(x => BooleanOperationsUtils.CutWithHalfSpace(x, planes[0])).ToList();
-                        planes[0] = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(-planes[0].Normal, planes[0].Origin);
-                    }
+                        HostObject h = hosts[i];
 
-                    foreach (Solid s in fullSolids)
-                    {
-                        foreach (Solid s2 in solidsWithOpening[i])
+                        List<Autodesk.Revit.DB.Plane> planes = h.IPanelPlanes();
+                        if (planes.Count == 0)
+                            continue;
+
+                        List<Solid> fullSolids = h.Solids(new Options()).SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
+                        if (h is Wall)
                         {
-                            BooleanOperationsUtils.ExecuteBooleanOperationModifyingOriginalSolid(s, s2, BooleanOperationsType.Difference);
+                            fullSolids = fullSolids.Select(x => BooleanOperationsUtils.CutWithHalfSpace(x, planes[0])).ToList();
+                            planes[0] = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(-planes[0].Normal, planes[0].Origin);
                         }
 
-                        foreach (Autodesk.Revit.DB.Face f in s.Faces)
+                        foreach (Solid s in fullSolids)
                         {
-                            PlanarFace pf = f as PlanarFace;
-                            if (pf == null)
-                                continue;
+                            foreach (Solid s2 in solidsWithOpening[i])
+                            {
+                                BooleanOperationsUtils.ExecuteBooleanOperationModifyingOriginalSolid(s, s2, BooleanOperationsType.Difference);
+                            }
 
-                            if (planes.Any(x => Math.Abs(1 - pf.FaceNormal.DotProduct(x.Normal)) <= settings.DistanceTolerance && Math.Abs((pf.Origin - x.Origin).DotProduct(x.Normal)) <= settings.AngleTolerance))
-                                loops.AddRange(pf.GetEdgesAsCurveLoops());
+                            foreach (Autodesk.Revit.DB.Face f in s.Faces)
+                            {
+                                PlanarFace pf = f as PlanarFace;
+                                if (pf == null)
+                                    continue;
+
+                                if (planes.Any(x => Math.Abs(1 - pf.FaceNormal.DotProduct(x.Normal)) <= settings.DistanceTolerance && Math.Abs((pf.Origin - x.Origin).DotProduct(x.Normal)) <= settings.AngleTolerance))
+                                    loops.AddRange(pf.GetEdgesAsCurveLoops());
+                            }
                         }
+
                     }
 
+                }
+                catch
+                {
+                    BH.Engine.Reflection.Compute.RecordError(String.Format("Geometrical processing of a Revit element failed due to an internal Revit error. Converted opening might be missing one or more of its surfaces. Revit ElementId: {0}", familyInstance.Id));
                 }
 
                 t.RollBack(failureHandlingOptions);
