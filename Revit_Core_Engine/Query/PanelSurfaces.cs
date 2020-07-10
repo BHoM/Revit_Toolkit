@@ -96,24 +96,12 @@ namespace BH.Revit.Engine.Core
                 fullSolids = fullSolids.SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
                 planes[0] = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(-planes[0].Normal, planes[0].Origin);
             }
-
-            List<Solid> openingVolumes = new List<Solid>();
-            if (inserts.Count != 0)
+            
+            foreach (Autodesk.Revit.DB.Plane plane in planes)
             {
                 foreach (Solid s in fullSolids)
                 {
-                    foreach (Solid s2 in solidsWithOpenings)
-                    {
-                        openingVolumes.Add(BooleanOperationsUtils.ExecuteBooleanOperation(s, s2, BooleanOperationsType.Difference));
-                    }
-                }
-            }
-
-            foreach(Autodesk.Revit.DB.Plane plane in planes)
-            {
-                List<CurveLoop> loops = new List<CurveLoop>();
-                foreach (Solid s in fullSolids.Union(openingVolumes))
-                {
+                    List<CurveLoop> loops = new List<CurveLoop>();
                     foreach (Autodesk.Revit.DB.Face f in s.Faces)
                     {
                         PlanarFace pf = f as PlanarFace;
@@ -123,15 +111,40 @@ namespace BH.Revit.Engine.Core
                         if (Math.Abs(1 - pf.FaceNormal.DotProduct(plane.Normal)) <= settings.DistanceTolerance && Math.Abs((pf.Origin - plane.Origin).DotProduct(plane.Normal)) <= settings.AngleTolerance)
                             loops.AddRange(pf.GetEdgesAsCurveLoops());
                     }
-                }
-                
-                foreach (IList<CurveLoop> loopSet in ExporterIFCUtils.SortCurveLoops(loops))
-                {
-                    PlanarSurface surface = new PlanarSurface(loopSet[0].FromRevit(), null);
+
+                    CurveLoop outline = loops.FirstOrDefault(x => x.IsCounterclockwise(plane.Normal));
+                    PlanarSurface surface = new PlanarSurface(outline.FromRevit(), null);
                     List<PlanarSurface> openings = new List<PlanarSurface>();
-                    foreach (CurveLoop loop in loopSet.Skip(1))
+                    foreach (CurveLoop loop in loops.Where(x => x != outline))
                     {
                         openings.Add(new PlanarSurface(loop.FromRevit(), null));
+                    }
+                    
+                    if (inserts.Count != 0)
+                    {
+                        List<Solid> openingVolumes = new List<Solid>();
+                        foreach (Solid s2 in solidsWithOpenings)
+                        {
+                            openingVolumes.Add(BooleanOperationsUtils.ExecuteBooleanOperation(s, s2, BooleanOperationsType.Difference));
+                        }
+
+                        foreach (Solid s2 in openingVolumes)
+                        {
+                            foreach (Autodesk.Revit.DB.Face f in s2.Faces)
+                            {
+                                PlanarFace pf = f as PlanarFace;
+                                if (pf == null)
+                                    continue;
+
+                                if (Math.Abs(1 - pf.FaceNormal.DotProduct(plane.Normal)) <= settings.DistanceTolerance && Math.Abs((pf.Origin - plane.Origin).DotProduct(plane.Normal)) <= settings.AngleTolerance)
+                                {
+                                    foreach (CurveLoop cl in pf.GetEdgesAsCurveLoops())
+                                    {
+                                        openings.Add(new PlanarSurface(cl.FromRevit(), null));
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     result.Add(surface, openings);

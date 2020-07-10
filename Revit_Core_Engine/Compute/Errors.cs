@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
 
         internal static void NoPanelLocationError(this Element element)
         {
-            BH.Engine.Reflection.Compute.RecordError(string.Format("Geometry of the {0} could not be converted to BHoM, and therefore the output BHoM object will have empty location. Please note that BHoM panel conversion supports only planar faces. Revit ElementId: {1}", element.GetType().Name, element.Id.IntegerValue));
+            BH.Engine.Reflection.Compute.RecordError(string.Format("Location of the Revit {0} could not be converted to BHoM, and therefore the output BHoM object will have empty location and no openings. Please note that BHoM panel conversion supports only planar faces. Revit ElementId: {1}", element.GetType().Name, element.Id.IntegerValue));
         }
 
         /***************************************************/

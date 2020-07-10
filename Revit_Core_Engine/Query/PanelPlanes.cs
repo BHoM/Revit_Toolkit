@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
         {
             Line line = (wall.Location as LocationCurve)?.Curve as Line;
             if (line == null)
-                return null;
+                return new List<Plane>();
 
             return new List<Plane> { Plane.CreateByNormalAndOrigin(line.Direction.CrossProduct(XYZ.BasisZ), line.Origin) };
         }
@@ -103,8 +103,8 @@ namespace BH.Revit.Engine.Core
 
         private static List<Plane> PanelPlanes(this HostObject hostObject)
         {
-            BH.Engine.Reflection.Compute.RecordError(String.Format("Querying panel locations for Revit elements of type {0} is currently not supported. Revit ElementId: {1}", hostObject.GetType().Name, hostObject.Id.IntegerValue));
-            return null;
+            BH.Engine.Reflection.Compute.RecordError(String.Format("Querying panel locations for Revit elements of type {0} is currently not supported.", hostObject.GetType().Name));
+            return new List<Plane>();
         }
 
         /***************************************************/
