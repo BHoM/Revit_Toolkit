@@ -39,6 +39,11 @@ namespace BH.Revit.Engine.Core
 
         public static Window WindowFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            return familyInstance.WindowFromRevit(null, settings, refObjects);
+        }
+
+        public static Window WindowFromRevit(this FamilyInstance familyInstance, HostObject host = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
             if (familyInstance == null)
                 return null;
 
@@ -48,9 +53,14 @@ namespace BH.Revit.Engine.Core
             if (window != null)
                 return window;
 
-            BH.oM.Geometry.ISurface location = familyInstance.OpeningSurface(settings);
+            BH.oM.Geometry.ISurface location = familyInstance.OpeningSurface(host, settings);
             if (location == null)
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Location of the window could not be retrieved from the model (possibly it has zero area or lies on a non-planar face). A window object without location has been returned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
+            {
+                if (host == null)
+                    BH.Engine.Reflection.Compute.RecordError(String.Format("Location of the window could not be retrieved from the model (possibly it has zero area or lies on a non-planar face). A window object without location has been returned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
+                else
+                    return null;
+            }
 
             window = new Window { Location = location, Name = familyInstance.FamilyTypeFullName() };
             ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;

@@ -55,35 +55,52 @@ namespace BH.Revit.Engine.Core
             ISurface location = null;
             List<BH.oM.Physical.Elements.IOpening> openings = new List<oM.Physical.Elements.IOpening>();
 
-            List<Element> inserts = (floor as HostObject).FindInserts(true, true, true, true).Select(x => floor.Document.GetElement(x)).ToList();
-            List<FamilyInstance> windows = inserts.Where(x => x is FamilyInstance && x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Windows).Cast<FamilyInstance>().ToList();
-            List<FamilyInstance> doors = inserts.Where(x => x is FamilyInstance && x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors).Cast<FamilyInstance>().ToList();
-
-            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = floor.PanelSurfaces(windows.Union(doors).Select(x => x.Id), settings);
-            if (surfaces != null && surfaces.Count != 0)
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = null;
+            BoundingBoxXYZ bbox = floor.get_BoundingBox(null);
+            if (bbox != null)
             {
-                List<ISurface> locations = new List<ISurface>(surfaces.Keys);
-                if (locations.Count == 1)
-                    location = locations[0];
+                BoundingBoxIntersectsFilter bbif = new BoundingBoxIntersectsFilter(new Outline(bbox.Min, bbox.Max));
+                IList<ElementId> insertIds = (floor as HostObject).FindInserts(true, true, true, true);
+                List<Element> inserts;
+                if (insertIds.Count == 0)
+                    inserts = new List<Element>();
                 else
-                    location = new PolySurface { Surfaces = locations };
+                    inserts = new FilteredElementCollector(floor.Document, insertIds).WherePasses(bbif).ToList();
 
-                foreach (List<PlanarSurface> ps in surfaces.Values)
-                {
-                    openings.AddRange(ps.Select(x => new BH.oM.Physical.Elements.Void { Location = x }));
-                }
+                List<FamilyInstance> windows = inserts.Where(x => x is FamilyInstance && x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Windows).Cast<FamilyInstance>().ToList();
+                List<FamilyInstance> doors = inserts.Where(x => x is FamilyInstance && x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors).Cast<FamilyInstance>().ToList();
 
-                foreach (FamilyInstance window in windows)
+                surfaces = floor.PanelSurfaces(windows.Union(doors).Select(x => x.Id), settings);
+                if (surfaces != null)
                 {
-                    openings.Add(window.WindowFromRevit(settings, refObjects));
-                }
+                    List<ISurface> locations = new List<ISurface>(surfaces.Keys);
+                    if (locations.Count == 1)
+                        location = locations[0];
+                    else
+                        location = new PolySurface { Surfaces = locations };
 
-                foreach (FamilyInstance door in doors)
-                {
-                    openings.Add(door.DoorFromRevit(settings, refObjects));
+                    foreach (List<PlanarSurface> ps in surfaces.Values)
+                    {
+                        openings.AddRange(ps.Select(x => new BH.oM.Physical.Elements.Void { Location = x }));
+                    }
+
+                    foreach (FamilyInstance window in windows)
+                    {
+                        BH.oM.Physical.Elements.Window bHoMWindow = window.WindowFromRevit(floor, settings, refObjects);
+                        if (bHoMWindow != null)
+                            openings.Add(bHoMWindow);
+                    }
+
+                    foreach (FamilyInstance door in doors)
+                    {
+                        BH.oM.Physical.Elements.Door bHoMDoor = door.DoorFromRevit(floor, settings, refObjects);
+                        if (bHoMDoor != null)
+                            openings.Add(bHoMDoor);
+                    }
                 }
             }
-            else
+
+            if (surfaces == null || surfaces.Count == 0)
                 floor.NoPanelLocationError();
 
             bHoMFloor = new oM.Physical.Elements.Floor { Location = location, Openings = openings, Construction = construction };
