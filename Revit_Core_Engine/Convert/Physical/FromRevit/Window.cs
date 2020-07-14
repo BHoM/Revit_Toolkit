@@ -63,7 +63,6 @@ namespace BH.Revit.Engine.Core
             }
 
             window = new Window { Location = location, Name = familyInstance.FamilyTypeFullName() };
-            ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
             
             //Set identifiers, parameters & custom data
             window.SetIdentifiers(familyInstance);
