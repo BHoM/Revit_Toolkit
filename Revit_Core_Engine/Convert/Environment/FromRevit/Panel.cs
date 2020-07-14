@@ -47,11 +47,12 @@ namespace BH.Revit.Engine.Core
             if (panel != null)
                 return panel;
 
-            PolyCurve polycurve = familyInstance.PolyCurve(settings);
-            if (polycurve == null)
+            PlanarSurface openingSurface = familyInstance.OpeningSurface(null, settings) as PlanarSurface;
+            ICurve outline = openingSurface?.ExternalBoundary;
+            if (outline == null)
                 return null;
-
-            panel = BH.Engine.Environment.Create.Panel(externalEdges: polycurve.ToEdges());
+            
+            panel = BH.Engine.Environment.Create.Panel(externalEdges: outline.ToEdges());
             panel.Name = familyInstance.FamilyTypeFullName();
 
             //Set ExtendedProperties
@@ -100,20 +101,18 @@ namespace BH.Revit.Engine.Core
             if (panels != null && panels.Count != 0)
                 return panels;
 
-            List<PolyCurve> polycurves = ceiling.Profiles(settings);
-            if (polycurves == null)
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = ceiling.PanelSurfaces(ceiling.FindInserts(true, true, true, true), settings);
+            if (surfaces == null)
                 return panels;
-
-            panels = new List<oM.Environment.Elements.Panel>();
 
             CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
             BH.oM.Physical.Constructions.Construction construction = ceilingType.ConstructionFromRevit(settings, refObjects);
-
-            List<PolyCurve> polycurveListOuter = polycurves.OuterPolyCurves();
-            foreach (ICurve curve in polycurveListOuter)
+            
+            panels = new List<oM.Environment.Elements.Panel>();
+            foreach (PlanarSurface surface in surfaces.Keys)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: curve.ToEdges());
+                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: surface.ExternalBoundary.ToEdges());
                 panel.Name = ceiling.FamilyTypeFullName();
 
                 //Set ExtendedProperties
@@ -162,21 +161,18 @@ namespace BH.Revit.Engine.Core
             if (panels != null && panels.Count != 0)
                 return panels;
 
-            List<PolyCurve> polycurves = floor.Profiles(settings);
-            if (polycurves == null)
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = floor.PanelSurfaces(floor.FindInserts(true, true, true, true), settings);
+            if (surfaces == null)
                 return panels;
 
+            FloorType floorType = floor.FloorType;
+            BH.oM.Physical.Constructions.Construction construction = floorType.ConstructionFromRevit(settings, refObjects);
+            
             panels = new List<oM.Environment.Elements.Panel>();
-
-            BH.oM.Physical.Constructions.Construction construction = floor.FloorType.ConstructionFromRevit(settings, refObjects);
-
-            FloorType floorType = floor.Document.GetElement(floor.GetTypeId()) as FloorType;
-
-            List<PolyCurve> polycurveListOuter = polycurves.OuterPolyCurves();
-            foreach (ICurve curve in polycurveListOuter)
+            foreach (PlanarSurface surface in surfaces.Keys)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: curve.ToEdges());
+                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: surface.ExternalBoundary.ToEdges());
                 panel.Name = floor.FamilyTypeFullName();
 
                 //Set ExtendedProperties
@@ -226,19 +222,17 @@ namespace BH.Revit.Engine.Core
             if (panels != null && panels.Count > 0)
                 return panels;
 
-            List<PolyCurve> polycurves = roofBase.Profiles(settings);
-            if (polycurves == null)
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = roofBase.PanelSurfaces(roofBase.FindInserts(true, true, true, true), settings);
+            if (surfaces == null)
                 return panels;
-
-            panels = new List<oM.Environment.Elements.Panel>();
-
+            
             BH.oM.Physical.Constructions.Construction construction = roofBase.RoofType.ConstructionFromRevit(settings, refObjects);
 
-            List<PolyCurve> polycurvesListOuter = polycurves.OuterPolyCurves();
-            foreach (ICurve curve in polycurvesListOuter)
+            panels = new List<oM.Environment.Elements.Panel>();
+            foreach (PlanarSurface surface in surfaces.Keys)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: curve.ToEdges());
+                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: surface.ExternalBoundary.ToEdges());
                 panel.Name = roofBase.FamilyTypeFullName();
 
                 //Set ExtendedProperties
@@ -291,17 +285,17 @@ namespace BH.Revit.Engine.Core
             if (wall.StackedWallOwnerId != null && wall.StackedWallOwnerId != ElementId.InvalidElementId)
                 return null;
 
-            panels = new List<oM.Environment.Elements.Panel>();
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = wall.PanelSurfaces(wall.FindInserts(true, true, true, true), settings);
+            if (surfaces == null)
+                return panels;
 
             BH.oM.Physical.Constructions.Construction constrtuction = wall.WallType.ConstructionFromRevit(settings, refObjects);
-
-            List<PolyCurve> polycurves = wall.Profiles(settings);
-            List<PolyCurve> polycurveListOuter = polycurves.OuterPolyCurves();
-
-            foreach (ICurve curve in polycurveListOuter)
+            
+            panels = new List<oM.Environment.Elements.Panel>();
+            foreach (PlanarSurface surface in surfaces.Keys)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: curve.ToEdges());
+                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: surface.ExternalBoundary.ToEdges());
                 panel.Name = wall.FamilyTypeFullName();
 
                 //Set ExtendedProperties
