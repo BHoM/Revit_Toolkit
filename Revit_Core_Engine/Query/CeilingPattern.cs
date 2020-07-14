@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
             if (surface == null)
             {
                 //This would need to be extended to take openings from Values into account
-                foreach (PlanarSurface srf in ceiling.PlanarSurfaceDictionary(false, settings).Keys)
+                foreach (PlanarSurface srf in ceiling.PanelSurfaces(ceiling.FindInserts(true, true, true, true), settings).Keys)
                 {
                     result.AddRange(material.CeilingPattern(srf, settings));
                 }
