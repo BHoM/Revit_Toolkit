@@ -24,7 +24,6 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Environment.Fragments;
 using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
@@ -65,15 +64,7 @@ namespace BH.Revit.Engine.Core
 
             window = new Window { Location = location, Name = familyInstance.FamilyTypeFullName() };
             ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
-
-            //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment();
-            originContext.ElementID = familyInstance.Id.IntegerValue.ToString();
-            originContext.TypeName = familyInstance.FamilyTypeFullName();
-            originContext.SetProperties(familyInstance, settings.ParameterSettings);
-            originContext.SetProperties(elementType, settings.ParameterSettings);
-            window.Fragments.Add(originContext);
-
+            
             //Set identifiers, parameters & custom data
             window.SetIdentifiers(familyInstance);
             window.CopyParameters(familyInstance, settings.ParameterSettings);
