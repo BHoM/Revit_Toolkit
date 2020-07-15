@@ -50,13 +50,13 @@ namespace BH.Revit.Engine.Core
             IMaterialFragment materialFragment = null;
             double thickness = 0;
 
-            CompoundStructure compoundStructure = hostObjAttributes.GetCompoundStructure();
+            IList<CompoundStructureLayer> compoundStructure = hostObjAttributes.GetCompoundStructure()?.GetLayers();
             if (compoundStructure != null)
             {
                 bool composite = false;
                 bool nonStructuralLayers = false;
 
-                foreach (CompoundStructureLayer csl in hostObjAttributes.GetCompoundStructure().GetLayers())
+                foreach (CompoundStructureLayer csl in compoundStructure)
                 {
                     if (csl.Function == MaterialFunctionAssignment.Structure)
                     {
