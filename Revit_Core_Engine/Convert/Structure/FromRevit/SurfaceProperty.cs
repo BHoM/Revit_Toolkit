@@ -26,6 +26,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.SurfaceProperties;
+using System;
 using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
@@ -46,63 +47,66 @@ namespace BH.Revit.Engine.Core
             if (constantThickness != null)
                 return constantThickness;
 
-            double thickness = 0;
             IMaterialFragment materialFragment = null;
+            double thickness = 0;
 
-            bool composite = false;
-            foreach (CompoundStructureLayer csl in hostObjAttributes.GetCompoundStructure().GetLayers())
+            CompoundStructure compoundStructure = hostObjAttributes.GetCompoundStructure();
+            if (compoundStructure != null)
             {
-                if (csl.Function == MaterialFunctionAssignment.Structure)
+                bool composite = false;
+                bool nonStructuralLayers = false;
+
+                foreach (CompoundStructureLayer csl in hostObjAttributes.GetCompoundStructure().GetLayers())
                 {
-                    if (thickness != 0)
+                    if (csl.Function == MaterialFunctionAssignment.Structure)
                     {
-                        composite = true;
-                        thickness = 0;
-                        break;
-                    }
+                        if (thickness != 0)
+                        {
+                            composite = true;
+                            thickness = 0;
+                            break;
+                        }
 
-                    thickness = csl.Width.ToSI(UnitType.UT_Section_Dimension);
+                        thickness = csl.Width.ToSI(UnitType.UT_Section_Dimension);
 
-                    Material revitMaterial = document.GetElement(csl.MaterialId) as Material;
-                    if (revitMaterial == null)
-                    {
-                        BH.Engine.Reflection.Compute.RecordWarning("There is a structural layer in wall/floor type without material assigned. A default empty material is returned. ElementId: " + hostObjAttributes.Id.IntegerValue.ToString());
-                        materialFragment = Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined.EmptyMaterialFragment();
+                        Material revitMaterial = document.GetElement(csl.MaterialId) as Material;
+                        if (revitMaterial == null)
+                        {
+                            BH.Engine.Reflection.Compute.RecordWarning("There is a structural layer in wall/floor type without material assigned. A default empty material is returned. ElementId: " + hostObjAttributes.Id.IntegerValue.ToString());
+                            materialFragment = Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined.EmptyMaterialFragment();
+                        }
+                        else
+                        {
+                            Autodesk.Revit.DB.Structure.StructuralMaterialType structuralMaterialType = revitMaterial.MaterialClass.StructuralMaterialType();
+                            materialFragment = structuralMaterialType.LibraryMaterial(materialGrade);
+
+                            if (materialFragment == null)
+                                materialFragment = revitMaterial.MaterialFragmentFromRevit(null, settings, refObjects);
+
+                            if (materialFragment == null)
+                            {
+                                Compute.InvalidDataMaterialWarning(hostObjAttributes);
+                                materialFragment = structuralMaterialType.EmptyMaterialFragment();
+                            }
+                        }
+
                     }
+                    else if (csl.Function == MaterialFunctionAssignment.StructuralDeck)
+                        BH.Engine.Reflection.Compute.RecordWarning(String.Format("A structural deck layer has been found in the Revit compound structure, but was ignored on convert. Revit ElementId: {0}", hostObjAttributes.Id));
                     else
-                    {
-                        Autodesk.Revit.DB.Structure.StructuralMaterialType structuralMaterialType = revitMaterial.MaterialClass.StructuralMaterialType();
-                        materialFragment = structuralMaterialType.LibraryMaterial(materialGrade);
-                        
-                        if (materialFragment == null)
-                        {
-                            //Compute.MaterialNotInLibraryNote(familyInstance);
-                            materialFragment = revitMaterial.MaterialFragmentFromRevit(null, settings, refObjects);
-                        }
+                        nonStructuralLayers = true;
+                }
 
-                        if (materialFragment == null)
-                        {
-                            Compute.InvalidDataMaterialWarning(hostObjAttributes);
-                            materialFragment = structuralMaterialType.EmptyMaterialFragment();
-                        }
-                    }
+                if (nonStructuralLayers)
+                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("Layers marked as nonstructural have been found in the Revit compound structure and were ignored on convert. Revit ElementId: {0}", hostObjAttributes.Id));
 
-                }
-                else if (csl.Function == MaterialFunctionAssignment.StructuralDeck)
-                {
-                    //TODO: warning that a composite deck here + action appropriately
-                }
-                else
-                {
-                    //TODO: warning that nonstructural layers exist and are skipped
-                }
+                if (composite)
+                    hostObjAttributes.CompositePanelWarning();
+                else if (thickness == 0)
+                    BH.Engine.Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
             }
-
-            //TODO: Clean it up!
-            if (composite)
-                hostObjAttributes.CompositePanelWarning();
-            else if (thickness == 0)
-                BH.Engine.Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
+            else
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Revit panel type does not contain any layers (possibly it is a curtain panel). A BHoM panel type with zero thickness and no material is returned. Revit ElementId: {0}", hostObjAttributes.Id));
 
             oM.Structure.SurfaceProperties.PanelType panelType = oM.Structure.SurfaceProperties.PanelType.Undefined;
             if (hostObjAttributes is WallType)
