@@ -80,8 +80,8 @@ namespace BH.Revit.Engine.Core
             XYZ centre = curve.Centre.ToRevit();
             double radius1 = curve.Radius1.FromSI(UnitType.UT_Length);
             double radius2 = curve.Radius2.FromSI(UnitType.UT_Length);
-            XYZ axis1 = curve.Axis1.ToRevit();
-            XYZ axis2 = curve.Axis2.ToRevit();
+            XYZ axis1 = curve.Axis1.ToRevit().Normalize();
+            XYZ axis2 = curve.Axis2.ToRevit().Normalize();
             return new List<Curve> { Ellipse.CreateCurve(centre, radius1, radius2, axis1, axis2, 0, Math.PI), Ellipse.CreateCurve(centre, radius1, radius2, axis1, axis2, Math.PI, Math.PI * 2) };
         }
 
