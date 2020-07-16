@@ -120,7 +120,7 @@ namespace BH.Engine.Adapters.Revit
             ModelInstance modelInstance = new ModelInstance()
             {
                 Properties = instanceProperties,
-                Name = "Detail Lines",
+                Name = "Lines",
                 Location = location
             };
             modelInstance.CustomData.Add(Convert.CategoryName, "Lines");
@@ -146,7 +146,7 @@ namespace BH.Engine.Adapters.Revit
             ModelInstance modelInstance = new ModelInstance()
             {
                 Properties = instanceProperties,
-                Name = "Detail Lines",
+                Name = "Lines",
                 Location = location
             };
             modelInstance.CustomData.Add(Convert.CategoryName, "Lines");
