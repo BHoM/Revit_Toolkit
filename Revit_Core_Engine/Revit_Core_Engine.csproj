@@ -307,6 +307,8 @@
     <Compile Include="Query\CurtainPanels.cs" />
     <Compile Include="Query\FramingOffsetVectors.cs" />
     <Compile Include="Query\Identifiers.cs" />
+    <Compile Include="Query\LevelAbove.cs" />
+    <Compile Include="Query\LevelBelow.cs" />
     <Compile Include="Query\OpeningSurface.cs" />
     <Compile Include="Query\PanelPlanes.cs" />
     <Compile Include="Query\PanelSurfaces.cs" />
