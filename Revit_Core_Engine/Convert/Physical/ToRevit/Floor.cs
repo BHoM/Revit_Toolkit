@@ -97,15 +97,14 @@ namespace BH.Revit.Engine.Core
                     normal = -slabPlane.Normal;
 
                 double angle = normal.Angle(Vector.ZAxis);
-                BH.oM.Geometry.Line ln = slabPlane.PlaneIntersection(sketchPlane);
-                XYZ start = ln.ClosestPoint(curveArray.get_Item(0).GetEndPoint(0).PointFromRevit(), true).ToRevit();
-                XYZ perp = slabPlane.Normal.ToRevit().CrossProduct(XYZ.BasisZ);
-                XYZ dir = XYZ.BasisZ.CrossProduct(perp).Normalize();
                 double tan = Math.Tan(angle);
 
+                XYZ dir = normal.Project(oM.Geometry.Plane.XY).ToRevit().Normalize();
+                BH.oM.Geometry.Line ln = slabPlane.PlaneIntersection(sketchPlane);
+                XYZ start = ln.ClosestPoint(curveArray.get_Item(0).GetEndPoint(0).PointFromRevit(), true).ToRevit();
                 Autodesk.Revit.DB.Line line = Autodesk.Revit.DB.Line.CreateBound(start, start + dir);
-                revitFloor = document.Create.NewSlab(curveArray, level, line, -tan, true);
 
+                revitFloor = document.Create.NewSlab(curveArray, level, line, -tan, true);
                 revitFloor.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, floorType.Id);
             }
 
