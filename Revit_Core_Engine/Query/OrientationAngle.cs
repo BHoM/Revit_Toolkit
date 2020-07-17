@@ -76,7 +76,9 @@ namespace BH.Revit.Engine.Core
         public static double OrientationAngleFraming(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             double rotation;
-            Curve locationCurve = ((LocationCurve)familyInstance.Location).Curve;
+            Curve locationCurve = (familyInstance.Location as LocationCurve)?.Curve;
+            if (locationCurve == null)
+                return double.NaN;
 
             if (locationCurve is Autodesk.Revit.DB.Line)
             {
