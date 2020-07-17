@@ -48,10 +48,10 @@ namespace BH.Revit.Engine.Core
 
             CompoundStructure compoundStructure = hostObjectAttributes.GetCompoundStructure();
             if (compoundStructure == null)
-                {
-                    //throw error
-                    return newConstruction;
-                }
+            {
+                //throw error
+                return newConstruction;
+            }
 
             List<CompoundStructureLayer> revitLayers = compoundStructure.GetLayers().ToList();
             if (newConstruction.Layers.Count!= revitLayers.Count)
@@ -66,8 +66,7 @@ namespace BH.Revit.Engine.Core
                 Layer newLayer = construction.Layers[i].GetShallowClone() as Layer;
 
                 CompoundStructureLayer revitLayer = revitLayers[i];
-                Autodesk.Revit.DB.Material revitMaterial = doc.GetElement(revitLayers[i].MaterialId) as Autodesk.Revit.DB.Material;
-                //BH.oM.Physical.Materials.Material material = construction.Layers[i].Material;
+                Material revitMaterial = doc.GetElement(revitLayers[i].MaterialId) as Material;
 
                 newLayer.Material = newLayer.Material.UpdateMaterialProperties(revitMaterial, materialGrade, StructuralMaterialType.Undefined, settings, refObjects);
                 newConstruction.Layers[i] = newLayer;
@@ -92,7 +91,7 @@ namespace BH.Revit.Engine.Core
                 else
                 {
                     newMaterial.Name = String.Format("Unknown {0} Material", structuralMaterialType);
-                    newMaterial.TryUpdateEmptyMaterialFromLibrary(structuralMaterialType, materialGrade, settings, refObjects);
+                    newMaterial.TryGetCharacteristicsFromLibrary(structuralMaterialType, materialGrade, settings, refObjects);
                 }
             }
             else
@@ -103,7 +102,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static bool TryUpdateEmptyMaterialFromLibrary(this BH.oM.Physical.Materials.Material material, StructuralMaterialType structuralMaterialType, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static bool TryGetCharacteristicsFromLibrary(this BH.oM.Physical.Materials.Material material, StructuralMaterialType structuralMaterialType, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 

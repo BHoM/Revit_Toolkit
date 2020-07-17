@@ -53,8 +53,7 @@ namespace BH.Revit.Engine.Core
             if (parameter != null)
                 result.Description = parameter.AsString();
 
-            result.Update(material, settings);
-
+            result.CopyCharacteristics(material);
             result.SetProperties(material, settings.ParameterSettings);
 
             refObjects.AddOrReplace(material.Id, result);
@@ -66,41 +65,39 @@ namespace BH.Revit.Engine.Core
         /****             Private methods               ****/
         /***************************************************/
 
-        private static void Update(this SolidMaterial solidMaterial, Material material, RevitSettings settings)
+        private static void CopyCharacteristics(this SolidMaterial toMaterial, Material fromMaterial)
         {
-            if (material == null)
+            if (fromMaterial == null)
             {
-                Compute.NullRevitElementWarning(solidMaterial);
+                toMaterial.NullRevitElementWarning();
                 return;
             }
 
-            ElementId elementID = material.ThermalAssetId;
+            ElementId elementID = fromMaterial.ThermalAssetId;
             if (elementID == null || elementID == ElementId.InvalidElementId)
             {
-                Compute.NullThermalAssetWarning(solidMaterial);
+                toMaterial.NullThermalAssetWarning();
+                return;
+            }
+            
+            PropertySetElement propertySetElement = fromMaterial.Document.GetElement(elementID) as PropertySetElement;
+            ThermalAsset thermalAsset = propertySetElement?.GetThermalAsset();
+            if (thermalAsset == null)
+            {
+                Compute.NullThermalAssetWarning(toMaterial);
                 return;
             }
 
-            Document document = material.Document;
-
-            PropertySetElement propertySetElement = document.GetElement(elementID) as PropertySetElement;
-            solidMaterial.Update(propertySetElement.GetThermalAsset(), settings);
+            toMaterial.CopyCharacteristics(thermalAsset);
         }
 
         /***************************************************/
 
-        private static void Update(this SolidMaterial solidMaterial, StructuralAsset structuralAsset, RevitSettings settings = null)
+        private static void CopyCharacteristics(this SolidMaterial toMaterial, ThermalAsset fromAsset)
         {
-
-        }
-
-        /***************************************************/
-
-        private static void Update(this SolidMaterial solidMaterial, ThermalAsset thermalAsset, RevitSettings settings = null)
-        {
-            solidMaterial.Conductivity = thermalAsset.ThermalConductivity;
-            solidMaterial.SpecificHeat = thermalAsset.SpecificHeat;
-            solidMaterial.Density = thermalAsset.Density.ToSI(UnitType.UT_MassDensity);
+            toMaterial.Conductivity = fromAsset.ThermalConductivity;
+            toMaterial.SpecificHeat = fromAsset.SpecificHeat;
+            toMaterial.Density = fromAsset.Density.ToSI(UnitType.UT_MassDensity);
         }
 
         /***************************************************/
