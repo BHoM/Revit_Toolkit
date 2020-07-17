@@ -52,13 +52,16 @@ namespace BH.Revit.Engine.Core
                 material = ceiling.Document.GetElement(comStruct.GetLayers().Last().MaterialId) as Material;
             else
             {
-                List<ElementId> materialIds = ceiling.GetMaterialIds(false).ToList();
-                if (materialIds.Count == 0)
-                {
-                    BH.Engine.Reflection.Compute.RecordError("Ceiling patterns could not be pulled for ceiling element with the ID " + ceiling.Id);
-                    return new List<oM.Geometry.Line>();
-                }
-                material = ceiling.Document.GetElement(materialIds[0]) as Material;
+                ElementId materialId = ceiling.GetMaterialIds(false)?.FirstOrDefault();
+
+                if (materialId != null)
+                    material = ceiling.Document.GetElement(materialId) as Material;
+            }
+
+            if (material == null)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Ceiling patterns could not be pulled because there is no material assigned to the ceiling. Revit ElementId: {0}", ceiling.Id));
+                return new List<oM.Geometry.Line>();
             }
 
             List<oM.Geometry.Line> result = new List<oM.Geometry.Line>();
