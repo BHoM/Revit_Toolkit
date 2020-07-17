@@ -76,7 +76,17 @@ namespace BH.Revit.Engine.Core
             BH.oM.Geometry.Plane startPlane = new oM.Geometry.Plane { Origin = line.Start, Normal = dir };
             BH.oM.Geometry.Plane endPlane = new oM.Geometry.Plane { Origin = line.End, Normal = dir };
             BH.oM.Geometry.Line transformedLine = BH.Engine.Geometry.Create.Line(transform.Origin.PointFromRevit(), transform.BasisX.VectorFromRevit());
-            return new BH.oM.Geometry.Line { Start = transformedLine.PlaneIntersection(startPlane, true), End = transformedLine.PlaneIntersection(endPlane, true) };
+            line = new BH.oM.Geometry.Line { Start = transformedLine.PlaneIntersection(startPlane, true), End = transformedLine.PlaneIntersection(endPlane, true) };
+
+            double startExtension = familyInstance.LookupParameterDouble(BuiltInParameter.START_EXTENSION);
+            if (!double.IsNaN(startExtension))
+                line.Start = line.Start - dir * startExtension;
+
+            double endExtension = familyInstance.LookupParameterDouble(BuiltInParameter.END_EXTENSION);
+            if (!double.IsNaN(endExtension))
+                line.End = line.End + dir * endExtension;
+
+            return line;
         }
 
         /***************************************************/
