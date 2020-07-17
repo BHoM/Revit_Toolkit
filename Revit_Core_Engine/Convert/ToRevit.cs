@@ -204,7 +204,7 @@ namespace BH.Revit.Engine.Core
 
             Element result = ToRevit(obj as dynamic, document, settings, refObjects);
             if (result == null)
-                obj.NotConvertedWarning();
+                obj.NotConvertedError();
 
             return result;
         }
