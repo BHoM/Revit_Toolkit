@@ -32,6 +32,18 @@ namespace BH.Revit.Engine.Core
         /****               Internal methods            ****/
         /***************************************************/
 
+        internal static void NotConvertedError(this IBHoMObject obj)
+        {
+            string message = String.Format("BHoM object conversion to Revit failed.");
+
+            if (obj != null)
+                message += string.Format(" BHoM object type: {0}, BHoM Guid: {1}", obj.GetType(), obj.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordError(message);
+        }
+
+        /***************************************************/
+
         internal static void NullDocumentError()
         {
             BH.Engine.Reflection.Compute.RecordError("BHoM object could not be read because Revit document does not exist.");

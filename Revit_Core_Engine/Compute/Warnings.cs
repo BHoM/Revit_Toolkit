@@ -22,12 +22,10 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
-using BH.Adapter.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
 using BH.oM.Physical.Elements;
-using BH.oM.Physical.FramingProperties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,16 +38,6 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****             Internal methods              ****/
         /***************************************************/
-
-        internal static void NotConvertedWarning(this IBHoMObject obj)
-        {
-            string message = String.Format("BHoM object conversion to Revit failed.");
-
-            if (obj != null)
-                message += string.Format(" BHoM object type: {0}, BHoM Guid: {1}", obj.GetType(), obj.BHoM_Guid);
-
-            BH.Engine.Reflection.Compute.RecordWarning(message);
-        }
 
         internal static void NotConvertedWarning(this Element element, Discipline discipline)
         {
