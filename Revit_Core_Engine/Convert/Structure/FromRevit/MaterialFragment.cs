@@ -77,9 +77,11 @@ namespace BH.Revit.Engine.Core
             }
 
             //TODO: zero strength warning + raise an issue
-            materialFragment = materialFragment.Update(material);
+            materialFragment.CopyCharacteristics(material);
 
             materialFragment.Name = material.Name;
+
+            //TODO: add to refObjects incl. grade!
             return materialFragment;
         }
 
@@ -88,104 +90,94 @@ namespace BH.Revit.Engine.Core
         /****             Private methods               ****/
         /***************************************************/
 
-        private static IMaterialFragment Update(this IMaterialFragment materialDestination, Material materialSource)
+        private static void CopyCharacteristics(this IMaterialFragment toMaterial, Material fromMaterial)
         {
-            if (materialSource == null)
+            if (fromMaterial == null)
             {
-                Compute.NullRevitElementWarning(materialDestination);
-                return materialDestination;
+                toMaterial.NullRevitElementWarning();
+                return;
             }
                 
-            ElementId elementID = materialSource.StructuralAssetId;
+            ElementId elementID = fromMaterial.StructuralAssetId;
             if (elementID == null || elementID == ElementId.InvalidElementId)
             {
-                Compute.NullStructuralAssetWarning(materialDestination);
-                return materialDestination;
+                toMaterial.NullStructuralAssetWarning();
+                return;
             }
 
-            Document document = materialSource.Document;
-
-            PropertySetElement propertySetElement = document.GetElement(elementID) as PropertySetElement;
-            StructuralAsset structuralAsset = propertySetElement.GetStructuralAsset();
+            PropertySetElement propertySetElement = fromMaterial.Document.GetElement(elementID) as PropertySetElement;
+            StructuralAsset structuralAsset = propertySetElement?.GetStructuralAsset();
             if (structuralAsset == null)
             {
-                Compute.NullStructuralAssetWarning(materialDestination);
-                return materialDestination;
+                Compute.NullStructuralAssetWarning(toMaterial);
+                return;
             }
 
-            return materialDestination.Update(structuralAsset);
+            toMaterial.CopyCharacteristics(structuralAsset);
         }
 
         /***************************************************/
 
-        private static IMaterialFragment Update(this IMaterialFragment materialFragment, StructuralAsset structuralAsset)
+        private static void CopyCharacteristics(this IMaterialFragment toMaterial, StructuralAsset fromAsset)
         {
-            double density = structuralAsset.Density.ToSI(UnitType.UT_MassDensity);
+            double density = fromAsset.Density.ToSI(UnitType.UT_MassDensity);
 
 #if REVIT2020
 
 #else
-            double dampingRatio = structuralAsset.DampingRatio;
+            double dampingRatio = fromAsset.DampingRatio;
 #endif
 
-            oM.Geometry.Vector youngsModulus = BH.Engine.Geometry.Create.Vector(structuralAsset.YoungModulus.X.ToSI(UnitType.UT_Stress), structuralAsset.YoungModulus.Y.ToSI(UnitType.UT_Stress), structuralAsset.YoungModulus.Z.ToSI(UnitType.UT_Stress));
-            oM.Geometry.Vector thermalExpansionCoeff = BH.Engine.Geometry.Create.Vector(structuralAsset.ThermalExpansionCoefficient.X.ToSI(UnitType.UT_ThermalExpansion), structuralAsset.ThermalExpansionCoefficient.Y.ToSI(UnitType.UT_ThermalExpansion), structuralAsset.ThermalExpansionCoefficient.Z.ToSI(UnitType.UT_ThermalExpansion));
-            oM.Geometry.Vector poissonsRatio = BH.Engine.Geometry.Create.Vector(structuralAsset.PoissonRatio.X, structuralAsset.PoissonRatio.Y, structuralAsset.PoissonRatio.Z);
-            oM.Geometry.Vector shearModulus = BH.Engine.Geometry.Create.Vector(structuralAsset.ShearModulus.X.ToSI(UnitType.UT_Stress), structuralAsset.ShearModulus.Y.ToSI(UnitType.UT_Stress), structuralAsset.ShearModulus.Z.ToSI(UnitType.UT_Stress));
+            oM.Geometry.Vector youngsModulus = BH.Engine.Geometry.Create.Vector(fromAsset.YoungModulus.X.ToSI(UnitType.UT_Stress), fromAsset.YoungModulus.Y.ToSI(UnitType.UT_Stress), fromAsset.YoungModulus.Z.ToSI(UnitType.UT_Stress));
+            oM.Geometry.Vector thermalExpansionCoeff = BH.Engine.Geometry.Create.Vector(fromAsset.ThermalExpansionCoefficient.X.ToSI(UnitType.UT_ThermalExpansion), fromAsset.ThermalExpansionCoefficient.Y.ToSI(UnitType.UT_ThermalExpansion), fromAsset.ThermalExpansionCoefficient.Z.ToSI(UnitType.UT_ThermalExpansion));
+            oM.Geometry.Vector poissonsRatio = BH.Engine.Geometry.Create.Vector(fromAsset.PoissonRatio.X, fromAsset.PoissonRatio.Y, fromAsset.PoissonRatio.Z);
+            oM.Geometry.Vector shearModulus = BH.Engine.Geometry.Create.Vector(fromAsset.ShearModulus.X.ToSI(UnitType.UT_Stress), fromAsset.ShearModulus.Y.ToSI(UnitType.UT_Stress), fromAsset.ShearModulus.Z.ToSI(UnitType.UT_Stress));
 
-            materialFragment.Density = density;
+            toMaterial.Density = density;
 #if REVIT2020
 
 #else
-            materialFragment.DampingRatio = dampingRatio;
+            toMaterial.DampingRatio = dampingRatio;
 #endif
-
-
-            if (materialFragment is Aluminium)
+            
+            if (toMaterial is Aluminium)
             {
-                Aluminium material = materialFragment as Aluminium;
+                Aluminium material = toMaterial as Aluminium;
                 material.YoungsModulus = youngsModulus.X;
                 material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
                 material.PoissonsRatio = poissonsRatio.X;
-                materialFragment = material;
             }
-            else if (materialFragment is Concrete)
+            else if (toMaterial is Concrete)
             {
-                Concrete material = materialFragment as Concrete;
+                Concrete material = toMaterial as Concrete;
                 material.YoungsModulus = youngsModulus.X;
                 material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
                 material.PoissonsRatio = poissonsRatio.X;
-                material.CustomData["Concrete Bending Reinforcement"] = structuralAsset.ConcreteBendingReinforcement;
-                material.CustomData["Concrete Shear Reinforcement"] = structuralAsset.ConcreteShearReinforcement;
-                material.CustomData["Concrete Shear Strength Reduction"] = structuralAsset.ConcreteShearStrengthReduction;
-                materialFragment = material;
+                material.CustomData["Concrete Bending Reinforcement"] = fromAsset.ConcreteBendingReinforcement;
+                material.CustomData["Concrete Shear Reinforcement"] = fromAsset.ConcreteShearReinforcement;
+                material.CustomData["Concrete Shear Strength Reduction"] = fromAsset.ConcreteShearStrengthReduction;
             }
-            else if (materialFragment is Steel)
+            else if (toMaterial is Steel)
             {
-                Steel material = materialFragment as Steel;
+                Steel material = toMaterial as Steel;
                 material.YoungsModulus = youngsModulus.X;
                 material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
                 material.PoissonsRatio = poissonsRatio.X;
-                materialFragment = material;
             }
-            else if (materialFragment is Timber)
+            else if (toMaterial is Timber)
             {
-                Timber material = materialFragment as Timber;
+                Timber material = toMaterial as Timber;
                 material.YoungsModulus = youngsModulus;
                 material.ThermalExpansionCoeff = thermalExpansionCoeff;
                 material.PoissonsRatio = poissonsRatio;
-                materialFragment = material;
             }
-            else if (materialFragment is GenericIsotropicMaterial)
+            else if (toMaterial is GenericIsotropicMaterial)
             {
-                GenericIsotropicMaterial material = materialFragment as GenericIsotropicMaterial;
+                GenericIsotropicMaterial material = toMaterial as GenericIsotropicMaterial;
                 material.YoungsModulus = youngsModulus.X;
                 material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
                 material.PoissonsRatio = poissonsRatio.X;
-                materialFragment = material;
             }
-
-            return materialFragment;
         }
 
         /***************************************************/

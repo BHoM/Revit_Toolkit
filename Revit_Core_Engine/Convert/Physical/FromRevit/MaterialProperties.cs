@@ -24,7 +24,6 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Physical.Materials;
-using BH.oM.Structure.MaterialFragments;
 using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
