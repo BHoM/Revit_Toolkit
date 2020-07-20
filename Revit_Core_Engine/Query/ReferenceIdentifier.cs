@@ -46,5 +46,19 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        public static string ReferenceIdentifier(this ElementId elementId, string grade = null)
+        {
+            if (elementId == null)
+                return null;
+
+            string refId = elementId.ToString();
+            if (grade != null)
+                refId += String.Format(" Grade: {0}", grade);
+
+            return refId;
+        }
+
+        /***************************************************/
     }
 }

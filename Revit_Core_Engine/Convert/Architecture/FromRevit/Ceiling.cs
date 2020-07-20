@@ -46,8 +46,8 @@ namespace BH.Revit.Engine.Core
             oM.Architecture.Elements.Ceiling bHoMCeiling = refObjects.GetValue<oM.Architecture.Elements.Ceiling>(ceiling.Id);
             if (bHoMCeiling != null)
                 return bHoMCeiling;
-
-            oM.Physical.Constructions.Construction construction = (ceiling.Document.GetElement(ceiling.GetTypeId()) as HostObjAttributes).ConstructionFromRevit(settings, refObjects);
+            
+            oM.Physical.Constructions.Construction construction = (ceiling.Document.GetElement(ceiling.GetTypeId()) as HostObjAttributes).ConstructionFromRevit(null, settings, refObjects);
 
             ISurface location = null;
             Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = ceiling.PanelSurfaces(null, settings);

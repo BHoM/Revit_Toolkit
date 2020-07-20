@@ -106,7 +106,7 @@ namespace BH.Revit.Engine.Core
                 return panels;
 
             CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
-            BH.oM.Physical.Constructions.Construction construction = ceilingType.ConstructionFromRevit(settings, refObjects);
+            BH.oM.Physical.Constructions.Construction construction = ceilingType.ConstructionFromRevit(null, settings, refObjects);
             
             panels = new List<oM.Environment.Elements.Panel>();
             foreach (PlanarSurface surface in surfaces.Keys)
@@ -166,7 +166,7 @@ namespace BH.Revit.Engine.Core
                 return panels;
 
             FloorType floorType = floor.FloorType;
-            BH.oM.Physical.Constructions.Construction construction = floorType.ConstructionFromRevit(settings, refObjects);
+            BH.oM.Physical.Constructions.Construction construction = floorType.ConstructionFromRevit(null, settings, refObjects);
             
             panels = new List<oM.Environment.Elements.Panel>();
             foreach (PlanarSurface surface in surfaces.Keys)
@@ -226,7 +226,7 @@ namespace BH.Revit.Engine.Core
             if (surfaces == null)
                 return panels;
             
-            BH.oM.Physical.Constructions.Construction construction = roofBase.RoofType.ConstructionFromRevit(settings, refObjects);
+            BH.oM.Physical.Constructions.Construction construction = roofBase.RoofType.ConstructionFromRevit(null, settings, refObjects);
 
             panels = new List<oM.Environment.Elements.Panel>();
             foreach (PlanarSurface surface in surfaces.Keys)
@@ -289,7 +289,7 @@ namespace BH.Revit.Engine.Core
             if (surfaces == null)
                 return panels;
 
-            BH.oM.Physical.Constructions.Construction constrtuction = wall.WallType.ConstructionFromRevit(settings, refObjects);
+            BH.oM.Physical.Constructions.Construction constrtuction = wall.WallType.ConstructionFromRevit(null, settings, refObjects);
             
             panels = new List<oM.Environment.Elements.Panel>();
             foreach (PlanarSurface surface in surfaces.Keys)
@@ -467,7 +467,7 @@ namespace BH.Revit.Engine.Core
             else
                 panel.Type = oM.Environment.Elements.PanelType.Undefined;
 
-            panel.Construction = Convert.ConstructionFromRevit(elementType as dynamic, settings, refObjects);
+            panel.Construction = Convert.ConstructionFromRevit(elementType as dynamic, null, settings, refObjects);
 
             //Set identifiers, parameters & custom data
             panel.SetIdentifiers(element);
