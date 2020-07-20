@@ -48,9 +48,8 @@ namespace BH.Revit.Engine.Core
                 return bHoMFloor;
 
             HostObjAttributes hostObjAttributes = floor.Document.GetElement(floor.GetTypeId()) as HostObjAttributes;
-            oM.Physical.Constructions.Construction construction = hostObjAttributes.ConstructionFromRevit(settings, refObjects);
             string materialGrade = floor.MaterialGrade(settings);
-            construction = construction.UpdateMaterialProperties(hostObjAttributes, materialGrade, settings, refObjects);
+            oM.Physical.Constructions.Construction construction = hostObjAttributes.ConstructionFromRevit(materialGrade, settings, refObjects);
 
             ISurface location = null;
             List<BH.oM.Physical.Elements.IOpening> openings = new List<oM.Physical.Elements.IOpening>();

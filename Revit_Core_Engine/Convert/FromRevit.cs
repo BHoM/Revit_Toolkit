@@ -190,7 +190,7 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
-                    return hostObjAttributes.ConstructionFromRevit(settings, refObjects);
+                    return hostObjAttributes.ConstructionFromRevit(null, settings, refObjects);
                 default:
                     return null;
             }
@@ -356,9 +356,7 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Structural:
                     return material.MaterialFragmentFromRevit(null, settings, refObjects);
                 case Discipline.Physical:
-                    BH.oM.Physical.Materials.Material BHMaterial = material.EmptyMaterialFromRevit(settings, refObjects);
-                    BHMaterial.Properties = material.MaterialPropertiesFromRevit(null, settings, refObjects);
-                    return BHMaterial;
+                    return material.MaterialFromRevit(null, settings, refObjects);
                 default:
                     return null;
             }

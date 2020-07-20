@@ -40,16 +40,17 @@ namespace BH.Revit.Engine.Core
         public static IMaterialFragment MaterialFragmentFromRevit(this Material material, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (material == null)
-            {
-                //TODO: add more sensible null!
-                //Compute.NullObjectWarning();
                 return null;
-            }
+
+            string refId = material.Id.ReferenceIdentifier(materialGrade);
+            IMaterialFragment materialFragment = refObjects.GetValue<IMaterialFragment>(refId);
+            if (materialFragment != null)
+                return materialFragment;
 
             settings = settings.DefaultIfNull();
 
             StructuralMaterialType structuralMaterialType = material.MaterialClass.StructuralMaterialType();
-            IMaterialFragment materialFragment = structuralMaterialType.LibraryMaterial(materialGrade);
+            materialFragment = structuralMaterialType.LibraryMaterial(materialGrade);
             if (materialFragment != null)
                 return materialFragment;
 
@@ -71,17 +72,15 @@ namespace BH.Revit.Engine.Core
                     materialFragment = new Timber();
                     break;
                 default:
-                    //TODO: default generic material warning
+                    BH.Engine.Reflection.Compute.RecordError(String.Format("Revit material of structural type {0} is currently not supported, the material was converted to a generic isotropic BHoM material. Revit ElementId: {1}", structuralMaterialType, material.Id.IntegerValue));
                     materialFragment = new GenericIsotropicMaterial();
                     break;
             }
-
-            //TODO: zero strength warning + raise an issue
+            
             materialFragment.CopyCharacteristics(material);
-
             materialFragment.Name = material.Name;
 
-            //TODO: add to refObjects incl. grade!
+            refObjects.AddOrReplace(refId, materialFragment);
             return materialFragment;
         }
 

@@ -23,6 +23,8 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,7 +34,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static oM.Physical.Constructions.Layer Layer(this CompoundStructureLayer compoundStructureLayer, Document doc, BuiltInCategory builtInCategory = Autodesk.Revit.DB.BuiltInCategory.INVALID, RevitSettings settings = null)
+        public static oM.Physical.Constructions.Layer Layer(this CompoundStructureLayer compoundStructureLayer, Document doc, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (compoundStructureLayer == null)
                 return null;
@@ -43,7 +45,8 @@ namespace BH.Revit.Engine.Core
             layer.Thickness = compoundStructureLayer.Width.ToSI(UnitType.UT_Length);
 
             Material revitMaterial = doc.GetElement(compoundStructureLayer.MaterialId) as Material;
-            layer.Material = revitMaterial.EmptyMaterialFromRevit(settings);
+
+            layer.Material = revitMaterial.MaterialFromRevit(materialGrade, settings, refObjects);
             return layer;
         }
 

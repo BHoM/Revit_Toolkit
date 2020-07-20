@@ -60,9 +60,8 @@ namespace BH.Revit.Engine.Core
                 return null;
             
             HostObjAttributes hostObjAttributes = wall.Document.GetElement(wall.GetTypeId()) as HostObjAttributes;
-            oM.Physical.Constructions.Construction construction = hostObjAttributes.ConstructionFromRevit(settings, refObjects);
             string materialGrade = wall.MaterialGrade(settings);
-            construction = construction.UpdateMaterialProperties(hostObjAttributes, materialGrade, settings, refObjects);
+            oM.Physical.Constructions.Construction construction = hostObjAttributes.ConstructionFromRevit(materialGrade, settings, refObjects);
             bHoMWall.Construction = construction;
 
             bHoMWall.Name = wall.FamilyTypeFullName();

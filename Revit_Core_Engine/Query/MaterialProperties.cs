@@ -28,13 +28,13 @@ using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static List<IMaterialProperties> MaterialPropertiesFromRevit(this Autodesk.Revit.DB.Material material, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<IMaterialProperties> MaterialProperties(this Autodesk.Revit.DB.Material material, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 

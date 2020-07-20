@@ -271,7 +271,7 @@
     <Compile Include="Convert\Physical\FromRevit\Floor.cs" />
     <Compile Include="Convert\Physical\FromRevit\Construction.cs" />
     <Compile Include="Convert\Physical\FromRevit\Material.cs" />
-    <Compile Include="Convert\Physical\FromRevit\MaterialProperties.cs" />
+    <Compile Include="Query\MaterialProperties.cs" />
     <Compile Include="Convert\Physical\FromRevit\Roof.cs" />
     <Compile Include="Convert\Physical\FromRevit\Wall.cs" />
     <Compile Include="Convert\Physical\FromRevit\Window.cs" />
@@ -354,7 +354,6 @@
     <Compile Include="Modify\RemoveStackedWallParts.cs" />
     <Compile Include="Modify\SetLocation.cs" />
     <Compile Include="Modify\Update.cs" />
-    <Compile Include="Modify\UpdateMaterialProperties.cs" />
     <Compile Include="Objects\FamilyLoadOptions.cs" />
     <Compile Include="Objects\WarningSwallower.cs" />
     <Compile Include="Query\Color.cs" />
