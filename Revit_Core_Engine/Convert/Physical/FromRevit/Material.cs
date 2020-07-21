@@ -46,7 +46,11 @@ namespace BH.Revit.Engine.Core
             if (material != null)
                 return material;
 
-            material = new Material { Properties = revitMaterial.MaterialProperties(grade, settings, refObjects), Name = revitMaterial.Name };
+            string name = revitMaterial.Name;
+            if (!string.IsNullOrWhiteSpace(grade))
+                name += " grade " + grade;
+
+            material = new Material { Properties = revitMaterial.MaterialProperties(grade, settings, refObjects), Name =  name};
 
             //Set identifiers, parameters & custom data
             material.SetIdentifiers(revitMaterial);
