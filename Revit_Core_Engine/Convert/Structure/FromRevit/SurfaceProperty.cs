@@ -43,9 +43,10 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            ConstantThickness constantThickness = refObjects.GetValue<ConstantThickness>(hostObjAttributes.Id);
-            if (constantThickness != null)
-                return constantThickness;
+            string refId = hostObjAttributes.Id.ReferenceIdentifier(materialGrade);
+            ConstantThickness property2D = refObjects.GetValue<ConstantThickness>(refId);
+            if (property2D != null)
+                return property2D;
 
             IMaterialFragment materialFragment = null;
             double thickness = 0;
@@ -114,14 +115,14 @@ namespace BH.Revit.Engine.Core
             else if (hostObjAttributes is FloorType)
                 panelType = oM.Structure.SurfaceProperties.PanelType.Slab;
 
-            ConstantThickness property2D = new ConstantThickness { PanelType = panelType, Thickness = thickness, Material = materialFragment, Name = hostObjAttributes.Name };
+            property2D = new ConstantThickness { PanelType = panelType, Thickness = thickness, Material = materialFragment, Name = hostObjAttributes.Name };
 
             //Set identifiers, parameters & custom data
             property2D.SetIdentifiers(hostObjAttributes);
             property2D.CopyParameters(hostObjAttributes, settings.ParameterSettings);
             property2D.SetProperties(hostObjAttributes, settings.ParameterSettings);
 
-            refObjects.AddOrReplace(hostObjAttributes.Id, property2D);
+            refObjects.AddOrReplace(refId, property2D);
             return property2D;
         }
 
