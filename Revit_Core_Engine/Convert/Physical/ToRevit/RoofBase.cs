@@ -83,11 +83,7 @@ namespace BH.Revit.Engine.Core
             if (roofType == null)
                 return null;
             
-            double lowElevation = roof.LowElevation();
-            if (double.IsNaN(lowElevation))
-                return null;
-
-            Level level = document.HighLevel(lowElevation);
+            Level level = document.LevelBelow(roof.Location, settings);
             if (level == null)
                 return null;
 

@@ -20,14 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
-
-using BH.oM.Base;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Geometry;
+using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,28 +33,35 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [DeprecatedAttribute("3.0", "BH.UI.Revit.Engine.Query.NextLevel method is not supported any more")]
-        public static Level NextLevel(this Level level)
+        public static List<PolyCurve> Perimeter(this SpatialElement spatialElement, RevitSettings settings = null)
         {
-            if (level == null)
+            if (spatialElement == null)
                 return null;
 
-            List<Level> levels = new FilteredElementCollector(level.Document).OfClass(typeof(Level)).Cast<Level>().ToList();
-            if (levels == null || levels.Count < 2)
+            IList<IList<BoundarySegment>> boundarySegments = spatialElement.GetBoundarySegments(new SpatialElementBoundaryOptions());
+            if (boundarySegments == null)
                 return null;
 
-            levels.Sort((x, y) => x.ProjectElevation.CompareTo(y.ProjectElevation));
+            List<PolyCurve> results = new List<PolyCurve>();
 
-            int index = levels.FindIndex(x => x.Id == level.Id);
-            if (index == -1)
-                return null;
+            foreach (IList<BoundarySegment> boundarySegmentList in boundarySegments)
+            {
+                if (boundarySegmentList == null)
+                    continue;
 
-            if (index == levels.Count - 1)
-                return null;
+                List<BH.oM.Geometry.ICurve> curves = new List<ICurve>();
+                foreach (BoundarySegment boundarySegment in boundarySegmentList)
+                {
+                    curves.Add(boundarySegment.GetCurve().IFromRevit());
+                }
 
-            return levels[index + 1];
+                results.Add(BH.Engine.Geometry.Create.PolyCurve(curves));
+            }
+
+            return results;
         }
-
+        
         /***************************************************/
     }
 }
+

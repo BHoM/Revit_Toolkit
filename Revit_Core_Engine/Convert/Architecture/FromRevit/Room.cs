@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
 
             room = new oM.Architecture.Elements.Room()
             {
-                Perimeter = spatialElement.Profiles(settings).First()
+                Perimeter = spatialElement.Perimeter(settings).First()
             };
             room.Name = spatialElement.Name;
 
