@@ -110,16 +110,16 @@ namespace BH.Revit.Engine.Core
         /****       Fallback methods - Materials        ****/
         /***************************************************/
 
-        public static void CopyCharacteristics(this BH.oM.Physical.Materials.IMaterialProperties toMaterial, Material fromMaterial)
+        private static void CopyCharacteristics(this BH.oM.Physical.Materials.IMaterialProperties toMaterial, Material fromMaterial)
         {
-            BH.Engine.Reflection.Compute.RecordError(String.Format("Copying characteristics to BHoM material fragment of type {0} is currently not supported. Revit ElementId: {1}", toMaterial.GetType().Name, fromMaterial.Id.IntegerValue));
+            BH.Engine.Reflection.Compute.RecordWarning(String.Format("Copying characteristics to BHoM material fragment of type {0} is currently not supported. Revit ElementId: {1}", toMaterial.GetType().Name, fromMaterial.Id.IntegerValue));
         }
 
         /***************************************************/
-        
-        public static void CopyCharacteristics(this Material toMaterial, BH.oM.Physical.Materials.IMaterialProperties fromMaterial)
+
+        private static void CopyCharacteristics(this Material toMaterial, BH.oM.Physical.Materials.IMaterialProperties fromMaterial)
         {
-            BH.Engine.Reflection.Compute.RecordError(String.Format("Copying characteristics from BHoM material fragment of type {0} is currently not supported. BHoM_Guid: {1}", toMaterial.GetType().Name, fromMaterial.BHoM_Guid));
+            BH.Engine.Reflection.Compute.RecordWarning(String.Format("Copying characteristics from BHoM material fragment of type {0} is currently not supported. BHoM_Guid: {1}", toMaterial.GetType().Name, fromMaterial.BHoM_Guid));
         }
 
 
