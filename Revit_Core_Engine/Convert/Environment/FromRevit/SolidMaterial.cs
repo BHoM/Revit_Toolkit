@@ -59,47 +59,7 @@ namespace BH.Revit.Engine.Core
             refObjects.AddOrReplace(material.Id, result);
             return result;
         }
-
-
-        /***************************************************/
-        /****             Private methods               ****/
-        /***************************************************/
-
-        private static void CopyCharacteristics(this SolidMaterial toMaterial, Material fromMaterial)
-        {
-            if (fromMaterial == null)
-            {
-                toMaterial.NullRevitElementWarning();
-                return;
-            }
-
-            ElementId elementID = fromMaterial.ThermalAssetId;
-            if (elementID == null || elementID == ElementId.InvalidElementId)
-            {
-                toMaterial.NullThermalAssetWarning();
-                return;
-            }
-            
-            PropertySetElement propertySetElement = fromMaterial.Document.GetElement(elementID) as PropertySetElement;
-            ThermalAsset thermalAsset = propertySetElement?.GetThermalAsset();
-            if (thermalAsset == null)
-            {
-                Compute.NullThermalAssetWarning(toMaterial);
-                return;
-            }
-
-            toMaterial.CopyCharacteristics(thermalAsset);
-        }
-
-        /***************************************************/
-
-        private static void CopyCharacteristics(this SolidMaterial toMaterial, ThermalAsset fromAsset)
-        {
-            toMaterial.Conductivity = fromAsset.ThermalConductivity;
-            toMaterial.SpecificHeat = fromAsset.SpecificHeat;
-            toMaterial.Density = fromAsset.Density.ToSI(UnitType.UT_MassDensity);
-        }
-
+        
         /***************************************************/
     }
 }

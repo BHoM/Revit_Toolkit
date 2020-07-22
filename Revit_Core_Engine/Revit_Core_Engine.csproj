@@ -271,6 +271,7 @@
     <Compile Include="Convert\Physical\FromRevit\Floor.cs" />
     <Compile Include="Convert\Physical\FromRevit\Construction.cs" />
     <Compile Include="Convert\Physical\FromRevit\Material.cs" />
+    <Compile Include="Modify\CopyCharacteristics.cs" />
     <Compile Include="Query\MaterialProperties.cs" />
     <Compile Include="Convert\Physical\FromRevit\Roof.cs" />
     <Compile Include="Convert\Physical\FromRevit\Wall.cs" />
