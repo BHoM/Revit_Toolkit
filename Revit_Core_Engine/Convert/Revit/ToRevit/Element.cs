@@ -261,7 +261,7 @@ namespace BH.Revit.Engine.Core
 
             ICurve curve = (ICurve)modelInstance.Location;
 
-            Level level = curve.BottomLevel(familySymbol.Document);
+            Level level = familySymbol.Document.LevelBelow(curve);
             if (level == null)
                 return null;
 
@@ -288,8 +288,8 @@ namespace BH.Revit.Engine.Core
             Document document = MEPType.Document;
 
             BH.oM.Geometry.Line line = modelInstance.Location as BH.oM.Geometry.Line;
-
-            Level level = line.BottomLevel(document);
+            
+            Level level = document.LevelBelow(line);
             if (level == null)
                 return null;
 
@@ -335,7 +335,7 @@ namespace BH.Revit.Engine.Core
 
             oM.Geometry.Point point = (oM.Geometry.Point)modelInstance.Location;
 
-            Level level = point.BottomLevel(document);
+            Level level = document.LevelBelow(point);
             if (level == null)
                 return null;
 
@@ -376,7 +376,7 @@ namespace BH.Revit.Engine.Core
 
             ICurve curve = (ICurve)modelInstance.Location;
 
-            Level level = curve.BottomLevel(document);
+            Level level = document.LevelBelow(curve);
             if (level == null)
                 return null;
 
@@ -413,7 +413,7 @@ namespace BH.Revit.Engine.Core
             {
                 oM.Geometry.Point point = (oM.Geometry.Point)modelInstance.Location;
 
-                Level level = point.BottomLevel(document);
+                Level level = document.LevelBelow(point);
                 if (level == null)
                     return null;
 
@@ -429,7 +429,7 @@ namespace BH.Revit.Engine.Core
                     return null;
                 }
 
-                Level level = line.Start.BottomLevel(document);
+                Level level = document.LevelBelow(line.Start);
                 if (level == null)
                     return null;
 
@@ -460,7 +460,7 @@ namespace BH.Revit.Engine.Core
 
             ICurve curve = (ICurve)modelInstance.Location;
 
-            Level level = curve.BottomLevel(wallType.Document);
+            Level level = document.LevelBelow(curve);
             if (level == null)
                 return null;
 

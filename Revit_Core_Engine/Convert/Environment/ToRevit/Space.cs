@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            Level level = Query.BottomLevel(space.Location.Z, document);
+            Level level = document.LevelBelow(space.Location, settings);
             if (level == null)
                 return null;
 

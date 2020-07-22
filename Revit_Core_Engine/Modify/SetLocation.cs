@@ -185,7 +185,7 @@ namespace BH.Revit.Engine.Core
 
         public static bool SetLocation(this Autodesk.Revit.DB.Mechanical.Space revitSpace, Space bHoMSpace, RevitSettings settings)
         {
-            Level level = bHoMSpace.Location.Z.BottomLevel(revitSpace.Document);
+            Level level = revitSpace.Document.LevelBelow(bHoMSpace.Location, settings);
             if (level == null)
                 return false;
 

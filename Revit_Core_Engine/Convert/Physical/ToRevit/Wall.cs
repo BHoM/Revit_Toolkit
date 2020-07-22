@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 using System;
@@ -82,11 +83,14 @@ namespace BH.Revit.Engine.Core
             if (wallType == null)
                 return null;
 
-            double lowElevation = wall.LowElevation();
-            if (double.IsNaN(lowElevation))
+            BoundingBox bbox = wall.Location.IBounds();
+            if (bbox == null)
                 return null;
 
-            Level level = document.LowLevel(lowElevation);
+            double bottomElevation = bbox.Min.Z.FromSI(UnitType.UT_Length);
+            double topElevation = bbox.Max.Z.FromSI(UnitType.UT_Length);
+
+            Level level = document.LevelBelow(bottomElevation, settings);
             if (level == null)
                 return null;
 
@@ -97,21 +101,22 @@ namespace BH.Revit.Engine.Core
             parameter = revitWall.get_Parameter(BuiltInParameter.WALL_HEIGHT_TYPE);
             if (parameter != null)
                 parameter.Set(ElementId.InvalidElementId);
+
             parameter = revitWall.get_Parameter(BuiltInParameter.WALL_USER_HEIGHT_PARAM);
             if (parameter != null)
             {
-                double height = (wall.HighElevation() - lowElevation).FromSI(UnitType.UT_Length);
+                double height = topElevation - bottomElevation;
                 parameter.Set(height);
             }
 
             double levelElevation = level.Elevation.ToSI(UnitType.UT_Length);
 
-            if (System.Math.Abs(lowElevation - levelElevation) > Tolerance.MacroDistance)
+            if (System.Math.Abs(bottomElevation - levelElevation) > Tolerance.MacroDistance)
             {
                 parameter = revitWall.get_Parameter(BuiltInParameter.WALL_BASE_OFFSET);
                 if (parameter != null)
                 {
-                    double offset = (lowElevation - levelElevation).FromSI(UnitType.UT_Length);
+                    double offset = (bottomElevation - levelElevation).FromSI(UnitType.UT_Length);
 
                     parameter.Set(offset);
                 }

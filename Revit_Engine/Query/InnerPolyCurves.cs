@@ -34,6 +34,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [DeprecatedAttribute("3.2", "This method is a unreliable duplicate of BH.Engine.Spatial.Compute.DistributeOutlines.")]
         [Description("Returns the PolyCurves from the list that lie inside the provided PolyCurve. QUICK CHECK (BOUNDING BOX).")]
         [Input("polyCurve", "PolyCurve to be used as outer bounds of space.")]
         [Input("polyCurves", "Collection of PolyCurves to be queried for containment.")]

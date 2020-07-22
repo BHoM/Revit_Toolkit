@@ -75,9 +75,12 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Reflection.Compute.RecordError(string.Format("Start point of Revit columns need to have lower elevation than the end point. Have a look at flipping your location curves. BHoM_Guid: {0}", framingElement.BHoM_Guid));
                 return null;
             }
-            
+
+            Level level = document.LevelBelow(framingElement.Location, settings);
+            if (level == null)
+                return null;
+
             Line columnLine = framingElement.Location.IToRevit() as Line;
-            Level level = framingElement.Location.BottomLevel(document);
             
             FamilySymbol familySymbol = framingElement.Property.ToRevitFamilySymbol(BuiltInCategory.OST_StructuralColumns, document, settings, refObjects);
             if (familySymbol == null)
@@ -174,7 +177,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            Level level = framingElement.Location.BottomLevel(document);
+            Level level = document.LevelBelow(framingElement.Location, settings);
 
             FamilySymbol familySymbol = framingElement.Property.ToRevitFamilySymbol(BuiltInCategory.OST_StructuralFraming, document, settings, refObjects);
             if (familySymbol == null)
