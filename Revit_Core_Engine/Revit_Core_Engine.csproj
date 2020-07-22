@@ -407,7 +407,6 @@
     <Compile Include="Query\SectionShape.cs" />
     <Compile Include="Query\Solids.cs" />
     <Compile Include="Query\FamilySymbols.cs" />
-    <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\OpeningType.cs" />
     <Compile Include="Query\StringValue.cs" />
     <Compile Include="Modify\StructuralTypeFilter.cs" />
@@ -440,7 +439,6 @@
     <Compile Include="Query\ElementId.cs" />
     <Compile Include="Query\MaterialGrade.cs" />
     <Compile Include="Query\Outlines.cs" />
-    <Compile Include="Query\SpatialElementId.cs" />
     <Compile Include="Query\Level.cs" />
     <Compile Include="Query\LookupParameter.cs" />
     <Compile Include="Query\Perimeter.cs" />
@@ -448,8 +446,6 @@
     <Compile Include="Query\LibraryMaterial.cs" />
     <Compile Include="Query\ActiveWorksetId.cs" />
     <Compile Include="Query\WorksetId.cs" />
-    <Compile Include="Query\WorksetIds.cs" />
-    <Compile Include="Query\WorksetNames.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
