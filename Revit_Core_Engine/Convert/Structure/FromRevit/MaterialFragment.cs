@@ -37,12 +37,12 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static IMaterialFragment MaterialFragmentFromRevit(this Material material, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IMaterialFragment MaterialFragmentFromRevit(this Material material, string grade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (material == null)
                 return null;
 
-            string refId = material.Id.ReferenceIdentifier(materialGrade);
+            string refId = material.Id.ReferenceIdentifier(grade);
             IMaterialFragment materialFragment = refObjects.GetValue<IMaterialFragment>(refId);
             if (materialFragment != null)
                 return materialFragment;
@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             StructuralMaterialType structuralMaterialType = material.MaterialClass.StructuralMaterialType();
-            materialFragment = structuralMaterialType.LibraryMaterial(materialGrade);
+            materialFragment = structuralMaterialType.LibraryMaterial(grade);
             if (materialFragment != null)
                 return materialFragment;
 
@@ -78,107 +78,17 @@ namespace BH.Revit.Engine.Core
             }
             
             materialFragment.CopyCharacteristics(material);
+
+            string name = material.Name;
+            if (!string.IsNullOrWhiteSpace(grade))
+                name += " grade " + grade;
+
             materialFragment.Name = material.Name;
 
             refObjects.AddOrReplace(refId, materialFragment);
             return materialFragment;
         }
-
-
-        /***************************************************/
-        /****             Private methods               ****/
-        /***************************************************/
-
-        private static void CopyCharacteristics(this IMaterialFragment toMaterial, Material fromMaterial)
-        {
-            if (fromMaterial == null)
-            {
-                toMaterial.NullRevitElementWarning();
-                return;
-            }
-                
-            ElementId elementID = fromMaterial.StructuralAssetId;
-            if (elementID == null || elementID == ElementId.InvalidElementId)
-            {
-                toMaterial.NullStructuralAssetWarning();
-                return;
-            }
-
-            PropertySetElement propertySetElement = fromMaterial.Document.GetElement(elementID) as PropertySetElement;
-            StructuralAsset structuralAsset = propertySetElement?.GetStructuralAsset();
-            if (structuralAsset == null)
-            {
-                Compute.NullStructuralAssetWarning(toMaterial);
-                return;
-            }
-
-            toMaterial.CopyCharacteristics(structuralAsset);
-        }
-
-        /***************************************************/
-
-        private static void CopyCharacteristics(this IMaterialFragment toMaterial, StructuralAsset fromAsset)
-        {
-            double density = fromAsset.Density.ToSI(UnitType.UT_MassDensity);
-
-#if REVIT2020
-
-#else
-            double dampingRatio = fromAsset.DampingRatio;
-#endif
-
-            oM.Geometry.Vector youngsModulus = BH.Engine.Geometry.Create.Vector(fromAsset.YoungModulus.X.ToSI(UnitType.UT_Stress), fromAsset.YoungModulus.Y.ToSI(UnitType.UT_Stress), fromAsset.YoungModulus.Z.ToSI(UnitType.UT_Stress));
-            oM.Geometry.Vector thermalExpansionCoeff = BH.Engine.Geometry.Create.Vector(fromAsset.ThermalExpansionCoefficient.X.ToSI(UnitType.UT_ThermalExpansion), fromAsset.ThermalExpansionCoefficient.Y.ToSI(UnitType.UT_ThermalExpansion), fromAsset.ThermalExpansionCoefficient.Z.ToSI(UnitType.UT_ThermalExpansion));
-            oM.Geometry.Vector poissonsRatio = BH.Engine.Geometry.Create.Vector(fromAsset.PoissonRatio.X, fromAsset.PoissonRatio.Y, fromAsset.PoissonRatio.Z);
-            oM.Geometry.Vector shearModulus = BH.Engine.Geometry.Create.Vector(fromAsset.ShearModulus.X.ToSI(UnitType.UT_Stress), fromAsset.ShearModulus.Y.ToSI(UnitType.UT_Stress), fromAsset.ShearModulus.Z.ToSI(UnitType.UT_Stress));
-
-            toMaterial.Density = density;
-#if REVIT2020
-
-#else
-            toMaterial.DampingRatio = dampingRatio;
-#endif
-            
-            if (toMaterial is Aluminium)
-            {
-                Aluminium material = toMaterial as Aluminium;
-                material.YoungsModulus = youngsModulus.X;
-                material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
-                material.PoissonsRatio = poissonsRatio.X;
-            }
-            else if (toMaterial is Concrete)
-            {
-                Concrete material = toMaterial as Concrete;
-                material.YoungsModulus = youngsModulus.X;
-                material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
-                material.PoissonsRatio = poissonsRatio.X;
-                material.CustomData["Concrete Bending Reinforcement"] = fromAsset.ConcreteBendingReinforcement;
-                material.CustomData["Concrete Shear Reinforcement"] = fromAsset.ConcreteShearReinforcement;
-                material.CustomData["Concrete Shear Strength Reduction"] = fromAsset.ConcreteShearStrengthReduction;
-            }
-            else if (toMaterial is Steel)
-            {
-                Steel material = toMaterial as Steel;
-                material.YoungsModulus = youngsModulus.X;
-                material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
-                material.PoissonsRatio = poissonsRatio.X;
-            }
-            else if (toMaterial is Timber)
-            {
-                Timber material = toMaterial as Timber;
-                material.YoungsModulus = youngsModulus;
-                material.ThermalExpansionCoeff = thermalExpansionCoeff;
-                material.PoissonsRatio = poissonsRatio;
-            }
-            else if (toMaterial is GenericIsotropicMaterial)
-            {
-                GenericIsotropicMaterial material = toMaterial as GenericIsotropicMaterial;
-                material.YoungsModulus = youngsModulus.X;
-                material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
-                material.PoissonsRatio = poissonsRatio.X;
-            }
-        }
-
+        
         /***************************************************/
     }
 }

@@ -87,6 +87,32 @@ namespace BH.Revit.Engine.Core
             return true;
         }
 
+        /***************************************************/
+
+        public static bool Update(this Material element, BH.oM.Physical.Materials.Material bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            foreach (BH.oM.Physical.Materials.IMaterialProperties property in BH.Engine.Base.Query.FilterByType(bHoMObject.Fragments, typeof(BH.oM.Physical.Materials.IMaterialProperties)))
+            {
+                element.CopyCharacteristics(property);
+            }
+
+            element.CopyParameters(bHoMObject, settings);
+
+            if (!string.IsNullOrWhiteSpace(bHoMObject.Name) && element.Name != bHoMObject.Name)
+            {
+                try
+                {
+                    element.Name = bHoMObject.Name;
+                }
+                catch
+                {
+
+                }
+            }
+
+            return true;
+        }
+
 
         /***************************************************/
         /****             Disallowed Types              ****/
@@ -113,7 +139,7 @@ namespace BH.Revit.Engine.Core
             panel.ConvertBeforePushError(typeof(oM.Physical.Elements.ISurface));
             return false;
         }
-        
+
         /***************************************************/
     }
 }

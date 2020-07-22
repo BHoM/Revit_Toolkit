@@ -37,13 +37,32 @@ namespace BH.Revit.Engine.Core
 
         public static Material ToRevitMaterial(this BHP.Material material, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
+            if (material == null)
+                return null;
+
             Material revitMaterial = refObjects.GetValue<Material>(document, material.BHoM_Guid);
             if (revitMaterial != null)
                 return revitMaterial;
 
             settings = settings.DefaultIfNull();
 
-            revitMaterial = document.GetElement(Material.Create(document, material.Name)) as Material;
+            try
+            {
+                revitMaterial = document.GetElement(Material.Create(document, material.Name)) as Material;
+            }
+            catch
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Revit material could not be created because a material with the same name already exists in the model or the name is incorrect. BHoM_Guid: {0}", material.BHoM_Guid));
+                return null;
+            }
+
+            foreach (BHP.IMaterialProperties property in BH.Engine.Base.Query.FilterByType(material.Fragments, typeof(BHP.IMaterialProperties)))
+            {
+                revitMaterial.CopyCharacteristics(property);
+            }
+
+            // Copy parameters from BHoM object to Revit element
+            revitMaterial.CopyParameters(material, settings);
 
             refObjects.AddOrReplace(material, revitMaterial);
             return revitMaterial;
