@@ -56,7 +56,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            foreach (BHP.IMaterialProperties property in BH.Engine.Base.Query.FilterByType(material.Fragments, typeof(BHP.IMaterialProperties)))
+            foreach (BHP.IMaterialProperties property in material.Properties)
             {
                 revitMaterial.CopyCharacteristics(property);
             }
