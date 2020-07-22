@@ -129,8 +129,8 @@ namespace BH.Revit.Engine.Core
 
         public static void CopyCharacteristics(this SolidMaterial toMaterial, ThermalAsset fromAsset)
         {
-            toMaterial.Conductivity = fromAsset.ThermalConductivity;
-            toMaterial.SpecificHeat = fromAsset.SpecificHeat;
+            toMaterial.Conductivity = fromAsset.ThermalConductivity.ToSI(UnitType.UT_HVAC_ThermalConductivity);
+            toMaterial.SpecificHeat = fromAsset.SpecificHeat.ToSI(UnitType.UT_HVAC_SpecificHeat);
             toMaterial.Density = fromAsset.Density.ToSI(UnitType.UT_MassDensity);
         }
 
