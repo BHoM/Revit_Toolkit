@@ -21,7 +21,9 @@
  */
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Geometry;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,7 +35,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Level LevelAbove(this Document document, double elevation, RevitSettings settings, bool closestIfNotFound = true)
+        public static Level LevelAbove(this Document document, double elevation, RevitSettings settings = null, bool closestIfNotFound = true)
         {
             settings = settings.DefaultIfNull();
 
@@ -41,11 +43,22 @@ namespace BH.Revit.Engine.Core
             if (levels.Count == 0)
                 return null;
 
-            Level level = levels.FirstOrDefault(x => x.Elevation + settings.DistanceTolerance >= elevation);
+            Level level = levels.FirstOrDefault(x => x.ProjectElevation + settings.DistanceTolerance >= elevation);
             if (level == null && closestIfNotFound)
                 level = levels[levels.Count - 1];
 
             return level;
+        }
+
+        /***************************************************/
+
+        public static Level LevelAbove(this Document document, IGeometry geometry, RevitSettings settings = null, bool closestIfNotFound = true)
+        {
+            BoundingBox bbox = geometry.IBounds();
+            if (bbox == null)
+                return null;
+
+            return document.LevelAbove(bbox.Max.Z.FromSI(UnitType.UT_Length), settings, closestIfNotFound);
         }
 
         /***************************************************/
