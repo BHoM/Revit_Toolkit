@@ -93,7 +93,7 @@ namespace BH.Revit.Engine.Core
         {
             foreach (BH.oM.Physical.Materials.IMaterialProperties property in bHoMObject.Properties)
             {
-                element.CopyCharacteristics(property);
+                element.ICopyCharacteristics(property);
             }
 
             element.CopyParameters(bHoMObject, settings);

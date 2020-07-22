@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
 
             foreach (BHP.IMaterialProperties property in material.Properties)
             {
-                revitMaterial.CopyCharacteristics(property);
+                revitMaterial.ICopyCharacteristics(property);
             }
 
             // Copy parameters from BHoM object to Revit element
