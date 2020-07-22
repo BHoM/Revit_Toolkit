@@ -91,7 +91,7 @@ namespace BH.Revit.Engine.Core
 
         public static bool Update(this Material element, BH.oM.Physical.Materials.Material bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
-            foreach (BH.oM.Physical.Materials.IMaterialProperties property in BH.Engine.Base.Query.FilterByType(bHoMObject.Fragments, typeof(BH.oM.Physical.Materials.IMaterialProperties)))
+            foreach (BH.oM.Physical.Materials.IMaterialProperties property in bHoMObject.Properties)
             {
                 element.CopyCharacteristics(property);
             }
