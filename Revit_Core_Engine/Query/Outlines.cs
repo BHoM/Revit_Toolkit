@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
             
-            List<ICurve> wallCurves = analyticalModel.GetCurves(AnalyticalCurveType.RawCurves).ToList().FromRevit();
+            List<ICurve> wallCurves = analyticalModel.GetCurves(AnalyticalCurveType.ActiveCurves).ToList().FromRevit();
             if (wallCurves.Any(x => x == null))
             {
                 hostObject.UnsupportedOutlineCurveWarning();
