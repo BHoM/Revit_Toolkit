@@ -482,7 +482,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'!='Debug' And '$(Configuration)'!='Release'">
     <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
