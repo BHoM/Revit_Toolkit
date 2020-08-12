@@ -25,6 +25,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Physical.Materials;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -43,7 +44,7 @@ namespace BH.Revit.Engine.Core
             result.Add(material.SolidMaterialFromRevit(settings, refObjects));
             result.Add(material.MaterialFragmentFromRevit(materialGrade, settings, refObjects));
 
-            return result;
+            return result.Where(x => x != null).ToList();
         }
 
         /***************************************************/
