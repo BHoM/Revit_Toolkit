@@ -319,18 +319,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        internal static void InvalidDataMaterialWarning(this Material material)
-        {
-            string message = "Material could not be correctly converted. Some BHoM Material data may not be valid.";
-
-            if (material != null)
-                message = string.Format("{0} Material Element Id: {1}", message, material.Id.IntegerValue);
-
-            BH.Engine.Reflection.Compute.RecordWarning(message);
-        }
-
-        /***************************************************/
-
         internal static void InvalidDataMaterialWarning(this Element element)
         {
             string message = "Material could not be correctly converted. Some BHoM Material data may not be valid.";
