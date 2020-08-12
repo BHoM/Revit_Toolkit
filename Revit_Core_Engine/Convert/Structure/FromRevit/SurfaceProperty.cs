@@ -72,25 +72,14 @@ namespace BH.Revit.Engine.Core
 
                         Material revitMaterial = document.GetElement(csl.MaterialId) as Material;
                         if (revitMaterial == null)
+                            revitMaterial = hostObjAttributes.Category.Material;
+
+                        materialFragment = revitMaterial.MaterialFragmentFromRevit(materialGrade, settings, refObjects);
+                        if (materialFragment == null)
                         {
                             BH.Engine.Reflection.Compute.RecordWarning("There is a structural layer in wall/floor type without material assigned. A default empty material is returned. ElementId: " + hostObjAttributes.Id.IntegerValue.ToString());
-                            materialFragment = Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined.EmptyMaterialFragment();
+                            materialFragment = Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined.EmptyMaterialFragment(materialGrade);
                         }
-                        else
-                        {
-                            Autodesk.Revit.DB.Structure.StructuralMaterialType structuralMaterialType = revitMaterial.MaterialClass.StructuralMaterialType();
-                            materialFragment = structuralMaterialType.LibraryMaterial(materialGrade);
-
-                            if (materialFragment == null)
-                                materialFragment = revitMaterial.MaterialFragmentFromRevit(null, settings, refObjects);
-
-                            if (materialFragment == null)
-                            {
-                                Compute.InvalidDataMaterialWarning(hostObjAttributes);
-                                materialFragment = structuralMaterialType.EmptyMaterialFragment();
-                            }
-                        }
-
                     }
                     else if (csl.Function == MaterialFunctionAssignment.StructuralDeck)
                         BH.Engine.Reflection.Compute.RecordWarning(String.Format("A structural deck layer has been found in the Revit compound structure, but was ignored on convert. Revit ElementId: {0}", hostObjAttributes.Id));

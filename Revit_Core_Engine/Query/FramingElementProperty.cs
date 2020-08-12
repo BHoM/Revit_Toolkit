@@ -25,6 +25,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.Physical.FramingProperties;
+using System;
 using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
@@ -44,15 +45,22 @@ namespace BH.Revit.Engine.Core
             if (framingProperty != null)
                 return framingProperty;
 
-            // Check if an instance or type Structural Material parameter exists.
+            // Convert the material to BHoM.
             ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
             if (structuralMaterialId.IntegerValue < 0)
                 structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
 
             Material revitMaterial = familyInstance.Document.GetElement(structuralMaterialId) as Material;
+            if (revitMaterial == null)
+                revitMaterial = familyInstance.Category.Material;
+
             string materialGrade = familyInstance.MaterialGrade(settings);
             BH.oM.Physical.Materials.Material material = revitMaterial.MaterialFromRevit(materialGrade, settings, refObjects);
-            
+
+            // If Revit material is null, rename the BHoM material based on material type of framing family.
+            if (material != null && revitMaterial == null)
+                material.Name = String.Format("Unknown {0} Material", familyInstance.StructuralMaterialType);
+
             IProfile profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
             if (profile == null)
                 familyInstance.Symbol.NotConvertedWarning();
