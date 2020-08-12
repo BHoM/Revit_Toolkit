@@ -83,7 +83,7 @@ namespace BH.Revit.Engine.Core
             if (!string.IsNullOrWhiteSpace(grade))
                 name += " grade " + grade;
 
-            materialFragment.Name = material.Name;
+            materialFragment.Name = name;
 
             refObjects.AddOrReplace(refId, materialFragment);
             return materialFragment;

@@ -36,17 +36,8 @@ namespace BH.Revit.Engine.Core
 
         public static Material MaterialFromRevit(this Autodesk.Revit.DB.Material revitMaterial, string grade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            string name;
-            if (revitMaterial != null)
-                name = revitMaterial.Name;
-            else
-                name = "Unknown material";
-
-            if (!string.IsNullOrWhiteSpace(grade))
-                name += " grade " + grade;
-
             if (revitMaterial == null)
-                return new Material { Name = name };
+                return new Material { Name = "Unknown Material" };
 
             settings = settings.DefaultIfNull();
 
@@ -55,7 +46,7 @@ namespace BH.Revit.Engine.Core
             if (material != null)
                 return material;
 
-            material = new Material { Properties = revitMaterial.MaterialProperties(grade, settings, refObjects), Name =  name};
+            material = new Material { Properties = revitMaterial.MaterialProperties(grade, settings, refObjects), Name =  revitMaterial.Name};
 
             //Set identifiers, parameters & custom data
             material.SetIdentifiers(revitMaterial);

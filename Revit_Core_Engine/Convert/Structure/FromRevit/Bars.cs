@@ -65,25 +65,29 @@ namespace BH.Revit.Engine.Core
                 locationCurve = familyInstance.LocationCurve(settings);
 
             // Get bar material
+            ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
+            if (structuralMaterialId.IntegerValue < 0)
+                structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
+
+            Material revitMaterial = familyInstance.Document.GetElement(structuralMaterialId) as Material;
+            if (revitMaterial == null)
+                revitMaterial = familyInstance.Category.Material;
+            
+            // Get material grade
             string materialGrade = familyInstance.MaterialGrade(settings);
-            IMaterialFragment materialFragment = familyInstance.StructuralMaterialType.LibraryMaterial(materialGrade);
 
+            // Find material fragment: convert the material assigned to the element, if that returns null try finding a material in the library, based on the material type assigned to the family.
+            IMaterialFragment materialFragment = revitMaterial.MaterialFragmentFromRevit(materialGrade, settings, refObjects);
             if (materialFragment == null)
-            {
-                // Check if an instance or type Structural Material parameter exists.
-                ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
-                if (structuralMaterialId.IntegerValue < 0)
-                    structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
+                materialFragment = familyInstance.StructuralMaterialType.LibraryMaterial(materialGrade);
 
-                materialFragment = (familyInstance.Document.GetElement(structuralMaterialId) as Material).MaterialFragmentFromRevit(null, settings, refObjects);
-            }
-
-            if (materialFragment == null)
+            // If material fragment could not be found, raise a warning and create an empty one.
+            if (materialFragment == null) 
             {
                 Compute.InvalidDataMaterialWarning(familyInstance);
-                materialFragment = familyInstance.StructuralMaterialType.EmptyMaterialFragment();
+                materialFragment = familyInstance.StructuralMaterialType.EmptyMaterialFragment(materialGrade);
             }
-            
+
             // Get bar profile and create property
             string profileName = familyInstance.Symbol.Name;
             ISectionProperty property = BH.Engine.Library.Query.Match("SectionProperties", profileName) as ISectionProperty;

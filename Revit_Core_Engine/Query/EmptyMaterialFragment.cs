@@ -32,13 +32,16 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IMaterialFragment EmptyMaterialFragment(this StructuralMaterialType structuralMaterialType)
+        public static IMaterialFragment EmptyMaterialFragment(this StructuralMaterialType structuralMaterialType, string grade)
         {
             string name;
             if (structuralMaterialType == Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined)
                 name = "Unknown Material";
             else
                 name = String.Format("Unknown {0} Material", structuralMaterialType);
+
+            if (!string.IsNullOrWhiteSpace(grade))
+                name += " grade " + grade;
 
             switch (structuralMaterialType)
             {

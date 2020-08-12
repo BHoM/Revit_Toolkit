@@ -52,7 +52,7 @@ namespace BH.Revit.Engine.Core
                 if (compoundStructureLayers != null)
                     foreach (CompoundStructureLayer layer in compoundStructureLayers)
                     {
-                        layers.Add(layer.Layer(hostObjAttributes.Document, materialGrade, settings, refObjects));
+                        layers.Add(layer.Layer(hostObjAttributes, materialGrade, settings, refObjects));
                     }
             }
 
