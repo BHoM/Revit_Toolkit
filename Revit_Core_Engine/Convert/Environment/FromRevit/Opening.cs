@@ -53,7 +53,10 @@ namespace BH.Revit.Engine.Core
                     return result;
 
                 ICurve curve = energyAnalysisOpening.GetPolyloop().FromRevit();
-                result = BH.Engine.Environment.Create.Opening(externalEdges: curve.ToEdges());
+                result = new oM.Environment.Elements.Opening()
+                {
+                    Edges = curve.ToEdges(),
+                };
 
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = energyAnalysisOpening.Id.IntegerValue.ToString(), TypeName = energyAnalysisOpening.OpeningName };
                 originContext.SetProperties(energyAnalysisOpening, settings.ParameterSettings);
@@ -79,8 +82,11 @@ namespace BH.Revit.Engine.Core
                 ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
 
                 ICurve curve = energyAnalysisOpening.GetPolyloop().FromRevit();
-                result = BH.Engine.Environment.Create.Opening(externalEdges: curve.ToEdges());
-                result.Name = element.FamilyTypeFullName();
+                result = new oM.Environment.Elements.Opening()
+                {
+                    Edges = curve.ToEdges(),
+                    Name = element.FamilyTypeFullName(),
+                };
 
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
                 originContext.SetProperties(element, settings.ParameterSettings);

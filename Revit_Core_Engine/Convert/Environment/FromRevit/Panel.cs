@@ -51,9 +51,12 @@ namespace BH.Revit.Engine.Core
             ICurve outline = openingSurface?.ExternalBoundary;
             if (outline == null)
                 return null;
-            
-            panel = BH.Engine.Environment.Create.Panel(externalEdges: outline.ToEdges());
-            panel.Name = familyInstance.FamilyTypeFullName();
+
+            panel = new oM.Environment.Elements.Panel()
+            {
+                ExternalEdges = outline.ToEdges(),
+                Name = familyInstance.FamilyTypeFullName(),
+            };
 
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment() { ElementID = familyInstance.Id.IntegerValue.ToString(), TypeName = familyInstance.FamilyTypeFullName() };
@@ -112,8 +115,11 @@ namespace BH.Revit.Engine.Core
             foreach (PlanarSurface surface in surfaces.Keys)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: surface.ExternalBoundary.ToEdges());
-                panel.Name = ceiling.FamilyTypeFullName();
+                oM.Environment.Elements.Panel panel = new oM.Environment.Elements.Panel()
+                {
+                    ExternalEdges = surface.ExternalBoundary.ToEdges(),
+                    Name = ceiling.FamilyTypeFullName(),
+                };
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = ceiling.Id.IntegerValue.ToString(), TypeName = ceiling.FamilyTypeFullName() };
@@ -172,8 +178,11 @@ namespace BH.Revit.Engine.Core
             foreach (PlanarSurface surface in surfaces.Keys)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: surface.ExternalBoundary.ToEdges());
-                panel.Name = floor.FamilyTypeFullName();
+                oM.Environment.Elements.Panel panel = new oM.Environment.Elements.Panel()
+                {
+                    ExternalEdges = surface.ExternalBoundary.ToEdges(),
+                    Name = floor.FamilyTypeFullName(),
+                };
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = floor.Id.IntegerValue.ToString(), TypeName = floor.FamilyTypeFullName() };
@@ -232,8 +241,11 @@ namespace BH.Revit.Engine.Core
             foreach (PlanarSurface surface in surfaces.Keys)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: surface.ExternalBoundary.ToEdges());
-                panel.Name = roofBase.FamilyTypeFullName();
+                oM.Environment.Elements.Panel panel = new oM.Environment.Elements.Panel()
+                {
+                    ExternalEdges = surface.ExternalBoundary.ToEdges(),
+                    Name = roofBase.FamilyTypeFullName(),
+                };
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = roofBase.Id.IntegerValue.ToString(), TypeName = roofBase.FamilyTypeFullName() };
@@ -295,8 +307,11 @@ namespace BH.Revit.Engine.Core
             foreach (PlanarSurface surface in surfaces.Keys)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: surface.ExternalBoundary.ToEdges());
-                panel.Name = wall.FamilyTypeFullName();
+                oM.Environment.Elements.Panel panel = new oM.Environment.Elements.Panel()
+                {
+                    ExternalEdges = surface.ExternalBoundary.ToEdges(),
+                    Name = wall.FamilyTypeFullName(),
+                };
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = wall.Id.IntegerValue.ToString(), TypeName = wall.FamilyTypeFullName() };
@@ -350,8 +365,11 @@ namespace BH.Revit.Engine.Core
 
             ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
 
-            panel = BH.Engine.Environment.Create.Panel(externalEdges: crv.ToEdges());
-            panel.Name = element.FamilyTypeFullName();
+            panel = new oM.Environment.Elements.Panel()
+            {
+                ExternalEdges = crv.ToEdges(),
+                Name = element.FamilyTypeFullName(),
+            };
 
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
@@ -411,8 +429,11 @@ namespace BH.Revit.Engine.Core
                 return panel;
             
             elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-            panel = BH.Engine.Environment.Create.Panel(name: element.FamilyTypeFullName(), externalEdges: curve.ToEdges());
-
+            panel = new oM.Environment.Elements.Panel()
+            {
+                ExternalEdges = curve.ToEdges(),
+                Name = element.FamilyTypeFullName(),
+            };
 
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
