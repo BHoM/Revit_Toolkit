@@ -65,7 +65,12 @@ namespace BH.Engine.Adapters.Revit
             originContext.Origin = Convert.AdapterIdName;
             originContext.TypeName = familyTypeName;
 
-            Panel panel = Environment.Create.Panel(type: PanelType.Wall, externalEdges: polycurve.ToEdges());
+            Panel panel = new Panel()
+            {
+                Type = PanelType.Wall,
+                ExternalEdges = polycurve.ToEdges(),
+            };
+
             panel.Name = familyTypeName;
             panel.CustomData.Add(Convert.CategoryName, "Walls");
 
@@ -97,8 +102,12 @@ namespace BH.Engine.Adapters.Revit
                 if (Geometry.Query.Distance(point1, point2) > Tolerance.MicroDistance)
                     polycurve.Curves.Add(Geometry.Create.Line(point1, point2));
             }
-                
-            return Environment.Create.Panel(externalEdges: polycurve.ToEdges(), name: familyTypeName);
+
+            return new Panel()
+            {
+                ExternalEdges = polycurve.ToEdges(),
+                Name = familyTypeName,
+            };
         }
 
         /***************************************************/
