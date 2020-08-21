@@ -106,7 +106,7 @@ namespace BH.Revit.Engine.Core
             List<BH.oM.Geometry.Line> patterns = new List<BH.oM.Geometry.Line>();
             FillPatternElement fillPatternElement = null;
 
-#if REVIT2020
+#if (REVIT2020 || REVIT2021)
             fillPatternElement = revitMaterial.Document.GetElement(revitMaterial.SurfaceForegroundPatternId) as FillPatternElement;
 #else
                 fillPatternElement = revitMaterial.Document.GetElement(revitMaterial.SurfacePatternId) as FillPatternElement;
