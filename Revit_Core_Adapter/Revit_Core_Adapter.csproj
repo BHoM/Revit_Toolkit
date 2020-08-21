@@ -102,6 +102,28 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AssemblyName>Revit_Core_Adapter_2020</AssemblyName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2021|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;REVIT2021</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Adapter_2021</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2021|AnyCPU'">
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;REVIT2021</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Adapter_2021</AssemblyName>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Adapter_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Adapter_Engine.dll</HintPath>
@@ -180,6 +202,18 @@
       <HintPath>..\libs\2020\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
+      <HintPath>..\libs\2021\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
+      <HintPath>..\libs\2021\RevitAPIIFC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
+      <HintPath>..\libs\2021\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Socket_Adapter">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Socket_Adapter.dll</HintPath>
       <Private>False</Private>
@@ -255,6 +289,9 @@
     <None Include="Listener\Files\BHoM_2020.Addin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Listener\Files\BHoM_2021.Addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Listener\Forms\UpdatePortsForm.resx">
@@ -277,6 +314,11 @@
   <PropertyGroup Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
     <PostBuildEvent>
 		C:\Windows\System32\xcopy "$(ProjectDir)Listener\Files\BHoM_2020.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2020\" /Y /I /E
+		xcopy "$(TargetDir)$(TargetFileName)" "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
+    <PostBuildEvent>
+		C:\Windows\System32\xcopy "$(ProjectDir)Listener\Files\BHoM_2021.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2021\" /Y /I /E
 		xcopy "$(TargetDir)$(TargetFileName)" "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

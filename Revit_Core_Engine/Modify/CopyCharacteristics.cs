@@ -140,7 +140,7 @@ namespace BH.Revit.Engine.Core
         {
             double density = fromAsset.Density.ToSI(UnitType.UT_MassDensity);
 
-#if REVIT2020
+#if (REVIT2020 || REVIT2021)
 
 #else
             double dampingRatio = fromAsset.DampingRatio;
@@ -152,7 +152,7 @@ namespace BH.Revit.Engine.Core
             oM.Geometry.Vector shearModulus = BH.Engine.Geometry.Create.Vector(fromAsset.ShearModulus.X.ToSI(UnitType.UT_Stress), fromAsset.ShearModulus.Y.ToSI(UnitType.UT_Stress), fromAsset.ShearModulus.Z.ToSI(UnitType.UT_Stress));
 
             toMaterial.Density = density;
-#if REVIT2020
+#if (REVIT2020 || REVIT2021)
 
 #else
             toMaterial.DampingRatio = dampingRatio;

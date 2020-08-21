@@ -80,7 +80,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             revitViewPlan = ViewPlan.Create(document, viewFamilyTypeElementID, levelElementID);
-#if REVIT2020
+#if (REVIT2020 || REVIT2021)
             revitViewPlan.Name = viewPlan.Name;
 #else
             revitViewPlan.ViewName = viewPlan.Name;
