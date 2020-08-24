@@ -78,7 +78,7 @@ namespace BH.Revit.Engine.Core
             if (outlines != null && outlines.Count != 0)
             {
                 hostObject.AnalyticalPullWarning();
-                result = BHS.Create.Panel(outlines, property2D, hostObject.Name);
+                result = BHS.Create.Panel(outlines, property2D, null, hostObject.Name);
             }
             else
             {
@@ -96,7 +96,7 @@ namespace BH.Revit.Engine.Core
                         if (surfaces[planarSurface] != null)
                             internalBoundaries.AddRange(surfaces[planarSurface].Select(x => x.ExternalBoundary.ITranslate(translation)));
 
-                        result.Add(BHS.Create.Panel(planarSurface.ExternalBoundary.ITranslate(translation), internalBoundaries, property2D, hostObject.Name));
+                        result.Add(BHS.Create.Panel(planarSurface.ExternalBoundary.ITranslate(translation), internalBoundaries, property2D, null, hostObject.Name));
                     }
                 }
             }
