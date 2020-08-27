@@ -109,7 +109,7 @@ namespace BH.Revit.Engine.Core
                 parameter.Set(height);
             }
 
-            double levelElevation = level.Elevation.ToSI(UnitType.UT_Length);
+            double levelElevation = level.Elevation;
 
             if (System.Math.Abs(bottomElevation - levelElevation) > Tolerance.MacroDistance)
             {
