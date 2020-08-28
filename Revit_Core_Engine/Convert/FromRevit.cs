@@ -23,13 +23,19 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using Autodesk.Revit.DB.Structure;
+using Autodesk.Revit.DB.Mechanical;
+using Autodesk.Revit.DB.Plumbing;
+using Autodesk.Revit.DB.Electrical;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using BH.oM.MEP.Elements;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Revit.Engine.Core
 {
@@ -147,7 +153,7 @@ namespace BH.Revit.Engine.Core
 
         public static IEnumerable<IBHoMObject> FromRevit(this Floor floor, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            switch(discipline)
+            switch (discipline)
             {
                 case Discipline.Environmental:
                     return floor.EnvironmentPanelsFromRevit(settings, refObjects);
@@ -198,9 +204,72 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Convert a Revit Duct to a corresponding BHoM object.")]
+        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct instance.")]
+        [Input("BH.oM.Adapters.Revit.Enums.Discipline", "Engineering discipline.")]
+        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
+        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
+        [Output("IBHoMObject", "Duct represented as a BHoM object.")]
+        public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            switch (discipline)
+            {
+                case Discipline.Architecture:
+                case Discipline.Physical:
+                case Discipline.Environmental:
+                    return duct.DuctFromRevit(settings, refObjects);
+                default:
+                    return null;
+            }
+        }
+
+        /***************************************************/
+
+        [Description("Convert a Revit Pipe to a corresponding BHoM object.")]
+        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit pipe instance.")]
+        [Input("BH.oM.Adapters.Revit.Enums.Discipline", "Engineering discipline.")]
+        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
+        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
+        [Output("IBHoMObject", "Pipe represented as a BHoM object.")]
+        public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Plumbing.Pipe pipe, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            switch (discipline)
+            {
+                case Discipline.Architecture:
+                case Discipline.Physical:
+                case Discipline.Environmental:
+                    return pipe.PipeFromRevit(settings, refObjects);
+                default:
+                    return null;
+            }
+        }
+
+        /***************************************************/
+
+        [Description("Convert a Revit Wire to a corresponding BHoM object.")]
+        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit wire instance.")]
+        [Input("BH.oM.Adapters.Revit.Enums.Discipline", "Engineering discipline.")]
+        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
+        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
+        [Output("IBHoMObject", "Wire represented as a BHoM object.")]
+        public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Electrical.Wire wire, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            switch (discipline)
+            {
+                case Discipline.Architecture:
+                case Discipline.Physical:
+                case Discipline.Environmental:
+                    return wire.WireFromRevit(settings, refObjects);
+                default:
+                    return null;
+            }
+        }
+
+        /***************************************************/
+
         public static IBHoMObject FromRevit(this Level level, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            switch(discipline)
+            switch (discipline)
             {
                 default:
                     return level.LevelFromRevit(settings, refObjects);
@@ -268,7 +337,7 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-        
+
         public static IBHoMObject FromRevit(this EnergyAnalysisSpace energyAnalysisSpace, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
