@@ -44,112 +44,28 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert pipes in the model to their corresponding BHoM objects.")]
-        [Input("Autodesk.Revit.DB.FamilyInstance", "Revit family instance.")]
+        [Description("Convert a Revit pipe into a BHoM pipe.")]
+        [Input("Autodesk.Revit.DB.Plumbing.Pipe", "Revit family instance.")]
         [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
         [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("List<Pipe>", "Revit pipes represented as BHoM objects.")]
-        public static List<Pipe> PipeFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("BH.oM.MEP.Elements.Pipe", "BHoM Pipe.")]
+        public static BH.oM.MEP.Elements.Pipe PipeFromRevit(this Autodesk.Revit.DB.Plumbing.Pipe revitPipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            List<Pipe> pipes = refObjects.GetValues<Pipe>(familyInstance.Id);
-            if (pipes != null)
-                return pipes;
+            // Linear duct
+            BH.oM.MEP.Elements.Pipe bhomPipe = new BH.oM.MEP.Elements.Pipe();
+            //bhomPipe.StartNode.Position.X =
+            //bhomPipe.StartNode.Position.Y =
+            //bhomPipe.StartNode.Position.Z =
+            //bhomPipe.EndNode.Position.X =
+            //bhomPipe.EndNode.Position.Y =
+            //bhomPipe.EndNode.Position.Z =
 
-            // Get pipe curve
-            oM.Geometry.ICurve locationCurve = null;
-            AnalyticalModelStick analyticalModel = familyInstance.GetAnalyticalModel() as AnalyticalModelStick;
-            if (analyticalModel != null)
-            {
-                Curve curve = analyticalModel.GetCurve();
-                if (curve != null)
-                    locationCurve = curve.IFromRevit();
-            }
+            //bhomPipe.SectionProperty.SectionProfile.InsulationProfile. =
 
-            if (locationCurve != null)
-                familyInstance.AnalyticalPullWarning();
-            else
-                locationCurve = familyInstance.LocationCurve(settings);
 
-            // Get pipe material
-            string materialGrade = familyInstance.MaterialGrade(settings);
-            IMaterialFragment materialFragment = familyInstance.StructuralMaterialType.LibraryMaterial(materialGrade);
-
-            if (materialFragment == null)
-            {
-                // Check if an instance or type Structural Material parameter exists.
-                ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
-                if (structuralMaterialId.IntegerValue < 0)
-                    structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
-
-                materialFragment = (familyInstance.Document.GetElement(structuralMaterialId) as Material).MaterialFragmentFromRevit(null, settings, refObjects);
-            }
-
-            if (materialFragment == null)
-            {
-                Compute.InvalidDataMaterialWarning(familyInstance);
-                materialFragment = familyInstance.StructuralMaterialType.EmptyMaterialFragment();
-            }
-
-            // Get pipe profile and create property
-            string profileName = familyInstance.Symbol.Name;
-            ISectionProperty property = BH.Engine.Library.Query.Match("SectionProperties", profileName) as ISectionProperty;
-
-            if (property == null)
-            {
-                IProfile profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
-
-                //TODO: this should be removed and null passed finally?
-                if (profile == null)
-                    profile = new FreeFormProfile(new List<oM.Geometry.ICurve>());
-
-                if (profile.Edges.Count == 0)
-                    familyInstance.Symbol.ConvertProfileFailedWarning();
-
-                property = BH.Engine.Structure.Create.SectionPropertyFromProfile(profile, materialFragment, profileName);
-            }
-            else
-            {
-                property = property.GetShallowClone() as ISectionProperty;
-                property.Material = materialFragment;
-                property.Name = profileName;
-            }
-
-            // List linear pipes
-            pipes = new List<Pipe>();
-            if (locationCurve != null)
-            {
-                //TODO: check category of familyInstance to recognize which rotation query to use
-                double rotation = familyInstance.OrientationAngle(settings);
-                foreach (BH.oM.Geometry.Line line in locationCurve.ICollapseToPolyline(Math.PI / 12).SubParts())
-                {
-                    //pipes.Add(BH.Engine.Structure.Create.Bar(line, property, rotation));
-                    Pipe pipe = new Pipe();
-                    pipe.StartNode = 
-                    pipe.EndNode = 
-                    pipe.SectionProperty =
-                    pipes.Add(pipe);
-                }
-            }
-            else
-            {
-                //pipes.Add(BH.Engine.Structure.Create.Bar(null, null, property, 0));
-                pipes.Add(new Pipe());
-            }
-
-            for (int i = 0; i < pipes.Count; i++)
-            {
-                pipes[i].Name = familyInstance.Name;
-
-                //Set identifiers, parameters & custom data
-                pipes[i].SetIdentifiers(familyInstance);
-                pipes[i].CopyParameters(familyInstance, settings.ParameterSettings);
-                pipes[i].SetProperties(familyInstance, settings.ParameterSettings);
-            }
-
-            refObjects.AddOrReplace(familyInstance.Id, pipes);
-            return pipes;
+            return bhomPipe;
         }
 
         /***************************************************/

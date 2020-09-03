@@ -38,6 +38,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using BH.oM.Geometry;
 using System.Linq;
+using BH.oM.MEP.MaterialFragments;
 
 namespace BH.Revit.Engine.Core
 {
@@ -47,44 +48,37 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert a Revit duct to a BHoM duct.")]
-        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct.")]
+        [Description("Convert to a BHoM duct section property fom Revit.")]
+        [Input("Autodesk.Revit.DB.Mechanical.DuctType", "Revit duct type.")]
         [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
         [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("BH.oM.MEP.Elements.Duct", "BHoM duct.")]
-        public static BH.oM.MEP.Elements.Duct DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("BH.oM.MEP.SectionProperties.DuctSectionProperty", "BHoM duct section property.")]
+        public static BH.oM.MEP.SectionProperties.DuctSectionProperty DuctSectionPropertyFromRevit(this Autodesk.Revit.DB.Mechanical.DuctType revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
             Options options = new Options();
             options.IncludeNonVisibleObjects = false;
 
-            // Linear duct
+            //// Linear duct
 
-            BH.oM.MEP.Elements.Duct bhomDuct = new BH.oM.MEP.Elements.Duct();
-                       
-            try
-            {
-                // Duct start point
-                LocationCurve locationCurve = revitDuct.Location as LocationCurve;
-                Curve curve = locationCurve.Curve;
-                bhomDuct.StartNode.Position.X = curve.GetEndPoint(0).X;
-                bhomDuct.StartNode.Position.Y = curve.GetEndPoint(0).Y;
-                bhomDuct.StartNode.Position.Z = curve.GetEndPoint(0).Z;
+            //BH.oM.MEP.Elements.Duct bhomDuct = new BH.oM.MEP.Elements.Duct();
 
-                // Duct end point
-                bhomDuct.EndNode.Position.X = curve.GetEndPoint(1).X;
-                bhomDuct.EndNode.Position.Y = curve.GetEndPoint(1).Y;
-                bhomDuct.EndNode.Position.Z = curve.GetEndPoint(1).Z;
-            }
-            catch (Exception)
-            {
-                // Error message to be added
-            }
+            //// Duct start point
+            //LocationCurve locationCurve = revitDuct.Location as LocationCurve;
+            //Curve curve = locationCurve.Curve;
+            //bhomDuct.StartNode.Position.X = curve.GetEndPoint(0).X;
+            //bhomDuct.StartNode.Position.Y = curve.GetEndPoint(0).Y;
+            //bhomDuct.StartNode.Position.Z = curve.GetEndPoint(0).Z;
+
+            //// Duct end point
+            //bhomDuct.EndNode.Position.X = curve.GetEndPoint(1).X;
+            //bhomDuct.EndNode.Position.Y = curve.GetEndPoint(1).Y;
+            //bhomDuct.EndNode.Position.Z = curve.GetEndPoint(1).Z;
 
             // Box profile
-            double boxHeight = revitDuct.Height.ToSI(UnitType.UT_HVAC_DuctSize);
-            double boxWidth = revitDuct.Width.ToSI(UnitType.UT_HVAC_DuctSize);
-            double boxThickness = 0.001519; // Dafault to 16 gauge to be changed later
+            double boxHeight = double.NaN;
+            double boxWidth = double.NaN;
+            double boxThickness = double.NaN;
             double outerRadius = double.NaN;
             double innerRadius = double.NaN;
             List<ICurve> edges = revitDuct.Curves(options, settings, true).FromRevit();
@@ -103,23 +97,13 @@ namespace BH.Revit.Engine.Core
             // Section profile
             SectionProfile sectionProfile = new SectionProfile(boxProfile, liningProfile, insulationProfile);
 
-            // Duct section property
-            double elementSolidArea = double.NaN;
-            double liningSolidArea = double.NaN;
-            double insulationSolidArea = double.NaN;
-            double elementVoidArea = double.NaN;
-            double liningVoidArea = double.NaN;
-            double insulationVoidArea = double.NaN;
-            double hydraulicDiameter = double.NaN;
-            double circularEquivalentDiameter = double.NaN;
-            Autodesk.Revit.DB.Mechanical.DuctType ductType = revitDuct.DuctType;
-            //DuctSectionProperty ductSectionProperty = BH.Revit.Engine.Core.Convert.DuctSectionPropertyFromRevit(ductType, settings, refObjects);
+            IMEPMaterial ductMaterial = null;
+            IMEPMaterial insulationMaterial = null;
+            IMEPMaterial liningMaterial = null;
+            string name = revitDuct.GetType().Name;
+            DuctSectionProperty ductSectionProperty = BH.Engine.MEP.Create.DuctSectionProperty(sectionProfile, ductMaterial, insulationMaterial, liningMaterial, name);
 
-            DuctSectionProperty ductSectionProperty = new DuctSectionProperty(sectionProfile, elementSolidArea, liningSolidArea, insulationSolidArea, elementVoidArea, liningVoidArea, insulationVoidArea, hydraulicDiameter, circularEquivalentDiameter);
-
-            bhomDuct.SectionProperty = ductSectionProperty;
-
-            return bhomDuct;
+            return ductSectionProperty;
         }
 
         /***************************************************/
