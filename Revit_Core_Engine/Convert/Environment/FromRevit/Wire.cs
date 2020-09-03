@@ -44,107 +44,30 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert wires in the model to their corresponding BHoM objects.")]
-        [Input("Autodesk.Revit.DB.FamilyInstance", "Revit family instance.")]
+        [Description("Convert a Revit wire into a BHoM wire.")]
+        [Input("Autodesk.Revit.DB.Electrical.Wire", "Revit family instance.")]
         [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
         [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("List<Wire>", "Revit wires represented as BHoM objects.")]
-        public static List<Wire> WireFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("BH.oM.MEP.Elements.Wire", "BHoM Wire.")]
+        public static BH.oM.MEP.Elements.Wire WireFromRevit(this Autodesk.Revit.DB.Electrical.Wire revitWire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            List<Wire> wires = refObjects.GetValues<Wire>(familyInstance.Id);
-            if (wires != null)
-                return wires;
+            // Wire
+            BH.oM.MEP.Elements.Wire bhomWire = new BH.oM.MEP.Elements.Wire();
 
-            // Get wire curve
-            oM.Geometry.ICurve locationCurve = null;
-            AnalyticalModelStick analyticalModel = familyInstance.GetAnalyticalModel() as AnalyticalModelStick;
-            if (analyticalModel != null)
-            {
-                Curve curve = analyticalModel.GetCurve();
-                if (curve != null)
-                    locationCurve = curve.IFromRevit();
-            }
+            WireSegment wireSegment = new WireSegment();
+            //wireSegment.StartNode.Position.X =
+            //wireSegment.StartNode.Position.Y =
+            //wireSegment.StartNode.Position.Z =
 
-            if (locationCurve != null)
-                familyInstance.AnalyticalPullWarning();
-            else
-                locationCurve = familyInstance.LocationCurve(settings);
+            //wireSegment.EndNode.Position.X =
+            //wireSegment.EndNode.Position.Y =
+            //wireSegment.EndNode.Position.Z =
 
-            // Get wire material
-            string materialGrade = familyInstance.MaterialGrade(settings);
-            IMaterialFragment materialFragment = familyInstance.StructuralMaterialType.LibraryMaterial(materialGrade);
+            bhomWire.WireSegments.Add(wireSegment);
 
-            if (materialFragment == null)
-            {
-                // Check if an instance or type Structural Material parameter exists.
-                ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
-                if (structuralMaterialId.IntegerValue < 0)
-                    structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
-
-                materialFragment = (familyInstance.Document.GetElement(structuralMaterialId) as Material).MaterialFragmentFromRevit(null, settings, refObjects);
-            }
-
-            if (materialFragment == null)
-            {
-                Compute.InvalidDataMaterialWarning(familyInstance);
-                materialFragment = familyInstance.StructuralMaterialType.EmptyMaterialFragment();
-            }
-
-            // Get wire profile and create property
-            string profileName = familyInstance.Symbol.Name;
-            ISectionProperty property = BH.Engine.Library.Query.Match("SectionProperties", profileName) as ISectionProperty;
-
-            if (property == null)
-            {
-                IProfile profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
-
-                //TODO: this should be removed and null passed finally?
-                if (profile == null)
-                    profile = new FreeFormProfile(new List<oM.Geometry.ICurve>());
-
-                if (profile.Edges.Count == 0)
-                    familyInstance.Symbol.ConvertProfileFailedWarning();
-
-                property = BH.Engine.Structure.Create.SectionPropertyFromProfile(profile, materialFragment, profileName);
-            }
-            else
-            {
-                property = property.GetShallowClone() as ISectionProperty;
-                property.Material = materialFragment;
-                property.Name = profileName;
-            }
-
-            // List wires
-            wires = new List<Wire>();
-            if (locationCurve != null)
-            {
-                //TODO: check category of familyInstance to recognize which rotation query to use
-                double rotation = familyInstance.OrientationAngle(settings);
-                foreach (BH.oM.Geometry.Line line in locationCurve.ICollapseToPolyline(Math.PI / 12).SubParts())
-                {
-                    //wires.Add(BH.Engine.Environment.Create.Wire(line, property, rotation));
-                    Wire wire = new Wire();
-                    wire.WireSegments =
-                    wires.Add(wire);
-                }
-            }
-            else
-                wires.Add(new Wire());
-
-            for (int i = 0; i < wires.Count; i++)
-            {
-                wires[i].Name = familyInstance.Name;
-
-                //Set identifiers, parameters & custom data
-                wires[i].SetIdentifiers(familyInstance);
-                wires[i].CopyParameters(familyInstance, settings.ParameterSettings);
-                wires[i].SetProperties(familyInstance, settings.ParameterSettings);
-            }
-
-            refObjects.AddOrReplace(familyInstance.Id, wires);
-            return wires;
+            return bhomWire;
         }
 
         /***************************************************/

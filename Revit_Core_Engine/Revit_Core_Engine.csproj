@@ -171,6 +171,9 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="MEP_Engine">
+      <HintPath>..\..\..\..\..\..\ProgramData\BHoM\Assemblies\MEP_Engine.dll</HintPath>
+    </Reference>
     <Reference Include="MEP_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\MEP_oM.dll</HintPath>
       <Private>False</Private>
@@ -253,6 +256,7 @@
   <ItemGroup>
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Room.cs" />
+    <Compile Include="Convert\Environment\FromRevit\DuctSectionProperty.cs" />
     <Compile Include="Convert\Environment\FromRevit\Wire.cs" />
     <Compile Include="Convert\Environment\FromRevit\Pipe.cs" />
     <Compile Include="Convert\Environment\FromRevit\Duct.cs" />
@@ -474,6 +478,9 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)'!='Debug' And '$(Configuration)'!='Release'">
+    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

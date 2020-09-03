@@ -223,10 +223,29 @@ namespace BH.Revit.Engine.Core
             }
         }
 
+        [Description("Convert a Revit Duct to a corresponding BHoM object.")]
+        [Input("Autodesk.Revit.DB.Mechanical.DuctType ductType", "Revit duct instance.")]
+        [Input("BH.oM.Adapters.Revit.Enums.Discipline", "Engineering discipline.")]
+        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
+        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
+        [Output("IBHoMObject", "Duct represented as a BHoM object.")]
+        public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Mechanical.DuctType ductType, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            switch (discipline)
+            {
+                case Discipline.Architecture:
+                case Discipline.Physical:
+                case Discipline.Environmental:
+                    return ductType.DuctSectionPropertyFromRevit(settings, refObjects);
+                default:
+                    return null;
+            }
+        }
+
         /***************************************************/
 
         [Description("Convert a Revit Pipe to a corresponding BHoM object.")]
-        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit pipe instance.")]
+        [Input("Autodesk.Revit.DB.Plumbing.Pipe", "Revit pipe instance.")]
         [Input("BH.oM.Adapters.Revit.Enums.Discipline", "Engineering discipline.")]
         [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
         [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
@@ -247,7 +266,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Convert a Revit Wire to a corresponding BHoM object.")]
-        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit wire instance.")]
+        [Input("Autodesk.Revit.DB.Electrical.Wire", "Revit wire instance.")]
         [Input("BH.oM.Adapters.Revit.Enums.Discipline", "Engineering discipline.")]
         [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
         [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
