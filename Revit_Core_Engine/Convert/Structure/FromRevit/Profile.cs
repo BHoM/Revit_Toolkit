@@ -553,42 +553,8 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static IProfile FreeFormProfileFromRevit(this FamilySymbol familySymbol, RevitSettings settings)
+        private static FreeFormProfile FreeFormProfileFromRevit(this FamilySymbol familySymbol, RevitSettings settings)
         {
-            List<ICurve> profileCurves = new List<ICurve>();
-
-            // Check if one and only one solid exists to make sure that the column is a single piece
-            Solid solid = null;
-            Options options = new Options();
-            options.IncludeNonVisibleObjects = false;
-            foreach (GeometryObject obj in familySymbol.get_Geometry(options))
-            {
-                if (obj is Solid)
-                {
-                    Solid s = obj as Solid;
-                    if (!s.Faces.IsEmpty)
-                    {
-                        if (solid == null)
-                            solid = s;
-                        else
-                        {
-                            BH.Engine.Reflection.Compute.RecordWarning("Geometry of family type consists of more than one solid. ElementId: " + familySymbol.Id.IntegerValue.ToString());
-                            return null;
-                        }
-                    }
-                }
-            }
-
-            if (solid == null)
-            {
-                BH.Engine.Reflection.Compute.RecordWarning("The profile of a family type could not be found. ElementId: " + familySymbol.Id.IntegerValue.ToString());
-                return null;
-            }
-
-            //TODO: direction should be driven based on the relation between GetTotalTransform(), handOrientation and facingOrientation?
-
-            BH.oM.Geometry.Point centroid = solid.ComputeCentroid().PointFromRevit();
-
             XYZ direction;
             if (familySymbol.Family.FamilyPlacementType == FamilyPlacementType.CurveDrivenStructural)
                 direction = XYZ.BasisX;
@@ -597,6 +563,55 @@ namespace BH.Revit.Engine.Core
             else
             {
                 BH.Engine.Reflection.Compute.RecordWarning("The profile of a family type could not be found. ElementId: " + familySymbol.Id.IntegerValue.ToString());
+                return null;
+            }
+
+            // Check if one and only one solid exists to make sure that the column is a single piece
+            Solid solid = null;
+            Options options = new Options();
+            options.IncludeNonVisibleObjects = false;
+
+            // Activate the symbol temporarily if not active, then extract its geometry (open either transaction or subtransaction, depending on whether one is already open).
+            if (!familySymbol.IsActive)
+            {
+                Document doc = familySymbol.Document;
+                if (!doc.IsModifiable)
+                {
+                    using(Transaction tempTransaction = new Transaction(doc, "Temp activate family symbol"))
+                    {
+                        tempTransaction.Start();
+
+                        familySymbol.Activate();
+                        doc.Regenerate();
+                        solid = familySymbol.get_Geometry(options).SingleSolid();
+                        if (solid != null)
+                            solid = SolidUtils.Clone(solid);
+
+                        tempTransaction.RollBack();
+                    }
+                }
+                else
+                {
+                    using (SubTransaction tempTransaction = new SubTransaction(doc))
+                    {
+                        tempTransaction.Start();
+
+                        familySymbol.Activate();
+                        doc.Regenerate();
+                        solid = familySymbol.get_Geometry(options).SingleSolid();
+                        if (solid != null)
+                            solid = SolidUtils.Clone(solid);
+
+                        tempTransaction.RollBack();
+                    }
+                }
+            }
+            else
+                solid = familySymbol.get_Geometry(options).SingleSolid();
+
+            if (solid == null)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("The profile of a family type could not be found because it is empty or it consists of more than one solid. ElementId: " + familySymbol.Id.IntegerValue.ToString());
                 return null;
             }
 
@@ -620,7 +635,8 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Reflection.Compute.RecordWarning("The profile of a family type could not be found. ElementId: " + familySymbol.Id.IntegerValue.ToString());
                 return null;
             }
-
+            
+            List<ICurve> profileCurves = new List<ICurve>();
             foreach (EdgeArray curveArray in (face as PlanarFace).EdgeLoops)
             {
                 foreach (Edge c in curveArray)
@@ -637,27 +653,48 @@ namespace BH.Revit.Engine.Core
 
             if (profileCurves.Count != 0)
             {
-                // Checking if the curves are in the horizontal plane, if not rotating them.
-                Vector tan = direction.VectorFromRevit();
+                BH.oM.Geometry.Point centroid = solid.ComputeCentroid().PointFromRevit();
+                Vector tan = direction.VectorFromRevit().Normalise();
 
-                double angle = tan.Angle(Vector.ZAxis);
-                Vector rotAxis = tan.CrossProduct(Vector.ZAxis);
-                if (angle > settings.AngleTolerance)
-                    profileCurves = profileCurves.Select(x => x.IRotate(centroid, rotAxis, angle)).ToList();
+                // Adjustment of the origin to global (0,0,0).
+                Vector adjustment = oM.Geometry.Point.Origin - centroid + (centroid - profileCurves[0].IStartPoint()).DotProduct(tan) * tan;
+                if (adjustment.Length() > settings.DistanceTolerance)
+                    profileCurves = profileCurves.Select(x => x.ITranslate(adjustment)).ToList();
 
-                // Adjustment of the origin to global (0,0,0)
-                Vector adjustment = (centroid - profileCurves[0].IStartPoint()).DotProduct(Vector.ZAxis) * Vector.ZAxis;
-
-                if (centroid.Distance(oM.Geometry.Point.Origin) > settings.DistanceTolerance)
-                    profileCurves = profileCurves.Select(x => x.ITranslate(oM.Geometry.Point.Origin - centroid + adjustment)).ToList();
-
-                // Rotation of the profile to align its local Z with global Y.
-                angle = tan.Angle(rotAxis);
-                if (angle > settings.AngleTolerance)
-                    profileCurves = profileCurves.Select(x => x.IRotate(centroid, Vector.ZAxis, angle)).ToList();
+                // Check if the curves are in the horizontal plane, if not then align them.
+                if (familySymbol.Family.FamilyPlacementType == FamilyPlacementType.CurveDrivenStructural)
+                {
+                    // First rotate the profile to align its local plane with global XY, then rotate to align its local Z with global Y.
+                    double angle = -Math.PI * 0.5;
+                    profileCurves = profileCurves.Select(x => x.IRotate(oM.Geometry.Point.Origin, Vector.YAxis, angle)).ToList();
+                    profileCurves = profileCurves.Select(x => x.IRotate(oM.Geometry.Point.Origin, Vector.ZAxis, angle)).ToList();
+                }
             }
 
             return new FreeFormProfile(profileCurves);
+        }
+
+        /***************************************************/
+
+        private static Solid SingleSolid(this GeometryElement geometryElement)
+        {
+            Solid solid = null;
+            foreach (GeometryObject obj in geometryElement)
+            {
+                if (obj is Solid)
+                {
+                    Solid s = obj as Solid;
+                    if (!s.Faces.IsEmpty)
+                    {
+                        if (solid != null)
+                            return null;
+
+                        solid = s;
+                    }
+                }
+            }
+
+            return solid;
         }
 
 
