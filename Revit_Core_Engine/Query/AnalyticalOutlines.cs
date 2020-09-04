@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<ICurve> Outlines(this HostObject hostObject, RevitSettings settings = null)
+        public static List<ICurve> AnalyticalOutlines(this HostObject hostObject, RevitSettings settings = null)
         {
             AnalyticalModel analyticalModel = hostObject.GetAnalyticalModel();
             if (analyticalModel == null)
