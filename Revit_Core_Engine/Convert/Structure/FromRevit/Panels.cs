@@ -74,7 +74,7 @@ namespace BH.Revit.Engine.Core
             if (property2D == null)
                 BH.Engine.Reflection.Compute.RecordError(String.Format("Conversion of Revit panel's construction to BHoM ISurfaceProperty failed. A panel without property is returned. Revit ElementId : {0}", hostObjAttributes.Id));
 
-            List<ICurve> outlines = hostObject.Outlines(settings);
+            List<ICurve> outlines = hostObject.AnalyticalOutlines(settings);
             if (outlines != null && outlines.Count != 0)
             {
                 hostObject.AnalyticalPullWarning();
