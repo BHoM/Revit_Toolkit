@@ -21,11 +21,14 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Mechanical;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Physical.Elements;
+using BH.oM.Reflection.Attributes;
 using System;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -48,7 +51,31 @@ namespace BH.Revit.Engine.Core
 
             return rotation;
         }
-        
+
+        /***************************************************/
+
+        [Description("Get the orientation angle of a duct.")]
+        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct.")]
+        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
+        [Output("double", "BHoM duct section property.")]
+        public static double OrientationAngle(this Duct duct, RevitSettings settings = null)
+        {
+            settings = settings.DefaultIfNull();
+            
+            Location location = duct.Location;
+
+            if (location is LocationPoint)
+            {
+                double rotation = Math.PI * 0.5 + (location as LocationPoint).Rotation;
+                return rotation.NormalizeAngleDomain();
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordError("Unable to get the orientation angle of a duct.");
+                return double.NaN;
+            }
+        }
+
         /***************************************************/
 
         public static double OrientationAngleColumn(this FamilyInstance familyInstance, RevitSettings settings)
