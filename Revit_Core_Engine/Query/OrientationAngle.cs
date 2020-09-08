@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Mechanical;
+using Autodesk.Revit.DB.Plumbing;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
@@ -57,23 +58,41 @@ namespace BH.Revit.Engine.Core
         [Description("Get the orientation angle of a duct.")]
         [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct.")]
         [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Output("double", "BHoM duct section property.")]
+        [Output("double", "Orientation angle of a duct.")]
         public static double OrientationAngle(this Duct duct, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
             
             Location location = duct.Location;
 
-            if (location is LocationPoint)
-            {
-                double rotation = Math.PI * 0.5 + (location as LocationPoint).Rotation;
-                return rotation.NormalizeAngleDomain();
-            }
-            else
-            {
-                BH.Engine.Reflection.Compute.RecordError("Unable to get the orientation angle of a duct.");
-                return double.NaN;
-            }
+            LocationCurve locationCurve = duct.Location as LocationCurve;
+            Curve curve = locationCurve.Curve;
+
+            XYZ startPoint = curve.GetEndPoint(0); // Start point
+            XYZ endPoint = curve.GetEndPoint(1); // End point
+
+            return startPoint.AngleTo(endPoint).ToSI(UnitType.UT_Angle);
+        }
+
+        /***************************************************/
+
+        [Description("Get the orientation angle of a pipe.")]
+        [Input("Autodesk.Revit.DB.Plumbing.Pipe", "Revit pipe.")]
+        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
+        [Output("double", "Orientation angle.")]
+        public static double OrientationAngle(this Pipe duct, RevitSettings settings = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            Location location = duct.Location;
+
+            LocationCurve locationCurve = duct.Location as LocationCurve;
+            Curve curve = locationCurve.Curve;
+
+            XYZ startPoint = curve.GetEndPoint(0); // Start point
+            XYZ endPoint = curve.GetEndPoint(1); // End point
+
+            return startPoint.AngleTo(endPoint).ToSI(UnitType.UT_Angle);
         }
 
         /***************************************************/

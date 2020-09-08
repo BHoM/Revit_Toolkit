@@ -61,9 +61,6 @@ namespace BH.Revit.Engine.Core
             Options options = new Options();
             options.IncludeNonVisibleObjects = false;
 
-            // Get the duct shape, which is either circular, rectangular, oval or null
-            BH.oM.Adapters.Revit.Enums.DuctShape? ductShape = BH.Revit.Engine.Core.Query.DuctShape(ductType, settings);
-
             // Ensure that the duct shape is specified
             if (ductType == null)
             {
@@ -75,22 +72,34 @@ namespace BH.Revit.Engine.Core
             List<ICurve> edges = duct.Curves(options, settings, true).FromRevit();
 
             // Is the duct circular, rectangular or oval?
+            // Get the duct shape, which is either circular, rectangular, oval or null
+            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(duct, settings);
             switch (ductShape)
             {
-                case DuctShape.Circular:
+                case Autodesk.Revit.DB.ConnectorProfileType.Round:
                     // Create a circular profile
-                    double diameter = duct.Diameter.ToSI(UnitType.UT_HVAC_DuctSize);
+                    // Diameter
+                    double diameter = 0;
+                    try
+                    {
+                        diameter = duct.Diameter.ToSI(UnitType.UT_HVAC_DuctSize);
+                    }
+                    catch (Exception)
+                    {
+                        BH.Engine.Reflection.Compute.RecordWarning("Unable to get the duct diameter.");
+                    }
+
                     double thickness = 0.001519; // Dafault to 16 gauge, to be changed later
                     return new TubeProfile(diameter, thickness, edges);
-                case DuctShape.Rectangular:
+                case Autodesk.Revit.DB.ConnectorProfileType.Rectangular:
                     // Create a rectangular box profile
                     double height = duct.Height.ToSI(UnitType.UT_HVAC_DuctSize);
                     double boxWidth = duct.Width.ToSI(UnitType.UT_HVAC_DuctSize);
                     double boxThickness = 0.001519; // Dafault to 16 gauge, to be changed later
-                    double outerRadius = double.NaN;
-                    double innerRadius = double.NaN;
+                    double outerRadius = 2;
+                    double innerRadius = 1;
                     return new BoxProfile(height, boxWidth, boxThickness, outerRadius, innerRadius, edges);
-                case DuctShape.Oval:
+                case Autodesk.Revit.DB.ConnectorProfileType.Oval:
                     // Create an oval profile
                     // There is currently no section profile for an oval duct in BHoM_Engine. This part will be implemented once the relevant section profile becomes available.
                     BH.Engine.Reflection.Compute.RecordError("Unable to create a profile for an oval duct at this time because there is currently no section profile for an oval duct in BHoM_Engine.");

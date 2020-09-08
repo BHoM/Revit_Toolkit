@@ -41,29 +41,60 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Determines whether a duct is circular, rectangular, oval.")]
-        [Input("Autodesk.Revit.DB.Mechanical.DuctType", "Revit duct.")]
+        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct.")]
         [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Output("Autodesk.Revit.DB.Mechanical.Duct", "BHoM duct.")]
-        public static BH.oM.Adapters.Revit.Enums.DuctShape? DuctShape(this Autodesk.Revit.DB.Mechanical.DuctType ductType, RevitSettings settings = null)
+        [Output("Autodesk.Revit.DB.ConnectorProfileType", "BHoM duct.")]
+        public static Autodesk.Revit.DB.ConnectorProfileType DuctShape(this Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null)
         {
             // Input validation
-            if (ductType == null)
+            if (duct == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Duct type not provided. Please input a Autodesk.Revit.DB.Mechanical.DuctType object.");
+                BH.Engine.Reflection.Compute.RecordError("Duct not provided. Please input a Autodesk.Revit.DB.Mechanical.Duct object.");
 
-                return null;
+                return Autodesk.Revit.DB.ConnectorProfileType.Invalid;
             }
 
             // Get the contents of the "Size" parameter
-            string sizeParameter = ductType.GetParameters("Size").FirstOrDefault().AsString();
+            //string sizeParameter = ductType.LookupParameterString("Size");
+
+            //// Duct height
+            //double ductHeight = double.MinValue;
+            //try
+            //{
+            //    ductHeight = duct.Height.ToSI(UnitType.UT_HVAC_DuctSize);
+            //}
+            //catch (Exception)
+            //{
+            //    BH.Engine.Reflection.Compute.RecordNote("Unable to get the duct height. This may be because the duct is not rectangular or oval.");
+            //}
+
+            //// Duct diameter
+            //double ductDiameter = double.MinValue;
+            //try
+            //{
+            //    ductDiameter = duct.Diameter.ToSI(UnitType.UT_HVAC_DuctSize);
+            //}
+            //catch (Exception)
+            //{
+            //    BH.Engine.Reflection.Compute.RecordNote("Unable to get the duct diameter. This may be because the duct is not round.");
+            //}
+
+            string ductFamilyName = duct?.DuctType?.FamilyName;
 
             // Determine the shape of the duct
-            if (sizeParameter.Split('x').Length == 2) // Is the size value split by "x"?
-                return BH.oM.Adapters.Revit.Enums.DuctShape.Rectangular; // The duct is rectangular
-            else if (sizeParameter.Split('/').Length == 2) // Is the size value split by "/"?
-                return BH.oM.Adapters.Revit.Enums.DuctShape.Oval; // The duct is oval
+            if (ductFamilyName.Contains("Rectangular")) // Does the duct have a height
+                return Autodesk.Revit.DB.ConnectorProfileType.Rectangular; // The duct is rectangular
+            else if (ductFamilyName.Contains("Round")) // Does the duct have a diameter?
+                return Autodesk.Revit.DB.ConnectorProfileType.Round; // The duct is circular
+            else if (ductFamilyName.Contains("Oval")) // Does the duct have a diameter?
+                return Autodesk.Revit.DB.ConnectorProfileType.Oval; // The duct is circular
             else
-                return BH.oM.Adapters.Revit.Enums.DuctShape.Circular; // The duct is circular
+            {
+                BH.Engine.Reflection.Compute.RecordNote("Unable to determine whether one of the selected ducts is round, oval or rectangular.");
+                return Autodesk.Revit.DB.ConnectorProfileType.Invalid;
+            }
+
+
         }
 
         /***************************************************/
