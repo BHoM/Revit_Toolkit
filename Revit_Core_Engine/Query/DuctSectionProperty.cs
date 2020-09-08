@@ -58,25 +58,64 @@ namespace BH.Revit.Engine.Core
         public static BH.oM.MEP.SectionProperties.DuctSectionProperty DuctSectionProperty(this Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-            Options options = new Options();
-            options.IncludeNonVisibleObjects = false;
-            IProfile profile = duct.DuctType.ProfileFromRevit(duct, settings, refObjects);
-            double liningThickness = 5;// duct.LookupParameterDouble("Lining Thickness").ToSI(UnitType.UT_HVAC_DuctLiningThickness); // extract the lining thk from Duct element
-            double insulationThickness = 6;// duct.LookupParameterDouble("Insulation Thickness").ToSI(UnitType.UT_HVAC_DuctInsulationThickness); // as above
+            //Options options = new Options();
+            //options.IncludeNonVisibleObjects = false;
 
-            SectionProfile sectionProfile;
-            if (profile is TubeProfile)
-                sectionProfile = BH.Engine.MEP.Create.SectionProfile((TubeProfile)profile, liningThickness, insulationThickness);
-            else if (profile is BoxProfile)
-                sectionProfile = BH.Engine.MEP.Create.SectionProfile((BoxProfile)profile, liningThickness, insulationThickness);
-            else
+            IProfile profile = duct.DuctType.ProfileFromRevit(duct, settings, refObjects);
+
+            double liningThickness = duct.LookupParameterDouble("Lining Thickness").ToSI(UnitType.UT_HVAC_DuctLiningThickness); // extract the lining thk from Duct element
+            double insulationThickness = duct.LookupParameterDouble("Insulation Thickness").ToSI(UnitType.UT_HVAC_DuctInsulationThickness); // as above
+
+            // Get the duct shape, which is either circular, rectangular, oval or null
+            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(duct, settings);
+
+            SectionProfile sectionProfile = null;
+
+            // Is the duct circular, rectangular or oval?
+            switch (ductShape)
             {
-                //raise error
-                return null;
+                case Autodesk.Revit.DB.ConnectorProfileType.Round:
+                    sectionProfile = BH.Engine.MEP.Create.SectionProfile((TubeProfile)profile, liningThickness, insulationThickness);
+                    break;
+                case Autodesk.Revit.DB.ConnectorProfileType.Rectangular:
+                    sectionProfile = BH.Engine.MEP.Create.SectionProfile((BoxProfile)profile, liningThickness, insulationThickness);
+                    break;
+                //case Autodesk.Revit.DB.ConnectorProfileType.Oval:
+                //    // Create an oval profile
+                //    // There is currently no section profile for an oval duct in BHoM_Engine. This part will be implemented once the relevant section profile becomes available.
+                //    BH.Engine.Reflection.Compute.RecordError("There is currently no section profile for an oval duct in BHoM_Engine.");
+                //    break;
+                default:
+                    break;
             }
 
 
             DuctSectionProperty result = BH.Engine.MEP.Create.DuctSectionProperty(sectionProfile);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             //[Description("Convert to a BHoM duct section property fom Revit.")]
             //[Input("Autodesk.Revit.DB.Mechanical.DuctType", "Revit duct type.")]

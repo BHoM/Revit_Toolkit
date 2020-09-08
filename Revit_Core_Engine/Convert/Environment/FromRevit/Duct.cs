@@ -56,63 +56,23 @@ namespace BH.Revit.Engine.Core
         public static BH.oM.MEP.Elements.Duct DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-            //Options options = new Options();
-            //options.IncludeNonVisibleObjects = false;
+            Options options = new Options();
+            options.IncludeNonVisibleObjects = false;
 
             // Linear duct
-
             BH.oM.MEP.Elements.Duct bhomDuct = new BH.oM.MEP.Elements.Duct();
 
             // Duct start and end points
             LocationCurve locationCurve = duct.Location as LocationCurve;
             Curve curve = locationCurve.Curve;
-            bhomDuct.StartNode.Position = curve.GetEndPoint(0).PointFromRevit(); // Start point
-            bhomDuct.EndNode.Position = curve.GetEndPoint(1).PointFromRevit(); // End point
+            bhomDuct.StartNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(0).PointFromRevit() }; // Start point
+            bhomDuct.EndNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
 
             // Duct orientation angle
-            //bhomDuct.OrientationAngle = duct.OrientationAngle(settings);
+            bhomDuct.OrientationAngle = duct.OrientationAngle(settings);
 
             // Duct section property
             bhomDuct.SectionProperty = duct.DuctSectionProperty(settings, refObjects);
-            
-            //// Box profile
-            //double boxHeight = revitDuct.Height.ToSI(UnitType.UT_HVAC_DuctSize);
-            //double boxWidth = revitDuct.Width.ToSI(UnitType.UT_HVAC_DuctSize);
-            //double boxThickness = 0.001519; // Dafault to 16 gauge to be changed later
-            //double outerRadius = double.NaN;
-            //double innerRadius = double.NaN;
-            //List<ICurve> edges = revitDuct.Curves(options, settings, true).FromRevit();
-            //BoxProfile boxProfile = new BoxProfile(boxHeight, boxWidth, boxThickness, outerRadius, innerRadius, edges);
-
-            //// Lining
-            ////DuctInsulation ductInsulation = DuctInsulation.get
-            ////double liningHeight = revitDuct.
-            //double liningWidth = double.NaN;
-            //IProfile liningProfile = BH.Engine.Geometry.Create.RectangleProfile(liningHeight, liningWidth, 0);
-
-            //// Insulation
-            //double insulationHeight = double.NaN;
-            //double insulationWidth = double.NaN;
-            //IProfile insulationProfile = BH.Engine.Geometry.Create.RectangleProfile(insulationHeight, insulationWidth, 0);
-
-            //// Section profile
-            //SectionProfile sectionProfile = new SectionProfile(boxProfile, liningProfile, insulationProfile);
-
-            //// Duct section property
-            //double elementSolidArea = double.NaN;
-            //double liningSolidArea = double.NaN;
-            //double insulationSolidArea = double.NaN;
-            //double elementVoidArea = double.NaN;
-            //double liningVoidArea = double.NaN;
-            //double insulationVoidArea = double.NaN;
-            //double hydraulicDiameter = double.NaN;
-            //double circularEquivalentDiameter = double.NaN;
-            //Autodesk.Revit.DB.Mechanical.DuctType ductType = revitDuct.DuctType;
-            ////DuctSectionProperty ductSectionProperty = BH.Revit.Engine.Core.Convert.DuctSectionPropertyFromRevit(ductType, settings, refObjects);
-
-            //DuctSectionProperty ductSectionProperty = new DuctSectionProperty(sectionProfile, elementSolidArea, liningSolidArea, insulationSolidArea, elementVoidArea, liningVoidArea, insulationVoidArea, hydraulicDiameter, circularEquivalentDiameter);
-
-            //bhomDuct.SectionProperty = ductSectionProperty;
 
             return bhomDuct;
         }

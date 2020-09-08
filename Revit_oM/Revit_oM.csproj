@@ -83,7 +83,6 @@
     <Compile Include="Enums\DetailLevel.cs" />
     <Compile Include="Enums\Discipline.cs" />
     <Compile Include="Enums\NumberComparisonType.cs" />
-    <Compile Include="Enums\DuctShape.cs" />
     <Compile Include="Enums\RevitViewType.cs" />
     <Compile Include="Enums\TextComparisonType.cs" />
     <Compile Include="Parameters\ElementTypeParameterLink.cs" />

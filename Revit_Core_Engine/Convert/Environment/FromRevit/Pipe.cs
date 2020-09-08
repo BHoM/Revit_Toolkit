@@ -54,7 +54,7 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             // Linear duct
-            BH.oM.MEP.Elements.Pipe bhomPipe = new BH.oM.MEP.Elements.Pipe();
+            //BH.oM.MEP.Elements.Pipe bhomPipe = new BH.oM.MEP.Elements.Pipe();
             //bhomPipe.StartNode.Position.X =
             //bhomPipe.StartNode.Position.Y =
             //bhomPipe.StartNode.Position.Z =
@@ -63,6 +63,26 @@ namespace BH.Revit.Engine.Core
             //bhomPipe.EndNode.Position.Z =
 
             //bhomPipe.SectionProperty.SectionProfile.InsulationProfile. =
+
+
+            settings = settings.DefaultIfNull();
+            Options options = new Options();
+            options.IncludeNonVisibleObjects = false;
+
+            // Linear duct
+            BH.oM.MEP.Elements.Pipe bhomPipe = new BH.oM.MEP.Elements.Pipe();
+
+            //// Duct start and end points
+            //LocationCurve locationCurve = duct.Location as LocationCurve;
+            //Curve curve = locationCurve.Curve;
+            //bhomDuct.StartNode.Position = curve.GetEndPoint(0).PointFromRevit(); // Start point
+            //bhomDuct.EndNode.Position = curve.GetEndPoint(1).PointFromRevit(); // End point
+
+            //// Duct orientation angle
+            //bhomDuct.OrientationAngle = duct.OrientationAngle(settings);
+
+            //// Duct section property
+            //bhomDuct.SectionProperty = duct.DuctSectionProperty(settings, refObjects);
 
 
             return bhomPipe;

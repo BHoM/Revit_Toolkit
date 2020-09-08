@@ -167,7 +167,7 @@ namespace BH.Revit.Adapter.Core
             if (element == null || !element.IsValidObject)
                 return new List<IBHoMObject>();
 
-            object obj = null;
+            dynamic obj = null;
             try
             {
                 obj = element.IFromRevit(discipline, settings, refObjects);
