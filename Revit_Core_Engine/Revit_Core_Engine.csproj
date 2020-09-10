@@ -172,7 +172,8 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="MEP_Engine">
-      <HintPath>..\..\..\..\..\..\ProgramData\BHoM\Assemblies\MEP_Engine.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\MEP_Engine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="MEP_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\MEP_oM.dll</HintPath>
@@ -235,7 +236,8 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Spatial_Engine">
-      <HintPath>..\..\..\..\..\..\ProgramData\BHoM\Assemblies\Spatial_Engine.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Spatial_Engine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Structure_Engine">
       <SpecificVersion>False</SpecificVersion>
