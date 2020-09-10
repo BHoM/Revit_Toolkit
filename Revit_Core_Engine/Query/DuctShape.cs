@@ -54,31 +54,6 @@ namespace BH.Revit.Engine.Core
                 return Autodesk.Revit.DB.ConnectorProfileType.Invalid;
             }
 
-            // Get the contents of the "Size" parameter
-            //string sizeParameter = ductType.LookupParameterString("Size");
-
-            //// Duct height
-            //double ductHeight = double.MinValue;
-            //try
-            //{
-            //    ductHeight = duct.Height.ToSI(UnitType.UT_HVAC_DuctSize);
-            //}
-            //catch (Exception)
-            //{
-            //    BH.Engine.Reflection.Compute.RecordNote("Unable to get the duct height. This may be because the duct is not rectangular or oval.");
-            //}
-
-            //// Duct diameter
-            //double ductDiameter = double.MinValue;
-            //try
-            //{
-            //    ductDiameter = duct.Diameter.ToSI(UnitType.UT_HVAC_DuctSize);
-            //}
-            //catch (Exception)
-            //{
-            //    BH.Engine.Reflection.Compute.RecordNote("Unable to get the duct diameter. This may be because the duct is not round.");
-            //}
-
             string ductFamilyName = duct?.DuctType?.FamilyName;
 
             // Determine the shape of the duct
@@ -90,7 +65,7 @@ namespace BH.Revit.Engine.Core
                 return Autodesk.Revit.DB.ConnectorProfileType.Oval; // The duct is circular
             else
             {
-                BH.Engine.Reflection.Compute.RecordNote("Unable to determine whether one of the selected ducts is round, oval or rectangular.");
+                BH.Engine.Reflection.Compute.RecordNote("Unable to determine whether one of the selected ducts is round, rectangular or oval.");
                 return Autodesk.Revit.DB.ConnectorProfileType.Invalid;
             }
 
