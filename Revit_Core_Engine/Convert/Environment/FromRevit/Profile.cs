@@ -54,7 +54,7 @@ namespace BH.Revit.Engine.Core
         [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct.")]
         [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
         [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("BH.oM.MEP.SectionProperties.DuctSectionProperty", "BHoM duct section property.")]
+        [Output("IProfile", "BHoM duct section property.")]
         public static IProfile ProfileFromRevit(this Autodesk.Revit.DB.Mechanical.DuctType ductType, Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -69,7 +69,8 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            List<ICurve> edges = duct.Curves(options, settings, true).FromRevit();
+            //List<ICurve> edges = duct.Curves(options, settings, true).FromRevit();
+            List<ICurve> edges = new List<ICurve>();
 
             // Is the duct circular, rectangular or oval?
             // Get the duct shape, which is either circular, rectangular, oval or null
@@ -96,9 +97,9 @@ namespace BH.Revit.Engine.Core
                     double height = duct.Height.ToSI(UnitType.UT_HVAC_DuctSize);
                     double boxWidth = duct.Width.ToSI(UnitType.UT_HVAC_DuctSize);
                     double boxThickness = 0.001519; // Dafault to 16 gauge, to be changed later
-                    double outerRadius = 2;
-                    double innerRadius = 1;
-                    return new BoxProfile(height, boxWidth, boxThickness, outerRadius, innerRadius, edges);
+                    double outerRadius = 0;
+                    double innerRadius = 0;
+                    return new BH.oM.Geometry.ShapeProfiles.BoxProfile(height, boxWidth, boxThickness, outerRadius, innerRadius, edges);
                 case Autodesk.Revit.DB.ConnectorProfileType.Oval:
                     // Create an oval profile
                     // There is currently no section profile for an oval duct in BHoM_Engine. This part will be implemented once the relevant section profile becomes available.
@@ -107,52 +108,72 @@ namespace BH.Revit.Engine.Core
                 default:
                     return null;
             }
+        }
+
+        /***************************************************/
+
+        [Description("Get the profile of a pipe.")]
+        [Input("Autodesk.Revit.DB.Plumbing.PipeType", "Revit pipe type.")]
+        [Input("Autodesk.Revit.DB.Plumbing.Pipe", "Revit pipe.")]
+        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
+        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
+        [Output("IProfile", "BHoM pipe section property.")]
+        public static IProfile ProfileFromRevit(this Autodesk.Revit.DB.Plumbing.PipeType pipeType, Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            settings = settings.DefaultIfNull();
+            Options options = new Options();
+            options.IncludeNonVisibleObjects = false;
+
+            // Ensure that the duct shape is specified
+            if (pipeType == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Unable to determine the duct shape.");
+
+                return null;
+            }
+
+            //List<ICurve> edges = pipe.Curves(options, settings, true).FromRevit();
+            List<ICurve> edges = new List<ICurve>();
+
+            double diameter = pipe.Diameter.ToSI(UnitType.UT_PipeSize);
+
+            // Thickness
+            double outsideDiameter = pipe.LookupParameterDouble("Outside Diameter");
+            double insideDiameter = pipe.LookupParameterDouble("Inside Diameter");
+            double thickness = (outsideDiameter - insideDiameter) / 2;
+
+            return new TubeProfile(diameter, thickness, edges);
+        }
+
+        /***************************************************/
+
+        [Description("Get the profile of a wire.")]
+        [Input("Autodesk.Revit.DB.Electrical.WireType", "Revit wire type.")]
+        [Input("Autodesk.Revit.DB.Electrical.Wire", "Revit pipe.")]
+        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
+        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
+        [Output("IProfile", "BHoM wire section property.")]
+        public static IProfile ProfileFromRevit(this Autodesk.Revit.DB.Electrical.WireType wireType, Autodesk.Revit.DB.Electrical.Wire wire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            settings = settings.DefaultIfNull();
+            Options options = new Options();
+            options.IncludeNonVisibleObjects = false;
+
+            // Ensure that the duct shape is specified
+            if (wireType == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Unable to determine the wire type.");
+
+                return null;
+            }
+
+            List<ICurve> edges = new List<ICurve>();
+
+            double diameter = wire.Diameter.ToSI(UnitType.UT_WireSize);
+
+            double thickness = 0;
             
-            //// Linear duct
-
-            //BH.oM.MEP.Elements.Duct bhomDuct = new BH.oM.MEP.Elements.Duct();
-
-            //// Duct start point
-            //LocationCurve locationCurve = revitDuct.Location as LocationCurve;
-            //Curve curve = locationCurve.Curve;
-            //bhomDuct.StartNode.Position.X = curve.GetEndPoint(0).X;
-            //bhomDuct.StartNode.Position.Y = curve.GetEndPoint(0).Y;
-            //bhomDuct.StartNode.Position.Z = curve.GetEndPoint(0).Z;
-
-            //// Duct end point
-            //bhomDuct.EndNode.Position.X = curve.GetEndPoint(1).X;
-            //bhomDuct.EndNode.Position.Y = curve.GetEndPoint(1).Y;
-            //bhomDuct.EndNode.Position.Z = curve.GetEndPoint(1).Z;
-
-            // Box profile
-            //double boxHeight = double.NaN;
-            //double boxWidth = double.NaN;
-            //double boxThickness = double.NaN;
-            //double outerRadius = double.NaN;
-            //double innerRadius = double.NaN;
-            //List<ICurve> edges = ductType.Curves(options, settings, true).FromRevit();
-            //BoxProfile boxProfile = new BoxProfile(boxHeight, boxWidth, boxThickness, outerRadius, innerRadius, edges);
-
-            //// Lining
-            //double liningHeight = double.NaN;
-            //double liningWidth = double.NaN;
-            //IProfile liningProfile = BH.Engine.Geometry.Create.RectangleProfile(liningHeight, liningWidth, 0);
-
-            //// Insulation
-            //double insulationHeight = double.NaN;
-            //double insulationWidth = double.NaN;
-            //IProfile insulationProfile = BH.Engine.Geometry.Create.RectangleProfile(insulationHeight, insulationWidth, 0);
-
-            //// Section profile
-            //SectionProfile sectionProfile = new SectionProfile(boxProfile, liningProfile, insulationProfile);
-
-            //IMEPMaterial ductMaterial = null;
-            //IMEPMaterial insulationMaterial = null;
-            //IMEPMaterial liningMaterial = null;
-            //string name = ductType.GetType().Name;
-            //DuctSectionProperty ductSectionProperty = BH.Engine.MEP.Create.DuctSectionProperty(sectionProfile, ductMaterial, insulationMaterial, liningMaterial, name);
-
-            //return ductSectionProperty;
+            return new TubeProfile(diameter, thickness, edges);
         }
 
         /***************************************************/

@@ -62,37 +62,29 @@ namespace BH.Revit.Engine.Core
         public static double OrientationAngle(this Duct duct, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
-            
+
+            double rotation;
             Location location = duct.Location;
 
-            LocationCurve locationCurve = duct.Location as LocationCurve;
+            LocationCurve locationCurve = location as LocationCurve;
+
             Curve curve = locationCurve.Curve;
 
             XYZ startPoint = curve.GetEndPoint(0); // Start point
             XYZ endPoint = curve.GetEndPoint(1); // End point
 
-            return startPoint.AngleTo(endPoint).ToSI(UnitType.UT_Angle);
-        }
+            XYZ vector = (endPoint - startPoint).Normalize(); // Normalised vector
 
-        /***************************************************/
+            Transform transform = Transform.CreateTranslation(vector); // Transform of a vector
 
-        [Description("Get the orientation angle of a pipe.")]
-        [Input("Autodesk.Revit.DB.Plumbing.Pipe", "Revit pipe.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Output("double", "Orientation angle.")]
-        public static double OrientationAngle(this Pipe duct, RevitSettings settings = null)
-        {
-            settings = settings.DefaultIfNull();
+            BH.oM.Geometry.ICurve bhomCurve = curve.IFromRevit(); // Convert to a BHoM curve
 
-            Location location = duct.Location;
+            if ((bhomCurve as BH.oM.Geometry.Line).IsVertical()) // Is the duct vertical?
+                rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisX, transform.BasisZ);
+            else
+                rotation = XYZ.BasisZ.AngleOnPlaneTo(transform.BasisY, transform.BasisZ);
 
-            LocationCurve locationCurve = duct.Location as LocationCurve;
-            Curve curve = locationCurve.Curve;
-
-            XYZ startPoint = curve.GetEndPoint(0); // Start point
-            XYZ endPoint = curve.GetEndPoint(1); // End point
-
-            return startPoint.AngleTo(endPoint).ToSI(UnitType.UT_Angle);
+            return rotation.NormalizeAngleDomain();
         }
 
         /***************************************************/
@@ -118,7 +110,7 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-        
+
         public static double OrientationAngleFraming(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             double rotation;
@@ -147,7 +139,7 @@ namespace BH.Revit.Engine.Core
 
             return rotation.NormalizeAngleDomain();
         }
-        
+
         /***************************************************/
     }
 }

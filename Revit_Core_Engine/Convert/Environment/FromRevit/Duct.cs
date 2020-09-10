@@ -40,6 +40,13 @@ using BH.oM.Geometry;
 using System.Linq;
 using Autodesk.Revit.DB.Mechanical;
 
+using System.Text;
+using System.Threading.Tasks;
+
+using BH.oM.MEP.MaterialFragments;
+using BH.Engine.Spatial;
+using BH.Engine.MEP;
+
 namespace BH.Revit.Engine.Core
 {
     public static partial class Convert
@@ -53,26 +60,55 @@ namespace BH.Revit.Engine.Core
         [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
         [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
         [Output("BH.oM.MEP.Elements.Duct", "BHoM duct.")]
-        public static BH.oM.MEP.Elements.Duct DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static BH.oM.MEP.Elements.Duct DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
             Options options = new Options();
             options.IncludeNonVisibleObjects = false;
 
-            // Linear duct
+            // BHoM duct
             BH.oM.MEP.Elements.Duct bhomDuct = new BH.oM.MEP.Elements.Duct();
 
-            // Duct start and end points
-            LocationCurve locationCurve = duct.Location as LocationCurve;
+            // Start and end points
+            LocationCurve locationCurve = revitDuct.Location as LocationCurve;
             Curve curve = locationCurve.Curve;
             bhomDuct.StartNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(0).PointFromRevit() }; // Start point
             bhomDuct.EndNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
 
-            // Duct orientation angle
-            bhomDuct.OrientationAngle = duct.OrientationAngle(settings);
+            // Orientation angle
+            bhomDuct.OrientationAngle = revitDuct.OrientationAngle(settings);
+
+            // Duct section profile
+            SectionProfile sectionProfile = revitDuct.DuctSectionProfile(settings, refObjects);
 
             // Duct section property
-            bhomDuct.SectionProperty = duct.DuctSectionProperty(settings, refObjects);
+            // This is being constructed manually because BH.Engine.MEP.Create.DuctSectionProperty doesn't work with round ducts, as it attempts to calculate the circular equivalent of a round duct.
+            // Solid Areas
+            double elementSolidArea = sectionProfile.ElementProfile.Area();
+            double liningSolidArea = sectionProfile.LiningProfile.Area() - sectionProfile.ElementProfile.Area();
+            double insulationSolidArea = sectionProfile.InsulationProfile.Area();
+
+            // Void Areas
+            double elementVoidArea = sectionProfile.ElementProfile.VoidArea();
+            double liningVoidArea = sectionProfile.LiningProfile.VoidArea();
+            double insulationVoidArea = sectionProfile.InsulationProfile.VoidArea();
+
+            // Get the duct shape, which is either circular, rectangular, oval or null
+            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(revitDuct, settings);
+
+            // Duct specific properties
+            // Circular equivalent diameter
+            double circularEquivalent = 0;
+            // Is the duct rectangular?
+            if (ductShape == Autodesk.Revit.DB.ConnectorProfileType.Rectangular)
+            {
+                circularEquivalent = sectionProfile.ElementProfile.ICircularEquivalentDiameter();
+            }
+
+            // Hydraulic diameter
+            double hydraulicDiameter = revitDuct.LookupParameterDouble("Hydraulic Diameter");
+
+            bhomDuct.SectionProperty = new BH.oM.MEP.SectionProperties.DuctSectionProperty(sectionProfile, elementSolidArea, liningSolidArea, insulationSolidArea, elementVoidArea, liningVoidArea, insulationVoidArea, hydraulicDiameter, circularEquivalent);
 
             return bhomDuct;
         }

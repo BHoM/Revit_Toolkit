@@ -51,23 +51,24 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Convert to a BHoM duct section property fom Revit.")]
-        [Input("Autodesk.Revit.DB.Mechanical.DuctType", "Revit duct type.")]
+        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct.")]
         [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
         [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
         [Output("BH.oM.MEP.SectionProperties.DuctSectionProperty", "BHoM duct section property.")]
-        public static BH.oM.MEP.SectionProperties.DuctSectionProperty DuctSectionProperty(this Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static BH.oM.MEP.SectionProperties.DuctSectionProperty DuctSectionProperty(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-            //Options options = new Options();
-            //options.IncludeNonVisibleObjects = false;
 
-            IProfile profile = duct.DuctType.ProfileFromRevit(duct, settings, refObjects);
+            IProfile profile = revitDuct.DuctType.ProfileFromRevit(revitDuct, settings, refObjects);
 
-            double liningThickness = duct.LookupParameterDouble("Lining Thickness").ToSI(UnitType.UT_HVAC_DuctLiningThickness); // extract the lining thk from Duct element
-            double insulationThickness = duct.LookupParameterDouble("Insulation Thickness").ToSI(UnitType.UT_HVAC_DuctInsulationThickness); // as above
+            // Lining thickness
+            double liningThickness = revitDuct.LookupParameterDouble("Lining Thickness");
 
+            // Insulation thickness
+            double insulationThickness = revitDuct.LookupParameterDouble("Insulation Thickness");
+            
             // Get the duct shape, which is either circular, rectangular, oval or null
-            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(duct, settings);
+            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(revitDuct, settings);
 
             SectionProfile sectionProfile = null;
 
@@ -80,148 +81,16 @@ namespace BH.Revit.Engine.Core
                 case Autodesk.Revit.DB.ConnectorProfileType.Rectangular:
                     sectionProfile = BH.Engine.MEP.Create.SectionProfile((BoxProfile)profile, liningThickness, insulationThickness);
                     break;
-                //case Autodesk.Revit.DB.ConnectorProfileType.Oval:
-                //    // Create an oval profile
-                //    // There is currently no section profile for an oval duct in BHoM_Engine. This part will be implemented once the relevant section profile becomes available.
-                //    BH.Engine.Reflection.Compute.RecordError("There is currently no section profile for an oval duct in BHoM_Engine.");
-                //    break;
+                case Autodesk.Revit.DB.ConnectorProfileType.Oval:
+                    // Create an oval profile
+                    // There is currently no section profile for an oval duct in BHoM_Engine. This part will be implemented once the relevant section profile becomes available.
+                    BH.Engine.Reflection.Compute.RecordWarning("There is currently no section profile for an oval duct in BHoM_Engine.");
+                    break;
                 default:
                     break;
             }
 
-
-            DuctSectionProperty result = BH.Engine.MEP.Create.DuctSectionProperty(sectionProfile);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            //[Description("Convert to a BHoM duct section property fom Revit.")]
-            //[Input("Autodesk.Revit.DB.Mechanical.DuctType", "Revit duct type.")]
-            //[Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-            //[Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-            //[Output("BH.oM.MEP.SectionProperties.DuctSectionProperty", "BHoM duct section property.")]
-            //public static BH.oM.MEP.SectionProperties.DuctSectionProperty DuctSectionProperty(this Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-            //{
-            //    settings = settings.DefaultIfNull();
-            //    Options options = new Options();
-            //    options.IncludeNonVisibleObjects = false;
-            //    IProfile profile = duct.DuctType.ProfileFromRevit(duct, settings, refObjects);
-            //    double liningThickness = 5;// duct.LookupParameterDouble("Lining Thickness").ToSI(UnitType.UT_HVAC_DuctLiningThickness); // extract the lining thk from Duct element
-            //    double insulationThickness = 6;// duct.LookupParameterDouble("Insulation Thickness").ToSI(UnitType.UT_HVAC_DuctInsulationThickness); // as above
-
-            //    SectionProfile sectionProfile;
-            //    if (profile is TubeProfile)
-            //        sectionProfile = BH.Engine.MEP.Create.SectionProfile((TubeProfile)profile, liningThickness, insulationThickness);
-            //    else if (profile is BoxProfile)
-            //        sectionProfile = BH.Engine.MEP.Create.SectionProfile((BoxProfile)profile, liningThickness, insulationThickness);
-            //    else
-            //    {
-            //        //raise error
-            //        return null;
-            //    }
-
-
-            //    DuctSectionProperty result = BH.Engine.MEP.Create.DuctSectionProperty(sectionProfile);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            //// Linear duct
-
-            //BH.oM.MEP.Elements.Duct bhomDuct = new BH.oM.MEP.Elements.Duct();
-
-            //// Duct start point
-            //LocationCurve locationCurve = revitDuct.Location as LocationCurve;
-            //Curve curve = locationCurve.Curve;
-            //bhomDuct.StartNode.Position.X = curve.GetEndPoint(0).X;
-            //bhomDuct.StartNode.Position.Y = curve.GetEndPoint(0).Y;
-            //bhomDuct.StartNode.Position.Z = curve.GetEndPoint(0).Z;
-
-            //// Duct end point
-            //bhomDuct.EndNode.Position.X = curve.GetEndPoint(1).X;
-            //bhomDuct.EndNode.Position.Y = curve.GetEndPoint(1).Y;
-            //bhomDuct.EndNode.Position.Z = curve.GetEndPoint(1).Z;
-
-            //// Box profile
-            //double boxHeight = double.NaN;
-            //double boxWidth = double.NaN;
-            //double boxThickness = double.NaN;
-            //double outerRadius = double.NaN;
-            //double innerRadius = double.NaN;
-            //List<ICurve> edges = duct.GetType().Curves(options, settings, true).FromRevit();
-            //BoxProfile boxProfile = new BoxProfile(boxHeight, boxWidth, boxThickness, outerRadius, innerRadius, edges);
-
-            //// Lining
-            //double liningHeight = double.NaN;
-            //double liningWidth = double.NaN;
-            //IProfile liningProfile = BH.Engine.Geometry.Create.RectangleProfile(liningHeight, liningWidth, 0);
-
-            //// Insulation
-            //double insulationHeight = double.NaN;
-            //double insulationWidth = double.NaN;
-            //IProfile insulationProfile = BH.Engine.Geometry.Create.RectangleProfile(insulationHeight, insulationWidth, 0);
-
-            //// Section profile
-            //SectionProfile sectionProfile = new SectionProfile(boxProfile, liningProfile, insulationProfile);
-
-            //IMEPMaterial ductMaterial = null;
-            //IMEPMaterial insulationMaterial = null;
-            //IMEPMaterial liningMaterial = null;
-            //string name = ductType.GetType().Name;
-            //DuctSectionProperty ductSectionProperty = BH.Engine.MEP.Create.DuctSectionProperty(sectionProfile, ductMaterial, insulationMaterial, liningMaterial, name);
-
-            return result;
+            return BH.Engine.MEP.Create.DuctSectionProperty(sectionProfile);
         }
 
         /***************************************************/

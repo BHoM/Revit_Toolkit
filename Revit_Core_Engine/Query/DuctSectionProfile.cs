@@ -23,10 +23,12 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
+using BH.Revit.Engine.Core;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry.ShapeProfiles;
+using BH.oM.MEP.SectionProperties;
 using BH.oM.MEP.Elements;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Structure.Elements;
@@ -35,43 +37,54 @@ using BH.oM.Structure.SectionProperties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using BH.oM.Geometry;
+using System.Linq;
+using BH.oM.MEP.MaterialFragments;
+using Autodesk.Revit.DB.Mechanical;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert a Revit pipe into a BHoM pipe.")]
-        [Input("Autodesk.Revit.DB.Plumbing.Pipe", "Revit family instance.")]
+        [Description("Section profile of round and rectangular ducts.")]
+        [Input("Autodesk.Revit.DB.Mechanical.DuctType", "Revit duct type.")]
         [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
         [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("BH.oM.MEP.Elements.Pipe", "BHoM Pipe.")]
-        public static BH.oM.MEP.Elements.Pipe PipeFromRevit(this Autodesk.Revit.DB.Plumbing.Pipe revitPipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("BH.oM.MEP.SectionProperties.SectionProfile", "BHoM section property.")]
+        public static BH.oM.MEP.SectionProperties.SectionProfile DuctSectionProfile(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            settings = settings.DefaultIfNull();
-            Options options = new Options();
-            options.IncludeNonVisibleObjects = false;
+            IProfile profile = revitDuct.DuctType.ProfileFromRevit(revitDuct, settings, refObjects);
 
-            // BHoM pipe
-            BH.oM.MEP.Elements.Pipe bhomPipe = new BH.oM.MEP.Elements.Pipe();
+            // Lining thickness
+            double liningThickness = revitDuct.LookupParameterDouble("Lining Thickness");
 
-            // Start and end points
-            LocationCurve locationCurve = revitPipe.Location as LocationCurve;
-            Curve curve = locationCurve.Curve;
-            bhomPipe.StartNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(0).PointFromRevit() }; // Start point
-            bhomPipe.EndNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
+            // Insulation thickness
+            double insulationThickness = revitDuct.LookupParameterDouble("Insulation Thickness");
+            
+            // Get the duct shape, which is either circular, rectangular, oval or null
+            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(revitDuct, settings);
 
-            IProfile profile = revitPipe.PipeType.ProfileFromRevit(revitPipe, settings, refObjects);
-
-            // Duct section property
-            bhomPipe.SectionProperty = revitPipe.PipeSectionProperty(settings, refObjects);
-
-            return bhomPipe;
+            // Is the duct circular, rectangular or oval?
+            switch (ductShape)
+            {
+                case Autodesk.Revit.DB.ConnectorProfileType.Round:
+                    return BH.Engine.MEP.Create.SectionProfile((TubeProfile)profile, liningThickness, insulationThickness);
+                case Autodesk.Revit.DB.ConnectorProfileType.Rectangular:
+                    return BH.Engine.MEP.Create.SectionProfile((BoxProfile)profile, liningThickness, insulationThickness);
+                case Autodesk.Revit.DB.ConnectorProfileType.Oval:
+                    // Create an oval profile
+                    // There is currently no section profile for an oval duct in BHoM_Engine. This part will be implemented once the relevant section profile becomes available.
+                    BH.Engine.Reflection.Compute.RecordWarning("There is currently no section profile for an oval duct in BHoM_Engine.");
+                    return null;
+                default:
+                    return null;
+            }
         }
 
         /***************************************************/

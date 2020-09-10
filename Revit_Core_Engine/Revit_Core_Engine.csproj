@@ -234,6 +234,9 @@
       <HintPath>..\libs\2020\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Spatial_Engine">
+      <HintPath>..\..\..\..\..\..\ProgramData\BHoM\Assemblies\Spatial_Engine.dll</HintPath>
+    </Reference>
     <Reference Include="Structure_Engine">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\ProgramData\BHoM\Assemblies\Structure_Engine.dll</HintPath>
@@ -256,6 +259,8 @@
   <ItemGroup>
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Room.cs" />
+    <Compile Include="Query\DuctSectionProfile.cs" />
+    <Compile Include="Query\PipeSectionProperty.cs" />
     <Compile Include="Query\DuctSectionProperty.cs" />
     <Compile Include="Convert\Environment\FromRevit\Profile.cs" />
     <Compile Include="Convert\Environment\FromRevit\Wire.cs" />
