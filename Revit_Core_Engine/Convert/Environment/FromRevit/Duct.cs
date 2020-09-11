@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
         [Input("revitDuct", "Revit duct to be converted.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
-        [Output("Duct From Revit", "BHoM duct converted from Revit.")]
+        [Output("duct", "BHoM duct converted from Revit.")]
         public static BH.oM.MEP.Elements.Duct DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();

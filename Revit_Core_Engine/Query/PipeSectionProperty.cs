@@ -42,12 +42,12 @@ namespace BH.Revit.Engine.Core
         [Input("pipe", "Revit pipe type to be converted to a section property.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
-        [Output("PipeSectionProperty", "BHoM duct section property.")]
+        [Output("property", "BHoM duct section property.")]
         public static BH.oM.MEP.SectionProperties.PipeSectionProperty PipeSectionProperty(this Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            IProfile profile = pipe.PipeType.ProfileFromRevit(pipe, settings, refObjects);
+            IProfile profile = pipe.ProfileFromRevit(settings, refObjects);
 
             double liningThickness = pipe.LookupParameterDouble("Lining Thickness").ToSI(UnitType.UT_HVAC_DuctLiningThickness); // extract the lining thk from Duct element
             if (liningThickness == 0)
