@@ -21,25 +21,15 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
-using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
 using BH.oM.Geometry.ShapeProfiles;
-using BH.oM.MEP.SectionProperties;
-using BH.oM.MEP.Elements;
 using BH.oM.Reflection.Attributes;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.MaterialFragments;
-using BH.oM.Structure.SectionProperties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using BH.oM.Geometry;
-using System.Linq;
-using BH.oM.MEP.MaterialFragments;
 
 namespace BH.Revit.Engine.Core
 {
@@ -49,48 +39,31 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Get the profile of a duct.")]
-        [Input("Autodesk.Revit.DB.Mechanical.DuctType", "Revit duct type.")]
-        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("IProfile", "BHoM duct section property.")]
+        [Description("Convert a profile from a duct type.")]
+        [Input("ductType", "Revit duct type to be converted to a profile.")]
+        [Input("duct", "Revit duct for property extraction.")]
+        [Input("settings", "Revit settings.")]
+        [Input("refObjects", "Referenced objects.")]
+        [Output("ProfileFromRevit", "BHoM duct section property converted from a duct type.")]
         public static IProfile ProfileFromRevit(this Autodesk.Revit.DB.Mechanical.DuctType ductType, Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-            Options options = new Options();
-            options.IncludeNonVisibleObjects = false;
 
-            // Ensure that the duct shape is specified
-            if (ductType == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Unable to determine the duct shape.");
-
-                return null;
-            }
-
-            //List<ICurve> edges = duct.Curves(options, settings, true).FromRevit();
             List<ICurve> edges = new List<ICurve>();
 
             // Is the duct circular, rectangular or oval?
             // Get the duct shape, which is either circular, rectangular, oval or null
-            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(duct, settings);
+            Autodesk.Revit.DB.ConnectorProfileType ductShape = ductType.Shape;
             switch (ductShape)
             {
                 case Autodesk.Revit.DB.ConnectorProfileType.Round:
                     // Create a circular profile
                     // Diameter
-                    double diameter = 0;
-                    try
-                    {
-                        diameter = duct.Diameter.ToSI(UnitType.UT_HVAC_DuctSize);
-                    }
-                    catch (Exception)
-                    {
-                        BH.Engine.Reflection.Compute.RecordWarning("Unable to get the duct diameter.");
-                    }
+                    double diameter = duct.Diameter.ToSI(UnitType.UT_HVAC_DuctSize);
 
+                    // Thickness / gauge of the duct sheet
                     double thickness = 0.001519; // Dafault to 16 gauge, to be changed later
+
                     return new TubeProfile(diameter, thickness, edges);
                 case Autodesk.Revit.DB.ConnectorProfileType.Rectangular:
                     // Create a rectangular box profile
@@ -103,7 +76,7 @@ namespace BH.Revit.Engine.Core
                 case Autodesk.Revit.DB.ConnectorProfileType.Oval:
                     // Create an oval profile
                     // There is currently no section profile for an oval duct in BHoM_Engine. This part will be implemented once the relevant section profile becomes available.
-                    BH.Engine.Reflection.Compute.RecordError("Unable to create a profile for an oval duct at this time because there is currently no section profile for an oval duct in BHoM_Engine.");
+                    BH.Engine.Reflection.Compute.RecordError("Unable to create a profile for an oval duct at this time because there is currently no section profile for an oval duct. Element ID: " + duct.Id);
                     return null;
                 default:
                     return null;
@@ -112,27 +85,16 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Get the profile of a pipe.")]
-        [Input("Autodesk.Revit.DB.Plumbing.PipeType", "Revit pipe type.")]
-        [Input("Autodesk.Revit.DB.Plumbing.Pipe", "Revit pipe.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("IProfile", "BHoM pipe section property.")]
+        [Description("Convert a profile from a pipe type.")]
+        [Input("pipeType", "Revit pipe type to be converted to a profile.")]
+        [Input("pipe", "Revit pipe for property extraction.")]
+        [Input("settings", "Revit settings.")]
+        [Input("refObjects", "Referenced objects.")]
+        [Output("ProfileFromRevit", "BHoM pipe section property to be converted from a pipe type.")]
         public static IProfile ProfileFromRevit(this Autodesk.Revit.DB.Plumbing.PipeType pipeType, Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-            Options options = new Options();
-            options.IncludeNonVisibleObjects = false;
 
-            // Ensure that the duct shape is specified
-            if (pipeType == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Unable to determine the duct shape.");
-
-                return null;
-            }
-
-            //List<ICurve> edges = pipe.Curves(options, settings, true).FromRevit();
             List<ICurve> edges = new List<ICurve>();
 
             double diameter = pipe.Diameter.ToSI(UnitType.UT_PipeSize);
@@ -147,25 +109,15 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Get the profile of a wire.")]
-        [Input("Autodesk.Revit.DB.Electrical.WireType", "Revit wire type.")]
-        [Input("Autodesk.Revit.DB.Electrical.Wire", "Revit pipe.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("IProfile", "BHoM wire section property.")]
+        [Description("Convert a profile from a wire type.")]
+        [Input("wireType", "Revit wire type to be converted to a profile.")]
+        [Input("wire", "Revit wire for property extraction.")]
+        [Input("settings", "Revit settings.")]
+        [Input("refObjects", "Referenced objects.")]
+        [Output("ProfileFromRevit", "BHoM wire section property to be converted from a wire type.")]
         public static IProfile ProfileFromRevit(this Autodesk.Revit.DB.Electrical.WireType wireType, Autodesk.Revit.DB.Electrical.Wire wire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-            Options options = new Options();
-            options.IncludeNonVisibleObjects = false;
-
-            // Ensure that the duct shape is specified
-            if (wireType == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Unable to determine the wire type.");
-
-                return null;
-            }
 
             List<ICurve> edges = new List<ICurve>();
 

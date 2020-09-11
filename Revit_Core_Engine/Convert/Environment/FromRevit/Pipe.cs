@@ -21,18 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
-using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry.ShapeProfiles;
-using BH.oM.MEP.Elements;
 using BH.oM.Reflection.Attributes;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.MaterialFragments;
-using BH.oM.Structure.SectionProperties;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -45,17 +38,13 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Convert a Revit pipe into a BHoM pipe.")]
-        [Input("Autodesk.Revit.DB.Plumbing.Pipe", "Revit family instance.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("BH.oM.MEP.Elements.Pipe", "BHoM Pipe.")]
+        [Input("revitPipe", "Revit pipe to be converted.")]
+        [Input("settings", "Revit settings.")]
+        [Input("refObjects", "Referenced objects.")]
+        [Output("PipeFromRevit", "BHoM Pipe converted from Revit.")]
         public static BH.oM.MEP.Elements.Pipe PipeFromRevit(this Autodesk.Revit.DB.Plumbing.Pipe revitPipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-
-            settings = settings.DefaultIfNull();
-            Options options = new Options();
-            options.IncludeNonVisibleObjects = false;
 
             // BHoM pipe
             BH.oM.MEP.Elements.Pipe bhomPipe = new BH.oM.MEP.Elements.Pipe();
@@ -66,10 +55,16 @@ namespace BH.Revit.Engine.Core
             bhomPipe.StartNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(0).PointFromRevit() }; // Start point
             bhomPipe.EndNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
 
-            IProfile profile = revitPipe.PipeType.ProfileFromRevit(revitPipe, settings, refObjects);
-
             // Duct section property
             bhomPipe.SectionProperty = revitPipe.PipeSectionProperty(settings, refObjects);
+
+            //Set identifiers, parameters & custom data
+            Element element = revitPipe.Document.Element(revitPipe.Id.ToString());
+            bhomPipe.SetIdentifiers(element);
+            bhomPipe.CopyParameters(element, settings.ParameterSettings);
+            bhomPipe.SetProperties(element, settings.ParameterSettings);
+
+            refObjects.AddOrReplace(revitPipe.Id, bhomPipe);
 
             return bhomPipe;
         }

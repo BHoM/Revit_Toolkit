@@ -21,19 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure;
-using Autodesk.Revit.DB.Electrical;
 using BH.Engine.Adapters.Revit;
-using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.MEP.Elements;
 using BH.oM.Reflection.Attributes;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.MaterialFragments;
-using BH.oM.Structure.SectionProperties;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -54,10 +46,6 @@ namespace BH.Revit.Engine.Core
         {
             settings = settings.DefaultIfNull();
 
-            settings = settings.DefaultIfNull();
-            Options options = new Options();
-            options.IncludeNonVisibleObjects = false;
-
             // Wire
             BH.oM.MEP.Elements.Wire bhomWire = new BH.oM.MEP.Elements.Wire();
 
@@ -69,12 +57,15 @@ namespace BH.Revit.Engine.Core
             wireSegment.StartNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(0).PointFromRevit() }; // Start point
             wireSegment.EndNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
 
-            //IProfile profile = revitWire.wir.ProfileFromRevit(revitWire, settings, refObjects);
-
-            //// Duct section property
-            //bhomPipe.SectionProperty = revitWire.PipeSectionProperty(settings, refObjects);
-
             bhomWire.WireSegments.Add(wireSegment);
+
+            //Set identifiers, parameters & custom data
+            Element element = revitWire.Document.Element(revitWire.Id.ToString());
+            bhomWire.SetIdentifiers(element);
+            bhomWire.CopyParameters(element, settings.ParameterSettings);
+            bhomWire.SetProperties(element, settings.ParameterSettings);
+
+            refObjects.AddOrReplace(revitWire.Id, bhomWire);
 
             return bhomWire;
         }
