@@ -37,17 +37,22 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert a Revit wire into a BHoM wire.")]
-        [Input("Autodesk.Revit.DB.Electrical.Wire", "Revit family instance.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("BH.oM.MEP.Elements.Wire", "BHoM Wire.")]
+        [Description("BHoM wire converted from a Revit wire.")]
+        [Input("revitWire", "Revit wire to be converted.")]
+        [Input("settings", "Revit settings.")]
+        [Input("refObjects", "Referenced objects.")]
+        [Output("Wire From Revit", "BHoM wire.")]
         public static BH.oM.MEP.Elements.Wire WireFromRevit(this Autodesk.Revit.DB.Electrical.Wire revitWire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
+            // Reuse a BHoM duct from refObjects it it has been converted before
+            BH.oM.MEP.Elements.Wire bhomWire = refObjects.GetValue<BH.oM.MEP.Elements.Wire>(revitWire.Id);
+            if (bhomWire != null)
+                return bhomWire;
+
             // Wire
-            BH.oM.MEP.Elements.Wire bhomWire = new BH.oM.MEP.Elements.Wire();
+            bhomWire = new BH.oM.MEP.Elements.Wire();
 
             WireSegment wireSegment = new WireSegment();
             

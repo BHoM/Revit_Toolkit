@@ -46,8 +46,13 @@ namespace BH.Revit.Engine.Core
         {
             settings = settings.DefaultIfNull();
 
+            // Reuse a BHoM duct from refObjects it it has been converted before
+            BH.oM.MEP.Elements.Pipe bhomPipe = refObjects.GetValue<BH.oM.MEP.Elements.Pipe>(revitPipe.Id);
+            if (bhomPipe != null)
+                return bhomPipe;
+
             // BHoM pipe
-            BH.oM.MEP.Elements.Pipe bhomPipe = new BH.oM.MEP.Elements.Pipe();
+            bhomPipe = new BH.oM.MEP.Elements.Pipe();
 
             // Start and end points
             LocationCurve locationCurve = revitPipe.Location as LocationCurve;
