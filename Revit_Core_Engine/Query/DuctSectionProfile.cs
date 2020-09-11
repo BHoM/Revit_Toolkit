@@ -49,9 +49,13 @@ namespace BH.Revit.Engine.Core
 
             // Lining thickness
             double liningThickness = revitDuct.LookupParameterDouble("Lining Thickness");
+            if (liningThickness == 0)
+                liningThickness = BH.oM.Geometry.Tolerance.Distance;
 
             // Insulation thickness
             double insulationThickness = revitDuct.LookupParameterDouble("Insulation Thickness");
+            if (insulationThickness == 0)
+                insulationThickness = BH.oM.Geometry.Tolerance.Distance;
             
             // Get the duct shape, which is either circular, rectangular, oval or null
             Autodesk.Revit.DB.ConnectorProfileType ductShape = revitDuct.DuctType.Shape;
