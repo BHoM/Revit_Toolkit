@@ -265,50 +265,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Get the profile of a pipe.")]
-        [Input("Autodesk.Revit.DB.Mechanical.DuctType", "Revit duct type.")]
-        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct.")]
-        [Input("BH.oM.Adapters.Revit.Enums.Discipline", "Engineering discipline.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("IBHoMObject", "Pipe profile.")]
-        public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Plumbing.PipeType pipeType, Autodesk.Revit.DB.Plumbing.Pipe pipe, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            switch (discipline)
-            {
-                case Discipline.Architecture:
-                case Discipline.Physical:
-                case Discipline.Environmental:
-                    return pipeType.ProfileFromRevit(pipe, settings, refObjects);
-                default:
-                    return null;
-            }
-        }
-
-        /***************************************************/
-
-        [Description("Get the profile of a wire.")]
-        [Input("Autodesk.Revit.DB.Electrical.WireType", "Revit wire type.")]
-        [Input("Autodesk.Revit.DB.Electrical.Wire", "Revit wire.")]
-        [Input("BH.oM.Adapters.Revit.Enums.Discipline", "Engineering discipline.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("IBHoMObject", "Wire profile.")]
-        public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Electrical.WireType wireType, Autodesk.Revit.DB.Electrical.Wire wire, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            switch (discipline)
-            {
-                case Discipline.Architecture:
-                case Discipline.Physical:
-                case Discipline.Environmental:
-                    return wireType.ProfileFromRevit(wire, settings, refObjects);
-                default:
-                    return null;
-            }
-        }
-
-        /***************************************************/
-
         public static IBHoMObject FromRevit(this Level level, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
