@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Determines whether a duct is circular, rectangular, oval.")]
+        [Description("Determines whether a duct is circular, rectangular or oval.")]
         [Input("duct", "Revit duct.")]
         [Input("settings", "Revit settings.")]
         [Output("ductShape", "Shape of a duct.")]
