@@ -44,13 +44,18 @@ namespace BH.Revit.Engine.Core
         [Input("revitDuct", "Revit duct to be converted.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
-        [Output("DuctFromRevit", "BHoM duct converted from Revit.")]
+        [Output("Duct From Revit", "BHoM duct converted from Revit.")]
         public static BH.oM.MEP.Elements.Duct DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
+            // Reuse a BHoM duct from refObjects it it has been converted before
+            BH.oM.MEP.Elements.Duct bhomDuct = refObjects.GetValue<BH.oM.MEP.Elements.Duct>(revitDuct.Id);
+            if (bhomDuct != null)
+                return bhomDuct;
+
             // BHoM duct
-            BH.oM.MEP.Elements.Duct bhomDuct = new BH.oM.MEP.Elements.Duct();
+            bhomDuct = new BH.oM.MEP.Elements.Duct();
 
             // Start and end points
             LocationCurve locationCurve = revitDuct.Location as LocationCurve;
