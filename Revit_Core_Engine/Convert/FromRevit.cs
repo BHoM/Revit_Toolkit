@@ -265,28 +265,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Get the profile of a duct.")]
-        [Input("Autodesk.Revit.DB.Mechanical.DuctType", "Revit duct type.")]
-        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct.")]
-        [Input("BH.oM.Adapters.Revit.Enums.Discipline", "Engineering discipline.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("IBHoMObject", "Duct profile.")]
-        public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Mechanical.DuctType ductType, Autodesk.Revit.DB.Mechanical.Duct duct, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            switch (discipline)
-            {
-                case Discipline.Architecture:
-                case Discipline.Physical:
-                case Discipline.Environmental:
-                    return ductType.ProfileFromRevit(duct, settings, refObjects);
-                default:
-                    return null;
-            }
-        }
-
-        /***************************************************/
-
         [Description("Get the profile of a pipe.")]
         [Input("Autodesk.Revit.DB.Mechanical.DuctType", "Revit duct type.")]
         [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct.")]
