@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
             bhomDuct.EndNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
 
             // Orientation angle
-            bhomDuct.OrientationAngle = revitDuct.OrientationAngle(settings);
+            //bhomDuct.OrientationAngle = revitDuct.OrientationAngle(settings); //ToDo - resolve in next issue, specific issue being raised
 
             // Duct section profile
             SectionProfile sectionProfile = revitDuct.DuctSectionProfile(settings, refObjects);
@@ -99,10 +99,9 @@ namespace BH.Revit.Engine.Core
             bhomDuct.SectionProperty = new BH.oM.MEP.SectionProperties.DuctSectionProperty(sectionProfile, elementSolidArea, liningSolidArea, insulationSolidArea, elementVoidArea, liningVoidArea, insulationVoidArea, hydraulicDiameter, circularEquivalent);
 
             //Set identifiers, parameters & custom data
-            Element element = revitDuct.Document.Element(revitDuct.Id.ToString());
-            bhomDuct.SetIdentifiers(element);
-            bhomDuct.CopyParameters(element, settings.ParameterSettings);
-            bhomDuct.SetProperties(element, settings.ParameterSettings);
+            bhomDuct.SetIdentifiers(revitDuct);
+            bhomDuct.CopyParameters(revitDuct, settings.ParameterSettings);
+            bhomDuct.SetProperties(revitDuct, settings.ParameterSettings);
 
             refObjects.AddOrReplace(revitDuct.Id, bhomDuct);
 
