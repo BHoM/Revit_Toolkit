@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
         {
             settings = settings.DefaultIfNull();
 
-            IProfile profile = pipe.ProfileFromRevit(settings, refObjects);
+            IProfile profile = pipe.Profile(settings, refObjects);
 
             double liningThickness = pipe.LookupParameterDouble("Lining Thickness").ToSI(UnitType.UT_HVAC_DuctLiningThickness); // extract the lining thk from Duct element
             if (liningThickness == 0)
