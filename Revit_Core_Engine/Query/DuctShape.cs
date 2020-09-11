@@ -41,9 +41,9 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Determines whether a duct is circular, rectangular, oval.")]
-        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Output("Autodesk.Revit.DB.ConnectorProfileType", "BHoM duct.")]
+        [Input("duct", "Revit duct.")]
+        [Input("settings", "Revit settings.")]
+        [Output("ductShape", "Shape of a duct.")]
         public static Autodesk.Revit.DB.ConnectorProfileType DuctShape(this Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null)
         {
             // Input validation

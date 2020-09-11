@@ -205,11 +205,11 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Convert a Revit Duct to a corresponding BHoM object.")]
-        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct instance.")]
-        [Input("BH.oM.Adapters.Revit.Enums.Discipline", "Engineering discipline.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("IBHoMObject", "Duct represented as a BHoM object.")]
+        [Input("duct", "Revit duct instance.")]
+        [Input("discipline", "Engineering discipline.")]
+        [Input("settings", "Revit settings.")]
+        [Input("refObjects", "Referenced objects.")]
+        [Output("duct", "Duct represented as a BHoM object.")]
         public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
@@ -224,11 +224,11 @@ namespace BH.Revit.Engine.Core
         }
 
         [Description("Convert a Revit Pipe to a corresponding BHoM object.")]
-        [Input("Autodesk.Revit.DB.Plumbing.Pipe", "Revit pipe instance.")]
-        [Input("BH.oM.Adapters.Revit.Enums.Discipline", "Engineering discipline.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("IBHoMObject", "Pipe represented as a BHoM object.")]
+        [Input("pipe", "Revit pipe instance.")]
+        [Input("discipline", "Engineering discipline.")]
+        [Input("settings", "Revit settings.")]
+        [Input("refObjects", "Referenced objects.")]
+        [Output("pipe", "Pipe represented as a BHoM object.")]
         public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Plumbing.Pipe pipe, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
@@ -245,11 +245,11 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Convert a Revit Wire to a corresponding BHoM object.")]
-        [Input("Autodesk.Revit.DB.Electrical.Wire", "Revit wire instance.")]
-        [Input("BH.oM.Adapters.Revit.Enums.Discipline", "Engineering discipline.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("IBHoMObject", "Wire represented as a BHoM object.")]
+        [Input("wire", "Revit wire instance.")]
+        [Input("discipline", "Engineering discipline.")]
+        [Input("settings", "Revit settings.")]
+        [Input("refObjects", "Referenced objects.")]
+        [Output("wire", "Wire represented as a BHoM object.")]
         public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Electrical.Wire wire, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)

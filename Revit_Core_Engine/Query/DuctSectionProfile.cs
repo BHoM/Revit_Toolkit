@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         [Input("revitDuct", "Revit duct to be converted into a section profile.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
-        [Output("Duct Section Profile", "Converted BHoM duct section profile converted.")]
+        [Output("profile", "Converted BHoM duct section profile converted.")]
         public static BH.oM.MEP.SectionProperties.SectionProfile DuctSectionProfile(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();

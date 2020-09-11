@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
         [Input("revitWire", "Revit wire to be converted.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
-        [Output("Wire From Revit", "BHoM wire.")]
+        [Output("wire", "BHoM wire.")]
         public static BH.oM.MEP.Elements.Wire WireFromRevit(this Autodesk.Revit.DB.Electrical.Wire revitWire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();

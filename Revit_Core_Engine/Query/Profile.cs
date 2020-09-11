@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Input("duct", "Revit duct for property extraction.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
-        [Output("ProfileFromRevit", "BHoM duct section property converted from a duct type.")]
+        [Output("profile", "BHoM duct section property converted from a duct type.")]
         public static IProfile ProfileFromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -85,12 +85,11 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Convert a profile from a pipe type.")]
-        [Input("pipeType", "Revit pipe type to be converted to a profile.")]
         [Input("pipe", "Revit pipe for property extraction.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
-        [Output("ProfileFromRevit", "BHoM pipe section property to be converted from a pipe type.")]
-        public static IProfile ProfileFromRevit(this Autodesk.Revit.DB.Plumbing.PipeType pipeType, Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("profile", "BHoM pipe section property to be converted from a pipe type.")]
+        public static IProfile ProfileFromRevit(this Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
@@ -109,12 +108,11 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Convert a profile from a wire type.")]
-        [Input("wireType", "Revit wire type to be converted to a profile.")]
         [Input("wire", "Revit wire for property extraction.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
-        [Output("ProfileFromRevit", "BHoM wire section property to be converted from a wire type.")]
-        public static IProfile ProfileFromRevit(this Autodesk.Revit.DB.Electrical.WireType wireType, Autodesk.Revit.DB.Electrical.Wire wire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("profile", "BHoM wire section property to be converted from a wire type.")]
+        public static IProfile ProfileFromRevit(this Autodesk.Revit.DB.Electrical.Wire wire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
