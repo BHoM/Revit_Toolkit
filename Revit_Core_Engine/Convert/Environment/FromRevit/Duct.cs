@@ -67,6 +67,7 @@ namespace BH.Revit.Engine.Core
             // Orientation angle
             //bhomDuct.OrientationAngle = revitDuct.OrientationAngle(settings); //ToDo - resolve in next issue, specific issue being raised
 
+            bhomDuct.SectionProperty = BH.Revit.Engine.Core.Query.DuctSectionProperty(revitDuct, settings, refObjects);
 
 
             //Set identifiers, parameters & custom data
