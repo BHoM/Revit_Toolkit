@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.MEP;
 using BH.Engine.Spatial;
@@ -76,7 +77,7 @@ namespace BH.Revit.Engine.Core
             }
 
             // Hydraulic diameter
-            double hydraulicDiameter = revitDuct.LookupParameterDouble("Hydraulic Diameter");
+            double hydraulicDiameter = BH.Engine.MEP.Query.HydraulicDiameter(sectionProfile as IProfile, elementSolidArea);
 
             return new BH.oM.MEP.SectionProperties.DuctSectionProperty(sectionProfile, elementSolidArea, liningSolidArea, insulationSolidArea, elementVoidArea, liningVoidArea, insulationVoidArea, hydraulicDiameter, circularEquivalent);
         }

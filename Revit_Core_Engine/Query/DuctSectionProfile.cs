@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
@@ -48,10 +49,10 @@ namespace BH.Revit.Engine.Core
             IProfile profile = revitDuct.Profile(settings, refObjects);
 
             // Lining thickness
-            double liningThickness = revitDuct.LookupParameterDouble("Lining Thickness");
+            double liningThickness = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_LINING_THICKNESS);
 
             // Insulation thickness
-            double insulationThickness = revitDuct.LookupParameterDouble("Insulation Thickness");
+            double insulationThickness = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_INSULATION_THICKNESS);
 
             // Get the duct shape, which is either circular, rectangular, oval or null
             Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(revitDuct, settings);//revitDuct.DuctType.Shape;

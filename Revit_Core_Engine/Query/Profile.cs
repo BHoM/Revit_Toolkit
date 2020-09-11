@@ -98,8 +98,8 @@ namespace BH.Revit.Engine.Core
             double diameter = pipe.Diameter.ToSI(UnitType.UT_PipeSize);
 
             // Thickness
-            double outsideDiameter = pipe.LookupParameterDouble("Outside Diameter");
-            double insideDiameter = pipe.LookupParameterDouble("Inside Diameter");
+            double outsideDiameter = pipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_OUTER_DIAMETER);
+            double insideDiameter = pipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_INNER_DIAM_PARAM);
             double thickness = (outsideDiameter - insideDiameter) / 2;
 
             return new TubeProfile(diameter, thickness, edges);
