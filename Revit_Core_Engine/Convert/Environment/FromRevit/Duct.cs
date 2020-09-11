@@ -66,37 +66,7 @@ namespace BH.Revit.Engine.Core
             // Orientation angle
             //bhomDuct.OrientationAngle = revitDuct.OrientationAngle(settings); //ToDo - resolve in next issue, specific issue being raised
 
-            // Duct section profile
-            SectionProfile sectionProfile = revitDuct.DuctSectionProfile(settings, refObjects);
 
-            // Duct section property
-            // This is being constructed manually because BH.Engine.MEP.Create.DuctSectionProperty doesn't work with round ducts, as it attempts to calculate the circular equivalent of a round duct.
-            // Solid Areas
-            double elementSolidArea = sectionProfile.ElementProfile.Area();
-            double liningSolidArea = sectionProfile.LiningProfile.Area() - sectionProfile.ElementProfile.Area();
-            double insulationSolidArea = sectionProfile.InsulationProfile.Area();
-
-            // Void Areas
-            double elementVoidArea = sectionProfile.ElementProfile.VoidArea();
-            double liningVoidArea = sectionProfile.LiningProfile.VoidArea();
-            double insulationVoidArea = sectionProfile.InsulationProfile.VoidArea();
-
-            // Get the duct shape, which is either circular, rectangular, oval or null
-            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(revitDuct, settings);//revitDuct.DuctType.Shape;
-
-            // Duct specific properties
-            // Circular equivalent diameter
-            double circularEquivalent = 0;
-            // Is the duct rectangular?
-            if (ductShape == Autodesk.Revit.DB.ConnectorProfileType.Rectangular)
-            {
-                circularEquivalent = sectionProfile.ElementProfile.ICircularEquivalentDiameter();
-            }
-
-            // Hydraulic diameter
-            double hydraulicDiameter = revitDuct.LookupParameterDouble("Hydraulic Diameter");
-
-            bhomDuct.SectionProperty = new BH.oM.MEP.SectionProperties.DuctSectionProperty(sectionProfile, elementSolidArea, liningSolidArea, insulationSolidArea, elementVoidArea, liningVoidArea, insulationVoidArea, hydraulicDiameter, circularEquivalent);
 
             //Set identifiers, parameters & custom data
             bhomDuct.SetIdentifiers(revitDuct);

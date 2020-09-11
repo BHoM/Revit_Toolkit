@@ -262,6 +262,7 @@
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Room.cs" />
     <Compile Include="Query\DuctSectionProfile.cs" />
+    <Compile Include="Query\DuctSectionProperty.cs" />
     <Compile Include="Query\DuctShape.cs" />
     <Compile Include="Query\PipeSectionProperty.cs" />
     <Compile Include="Query\Profile.cs" />
@@ -487,10 +488,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)'!='Debug' And '$(Configuration)'!='Release'">
     <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -279,10 +279,6 @@
 		C:\Windows\System32\xcopy "$(ProjectDir)Listener\Files\BHoM_2020.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2020\" /Y /I /E
 		xcopy "$(TargetDir)$(TargetFileName)" "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
   </PropertyGroup>
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
