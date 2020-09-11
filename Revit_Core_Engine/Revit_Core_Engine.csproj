@@ -264,7 +264,7 @@
     <Compile Include="Query\DuctSectionProfile.cs" />
     <Compile Include="Query\DuctShape.cs" />
     <Compile Include="Query\PipeSectionProperty.cs" />
-    <Compile Include="Convert\Environment\FromRevit\Profile.cs" />
+    <Compile Include="Query\Profile.cs" />
     <Compile Include="Convert\Environment\FromRevit\Wire.cs" />
     <Compile Include="Convert\Environment\FromRevit\Pipe.cs" />
     <Compile Include="Convert\Environment\FromRevit\Duct.cs" />

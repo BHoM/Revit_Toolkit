@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         {
             settings = settings.DefaultIfNull();
 
-            IProfile profile = revitDuct.DuctType.ProfileFromRevit(revitDuct, settings, refObjects);
+            IProfile profile = revitDuct.ProfileFromRevit(settings, refObjects);
 
             // Lining thickness
             double liningThickness = revitDuct.LookupParameterDouble("Lining Thickness");

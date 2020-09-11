@@ -33,19 +33,18 @@ using BH.oM.Geometry;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
         /****               Public Methods              ****/
         /***************************************************/
 
         [Description("Convert a profile from a duct type.")]
-        [Input("ductType", "Revit duct type to be converted to a profile.")]
         [Input("duct", "Revit duct for property extraction.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
         [Output("ProfileFromRevit", "BHoM duct section property converted from a duct type.")]
-        public static IProfile ProfileFromRevit(this Autodesk.Revit.DB.Mechanical.DuctType ductType, Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IProfile ProfileFromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
@@ -53,7 +52,7 @@ namespace BH.Revit.Engine.Core
 
             // Is the duct circular, rectangular or oval?
             // Get the duct shape, which is either circular, rectangular, oval or null
-            Autodesk.Revit.DB.ConnectorProfileType ductShape = ductType.Shape;
+            Autodesk.Revit.DB.ConnectorProfileType ductShape =duct.DuctType.Shape;
             switch (ductShape)
             {
                 case Autodesk.Revit.DB.ConnectorProfileType.Round:
