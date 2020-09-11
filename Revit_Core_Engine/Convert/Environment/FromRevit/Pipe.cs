@@ -64,10 +64,9 @@ namespace BH.Revit.Engine.Core
             bhomPipe.SectionProperty = revitPipe.PipeSectionProperty(settings, refObjects);
 
             //Set identifiers, parameters & custom data
-            Element element = revitPipe.Document.Element(revitPipe.Id.ToString());
-            bhomPipe.SetIdentifiers(element);
-            bhomPipe.CopyParameters(element, settings.ParameterSettings);
-            bhomPipe.SetProperties(element, settings.ParameterSettings);
+            bhomPipe.SetIdentifiers(revitPipe);
+            bhomPipe.CopyParameters(revitPipe, settings.ParameterSettings);
+            bhomPipe.SetProperties(revitPipe, settings.ParameterSettings);
 
             refObjects.AddOrReplace(revitPipe.Id, bhomPipe);
 

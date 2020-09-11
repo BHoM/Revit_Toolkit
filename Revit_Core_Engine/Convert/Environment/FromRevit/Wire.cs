@@ -65,10 +65,9 @@ namespace BH.Revit.Engine.Core
             bhomWire.WireSegments.Add(wireSegment);
 
             //Set identifiers, parameters & custom data
-            Element element = revitWire.Document.Element(revitWire.Id.ToString());
-            bhomWire.SetIdentifiers(element);
-            bhomWire.CopyParameters(element, settings.ParameterSettings);
-            bhomWire.SetProperties(element, settings.ParameterSettings);
+            bhomWire.SetIdentifiers(revitWire);
+            bhomWire.CopyParameters(revitWire, settings.ParameterSettings);
+            bhomWire.SetProperties(revitWire, settings.ParameterSettings);
 
             refObjects.AddOrReplace(revitWire.Id, bhomWire);
 
