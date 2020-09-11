@@ -52,7 +52,7 @@ namespace BH.Revit.Engine.Core
 
             // Is the duct circular, rectangular or oval?
             // Get the duct shape, which is either circular, rectangular, oval or null
-            Autodesk.Revit.DB.ConnectorProfileType ductShape =duct.DuctType.Shape;
+            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(duct, settings); //duct.DuctType.Shape;
             switch (ductShape)
             {
                 case Autodesk.Revit.DB.ConnectorProfileType.Round:

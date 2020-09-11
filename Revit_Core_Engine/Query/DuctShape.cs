@@ -68,8 +68,6 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Reflection.Compute.RecordNote("Unable to determine whether one of the selected ducts is round, rectangular or oval.");
                 return Autodesk.Revit.DB.ConnectorProfileType.Invalid;
             }
-
-
         }
 
         /***************************************************/

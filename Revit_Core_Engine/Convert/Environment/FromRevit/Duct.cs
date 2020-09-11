@@ -82,7 +82,7 @@ namespace BH.Revit.Engine.Core
             double insulationVoidArea = sectionProfile.InsulationProfile.VoidArea();
 
             // Get the duct shape, which is either circular, rectangular, oval or null
-            Autodesk.Revit.DB.ConnectorProfileType ductShape = revitDuct.DuctType.Shape;
+            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(revitDuct, settings);//revitDuct.DuctType.Shape;
 
             // Duct specific properties
             // Circular equivalent diameter
