@@ -21,29 +21,14 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.MEP.SectionProperties;
-using BH.oM.MEP.Elements;
 using BH.oM.Reflection.Attributes;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.MaterialFragments;
-using BH.oM.Structure.SectionProperties;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using BH.oM.Geometry;
-using System.Linq;
-using Autodesk.Revit.DB.Mechanical;
-
-using System.Text;
-using System.Threading.Tasks;
-
-using BH.oM.MEP.MaterialFragments;
 using BH.Engine.Spatial;
 using BH.Engine.MEP;
 
@@ -56,15 +41,13 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Convert a Revit duct to a BHoM duct.")]
-        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("BH.oM.MEP.Elements.Duct", "BHoM duct.")]
+        [Input("revitDuct", "Revit duct to be converted.")]
+        [Input("settings", "Revit settings.")]
+        [Input("refObjects", "Referenced objects.")]
+        [Output("DuctFromRevit", "BHoM duct converted from Revit.")]
         public static BH.oM.MEP.Elements.Duct DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-            Options options = new Options();
-            options.IncludeNonVisibleObjects = false;
 
             // BHoM duct
             BH.oM.MEP.Elements.Duct bhomDuct = new BH.oM.MEP.Elements.Duct();
@@ -94,7 +77,7 @@ namespace BH.Revit.Engine.Core
             double insulationVoidArea = sectionProfile.InsulationProfile.VoidArea();
 
             // Get the duct shape, which is either circular, rectangular, oval or null
-            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(revitDuct, settings);
+            Autodesk.Revit.DB.ConnectorProfileType ductShape = revitDuct.DuctType.Shape;
 
             // Duct specific properties
             // Circular equivalent diameter
@@ -109,6 +92,14 @@ namespace BH.Revit.Engine.Core
             double hydraulicDiameter = revitDuct.LookupParameterDouble("Hydraulic Diameter");
 
             bhomDuct.SectionProperty = new BH.oM.MEP.SectionProperties.DuctSectionProperty(sectionProfile, elementSolidArea, liningSolidArea, insulationSolidArea, elementVoidArea, liningVoidArea, insulationVoidArea, hydraulicDiameter, circularEquivalent);
+
+            //Set identifiers, parameters & custom data
+            Element element = revitDuct.Document.Element(revitDuct.Id.ToString());
+            bhomDuct.SetIdentifiers(element);
+            bhomDuct.CopyParameters(element, settings.ParameterSettings);
+            bhomDuct.SetProperties(element, settings.ParameterSettings);
+
+            refObjects.AddOrReplace(revitDuct.Id, bhomDuct);
 
             return bhomDuct;
         }

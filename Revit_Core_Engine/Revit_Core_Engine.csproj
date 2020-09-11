@@ -262,6 +262,7 @@
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Room.cs" />
     <Compile Include="Query\DuctSectionProfile.cs" />
+    <Compile Include="Query\DuctShape.cs" />
     <Compile Include="Query\PipeSectionProperty.cs" />
     <Compile Include="Query\DuctSectionProperty.cs" />
     <Compile Include="Convert\Environment\FromRevit\Profile.cs" />
@@ -330,7 +331,6 @@
     <Compile Include="Query\LevelAbove.cs" />
     <Compile Include="Query\LevelBelow.cs" />
     <Compile Include="Query\OpeningSurface.cs" />
-    <Compile Include="Query\DuctShape.cs" />
     <Compile Include="Query\PanelPlanes.cs" />
     <Compile Include="Query\PanelSurfaces.cs" />
     <Compile Include="Query\ParameterLink.cs" />
@@ -490,7 +490,8 @@
     <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

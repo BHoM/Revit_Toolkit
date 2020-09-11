@@ -20,27 +20,13 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
-using BH.Revit.Engine.Core;
-using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry.ShapeProfiles;
-using BH.oM.MEP.SectionProperties;
-using BH.oM.MEP.Elements;
 using BH.oM.Reflection.Attributes;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.MaterialFragments;
-using BH.oM.Structure.SectionProperties;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using BH.oM.Geometry;
-using System.Linq;
-using BH.oM.MEP.MaterialFragments;
-using Autodesk.Revit.DB.Mechanical;
 
 namespace BH.Revit.Engine.Core
 {
@@ -50,11 +36,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Section profile of round and rectangular ducts.")]
-        [Input("Autodesk.Revit.DB.Mechanical.DuctType", "Revit duct type.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Input("Dictionary<string, List<IBHoMObject>>", "Referenced objects.")]
-        [Output("BH.oM.MEP.SectionProperties.SectionProfile", "BHoM section property.")]
+        [Description("Section profile of round and rectangular ducts converted from a Revit duct.")]
+        [Input("revitDuct", "Revit duct to be converted into a section profile.")]
+        [Input("settings", "Revit settings.")]
+        [Input("refObjects", "Referenced objects.")]
+        [Output("Duct Section Profile", "Converted BHoM duct section profile converted.")]
         public static BH.oM.MEP.SectionProperties.SectionProfile DuctSectionProfile(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -68,7 +54,7 @@ namespace BH.Revit.Engine.Core
             double insulationThickness = revitDuct.LookupParameterDouble("Insulation Thickness");
             
             // Get the duct shape, which is either circular, rectangular, oval or null
-            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(revitDuct, settings);
+            Autodesk.Revit.DB.ConnectorProfileType ductShape = revitDuct.DuctType.Shape;
 
             // Is the duct circular, rectangular or oval?
             switch (ductShape)
@@ -80,7 +66,7 @@ namespace BH.Revit.Engine.Core
                 case Autodesk.Revit.DB.ConnectorProfileType.Oval:
                     // Create an oval profile
                     // There is currently no section profile for an oval duct in BHoM_Engine. This part will be implemented once the relevant section profile becomes available.
-                    BH.Engine.Reflection.Compute.RecordWarning("There is currently no section profile for an oval duct in BHoM_Engine.");
+                    BH.Engine.Reflection.Compute.RecordWarning("There is currently no section profile for an oval duct. Element ID: " + revitDuct.Id);
                     return null;
                 default:
                     return null;
