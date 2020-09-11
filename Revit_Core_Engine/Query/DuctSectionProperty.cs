@@ -53,16 +53,7 @@ namespace BH.Revit.Engine.Core
             SectionProfile sectionProfile = revitDuct.DuctSectionProfile(settings, refObjects);
 
             // Get the duct shape, which is either circular, rectangular, oval or null
-            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(revitDuct, settings);//revitDuct.DuctType.Shape;
-
-            // Duct specific properties
-            // Circular equivalent diameter
-            double circularEquivalent = 0;
-            // Is the duct rectangular?
-            if (ductShape == Autodesk.Revit.DB.ConnectorProfileType.Rectangular)
-            {
-                circularEquivalent = sectionProfile.ElementProfile.ICircularEquivalentDiameter();
-            }
+            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(revitDuct, settings);//
 
             return BH.Engine.MEP.Create.DuctSectionProperty(sectionProfile);
         }
