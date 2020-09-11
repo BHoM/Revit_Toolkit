@@ -59,6 +59,7 @@ namespace BH.Revit.Engine.Core
             Curve curve = locationCurve.Curve;
             bhomPipe.StartNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(0).PointFromRevit() }; // Start point
             bhomPipe.EndNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
+            bhomPipe.FlowRate = revitPipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_FLOW_PARAM); // Flow rate
 
             // Duct section property
             bhomPipe.SectionProperty = revitPipe.PipeSectionProperty(settings, refObjects);
