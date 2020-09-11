@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
             bhomPipe.EndNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
             bhomPipe.FlowRate = revitPipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_FLOW_PARAM); // Flow rate
 
-            // Duct section property
+            // Pipe section property
             bhomPipe.SectionProperty = revitPipe.PipeSectionProperty(settings, refObjects);
 
             //Set identifiers, parameters & custom data
