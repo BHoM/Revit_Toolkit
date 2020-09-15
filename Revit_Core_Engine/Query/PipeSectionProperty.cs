@@ -49,12 +49,12 @@ namespace BH.Revit.Engine.Core
 
             IProfile profile = pipe.Profile(settings, refObjects);
 
-            double liningThickness = pipe.LookupParameterDouble(BuiltInParameter.RBS_LINING_THICKNESS).ToSI(UnitType.UT_HVAC_DuctLiningThickness); // extract the lining thk from Duct element
+            double liningThickness = pipe.LookupParameterDouble(BuiltInParameter.RBS_LINING_THICKNESS); // Extract the lining thk from Duct element
             if (liningThickness == 0)
                 liningThickness = BH.oM.Geometry.Tolerance.Distance;
 
 
-            double insulationThickness = pipe.LookupParameterDouble(BuiltInParameter.RBS_INSULATION_THICKNESS).ToSI(UnitType.UT_HVAC_DuctInsulationThickness); // as above
+            double insulationThickness = pipe.LookupParameterDouble(BuiltInParameter.RBS_INSULATION_THICKNESS); // Extract the lining thk from Duct element
             if (insulationThickness == 0)
                 insulationThickness = BH.oM.Geometry.Tolerance.Distance;
 
