@@ -29,7 +29,6 @@ using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Fragments;
 using System.Collections.Generic;
-
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
 using System.Linq;
