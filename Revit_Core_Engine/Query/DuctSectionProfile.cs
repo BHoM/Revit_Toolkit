@@ -49,11 +49,9 @@ namespace BH.Revit.Engine.Core
             IProfile profile = revitDuct.Profile(settings, refObjects);
 
             // Lining thickness
-            //double liningThickness = revitDuct.LookupParameterDouble("Lining Thickness");
             double liningThickness = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_LINING_THICKNESS);
 
             // Insulation thickness
-            //double insulationThickness = revitDuct.LookupParameterDouble("Insulation Thickness");
             double insulationThickness = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_INSULATION_THICKNESS);
 
             // Create a section profile
