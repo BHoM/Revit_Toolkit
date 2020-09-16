@@ -54,7 +54,7 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-
+        
         public static Space SpaceFromRevit(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (spatialElement == null || spatialElementBoundaryOptions == null)

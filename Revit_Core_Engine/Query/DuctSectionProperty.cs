@@ -20,13 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
-using BH.Engine.MEP;
-using BH.Engine.Spatial;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.MEP.SectionProperties;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
@@ -40,11 +36,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Duct section property converted from a Revit duct.")]
-        [Input("revitDuct", "Revit duct to be conerted into a section property.")]
+        [Description("Convert a Revit duct into a BHoM duct section property.")]
+        [Input("revitDuct", "Revit duct to be converted into a BHoM section property.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
-        [Output("DuctSectionProperty", "BHoM duct section property.")]
+        [Output("sectionProperty", "BHoM duct section property converted from a Revit duct.")]
         public static BH.oM.MEP.SectionProperties.DuctSectionProperty DuctSectionProperty(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -52,9 +48,7 @@ namespace BH.Revit.Engine.Core
             // Duct section profile
             SectionProfile sectionProfile = revitDuct.DuctSectionProfile(settings, refObjects);
 
-            // Get the duct shape, which is either circular, rectangular, oval or null
-            Autodesk.Revit.DB.ConnectorProfileType ductShape = BH.Revit.Engine.Core.Query.DuctShape(revitDuct, settings);//
-
+            // Duct section property
             return BH.Engine.MEP.Create.DuctSectionProperty(sectionProfile);
         }
 
