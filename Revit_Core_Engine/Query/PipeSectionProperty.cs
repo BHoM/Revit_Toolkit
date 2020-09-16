@@ -50,13 +50,13 @@ namespace BH.Revit.Engine.Core
             IProfile profile = pipe.Profile(settings, refObjects);
 
             double liningThickness = pipe.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_LINING_THICKNESS); // Extract the lining thk from Duct element
-            if (liningThickness == 0)
-                liningThickness = BH.oM.Geometry.Tolerance.Distance;
+            if (liningThickness == double.NaN)
+                liningThickness = 0;
 
 
             double insulationThickness = pipe.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_INSULATION_THICKNESS); // Extract the lining thk from Duct element
-            if (insulationThickness == 0)
-                insulationThickness = BH.oM.Geometry.Tolerance.Distance;
+            if (insulationThickness == double.NaN)
+                insulationThickness = 0;
 
             SectionProfile sectionProfile = BH.Engine.MEP.Create.SectionProfile((TubeProfile)profile, liningThickness, insulationThickness);
 

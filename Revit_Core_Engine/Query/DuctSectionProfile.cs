@@ -50,9 +50,13 @@ namespace BH.Revit.Engine.Core
 
             // Lining thickness
             double liningThickness = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_LINING_THICKNESS);
+            if (liningThickness == double.NaN)
+                liningThickness = 0;
 
             // Insulation thickness
             double insulationThickness = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_INSULATION_THICKNESS);
+            if (insulationThickness == double.NaN)
+                insulationThickness = 0;
 
             // Create a section profile
             if (profile != null)
