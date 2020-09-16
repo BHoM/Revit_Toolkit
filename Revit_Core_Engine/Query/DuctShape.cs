@@ -52,7 +52,7 @@ namespace BH.Revit.Engine.Core
             // Get the duct connector shape in Revit 2018 by extracting it from one of the duct connectors
             foreach (Connector connector in duct.ConnectorManager.Connectors)
             {
-                // Get the primary "End" connector for this duct
+                // Get the End connector for this duct
                 if (connector.ConnectorType == ConnectorType.End)
                 {
                     return connector.Shape;

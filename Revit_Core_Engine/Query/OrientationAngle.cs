@@ -75,7 +75,7 @@ namespace BH.Revit.Engine.Core
             Connector connector = null;
             foreach (Connector conn in duct.ConnectorManager.Connectors)
             {
-                // Find the primary connector
+                // Get the End connector for this duct
                 if (conn.ConnectorType == ConnectorType.End)
                 {
                     connector = conn;
