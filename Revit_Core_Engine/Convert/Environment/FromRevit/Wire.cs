@@ -37,11 +37,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("BHoM wire converted from a Revit wire.")]
+        [Description("Convert a Revit wire into a BHoM wire.")]
         [Input("revitWire", "Revit wire to be converted.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
-        [Output("wire", "BHoM wire converted from Revit.")]
+        [Output("wire", "BHoM wire converted from a Revit wire.")]
         public static BH.oM.MEP.Elements.Wire WireFromRevit(this Autodesk.Revit.DB.Electrical.Wire revitWire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -50,17 +50,18 @@ namespace BH.Revit.Engine.Core
             BH.oM.MEP.Elements.Wire bhomWire = refObjects.GetValue<BH.oM.MEP.Elements.Wire>(revitWire.Id);
             if (bhomWire != null)
                 return bhomWire;
+            
+            LocationCurve locationCurve = revitWire.Location as LocationCurve;
+            Curve curve = locationCurve.Curve;
+            BH.oM.MEP.Elements.Node startNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(0).PointFromRevit() }; // Start point
+            BH.oM.MEP.Elements.Node endNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
+            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startNode.Position, endNode.Position); // BHoM line
 
             // Wire
             bhomWire = new BH.oM.MEP.Elements.Wire();
 
-            WireSegment wireSegment = new WireSegment();
-            
-            // Start and end points
-            LocationCurve locationCurve = revitWire.Location as LocationCurve;
-            Curve curve = locationCurve.Curve;
-            wireSegment.StartNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(0).PointFromRevit() }; // Start point
-            wireSegment.EndNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
+            // Wire segment
+            WireSegment wireSegment = BH.Engine.MEP.Create.Wire(line);
 
             bhomWire.WireSegments.Add(wireSegment);
 

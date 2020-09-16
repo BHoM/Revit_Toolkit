@@ -38,11 +38,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Pipe section property converted fom Revit.")]
-        [Input("pipe", "Revit pipe type to be converted to a section property.")]
+        [Description("Convert a Revit pipe into a BHoM pipe section property.")]
+        [Input("pipe", "Revit pipe to be converted into a BHoM section property.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
-        [Output("property", "BHoM duct section property.")]
+        [Output("sectionProperty", "BHoM pipe section property converted from a Revit pipe.")]
         public static BH.oM.MEP.SectionProperties.PipeSectionProperty PipeSectionProperty(this Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();

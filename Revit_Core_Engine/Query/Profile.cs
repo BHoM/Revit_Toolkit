@@ -26,7 +26,6 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.Reflection.Attributes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using BH.oM.Geometry;
@@ -39,16 +38,14 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Extract a BHoM profile from a Revit duct.")]
-        [Input("duct", "Revit duct for property extraction.")]
+        [Description("Extract a BHoM duct profile from a Revit duct.")]
+        [Input("duct", "Revit duct to extract relevant profie information from.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
         [Output("profile", "BHoM duct profile extracted from a Revit duct.")]
         public static IProfile Profile(this Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-
-            List<ICurve> edges = new List<ICurve>();
 
             // Is the duct circular, rectangular or oval?
             // Get the duct shape, which is either circular, rectangular, oval or null
@@ -62,16 +59,17 @@ namespace BH.Revit.Engine.Core
 
                     // Thickness / gauge of the duct sheet
                     double thickness = 0.001519; // Dafault to 16 gauge, to be changed later
-
-                    return new TubeProfile(diameter, thickness, edges);
+                    
+                    return BH.Engine.Geometry.Create.TubeProfile(diameter, thickness);
                 case Autodesk.Revit.DB.ConnectorProfileType.Rectangular:
                     // Create a rectangular box profile
-                    double height = duct.Height.ToSI(UnitType.UT_HVAC_DuctSize);
+                    double boxHeight = duct.Height.ToSI(UnitType.UT_HVAC_DuctSize);
                     double boxWidth = duct.Width.ToSI(UnitType.UT_HVAC_DuctSize);
                     double boxThickness = 0.001519; // Dafault to 16 gauge, to be changed later
                     double outerRadius = 0;
                     double innerRadius = 0;
-                    return new BH.oM.Geometry.ShapeProfiles.BoxProfile(height, boxWidth, boxThickness, outerRadius, innerRadius, edges);
+
+                    return BH.Engine.Geometry.Create.BoxProfile(boxHeight, boxWidth, boxThickness, outerRadius, innerRadius);
                 case Autodesk.Revit.DB.ConnectorProfileType.Oval:
                     // Create an oval profile
                     // There is currently no section profile for an oval duct in BHoM_Engine. This part will be implemented once the relevant section profile becomes available.
@@ -84,8 +82,8 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Extract a BHoM profile from a Revit pipe.")]
-        [Input("pipe", "Revit pipe for property extraction.")]
+        [Description("Extract a BHoM pipe profile from a Revit pipe.")]
+        [Input("pipe", "Revit pipe to extract relevant profie information from.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
         [Output("profile", "BHoM pipe profile extracted from a Revit pipe.")]
@@ -102,16 +100,16 @@ namespace BH.Revit.Engine.Core
             double insideDiameter = pipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_INNER_DIAM_PARAM);
             double thickness = (outsideDiameter - insideDiameter) / 2;
 
-            return new TubeProfile(diameter, thickness, edges);
+            return BH.Engine.Geometry.Create.TubeProfile(diameter, thickness);
         }
 
         /***************************************************/
 
-        [Description("Extract a BHoM profile from a Revit pipe.")]
-        [Input("wire", "Revit wire for property extraction.")]
+        [Description("Extract a BHoM tube profile from a Revit wire. A tube profile is used in this case to facilitate the extraction of the wire diameter because a dedicated BHoM profile for a wire is not available.")]
+        [Input("wire", "Revit wire to extract relevant profie information from.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
-        [Output("profile", "BHoM wire profile extracted from a Revit wire.")]
+        [Output("profile", "BHoM tube profile extracted from a Revit wire.")]
         public static IProfile Profile(this Autodesk.Revit.DB.Electrical.Wire wire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -121,8 +119,8 @@ namespace BH.Revit.Engine.Core
             double diameter = wire.Diameter.ToSI(UnitType.UT_WireSize);
 
             double thickness = 0;
-            
-            return new TubeProfile(diameter, thickness, edges);
+
+            return BH.Engine.Geometry.Create.TubeProfile(diameter, thickness);
         }
 
         /***************************************************/

@@ -62,23 +62,26 @@ namespace BH.Revit.Engine.Core
         public static double OrientationAngle(this Duct duct, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
+            Options options = new Options();
+            options.IncludeNonVisibleObjects = false;
 
             double rotation;
+
             Location location = duct.Location;
-
+            LocationPoint locationPoint = duct.Location as LocationPoint;
+            XYZ point = locationPoint.Point;
+            
             LocationCurve locationCurve = location as LocationCurve;
-
             Curve curve = locationCurve.Curve;
-
+            
             XYZ startPoint = curve.GetEndPoint(0); // Start point
             XYZ endPoint = curve.GetEndPoint(1); // End point
-
-            XYZ vector = (endPoint - startPoint).Normalize(); // Normalised vector
+            XYZ vector = (endPoint - startPoint); // Create a vector
 
             Transform transform = Transform.CreateTranslation(vector); // Transform of a vector
 
             BH.oM.Geometry.ICurve bhomCurve = curve.IFromRevit(); // Convert to a BHoM curve
-
+            
             if ((bhomCurve as BH.oM.Geometry.Line).IsVertical()) // Is the duct vertical?
                 rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisX, transform.BasisZ);
             else

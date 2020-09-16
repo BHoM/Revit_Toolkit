@@ -24,7 +24,6 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Geometry.ShapeProfiles;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,7 +40,7 @@ namespace BH.Revit.Engine.Core
         [Input("revitPipe", "Revit pipe to be converted.")]
         [Input("settings", "Revit settings.")]
         [Input("refObjects", "Referenced objects.")]
-        [Output("pipe", "BHoM Pipe converted from Revit.")]
+        [Output("pipe", "BHoM pipe converted from a Revit pipe.")]
         public static BH.oM.MEP.Elements.Pipe PipeFromRevit(this Autodesk.Revit.DB.Plumbing.Pipe revitPipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -51,18 +50,22 @@ namespace BH.Revit.Engine.Core
             if (bhomPipe != null)
                 return bhomPipe;
 
-            // BHoM pipe
-            bhomPipe = new BH.oM.MEP.Elements.Pipe();
-
             // Start and end points
             LocationCurve locationCurve = revitPipe.Location as LocationCurve;
             Curve curve = locationCurve.Curve;
-            bhomPipe.StartNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(0).PointFromRevit() }; // Start point
-            bhomPipe.EndNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
-            bhomPipe.FlowRate = revitPipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_FLOW_PARAM); // Flow rate
+            BH.oM.MEP.Elements.Node startNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(0).PointFromRevit() }; // Start point
+            BH.oM.MEP.Elements.Node endNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
+            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startNode.Position, endNode.Position); // BHoM line
+            double flowRate = revitPipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_FLOW_PARAM); // Flow rate
 
             // Pipe section property
-            bhomPipe.SectionProperty = revitPipe.PipeSectionProperty(settings, refObjects);
+            BH.oM.MEP.SectionProperties.PipeSectionProperty sectionProperty = revitPipe.PipeSectionProperty(settings, refObjects);
+
+            // BHoM pipe
+            bhomPipe = BH.Engine.MEP.Create.Pipe(line, flowRate, sectionProperty);
+
+            // Set the flow rate, as the Create method above does not set the flow rate with the suppliet flowRate argument
+            bhomPipe.FlowRate = flowRate;
 
             //Set identifiers, parameters & custom data
             bhomPipe.SetIdentifiers(revitPipe);

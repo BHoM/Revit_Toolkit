@@ -21,16 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Mechanical;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Physical.Elements;
 using BH.oM.Reflection.Attributes;
-using System;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -40,10 +33,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Determines whether a duct is circular, rectangular or oval.")]
-        [Input("duct", "Revit duct.")]
+        [Description("Determines whether a Revit duct is round, rectangular or oval.")]
+        [Input("duct", "Revit duct to check in order to determine its shape.")]
         [Input("settings", "Revit settings.")]
-        [Output("ductShape", "Shape of a duct.")]
+        [Output("ductShape", "Shape of a duct, which can be eiher round, rectangular or oval. If the shape of the duct cannot be determined, an invalid connector shape is returned.")]
         public static Autodesk.Revit.DB.ConnectorProfileType DuctShape(this Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null)
         {
             // Input validation
@@ -54,15 +47,28 @@ namespace BH.Revit.Engine.Core
                 return Autodesk.Revit.DB.ConnectorProfileType.Invalid;
             }
 
-            string ductFamilyName = duct?.DuctType?.FamilyName;
+            ConnectorProfileType connectorShape = ConnectorProfileType.Invalid;
 
+#if REVIT2018
+            // Get the duct connector shape in Revit 2018 by extracting it from one of the duct connectors
+            var connectors = duct.ConnectorManager.Connectors;
+            foreach (Connector connector in connectors)
+            {
+                connectorShape = connector.Shape;
+                break;
+            }
+#else
+            // Get the duct connector shape in Revit 2019 and above by extracting it from the duct type
+            connectorShape = duct.DuctType.Shape;
+#endif
+            
             // Determine the shape of the duct
-            if (ductFamilyName.Contains("Rectangular")) // Does the duct have a height
+            if (connectorShape == Autodesk.Revit.DB.ConnectorProfileType.Rectangular)
                 return Autodesk.Revit.DB.ConnectorProfileType.Rectangular; // The duct is rectangular
-            else if (ductFamilyName.Contains("Round")) // Does the duct have a diameter?
-                return Autodesk.Revit.DB.ConnectorProfileType.Round; // The duct is circular
-            else if (ductFamilyName.Contains("Oval")) // Does the duct have a diameter?
-                return Autodesk.Revit.DB.ConnectorProfileType.Oval; // The duct is circular
+            else if (connectorShape == Autodesk.Revit.DB.ConnectorProfileType.Round)
+                return Autodesk.Revit.DB.ConnectorProfileType.Round; // The duct is round
+            else if (connectorShape == Autodesk.Revit.DB.ConnectorProfileType.Oval)
+                return Autodesk.Revit.DB.ConnectorProfileType.Oval; // The duct is oval
             else
             {
                 BH.Engine.Reflection.Compute.RecordNote("Unable to determine whether one of the selected ducts is round, rectangular or oval.");

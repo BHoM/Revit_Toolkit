@@ -30,7 +30,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
+        
         public static IEnumerable<WorksetId> SystemWorksetIds(this Document document)
         {
             if (document == null)
