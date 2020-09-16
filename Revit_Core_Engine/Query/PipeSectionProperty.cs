@@ -38,23 +38,23 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert a Revit pipe into a BHoM pipe section property.")]
+        [Description("Query a Revit pipe to get a BHoM pipe section property.")]
         [Input("pipe", "Revit pipe to be converted into a BHoM section property.")]
-        [Input("settings", "Revit settings.")]
-        [Input("refObjects", "Referenced objects.")]
-        [Output("sectionProperty", "BHoM pipe section property converted from a Revit pipe.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("sectionProperty", "BHoM pipe section property extracted from a Revit pipe.")]
         public static BH.oM.MEP.SectionProperties.PipeSectionProperty PipeSectionProperty(this Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
             IProfile profile = pipe.Profile(settings, refObjects);
 
-            double liningThickness = pipe.LookupParameterDouble(BuiltInParameter.RBS_LINING_THICKNESS); // Extract the lining thk from Duct element
+            double liningThickness = pipe.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_LINING_THICKNESS); // Extract the lining thk from Duct element
             if (liningThickness == 0)
                 liningThickness = BH.oM.Geometry.Tolerance.Distance;
 
 
-            double insulationThickness = pipe.LookupParameterDouble(BuiltInParameter.RBS_INSULATION_THICKNESS); // Extract the lining thk from Duct element
+            double insulationThickness = pipe.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_INSULATION_THICKNESS); // Extract the lining thk from Duct element
             if (insulationThickness == 0)
                 insulationThickness = BH.oM.Geometry.Tolerance.Distance;
 

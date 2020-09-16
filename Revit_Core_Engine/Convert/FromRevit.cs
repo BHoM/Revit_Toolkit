@@ -202,8 +202,8 @@ namespace BH.Revit.Engine.Core
         [Description("Convert a Revit duct into a BHoM duct.")]
         [Input("duct", "Revit duct to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        [Input("settings", "Revit settings.")]
-        [Input("refObjects", "Referenced objects.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("duct", "BHoM duct converted from a Revit duct.")]
         public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
@@ -221,8 +221,8 @@ namespace BH.Revit.Engine.Core
         [Description("Convert a Revit pipe into a BHoM pipe.")]
         [Input("pipe", "Revit pipe to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        [Input("settings", "Revit settings.")]
-        [Input("refObjects", "Referenced objects.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("pipe", "BHoM pipe converted from a Revit pipe.")]
         public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Plumbing.Pipe pipe, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
@@ -242,8 +242,8 @@ namespace BH.Revit.Engine.Core
         [Description("Convert a Revit wire into a BHoM wire.")]
         [Input("wire", "Revit wire to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        [Input("settings", "Revit settings.")]
-        [Input("refObjects", "Referenced objects.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("wire", "BHoM wire converted from a Revit wire.")]
         public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Electrical.Wire wire, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {

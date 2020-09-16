@@ -36,11 +36,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert a Revit duct into a BHoM duct section property.")]
+        [Description("Query a Revit duct to extract a BHoM duct section property.")]
         [Input("revitDuct", "Revit duct to be converted into a BHoM section property.")]
-        [Input("settings", "Revit settings.")]
-        [Input("refObjects", "Referenced objects.")]
-        [Output("sectionProperty", "BHoM duct section property converted from a Revit duct.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("sectionProperty", "BHoM duct section property extracted from a Revit duct.")]
         public static BH.oM.MEP.SectionProperties.DuctSectionProperty DuctSectionProperty(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();

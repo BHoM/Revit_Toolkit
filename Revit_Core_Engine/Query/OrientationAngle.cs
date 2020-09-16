@@ -54,15 +54,13 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Get the orientation angle of a duct.")]
-        [Input("Autodesk.Revit.DB.Mechanical.Duct", "Revit duct.")]
-        [Input("BH.oM.Adapters.Revit.Settings.RevitSettings", "Revit settings.")]
-        [Output("double", "Orientation angle of a duct in radians.")]
+        [Description("Query a Revit duct to extract its orientation angle.")]
+        [Input("duct", "Revit duct to be queried.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Output("double", "Orientation angle of a duct in radians extracted from a Revit duct.")]
         public static double OrientationAngle(this Duct duct, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
-            Options options = new Options();
-            options.IncludeNonVisibleObjects = false;
 
             double rotation;
 
@@ -77,13 +75,17 @@ namespace BH.Revit.Engine.Core
             Connector connector = null;
             foreach (Connector conn in duct.ConnectorManager.Connectors)
             {
-                connector = conn;
-                break;
+                // Find the primary connector
+                if (conn.ConnectorType == ConnectorType.End)
+                {
+                    connector = conn;
+                    break;
+                }
             }
 
             // Coordinate system of the duct connector
             Transform transform = connector.CoordinateSystem;
-            
+
             // Get the rotation
             if ((bhomCurve as BH.oM.Geometry.Line).IsVertical()) // Is the duct vertical?
                 rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisX, transform.BasisZ);

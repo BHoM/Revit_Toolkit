@@ -40,8 +40,8 @@ namespace BH.Revit.Engine.Core
 
         [Description("Extract a BHoM duct profile from a Revit duct.")]
         [Input("duct", "Revit duct to extract relevant profie information from.")]
-        [Input("settings", "Revit settings.")]
-        [Input("refObjects", "Referenced objects.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("profile", "BHoM duct profile extracted from a Revit duct.")]
         public static IProfile Profile(this Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
@@ -84,8 +84,8 @@ namespace BH.Revit.Engine.Core
 
         [Description("Extract a BHoM pipe profile from a Revit pipe.")]
         [Input("pipe", "Revit pipe to extract relevant profie information from.")]
-        [Input("settings", "Revit settings.")]
-        [Input("refObjects", "Referenced objects.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("profile", "BHoM pipe profile extracted from a Revit pipe.")]
         public static IProfile Profile(this Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
@@ -107,8 +107,8 @@ namespace BH.Revit.Engine.Core
 
         [Description("Extract a BHoM tube profile from a Revit wire. A tube profile is used in this case to facilitate the extraction of the wire diameter because a dedicated BHoM profile for a wire is not available.")]
         [Input("wire", "Revit wire to extract relevant profie information from.")]
-        [Input("settings", "Revit settings.")]
-        [Input("refObjects", "Referenced objects.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("profile", "BHoM tube profile extracted from a Revit wire.")]
         public static IProfile Profile(this Autodesk.Revit.DB.Electrical.Wire wire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {

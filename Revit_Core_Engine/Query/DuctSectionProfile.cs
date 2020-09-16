@@ -37,11 +37,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
         
-        [Description("Convert a Revit duct into a BHoM duct section profile.")]
+        [Description("Query a Revit duct to extract a BHoM duct section profile.")]
         [Input("revitDuct", "Revit duct to be converted into a BHoM section profile.")]
-        [Input("settings", "Revit settings.")]
-        [Input("refObjects", "Referenced objects.")]
-        [Output("profile", "BHoM section profile for a duct converted from a Revit duct.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("profile", "BHoM section profile for a duct extracted from a Revit duct.")]
         public static BH.oM.MEP.SectionProperties.SectionProfile DuctSectionProfile(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -49,10 +49,12 @@ namespace BH.Revit.Engine.Core
             IProfile profile = revitDuct.Profile(settings, refObjects);
 
             // Lining thickness
-            double liningThickness = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_LINING_THICKNESS);
+            //double liningThickness = revitDuct.LookupParameterDouble("Lining Thickness");
+            double liningThickness = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_LINING_THICKNESS);
 
             // Insulation thickness
-            double insulationThickness = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_INSULATION_THICKNESS);
+            //double insulationThickness = revitDuct.LookupParameterDouble("Insulation Thickness");
+            double insulationThickness = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_INSULATION_THICKNESS);
 
             // Create a section profile
             if (profile != null)

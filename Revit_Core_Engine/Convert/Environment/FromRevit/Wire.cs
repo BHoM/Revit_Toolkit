@@ -39,8 +39,8 @@ namespace BH.Revit.Engine.Core
 
         [Description("Convert a Revit wire into a BHoM wire.")]
         [Input("revitWire", "Revit wire to be converted.")]
-        [Input("settings", "Revit settings.")]
-        [Input("refObjects", "Referenced objects.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("wire", "BHoM wire converted from a Revit wire.")]
         public static BH.oM.MEP.Elements.Wire WireFromRevit(this Autodesk.Revit.DB.Electrical.Wire revitWire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
