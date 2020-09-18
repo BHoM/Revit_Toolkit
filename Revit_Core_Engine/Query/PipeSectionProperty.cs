@@ -39,15 +39,14 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Query a Revit pipe to get a BHoM pipe section property.")]
-        [Input("pipe", "Revit pipe to be converted into a BHoM section property.")]
+        [Input("pipe", "Revit pipe to be queried for information required for a BHoM section property.")]
         [Input("settings", "Revit adapter settings.")]
-        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("sectionProperty", "BHoM pipe section property extracted from a Revit pipe.")]
-        public static BH.oM.MEP.SectionProperties.PipeSectionProperty PipeSectionProperty(this Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static BH.oM.MEP.SectionProperties.PipeSectionProperty PipeSectionProperty(this Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
 
-            IProfile profile = pipe.Profile(settings, refObjects);
+            IProfile profile = pipe.Profile(settings);
 
             double liningThickness = pipe.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_LINING_THICKNESS); // Extract the lining thk from Duct element
             if (liningThickness == double.NaN)

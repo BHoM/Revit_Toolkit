@@ -38,15 +38,14 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         
         [Description("Query a Revit duct to extract a BHoM duct section profile.")]
-        [Input("revitDuct", "Revit duct to be converted into a BHoM section profile.")]
+        [Input("revitDuct", "Revit duct to be queried for information needed for a BHoM section profile.")]
         [Input("settings", "Revit adapter settings.")]
-        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("profile", "BHoM section profile for a duct extracted from a Revit duct.")]
-        public static BH.oM.MEP.SectionProperties.SectionProfile DuctSectionProfile(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static BH.oM.MEP.SectionProperties.SectionProfile DuctSectionProfile(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
 
-            IProfile profile = revitDuct.Profile(settings, refObjects);
+            IProfile profile = revitDuct.Profile(settings);
 
             // Lining thickness
             double liningThickness = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_LINING_THICKNESS);
