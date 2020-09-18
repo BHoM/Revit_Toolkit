@@ -116,8 +116,7 @@ namespace BH.Revit.Engine.Core
                 parameter = revitWall.get_Parameter(BuiltInParameter.WALL_BASE_OFFSET);
                 if (parameter != null)
                 {
-                    double offset = (bottomElevation - levelElevation).FromSI(UnitType.UT_Length);
-
+                    double offset = (bottomElevation - levelElevation);
                     parameter.Set(offset);
                 }
             }
