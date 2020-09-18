@@ -618,7 +618,7 @@ namespace BH.Revit.Engine.Core
             Autodesk.Revit.DB.Face face = null;
             foreach (Autodesk.Revit.DB.Face f in solid.Faces)
             {
-                if (f is PlanarFace && (f as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(direction, 0.001))
+                if (f is PlanarFace && (f as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(-direction, 0.001))
                 {
                     if (face == null)
                         face = f;
@@ -665,7 +665,7 @@ namespace BH.Revit.Engine.Core
                 if (familySymbol.Family.FamilyPlacementType == FamilyPlacementType.CurveDrivenStructural)
                 {
                     // First rotate the profile to align its local plane with global XY, then rotate to align its local Z with global Y.
-                    double angle = -Math.PI * 0.5;
+                    double angle = Math.PI * 0.5;
                     profileCurves = profileCurves.Select(x => x.IRotate(oM.Geometry.Point.Origin, Vector.YAxis, angle)).ToList();
                     profileCurves = profileCurves.Select(x => x.IRotate(oM.Geometry.Point.Origin, Vector.ZAxis, angle)).ToList();
                 }
