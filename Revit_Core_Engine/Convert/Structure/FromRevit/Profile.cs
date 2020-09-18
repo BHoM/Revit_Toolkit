@@ -138,13 +138,13 @@ namespace BH.Revit.Engine.Core
             else if (section is StructuralSectionConcreteRound)
                 diameter = (section as StructuralSectionConcreteRound).Diameter.ToSI(UnitType.UT_Section_Dimension);
             else
-                diameter = familySymbol.LookupParameterDouble(diameterNames);
+                diameter = familySymbol.LookupParameterDouble(diameterNames, dimensionGroups);
 
             if (!double.IsNaN(diameter))
                 return BHG.Create.CircleProfile(diameter);
             else
             {
-                double radius = familySymbol.LookupParameterDouble(radiusNames);
+                double radius = familySymbol.LookupParameterDouble(radiusNames, dimensionGroups);
                 if (!double.IsNaN(radius))
                     return BHG.Create.CircleProfile(radius * 2);
             }
@@ -171,18 +171,18 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                topFlangeWidth = familySymbol.LookupParameterDouble(topFlangeWidthNames);
-                botFlangeWidth = familySymbol.LookupParameterDouble(botFlangeWidthNames);
-                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
-                topFlangeThickness = familySymbol.LookupParameterDouble(topFlangeThicknessNames);
-                botFlangeThickness = familySymbol.LookupParameterDouble(botFlangeThicknessNames);
-                weldSize = familySymbol.LookupParameterDouble(weldSizeNames1);
+                height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
+                topFlangeWidth = familySymbol.LookupParameterDouble(topFlangeWidthNames, dimensionGroups);
+                botFlangeWidth = familySymbol.LookupParameterDouble(botFlangeWidthNames, dimensionGroups);
+                webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
+                topFlangeThickness = familySymbol.LookupParameterDouble(topFlangeThicknessNames, dimensionGroups);
+                botFlangeThickness = familySymbol.LookupParameterDouble(botFlangeThicknessNames, dimensionGroups);
+                weldSize = familySymbol.LookupParameterDouble(weldSizeNames1, dimensionGroups);
             }
 
             if (double.IsNaN(weldSize))
             {
-                weldSize = familySymbol.LookupParameterDouble(weldSizeNames2);
+                weldSize = familySymbol.LookupParameterDouble(weldSizeNames2, dimensionGroups);
                 if (!double.IsNaN(weldSize) && !double.IsNaN(webThickness))
                     weldSize = (weldSize - webThickness) / (Math.Sqrt(2));
                 else
@@ -224,9 +224,9 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                width = familySymbol.LookupParameterDouble(widthNames);
-                cornerRadius = familySymbol.LookupParameterDouble(cornerRadiusNames);
+                height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
+                width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
+                cornerRadius = familySymbol.LookupParameterDouble(cornerRadiusNames, dimensionGroups);
             }
 
             if (double.IsNaN(cornerRadius))
@@ -267,12 +267,12 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                width = familySymbol.LookupParameterDouble(widthNames);
-                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
-                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
-                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
-                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
+                height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
+                width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
+                webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
+                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, dimensionGroups);
+                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, dimensionGroups);
+                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, dimensionGroups);
             }
 
             if (double.IsNaN(rootRadius))
@@ -304,11 +304,11 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                width = familySymbol.LookupParameterDouble(widthNames);
-                thickness = familySymbol.LookupParameterDouble(wallThicknessNames);
-                outerRadius = familySymbol.LookupParameterDouble(outerRadiusNames);
-                innerRadius = familySymbol.LookupParameterDouble(innerRadiusNames);
+                height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
+                width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
+                thickness = familySymbol.LookupParameterDouble(wallThicknessNames, dimensionGroups);
+                outerRadius = familySymbol.LookupParameterDouble(outerRadiusNames, dimensionGroups);
+                innerRadius = familySymbol.LookupParameterDouble(innerRadiusNames, dimensionGroups);
             }
 
             if (double.IsNaN(outerRadius))
@@ -352,12 +352,12 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                flangeWidth = familySymbol.LookupParameterDouble(widthNames);
-                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
-                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
-                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
-                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
+                height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
+                flangeWidth = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
+                webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
+                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, dimensionGroups);
+                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, dimensionGroups);
+                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, dimensionGroups);
             }
 
             if (double.IsNaN(rootRadius))
@@ -400,12 +400,12 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                width = familySymbol.LookupParameterDouble(widthNames);
-                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
-                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
-                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
-                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
+                height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
+                width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
+                webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
+                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, dimensionGroups);
+                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, dimensionGroups);
+                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, dimensionGroups);
             }
 
             if (double.IsNaN(rootRadius))
@@ -459,12 +459,12 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                width = familySymbol.LookupParameterDouble(widthNames);
-                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
-                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
-                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
-                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
+                height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
+                width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
+                webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
+                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, dimensionGroups);
+                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, dimensionGroups);
+                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, dimensionGroups);
             }
 
             if (double.IsNaN(rootRadius))
@@ -497,12 +497,12 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                height = familySymbol.LookupParameterDouble(heightNames);
-                flangeWidth = familySymbol.LookupParameterDouble(widthNames);
-                webThickness = familySymbol.LookupParameterDouble(webThicknessNames);
-                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames);
-                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames);
-                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames);
+                height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
+                flangeWidth = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
+                webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
+                flangeThickness = familySymbol.LookupParameterDouble(flangeThicknessNames, dimensionGroups);
+                rootRadius = familySymbol.LookupParameterDouble(rootRadiusNames, dimensionGroups);
+                toeRadius = familySymbol.LookupParameterDouble(toeRadiusNames, dimensionGroups);
             }
 
             if (double.IsNaN(rootRadius))
@@ -537,14 +537,14 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                thickness = familySymbol.LookupParameterDouble(wallThicknessNames);
-                diameter = familySymbol.LookupParameterDouble(diameterNames);
+                thickness = familySymbol.LookupParameterDouble(wallThicknessNames, dimensionGroups);
+                diameter = familySymbol.LookupParameterDouble(diameterNames, dimensionGroups);
             }
 
             if (!double.IsNaN(diameter) && !double.IsNaN(thickness))
                 return BHG.Create.TubeProfile(diameter, thickness);
 
-            double radius = familySymbol.LookupParameterDouble(radiusNames);
+            double radius = familySymbol.LookupParameterDouble(radiusNames, dimensionGroups);
             if (!double.IsNaN(radius) && !double.IsNaN(thickness))
                 return BHG.Create.TubeProfile(radius * 2, thickness);
 
@@ -702,6 +702,8 @@ namespace BH.Revit.Engine.Core
         /****              Private helpers              ****/
         /***************************************************/
 
+        private static readonly BuiltInParameterGroup[] dimensionGroups = { BuiltInParameterGroup.PG_STRUCTURAL_SECTION_GEOMETRY, BuiltInParameterGroup.PG_GEOMETRY };
+
         private static readonly string[] diameterNames = { "BHE_Diameter", "Diameter", "d", "D", "OD" };
         private static readonly string[] radiusNames = { "BHE_Radius", "Radius", "r", "R" };
         private static readonly string[] heightNames = { "BHE_Height", "BHE_Depth", "Height", "Depth", "d", "h", "D", "H", "Ht", "b" };
@@ -715,9 +717,9 @@ namespace BH.Revit.Engine.Core
         private static readonly string[] flangeThicknessNames = { "Flange Thickness", "Slab Depth", "tf", "T", "t" };
         private static readonly string[] weldSizeNames1 = { "Weld Size" };                                            // weld size, diagonal
         private static readonly string[] weldSizeNames2 = { "k" };                                                    // weld size counted from bar's vertical axis
-        private static readonly string[] rootRadiusNames = { "Web Fillet", "Root Radius", "r", "r1", "tr", "kr", "R1", "R", "t" };
-        private static readonly string[] toeRadiusNames = { "Flange Fillet", "Toe Radius", "r2", "R2", "t" };
-        private static readonly string[] innerRadiusNames = { "Inner Fillet", "Inner Radius", "r1", "R1", "ri", "t" };
+        private static readonly string[] rootRadiusNames = { "Web Fillet", "Root Radius", "r", "r1", "tr", "kr", "R1", "R" };
+        private static readonly string[] toeRadiusNames = { "Flange Fillet", "Toe Radius", "r2", "R2" };
+        private static readonly string[] innerRadiusNames = { "Inner Fillet", "Inner Radius", "r1", "R1", "ri" };
         private static readonly string[] outerRadiusNames = { "Outer Fillet", "Outer Radius", "r2", "R2", "ro", "tr" };
         private static readonly string[] wallThicknessNames = { "Wall Nominal Thickness", "Wall Thickness", "t", "T" };
 
