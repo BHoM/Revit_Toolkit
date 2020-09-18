@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
             double flowRate = revitPipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_FLOW_PARAM); // Flow rate
 
             // Pipe section property
-            BH.oM.MEP.SectionProperties.PipeSectionProperty sectionProperty = revitPipe.PipeSectionProperty(settings, refObjects);
+            BH.oM.MEP.SectionProperties.PipeSectionProperty sectionProperty = revitPipe.PipeSectionProperty(settings);
 
             // BHoM pipe
             bhomPipe = BH.Engine.MEP.Create.Pipe(line, flowRate, sectionProperty);
