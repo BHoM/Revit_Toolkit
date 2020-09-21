@@ -138,7 +138,10 @@ namespace BH.Revit.Engine.Core
             else if (section is StructuralSectionConcreteRound)
                 diameter = (section as StructuralSectionConcreteRound).Diameter.ToSI(UnitType.UT_Section_Dimension);
             else
+            {
+                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 diameter = familySymbol.LookupParameterDouble(diameterNames, dimensionGroups);
+            }
 
             if (!double.IsNaN(diameter))
                 return BHG.Create.CircleProfile(diameter);
@@ -171,6 +174,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
+                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 topFlangeWidth = familySymbol.LookupParameterDouble(topFlangeWidthNames, dimensionGroups);
                 botFlangeWidth = familySymbol.LookupParameterDouble(botFlangeWidthNames, dimensionGroups);
@@ -224,6 +228,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
+                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
                 cornerRadius = familySymbol.LookupParameterDouble(cornerRadiusNames, dimensionGroups);
@@ -267,6 +272,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
+                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
                 webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
@@ -304,6 +310,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
+                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
                 thickness = familySymbol.LookupParameterDouble(wallThicknessNames, dimensionGroups);
@@ -352,6 +359,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
+                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 flangeWidth = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
                 webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
@@ -400,6 +408,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
+                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
                 webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
@@ -459,6 +468,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
+                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
                 webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
@@ -497,6 +507,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
+                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 flangeWidth = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
                 webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
@@ -537,6 +548,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
+                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 thickness = familySymbol.LookupParameterDouble(wallThicknessNames, dimensionGroups);
                 diameter = familySymbol.LookupParameterDouble(diameterNames, dimensionGroups);
             }
