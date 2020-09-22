@@ -73,30 +73,32 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            List<double> knots = curve.Knots.ToList();
-            knots.Insert(0, knots[0]);
-            knots.Add(knots[knots.Count - 1]);
-            List<XYZ> controlPoints = curve.ControlPoints.Select(x => x.ToRevit()).ToList();
-
-            int degree = curve.Degree();
-            switch (degree)
+            if (curve.ControlPoints.Count == 2)
+                return new oM.Geometry.Line { Start = curve.ControlPoints[0], End = curve.ControlPoints[1] }.ToRevit();
+            else
             {
-                case 1:
-                    return new oM.Geometry.Polyline { ControlPoints = curve.ControlPoints }.ToRevit();
-                case 2:
+                List<double> knots = curve.Knots.ToList();
+                knots.Insert(0, knots[0]);
+                knots.Add(knots[knots.Count - 1]);
+                List<XYZ> controlPoints = curve.ControlPoints.Select(x => x.ToRevit()).ToList();
+
+                try
+                {
+                    return NurbSpline.CreateCurve(curve.Degree(), knots, controlPoints, curve.Weights);
+                }
+                catch
                 {
                     BH.Engine.Reflection.Compute.RecordWarning("Revit does not support nurbs curves of degree 2. A simplified (possibly distorted) hermite spline has been created.");
 
-                    List<oM.Geometry.Point> cps = new List<oM.Geometry.Point>();
-                    for (int i = 0; i < curve.ControlPoints.Count; i++)
+                    List<XYZ> cps = new List<XYZ>();
+                    for (int i = 0; i < controlPoints.Count; i++)
                     {
                         if (Math.Abs(1 - curve.Weights[i]) <= 1e-6)
-                            cps.Add(curve.ControlPoints[i]);
+                            cps.Add(controlPoints[i]);
                     }
-                    return HermiteSpline.Create(cps.Select(x => x.ToRevit()).ToList(), false);
+
+                    return HermiteSpline.Create(cps, false);
                 }
-                default:
-                    return NurbSpline.CreateCurve(curve.Degree(), knots, controlPoints, curve.Weights);
             }
         }
 
