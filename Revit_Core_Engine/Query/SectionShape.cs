@@ -161,7 +161,7 @@ namespace BH.Revit.Engine.Core
             {
                 StructuralSectionShape.CProfile, new string[]
                 {
-                    "_U-Channels",
+                    //"_U-Channels",
                     //"_C-Channels"
                 }
             },
