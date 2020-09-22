@@ -114,9 +114,12 @@ namespace BH.Revit.Engine.Core
 
             document.Regenerate();
 
-            foreach (ICurve hole in planarSurface.InternalBoundaries)
+            if (planarSurface.InternalBoundaries != null)
             {
-                document.Create.NewOpening(revitFloor, Create.CurveArray(hole.IToRevitCurves()), true);
+                foreach (ICurve hole in planarSurface.InternalBoundaries)
+                {
+                    document.Create.NewOpening(revitFloor, Create.CurveArray(hole.IProject(slabPlane).IToRevitCurves()), true);
+                }
             }
 
             foreach (BH.oM.Physical.Elements.IOpening opening in floor.Openings)
@@ -134,6 +137,8 @@ namespace BH.Revit.Engine.Core
                     BH.Engine.Reflection.Compute.RecordWarning(String.Format("Revit allows only void openings in floors, therefore the BHoM opening of type {0} has been converted to a void opening. Floor BHoM_Guid: {1}, Opening BHoM_Guid: {2}", opening.GetType().Name, floor.BHoM_Guid, opening.BHoM_Guid));
             }
 
+            double offset = revitFloor.LookupParameterDouble(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM);
+
             // Copy parameters from BHoM object to Revit element
             revitFloor.CopyParameters(floor, settings);
 
@@ -141,10 +146,10 @@ namespace BH.Revit.Engine.Core
             if (revitFloor.LevelId.IntegerValue != level.Id.IntegerValue)
             {
                 Level newLevel = document.GetElement(revitFloor.LevelId) as Level;
-                double offset = revitFloor.LookupParameterDouble(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM);
                 offset += (level.ProjectElevation - newLevel.ProjectElevation).ToSI(UnitType.UT_Length);
-                revitFloor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, offset);
             }
+
+            revitFloor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, offset);
 
             refObjects.AddOrReplace(floor, revitFloor);
             return revitFloor;
