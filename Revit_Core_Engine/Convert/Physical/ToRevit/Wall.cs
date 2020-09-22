@@ -95,38 +95,22 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             revitWall = Wall.Create(document, planarSurface.ExternalBoundary.IToRevitCurves(), wallType.Id, level.Id, false);
-
-            Parameter parameter = null;
-
-            parameter = revitWall.get_Parameter(BuiltInParameter.WALL_HEIGHT_TYPE);
-            if (parameter != null)
-                parameter.Set(ElementId.InvalidElementId);
-
-            parameter = revitWall.get_Parameter(BuiltInParameter.WALL_USER_HEIGHT_PARAM);
-            if (parameter != null)
-            {
-                double height = topElevation - bottomElevation;
-                parameter.Set(height);
-            }
-
-            double levelElevation = level.Elevation;
-
-            if (System.Math.Abs(bottomElevation - levelElevation) > Tolerance.MacroDistance)
-            {
-                parameter = revitWall.get_Parameter(BuiltInParameter.WALL_BASE_OFFSET);
-                if (parameter != null)
-                {
-                    double offset = (bottomElevation - levelElevation);
-                    parameter.Set(offset);
-                }
-            }
-
             revitWall.CheckIfNullPush(wall);
             if (revitWall == null)
                 return null;
 
             // Copy parameters from BHoM object to Revit element
             revitWall.CopyParameters(wall, settings);
+
+            // Update top and bottom offset constraints
+            Level bottomLevel = document.GetElement(revitWall.LookupParameterElementId(BuiltInParameter.WALL_BASE_CONSTRAINT)) as Level;
+            revitWall.SetParameter(BuiltInParameter.WALL_BASE_OFFSET, bottomElevation - bottomLevel.ProjectElevation, false);
+
+            Level topLevel = document.GetElement(revitWall.LookupParameterElementId(BuiltInParameter.WALL_HEIGHT_TYPE)) as Level;
+            if (topLevel != null)
+                revitWall.SetParameter(BuiltInParameter.WALL_TOP_OFFSET, topElevation - topLevel.ProjectElevation, false);
+            else
+                revitWall.SetParameter(BuiltInParameter.WALL_USER_HEIGHT_PARAM, topElevation - bottomElevation, false);
 
             refObjects.AddOrReplace(wall, revitWall);
             return revitWall;
