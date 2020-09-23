@@ -581,6 +581,7 @@ namespace BH.Revit.Engine.Core
             // Check if one and only one solid exists to make sure that the column is a single piece
             Solid solid = null;
             Options options = new Options();
+            options.DetailLevel = ViewDetailLevel.Fine;
             options.IncludeNonVisibleObjects = false;
 
             // Activate the symbol temporarily if not active, then extract its geometry (open either transaction or subtransaction, depending on whether one is already open).
