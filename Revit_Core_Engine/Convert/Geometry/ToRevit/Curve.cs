@@ -88,7 +88,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch
                 {
-                    BH.Engine.Reflection.Compute.RecordWarning("Revit does not support nurbs curves of degree 2. A simplified (possibly distorted) hermite spline has been created.");
+                    BH.Engine.Reflection.Compute.RecordWarning("Conversion of a nurbs curve from BHoM to Revit failed. A simplified (possibly distorted) hermite spline has been created instead.");
 
                     List<XYZ> cps = new List<XYZ>();
                     for (int i = 0; i < controlPoints.Count; i++)
