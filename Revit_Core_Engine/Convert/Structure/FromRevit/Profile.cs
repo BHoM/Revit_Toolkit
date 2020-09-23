@@ -188,7 +188,7 @@ namespace BH.Revit.Engine.Core
             {
                 weldSize = familySymbol.LookupParameterDouble(weldSizeNames2, dimensionGroups);
                 if (!double.IsNaN(weldSize) && !double.IsNaN(webThickness))
-                    weldSize = (weldSize - webThickness) / (Math.Sqrt(2));
+                    weldSize = (weldSize - webThickness / 2) / (Math.Sqrt(2));
                 else
                     weldSize = 0;
             }
