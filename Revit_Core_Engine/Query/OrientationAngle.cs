@@ -96,6 +96,49 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+        
+        [Description("Query a Revit cable tray to extract its orientation angle.")]
+        [Input("cableTray", "Revit cable tray to be queried.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Output("double", "Orientation angle of a cable tray in radians extracted from a Revit cable tray.")]
+        public static double OrientationAngle(this Autodesk.Revit.DB.Electrical.CableTray cableTray, RevitSettings settings = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            double rotation;
+
+            Location location = cableTray.Location;
+
+            LocationCurve locationCurve = location as LocationCurve;
+            Curve curve = locationCurve.Curve;
+
+            BH.oM.Geometry.ICurve bhomCurve = curve.IFromRevit(); // Convert to a BHoM curve
+
+            // Get the cable tray connector
+            Connector connector = null;
+            foreach (Connector conn in cableTray.ConnectorManager.Connectors)
+            {
+                // Get the End connector for this cable tray
+                if (conn.ConnectorType == ConnectorType.End)
+                {
+                    connector = conn;
+                    break;
+                }
+            }
+
+            // Coordinate system of the cable tray connector
+            Transform transform = connector.CoordinateSystem;
+
+            // Get the rotation
+            if ((bhomCurve as BH.oM.Geometry.Line).IsVertical()) // Is the cable tray vertical?
+                rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisX, transform.BasisZ);
+            else
+                rotation = Math.PI + XYZ.BasisZ.AngleOnPlaneTo(transform.BasisY, transform.BasisZ);
+
+            return rotation.NormalizeAngleDomain();
+        }
+
+        /***************************************************/
 
         public static double OrientationAngleColumn(this FamilyInstance familyInstance, RevitSettings settings)
         {

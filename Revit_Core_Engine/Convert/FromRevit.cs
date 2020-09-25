@@ -30,6 +30,7 @@ using BH.oM.Geometry;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
+using BH.oM.MEP.Elements;
 using BH.oM.Reflection.Attributes;
 
 namespace BH.Revit.Engine.Core
@@ -199,6 +200,32 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Convert a Revit cable tray into a BHoM cable tray.")]
+        [Input("cableTray", "Revit cable tray to be converted.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("cableTray", "BHoM cable tray converted from a Revit cable tray.")]
+        public static List<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Electrical.CableTray cableTray, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            switch (discipline)
+            {
+                case Discipline.Architecture:
+                case Discipline.Physical:
+                case Discipline.Environmental: 
+                    List<IBHoMObject> result = new List<IBHoMObject>();
+                    foreach (CableTray ct in cableTray.CableTrayFromRevit(settings, refObjects))
+                    {
+                        result.Add(ct);
+                    }
+                    return result;
+                default:
+                    return null;
+            }
+        }
+        
+        /***************************************************/
+
         [Description("Convert a Revit duct into a BHoM duct.")]
         [Input("duct", "Revit duct to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
@@ -218,6 +245,8 @@ namespace BH.Revit.Engine.Core
             }
         }
 
+        /***************************************************/
+        
         [Description("Convert a Revit pipe into a BHoM pipe.")]
         [Input("pipe", "Revit pipe to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
