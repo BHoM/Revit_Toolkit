@@ -34,7 +34,7 @@ You will need the following to build Revit_Toolkit:
     - .NET Framework 4.5.2 for Revit 2018
     - .NET Framework 4.7.2 for Revit 2019
     - .NET Framework 4.7.2 for Revit 2020
-    - .NET Framework 4.8 for Revit 2020
+    - .NET Framework 4.8 for Revit 2021
 - [BHoM](https://github.com/BHoM/BHoM)
 - [BHoM_Engine](https://github.com/BHoM/BHoM_Engine)
 - [BHoM_Adapter](https://github.com/BHoM/BHoM_Adapter)
