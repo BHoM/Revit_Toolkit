@@ -79,7 +79,6 @@
     <Compile Include="Elements\ViewPlan.cs" />
     <Compile Include="Elements\ModelInstance.cs" />
     <Compile Include="Elements\Viewport.cs" />
-    <Compile Include="Enums\AdapterMode.cs" />
     <Compile Include="Enums\DetailLevel.cs" />
     <Compile Include="Enums\Discipline.cs" />
     <Compile Include="Enums\NumberComparisonType.cs" />
