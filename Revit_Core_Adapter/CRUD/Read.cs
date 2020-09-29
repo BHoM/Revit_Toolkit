@@ -112,7 +112,9 @@ namespace BH.Revit.Adapter.Core
                     {
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
-                            iBHoMObject.Fragments.AddOrReplace(element.MaterialTakeoff());
+                            RevitMaterialTakeoff takeoff = element.MaterialTakeoff();
+                            if (takeoff != null)
+                                iBHoMObject.Fragments.AddOrReplace(takeoff);
                         }
                     }
 
