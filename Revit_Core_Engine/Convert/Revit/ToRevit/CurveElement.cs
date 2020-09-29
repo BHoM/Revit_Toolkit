@@ -51,7 +51,7 @@ namespace BH.Revit.Engine.Core
             if (curve == null)
                 return null;
 
-            if (!curve.IIsPlanar(BH.oM.Geometry.Tolerance.Distance))
+            if (!curve.IIsPlanar(settings.DistanceTolerance))
             {
                 modelInstance.NonPlanarCurveError();
                 return null;
@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
             if (revitCurve == null)
                 return null;
 
-            if ((revitCurve is NurbSpline || revitCurve is HermiteSpline) && curve.IIsClosed(BH.oM.Geometry.Tolerance.Distance))
+            if ((revitCurve is NurbSpline || revitCurve is HermiteSpline) && curve.IIsClosed(settings.DistanceTolerance))
             {
                 modelInstance.ClosedNurbsCurveError();
                 return null;
