@@ -48,6 +48,8 @@ namespace BH.Revit.Adapter.Core
             Autodesk.Revit.UI.UIDocument uiDocument = this.UIDocument;
             Document document = this.Document;
 
+            ICollection<ElementId> selected = uiDocument.Selection.GetElementIds();
+
             if (request == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
@@ -157,6 +159,8 @@ namespace BH.Revit.Adapter.Core
             bool[] activePulls = new bool[] { geometryConfig.PullEdges, geometryConfig.PullSurfaces, geometryConfig.PullMeshes, representationConfig.PullRenderMesh };
             if (activePulls.Count(x => x == true) > 1)
                 BH.Engine.Reflection.Compute.RecordWarning("Pull of more than one geometry/representation type has been specified in RevitPullConfig. Please consider this can be time consuming due to the amount of conversions.");
+
+            uiDocument.Selection.SetElementIds(selected);
 
             return result;
         }

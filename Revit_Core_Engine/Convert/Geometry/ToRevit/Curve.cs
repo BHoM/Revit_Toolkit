@@ -73,19 +73,32 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            List<double> knots = curve.Knots.ToList();
-            knots.Insert(0, knots[0]);
-            knots.Add(knots[knots.Count - 1]);
-            List<XYZ> controlPoints = curve.ControlPoints.Select(x => x.ToRevit()).ToList();
-            
-            try
+            if (curve.ControlPoints.Count == 2)
+                return new oM.Geometry.Line { Start = curve.ControlPoints[0], End = curve.ControlPoints[1] }.ToRevit();
+            else
             {
-                return NurbSpline.CreateCurve(curve.Degree(), knots, controlPoints, curve.Weights);
-            }
-            catch
-            {
-                BH.Engine.Reflection.Compute.RecordWarning("Conversion of BHoM nurbs curve to Revit based on degree and knot vector failed. A simplified (possibly different) spline has been created.");
-                return NurbSpline.CreateCurve(controlPoints, curve.Weights);
+                List<double> knots = curve.Knots.ToList();
+                knots.Insert(0, knots[0]);
+                knots.Add(knots[knots.Count - 1]);
+                List<XYZ> controlPoints = curve.ControlPoints.Select(x => x.ToRevit()).ToList();
+
+                try
+                {
+                    return NurbSpline.CreateCurve(curve.Degree(), knots, controlPoints, curve.Weights);
+                }
+                catch
+                {
+                    BH.Engine.Reflection.Compute.RecordWarning("Conversion of a nurbs curve from BHoM to Revit failed. A simplified (possibly distorted) hermite spline has been created instead.");
+
+                    List<XYZ> cps = new List<XYZ>();
+                    for (int i = 0; i < controlPoints.Count; i++)
+                    {
+                        if (Math.Abs(1 - curve.Weights[i]) <= 1e-6)
+                            cps.Add(controlPoints[i]);
+                    }
+
+                    return HermiteSpline.Create(cps, false);
+                }
             }
         }
 
@@ -93,6 +106,9 @@ namespace BH.Revit.Engine.Core
 
         public static Curve ToRevit(this oM.Geometry.Polyline curve)
         {
+            if (curve.ControlPoints.Count == 2)
+                return Line.CreateBound(curve.ControlPoints[0].ToRevit(), curve.ControlPoints[1].ToRevit());
+
             Compute.MultiSegmentCurveError();
             return null;
         }
@@ -101,6 +117,10 @@ namespace BH.Revit.Engine.Core
 
         public static Curve ToRevit(this oM.Geometry.PolyCurve curve)
         {
+            List<oM.Geometry.ICurve> segments = curve.ISubParts().ToList();
+            if (segments.Count == 1)
+                return segments[0].IToRevit();
+
             Compute.MultiSegmentCurveError();
             return null;
         }

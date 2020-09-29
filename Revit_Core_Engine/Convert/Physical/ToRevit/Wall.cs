@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 using System;
@@ -82,47 +83,34 @@ namespace BH.Revit.Engine.Core
             if (wallType == null)
                 return null;
 
-            double lowElevation = wall.LowElevation();
-            if (double.IsNaN(lowElevation))
+            BoundingBox bbox = wall.Location.IBounds();
+            if (bbox == null)
                 return null;
 
-            Level level = document.LowLevel(lowElevation);
+            double bottomElevation = bbox.Min.Z.FromSI(UnitType.UT_Length);
+            double topElevation = bbox.Max.Z.FromSI(UnitType.UT_Length);
+
+            Level level = document.LevelBelow(bottomElevation, settings);
             if (level == null)
                 return null;
 
             revitWall = Wall.Create(document, planarSurface.ExternalBoundary.IToRevitCurves(), wallType.Id, level.Id, false);
-
-            Parameter parameter = null;
-
-            parameter = revitWall.get_Parameter(BuiltInParameter.WALL_HEIGHT_TYPE);
-            if (parameter != null)
-                parameter.Set(ElementId.InvalidElementId);
-            parameter = revitWall.get_Parameter(BuiltInParameter.WALL_USER_HEIGHT_PARAM);
-            if (parameter != null)
-            {
-                double height = (wall.HighElevation() - lowElevation).FromSI(UnitType.UT_Length);
-                parameter.Set(height);
-            }
-
-            double levelElevation = level.Elevation.ToSI(UnitType.UT_Length);
-
-            if (System.Math.Abs(lowElevation - levelElevation) > Tolerance.MacroDistance)
-            {
-                parameter = revitWall.get_Parameter(BuiltInParameter.WALL_BASE_OFFSET);
-                if (parameter != null)
-                {
-                    double offset = (lowElevation - levelElevation).FromSI(UnitType.UT_Length);
-
-                    parameter.Set(offset);
-                }
-            }
-
             revitWall.CheckIfNullPush(wall);
             if (revitWall == null)
                 return null;
 
             // Copy parameters from BHoM object to Revit element
             revitWall.CopyParameters(wall, settings);
+
+            // Update top and bottom offset constraints
+            Level bottomLevel = document.GetElement(revitWall.LookupParameterElementId(BuiltInParameter.WALL_BASE_CONSTRAINT)) as Level;
+            revitWall.SetParameter(BuiltInParameter.WALL_BASE_OFFSET, bottomElevation - bottomLevel.ProjectElevation, false);
+
+            Level topLevel = document.GetElement(revitWall.LookupParameterElementId(BuiltInParameter.WALL_HEIGHT_TYPE)) as Level;
+            if (topLevel != null)
+                revitWall.SetParameter(BuiltInParameter.WALL_TOP_OFFSET, topElevation - topLevel.ProjectElevation, false);
+            else
+                revitWall.SetParameter(BuiltInParameter.WALL_USER_HEIGHT_PARAM, topElevation - bottomElevation, false);
 
             refObjects.AddOrReplace(wall, revitWall);
             return revitWall;

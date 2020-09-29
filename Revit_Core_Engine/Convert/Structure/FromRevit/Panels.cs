@@ -22,10 +22,14 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Geometry;
 using BH.oM.Structure.SurfaceProperties;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using BHS = BH.Engine.Structure;
 
 namespace BH.Revit.Engine.Core
@@ -62,59 +66,56 @@ namespace BH.Revit.Engine.Core
             List<oM.Structure.Elements.Panel> result = refObjects.GetValues<oM.Structure.Elements.Panel>(hostObject.Id);
             if (result != null && result.Count > 0)
                 return result;
-
-            //TODO: check if the attributes != null
+            
             HostObjAttributes hostObjAttributes = hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes;
             string materialGrade = hostObject.MaterialGrade(settings);
-            ISurfaceProperty property2D = hostObjAttributes.SurfacePropertyFromRevit(materialGrade, settings, refObjects);
+            ISurfaceProperty property2D = hostObjAttributes?.SurfacePropertyFromRevit(materialGrade, settings, refObjects);
 
-            List<oM.Geometry.ICurve> outlines = hostObject.Outlines(settings);
+            if (property2D == null)
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Conversion of Revit panel's construction to BHoM ISurfaceProperty failed. A panel without property is returned. Revit ElementId : {0}", hostObjAttributes.Id));
+
+            List<ICurve> outlines = hostObject.AnalyticalOutlines(settings);
             if (outlines != null && outlines.Count != 0)
             {
                 hostObject.AnalyticalPullWarning();
-                result = BHS.Create.Panel(outlines, property2D, hostObject.Name);
+                result = BHS.Create.Panel(outlines, property2D, null, hostObject.Name);
             }
             else
             {
+                Vector translation = new Vector();
+                if (property2D is ConstantThickness && (hostObject is Floor || hostObject is RoofBase))
+                    translation = -((ConstantThickness)property2D).Thickness * 0.5 * Vector.ZAxis;
+
                 result = new List<oM.Structure.Elements.Panel>();
-                Dictionary<BH.oM.Geometry.PlanarSurface, List<BH.oM.Physical.Elements.IOpening>> dictionary = hostObject.PlanarSurfaceDictionary(true, settings);
-                if (dictionary != null)
+                Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = hostObject.PanelSurfaces(null, settings);
+                if (surfaces != null)
                 {
-                    foreach (BH.oM.Geometry.PlanarSurface planarSurface in dictionary.Keys)
+                    foreach (PlanarSurface planarSurface in surfaces.Keys)
                     {
-                        List<BH.oM.Geometry.ICurve> internalBoundaries = new List<oM.Geometry.ICurve>(planarSurface.InternalBoundaries);
+                        List<ICurve> internalBoundaries = new List<ICurve>();
+                        if (surfaces[planarSurface] != null)
+                            internalBoundaries.AddRange(surfaces[planarSurface].Select(x => x.ExternalBoundary.ITranslate(translation)));
 
-                        if (dictionary[planarSurface] != null)
-                        {
-                            foreach (BH.oM.Physical.Elements.IOpening opening in dictionary[planarSurface])
-                            {
-                                BH.oM.Geometry.PlanarSurface openingSurface = opening.Location as BH.oM.Geometry.PlanarSurface;
-                                if (openingSurface != null)
-                                    internalBoundaries.Add(openingSurface.ExternalBoundary);
-                                else
-                                    BH.Engine.Reflection.Compute.RecordWarning("A nonplanar opening has been ignored. ElementId: " + Query.ElementId(opening));
-                            }
-                        }
-
-                        result.Add(BHS.Create.Panel(planarSurface.ExternalBoundary, internalBoundaries, property2D, hostObject.Name));
+                        result.Add(BHS.Create.Panel(planarSurface.ExternalBoundary.ITranslate(translation), internalBoundaries, property2D, null, hostObject.Name));
                     }
                 }
             }
 
-            for (int i = 0; i < result.Count; i++)
+            if (result.Count == 0)
             {
-                oM.Structure.Elements.Panel panel = result[i] as oM.Structure.Elements.Panel;
-                panel.Property = property2D;
+                result.Add(new oM.Structure.Elements.Panel { Property = property2D });
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Conversion of Revit panel's location to BHoM failed. A panel without location is returned. Revit ElementId : {0}", hostObject.Id));
+            }
 
-                //Set identifiers, parameters & custom data
+            //Set identifiers, parameters & custom data
+            foreach (oM.Structure.Elements.Panel panel in result)
+            {
                 panel.SetIdentifiers(hostObject);
                 panel.CopyParameters(hostObject, settings.ParameterSettings);
                 panel.SetProperties(hostObject, settings.ParameterSettings);
-
-                refObjects.AddOrReplace(hostObject.Id, panel);
-                result[i] = panel;
             }
-
+            
+            refObjects.AddOrReplace(hostObject.Id, result);
             return result;
         }
 

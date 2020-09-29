@@ -52,20 +52,23 @@ namespace BH.Revit.Engine.Core
                 material = ceiling.Document.GetElement(comStruct.GetLayers().Last().MaterialId) as Material;
             else
             {
-                List<ElementId> materialIds = ceiling.GetMaterialIds(false).ToList();
-                if (materialIds.Count == 0)
-                {
-                    BH.Engine.Reflection.Compute.RecordError("Ceiling patterns could not be pulled for ceiling element with the ID " + ceiling.Id);
-                    return new List<oM.Geometry.Line>();
-                }
-                material = ceiling.Document.GetElement(materialIds[0]) as Material;
+                ElementId materialId = ceiling.GetMaterialIds(false)?.FirstOrDefault();
+
+                if (materialId != null)
+                    material = ceiling.Document.GetElement(materialId) as Material;
+            }
+
+            if (material == null)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Ceiling patterns could not be pulled because there is no material assigned to the ceiling. Revit ElementId: {0}", ceiling.Id));
+                return new List<oM.Geometry.Line>();
             }
 
             List<oM.Geometry.Line> result = new List<oM.Geometry.Line>();
             if (surface == null)
             {
                 //This would need to be extended to take openings from Values into account
-                foreach (PlanarSurface srf in ceiling.PlanarSurfaceDictionary(false, settings).Keys)
+                foreach (PlanarSurface srf in ceiling.PanelSurfaces(ceiling.FindInserts(true, true, true, true), settings).Keys)
                 {
                     result.AddRange(material.CeilingPattern(srf, settings));
                 }
@@ -103,7 +106,7 @@ namespace BH.Revit.Engine.Core
             List<BH.oM.Geometry.Line> patterns = new List<BH.oM.Geometry.Line>();
             FillPatternElement fillPatternElement = null;
 
-#if REVIT2020
+#if (REVIT2020 || REVIT2021)
             fillPatternElement = revitMaterial.Document.GetElement(revitMaterial.SurfaceForegroundPatternId) as FillPatternElement;
 #else
                 fillPatternElement = revitMaterial.Document.GetElement(revitMaterial.SurfacePatternId) as FillPatternElement;

@@ -103,18 +103,18 @@ namespace BH.Revit.Engine.Core
             {
                 StructuralSectionShape.IParallelFlange, new string[]
                 {
-                    "_RSJ-RolledSteelJoists-Column",
-                    "_RSJ-RolledSteelJoists",
+                    //"_RSJ-RolledSteelJoists-Column",
+                    //"_RSJ-RolledSteelJoists",
                     "_HP-BearingPile-Column",
                     "_IPE-Column",
                     "_IPE-Beams",
-                    "_IPN-Column",
-                    "_IPN-Beams",
+                    //"_IPN-Column",
+                    //"_IPN-Beams",
                     "_UKBP-UKBearingPiles-Column",
                     "_UKBP-UKBearingPiles",
                     "_UKB-UKBeams-Column",
                     "_UKB-UKBeams",
-                    "_ASB-Beams",
+                    //"_ASB-Beams",
                     "_UBP-UniversalBearingPile-Column",
                     "_UBP-UniversalBearingPile",
                     "_UB-UniversalBeams-Column",
@@ -161,8 +161,8 @@ namespace BH.Revit.Engine.Core
             {
                 StructuralSectionShape.CProfile, new string[]
                 {
-                    "_U-Channels",
-                    "_C-Channels"
+                    //"_U-Channels",
+                    //"_C-Channels"
                 }
             },
             {
@@ -178,13 +178,13 @@ namespace BH.Revit.Engine.Core
             {
                 StructuralSectionShape.ConcreteT, new string[]
                 {
-                    "_Precast-SingleTee"
+                    //"_Precast-SingleTee"
                 }
             },
             {
                 StructuralSectionShape.StructuralTees, new string[]
                 {
-                    "_T-Tees"
+                    //"_T-Tees"
                 }
             },
             {

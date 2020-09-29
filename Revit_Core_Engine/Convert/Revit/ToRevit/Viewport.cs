@@ -55,7 +55,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             List<View> viewList = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().ToList();
-#if REVIT2020
+#if (REVIT2020 || REVIT2021)
             View view = viewList.Find(x => !x.IsTemplate && x.Name == viewName);
 #else
             View view = viewList.Find(x => !x.IsTemplate && x.ViewName == viewName);

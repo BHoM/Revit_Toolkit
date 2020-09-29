@@ -26,6 +26,7 @@ using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -63,7 +64,11 @@ namespace BH.Revit.Engine.Core
                 parameterLinks = parameterMap.ParameterLinks.Where(x => !(x is ElementTypeParameterLink));
             }
 
-            foreach (Parameter parameter in element.ParametersMap)
+            IEnumerable elementParams = element.ParametersMap;
+            if (((Autodesk.Revit.DB.ParameterMap)elementParams).IsEmpty)
+                elementParams = element.Parameters;
+
+            foreach (Parameter parameter in elementParams)
             {
                 parameters.Add(parameter.ParameterFromRevit(parameterLinks, false));
             }

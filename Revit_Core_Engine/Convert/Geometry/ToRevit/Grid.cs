@@ -99,6 +99,10 @@ namespace BH.Revit.Engine.Core
                 revitGrid = document.GetElement(gridId);
             }
 
+            revitGrid.CheckIfNullPush(grid);
+            if (revitGrid == null)
+                return null;
+
             try
             {
                 revitGrid.Name = grid.Name;
@@ -107,10 +111,6 @@ namespace BH.Revit.Engine.Core
             {
                 BH.Engine.Reflection.Compute.RecordWarning(String.Format("Grid name '{0}' was not unique, name '{1}' has been assigned instead. BHoM_Guid: {2}", grid.Name, revitGrid.Name, grid.BHoM_Guid));
             }
-
-            revitGrid.CheckIfNullPush(grid);
-            if (revitGrid == null)
-                return null;
 
             // Copy parameters from BHoM object to Revit element
             revitGrid.CopyParameters(grid, settings);

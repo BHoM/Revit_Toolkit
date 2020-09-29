@@ -24,9 +24,8 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Environment.Fragments;
-using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
+using System;
 using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
@@ -39,37 +38,38 @@ namespace BH.Revit.Engine.Core
 
         public static Door DoorFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            return familyInstance.DoorFromRevit(null, settings, refObjects);
+        }
+
+        public static Door DoorFromRevit(this FamilyInstance familyInstance, HostObject host = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            if (familyInstance == null)
+                return null;
+
             settings = settings.DefaultIfNull();
 
-            Door door = refObjects.GetValue<Door>(familyInstance.Id);
+            string refId = familyInstance.Id.ReferenceIdentifier(host);
+            Door door = refObjects.GetValue<Door>(refId);
             if (door != null)
                 return door;
 
-            PolyCurve polycurve = familyInstance.PolyCurve(settings);
-            if (polycurve == null)
-                return null;
-
-            door = new Door()
+            BH.oM.Geometry.ISurface location = familyInstance.OpeningSurface(host, settings);
+            if (location == null)
             {
-                Name = familyInstance.FamilyTypeFullName(),
-                Location = BH.Engine.Geometry.Create.PlanarSurface(polycurve)
-            };
+                if (host == null)
+                    BH.Engine.Reflection.Compute.RecordError(String.Format("Location of the door could not be retrieved from the model (possibly it has zero area or lies on a non-planar face). A door object without location has been returned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
+                else
+                    return null;
+            }
 
-            ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
-            //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment();
-            originContext.ElementID = familyInstance.Id.IntegerValue.ToString();
-            originContext.TypeName = familyInstance.FamilyTypeFullName();
-            originContext.SetProperties(familyInstance, settings.ParameterSettings);
-            originContext.SetProperties(elementType, settings.ParameterSettings);
-            door.Fragments.Add(originContext);
-
+            door = new Door { Location = location, Name = familyInstance.FamilyTypeFullName() };
+            
             //Set identifiers, parameters & custom data
             door.SetIdentifiers(familyInstance);
             door.CopyParameters(familyInstance, settings.ParameterSettings);
             door.SetProperties(familyInstance, settings.ParameterSettings);
 
-            refObjects.AddOrReplace(familyInstance.Id, door);
+            refObjects.AddOrReplace(refId, door);
             return door;
         }
 

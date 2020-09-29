@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\Build\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;REVIT2018</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
@@ -28,7 +28,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;REVIT2018</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -108,6 +108,28 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AssemblyName>Revit_Core_Engine_2020</AssemblyName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2021|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;REVIT2021</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Engine_2021</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2021|AnyCPU'">
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;REVIT2021</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Engine_2021</AssemblyName>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytical_oM">
       <SpecificVersion>False</SpecificVersion>
@@ -171,6 +193,14 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="MEP_Engine">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\MEP_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MEP_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\MEP_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Physical_Engine">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_Engine.dll</HintPath>
@@ -227,6 +257,22 @@
       <HintPath>..\libs\2020\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
+      <HintPath>..\libs\2021\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
+      <HintPath>..\libs\2021\RevitAPIIFC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
+      <HintPath>..\libs\2021\RevitAPIUI.dll</HintPath>
+      <private>False</private>
+    </Reference>
+    <Reference Include="Spatial_Engine">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Spatial_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Structure_Engine">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\ProgramData\BHoM\Assemblies\Structure_Engine.dll</HintPath>
@@ -249,6 +295,14 @@
   <ItemGroup>
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Room.cs" />
+    <Compile Include="Query\DuctSectionProfile.cs" />
+    <Compile Include="Query\DuctSectionProperty.cs" />
+    <Compile Include="Query\DuctShape.cs" />
+    <Compile Include="Query\PipeSectionProperty.cs" />
+    <Compile Include="Query\Profile.cs" />
+    <Compile Include="Convert\Environment\FromRevit\Wire.cs" />
+    <Compile Include="Convert\Environment\FromRevit\Pipe.cs" />
+    <Compile Include="Convert\Environment\FromRevit\Duct.cs" />
     <Compile Include="Convert\Environment\FromRevit\EnergyAnalysisModel.cs" />
     <Compile Include="Convert\Environment\ToRevit\Space.cs" />
     <Compile Include="Convert\Geometry\FromRevit\Mesh.cs" />
@@ -268,12 +322,13 @@
     <Compile Include="Convert\Physical\FromRevit\Bracing.cs" />
     <Compile Include="Convert\Physical\FromRevit\Column.cs" />
     <Compile Include="Convert\Physical\FromRevit\Door.cs" />
-    <Compile Include="Convert\Physical\FromRevit\Floors.cs" />
+    <Compile Include="Convert\Physical\FromRevit\Floor.cs" />
     <Compile Include="Convert\Physical\FromRevit\Construction.cs" />
     <Compile Include="Convert\Physical\FromRevit\Material.cs" />
-    <Compile Include="Convert\Physical\FromRevit\MaterialProperties.cs" />
-    <Compile Include="Convert\Physical\FromRevit\Roofs.cs" />
-    <Compile Include="Convert\Physical\FromRevit\Walls.cs" />
+    <Compile Include="Modify\CopyCharacteristics.cs" />
+    <Compile Include="Query\MaterialProperties.cs" />
+    <Compile Include="Convert\Physical\FromRevit\Roof.cs" />
+    <Compile Include="Convert\Physical\FromRevit\Wall.cs" />
     <Compile Include="Convert\Physical\FromRevit\Window.cs" />
     <Compile Include="Convert\Physical\ToRevit\HostObjAttributes.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilyInstance.cs" />
@@ -303,18 +358,26 @@
     <Compile Include="Modify\SetType.cs" />
     <Compile Include="Query\AdjustedLocationCurve.cs" />
     <Compile Include="Query\ColumnExtensions.cs" />
+    <Compile Include="Query\CurtainGrids.cs" />
+    <Compile Include="Query\CurtainPanels.cs" />
     <Compile Include="Query\FramingOffsetVectors.cs" />
     <Compile Include="Query\Identifiers.cs" />
     <Compile Include="Query\MaterialTakeoff.cs" />
+    <Compile Include="Query\LevelAbove.cs" />
+    <Compile Include="Query\LevelBelow.cs" />
+    <Compile Include="Query\OpeningSurface.cs" />
+    <Compile Include="Query\PanelPlanes.cs" />
+    <Compile Include="Query\PanelSurfaces.cs" />
     <Compile Include="Query\ParameterLink.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByExclusion.cs" />
     <Compile Include="Query\LocationCurve.cs" />
+    <Compile Include="Query\ReferenceIdentifier.cs" />
     <Compile Include="Query\Workset.cs" />
     <Compile Include="Create\CurveArray.cs" />
     <Compile Include="Create\Options.cs" />
     <Compile Include="Compute\LoadFamily.cs" />
     <Compile Include="Modify\AddOrReplace.cs" />
-    <Compile Include="Convert\Architecture\FromRevit\Ceilings.cs" />
+    <Compile Include="Convert\Architecture\FromRevit\Ceiling.cs" />
     <Compile Include="Convert\Revit\FromRevit\ViewPlan.cs" />
     <Compile Include="Convert\Structure\FromRevit\MaterialFragment.cs" />
     <Compile Include="Convert\Revit\FromRevit\Viewport.cs" />
@@ -349,7 +412,6 @@
     <Compile Include="Modify\RemoveStackedWallParts.cs" />
     <Compile Include="Modify\SetLocation.cs" />
     <Compile Include="Modify\Update.cs" />
-    <Compile Include="Modify\UpdateMaterialProperties.cs" />
     <Compile Include="Objects\FamilyLoadOptions.cs" />
     <Compile Include="Objects\WarningSwallower.cs" />
     <Compile Include="Query\Color.cs" />
@@ -390,71 +452,55 @@
     <Compile Include="Query\GetValues.cs" />
     <Compile Include="Query\InstanceType.cs" />
     <Compile Include="Query\IsAnalytical.cs" />
-    <Compile Include="Query\IsContaining.cs" />
     <Compile Include="Query\IsSupportedAPIType.cs" />
     <Compile Include="Query\IsUsed.cs" />
     <Compile Include="Query\IsVerticalNonLinearCurve.cs" />
     <Compile Include="Query\MeshedGeometry.cs" />
     <Compile Include="Query\OriginContext.cs" />
-    <Compile Include="Query\PlanarSurfaceDictionary.cs" />
     <Compile Include="Query\RenderMeshes.cs" />
     <Compile Include="Query\RevitTypes.cs" />
     <Compile Include="Query\SectionShape.cs" />
     <Compile Include="Query\Solids.cs" />
     <Compile Include="Query\FamilySymbols.cs" />
-    <Compile Include="Query\HighElevation.cs" />
-    <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\OpeningType.cs" />
     <Compile Include="Query\StringValue.cs" />
     <Compile Include="Modify\StructuralTypeFilter.cs" />
     <Compile Include="Query\SupportedAPIType.cs" />
     <Compile Include="Query\SystemWorksetIds.cs" />
-    <Compile Include="Query\TopFacesPolyCurves.cs" />
     <Compile Include="Query\BHoMUnitType.cs" />
     <Compile Include="Query\UnsupportedAPITypes.cs" />
     <Compile Include="Query\View.cs" />
-    <Compile Include="Query\LowElevation.cs" />
     <Compile Include="Query\ViewDetailLevel.cs" />
     <Compile Include="Query\ViewType.cs" />
     <Compile Include="Query\Name.cs" />
-    <Compile Include="Query\LowLevel.cs" />
-    <Compile Include="Query\HighLevel.cs" />
-    <Compile Include="Query\BottomFacesPolyCurves.cs" />
     <Compile Include="Query\EnergyAnalysisElementName.cs" />
     <Compile Include="Query\Layer.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
     <Compile Include="Query\Construction.cs" />
-    <Compile Include="Query\PolyCurve.cs" />
     <Compile Include="Query\StructuralMaterialType.cs" />
-    <Compile Include="Query\NextLevel.cs" />
     <Compile Include="Query\IsSimilar.cs" />
     <Compile Include="Query\OpenWorksetIds.cs" />
     <Compile Include="Compute\LoadFamilySymbol.cs" />
     <Compile Include="Modify\SetIdentifiers.cs" />
     <Compile Include="Modify\SetParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query\BottomLevel.cs" />
     <Compile Include="Query\PanelType.cs" />
     <Compile Include="Query\BuiltInCategories.cs" />
     <Compile Include="Query\BuiltInCategory.cs" />
     <Compile Include="Query\CategoryName.cs" />
     <Compile Include="Query\ElementType.cs" />
     <Compile Include="Query\Family.cs" />
-    <Compile Include="Query\PolyCurves.cs" />
     <Compile Include="Query\Element.cs" />
     <Compile Include="Query\ElementId.cs" />
     <Compile Include="Query\MaterialGrade.cs" />
-    <Compile Include="Query\Outlines.cs" />
-    <Compile Include="Query\SpatialElementId.cs" />
+    <Compile Include="Query\AnalyticalOutlines.cs" />
     <Compile Include="Query\Level.cs" />
     <Compile Include="Query\LookupParameter.cs" />
-    <Compile Include="Query\Profiles.cs" />
+    <Compile Include="Query\Perimeter.cs" />
     <Compile Include="Query\Curves.cs" />
     <Compile Include="Query\LibraryMaterial.cs" />
     <Compile Include="Query\ActiveWorksetId.cs" />
     <Compile Include="Query\WorksetId.cs" />
-    <Compile Include="Query\WorksetIds.cs" />
-    <Compile Include="Query\WorksetNames.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
@@ -475,7 +521,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'!='Debug' And '$(Configuration)'!='Release'">
     <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -74,10 +74,19 @@ namespace BH.Revit.Engine.Core
                 Vector zOffsetStart = new Vector { X = transform.BasisZ.X * startOffset.Z, Y = transform.BasisZ.Y * startOffset.Z, Z = transform.BasisZ.Z * startOffset.Z };
                 Vector yOffsetEnd = new Vector { X = transform.BasisY.X * endOffset.Y, Y = transform.BasisY.Y * endOffset.Y, Z = transform.BasisY.Z * endOffset.Y };
                 Vector zOffsetEnd = new Vector { X = transform.BasisZ.X * endOffset.Z, Y = transform.BasisZ.Y * endOffset.Z, Z = transform.BasisZ.Z * endOffset.Z };
-                curve = new BH.oM.Geometry.Line { Start = line.Start.Translate(yOffsetStart + zOffsetStart), End = line.End.Translate(yOffsetEnd + zOffsetEnd) };
+                line = new BH.oM.Geometry.Line { Start = line.Start.Translate(yOffsetStart + zOffsetStart), End = line.End.Translate(yOffsetEnd + zOffsetEnd) };
             }
 
-            return curve;
+            Vector dir = line.Direction();
+            double startExtension = familyInstance.LookupParameterDouble(BuiltInParameter.START_EXTENSION);
+            if (!double.IsNaN(startExtension))
+                line.Start = line.Start + dir * startExtension;
+
+            double endExtension = familyInstance.LookupParameterDouble(BuiltInParameter.END_EXTENSION);
+            if (!double.IsNaN(endExtension))
+                line.End = line.End - dir * endExtension;
+
+            return line;
         }
 
         /***************************************************/

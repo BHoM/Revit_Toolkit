@@ -35,11 +35,12 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Physical.Constructions.Construction ConstructionFromRevit(this HostObjAttributes hostObjAttributes, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static oM.Physical.Constructions.Construction ConstructionFromRevit(this HostObjAttributes hostObjAttributes, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-
-            oM.Physical.Constructions.Construction construction = refObjects.GetValue<oM.Physical.Constructions.Construction>(hostObjAttributes.Id);
+            
+            string refId = hostObjAttributes.Id.ReferenceIdentifier(materialGrade);
+            oM.Physical.Constructions.Construction construction = refObjects.GetValue<oM.Physical.Constructions.Construction>(refId);
             if (construction != null)
                 return construction;
 
@@ -49,12 +50,10 @@ namespace BH.Revit.Engine.Core
             {
                 IEnumerable<CompoundStructureLayer> compoundStructureLayers = compoundStructure.GetLayers();
                 if (compoundStructureLayers != null)
-                {
-                    BuiltInCategory buildInCategory = (BuiltInCategory)hostObjAttributes.Category.Id.IntegerValue;
-
                     foreach (CompoundStructureLayer layer in compoundStructureLayers)
-                        layers.Add(layer.Layer(hostObjAttributes.Document, buildInCategory, settings));
-                }
+                    {
+                        layers.Add(layer.Layer(hostObjAttributes, materialGrade, settings, refObjects));
+                    }
             }
 
             construction = BH.Engine.Physical.Create.Construction(hostObjAttributes.FamilyTypeFullName(), layers);
@@ -64,7 +63,7 @@ namespace BH.Revit.Engine.Core
             construction.CopyParameters(hostObjAttributes, settings.ParameterSettings);
             construction.SetProperties(hostObjAttributes, settings.ParameterSettings);
 
-            refObjects.AddOrReplace(hostObjAttributes.Id, construction);
+            refObjects.AddOrReplace(refId, construction);
             return construction;
         }
 

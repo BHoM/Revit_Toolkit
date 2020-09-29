@@ -53,56 +53,13 @@ namespace BH.Revit.Engine.Core
             if (parameter != null)
                 result.Description = parameter.AsString();
 
-            result.Update(material, settings);
-
+            result.CopyCharacteristics(material);
             result.SetProperties(material, settings.ParameterSettings);
 
             refObjects.AddOrReplace(material.Id, result);
             return result;
         }
-
-
-        /***************************************************/
-        /****             Private methods               ****/
-        /***************************************************/
-
-        private static void Update(this SolidMaterial solidMaterial, Material material, RevitSettings settings)
-        {
-            if (material == null)
-            {
-                Compute.NullRevitElementWarning(solidMaterial);
-                return;
-            }
-
-            ElementId elementID = material.ThermalAssetId;
-            if (elementID == null || elementID == ElementId.InvalidElementId)
-            {
-                Compute.NullThermalAssetWarning(solidMaterial);
-                return;
-            }
-
-            Document document = material.Document;
-
-            PropertySetElement propertySetElement = document.GetElement(elementID) as PropertySetElement;
-            solidMaterial.Update(propertySetElement.GetThermalAsset(), settings);
-        }
-
-        /***************************************************/
-
-        private static void Update(this SolidMaterial solidMaterial, StructuralAsset structuralAsset, RevitSettings settings = null)
-        {
-
-        }
-
-        /***************************************************/
-
-        private static void Update(this SolidMaterial solidMaterial, ThermalAsset thermalAsset, RevitSettings settings = null)
-        {
-            solidMaterial.Conductivity = thermalAsset.ThermalConductivity;
-            solidMaterial.SpecificHeat = thermalAsset.SpecificHeat;
-            solidMaterial.Density = thermalAsset.Density.ToSI(UnitType.UT_MassDensity);
-        }
-
+        
         /***************************************************/
     }
 }

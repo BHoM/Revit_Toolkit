@@ -32,6 +32,7 @@ using System;
 using System.Linq;
 using BH.oM.Physical.FramingProperties;
 using BH.oM.Reflection;
+using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
 {
@@ -184,7 +185,7 @@ namespace BH.Revit.Engine.Core
 
         public static bool SetLocation(this Autodesk.Revit.DB.Mechanical.Space revitSpace, Space bHoMSpace, RevitSettings settings)
         {
-            Level level = bHoMSpace.Location.Z.BottomLevel(revitSpace.Document);
+            Level level = revitSpace.Document.LevelBelow(bHoMSpace.Location, settings);
             if (level == null)
                 return false;
 
@@ -261,7 +262,10 @@ namespace BH.Revit.Engine.Core
 
         public static bool SetLocation(this Element element, IGeometry geometry, RevitSettings settings)
         {
-            BH.Engine.Reflection.Compute.RecordError(String.Format("Setting Revit element location based on BHoM geometry of type {0} is currently not supported. Revit ElementId: {1}", geometry.GetType(), element.Id));
+            Type type = element.GetType();
+            if (AbstractRevitTypes.All(x => !x.IsAssignableFrom(type)))
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Setting Revit element location based on BHoM geometry of type {0} is currently not supported. Only parameters were updated. Revit ElementId: {1}", geometry.GetType(), element.Id));
+
             return false;
         }
 
@@ -269,7 +273,10 @@ namespace BH.Revit.Engine.Core
 
         public static bool SetLocation(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
-            BH.Engine.Reflection.Compute.RecordError(String.Format("Unable to set location of Revit element of type {0} based on BHoM object of type {1} beacuse no suitable method could be found. Revit ElementId: {2} BHoM_Guid: {3}", element.GetType(), bHoMObject.GetType(), element.Id, bHoMObject.BHoM_Guid));
+            Type type = element.GetType();
+            if (AbstractRevitTypes.All(x => !x.IsAssignableFrom(type)))
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Unable to set location of Revit element of type {0} based on BHoM object of type {1} beacuse no suitable method could be found. Only parameters were updated. Revit ElementId: {2} BHoM_Guid: {3}", element.GetType(), bHoMObject.GetType(), element.Id, bHoMObject.BHoM_Guid));
+
             return false;
         }
 
@@ -285,7 +292,20 @@ namespace BH.Revit.Engine.Core
 
             return SetLocation(element as dynamic, bHoMObject as dynamic, settings);
         }
-        
+
+
+        /***************************************************/
+        /****            Private collections            ****/
+        /***************************************************/
+
+        private static readonly Type[] AbstractRevitTypes = new Type[]
+        {
+            typeof(Autodesk.Revit.DB.Family),
+            typeof(ElementType),
+            typeof(Material),
+            typeof(View)
+        };
+
         /***************************************************/
     }
 }

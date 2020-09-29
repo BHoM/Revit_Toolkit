@@ -37,6 +37,28 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        public static Parameter LookupParameter(this Element element, IEnumerable<string> parameterNames, IEnumerable<BuiltInParameterGroup> parameterGroups = null)
+        {
+            if (parameterNames == null || !parameterNames.Any())
+                return null;
+
+            foreach (string name in parameterNames)
+            {
+                foreach (Parameter p in element.Parameters)
+                {
+                    if (p != null && p.HasValue && p.Definition.Name == name)
+                    {
+                        if (parameterGroups == null || parameterGroups.Any(x => x == p.Definition.ParameterGroup))
+                            return p;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /***************************************************/
+
         public static double LookupParameterDouble(this Element element, string parameterName, bool convertUnits = true)
         {
             double value = double.NaN;
@@ -57,11 +79,27 @@ namespace BH.Revit.Engine.Core
         public static double LookupParameterDouble(this Element element, IEnumerable<string> parameterNames, bool convertUnits = true)
         {
             double value = double.NaN;
-            foreach(string name in parameterNames)
+            foreach (string name in parameterNames)
             {
                 value = element.LookupParameterDouble(name, convertUnits);
                 if (!double.IsNaN(value))
                     return value;
+            }
+
+            return value;
+        }
+
+        /***************************************************/
+
+        public static double LookupParameterDouble(this Element element, IEnumerable<string> parameterNames, IEnumerable<BuiltInParameterGroup> parameterGroups, bool convertUnits = true)
+        {
+            double value = double.NaN;
+            Parameter p = element.LookupParameter(parameterNames, parameterGroups);
+            if (p != null && p.HasValue)
+            {
+                value = p.AsDouble();
+                if (convertUnits)
+                    value = value.ToSI(p.Definition.UnitType);
             }
 
             return value;

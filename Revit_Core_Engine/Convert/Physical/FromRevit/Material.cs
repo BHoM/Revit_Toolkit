@@ -34,25 +34,26 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static Material EmptyMaterialFromRevit(this Autodesk.Revit.DB.Material revitMaterial, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static Material MaterialFromRevit(this Autodesk.Revit.DB.Material revitMaterial, string grade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (revitMaterial == null)
                 return new Material { Name = "Unknown Material" };
 
             settings = settings.DefaultIfNull();
 
-            Material material = refObjects.GetValue<Material>(revitMaterial.Id);
+            string refId = revitMaterial.Id.ReferenceIdentifier(grade);
+            Material material = refObjects.GetValue<Material>(refId);
             if (material != null)
                 return material;
 
-            material = new Material { Properties = new List<IMaterialProperties>(), Name = revitMaterial.Name };
+            material = new Material { Properties = revitMaterial.MaterialProperties(grade, settings, refObjects), Name =  revitMaterial.Name};
 
             //Set identifiers, parameters & custom data
             material.SetIdentifiers(revitMaterial);
             material.CopyParameters(revitMaterial, settings.ParameterSettings);
             material.SetProperties(revitMaterial, settings.ParameterSettings);
-
-            refObjects.AddOrReplace(revitMaterial.Id, material);
+            
+            refObjects.AddOrReplace(refId, material);
             return material;
         }
 

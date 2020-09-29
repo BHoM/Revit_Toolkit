@@ -90,7 +90,8 @@ namespace BH.Engine.Adapters.Revit
         [Output("categoryName")]
         public static string CategoryName(this IBHoMObject bHoMObject)
         {
-            return bHoMObject?.GetRevitIdentifiers()?.CategoryName;
+            string name = bHoMObject?.GetRevitIdentifiers()?.CategoryName;
+            return name ?? bHoMObject.CustomDataValue(Convert.CategoryName) as string;
         }
 
         /***************************************************/

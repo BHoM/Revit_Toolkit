@@ -32,6 +32,18 @@ namespace BH.Revit.Engine.Core
         /****               Internal methods            ****/
         /***************************************************/
 
+        internal static void NotConvertedError(this IBHoMObject obj)
+        {
+            string message = String.Format("BHoM object conversion to Revit failed.");
+
+            if (obj != null)
+                message += string.Format(" BHoM object type: {0}, BHoM Guid: {1}", obj.GetType(), obj.BHoM_Guid);
+
+            BH.Engine.Reflection.Compute.RecordError(message);
+        }
+
+        /***************************************************/
+
         internal static void NullDocumentError()
         {
             BH.Engine.Reflection.Compute.RecordError("BHoM object could not be read because Revit document does not exist.");
@@ -42,6 +54,13 @@ namespace BH.Revit.Engine.Core
         internal static void ConvertBeforePushError(this IBHoMObject iBHoMObject, Type typeToConvert)
         {
             BH.Engine.Reflection.Compute.RecordError(string.Format("{0} has to be converted to {1} before pushing. BHoM object Guid: {2}", iBHoMObject.GetType().Name, typeToConvert.Name, iBHoMObject.BHoM_Guid));
+        }
+
+        /***************************************************/
+
+        internal static void NoPanelLocationError(this Element element)
+        {
+            BH.Engine.Reflection.Compute.RecordError(string.Format("Location of the Revit {0} could not be converted to BHoM, and therefore the output BHoM object will have empty location and no openings. Please note that BHoM panel conversion supports only planar faces. Revit ElementId: {1}", element.GetType().Name, element.Id.IntegerValue));
         }
 
         /***************************************************/

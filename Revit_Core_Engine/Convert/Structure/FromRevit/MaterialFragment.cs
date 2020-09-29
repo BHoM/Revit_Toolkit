@@ -37,19 +37,20 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static IMaterialFragment MaterialFragmentFromRevit(this Material material, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IMaterialFragment MaterialFragmentFromRevit(this Material material, string grade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (material == null)
-            {
-                //TODO: add more sensible null!
-                //Compute.NullObjectWarning();
                 return null;
-            }
+
+            string refId = material.Id.ReferenceIdentifier(grade);
+            IMaterialFragment materialFragment = refObjects.GetValue<IMaterialFragment>(refId);
+            if (materialFragment != null)
+                return materialFragment;
 
             settings = settings.DefaultIfNull();
 
             StructuralMaterialType structuralMaterialType = material.MaterialClass.StructuralMaterialType();
-            IMaterialFragment materialFragment = structuralMaterialType.LibraryMaterial(materialGrade);
+            materialFragment = structuralMaterialType.LibraryMaterial(grade);
             if (materialFragment != null)
                 return materialFragment;
 
@@ -71,123 +72,23 @@ namespace BH.Revit.Engine.Core
                     materialFragment = new Timber();
                     break;
                 default:
-                    //TODO: default generic material warning
+                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("Revit material of structural type {0} is currently not supported, the material was converted to a generic isotropic BHoM material. Revit ElementId: {1}", structuralMaterialType, material.Id.IntegerValue));
                     materialFragment = new GenericIsotropicMaterial();
                     break;
             }
+            
+            materialFragment.CopyCharacteristics(material);
 
-            //TODO: zero strength warning + raise an issue
-            materialFragment = materialFragment.Update(material);
+            string name = material.Name;
+            if (!string.IsNullOrWhiteSpace(grade))
+                name += " grade " + grade;
 
-            materialFragment.Name = material.Name;
+            materialFragment.Name = name;
+
+            refObjects.AddOrReplace(refId, materialFragment);
             return materialFragment;
         }
-
-
-        /***************************************************/
-        /****             Private methods               ****/
-        /***************************************************/
-
-        private static IMaterialFragment Update(this IMaterialFragment materialDestination, Material materialSource)
-        {
-            if (materialSource == null)
-            {
-                Compute.NullRevitElementWarning(materialDestination);
-                return materialDestination;
-            }
-                
-            ElementId elementID = materialSource.StructuralAssetId;
-            if (elementID == null || elementID == ElementId.InvalidElementId)
-            {
-                Compute.NullStructuralAssetWarning(materialDestination);
-                return materialDestination;
-            }
-
-            Document document = materialSource.Document;
-
-            PropertySetElement propertySetElement = document.GetElement(elementID) as PropertySetElement;
-            StructuralAsset structuralAsset = propertySetElement.GetStructuralAsset();
-            if (structuralAsset == null)
-            {
-                Compute.NullStructuralAssetWarning(materialDestination);
-                return materialDestination;
-            }
-
-            return materialDestination.Update(structuralAsset);
-        }
-
-        /***************************************************/
-
-        private static IMaterialFragment Update(this IMaterialFragment materialFragment, StructuralAsset structuralAsset)
-        {
-            double density = structuralAsset.Density.ToSI(UnitType.UT_MassDensity);
-
-#if REVIT2020
-
-#else
-            double dampingRatio = structuralAsset.DampingRatio;
-#endif
-
-            oM.Geometry.Vector youngsModulus = BH.Engine.Geometry.Create.Vector(structuralAsset.YoungModulus.X.ToSI(UnitType.UT_Stress), structuralAsset.YoungModulus.Y.ToSI(UnitType.UT_Stress), structuralAsset.YoungModulus.Z.ToSI(UnitType.UT_Stress));
-            oM.Geometry.Vector thermalExpansionCoeff = BH.Engine.Geometry.Create.Vector(structuralAsset.ThermalExpansionCoefficient.X.ToSI(UnitType.UT_ThermalExpansion), structuralAsset.ThermalExpansionCoefficient.Y.ToSI(UnitType.UT_ThermalExpansion), structuralAsset.ThermalExpansionCoefficient.Z.ToSI(UnitType.UT_ThermalExpansion));
-            oM.Geometry.Vector poissonsRatio = BH.Engine.Geometry.Create.Vector(structuralAsset.PoissonRatio.X, structuralAsset.PoissonRatio.Y, structuralAsset.PoissonRatio.Z);
-            oM.Geometry.Vector shearModulus = BH.Engine.Geometry.Create.Vector(structuralAsset.ShearModulus.X.ToSI(UnitType.UT_Stress), structuralAsset.ShearModulus.Y.ToSI(UnitType.UT_Stress), structuralAsset.ShearModulus.Z.ToSI(UnitType.UT_Stress));
-
-            materialFragment.Density = density;
-#if REVIT2020
-
-#else
-            materialFragment.DampingRatio = dampingRatio;
-#endif
-
-
-            if (materialFragment is Aluminium)
-            {
-                Aluminium material = materialFragment as Aluminium;
-                material.YoungsModulus = youngsModulus.X;
-                material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
-                material.PoissonsRatio = poissonsRatio.X;
-                materialFragment = material;
-            }
-            else if (materialFragment is Concrete)
-            {
-                Concrete material = materialFragment as Concrete;
-                material.YoungsModulus = youngsModulus.X;
-                material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
-                material.PoissonsRatio = poissonsRatio.X;
-                material.CustomData["Concrete Bending Reinforcement"] = structuralAsset.ConcreteBendingReinforcement;
-                material.CustomData["Concrete Shear Reinforcement"] = structuralAsset.ConcreteShearReinforcement;
-                material.CustomData["Concrete Shear Strength Reduction"] = structuralAsset.ConcreteShearStrengthReduction;
-                materialFragment = material;
-            }
-            else if (materialFragment is Steel)
-            {
-                Steel material = materialFragment as Steel;
-                material.YoungsModulus = youngsModulus.X;
-                material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
-                material.PoissonsRatio = poissonsRatio.X;
-                materialFragment = material;
-            }
-            else if (materialFragment is Timber)
-            {
-                Timber material = materialFragment as Timber;
-                material.YoungsModulus = youngsModulus;
-                material.ThermalExpansionCoeff = thermalExpansionCoeff;
-                material.PoissonsRatio = poissonsRatio;
-                materialFragment = material;
-            }
-            else if (materialFragment is GenericIsotropicMaterial)
-            {
-                GenericIsotropicMaterial material = materialFragment as GenericIsotropicMaterial;
-                material.YoungsModulus = youngsModulus.X;
-                material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
-                material.PoissonsRatio = poissonsRatio.X;
-                materialFragment = material;
-            }
-
-            return materialFragment;
-        }
-
+        
         /***************************************************/
     }
 }

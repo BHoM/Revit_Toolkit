@@ -24,7 +24,6 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Environment.Fragments;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -46,21 +45,14 @@ namespace BH.Revit.Engine.Core
 
             room = new oM.Architecture.Elements.Room()
             {
-                Perimeter = spatialElement.Profiles(settings).First()
+                Perimeter = spatialElement.Perimeter(settings).First()
             };
             room.Name = spatialElement.Name;
 
             //Set location
             if (spatialElement.Location != null && spatialElement.Location is LocationPoint)
                 room.Location = ((LocationPoint)spatialElement.Location).FromRevit();
-
-            //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment();
-            originContext.ElementID = spatialElement.Id.IntegerValue.ToString();
-            originContext.TypeName = Query.Name(spatialElement);
-            originContext.SetProperties(spatialElement, settings.ParameterSettings);
-            room.Fragments.Add(originContext);
-
+            
             //Set identifiers, parameters & custom data
             room.SetIdentifiers(spatialElement);
             room.CopyParameters(spatialElement, settings.ParameterSettings);

@@ -83,11 +83,7 @@ namespace BH.Revit.Engine.Core
             if (roofType == null)
                 return null;
             
-            double lowElevation = roof.LowElevation();
-            if (double.IsNaN(lowElevation))
-                return null;
-
-            Level level = document.HighLevel(lowElevation);
+            Level level = document.LevelBelow(roof.Location, settings);
             if (level == null)
                 return null;
 
@@ -95,30 +91,28 @@ namespace BH.Revit.Engine.Core
             
             oM.Geometry.Plane plane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, elevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
 
-            ICurve curve = BH.Engine.Geometry.Modify.Project(planarSurface.ExternalBoundary as dynamic, plane) as ICurve;
+            ICurve curve = planarSurface.ExternalBoundary.IProject(plane);
             CurveArray curveArray = Create.CurveArray(curve.IToRevitCurves());
 
             ModelCurveArray modelCurveArray = new ModelCurveArray();
             roofBase = document.Create.NewFootPrintRoof(curveArray, level, roofType, out modelCurveArray);
+            
             if (roofBase != null)
             {
                 Parameter parameter = roofBase.get_Parameter(BuiltInParameter.ROOF_UPTO_LEVEL_PARAM);
                 if (parameter != null)
                     parameter.Set(ElementId.InvalidElementId);
 
-                List<ICurve> curveList = planarSurface.ExternalBoundary.ISubParts().ToList();
+                List<oM.Geometry.Point> controlPoints = planarSurface.ExternalBoundary.IControlPoints();
 
-                if (curveList != null && curveList.Count > 2)
+                if (controlPoints != null && controlPoints.Count > 2)
                 {
                     SlabShapeEditor slabShapeEditor = roofBase.SlabShapeEditor;
                     slabShapeEditor.ResetSlabShape();
 
-                    foreach (ICurve tempCurve in curveList)
+                    foreach (oM.Geometry.Point point in controlPoints)
                     {
-                        oM.Geometry.Point point = tempCurve.IStartPoint();
-
-                        //TODO: remove hardcoded tolerance
-                        if (System.Math.Abs(point.Z - plane.Origin.Z) > Tolerance.MicroDistance)
+                        if (System.Math.Abs(point.Z - plane.Origin.Z) > Tolerance.Distance)
                         {
                             XYZ xyz = point.ToRevit();
                             slabShapeEditor.DrawPoint(xyz);
@@ -134,6 +128,16 @@ namespace BH.Revit.Engine.Core
 
             // Copy parameters from BHoM object to Revit element
             roofBase.CopyParameters(roof, settings);
+
+            // Update the offset in case the level had been overwritten.
+            double offset = 0;
+            if (roofBase.LevelId.IntegerValue != level.Id.IntegerValue)
+            {
+                Level newLevel = document.GetElement(roofBase.LevelId) as Level;
+                offset += (level.ProjectElevation - newLevel.ProjectElevation).ToSI(UnitType.UT_Length);
+            }
+
+            roofBase.SetParameter(BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM, offset);
 
             refObjects.AddOrReplace(roof, roofBase);
             return roofBase;

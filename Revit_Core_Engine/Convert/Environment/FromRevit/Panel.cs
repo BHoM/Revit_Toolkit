@@ -47,12 +47,16 @@ namespace BH.Revit.Engine.Core
             if (panel != null)
                 return panel;
 
-            PolyCurve polycurve = familyInstance.PolyCurve(settings);
-            if (polycurve == null)
+            PlanarSurface openingSurface = familyInstance.OpeningSurface(null, settings) as PlanarSurface;
+            ICurve outline = openingSurface?.ExternalBoundary;
+            if (outline == null)
                 return null;
 
-            panel = BH.Engine.Environment.Create.Panel(externalEdges: polycurve.ToEdges());
-            panel.Name = familyInstance.FamilyTypeFullName();
+            panel = new oM.Environment.Elements.Panel()
+            {
+                ExternalEdges = outline.ToEdges(),
+                Name = familyInstance.FamilyTypeFullName(),
+            };
 
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment() { ElementID = familyInstance.Id.IntegerValue.ToString(), TypeName = familyInstance.FamilyTypeFullName() };
@@ -100,21 +104,22 @@ namespace BH.Revit.Engine.Core
             if (panels != null && panels.Count != 0)
                 return panels;
 
-            List<PolyCurve> polycurves = ceiling.Profiles(settings);
-            if (polycurves == null)
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = ceiling.PanelSurfaces(ceiling.FindInserts(true, true, true, true), settings);
+            if (surfaces == null)
                 return panels;
 
-            panels = new List<oM.Environment.Elements.Panel>();
-
             CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
-            BH.oM.Physical.Constructions.Construction construction = ceilingType.ConstructionFromRevit(settings, refObjects);
-
-            List<PolyCurve> polycurveListOuter = polycurves.OuterPolyCurves();
-            foreach (ICurve curve in polycurveListOuter)
+            BH.oM.Physical.Constructions.Construction construction = ceilingType.ConstructionFromRevit(null, settings, refObjects);
+            
+            panels = new List<oM.Environment.Elements.Panel>();
+            foreach (PlanarSurface surface in surfaces.Keys)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: curve.ToEdges());
-                panel.Name = ceiling.FamilyTypeFullName();
+                oM.Environment.Elements.Panel panel = new oM.Environment.Elements.Panel()
+                {
+                    ExternalEdges = surface.ExternalBoundary.ToEdges(),
+                    Name = ceiling.FamilyTypeFullName(),
+                };
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = ceiling.Id.IntegerValue.ToString(), TypeName = ceiling.FamilyTypeFullName() };
@@ -162,22 +167,22 @@ namespace BH.Revit.Engine.Core
             if (panels != null && panels.Count != 0)
                 return panels;
 
-            List<PolyCurve> polycurves = floor.Profiles(settings);
-            if (polycurves == null)
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = floor.PanelSurfaces(floor.FindInserts(true, true, true, true), settings);
+            if (surfaces == null)
                 return panels;
 
+            FloorType floorType = floor.FloorType;
+            BH.oM.Physical.Constructions.Construction construction = floorType.ConstructionFromRevit(null, settings, refObjects);
+            
             panels = new List<oM.Environment.Elements.Panel>();
-
-            BH.oM.Physical.Constructions.Construction construction = floor.FloorType.ConstructionFromRevit(settings, refObjects);
-
-            FloorType floorType = floor.Document.GetElement(floor.GetTypeId()) as FloorType;
-
-            List<PolyCurve> polycurveListOuter = polycurves.OuterPolyCurves();
-            foreach (ICurve curve in polycurveListOuter)
+            foreach (PlanarSurface surface in surfaces.Keys)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: curve.ToEdges());
-                panel.Name = floor.FamilyTypeFullName();
+                oM.Environment.Elements.Panel panel = new oM.Environment.Elements.Panel()
+                {
+                    ExternalEdges = surface.ExternalBoundary.ToEdges(),
+                    Name = floor.FamilyTypeFullName(),
+                };
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = floor.Id.IntegerValue.ToString(), TypeName = floor.FamilyTypeFullName() };
@@ -226,20 +231,21 @@ namespace BH.Revit.Engine.Core
             if (panels != null && panels.Count > 0)
                 return panels;
 
-            List<PolyCurve> polycurves = roofBase.Profiles(settings);
-            if (polycurves == null)
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = roofBase.PanelSurfaces(roofBase.FindInserts(true, true, true, true), settings);
+            if (surfaces == null)
                 return panels;
+            
+            BH.oM.Physical.Constructions.Construction construction = roofBase.RoofType.ConstructionFromRevit(null, settings, refObjects);
 
             panels = new List<oM.Environment.Elements.Panel>();
-
-            BH.oM.Physical.Constructions.Construction construction = roofBase.RoofType.ConstructionFromRevit(settings, refObjects);
-
-            List<PolyCurve> polycurvesListOuter = polycurves.OuterPolyCurves();
-            foreach (ICurve curve in polycurvesListOuter)
+            foreach (PlanarSurface surface in surfaces.Keys)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: curve.ToEdges());
-                panel.Name = roofBase.FamilyTypeFullName();
+                oM.Environment.Elements.Panel panel = new oM.Environment.Elements.Panel()
+                {
+                    ExternalEdges = surface.ExternalBoundary.ToEdges(),
+                    Name = roofBase.FamilyTypeFullName(),
+                };
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = roofBase.Id.IntegerValue.ToString(), TypeName = roofBase.FamilyTypeFullName() };
@@ -291,18 +297,21 @@ namespace BH.Revit.Engine.Core
             if (wall.StackedWallOwnerId != null && wall.StackedWallOwnerId != ElementId.InvalidElementId)
                 return null;
 
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = wall.PanelSurfaces(wall.FindInserts(true, true, true, true), settings);
+            if (surfaces == null)
+                return panels;
+
+            BH.oM.Physical.Constructions.Construction constrtuction = wall.WallType.ConstructionFromRevit(null, settings, refObjects);
+            
             panels = new List<oM.Environment.Elements.Panel>();
-
-            BH.oM.Physical.Constructions.Construction constrtuction = wall.WallType.ConstructionFromRevit(settings, refObjects);
-
-            List<PolyCurve> polycurves = wall.Profiles(settings);
-            List<PolyCurve> polycurveListOuter = polycurves.OuterPolyCurves();
-
-            foreach (ICurve curve in polycurveListOuter)
+            foreach (PlanarSurface surface in surfaces.Keys)
             {
                 //Create the BuildingElement
-                oM.Environment.Elements.Panel panel = BH.Engine.Environment.Create.Panel(externalEdges: curve.ToEdges());
-                panel.Name = wall.FamilyTypeFullName();
+                oM.Environment.Elements.Panel panel = new oM.Environment.Elements.Panel()
+                {
+                    ExternalEdges = surface.ExternalBoundary.ToEdges(),
+                    Name = wall.FamilyTypeFullName(),
+                };
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = wall.Id.IntegerValue.ToString(), TypeName = wall.FamilyTypeFullName() };
@@ -356,8 +365,11 @@ namespace BH.Revit.Engine.Core
 
             ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
 
-            panel = BH.Engine.Environment.Create.Panel(externalEdges: crv.ToEdges());
-            panel.Name = element.FamilyTypeFullName();
+            panel = new oM.Environment.Elements.Panel()
+            {
+                ExternalEdges = crv.ToEdges(),
+                Name = element.FamilyTypeFullName(),
+            };
 
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
@@ -417,8 +429,11 @@ namespace BH.Revit.Engine.Core
                 return panel;
             
             elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-            panel = BH.Engine.Environment.Create.Panel(name: element.FamilyTypeFullName(), externalEdges: curve.ToEdges());
-
+            panel = new oM.Environment.Elements.Panel()
+            {
+                ExternalEdges = curve.ToEdges(),
+                Name = element.FamilyTypeFullName(),
+            };
 
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
@@ -473,7 +488,7 @@ namespace BH.Revit.Engine.Core
             else
                 panel.Type = oM.Environment.Elements.PanelType.Undefined;
 
-            panel.Construction = Convert.ConstructionFromRevit(elementType as dynamic, settings, refObjects);
+            panel.Construction = Convert.ConstructionFromRevit(elementType as dynamic, null, settings, refObjects);
 
             //Set identifiers, parameters & custom data
             panel.SetIdentifiers(element);

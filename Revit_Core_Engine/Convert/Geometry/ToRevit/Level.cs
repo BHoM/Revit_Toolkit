@@ -43,25 +43,26 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            ElementId elementID = level.ElementId();
-
-            if (elementID != null && elementID != ElementId.InvalidElementId)
-                revitLevel = document.GetElement(elementID) as Level;
-
-            if (revitLevel == null)
-                revitLevel = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList().Find(x => x.Name == level.Name);
-
-            if (revitLevel == null)
+            List<Level> existingLevels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
+            if (existingLevels.Any(x => x.Name == level.Name))
             {
-                double elevation = level.Elevation.FromSI(UnitType.UT_Length);
-
-                revitLevel = Level.Create(document, elevation);
-                revitLevel.Name = level.Name;
+                BH.Engine.Reflection.Compute.RecordError($"Level named {level.Name} could not be created because a level with the same name already exists in the model. BHoM_Guid: {level.BHoM_Guid}");
+                return null;
             }
 
+            double elevation = level.Elevation.FromSI(UnitType.UT_Length);
+            if (existingLevels.Any(x => Math.Abs(x.ProjectElevation - elevation) < settings.DistanceTolerance))
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Level with elevation {level.Elevation} could not be created because a level with the same elevation already exists in the model. BHoM_Guid: {level.BHoM_Guid}");
+                return null;
+            }
+
+            revitLevel = Level.Create(document, elevation);
             revitLevel.CheckIfNullPush(level);
             if (revitLevel == null)
                 return null;
+
+            revitLevel.Name = level.Name;
 
             // Copy parameters from BHoM object to Revit element
             revitLevel.CopyParameters(level, settings);

@@ -21,11 +21,14 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Mechanical;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Physical.Elements;
+using BH.oM.Reflection.Attributes;
 using System;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -48,7 +51,50 @@ namespace BH.Revit.Engine.Core
 
             return rotation;
         }
-        
+
+        /***************************************************/
+
+        [Description("Query a Revit duct to extract its orientation angle.")]
+        [Input("duct", "Revit duct to be queried.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Output("double", "Orientation angle of a duct in radians extracted from a Revit duct.")]
+        public static double OrientationAngle(this Duct duct, RevitSettings settings = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            double rotation;
+
+            Location location = duct.Location;
+
+            LocationCurve locationCurve = location as LocationCurve;
+            Curve curve = locationCurve.Curve;
+
+            BH.oM.Geometry.ICurve bhomCurve = curve.IFromRevit(); // Convert to a BHoM curve
+
+            // Get the duct connector
+            Connector connector = null;
+            foreach (Connector conn in duct.ConnectorManager.Connectors)
+            {
+                // Get the End connector for this duct
+                if (conn.ConnectorType == ConnectorType.End)
+                {
+                    connector = conn;
+                    break;
+                }
+            }
+
+            // Coordinate system of the duct connector
+            Transform transform = connector.CoordinateSystem;
+
+            // Get the rotation
+            if ((bhomCurve as BH.oM.Geometry.Line).IsVertical()) // Is the duct vertical?
+                rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisX, transform.BasisZ);
+            else
+                rotation = Math.PI + XYZ.BasisZ.AngleOnPlaneTo(transform.BasisY, transform.BasisZ);
+
+            return rotation.NormalizeAngleDomain();
+        }
+
         /***************************************************/
 
         public static double OrientationAngleColumn(this FamilyInstance familyInstance, RevitSettings settings)
@@ -72,11 +118,13 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-        
+
         public static double OrientationAngleFraming(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             double rotation;
-            Curve locationCurve = ((LocationCurve)familyInstance.Location).Curve;
+            Curve locationCurve = (familyInstance.Location as LocationCurve)?.Curve;
+            if (locationCurve == null)
+                return double.NaN;
 
             if (locationCurve is Autodesk.Revit.DB.Line)
             {
@@ -99,7 +147,7 @@ namespace BH.Revit.Engine.Core
 
             return rotation.NormalizeAngleDomain();
         }
-        
+
         /***************************************************/
     }
 }
