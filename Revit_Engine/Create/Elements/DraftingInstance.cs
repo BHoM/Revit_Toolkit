@@ -236,25 +236,6 @@ namespace BH.Engine.Adapters.Revit
             return draftingInstance;
         }
 
-
-        /***************************************************/
-        /****            Deprecated methods             ****/
-        /***************************************************/
-
-        [Deprecated("3.1", "Location type has been generalized from PlanarSurface to ISurface.")]
-        public static DraftingInstance DraftingInstance(string name, string viewName, PlanarSurface location)
-        {
-            return Create.DraftingInstance(name, viewName, location as ISurface);
-        }
-
-        /***************************************************/
-
-        [Deprecated("3.1", "Location type has been generalized from PlanarSurface to ISurface.")]
-        public static DraftingInstance DraftingInstance(InstanceProperties properties, string viewName, PlanarSurface location)
-        {
-            return Create.DraftingInstance(properties, viewName, location as ISurface);
-        }
-
         /***************************************************/
     }
 }
