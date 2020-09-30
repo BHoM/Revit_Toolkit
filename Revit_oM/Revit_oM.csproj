@@ -84,8 +84,9 @@
     <Compile Include="Enums\NumberComparisonType.cs" />
     <Compile Include="Enums\RevitViewType.cs" />
     <Compile Include="Enums\TextComparisonType.cs" />
+    <Compile Include="Misc\Tolerance.cs" />
     <Compile Include="Parameters\ElementTypeParameterLink.cs" />
-    <Compile Include="Generic\FamilyLibrary.cs" />
+    <Compile Include="Misc\FamilyLibrary.cs" />
     <Compile Include="Parameters\ElementParameterLink.cs" />
     <Compile Include="Parameters\IParameterLink.cs" />
     <Compile Include="Parameters\IRevitParameterFragment.cs" />
@@ -129,7 +130,7 @@
     <Compile Include="Requests\FilterViewTemplateByName.cs" />
     <Compile Include="Requests\FilterMemberElements.cs" />
     <Compile Include="_Properties\AssemblyInfo.cs" />
-    <Compile Include="Generic\RevitFilePreview.cs" />
+    <Compile Include="Misc\RevitFilePreview.cs" />
     <Compile Include="Settings\FamilyLoadSettings.cs" />
     <Compile Include="Settings\ConnectionSettings.cs" />
     <Compile Include="Parameters\ParameterMap.cs" />
