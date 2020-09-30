@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Deprecated("4.0", "BH.Engine.Adapters.Revit.Query.Plane method is not used any more.")]
+        [ToBeRemoved("4.0", "BH.Engine.Adapters.Revit.Query.Plane method is not used any more.")]
         [Description("Returns a plane in which the PolyCurve lies. Null is returned if the curve is not planar.")]
         [Input("polyCurve", "PolyCurve to be queried.")]
         [Input("tolerance", "Geometrical tolerance to be applied to planarity check.")]
@@ -57,7 +57,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Deprecated("4.0", "BH.Engine.Adapters.Revit.Query.Plane method is not used any more.")]
+        [ToBeRemoved("4.0", "BH.Engine.Adapters.Revit.Query.Plane method is not used any more.")]
         [Description("Returns a plane in which the Polyline lies. Null is returned if the curve is not planar.")]
         [Input("polyline", "Polyline to be queried.")]
         [Input("tolerance", "Geometrical tolerance to be applied to planarity check.")]
@@ -78,7 +78,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Deprecated("4.0", "BH.Engine.Adapters.Revit.Query.Plane method is not used any more.")]
+        [ToBeRemoved("4.0", "BH.Engine.Adapters.Revit.Query.Plane method is not used any more.")]
         [Description("Returns a plane spanned on a collection of points. Null is returned if the point set is not planar.")]
         [Input("points", "Set of points to be queried.")]
         [Output("plane")]
