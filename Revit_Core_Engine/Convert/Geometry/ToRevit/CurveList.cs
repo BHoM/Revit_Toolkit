@@ -43,8 +43,8 @@ namespace BH.Revit.Engine.Core
 
         public static List<Curve> ToRevitCurves(this BH.oM.Geometry.Arc curve)
         {
-            //Split the curve in half when it is closed - tolerance value taken from Autodesk.Revit.ApplicationServices.Application.AngleTolerance constant.
-            if (Math.Abs(2 * Math.PI) - curve.EndAngle + curve.StartAngle < 0.00174532925199433)
+            //Split the curve in half when it is closed.
+            if (Math.Abs(2 * Math.PI) - curve.EndAngle + curve.StartAngle < BH.oM.Adapters.Revit.Tolerance.Angle)
             {
                 double r = curve.Radius.FromSI(UnitType.UT_Length);
                 XYZ centre = curve.CoordinateSystem.Origin.ToRevit();
@@ -94,8 +94,8 @@ namespace BH.Revit.Engine.Core
             if (nc == null)
                 return null;
 
-            //Split the curve in half when it is closed - tolerance value taken from Autodesk.Revit.ApplicationServices.Application.VertexTolerance constant.
-            if (nc.GetEndPoint(0).DistanceTo(nc.GetEndPoint(1)) <= 0.0005233832795)
+            //Split the curve in half when it is closed.
+            if (nc.GetEndPoint(0).DistanceTo(nc.GetEndPoint(1)) <= BH.oM.Adapters.Revit.Tolerance.Vertex)
             {
                 double param1 = nc.GetEndParameter(0);
                 double param2 = nc.GetEndParameter(1);
