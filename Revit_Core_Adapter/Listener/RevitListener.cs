@@ -421,30 +421,6 @@ namespace BH.Revit.Adapter.Core
             infoButtons[0].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info.png")));
             infoButtons[1].ToolTip = "Visit the BHoM website.";
             infoButtons[1].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "BHoMWebsite.png")));
-
-            //PushButtonData bHoMRevitInfoButton = new PushButtonData("BHoM Revit Wiki", "BHoM\nRevit Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".RevitToolkitWiki");
-            //PushButtonData bHoMInfoButton = new PushButtonData("BHoM Wiki", "BHoM Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWiki");
-            //PushButtonData bHoMWebsiteButton = new PushButtonData("bhom.xyz", "bhom.xyz", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWebsite");
-
-            //List<RibbonButton> infoButtons = panel.AddStackedItems(bHoMRevitInfoButton, bHoMInfoButton, bHoMWebsiteButton).Cast<RibbonButton>().ToList();
-            //infoButtons[0].ToolTip = "Visit the BHoM Revit Toolkit Wiki page.";
-            //infoButtons[0].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info.png")));
-            //infoButtons[1].ToolTip = "Visit the BHoM Wiki page.";
-            //infoButtons[1].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info.png")));
-            //infoButtons[2].ToolTip = "Visit the BHoM website.";
-            //infoButtons[2].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "BHoMWebsite.png")));
-
-            //PushButton button = panel.AddItem(new PushButtonData("BHoM Revit Wiki", "BHoM\nRevit Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".RevitToolkitWiki")) as PushButton;
-            //button.ToolTip = "Visit the BHoM Revit Toolkit Wiki page.";
-            //button.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info.png")));
-
-            //button = panel.AddItem(new PushButtonData("BHoM Wiki", "BHoM Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWiki")) as PushButton;
-            //button.ToolTip = "Visit the BHoM Wiki page.";
-            //button.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info.png")));
-
-            //button = panel.AddItem(new PushButtonData("bhom.xyz", "bhom.xyz", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWebsite")) as PushButton;
-            //button.ToolTip = "Visit the BHoM website.";
-            //button.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "BHoMWebsite.png")));
         }
 
         /***************************************************/
