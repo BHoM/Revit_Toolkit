@@ -188,6 +188,9 @@ namespace BH.Revit.Adapter.Core
 
             uIControlledApplication.ViewActivated += Application_ViewActivated;
 
+            // Make sure the button visibility is OK after startup (Revit likes to mess it if the buttons are pinned to quick access toolbar).
+            uIControlledApplication.Idling += InitializeButtonVisibility;
+
             return Result.Succeeded;
         }
 
@@ -379,17 +382,21 @@ namespace BH.Revit.Adapter.Core
             m_ActivateButton.ToolTip = "Activate the BHoM Revit Adapter plugin to allow data exchange with Grasshopper, Dynamo or Excel. The port numbers on both sides must match (default ports: 14128 input and 14129 output).";
             m_ActivateButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterActivate32.png")));
             m_ActivateButton.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterActivate16.png")));
+            m_ActivateButton.Enabled = true;
+            m_ActivateButton.Visible = true;
 
             m_UpdatePortsButton = panel.AddItem(new PushButtonData("Update Ports", "Update\nPorts", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".SetPorts")) as PushButton;
             m_UpdatePortsButton.ToolTip = "Update ports used by the BHoM Adapter Revit plugin to allow data exchange with Grasshopper, Dynamo or Excel. The port numbers on both sides must match (default ports: 14128 input and 14129 output).";
             m_UpdatePortsButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterUpdate32.png")));
             m_UpdatePortsButton.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterUpdate16.png")));
+            m_UpdatePortsButton.Enabled = true;
             m_UpdatePortsButton.Visible = false;
 
             m_DeactivateButton = panel.AddItem(new PushButtonData("Deactivate", "Deactivate", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".Deactivate")) as PushButton;
             m_DeactivateButton.ToolTip = "Deactivate the BHoM Revit Adapter plugin to disallow data exchange with Grasshopper, Dynamo or Excel.";
             m_DeactivateButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterDeactivate32.png")));
             m_DeactivateButton.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterDeactivate16.png")));
+            m_DeactivateButton.Enabled = true;
             m_DeactivateButton.Visible = false;
         }
 
@@ -416,6 +423,8 @@ namespace BH.Revit.Adapter.Core
             button.ToolTip = "Visit the BHoM Revit Toolkit Wiki page.";
             button.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info32.png")));
             button.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info16.png")));
+            button.Enabled = true;
+            button.Visible = true;
 
             PushButtonData bHoMInfoButton = new PushButtonData("BHoM Wiki", "BHoM Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWiki");
             PushButtonData bHoMWebsiteButton = new PushButtonData("bhom.xyz", "bhom.xyz", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWebsite");
@@ -423,8 +432,12 @@ namespace BH.Revit.Adapter.Core
             List<RibbonButton> infoButtons = panel.AddStackedItems(bHoMInfoButton, bHoMWebsiteButton).Cast<RibbonButton>().ToList();
             infoButtons[0].ToolTip = "Visit the BHoM Wiki page.";
             infoButtons[0].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info16.png")));
+            infoButtons[0].Enabled = true;
+            infoButtons[0].Visible = true;
             infoButtons[1].ToolTip = "Visit the BHoM website.";
             infoButtons[1].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "BHoMWebsite16.png")));
+            infoButtons[1].Enabled = true;
+            infoButtons[1].Visible = true;
         }
 
         /***************************************************/
@@ -432,6 +445,14 @@ namespace BH.Revit.Adapter.Core
         private void Application_ViewActivated(object sender, Autodesk.Revit.UI.Events.ViewActivatedEventArgs e)
         {
             RevitAdapter.InternalAdapter = GetAdapter(e.Document);
+        }
+
+        /***************************************************/
+
+        private void InitializeButtonVisibility(object sender, Autodesk.Revit.UI.Events.IdlingEventArgs e)
+        {
+            ShowInactiveButtonSet();
+            UIControlledApplication.Idling -= InitializeButtonVisibility;
         }
 
 
