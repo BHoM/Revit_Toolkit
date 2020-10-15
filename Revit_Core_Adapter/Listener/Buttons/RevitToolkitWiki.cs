@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,59 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
+using Autodesk.Revit.Attributes;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 
-namespace BH.Revit.Adapter.Core.Forms
+namespace BH.Revit.Adapter.Core
 {
-    public partial class UpdatePortsForm : Form
+    [Transaction(TransactionMode.Manual)]
+    [Regeneration(RegenerationOption.Manual)]
+    public class RevitToolkitWiki : IExternalCommand
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        public UpdatePortsForm()
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            InitializeComponent();
-            int inPort = RevitListener.Listener.InPort();
-            if (inPort != -1)
-                this.InputPort.Value = inPort;
-
-            int outPort = RevitListener.Listener.OutPort();
-            if (outPort != -1)
-                this.OutputPort.Value = outPort;
-        }
-
-
-        /***************************************************/
-        /****              Private methods              ****/
-        /***************************************************/
-
-        private void OkBtn_Click(object sender, EventArgs e)
-        {
-            int inPort = (int)Math.Round(InputPort.Value);
-            int outPort = (int)Math.Round(OutputPort.Value);
-
-            if (inPort == outPort || inPort < 3000 || inPort > 65000 || outPort < 3000 || outPort > 65000)
-            {
-                MessageBox.Show("Input port and output port must have values between 3000 and 65000 and can not be the same", "Port number error");
-                return;
-            }
-
-            RevitListener.Listener.SetPorts(inPort, outPort);
-            this.Close();
-        }
-
-        /***************************************************/
-
-        private void CancelBtn_Click(object sender, EventArgs e)
-        {
-            this.Close();
+            System.Diagnostics.Process.Start("https://github.com/BHoM/Revit_Toolkit/wiki");
+            return Result.Succeeded;
         }
 
         /***************************************************/
     }
 }
-
