@@ -297,19 +297,28 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Listener\Files\Resources\AdapterActivate.png">
+    <Content Include="Listener\Files\Resources\AdapterActivate16.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Listener\Files\Resources\AdapterDeactivate.png">
+    <Content Include="Listener\Files\Resources\AdapterActivate32.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Listener\Files\Resources\AdapterUpdate.png">
+    <Content Include="Listener\Files\Resources\AdapterDeactivate16.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Listener\Files\Resources\BHoMWebsite.png">
+    <Content Include="Listener\Files\Resources\AdapterDeactivate32.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Listener\Files\Resources\Info.png">
+    <Content Include="Listener\Files\Resources\AdapterUpdate16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Listener\Files\Resources\AdapterUpdate32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Listener\Files\Resources\BHoMWebsite16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Listener\Files\Resources\Info16.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Listener\Files\Resources\Info32.png">

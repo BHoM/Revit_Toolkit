@@ -377,16 +377,19 @@ namespace BH.Revit.Adapter.Core
 
             m_ActivateButton = panel.AddItem(new PushButtonData("Activate", "Activate", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".SetPorts")) as PushButton;
             m_ActivateButton.ToolTip = "Activate the BHoM Revit Adapter plugin to allow data exchange with Grasshopper, Dynamo or Excel. The port numbers on both sides must match (default ports: 14128 input and 14129 output).";
-            m_ActivateButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterActivate.png")));
+            m_ActivateButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterActivate32.png")));
+            m_ActivateButton.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterActivate16.png")));
 
             m_UpdatePortsButton = panel.AddItem(new PushButtonData("Update Ports", "Update\nPorts", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".SetPorts")) as PushButton;
             m_UpdatePortsButton.ToolTip = "Update ports used by the BHoM Adapter Revit plugin to allow data exchange with Grasshopper, Dynamo or Excel. The port numbers on both sides must match (default ports: 14128 input and 14129 output).";
-            m_UpdatePortsButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterUpdate.png")));
+            m_UpdatePortsButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterUpdate32.png")));
+            m_UpdatePortsButton.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterUpdate16.png")));
             m_UpdatePortsButton.Visible = false;
 
             m_DeactivateButton = panel.AddItem(new PushButtonData("Deactivate", "Deactivate", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".Deactivate")) as PushButton;
             m_DeactivateButton.ToolTip = "Deactivate the BHoM Revit Adapter plugin to disallow data exchange with Grasshopper, Dynamo or Excel.";
-            m_DeactivateButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterDeactivate.png")));
+            m_DeactivateButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterDeactivate32.png")));
+            m_DeactivateButton.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterDeactivate16.png")));
             m_DeactivateButton.Visible = false;
         }
 
@@ -412,15 +415,16 @@ namespace BH.Revit.Adapter.Core
             PushButton button = panel.AddItem(new PushButtonData("BHoM Revit Wiki", "BHoM\nRevit Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".RevitToolkitWiki")) as PushButton;
             button.ToolTip = "Visit the BHoM Revit Toolkit Wiki page.";
             button.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info32.png")));
-            
+            button.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info16.png")));
+
             PushButtonData bHoMInfoButton = new PushButtonData("BHoM Wiki", "BHoM Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWiki");
             PushButtonData bHoMWebsiteButton = new PushButtonData("bhom.xyz", "bhom.xyz", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWebsite");
 
             List<RibbonButton> infoButtons = panel.AddStackedItems(bHoMInfoButton, bHoMWebsiteButton).Cast<RibbonButton>().ToList();
             infoButtons[0].ToolTip = "Visit the BHoM Wiki page.";
-            infoButtons[0].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info.png")));
+            infoButtons[0].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info16.png")));
             infoButtons[1].ToolTip = "Visit the BHoM website.";
-            infoButtons[1].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "BHoMWebsite.png")));
+            infoButtons[1].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "BHoMWebsite16.png")));
         }
 
         /***************************************************/
