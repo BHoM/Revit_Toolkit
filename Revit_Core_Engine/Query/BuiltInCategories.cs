@@ -123,7 +123,7 @@ namespace BH.Revit.Engine.Core
                 }
             },
             {
-                typeof (BH.oM.Geometry.ShapeProfiles.IProfile), new BuiltInCategory[]
+                typeof (BH.oM.Spatial.ShapeProfiles.IProfile), new BuiltInCategory[]
                 {
                     Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming,
                     Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns,
