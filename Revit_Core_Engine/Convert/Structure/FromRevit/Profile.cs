@@ -27,13 +27,13 @@ using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
-using BH.oM.Geometry.ShapeProfiles;
+using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Structure.SectionProperties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using BH.Engine.Base;
-using BHG = BH.Engine.Geometry;
+using BHS = BH.Engine.Spatial;
 
 namespace BH.Revit.Engine.Core
 {
@@ -144,12 +144,12 @@ namespace BH.Revit.Engine.Core
             }
 
             if (!double.IsNaN(diameter))
-                return BHG.Create.CircleProfile(diameter);
+                return BHS.Create.CircleProfile(diameter);
             else
             {
                 double radius = familySymbol.LookupParameterDouble(radiusNames, dimensionGroups);
                 if (!double.IsNaN(radius))
-                    return BHG.Create.CircleProfile(radius * 2);
+                    return BHS.Create.CircleProfile(radius * 2);
             }
 
             return null;
@@ -194,7 +194,7 @@ namespace BH.Revit.Engine.Core
             }
 
             if (!double.IsNaN(height) && !double.IsNaN(topFlangeWidth) && !double.IsNaN(botFlangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(topFlangeThickness) && !double.IsNaN(botFlangeThickness))
-                return BHG.Create.FabricatedISectionProfile(height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize);
+                return BHS.Create.FabricatedISectionProfile(height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize);
 
             return null;
         }
@@ -238,7 +238,7 @@ namespace BH.Revit.Engine.Core
                 cornerRadius = 0;
 
             if (!double.IsNaN(height) && !double.IsNaN(width))
-                return BHG.Create.RectangleProfile(height, width, cornerRadius);
+                return BHS.Create.RectangleProfile(height, width, cornerRadius);
 
             return null;
         }
@@ -288,7 +288,7 @@ namespace BH.Revit.Engine.Core
                 toeRadius = 0;
 
             if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
-                return BHG.Create.AngleProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+                return BHS.Create.AngleProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
 
             return null;
         }
@@ -325,7 +325,7 @@ namespace BH.Revit.Engine.Core
                 innerRadius = 0;
 
             if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(thickness))
-                return BHG.Create.BoxProfile(height, width, thickness, outerRadius, innerRadius);
+                return BHS.Create.BoxProfile(height, width, thickness, outerRadius, innerRadius);
 
             return null;
         }
@@ -375,7 +375,7 @@ namespace BH.Revit.Engine.Core
                 toeRadius = 0;
 
             if (!double.IsNaN(height) && !double.IsNaN(flangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
-                return BHG.Create.ChannelProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
+                return BHS.Create.ChannelProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
 
             return null;
         }
@@ -424,7 +424,7 @@ namespace BH.Revit.Engine.Core
                 toeRadius = 0;
 
             if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
-                return BHG.Create.ISectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+                return BHS.Create.ISectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
 
             return null;
         }
@@ -484,7 +484,7 @@ namespace BH.Revit.Engine.Core
                 toeRadius = 0;
 
             if (!double.IsNaN(height) && !double.IsNaN(width) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
-                return BHG.Create.TSectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
+                return BHS.Create.TSectionProfile(height, width, webThickness, flangeThickness, rootRadius, toeRadius);
 
             return null;
         }
@@ -523,7 +523,7 @@ namespace BH.Revit.Engine.Core
                 toeRadius = 0;
 
             if (!double.IsNaN(height) && !double.IsNaN(flangeWidth) && !double.IsNaN(webThickness) && !double.IsNaN(flangeThickness))
-                return BHG.Create.ZSectionProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
+                return BHS.Create.ZSectionProfile(height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius);
 
             return null;
         }
@@ -554,11 +554,11 @@ namespace BH.Revit.Engine.Core
             }
 
             if (!double.IsNaN(diameter) && !double.IsNaN(thickness))
-                return BHG.Create.TubeProfile(diameter, thickness);
+                return BHS.Create.TubeProfile(diameter, thickness);
 
             double radius = familySymbol.LookupParameterDouble(radiusNames, dimensionGroups);
             if (!double.IsNaN(radius) && !double.IsNaN(thickness))
-                return BHG.Create.TubeProfile(radius * 2, thickness);
+                return BHS.Create.TubeProfile(radius * 2, thickness);
 
             return null;
         }
