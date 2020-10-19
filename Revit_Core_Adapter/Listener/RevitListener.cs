@@ -380,6 +380,9 @@ namespace BH.Revit.Adapter.Core
 
             m_ActivateButton = panel.AddItem(new PushButtonData("Activate", "Activate", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".SetPorts")) as PushButton;
             m_ActivateButton.ToolTip = "Activate the BHoM Revit Adapter plugin to allow data exchange with Grasshopper, Dynamo or Excel. The port numbers on both sides must match (default ports: 14128 input and 14129 output).";
+            m_ActivateButton.LongDescription = "Checking and updating ports on the Revit side: navigate to the BHoM ribbon tab in Revit and click Activate (if not active) or Update Ports (if active already)." +
+                        "\nChecking and updating ports on the BHoM side: extract the RevitSettings property of RevitAdapter object, then ConnectionSettings of RevitSettings, then extract/overwrite PushPort and PullPort properties." +
+                        "\nPlease see the relevant Adapter/Setup Revit_Toolkit Wiki pages for more information.";
             m_ActivateButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterActivate32.png")));
             m_ActivateButton.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterActivate16.png")));
             m_ActivateButton.Enabled = true;
@@ -387,6 +390,9 @@ namespace BH.Revit.Adapter.Core
 
             m_UpdatePortsButton = panel.AddItem(new PushButtonData("Update Ports", "Update\nPorts", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".SetPorts")) as PushButton;
             m_UpdatePortsButton.ToolTip = "Update ports used by the BHoM Adapter Revit plugin to allow data exchange with Grasshopper, Dynamo or Excel. The port numbers on both sides must match (default ports: 14128 input and 14129 output).";
+            m_UpdatePortsButton.LongDescription = "Checking and updating ports on the Revit side: navigate to the BHoM ribbon tab in Revit and click Activate (if not active) or Update Ports (if active already)." +
+                        "\nChecking and updating ports on the BHoM side: extract the RevitSettings property of RevitAdapter object, then ConnectionSettings of RevitSettings, then extract/overwrite PushPort and PullPort properties." +
+                        "\nPlease see the relevant Adapter/Setup Revit_Toolkit Wiki pages for more information.";
             m_UpdatePortsButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterUpdate32.png")));
             m_UpdatePortsButton.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterUpdate16.png")));
             m_UpdatePortsButton.Enabled = true;
