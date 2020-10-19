@@ -124,7 +124,10 @@ namespace BH.Adapter.Revit
                 m_WaitEvent.Reset();
 
                 if (!success)
-                    Engine.Reflection.Compute.RecordError("Failed to connect to Revit. Please navigate to the BHoM ribbon tab in Revit and check if the BHoM Revit Adapter plugin is activated on the same ports as this adapter (default ports: 14128 input and 14129 output).");
+                    Engine.Reflection.Compute.RecordError("Failed to connect to Revit. Please check if the BHoM Revit Adapter plugin is activated on the same ports as this adapter (default ports: 14128 input and 14129 output)." +
+                        "\nChecking and updating ports on the Revit side: navigate to the BHoM ribbon tab in Revit and click Activate (if not active) or Update Ports (if active already)." +
+                        "\nChecking and updating ports on the BHoM side: extract the RevitSettings property of RevitAdapter object, then ConnectionSettings of RevitSettings, then extract/overwrite PushPort and PullPort properties." +
+                        "\nPlease see the relevant Adapter/Setup Revit_Toolkit Wiki pages for more information.");
             }
             catch
             {
