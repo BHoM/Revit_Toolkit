@@ -103,7 +103,7 @@ namespace BH.Revit.Engine.Core
             switch (discipline)
             {
                 default:
-                    if (typeof(BH.oM.Geometry.ShapeProfiles.IProfile).BuiltInCategories().Contains((BuiltInCategory)familySymbol.Category.Id.IntegerValue))
+                    if (typeof(BH.oM.Spatial.ShapeProfiles.IProfile).BuiltInCategories().Contains((BuiltInCategory)familySymbol.Category.Id.IntegerValue))
                         return familySymbol.ProfileFromRevit(settings, refObjects);
                     else
                         return null;
