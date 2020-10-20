@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Architecture.Elements;
 using BH.oM.Base;
 using BH.oM.Geometry;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Architecture.Elements.Ceiling CeilingFromRevit(this Ceiling ceiling, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static oM.Architecture.Elements.Ceiling CeilingFromRevit(this Autodesk.Revit.DB.Ceiling ceiling, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (ceiling == null)
                 return null;
@@ -84,7 +85,7 @@ namespace BH.Revit.Engine.Core
             }
 
             if (ceilingPatterns.Count != 0)
-                bHoMCeiling.CustomData.Add(BH.Engine.Adapters.Revit.Convert.CeilingPattern, ceilingPatterns);
+                bHoMCeiling.Tiles = BH.Engine.Architecture.Compute.CeilingTiles(bHoMCeiling, ceilingPatterns);
 
             if (surfaces.Values.Where(x => x != null).Sum(x => x.Count) != 0)
                 BH.Engine.Reflection.Compute.RecordWarning("Currently ceiling openings are not taken into account when generating ceilings.");
