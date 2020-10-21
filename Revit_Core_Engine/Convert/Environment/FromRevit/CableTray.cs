@@ -71,360 +71,146 @@ namespace BH.Revit.Engine.Core
             double orientationAngle = revitCableTray.OrientationAngle(settings);
             List<BH.oM.Geometry.Point> allPoints = new List<BH.oM.Geometry.Point>();
 
-            // Start and end points, which if the cable tray is connected to a fitting then uses the fitting origin as either start/end
-            //get connectors
+            // Determine start and end points, which if the cable tray is connected to
+            // a fitting then uses the fitting origin as either start/end
+            
+            // Get connectors
             ConnectorManager connectorManager = revitCableTray.ConnectorManager;
             ConnectorSet connectorSet = connectorManager.Connectors;
             List<Connector> connectors = connectorSet.Cast<Connector>().ToList();
-
-            /*
-            #region if it has 2 connectors
-
-            //cable trays will always have 2 END connectors only
-            if (connectors.Count == 2)
+            List<bool> endPointsConnected = new List<bool>();
+            List<BH.oM.Geometry.Point> endPoints = new List<BH.oM.Geometry.Point>();
+            List<BH.oM.Geometry.Point> midPoints = new List<BH.oM.Geometry.Point>();
+            foreach (Autodesk.Revit.DB.Connector c in connectorSet)
             {
-                Point startPoint = new Point();
-                Point endPoint = new Point();
-                CableTrayConnectionProperty connectionProperty = new CableTrayConnectionProperty();
-                if (connectors[0].IsConnected) // use index 0 as start
+                //calculate end points, that are in fact the origin of its fittings if connected
+                BH.oM.Geometry.Point point = null;
+                if (c.ConnectorType == ConnectorType.End)
                 {
-                    connectionProperty.IsStartConnected = true;
-                    ConnectorSet cSet = connectors[0].AllRefs;
-                    foreach (Connector con in cSet)
+                    if (c.IsConnected)
                     {
-                        //check if connector owner is not the original cable tray
-                        if (con.Owner.Id != revitCableTray.Id)
+                        bool isConnected = true;
+
+                        //at each connector get the connector refs to give access to fitting
+                        ConnectorSet cSet = c.AllRefs;
+                        foreach (Connector con in cSet)
                         {
-                            //get fitting location
-                            Location location =  con.Owner.Location;
-                            LocationPoint locationPoint = location as LocationPoint;
-
-                            //in some cases cable trays connect without fittings,
-                            //if thats the case then desired point will be its own connector origin
-                            if (locationPoint == null)
+                            //check if connector owner is not the original cable tray
+                            if (con.Owner.Id != revitCableTray.Id)
                             {
-                                //rounding to 4 decimal digits due to precision issues when extracting vector directions.
-                                startPoint = BH.Engine.Geometry.Create.Point(
-                                    Math.Round(connectors[0].Origin.PointFromRevit().X, 4),
-                                    Math.Round(connectors[0].Origin.PointFromRevit().Y, 4),
-                                    Math.Round(connectors[0].Origin.PointFromRevit().Z, 4));
-                            }
-                            //else use the fitting location point
-                            else
-                            {
-                                /*#region needs to check if the fitting is connected to another fitting
+                                //get fitting location
+                                Location location = con.Owner.Location;
+                                LocationPoint locationPoint = location as LocationPoint;
 
-                                if (con.Owner.GetType() != typeof(CableTray))
-                                
+                                //in some cases cable trays connect without fittings,
+                                //if thats the case then desired point will be its own connector origin
+                                if (locationPoint == null)
                                 {
-                                    //if fitting is connected to another fitting set isConnected to false
-                                    //because otherwise it'll remain as gap in network
-                                    FamilyInstance fittingInstance = con.Owner as FamilyInstance;
-                                    MEPModel fittingMEP = fittingInstance.MEPModel;
-                                    ConnectorManager fittingManager = fittingMEP.ConnectorManager;
-                                    ConnectorSet fittingSet = fittingManager.Connectors;
-                                    foreach (Connector cFitting in fittingSet)
-                                    {
-                                        bool statusChanged = false;
-                                        ConnectorSet subFittingSet = cFitting.AllRefs;
-                                        foreach (Connector cSub in subFittingSet)
-                                        {
-                                            //check if connector owner ins't the original cable tray
-                                            if (cSub.Owner.Id != con.Owner.Id &&
-                                                cSub.Owner.GetType() != typeof(CableTray))
-                                            {
-                                                connectionProperty.IsStartConnected = false;
-                                                statusChanged = true;
-                                                break;
-                                            }
-                                        }
-
-                                        if (statusChanged)
-                                            break;
-                                    }
+                                    //rounding to 4 decimal digits due to precision issues when extracting vector directions.
+                                    point = BH.Engine.Geometry.Create.Point(
+                                        Math.Round(c.Origin.PointFromRevit().X, 4),
+                                        Math.Round(c.Origin.PointFromRevit().Y, 4),
+                                        Math.Round(c.Origin.PointFromRevit().Z, 4));
+                                    endPoints.Add(point);
                                 }
-
-                                #endregion#1#
-                                
-                                startPoint = BH.Engine.Geometry.Create.Point(
-                                    Math.Round(locationPoint.Point.PointFromRevit().X, 4),
-                                    Math.Round(locationPoint.Point.PointFromRevit().Y, 4),
-                                    Math.Round(locationPoint.Point.PointFromRevit().Z, 4));
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    connectionProperty.IsStartConnected = false;
-                    startPoint = BH.Engine.Geometry.Create.Point(
-                        Math.Round(connectors[0].Origin.PointFromRevit().X, 4),
-                        Math.Round(connectors[0].Origin.PointFromRevit().Y, 4),
-                        Math.Round(connectors[0].Origin.PointFromRevit().Z, 4));
-                }
-
-                if (connectors[1].IsConnected) // use index 1 as end
-                {
-                    connectionProperty.IsEndConnected = true;
-                    ConnectorSet cSet = connectors[1].AllRefs;
-                    foreach (Connector con in cSet)
-                    {
-                        //check if connector owner is not the original cable tray
-                        if (con.Owner.Id != revitCableTray.Id)
-                        {
-                            //get fitting location
-                            Location location = con.Owner.Location;
-                            LocationPoint locationPoint = location as LocationPoint;
-
-                            //in some cases cable trays connect without fittings,
-                            //if thats the case then desired point will be its own connector origin
-                            if (locationPoint == null)
-                            {
-                                //rounding to 4 decimal digits due to precision issues when extracting vector directions.
-                                endPoint = BH.Engine.Geometry.Create.Point(
-                                    Math.Round(connectors[1].Origin.PointFromRevit().X, 4),
-                                    Math.Round(connectors[1].Origin.PointFromRevit().Y, 4),
-                                    Math.Round(connectors[1].Origin.PointFromRevit().Z, 4));
-                            }
-                            //else use the fitting location point
-                            else
-                            {
-                                /*#region needs to check if the fitting is connected to another fitting
-
-                                if (con.Owner.GetType() != typeof(CableTray))
+                                //else use the fitting location point
+                                else
                                 {
-                                    //if fitting is connected to another fitting set isConnected to false
-                                    //because otherwise it'll remain as gap in network
-                                    FamilyInstance fittingInstance = con.Owner as FamilyInstance;
-                                    MEPModel fittingMEP = fittingInstance.MEPModel;
-                                    ConnectorManager fittingManager = fittingMEP.ConnectorManager;
-                                    ConnectorSet fittingSet = fittingManager.Connectors;
-                                    foreach (Connector cFitting in fittingSet)
-                                    {
-                                        bool statusChanged = false;
-                                        ConnectorSet subFittingSet = cFitting.AllRefs;
-                                        foreach (Connector cSub in subFittingSet)
-                                        {
-                                            //check if connector owner ins't the original cable tray
-                                            if (cSub.Owner.Id != con.Owner.Id &&
-                                                cSub.Owner.GetType() != typeof(CableTray))
-                                            {
-                                                connectionProperty.IsEndConnected = false;
-                                                statusChanged = true;
-                                                break;
-                                            }
-                                        }
-
-                                        if (statusChanged)
-                                            break;
-                                    }
-                                }
-
-                                #endregion#1#
-                                
-                                endPoint = BH.Engine.Geometry.Create.Point(
-                                    Math.Round(locationPoint.Point.PointFromRevit().X, 4),
-                                    Math.Round(locationPoint.Point.PointFromRevit().Y, 4),
-                                    Math.Round(locationPoint.Point.PointFromRevit().Z, 4));
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    connectionProperty.IsEndConnected = false;
-                    endPoint = BH.Engine.Geometry.Create.Point(
-                        Math.Round(connectors[1].Origin.PointFromRevit().X, 4),
-                        Math.Round(connectors[1].Origin.PointFromRevit().Y, 4),
-                        Math.Round(connectors[1].Origin.PointFromRevit().Z, 4));
-                }
-
-                BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startPoint, endPoint);
-                CableTray cableTray = BH.Engine.MEP.Create.CableTray(line, sectionProperty, connectionProperty);
-                //Set identifiers, parameters & custom data
-                cableTray.SetIdentifiers(revitCableTray);
-                cableTray.CopyParameters(revitCableTray, settings.ParameterSettings);
-                cableTray.SetProperties(revitCableTray, settings.ParameterSettings);
-                bhomCableTrays.Add(cableTray);
-            }
-
-            #endregion
-            */
-
-            #region if it has more than 2 connectors
-
-            // else
-            // {
-                List<bool> endPointsConnected = new List<bool>();
-                List<BH.oM.Geometry.Point> endPoints = new List<BH.oM.Geometry.Point>();
-                List<BH.oM.Geometry.Point> midPoints = new List<BH.oM.Geometry.Point>();
-
-                foreach (Autodesk.Revit.DB.Connector c in connectorSet)
-                {
-                    //calculate end points, that are in fact the origin of its fittings if connected
-                    BH.oM.Geometry.Point point = null;
-                    if (c.ConnectorType == ConnectorType.End)
-                    {
-                        if (c.IsConnected)
-                        {
-                            bool isConnected = true;
-                            
-                            //at each connector get the connector refs to give access to fitting
-                            ConnectorSet cSet = c.AllRefs;
-                            foreach (Connector con in cSet)
-                            {
-                                //check if connector owner is not the original cable tray
-                                if (con.Owner.Id != revitCableTray.Id)
-                                {
-                                    //get fitting location
-                                    Location location = con.Owner.Location;
-                                    LocationPoint locationPoint = location as LocationPoint;
-
-                                    //in some cases cable trays connect without fittings,
-                                    //if thats the case then desired point will be its own connector origin
-                                    if (locationPoint == null)
-                                    {
-                                        //rounding to 4 decimal digits due to precision issues when extracting vector directions.
-                                        point = BH.Engine.Geometry.Create.Point(
-                                            Math.Round(c.Origin.PointFromRevit().X, 4),
-                                            Math.Round(c.Origin.PointFromRevit().Y, 4),
-                                            Math.Round(c.Origin.PointFromRevit().Z, 4));
-                                        endPoints.Add(point);
-                                    }
-                                    //else use the fitting location point
-                                    else
-                                    {
-                                        /*#region needs to check if the fitting is connected to another fitting
-
-                                        if (con.Owner.GetType() != typeof(CableTray))
-                                        {
-                                            //if fitting is connected to another fitting set isConnected to false
-                                            //because otherwise it'll remain as gap in network
-                                            FamilyInstance fittingInstance = con.Owner as FamilyInstance;
-                                            MEPModel fittingMEP = fittingInstance.MEPModel;
-                                            ConnectorManager fittingManager = fittingMEP.ConnectorManager;
-                                            ConnectorSet fittingSet = fittingManager.Connectors;
-                                            foreach (Connector cFitting in fittingSet)
-                                            {
-                                                bool statusChanged = false;
-                                                ConnectorSet subFittingSet = cFitting.AllRefs;
-                                                foreach (Connector cSub in subFittingSet)
-                                                {
-                                                    //check if connector owner ins't the original cable tray
-                                                    if (cSub.Owner.Id != con.Owner.Id &&
-                                                        cSub.Owner.GetType() != typeof(CableTray))
-                                                    {
-                                                        isConnected = false;
-                                                        statusChanged = true;
-                                                        break;
-                                                    }
-                                                }
-
-                                                if (statusChanged)
-                                                    break;
-                                            }
-                                        }
-
-                                        #endregion*/
-                                    
-                                        point = BH.Engine.Geometry.Create.Point(
-                                            Math.Round(locationPoint.Point.PointFromRevit().X, 4),
-                                            Math.Round(locationPoint.Point.PointFromRevit().Y, 4),
-                                            Math.Round(locationPoint.Point.PointFromRevit().Z, 4));
-                                        endPoints.Add(point);
-                                    }
+                                    point = BH.Engine.Geometry.Create.Point(
+                                        Math.Round(locationPoint.Point.PointFromRevit().X, 4),
+                                        Math.Round(locationPoint.Point.PointFromRevit().Y, 4),
+                                        Math.Round(locationPoint.Point.PointFromRevit().Z, 4));
+                                    endPoints.Add(point);
                                 }
                             }
-                            endPointsConnected.Add(isConnected);
                         }
-                        //if not connected at all then just use own connector origin
-                        else
-                        {
-                            endPointsConnected.Add(false);
-                            point = BH.Engine.Geometry.Create.Point(
-                                Math.Round(c.Origin.PointFromRevit().X, 4),
-                                Math.Round(c.Origin.PointFromRevit().Y, 4), 
-                                Math.Round(c.Origin.PointFromRevit().Z, 4));
-                            endPoints.Add(point);
-                            allPoints.Add(point);
-                        }
+
+                        endPointsConnected.Add(isConnected);
                     }
-                    //if cable tray has connections that don't take fitting,
-                    //then we need to store the point to later split the curve
+                    //if not connected at all then just use own connector origin
                     else
                     {
+                        endPointsConnected.Add(false);
                         point = BH.Engine.Geometry.Create.Point(
                             Math.Round(c.Origin.PointFromRevit().X, 4),
                             Math.Round(c.Origin.PointFromRevit().Y, 4), 
                             Math.Round(c.Origin.PointFromRevit().Z, 4));
-                        midPoints.Add(point);
+                        endPoints.Add(point);
+                        allPoints.Add(point);
                     }
                 }
-
-                CableTrayConnectionProperty connectionProperty = new CableTrayConnectionProperty();
-                connectionProperty.IsStartConnected = endPointsConnected[0];
-                connectionProperty.IsEndConnected = endPointsConnected[1];
-                
-                BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(endPoints[0], endPoints[1]);
-                List<BH.oM.Geometry.Line> segments = new List<Line>();
-                if (midPoints.Any())
+                //if cable tray has connections that don't take fitting,
+                //then we need to store the point to later split the curve
+                else
                 {
-                    segments = line.SplitAtPoints(midPoints);
+                    point = BH.Engine.Geometry.Create.Point(
+                        Math.Round(c.Origin.PointFromRevit().X, 4),
+                        Math.Round(c.Origin.PointFromRevit().Y, 4), 
+                        Math.Round(c.Origin.PointFromRevit().Z, 4));
+                    midPoints.Add(point);
+                }
+            }
+
+            CableTrayConnectionProperty connectionProperty = new CableTrayConnectionProperty();
+            connectionProperty.IsStartConnected = endPointsConnected[0];
+            connectionProperty.IsEndConnected = endPointsConnected[1];
+            
+            //split cable tray if there was any other cable tray connected to it without connector
+            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(endPoints[0], endPoints[1]);
+            List<BH.oM.Geometry.Line> segments = new List<Line>();
+            if (midPoints.Any())
+            {
+                segments = line.SplitAtPoints(midPoints);
+            }
+            else
+            {
+                segments.Add(line);
+            }
+
+            foreach (BH.oM.Geometry.Line segment in segments)
+            {
+                CableTrayConnectionProperty newConnectionProperty = new CableTrayConnectionProperty();
+                if (segment.Start == endPoints[0])
+                {
+                    newConnectionProperty.IsStartConnected = endPointsConnected[0];
+                    newConnectionProperty.IsEndConnected = true; //always true since line has been split
+                }
+                else if (segment.End == endPoints[0])
+                {
+                    newConnectionProperty.IsEndConnected = endPointsConnected[0];
+                    newConnectionProperty.IsStartConnected = true; //always true since line has been split
+                }
+                else if (segment.Start == endPoints[1])
+                {
+                    newConnectionProperty.IsStartConnected = endPointsConnected[1];
+                    newConnectionProperty.IsEndConnected = true; //always true since line has been split
+                }
+                else if (segment.End == endPoints[1])
+                {
+                    newConnectionProperty.IsEndConnected = endPointsConnected[1];
+                    newConnectionProperty.IsStartConnected = true; //always true since line has been split
                 }
                 else
                 {
-                    segments.Add(line);
+                    newConnectionProperty.IsStartConnected = true; //always true since line has been split
+                    newConnectionProperty.IsEndConnected = true; //always true since line has been split
                 }
-                //List<BH.oM.Geometry.Line> splitSegment = line.SplitAtPoints(midPoints);
-                
-                foreach (BH.oM.Geometry.Line segment in segments)
+
+                BH.oM.MEP.Elements.CableTray thisSegment = new CableTray
                 {
-                    CableTrayConnectionProperty newConnectionProperty = new CableTrayConnectionProperty();
-                    if (segment.Start == endPoints[0])
-                    {
-                        newConnectionProperty.IsStartConnected = endPointsConnected[0];
-                        newConnectionProperty.IsEndConnected = true; //always true since line has been split
-                    }
-                    else if (segment.End == endPoints[0])
-                    {
-                        newConnectionProperty.IsEndConnected = endPointsConnected[0];
-                        newConnectionProperty.IsStartConnected = true; //always true since line has been split
-                    }
-                    else if (segment.Start == endPoints[1])
-                    {
-                        newConnectionProperty.IsStartConnected = endPointsConnected[1];
-                        newConnectionProperty.IsEndConnected = true; //always true since line has been split
-                    }
-                    else if (segment.End == endPoints[1])
-                    {
-                        newConnectionProperty.IsEndConnected = endPointsConnected[1];
-                        newConnectionProperty.IsStartConnected = true; //always true since line has been split
-                    }
-                    else
-                    {
-                        newConnectionProperty.IsStartConnected = true; //always true since line has been split
-                        newConnectionProperty.IsEndConnected = true; //always true since line has been split
-                    }
+                    StartNode = (Node) segment.StartPoint(),
+                    EndNode = (Node) segment.EndPoint(),
+                    SectionProperty = sectionProperty,
+                    ConnectionProperty = newConnectionProperty,
+                    OrientationAngle = orientationAngle
+                };
 
-                    BH.oM.MEP.Elements.CableTray thisSegment = new CableTray
-                    {
-                        StartNode = (Node)segment.StartPoint(),
-                        EndNode = (Node)segment.EndPoint(),
-                        SectionProperty = sectionProperty,
-                        ConnectionProperty = newConnectionProperty,
-                        OrientationAngle = orientationAngle
-
-                    };
-
-                    //Set identifiers, parameters & custom data
-                    thisSegment.SetIdentifiers(revitCableTray);
-                    thisSegment.CopyParameters(revitCableTray, settings.ParameterSettings);
-                    thisSegment.SetProperties(revitCableTray, settings.ParameterSettings);
-                    bhomCableTrays.Add(thisSegment);
-                }
-            //}
-
-            #endregion
+                //Set identifiers, parameters & custom data
+                thisSegment.SetIdentifiers(revitCableTray);
+                thisSegment.CopyParameters(revitCableTray, settings.ParameterSettings);
+                thisSegment.SetProperties(revitCableTray, settings.ParameterSettings);
+                bhomCableTrays.Add(thisSegment);
+            }
 
             refObjects.AddOrReplace(revitCableTray.Id, bhomCableTrays);
             return bhomCableTrays;
