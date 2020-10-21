@@ -96,7 +96,7 @@ namespace BH.Revit.Engine.Core
             double outerRadius = 0;
             double innerRadius = 0;
 
-            return BH.Engine.Geometry.Create.BoxProfile(boxHeight, boxWidth, boxThickness, outerRadius, innerRadius);
+            return BH.Engine.Spatial.Create.BoxProfile(boxHeight, boxWidth, boxThickness, outerRadius, innerRadius);
         }
 
         /***************************************************/

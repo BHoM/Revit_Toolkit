@@ -27,6 +27,7 @@ using BH.oM.MEP.SectionProperties;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using BH.oM.MEP.MaterialFragments;
 
 namespace BH.Revit.Engine.Core
 {
@@ -49,7 +50,7 @@ namespace BH.Revit.Engine.Core
             SectionProfile sectionProfile = revitCableTray.CableTraySectionProfile(settings);
 
             // Cable Tray section property
-            return BH.Engine.MEP.Create.CableTraySectionProperty(sectionProfile);
+            return BH.Engine.MEP.Create.CableTraySectionProperty(new CableTrayMaterial(),sectionProfile);
         }
 
         /***************************************************/

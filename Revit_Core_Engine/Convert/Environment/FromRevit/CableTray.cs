@@ -32,7 +32,7 @@ using BH.oM.Base;
 using BH.oM.MEP.ConnectionProperties;
 using BH.oM.MEP.Elements;
 using BH.oM.Reflection.Attributes;
-using Point = BH.oM.Geometry.Point;
+using Line = BH.oM.Geometry.Line;
 
 namespace BH.Revit.Engine.Core
 {
@@ -77,6 +77,7 @@ namespace BH.Revit.Engine.Core
             ConnectorSet connectorSet = connectorManager.Connectors;
             List<Connector> connectors = connectorSet.Cast<Connector>().ToList();
 
+            /*
             #region if it has 2 connectors
 
             //cable trays will always have 2 END connectors only
@@ -143,7 +144,7 @@ namespace BH.Revit.Engine.Core
                                     }
                                 }
 
-                                #endregion*/
+                                #endregion#1#
                                 
                                 startPoint = BH.Engine.Geometry.Create.Point(
                                     Math.Round(locationPoint.Point.PointFromRevit().X, 4),
@@ -219,7 +220,7 @@ namespace BH.Revit.Engine.Core
                                     }
                                 }
 
-                                #endregion*/
+                                #endregion#1#
                                 
                                 endPoint = BH.Engine.Geometry.Create.Point(
                                     Math.Round(locationPoint.Point.PointFromRevit().X, 4),
@@ -248,11 +249,12 @@ namespace BH.Revit.Engine.Core
             }
 
             #endregion
+            */
 
             #region if it has more than 2 connectors
 
-            else
-            {
+            // else
+            // {
                 List<bool> endPointsConnected = new List<bool>();
                 List<BH.oM.Geometry.Point> endPoints = new List<BH.oM.Geometry.Point>();
                 List<BH.oM.Geometry.Point> midPoints = new List<BH.oM.Geometry.Point>();
@@ -364,9 +366,18 @@ namespace BH.Revit.Engine.Core
                 connectionProperty.IsEndConnected = endPointsConnected[1];
                 
                 BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(endPoints[0], endPoints[1]);
-                List<BH.oM.Geometry.Line> splitSegment = line.SplitAtPoints(midPoints);
+                List<BH.oM.Geometry.Line> segments = new List<Line>();
+                if (midPoints.Any())
+                {
+                    segments = line.SplitAtPoints(midPoints);
+                }
+                else
+                {
+                    segments.Add(line);
+                }
+                //List<BH.oM.Geometry.Line> splitSegment = line.SplitAtPoints(midPoints);
                 
-                foreach (BH.oM.Geometry.Line segment in splitSegment)
+                foreach (BH.oM.Geometry.Line segment in segments)
                 {
                     CableTrayConnectionProperty newConnectionProperty = new CableTrayConnectionProperty();
                     if (segment.Start == endPoints[0])
@@ -394,9 +405,16 @@ namespace BH.Revit.Engine.Core
                         newConnectionProperty.IsStartConnected = true; //always true since line has been split
                         newConnectionProperty.IsEndConnected = true; //always true since line has been split
                     }
-                    
-                    BH.oM.MEP.Elements.CableTray thisSegment = BH.Engine.MEP.Create.CableTray(segment,
-                        sectionProperty, newConnectionProperty, orientationAngle);
+
+                    BH.oM.MEP.Elements.CableTray thisSegment = new CableTray
+                    {
+                        StartNode = (Node)segment.StartPoint(),
+                        EndNode = (Node)segment.EndPoint(),
+                        SectionProperty = sectionProperty,
+                        ConnectionProperty = newConnectionProperty,
+                        OrientationAngle = orientationAngle
+
+                    };
 
                     //Set identifiers, parameters & custom data
                     thisSegment.SetIdentifiers(revitCableTray);
@@ -404,7 +422,7 @@ namespace BH.Revit.Engine.Core
                     thisSegment.SetProperties(revitCableTray, settings.ParameterSettings);
                     bhomCableTrays.Add(thisSegment);
                 }
-            }
+            //}
 
             #endregion
 
