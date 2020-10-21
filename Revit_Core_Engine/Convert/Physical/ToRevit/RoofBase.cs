@@ -112,7 +112,7 @@ namespace BH.Revit.Engine.Core
 
                     foreach (oM.Geometry.Point point in controlPoints)
                     {
-                        if (System.Math.Abs(point.Z - plane.Origin.Z) > Tolerance.Distance)
+                        if (Math.Abs(point.Z - plane.Origin.Z) > settings.DistanceTolerance)
                         {
                             XYZ xyz = point.ToRevit();
                             slabShapeEditor.DrawPoint(xyz);

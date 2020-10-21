@@ -99,7 +99,7 @@ namespace BH.Adapter.Revit
         /****             Private  Methods              ****/
         /***************************************************/
 
-        private void M_linkOut_DataObservers(oM.Socket.DataPackage package)
+        private void M_linkOut_DataObservers(oM.Adapters.Socket.DataPackage package)
         {
             //Store the return data
             m_ReturnPackage = package.Data;

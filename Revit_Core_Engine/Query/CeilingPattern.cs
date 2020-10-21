@@ -101,7 +101,7 @@ namespace BH.Revit.Engine.Core
                 End = new oM.Geometry.Point { X = box.Max.X, Y = box.Max.Y, Z = z },
             };
 
-            List<BH.oM.Geometry.Line> boundarySegments = surface.ExternalBoundary.ICollapseToPolyline(BH.oM.Geometry.Tolerance.Angle).SubParts().ToList();
+            List<BH.oM.Geometry.Line> boundarySegments = surface.ExternalBoundary.ICollapseToPolyline(settings.AngleTolerance).SubParts().ToList();
 
             List<BH.oM.Geometry.Line> patterns = new List<BH.oM.Geometry.Line>();
             FillPatternElement fillPatternElement = null;

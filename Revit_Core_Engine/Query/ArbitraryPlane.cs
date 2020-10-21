@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
         {
             XYZ origin = curve.GetEndPoint(0);
             XYZ x = (curve.GetEndPoint(1) - origin).Normalize();
-            XYZ helper = 1 - Math.Abs(x.DotProduct(XYZ.BasisZ)) > BH.oM.Geometry.Tolerance.Distance ? XYZ.BasisZ : XYZ.BasisX;
+            XYZ helper = 1 - Math.Abs(x.DotProduct(XYZ.BasisZ)) > BH.oM.Geometry.Tolerance.Angle ? XYZ.BasisZ : XYZ.BasisX;
             XYZ y = x.CrossProduct(helper).Normalize();
             return Plane.CreateByOriginAndBasis(origin, x, y);
         }
