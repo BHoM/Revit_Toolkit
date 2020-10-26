@@ -88,7 +88,7 @@
     <Compile Include="Enums\NumberComparisonType.cs" />
     <Compile Include="Enums\RevitViewType.cs" />
     <Compile Include="Enums\TextComparisonType.cs" />
-    <Compile Include="Generic\RevitMaterialTakeoff.cs" />
+    <Compile Include="Misc\RevitMaterialTakeoff.cs" />
     <Compile Include="Misc\Tolerance.cs" />
     <Compile Include="Parameters\ElementTypeParameterLink.cs" />
     <Compile Include="Misc\FamilyLibrary.cs" />
