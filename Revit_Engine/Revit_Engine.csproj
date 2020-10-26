@@ -119,8 +119,6 @@
     <Compile Include="Create\Config\RevitPushConfig.cs" />
     <Compile Include="Create\Config\RevitPullConfig.cs" />
     <Compile Include="Create\Config\RevitRemoveConfig.cs" />
-    <Compile Include="Create\Elements\Panel.cs" />
-    <Compile Include="Create\Elements\BHoMObject.cs" />
     <Compile Include="Create\Elements\DraftingInstance.cs" />
     <Compile Include="Create\Elements\ViewPlan.cs" />
     <Compile Include="Create\Elements\ModelInstance.cs" />
@@ -171,9 +169,6 @@
     <Compile Include="Modify\DefaultIfNull.cs" />
     <Compile Include="Modify\RemoveParameterLinks.cs" />
     <Compile Include="Modify\RemoveParameterMaps.cs" />
-    <Compile Include="Modify\SetFamilyTypeName.cs" />
-    <Compile Include="Modify\SetFamilyName.cs" />
-    <Compile Include="Modify\SetMapSettings.cs" />
     <Compile Include="Modify\SetRevitParameter.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
@@ -190,22 +185,17 @@
     <Compile Include="Query\RevitFilePreviews.cs" />
     <Compile Include="Query\CurrentDomainAssembly.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
-    <Compile Include="Query\MapSettings.cs" />
     <Compile Include="Query\MapPropertyInfos.cs" />
     <Compile Include="Query\ParameterNames.cs" />
     <Compile Include="Query\ParameterMap.cs" />
     <Compile Include="Query\OuterPolyCurves.cs" />
-    <Compile Include="Query\FilterByType.cs" />
     <Compile Include="Query\AdjacentSpaceId.cs" />
     <Compile Include="Query\Plane.cs" />
     <Compile Include="Query\SpaceId.cs" />
     <Compile Include="Query\Edges.cs" />
     <Compile Include="Query\FamilyTypeName.cs" />
-    <Compile Include="Query\Duplicate.cs" />
     <Compile Include="Modify\Append.cs" />
     <Compile Include="Modify\RemoveIdentifiers.cs" />
-    <Compile Include="Modify\SetFamilyLibrary.cs" />
-    <Compile Include="Modify\UpdateCustomDataValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\CategoryNames.cs" />
     <Compile Include="Query\FamilyName.cs" />
@@ -214,17 +204,9 @@
     <Compile Include="Query\Discipline.cs" />
     <Compile Include="Query\Paths.cs" />
     <Compile Include="Query\CustomDataValue.cs" />
-    <Compile Include="Query\FullNames.cs" />
-    <Compile Include="Query\IsAssignableFromByFullName.cs" />
-    <Compile Include="Query\IsZero.cs" />
-    <Compile Include="Query\Location.cs" />
     <Compile Include="Query\OmniClass.cs" />
-    <Compile Include="Query\SheetNumber.cs" />
-    <Compile Include="Query\IsTemplate.cs" />
-    <Compile Include="Query\ViewName.cs" />
     <Compile Include="Query\FamilyTypeNames.cs" />
     <Compile Include="Query\UniqueId.cs" />
-    <Compile Include="Query\UniqueIds.cs" />
     <Compile Include="Query\WorksetId.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Geometry.ShapeProfiles;
+using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
                     // Thickness / gauge of the duct sheet
                     double thickness = 0.001519; // Dafault to 16 gauge, to be changed later
                     
-                    return BH.Engine.Geometry.Create.TubeProfile(diameter, thickness);
+                    return BH.Engine.Spatial.Create.TubeProfile(diameter, thickness);
                 case Autodesk.Revit.DB.ConnectorProfileType.Rectangular:
                     // Create a rectangular box profile
                     double boxHeight = duct.Height.ToSI(UnitType.UT_HVAC_DuctSize);
@@ -68,7 +68,7 @@ namespace BH.Revit.Engine.Core
                     double outerRadius = 0;
                     double innerRadius = 0;
 
-                    return BH.Engine.Geometry.Create.BoxProfile(boxHeight, boxWidth, boxThickness, outerRadius, innerRadius);
+                    return BH.Engine.Spatial.Create.BoxProfile(boxHeight, boxWidth, boxThickness, outerRadius, innerRadius);
                 case Autodesk.Revit.DB.ConnectorProfileType.Oval:
                     // Create an oval profile
                     // There is currently no section profile for an oval duct in BHoM_Engine. This part will be implemented once the relevant section profile becomes available.
@@ -98,7 +98,7 @@ namespace BH.Revit.Engine.Core
             double insideDiameter = pipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_INNER_DIAM_PARAM);
             double thickness = (outsideDiameter - insideDiameter) / 2;
 
-            return BH.Engine.Geometry.Create.TubeProfile(diameter, thickness);
+            return BH.Engine.Spatial.Create.TubeProfile(diameter, thickness);
         }
 
         /***************************************************/
@@ -117,7 +117,7 @@ namespace BH.Revit.Engine.Core
 
             double thickness = 0;
 
-            return BH.Engine.Geometry.Create.TubeProfile(diameter, thickness);
+            return BH.Engine.Spatial.Create.TubeProfile(diameter, thickness);
         }
 
         /***************************************************/

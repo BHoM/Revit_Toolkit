@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
 
             double startOffsetLength = startOffset.Length();
             double endOffsetLength = endOffset.Length();
-            if (startOffsetLength > Tolerance.Distance || endOffsetLength > Tolerance.Distance)
+            if (startOffsetLength > settings.DistanceTolerance || endOffsetLength > settings.DistanceTolerance)
             {
                 if ((startOffset - endOffset).Length() > settings.DistanceTolerance)
                 {

@@ -88,7 +88,7 @@ namespace BH.Revit.Adapter.Core
         public void ReturnData(IEnumerable<object> objs)
         {
 
-            oM.Socket.DataPackage package = new oM.Socket.DataPackage
+            oM.Adapters.Socket.DataPackage package = new oM.Adapters.Socket.DataPackage
             {
                 Data = objs.ToList(),
                 Events = BH.Engine.Reflection.Query.CurrentEvents(),
@@ -184,7 +184,7 @@ namespace BH.Revit.Adapter.Core
         /****           Data observer method            ****/
         /***************************************************/
 
-        private void M_linkIn_DataObservers(oM.Socket.DataPackage package)
+        private void M_linkIn_DataObservers(oM.Adapters.Socket.DataPackage package)
         {
             BH.Engine.Reflection.Compute.ClearCurrentEvents();
 
@@ -276,7 +276,7 @@ namespace BH.Revit.Adapter.Core
 
         /***************************************************/
 
-        private bool CheckPackage(oM.Socket.DataPackage package)
+        private bool CheckPackage(oM.Adapters.Socket.DataPackage package)
         {
             if (package.Data.Count == 0)
             {

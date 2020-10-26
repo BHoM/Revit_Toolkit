@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,35 +20,24 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Environment.Fragments;
-using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Modify
+    public static class Tolerance
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /**** Constants                                 ****/
         /***************************************************/
 
-        [Deprecated("3.1", "This method is a duplicate of SetProperty.")]
-        [Description("Sets Family Type name for Environment Context Properties")]
-        [Input("originContextFragment", "Origin Context Properties")]
-        [Input("familyTypeName", "Revit Family Type Name")]
-        [Output("OriginContextFragment")]
-        public static OriginContextFragment SetFamilyTypeName(this OriginContextFragment originContextFragment, string familyTypeName)
-        {
-            if (originContextFragment == null)
-                return null;
+        [Description("Maximum distance between two vertices to consider them identical - value taken from Autodesk.Revit.ApplicationServices.Application.VertexTolerance constant.")]
+        public const double Vertex = 0.0005233832795 * 0.3048;
 
-            OriginContextFragment originContext = new OriginContextFragment();
-            originContext.Description = originContextFragment.Description;
-            originContext.ElementID = originContextFragment.ElementID;
-            originContext.TypeName = familyTypeName;
+        [Description("Minimum distance of a curve to consider it valid - value taken from Autodesk.Revit.ApplicationServices.Application.ShortCurveTolerance constant.")]
+        public const double ShortCurve = 0.00256026455729167 * 0.3048;
 
-            return originContext;
-        }
+        [Description("Maximum difference between two angles to consider them identical - value taken from Autodesk.Revit.ApplicationServices.Application.AngleTolerance constant.")]
+        public const double Angle = 0.00174532925199433;
 
         /***************************************************/
     }
