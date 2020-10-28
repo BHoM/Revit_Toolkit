@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static ViewSheet ToRevitViewSheet(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static ViewSheet ToRevitSheet(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (sheet == null)
                 return null;
@@ -47,6 +47,8 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             viewSheet = ViewSheet.Create(document, ElementId.InvalidElementId);
+            viewSheet.ViewName = sheet.SheetName;
+            viewSheet.SheetNumber = sheet.SheetNumber;
 
             // Copy parameters from BHoM object to Revit element
             viewSheet.CopyParameters(sheet, settings);

@@ -110,7 +110,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             InstanceProperties instanceProperties = new InstanceProperties();
-            instanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
+            instanceProperties.CategoryName = "Lines";
 
             DraftingInstance draftingInstance = new DraftingInstance()
             {
@@ -119,7 +119,6 @@ namespace BH.Engine.Adapters.Revit
                 ViewName = viewName,
                 Location = location
             };
-            draftingInstance.CustomData.Add(Convert.CategoryName, "Lines");
 
             return draftingInstance;
         }
@@ -138,7 +137,7 @@ namespace BH.Engine.Adapters.Revit
 
             InstanceProperties instanceProperties = new InstanceProperties();
             instanceProperties.Name = name;
-            instanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
+            instanceProperties.CategoryName = "Lines";
 
             DraftingInstance draftingInstance = new DraftingInstance()
             {
@@ -147,7 +146,6 @@ namespace BH.Engine.Adapters.Revit
                 ViewName = viewName,
                 Location = location
             };
-            draftingInstance.CustomData.Add(Convert.CategoryName, "Lines");
 
             return draftingInstance;
         }

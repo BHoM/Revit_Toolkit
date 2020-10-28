@@ -39,10 +39,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("revitIdentifiers")]
         public static RevitIdentifiers GetRevitIdentifiers(this IBHoMObject bHoMObject)
         {
-            if (bHoMObject == null)
-                return null;
-
-            return bHoMObject.Fragments?.FirstOrDefault(x => x is RevitIdentifiers) as RevitIdentifiers;
+            return bHoMObject?.Fragments?.FirstOrDefault(x => x is RevitIdentifiers) as RevitIdentifiers;
         }
 
         /***************************************************/

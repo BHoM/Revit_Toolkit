@@ -32,7 +32,7 @@ namespace BH.oM.Adapters.Revit.Properties
         /****             Public Properties             ****/
         /***************************************************/
 
-
+        public virtual string CategoryName { get; set; } = string.Empty;
 
         /***************************************************/
     }

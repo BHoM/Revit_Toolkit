@@ -26,20 +26,20 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("Configuration used to specify representation to be pulled and passed to CustomData.")]
+    [Description("Configuration used to specify representation to be pulled and passed to RevitRepresentation fragment.")]
     public class PullRepresentationConfig
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("If true, representation of elements will be pulled and stored under RenderMesh in CustomData.")]
+        [Description("If true, representation of elements will be pulled and stored under RenderMesh in RevitRepresentation fragment.")]
         public virtual bool PullRenderMesh { get; set; } = false;
 
         [Description("Detail level of representation, correspondent to level of detail in Revit.")]
         public virtual DetailLevel DetailLevel { get; set; } = DetailLevel.Medium;
 
-        [Description("Invisible element parts will be pulled and passed to CustomData if true. PullRepresentation switched to true needed for this to activate.")]
+        [Description("Invisible element parts will be pulled and passed to RevitRepresentation fragment if true. PullRepresentation switched to true needed for this to activate.")]
         public virtual bool IncludeNonVisible { get; set; } = false;
 
         /***************************************************/

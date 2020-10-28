@@ -47,15 +47,21 @@ namespace BH.Revit.Engine.Core
             return new RevitIdentifiers(family.UniqueId, family.Id.IntegerValue, family.FamilyCategory.Name, family.Name);
         }
 
+        /***************************************************/
+
         public static RevitIdentifiers Identifiers(this GraphicsStyle graphicsStyle)
         {
             return new RevitIdentifiers(graphicsStyle.UniqueId, graphicsStyle.Id.IntegerValue, graphicsStyle.GraphicsStyleCategory.Parent.Name);
         }
 
+        /***************************************************/
+
         public static RevitIdentifiers Identifiers(this ElementType elementType)
         {
             return new RevitIdentifiers(elementType.UniqueId, elementType.Id.IntegerValue, elementType.Category?.Name, elementType.FamilyName, elementType.Name, elementType.Id.IntegerValue);
         }
+
+        /***************************************************/
 
         public static RevitIdentifiers Identifiers(this Element element)
         {
@@ -66,6 +72,7 @@ namespace BH.Revit.Engine.Core
             string familyName = "";
             string familyTypeName = "";
             int familyTypeId = -1;
+            int ownerViewId = -1;
 
             Parameter parameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
             if (parameter != null)
@@ -83,7 +90,10 @@ namespace BH.Revit.Engine.Core
             if (parameter != null)
                 int.TryParse(parameter.AsValueString(), out familyTypeId);
 
-            return new RevitIdentifiers(element.UniqueId, element.Id.IntegerValue, categoryName, familyName, familyTypeName, familyTypeId);
+            if (element.ViewSpecific)
+                ownerViewId = element.OwnerViewId.IntegerValue;
+
+            return new RevitIdentifiers(element.UniqueId, element.Id.IntegerValue, categoryName, familyName, familyTypeName, familyTypeId, ownerViewId);
         }
 
         /***************************************************/

@@ -34,24 +34,13 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates BHoM Viewport object in specific point location, linked to the view by given name and to the sheet by given sheet Number.")]
-        [Input("sheetNumber", "Revit sheet number linked with created Viewport")]
-        [Input("viewName", "Revit view name linked with created Viewport")]
+        [InputFromProperty("sheetNumber")]
+        [InputFromProperty("viewName")]
         [InputFromProperty("location")]
         [Output("viewport")]
         public static Viewport Viewport(string sheetNumber, string viewName, Point location)
         {
-            Viewport viewport = new Viewport()
-            {
-                Location = location
-            };
-
-            viewport.CustomData.Add("Sheet Number", sheetNumber);
-            viewport.CustomData.Add("View Name", viewName);
-
-            viewport.CustomData.Add(Convert.FamilyName, "Viewport");
-            viewport.CustomData.Add(Convert.CategoryName, "Viewports");
-
-            return viewport;
+            return new Viewport { SheetNumber = sheetNumber, ViewName = viewName, Location = location };
         }
 
         /***************************************************/

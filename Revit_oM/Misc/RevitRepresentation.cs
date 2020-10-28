@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -19,51 +19,36 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
+
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Graphics;
+using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Query
+    //[Description("Wrapper for Revit family file (.rfa) that stores basic information about it such as family category, familiy type names etc. Prototype, currently with limited functionality.")]
+    public class RevitRepresentation : IFragment, IImmutable
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Deprecated("3.2", "This method is a duplicate of GetProperty.")]
-        [Description("Returns integer representation of WorksetId of Revit workset correspondent to given BHoMObject. This value is stored in CustomData under key Revit_worksetId.")]
-        [Input("bHoMObject", "BHoMObject to be queried.")]
-        [Output("worksetId")]
-        public static int WorksetId(this IBHoMObject bHoMObject)
+        //[Description("Path to the Revit family file wrapped by this object.")]
+        public virtual List<RenderMesh> RenderMeshes { get; set; } = null;
+
+
+        /***************************************************/
+        /****            Public Constructors            ****/
+        /***************************************************/
+
+        public RevitRepresentation(List<RenderMesh> renderMeshes)
         {
-            if (bHoMObject == null)
-                return -1;
-
-            object value = null;
-            if (bHoMObject.CustomData.TryGetValue("Revit_worksetId", out value))
-            {
-                if (value is string)
-                {
-                    int num = -1;
-                    if (int.TryParse((string)value, out num))
-                        return num;
-                }
-                else if (value is int)
-                {
-                    return (int)value;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-
-            return -1;
+            RenderMeshes = renderMeshes;
         }
 
         /***************************************************/
     }
 }
+
 

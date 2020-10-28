@@ -41,10 +41,10 @@ namespace BH.oM.Adapters.Revit
         [Description("Elements from closed worksets will be processed if true.")]
         public virtual bool IncludeClosedWorksets { get; set; } = false;
 
-        [Description("Configuration specifying which geometry should be pulled and passed to CustomData.")]
+        [Description("Configuration specifying which geometry should be pulled and passed to RevitGeometry fragment.")]
         public virtual PullGeometryConfig GeometryConfig { get; set; } = new PullGeometryConfig();
 
-        [Description("Configuration specifying representation to be pulled and passed to CustomData.")]
+        [Description("Configuration specifying representation to be pulled and passed to RevitRepresentation fragment.")]
         public virtual PullRepresentationConfig RepresentationConfig { get; set; } = new PullRepresentationConfig();
 
         /***************************************************/

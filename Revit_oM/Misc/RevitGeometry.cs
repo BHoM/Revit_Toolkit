@@ -20,35 +20,43 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-namespace BH.Engine.Adapters.Revit
+using BH.oM.Base;
+using BH.oM.Geometry;
+using System.Collections.Generic;
+using System.ComponentModel;
+
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Convert
+    //[Description("Wrapper for Revit family file (.rfa) that stores basic information about it such as family category, familiy type names etc. Prototype, currently with limited functionality.")]
+    public class RevitGeometry : IFragment, IImmutable
     {
         /***************************************************/
-        /****          Public Fields - General          ****/
+        /****             Public Properties             ****/
         /***************************************************/
-        
-        public const string AdapterIdName = "Revit_id";
-        public const string ElementId = "Revit_elementId";
-        public const string FamilyName = "Revit_familyName";
-        public const string FamilyTypeName = "Revit_familyTypeName";
-        public const string FamilyTypeId = "Revit_familyTypeId";
-        public const string FamilyPlacementTypeName = "Revit_familyPlacementTypeName";
-        public const string CategoryName = "Revit_categoryName";
-        public const string ViewName = "Revit_viewName";
-        public const string ViewTemplate = "View Template";
-        public const string Edges = "Revit_edges";
-        public const string Surfaces = "Revit_surfaces";
-        public const string Meshes = "Revit_meshes";
-        public const string RenderMesh = "RenderMesh";
+
+        //[Description("Path to the Revit family file wrapped by this object.")]
+        public virtual List<ICurve> Edges { get; set; } = null;
+
+        //[Description("Path to the Revit family file wrapped by this object.")]
+        public virtual List<ISurface> Surfaces { get; set; } = null;
+
+        //[Description("Path to the Revit family file wrapped by this object.")]
+        public virtual List<Mesh> Meshes { get; set; } = null;
 
 
         /***************************************************/
-        /****           Public Fields - BEnv            ****/
+        /****            Public Constructors            ****/
         /***************************************************/
 
-        public const string CeilingPattern = "CeilingPattern";
+        public RevitGeometry(List<ICurve> edges, List<ISurface> surfaces, List<Mesh> meshes)
+        {
+            Edges = edges;
+            Surfaces = surfaces;
+            Meshes = meshes;
+        }
 
         /***************************************************/
     }
 }
+
+

@@ -33,71 +33,24 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates BHoM ViewPlan object linked to a specific Revit level.")]
-        [Input("name", "Name of the created ViewPlan correspondent with Revit view name.")]
+        [InputFromProperty("viewName")]
         [InputFromProperty("levelName")]
         [Output("viewPlan")]
-        public static ViewPlan ViewPlan(string name, string levelName)
+        public static ViewPlan ViewPlan(string viewName, string levelName)
         {
-            ViewPlan viewPlan = new ViewPlan()
-            {
-                Name = name,
-                LevelName = levelName,
-                IsTemplate = false
-            };
-
-            viewPlan.CustomData.Add("View Name", name);
-
-            viewPlan.CustomData.Add(Convert.CategoryName, "Views");
-            viewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
-
-            return viewPlan;
-        }
-
-        /***************************************************/
-
-        [Description("Creates BHoM ViewPlan object not linked to any specific Revit level.")]
-        [Input("name", "Name of the created ViewPlan correspondent with Revit view name.")]
-        [Output("viewPlan")]
-        public static ViewPlan ViewPlan(string name)
-        {
-            ViewPlan viewPlan = new ViewPlan()
-            {
-                Name = name,
-                LevelName = null,
-                IsTemplate = true
-            };
-
-            viewPlan.CustomData.Add("View Name", name);
-
-            viewPlan.CustomData.Add(Convert.CategoryName, "Views");
-            viewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
-
-            return viewPlan;
+            return new ViewPlan { ViewName = viewName, LevelName = levelName };
         }
 
         /***************************************************/
 
         [Description("Creates BHoM ViewPlan object linked to a specific level, based on specific Revit view template.")]
-        [Input("name", "Name of the created ViewPlan correspondent with Revit view name.")]
+        [InputFromProperty("viewName")]
         [InputFromProperty("levelName")]
-        [Input("viewTemplateName", "Name of Revit view template to be assigned to the created ViewPlan.")]
+        [InputFromProperty("templateName")]
         [Output("viewPlan")]
-        public static ViewPlan ViewPlan(string name, string levelName, string viewTemplateName)
+        public static ViewPlan ViewPlan(string viewName, string levelName, string templateName)
         {
-            ViewPlan viewPlan = new ViewPlan()
-            {
-                Name = name,
-                LevelName = levelName,
-                IsTemplate = false
-            };
-
-            viewPlan.CustomData.Add("View Name", name);
-
-            viewPlan.CustomData.Add(Convert.CategoryName, "Views");
-            viewPlan.CustomData.Add(Convert.FamilyName, "Floor Plan");
-            viewPlan.CustomData.Add(Convert.ViewTemplate, viewTemplateName);
-
-            return viewPlan;
+            return new ViewPlan { ViewName = viewName, LevelName = levelName, TemplateName = templateName };
         }
 
         /***************************************************/
