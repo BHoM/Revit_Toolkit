@@ -26,26 +26,26 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("Configuration used to specify which geometry should be pulled and passed to CustomData.")]
+    [Description("Configuration used to specify which geometry should be pulled and passed to RevitGeometry fragment.")]
     public class PullGeometryConfig
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("If true, edges of elements will be pulled and stored under Revit_edges in CustomData.")]
+        [Description("If true, edges of elements will be pulled and stored under Revit_edges in RevitGeometry fragment.")]
         public virtual bool PullEdges { get; set; } = false;
 
-        [Description("If true, surfaces of elements will be pulled and stored under Revit_surfaces in CustomData.")]
+        [Description("If true, surfaces of elements will be pulled and stored under Revit_surfaces in RevitGeometry fragment.")]
         public virtual bool PullSurfaces { get; set; } = false;
 
-        [Description("If true, meshed surfaces of elements will be pulled and stored under Revit_meshes in CustomData.")]
+        [Description("If true, meshed surfaces of elements will be pulled and stored under Revit_meshes in RevitGeometry fragment.")]
         public virtual bool PullMeshes { get; set; } = false;
 
         [Description("Detail level of mesh to be pulled, correspondent to level of detail in Revit.")]
         public virtual DetailLevel MeshDetailLevel { get; set; } = DetailLevel.Medium;
 
-        [Description("Invisible element parts will be pulled and passed to CustomData if true. PullEdges or PullSurfaces switched to true needed for this to activate.")]
+        [Description("Invisible element parts will be pulled and passed to RevitGeometry fragment if true. PullEdges or PullSurfaces switched to true needed for this to activate.")]
         public virtual bool IncludeNonVisible { get; set; } = false;
 
         /***************************************************/

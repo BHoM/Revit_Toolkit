@@ -36,9 +36,6 @@ namespace BH.oM.Adapters.Revit.Elements
         [Description("An entity storing the information about Revit view type.")]
         InstanceProperties InstanceProperties { get; set; }
 
-        [Description("If true, the object represents a Revit view template, if false, the object represents an actual Revit view.")]
-        bool IsTemplate { get; set; }
-
         /***************************************************/
     }
 }

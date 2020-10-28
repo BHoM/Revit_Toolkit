@@ -115,7 +115,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compute\SortByPerformance.cs" />
-    <Compile Include="Convert\Aliases.cs" />
     <Compile Include="Create\Config\RevitPushConfig.cs" />
     <Compile Include="Create\Config\RevitPullConfig.cs" />
     <Compile Include="Create\Config\RevitRemoveConfig.cs" />
@@ -173,13 +172,15 @@
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Query\DefaultParameterSettings.cs" />
-    <Compile Include="Query\FamilyPlacementTypeName.cs" />
     <Compile Include="Query\GetRevitParameters.cs" />
     <Compile Include="Query\GetRevitParameterValue.cs" />
     <Compile Include="Query\InnerPolyCurves.cs" />
     <Compile Include="Query\Family.cs" />
     <Compile Include="Query\ParameterLinks.cs" />
     <Compile Include="Query\GetRevitIdentifiers.cs" />
+    <Compile Include="Query\RevitEdges.cs" />
+    <Compile Include="Query\RevitMeshes.cs" />
+    <Compile Include="Query\RevitSurfaces.cs" />
     <Compile Include="Query\XDocument.cs" />
     <Compile Include="Query\RevitFilePreviews.cs" />
     <Compile Include="Query\CurrentDomainAssembly.cs" />
@@ -188,10 +189,7 @@
     <Compile Include="Query\ParameterNames.cs" />
     <Compile Include="Query\ParameterMap.cs" />
     <Compile Include="Query\OuterPolyCurves.cs" />
-    <Compile Include="Query\AdjacentSpaceId.cs" />
     <Compile Include="Query\Plane.cs" />
-    <Compile Include="Query\SpaceId.cs" />
-    <Compile Include="Query\Edges.cs" />
     <Compile Include="Query\FamilyTypeName.cs" />
     <Compile Include="Modify\Append.cs" />
     <Compile Include="Modify\RemoveIdentifiers.cs" />
@@ -206,7 +204,6 @@
     <Compile Include="Query\OmniClass.cs" />
     <Compile Include="Query\FamilyTypeNames.cs" />
     <Compile Include="Query\UniqueId.cs" />
-    <Compile Include="Query\WorksetId.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
@@ -215,7 +212,9 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Convert\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,10 +20,13 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
-
+using BH.oM.Adapters.Revit;
 using BH.oM.Base;
+using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -33,37 +36,15 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Deprecated("3.2", "BH.Engine.Adapters.Revit.Query.SpaceId is not used any more.")]
-        [Description("Gets integer representation of ElementId of Revit space element correspondent to given BHoMObject. This value is stored in CustomData under key SpaceID.")]
+        [Description("Returns mesh geometry of Revit element correspondent to given BHoMObject. This value is stored in RevitGeometry fragment.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
-        [Output("elementId")]
-        public static int SpaceId(this IBHoMObject bHoMObject)
+        [Output("meshes")]
+        public static List<Mesh> RevitMeshes(this IBHoMObject bHoMObject)
         {
-            if (bHoMObject == null)
-                return -1;
-
-            object value = null;
-            if (bHoMObject.CustomData.TryGetValue("SpaceID", out value))
-            {
-                if (value is string)
-                {
-                    int num = -1;
-                    if (int.TryParse((string)value, out num))
-                        return num;
-                }
-                else if (value is int)
-                {
-                    return (int)value;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-
-            return -1;
+            return (bHoMObject?.Fragments?.FirstOrDefault(x => x is RevitGeometry) as RevitGeometry)?.Meshes;
         }
 
         /***************************************************/
     }
 }
+

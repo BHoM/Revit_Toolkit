@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -21,48 +21,42 @@
  */
 
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Geometry;
+using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Query
+    //[Description("Wrapper for Revit family file (.rfa) that stores basic information about it such as family category, familiy type names etc. Prototype, currently with limited functionality.")]
+    public class RevitGeometry : IFragment, IImmutable
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Deprecated("3.2", "BH.Engine.Adapters.Revit.Query.AdjacentSpaceId is not used any more.")]
-        [Description("Gets integer representation of adjacent space Revit ElementId (stored in CustomData) for given BHoMObject.")]
-        [Input("bHoMObject", "BHoMObject to be queried.")]
-        [Output("elementId")]
-        public static int AdjacentSpaceId(this IBHoMObject bHoMObject)
+        //[Description("Path to the Revit family file wrapped by this object.")]
+        public virtual List<ICurve> Edges { get; set; } = null;
+
+        //[Description("Path to the Revit family file wrapped by this object.")]
+        public virtual List<ISurface> Surfaces { get; set; } = null;
+
+        //[Description("Path to the Revit family file wrapped by this object.")]
+        public virtual List<Mesh> Meshes { get; set; } = null;
+
+
+        /***************************************************/
+        /****            Public Constructors            ****/
+        /***************************************************/
+
+        public RevitGeometry(List<ICurve> edges, List<ISurface> surfaces, List<Mesh> meshes)
         {
-            if (bHoMObject == null)
-                return -1;
-
-            object value = null;
-            if (bHoMObject.CustomData.TryGetValue("AdjacentSpaceID", out value))
-            {
-                if (value is string)
-                {
-                    int num = -1;
-                    if (int.TryParse((string)value, out num))
-                        return num;
-                }
-                else if (value is int)
-                {
-                    return (int)value;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-
-            return -1;
+            Edges = edges;
+            Surfaces = surfaces;
+            Meshes = meshes;
         }
 
         /***************************************************/
     }
 }
+
+

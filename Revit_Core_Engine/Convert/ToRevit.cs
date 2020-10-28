@@ -121,7 +121,7 @@ namespace BH.Revit.Engine.Core
 
         public static Element ToRevit(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            return sheet.ToRevitViewSheet(document, settings, refObjects);
+            return sheet.ToRevitSheet(document, settings, refObjects);
         }
 
         /***************************************************/

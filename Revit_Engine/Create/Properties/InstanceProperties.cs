@@ -38,15 +38,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("instanceProperties")]
         public static InstanceProperties InstanceProperties(string familyName, string familyTypeName)
         {
-            InstanceProperties instanceProperties = new InstanceProperties()
-            {
-                Name = Query.FamilyTypeFullName(familyName, familyTypeName),
-            };
-
-            instanceProperties.CustomData.Add(Convert.FamilyName, familyName);
-            instanceProperties.CustomData.Add(Convert.FamilyTypeName, familyTypeName);
-
-            return instanceProperties;
+            return new InstanceProperties { Name = Query.FamilyTypeFullName(familyName, familyTypeName) };
         }
 
         /***************************************************/
@@ -56,12 +48,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("instanceProperties")]
         public static InstanceProperties InstanceProperties(string name)
         {
-            InstanceProperties instanceProperties = new InstanceProperties()
-            {
-                Name = name,
-            };
-
-            return instanceProperties;
+            return new InstanceProperties { Name = name };
         }
 
         /***************************************************/

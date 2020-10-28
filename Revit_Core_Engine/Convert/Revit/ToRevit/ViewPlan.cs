@@ -85,23 +85,20 @@ namespace BH.Revit.Engine.Core
 #else
             revitViewPlan.ViewName = viewPlan.Name;
 #endif
+            
+            if (!string.IsNullOrWhiteSpace(viewPlan.TemplateName))
+            {
+                IEnumerable<ViewPlan> viewPlans = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).Cast<ViewPlan>();
+                //TODO: check if viewName or Name, check if can be 2 same named templates
+                ViewPlan viewPlanTemplate = viewPlans.FirstOrDefault(x => x.IsTemplate && viewPlan.TemplateName == x.ViewName);
+                if (viewPlanTemplate == null)
+                    Compute.ViewTemplateNotExistsWarning(viewPlan);
+                else
+                    revitViewPlan.ViewTemplateId = viewPlanTemplate.Id;
+            }
 
             // Copy parameters from BHoM object to Revit element
             revitViewPlan.CopyParameters(viewPlan, settings);
-
-            object value = null;
-            if (viewPlan.CustomData.TryGetValue(BH.Engine.Adapters.Revit.Convert.ViewTemplate, out value))
-            {
-                if (value is string)
-                {
-                    List<ViewPlan> viewPlans = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).Cast<ViewPlan>().ToList();
-                    ViewPlan viewPlanTemplate = viewPlans.Find(x => x.IsTemplate && value.Equals(x.Name));
-                    if (viewPlanTemplate == null)
-                        Compute.ViewTemplateNotExistsWarning(viewPlan);
-                    else
-                        revitViewPlan.ViewTemplateId = viewPlanTemplate.Id;
-                }
-            }
 
             refObjects.AddOrReplace(viewPlan, revitViewPlan);
             return revitViewPlan;

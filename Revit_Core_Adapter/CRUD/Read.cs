@@ -107,40 +107,35 @@ namespace BH.Revit.Adapter.Core
                 
                 IEnumerable<IBHoMObject> iBHoMObjects = Read(element, discipline, revitSettings, refObjects);
                 if (iBHoMObjects != null && iBHoMObjects.Count() != 0)
-                { 
+                {
+                    List<ICurve> edges = null;
                     if (geometryConfig.PullEdges)
-                    {
-                        List<ICurve> edges = element.Curves(geometryOptions, revitSettings, true).FromRevit();
-                        foreach (IBHoMObject iBHoMObject in iBHoMObjects)
-                        {
-                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Edges] = edges;
-                        }
-                    }
+                        edges = element.Curves(geometryOptions, revitSettings, true).FromRevit();
 
+                    List<ISurface> surfaces = null;
                     if (geometryConfig.PullSurfaces)
-                    {
-                        List<ISurface> surfaces = element.Faces(geometryOptions, revitSettings).Select(x => x.IFromRevit()).ToList();
-                        foreach (IBHoMObject iBHoMObject in iBHoMObjects)
-                        {
-                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Surfaces] = surfaces;
-                        }
-                    }
+                        surfaces = element.Faces(geometryOptions, revitSettings).Select(x => x.IFromRevit()).ToList();
 
+                    List<oM.Geometry.Mesh> meshes = null;
                     if (geometryConfig.PullMeshes)
+                        meshes = element.MeshedGeometry(meshOptions, revitSettings);
+
+                    if (geometryConfig.PullEdges || geometryConfig.PullSurfaces || geometryConfig.PullMeshes)
                     {
-                        List<oM.Geometry.Mesh> meshes = element.MeshedGeometry(meshOptions, revitSettings);
+                        RevitGeometry geometry = new RevitGeometry(edges, surfaces, meshes);
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
-                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.Meshes] = meshes;
+                            iBHoMObject.Fragments.AddOrReplace(geometry);
                         }
                     }
-
+                    
                     if (representationConfig.PullRenderMesh)
                     {
                         List<RenderMesh> renderMeshes = element.RenderMeshes(renderMeshOptions, revitSettings);
+                        RevitRepresentation representation = new RevitRepresentation(renderMeshes);
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
-                            iBHoMObject.CustomData[BH.Engine.Adapters.Revit.Convert.RenderMesh] = renderMeshes;
+                            iBHoMObject.Fragments.AddOrReplace(representation);
                         }
                     }
 
