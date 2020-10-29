@@ -200,7 +200,6 @@
     <Compile Include="Query\ElementId.cs" />
     <Compile Include="Query\Discipline.cs" />
     <Compile Include="Query\Paths.cs" />
-    <Compile Include="Query\CustomDataValue.cs" />
     <Compile Include="Query\OmniClass.cs" />
     <Compile Include="Query\FamilyTypeNames.cs" />
     <Compile Include="Query\UniqueId.cs" />
