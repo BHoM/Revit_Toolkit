@@ -81,12 +81,11 @@ namespace BH.Revit.Engine.Core
             if (materialFragment == null)
                 materialFragment = familyInstance.StructuralMaterialType.LibraryMaterial(materialGrade);
 
-            // If material fragment could not be found, raise a warning and create an empty one.
-            if (materialFragment == null) 
-            {
-                Compute.InvalidDataMaterialWarning(familyInstance);
+            // If material fragment could not be found create an empty one and raise a warning further down the line.
+            bool materialFound = materialFragment != null;
+
+            if (materialFragment == null)
                 materialFragment = familyInstance.StructuralMaterialType.EmptyMaterialFragment(materialGrade);
-            }
 
             // Get bar profile and create property
             string profileName = familyInstance.Symbol.Name;
@@ -103,12 +102,20 @@ namespace BH.Revit.Engine.Core
                 if (profile.Edges.Count == 0)
                     familyInstance.Symbol.ConvertProfileFailedWarning();
 
+                if (!materialFound)
+                    Compute.InvalidDataMaterialWarning(familyInstance);
+
                 property = BH.Engine.Structure.Create.SectionPropertyFromProfile(profile, materialFragment, profileName);
             }
             else
             {
                 property = property.GetShallowClone() as ISectionProperty;
-                property.Material = materialFragment;
+
+                if (!materialFound)
+                    BH.Engine.Reflection.Compute.RecordWarning($"Section property of a bar has been loaded from the library, but the material could not be converted. Default material of the section property has been used. Revit ElementId: {familyInstance.Id.IntegerValue}");
+                else
+                    property.Material = materialFragment;
+
                 property.Name = profileName;
             }
             
