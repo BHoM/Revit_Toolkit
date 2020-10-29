@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
             viewPlan = BH.Engine.Adapters.Revit.Create.ViewPlan(revitViewPlan.Name, revitViewPlan.GenLevel?.Name);
             View template = revitViewPlan.Document.GetElement(revitViewPlan.ViewTemplateId) as View;
             if (template != null)
-                viewPlan.TemplateName = template.ViewName;
+                viewPlan.TemplateName = template.Name;
 
             ElementType elementType = revitViewPlan.Document.GetElement(revitViewPlan.GetTypeId()) as ElementType;
             if (elementType != null)

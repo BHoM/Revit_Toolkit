@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             viewSheet = ViewSheet.Create(document, ElementId.InvalidElementId);
-            viewSheet.ViewName = sheet.SheetName;
+            viewSheet.Name = sheet.SheetName;
             viewSheet.SheetNumber = sheet.SheetNumber;
 
             // Copy parameters from BHoM object to Revit element

@@ -84,7 +84,7 @@ namespace BH.Revit.Engine.Core
             if (!string.IsNullOrWhiteSpace(viewPlan.TemplateName))
             {
                 IEnumerable<ViewPlan> viewPlans = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).Cast<ViewPlan>();
-                ViewPlan viewPlanTemplate = viewPlans.FirstOrDefault(x => x.IsTemplate && viewPlan.TemplateName == x.ViewName);
+                ViewPlan viewPlanTemplate = viewPlans.FirstOrDefault(x => x.IsTemplate && viewPlan.TemplateName == x.Name);
                 if (viewPlanTemplate == null)
                     Compute.ViewTemplateNotExistsWarning(viewPlan);
                 else
