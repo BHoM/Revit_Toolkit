@@ -48,7 +48,7 @@ namespace BH.Revit.Adapter.Core
         public RevitListenerAdapter(UIControlledApplication uIControlledApplication, Document document)
             : base()
         {
-            AdapterIdName = "Revit_id";
+            AdapterIdName = BH.Engine.Adapters.Revit.Convert.AdapterIdName;
             m_AdapterSettings.UseAdapterId = false;
 
             m_Document = document;
