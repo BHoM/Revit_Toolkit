@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
 
         public static ViewPlan ToRevitViewPlan(this oM.Adapters.Revit.Elements.ViewPlan viewPlan, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            if (viewPlan == null || string.IsNullOrEmpty(viewPlan.LevelName) || string.IsNullOrEmpty(viewPlan.Name))
+            if (viewPlan == null || string.IsNullOrEmpty(viewPlan.LevelName) || string.IsNullOrEmpty(viewPlan.ViewName))
                 return null;
 
             ViewPlan revitViewPlan = refObjects.GetValue<ViewPlan>(document, viewPlan.BHoM_Guid);
@@ -62,11 +62,6 @@ namespace BH.Revit.Engine.Core
             ElementId viewFamilyTypeElementID = ElementId.InvalidElementId;
 
             IEnumerable<ElementType> viewFamilyTypes = new FilteredElementCollector(document).OfClass(typeof(ViewFamilyType)).Cast<ElementType>();
-
-            ElementType elementType = viewPlan.ElementType(viewFamilyTypes, false);
-            if (elementType == null)
-                return null;
-
             foreach (ViewFamilyType viewFamilyType in viewFamilyTypes)
             {
                 if(viewFamilyType.FamilyName == "Floor Plan")
@@ -83,7 +78,7 @@ namespace BH.Revit.Engine.Core
 #if (REVIT2020 || REVIT2021)
             revitViewPlan.Name = viewPlan.Name;
 #else
-            revitViewPlan.ViewName = viewPlan.Name;
+            revitViewPlan.ViewName = viewPlan.ViewName;
 #endif
             
             if (!string.IsNullOrWhiteSpace(viewPlan.TemplateName))
