@@ -89,7 +89,6 @@ namespace BH.Revit.Engine.Core
             if (!string.IsNullOrWhiteSpace(viewPlan.TemplateName))
             {
                 IEnumerable<ViewPlan> viewPlans = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).Cast<ViewPlan>();
-                //TODO: check if viewName or Name, check if can be 2 same named templates
                 ViewPlan viewPlanTemplate = viewPlans.FirstOrDefault(x => x.IsTemplate && viewPlan.TemplateName == x.ViewName);
                 if (viewPlanTemplate == null)
                     Compute.ViewTemplateNotExistsWarning(viewPlan);

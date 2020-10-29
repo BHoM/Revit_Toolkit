@@ -27,14 +27,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    //[Description("Wrapper for Revit family file (.rfa) that stores basic information about it such as family category, familiy type names etc. Prototype, currently with limited functionality.")]
+    [Description("Fragment containing the representation extracted from Revit element represented by the BHoM object.")]
     public class RevitRepresentation : IFragment, IImmutable
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        //[Description("Path to the Revit family file wrapped by this object.")]
+        [Description("Mesh representation of Revit element represented by the BHoM object carrying this fragment.")]
         public virtual List<RenderMesh> RenderMeshes { get; set; } = null;
 
 

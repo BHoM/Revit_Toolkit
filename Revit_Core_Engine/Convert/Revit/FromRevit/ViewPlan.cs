@@ -42,11 +42,6 @@ namespace BH.Revit.Engine.Core
             if (viewPlan != null)
                 return viewPlan;
 
-            if (revitViewPlan.IsTemplate)
-            {
-                //warning
-            }
-
             viewPlan = BH.Engine.Adapters.Revit.Create.ViewPlan(revitViewPlan.Name, revitViewPlan.GenLevel?.Name);
             View template = revitViewPlan.Document.GetElement(revitViewPlan.ViewTemplateId) as View;
             if (template != null)

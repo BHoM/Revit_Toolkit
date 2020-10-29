@@ -27,20 +27,20 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    //[Description("Wrapper for Revit family file (.rfa) that stores basic information about it such as family category, familiy type names etc. Prototype, currently with limited functionality.")]
+    [Description("Fragment containing the geometry extracted from Revit element represented by the BHoM object.")]
     public class RevitGeometry : IFragment, IImmutable
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        //[Description("Path to the Revit family file wrapped by this object.")]
+        [Description("Edge curves of Revit element represented by the BHoM object carrying this fragment.")]
         public virtual List<ICurve> Edges { get; set; } = null;
 
-        //[Description("Path to the Revit family file wrapped by this object.")]
+        [Description("Surface geometry of Revit element represented by the BHoM object carrying this fragment.")]
         public virtual List<ISurface> Surfaces { get; set; } = null;
 
-        //[Description("Path to the Revit family file wrapped by this object.")]
+        [Description("Meshed surfaces of Revit element represented by the BHoM object carrying this fragment.")]
         public virtual List<Mesh> Meshes { get; set; } = null;
 
 
