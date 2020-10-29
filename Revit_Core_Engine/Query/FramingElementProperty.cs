@@ -59,7 +59,10 @@ namespace BH.Revit.Engine.Core
 
             // If Revit material is null, rename the BHoM material based on material type of framing family.
             if (material != null && revitMaterial == null)
+            {
                 material.Name = String.Format("Unknown {0} Material", familyInstance.StructuralMaterialType);
+                material.Properties.Add(familyInstance.StructuralMaterialType.EmptyMaterialFragment(materialGrade));
+            }
 
             IProfile profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
             if (profile == null)
