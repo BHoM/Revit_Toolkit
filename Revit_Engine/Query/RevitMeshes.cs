@@ -41,7 +41,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("meshes")]
         public static List<Mesh> RevitMeshes(this IBHoMObject bHoMObject)
         {
-            return (bHoMObject?.Fragments?.FirstOrDefault(x => x is RevitGeometry) as RevitGeometry)?.Meshes;
+            return (bHoMObject?.Fragments?.FirstOrDefault(x => x is RevitGeometry) as RevitGeometry)?.Meshes?.ToList();
         }
 
         /***************************************************/

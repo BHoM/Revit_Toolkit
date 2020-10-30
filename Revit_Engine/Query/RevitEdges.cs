@@ -42,7 +42,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("edges")]
         public static List<ICurve> RevitEdges(this IBHoMObject bHoMObject)
         {
-            return (bHoMObject?.Fragments?.FirstOrDefault(x => x is RevitGeometry) as RevitGeometry)?.Edges;
+            return (bHoMObject?.Fragments?.FirstOrDefault(x => x is RevitGeometry) as RevitGeometry)?.Edges?.ToList();
         }
 
         /***************************************************/
