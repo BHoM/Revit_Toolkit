@@ -36,7 +36,7 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         [Description("Mesh representation of Revit element represented by the BHoM object carrying this fragment.")]
-        public virtual ReadOnlyCollection<RenderMesh> RenderMeshes { get; } = null;
+        public virtual IList<RenderMesh> RenderMeshes { get; } = null;
 
 
         /***************************************************/
