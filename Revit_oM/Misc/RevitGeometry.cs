@@ -25,6 +25,7 @@ using BH.oM.Geometry;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.oM.Adapters.Revit
 {
@@ -36,24 +37,24 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         [Description("Edge curves of Revit element represented by the BHoM object carrying this fragment.")]
-        public virtual IEnumerable<ICurve> Edges { get; } = null;
+        public virtual ReadOnlyCollection<ICurve> Edges { get; } = null;
 
         [Description("Surface geometry of Revit element represented by the BHoM object carrying this fragment.")]
-        public virtual IEnumerable<ISurface> Surfaces { get; } = null;
+        public virtual ReadOnlyCollection<ISurface> Surfaces { get; } = null;
 
         [Description("Meshed surfaces of Revit element represented by the BHoM object carrying this fragment.")]
-        public virtual IEnumerable<Mesh> Meshes { get; } = null;
+        public virtual ReadOnlyCollection<Mesh> Meshes { get; } = null;
 
 
         /***************************************************/
         /****            Public Constructors            ****/
         /***************************************************/
 
-        public RevitGeometry(List<ICurve> edges, List<ISurface> surfaces, List<Mesh> meshes)
+        public RevitGeometry(IEnumerable<ICurve> edges, IEnumerable<ISurface> surfaces, IEnumerable<Mesh> meshes)
         {
-            Edges = edges == null ? null : new ReadOnlyCollection<ICurve>(edges);
-            Surfaces = surfaces == null ? null : new ReadOnlyCollection<ISurface>(surfaces);
-            Meshes = meshes == null ? null : new ReadOnlyCollection<Mesh>(meshes);
+            Edges = edges == null ? null : new ReadOnlyCollection<ICurve>(edges.ToList());
+            Surfaces = surfaces == null ? null : new ReadOnlyCollection<ISurface>(surfaces.ToList());
+            Meshes = meshes == null ? null : new ReadOnlyCollection<Mesh>(meshes.ToList());
         }
 
         /***************************************************/
