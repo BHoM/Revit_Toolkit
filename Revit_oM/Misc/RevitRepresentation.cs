@@ -23,6 +23,7 @@
 using BH.oM.Base;
 using BH.oM.Graphics;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
@@ -35,7 +36,7 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         [Description("Mesh representation of Revit element represented by the BHoM object carrying this fragment.")]
-        public virtual List<RenderMesh> RenderMeshes { get; set; } = null;
+        public virtual ReadOnlyCollection<RenderMesh> RenderMeshes { get; } = null;
 
 
         /***************************************************/
@@ -44,7 +45,7 @@ namespace BH.oM.Adapters.Revit
 
         public RevitRepresentation(List<RenderMesh> renderMeshes)
         {
-            RenderMeshes = renderMeshes;
+            RenderMeshes = renderMeshes == null ? null : new ReadOnlyCollection<RenderMesh>(renderMeshes);
         }
 
         /***************************************************/
