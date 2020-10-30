@@ -41,7 +41,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("surfaces")]
         public static List<ISurface> RevitSurfaces(this IBHoMObject bHoMObject)
         {
-            return (bHoMObject?.Fragments?.FirstOrDefault(x => x is RevitGeometry) as RevitGeometry)?.Surfaces;
+            return (bHoMObject?.Fragments?.FirstOrDefault(x => x is RevitGeometry) as RevitGeometry)?.Surfaces?.ToList();
         }
 
         /***************************************************/
