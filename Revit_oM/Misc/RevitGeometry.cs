@@ -36,13 +36,13 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         [Description("Edge curves of Revit element represented by the BHoM object carrying this fragment.")]
-        public virtual IList<ICurve> Edges { get; } = null;
+        public virtual IEnumerable<ICurve> Edges { get; } = null;
 
         [Description("Surface geometry of Revit element represented by the BHoM object carrying this fragment.")]
-        public virtual IList<ISurface> Surfaces { get; } = null;
+        public virtual IEnumerable<ISurface> Surfaces { get; } = null;
 
         [Description("Meshed surfaces of Revit element represented by the BHoM object carrying this fragment.")]
-        public virtual IList<Mesh> Meshes { get; } = null;
+        public virtual IEnumerable<Mesh> Meshes { get; } = null;
 
 
         /***************************************************/
