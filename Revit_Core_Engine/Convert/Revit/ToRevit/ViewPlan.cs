@@ -76,7 +76,7 @@ namespace BH.Revit.Engine.Core
             
             revitViewPlan = ViewPlan.Create(document, viewFamilyTypeElementID, levelElementID);
 #if (REVIT2020 || REVIT2021)
-            revitViewPlan.Name = viewPlan.Name;
+            revitViewPlan.Name = viewPlan.ViewName;
 #else
             revitViewPlan.ViewName = viewPlan.ViewName;
 #endif
