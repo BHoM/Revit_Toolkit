@@ -112,7 +112,7 @@ namespace BH.Revit.Engine.Core
                 property = property.GetShallowClone() as ISectionProperty;
 
                 if (!materialFound)
-                    BH.Engine.Reflection.Compute.RecordWarning($"Section property of a bar has been loaded from the library, but the material could not be converted. Default material of the section property has been used. Revit ElementId: {familyInstance.Id.IntegerValue}");
+                    BH.Engine.Reflection.Compute.RecordNote($"A matching section was found in the library. No valid material was defined in Revit, so the default material for this section was used. Revit ElementId: {familyInstance.Id.IntegerValue}");
                 else
                     property.Material = materialFragment;
 
