@@ -23,6 +23,7 @@
 using BH.oM.Base;
 using BH.oM.Geometry;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
@@ -35,13 +36,13 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         [Description("Edge curves of Revit element represented by the BHoM object carrying this fragment.")]
-        public virtual List<ICurve> Edges { get; set; } = null;
+        public virtual ReadOnlyCollection<ICurve> Edges { get; } = null;
 
         [Description("Surface geometry of Revit element represented by the BHoM object carrying this fragment.")]
-        public virtual List<ISurface> Surfaces { get; set; } = null;
+        public virtual ReadOnlyCollection<ISurface> Surfaces { get; } = null;
 
         [Description("Meshed surfaces of Revit element represented by the BHoM object carrying this fragment.")]
-        public virtual List<Mesh> Meshes { get; set; } = null;
+        public virtual ReadOnlyCollection<Mesh> Meshes { get; } = null;
 
 
         /***************************************************/
@@ -50,9 +51,9 @@ namespace BH.oM.Adapters.Revit
 
         public RevitGeometry(List<ICurve> edges, List<ISurface> surfaces, List<Mesh> meshes)
         {
-            Edges = edges;
-            Surfaces = surfaces;
-            Meshes = meshes;
+            Edges = edges == null ? null : new ReadOnlyCollection<ICurve>(edges);
+            Surfaces = surfaces == null ? null : new ReadOnlyCollection<ISurface>(surfaces);
+            Meshes = meshes == null ? null : new ReadOnlyCollection<Mesh>(meshes);
         }
 
         /***************************************************/
