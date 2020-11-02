@@ -29,7 +29,7 @@ namespace BH.Revit.Adapter.Core
 {
     [Transaction(TransactionMode.Manual)]
     [Regeneration(RegenerationOption.Manual)]
-    public class UpdatePorts : IExternalCommand
+    public class SetPorts : IExternalCommand
     {
         /***************************************************/
         /****              Public methods               ****/

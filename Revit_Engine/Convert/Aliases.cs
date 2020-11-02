@@ -28,7 +28,6 @@ namespace BH.Engine.Adapters.Revit
         /****          Public Fields - General          ****/
         /***************************************************/
         
-        public const string AdapterIdName = "Revit_id";
         public const string ElementId = "Revit_elementId";
         public const string FamilyName = "Revit_familyName";
         public const string FamilyTypeName = "Revit_familyTypeName";

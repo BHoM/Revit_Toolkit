@@ -30,7 +30,9 @@ using BH.oM.Base;
 using BH.oM.Data.Requests;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Windows.Media.Imaging;
 
 namespace BH.Revit.Adapter.Core
 {
@@ -102,13 +104,42 @@ namespace BH.Revit.Adapter.Core
 
         public void SetPorts(int inputPort, int outputPort)
         {
-            //Not sure if needed
-            m_LinkIn.DataObservers -= M_linkIn_DataObservers;
+            if (m_LinkIn != null)
+                m_LinkIn.DataObservers -= M_linkIn_DataObservers;
 
             m_LinkIn = new SocketLink_Tcp(inputPort);
             m_LinkIn.DataObservers += M_linkIn_DataObservers;
 
             m_LinkOut = new SocketLink_Tcp(outputPort);
+
+            ShowActiveButtonSet();
+        }
+
+        /***************************************************/
+
+        public void Deactivate()
+        {
+            if (m_LinkIn != null)
+                m_LinkIn.DataObservers -= M_linkIn_DataObservers;
+
+            m_LinkIn = null;
+            m_LinkOut = null;
+
+            ShowInactiveButtonSet();
+        }
+
+        /***************************************************/
+
+        public int InPort()
+        {
+            return m_LinkIn == null ? -1 : m_LinkIn.Port;
+        }
+
+        /***************************************************/
+
+        public int OutPort()
+        {
+            return m_LinkOut == null ? -1 : m_LinkOut.Port;
         }
 
 
@@ -118,8 +149,8 @@ namespace BH.Revit.Adapter.Core
 
         public Result OnShutdown(UIControlledApplication application)
         {
-            //Not sure if needed
-            m_LinkIn.DataObservers -= M_linkIn_DataObservers;
+            if (m_LinkIn != null)
+                m_LinkIn.DataObservers -= M_linkIn_DataObservers;
 
             return Result.Succeeded;
         }
@@ -133,8 +164,11 @@ namespace BH.Revit.Adapter.Core
             //Make sure all BHoM assemblies are loaded
             BH.Engine.Reflection.Compute.LoadAllAssemblies();
 
-            //Add button to set socket ports
-            AddRibbonItems(uIControlledApplication);
+            //Add buttons to manage the adapter
+            AddAdapterButtons(uIControlledApplication);
+
+            //Add info buttons
+            AddInfoButtons(uIControlledApplication);
 
             //Define static instance of the listener
             Listener = this;
@@ -152,31 +186,12 @@ namespace BH.Revit.Adapter.Core
             //empty list for package holding
             LatestPackage = new List<IObject>();
 
-            //Socket link for listening and sending data
-            m_LinkIn = new SocketLink_Tcp(14128);
-            m_LinkIn.DataObservers += M_linkIn_DataObservers;
-
-            m_LinkOut = new SocketLink_Tcp(14129);
-
             uIControlledApplication.ViewActivated += Application_ViewActivated;
 
+            // Make sure the button visibility is OK after startup (Revit likes to mess it if the buttons are pinned to quick access toolbar).
+            uIControlledApplication.Idling += InitializeButtonVisibility;
+
             return Result.Succeeded;
-        }
-
-        private void Application_ViewActivated(object sender, Autodesk.Revit.UI.Events.ViewActivatedEventArgs e)
-        {
-            RevitAdapter.InternalAdapter = GetAdapter(e.Document);
-        }
-
-        /***************************************************/
-
-        private void AddRibbonItems(UIControlledApplication application)
-        {
-            RibbonPanel ribbonPanel = application.CreateRibbonPanel("RevitListen");
-
-            PushButton pushButton = ribbonPanel.AddItem(new PushButtonData("Update Ports", "Update Ports", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".UpdatePorts")) as PushButton;
-            //aPushButton.LargeImage = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(TestResource.Test.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            pushButton.ToolTip = "Update the ports that revit is listening on for information from external softwares sending BHoM information";
         }
 
 
@@ -192,6 +207,9 @@ namespace BH.Revit.Adapter.Core
 
             lock (m_PackageLock)
             {
+                if (!CheckPackage(package))
+                    return;
+
                 PackageType packageType = (PackageType)package.Data[0];
 
                 switch (packageType)
@@ -280,11 +298,11 @@ namespace BH.Revit.Adapter.Core
         {
             if (package.Data.Count == 0)
             {
-                ReturnData(new List<string> { "Cant handle empty package" });
+                ReturnData(new List<string> { "Can't handle empty package." });
                 return false;
             }
 
-            PackageType packageType = PackageType.ConnectionCheck;
+            PackageType packageType;
 
             try
             {
@@ -292,7 +310,7 @@ namespace BH.Revit.Adapter.Core
             }
             catch
             {
-                ReturnData(new List<string> { "Unrecognized package type" });
+                ReturnData(new List<string> { "Unrecognized package type." });
                 return false;
             }
 
@@ -313,11 +331,134 @@ namespace BH.Revit.Adapter.Core
 
             if (package.Data.Count != packageSize)
             {
-                ReturnData(new List<string> { "Invalid Package" });
+                ReturnData(new List<string> { "Invalid package size for given package type." });
                 return false;
             }
 
             return true;
+        }
+
+
+        /***************************************************/
+        /****             Private methods               ****/
+        /***************************************************/
+
+        private void ShowActiveButtonSet()
+        {
+            m_ActivateButton.Visible = false;
+            m_UpdatePortsButton.Visible = true;
+            m_DeactivateButton.Visible = true;
+        }
+
+        /***************************************************/
+
+        private void ShowInactiveButtonSet()
+        {
+            m_ActivateButton.Visible = true;
+            m_UpdatePortsButton.Visible = false;
+            m_DeactivateButton.Visible = false;
+        }
+
+        /***************************************************/
+
+        private void AddAdapterButtons(UIControlledApplication uiControlledApp)
+        {
+            string tabName = "BHoM";
+            string panelName = "Revit Adapter";
+            try
+            {
+                uiControlledApp.CreateRibbonTab(tabName);
+            }
+            catch
+            {
+
+            }
+
+            RibbonPanel panel = uiControlledApp.GetRibbonPanels(tabName).FirstOrDefault(x => x.Name == panelName) as RibbonPanel;
+            if (panel == null)
+                panel = uiControlledApp.CreateRibbonPanel(tabName, panelName);
+
+            m_ActivateButton = panel.AddItem(new PushButtonData("Activate", "Activate", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".Activate")) as PushButton;
+            m_ActivateButton.ToolTip = "Activate the BHoM Revit Adapter plugin to allow data exchange with Grasshopper, Dynamo or Excel. The port numbers on both sides must match (default ports: 14128 input and 14129 output).";
+            m_ActivateButton.LongDescription = "Checking and updating ports on the Revit side: navigate to the BHoM ribbon tab in Revit, click Activate (if not active) and then Update Ports." +
+                        "\nChecking and updating ports on the BHoM side: extract the RevitSettings property of RevitAdapter object, then ConnectionSettings of RevitSettings, then extract/overwrite PushPort and PullPort properties." +
+                        "\nPlease see the relevant Adapter/Setup Revit_Toolkit Wiki pages for more information.";
+            m_ActivateButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterActivate32.png")));
+            m_ActivateButton.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterActivate16.png")));
+            m_ActivateButton.Enabled = true;
+            m_ActivateButton.Visible = true;
+
+            m_UpdatePortsButton = panel.AddItem(new PushButtonData("Update Ports", "Update\nPorts", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".SetPorts")) as PushButton;
+            m_UpdatePortsButton.ToolTip = "Update ports used by the BHoM Adapter Revit plugin to allow data exchange with Grasshopper, Dynamo or Excel. The port numbers on both sides must match (default ports: 14128 input and 14129 output).";
+            m_UpdatePortsButton.LongDescription = "Checking and updating ports on the Revit side: navigate to the BHoM ribbon tab in Revit, click Activate (if not active) and then Update Ports." +
+                        "\nChecking and updating ports on the BHoM side: extract the RevitSettings property of RevitAdapter object, then ConnectionSettings of RevitSettings, then extract/overwrite PushPort and PullPort properties." +
+                        "\nPlease see the relevant Adapter/Setup Revit_Toolkit Wiki pages for more information.";
+            m_UpdatePortsButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterUpdate32.png")));
+            m_UpdatePortsButton.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterUpdate16.png")));
+            m_UpdatePortsButton.Enabled = true;
+            m_UpdatePortsButton.Visible = false;
+
+            m_DeactivateButton = panel.AddItem(new PushButtonData("Deactivate", "Deactivate", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".Deactivate")) as PushButton;
+            m_DeactivateButton.ToolTip = "Deactivate the BHoM Revit Adapter plugin to disallow data exchange with Grasshopper, Dynamo or Excel.";
+            m_DeactivateButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterDeactivate32.png")));
+            m_DeactivateButton.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterDeactivate16.png")));
+            m_DeactivateButton.Enabled = true;
+            m_DeactivateButton.Visible = false;
+        }
+
+        /***************************************************/
+
+        private void AddInfoButtons(UIControlledApplication uiControlledApp)
+        {
+            string tabName = "BHoM";
+            string panelName = "Info";
+            try
+            {
+                uiControlledApp.CreateRibbonTab(tabName);
+            }
+            catch
+            {
+
+            }
+
+            RibbonPanel panel = uiControlledApp.GetRibbonPanels(tabName).FirstOrDefault(x => x.Name == panelName) as RibbonPanel;
+            if (panel == null)
+                panel = uiControlledApp.CreateRibbonPanel(tabName, panelName);
+
+            PushButton button = panel.AddItem(new PushButtonData("BHoM Revit Wiki", "BHoM\nRevit Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".RevitToolkitWiki")) as PushButton;
+            button.ToolTip = "Visit the BHoM Revit Toolkit Wiki page.";
+            button.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info32.png")));
+            button.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info16.png")));
+            button.Enabled = true;
+            button.Visible = true;
+
+            PushButtonData bHoMInfoButton = new PushButtonData("BHoM Wiki", "BHoM Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWiki");
+            PushButtonData bHoMWebsiteButton = new PushButtonData("bhom.xyz", "bhom.xyz", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWebsite");
+
+            List<RibbonButton> infoButtons = panel.AddStackedItems(bHoMInfoButton, bHoMWebsiteButton).Cast<RibbonButton>().ToList();
+            infoButtons[0].ToolTip = "Visit the BHoM Wiki page.";
+            infoButtons[0].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info16.png")));
+            infoButtons[0].Enabled = true;
+            infoButtons[0].Visible = true;
+            infoButtons[1].ToolTip = "Visit the BHoM website.";
+            infoButtons[1].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "BHoMWebsite16.png")));
+            infoButtons[1].Enabled = true;
+            infoButtons[1].Visible = true;
+        }
+
+        /***************************************************/
+
+        private void Application_ViewActivated(object sender, Autodesk.Revit.UI.Events.ViewActivatedEventArgs e)
+        {
+            RevitAdapter.InternalAdapter = GetAdapter(e.Document);
+        }
+
+        /***************************************************/
+
+        private void InitializeButtonVisibility(object sender, Autodesk.Revit.UI.Events.IdlingEventArgs e)
+        {
+            ShowInactiveButtonSet();
+            UIControlledApplication.Idling -= InitializeButtonVisibility;
         }
 
 
@@ -332,7 +473,11 @@ namespace BH.Revit.Adapter.Core
         private ExternalEvent m_RemoveEvent;
         private ExternalEvent m_UpdateTagsEvent;
         private Dictionary<Document, RevitListenerAdapter> m_Adapters = new Dictionary<Document, RevitListenerAdapter>();
-        
+        private PushButton m_ActivateButton;
+        private PushButton m_UpdatePortsButton;
+        private PushButton m_DeactivateButton;
+        private const string m_ResourceFolder = "C:\\ProgramData\\BHoM\\Resources\\Revit";
+
         public object m_PackageLock = new object();
 
         /***************************************************/
