@@ -32,7 +32,8 @@ using BH.oM.Base;
 using BH.oM.MEP.ConnectionProperties;
 using BH.oM.MEP.Elements;
 using BH.oM.Reflection.Attributes;
-using Line = BH.oM.Geometry.Line;
+using BH.oM.Geometry;
+
 
 namespace BH.Revit.Engine.Core
 {
@@ -45,9 +46,12 @@ namespace BH.Revit.Engine.Core
         [Description("Convert a Revit Cable Tray to a BHoM Cable Tray.")]
         [Input("revitCableTray", "Revit Cable Tray to be converted.")]
         [Input("settings", "Revit adapter settings.")]
-        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Input("refObjects",
+            "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("cableTray", "BHoM cable tray object converted from a Revit cable tray element.")]
-        public static List<BH.oM.MEP.Elements.CableTray> CableTrayFromRevit(this Autodesk.Revit.DB.Electrical.CableTray revitCableTray, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<BH.oM.MEP.Elements.CableTray> CableTrayFromRevit(
+            this Autodesk.Revit.DB.Electrical.CableTray revitCableTray, RevitSettings settings = null,
+            Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
@@ -69,11 +73,10 @@ namespace BH.Revit.Engine.Core
 
             // Orientation angle
             double orientationAngle = revitCableTray.OrientationAngle(settings);
-            List<BH.oM.Geometry.Point> allPoints = new List<BH.oM.Geometry.Point>();
 
-            // Determine start and end points, which if the cable tray is connected to
+            /*// Determine start and end points, which if the cable tray is connected to
             // a fitting then uses the fitting origin as either start/end
-            
+            List<BH.oM.Geometry.Point> allPoints = new List<BH.oM.Geometry.Point>();
             // Get connectors
             ConnectorManager connectorManager = revitCableTray.ConnectorManager;
             ConnectorSet connectorSet = connectorManager.Connectors;
@@ -204,6 +207,67 @@ namespace BH.Revit.Engine.Core
                     ConnectionProperty = newConnectionProperty,
                     OrientationAngle = orientationAngle
                 };
+
+                //Set identifiers, parameters & custom data
+                thisSegment.SetIdentifiers(revitCableTray);
+                thisSegment.CopyParameters(revitCableTray, settings.ParameterSettings);
+                thisSegment.SetProperties(revitCableTray, settings.ParameterSettings);
+                bhomCableTrays.Add(thisSegment);
+            }*/
+
+            List<BH.oM.Geometry.Line> queryied = Query.LocationCurveMEP(revitCableTray, settings);
+            List<bool> isConnected = Query.IsEndPointsConnected(revitCableTray);
+
+            if (revitCableTray.Id.IntegerValue == 1392148)
+            {
+                //debug
+            }
+
+            
+            
+            for (int i = 0; i < queryied.Count; i++)
+            {
+                BH.oM.Geometry.Line segment = queryied[i];
+                BH.oM.MEP.Elements.CableTray thisSegment = new CableTray
+                {
+                    StartNode = (Node) segment.StartPoint(),
+                    EndNode = (Node) segment.EndPoint(),
+                    SectionProperty = sectionProperty,
+                    ConnectionProperty = new CableTrayConnectionProperty(),
+                    OrientationAngle = orientationAngle
+                };
+                
+                thisSegment.ConnectionProperty.StartNode = thisSegment.StartNode;
+                thisSegment.ConnectionProperty.EndNode = thisSegment.EndNode;
+
+                //sets is connected to cable tray
+                if (queryied.Count > 1)
+                {
+                    //if first
+                    if (i == 0)
+                    {
+                        thisSegment.ConnectionProperty.IsStartConnected = isConnected[0];
+                        thisSegment.ConnectionProperty.IsEndConnected = true;
+                    }
+                    //if last
+                    else if(i == (queryied.Count-1))
+                    {
+                        thisSegment.ConnectionProperty.IsStartConnected = true;
+                        thisSegment.ConnectionProperty.IsEndConnected = isConnected[1];
+                    }
+                    //if anything in betweeen
+                    else
+                    {
+                        thisSegment.ConnectionProperty.IsStartConnected = true;
+                        thisSegment.ConnectionProperty.IsEndConnected = true;
+                    }
+                }
+                else
+                {
+                    thisSegment.ConnectionProperty.IsStartConnected = isConnected[0];
+                    thisSegment.ConnectionProperty.IsEndConnected = isConnected[1];
+                }
+
 
                 //Set identifiers, parameters & custom data
                 thisSegment.SetIdentifiers(revitCableTray);

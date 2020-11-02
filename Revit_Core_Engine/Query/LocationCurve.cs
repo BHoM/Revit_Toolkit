@@ -28,7 +28,10 @@ using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using BH.oM.Reflection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Autodesk.Revit.DB.Mechanical;
+using BH.Engine.Reflection;
 
 namespace BH.Revit.Engine.Core
 {
@@ -139,6 +142,151 @@ namespace BH.Revit.Engine.Core
             return curve;
         }
 
+        /***************************************************/
+        
+        public static List<BH.oM.Geometry.Line> LocationCurveMEP (this MEPCurve mepCurve, RevitSettings settings = null)
+        {
+            //List<BH.oM.Geometry.Line> result = new List<BH.oM.Geometry.Line>();
+            settings = settings.DefaultIfNull();
+            
+            // Determine start and end points, which if the MEP linear object is connected to
+            // a fitting then uses the fitting origin as either start/end
+            List<BH.oM.Geometry.Point> allPoints = new List<BH.oM.Geometry.Point>();
+            
+            // Get connectors
+            ConnectorManager connectorManager = mepCurve.ConnectorManager;
+            ConnectorSet connectorSet = connectorManager.Connectors;
+            //List<bool> endPointsConnected = new List<bool>();
+            List<BH.oM.Geometry.Point> endPoints = new List<BH.oM.Geometry.Point>();
+            List<BH.oM.Geometry.Point> midPoints = new List<BH.oM.Geometry.Point>();
+            foreach (Autodesk.Revit.DB.Connector c in connectorSet)
+            {
+                //calculate end points, that are in fact the origin of its fittings if connected
+                BH.oM.Geometry.Point point = null;
+                if (c.ConnectorType == ConnectorType.End)
+                {
+                    if (c.IsConnected)
+                    {
+                        //at each connector get the connector refs to give access to fitting
+                        ConnectorSet cSet = c.AllRefs;
+                        foreach (Connector con in cSet)
+                        {
+                            //check if connector owner is not the original MEP linear object
+                            if (con.Owner.Id != mepCurve.Id)
+                            {
+                                // todo new idea
+                                // if sequence is composed of two connectors then try to find midpoint distance but,
+                                // if connector is too long it may suggest to be a bend/elbow
+                                // and therefore should be queryied and instead of forming a single line for paths,
+                                // it forms 2, 1/4 connector 3/4 line
+                                // it should connect the back and forth precisely
+                                // do 2 levels only
+                                
+                                // todo continue new idea
+                                // if sequence starts with a T that has direct connector attached,
+                                // do nothing? pick this T location
+                                
+                                
+                                
+                                //in some cases there may be a chain of fittings connected to each other,
+                                //to capture these we have to dive deep into at least 2 levels of nested conn
+                                //strategy is to check for it in only one of the endpoints of mep curve,
+                                //so as to avoid duplicates from another mep curve
+                                
+                                //this is 1 level
+                                //get fitting location
+                                Location location = con.Owner.Location;
+                                LocationPoint locationPoint = location as LocationPoint;
+
+                                // routine to check 2 level
+                                if (c.Id == 0)
+                                {
+                                    if (con.Owner is FamilyInstance fittingInstance)
+                                    {
+                                        MEPModel fittingMEP = fittingInstance.MEPModel;
+                                        ConnectorManager fittingManager = fittingMEP.ConnectorManager;
+                                        ConnectorSet fittingSet = fittingManager.Connectors;
+                                        foreach (Connector cFitting in fittingSet)
+                                        {
+                                            //check each connector to find the next fitting
+                                            ConnectorSet subFittingSet = cFitting.AllRefs;
+                                            foreach (Connector cSub in subFittingSet)
+                                            {
+                                                //check if connector owner ins't the original cable tray
+                                                //and if its a FamilyInstance (fitting)
+                                                if (cSub.Owner.Id != fittingInstance.Id &&
+                                                    cSub.Owner.GetType() == typeof(FamilyInstance))
+                                                {
+                                                    //mark new location to be the next fitting
+                                                    location = cSub.Owner.Location;
+                                                    locationPoint = location as LocationPoint;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                //in some cases MEP linear objects connect without fittings,
+                                //if thats the case then desired point will be its own connector origin
+                                if (locationPoint == null)
+                                {
+                                    //rounding to 4 decimal digits due to precision issues when extracting vector directions.
+                                    point = BH.Engine.Geometry.Create.Point(
+                                        Math.Round(c.Origin.PointFromRevit().X, 4),
+                                        Math.Round(c.Origin.PointFromRevit().Y, 4),
+                                        Math.Round(c.Origin.PointFromRevit().Z, 4));
+                                    endPoints.Add(point);
+                                }
+                                //else use the fitting location point
+                                else
+                                {
+                                    point = BH.Engine.Geometry.Create.Point(
+                                        Math.Round(locationPoint.Point.PointFromRevit().X, 4),
+                                        Math.Round(locationPoint.Point.PointFromRevit().Y, 4),
+                                        Math.Round(locationPoint.Point.PointFromRevit().Z, 4));
+                                    endPoints.Add(point);
+                                }
+                            }
+                        }
+                    }
+                    //if not connected at all then just use own connector origin
+                    else
+                    {
+                        point = BH.Engine.Geometry.Create.Point(
+                            Math.Round(c.Origin.PointFromRevit().X, 4),
+                            Math.Round(c.Origin.PointFromRevit().Y, 4), 
+                            Math.Round(c.Origin.PointFromRevit().Z, 4));
+                        endPoints.Add(point);
+                        allPoints.Add(point);
+                    }
+                }
+                //if MEP linear object has connections that don't take fitting,
+                //then we need to store the point to later split the curve
+                else
+                {
+                    point = BH.Engine.Geometry.Create.Point(
+                        Math.Round(c.Origin.PointFromRevit().X, 4),
+                        Math.Round(c.Origin.PointFromRevit().Y, 4), 
+                        Math.Round(c.Origin.PointFromRevit().Z, 4));
+                    midPoints.Add(point);
+                }
+            }
+            
+            //split MEP linear object if there was any other MEP linear object connected to it without connector
+            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(endPoints[0], endPoints[1]);
+            List<BH.oM.Geometry.Line> result = new List<BH.oM.Geometry.Line>();
+            if (midPoints.Any())
+            {
+                result = line.SplitAtPoints(midPoints);
+            }
+            else
+            {
+                result.Add(line);
+            }
+
+            return result;
+        }
+        
         /***************************************************/
     }
 }
