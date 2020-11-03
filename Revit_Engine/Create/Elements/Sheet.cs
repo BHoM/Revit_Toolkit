@@ -33,24 +33,12 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates BHoM Sheet object.")]
-        [Input("name", "Name of the created Sheet correspondent with Revit sheet name.")]
-        [Input("number", "Number of the created Sheet correspondent with Revit sheet number.")]
+        [InputFromProperty("sheetName")]
+        [InputFromProperty("sheetNumber")]
         [Output("sheet")]
-        public static Sheet Sheet(string name, string number)
+        public static Sheet Sheet(string sheetName, string sheetNumber)
         {
-            Sheet sheet = new Sheet()
-            {
-                Name = name
-            };
-
-            sheet.CustomData.Add("Sheet Name", name);
-            sheet.CustomData.Add("Sheet Number", number);
-
-            sheet.CustomData.Add(Convert.FamilyName, "Sheet");
-            sheet.CustomData.Add(Convert.FamilyTypeName, "Sheet");
-            sheet.CustomData.Add(Convert.CategoryName, "Sheets");
-
-            return sheet;
+            return new Sheet { SheetName = sheetName, SheetNumber = sheetNumber };
         }
 
         /***************************************************/

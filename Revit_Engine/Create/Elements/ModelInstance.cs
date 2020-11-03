@@ -115,7 +115,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             InstanceProperties instanceProperties = new InstanceProperties();
-            instanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
+            instanceProperties.CategoryName = "Lines";
 
             ModelInstance modelInstance = new ModelInstance()
             {
@@ -123,7 +123,6 @@ namespace BH.Engine.Adapters.Revit
                 Name = "Lines",
                 Location = location
             };
-            modelInstance.CustomData.Add(Convert.CategoryName, "Lines");
 
             return modelInstance;
         }
@@ -141,7 +140,7 @@ namespace BH.Engine.Adapters.Revit
 
             InstanceProperties instanceProperties = new InstanceProperties();
             instanceProperties.Name = name;
-            instanceProperties.CustomData.Add(Convert.CategoryName, "Lines");
+            instanceProperties.CategoryName = "Lines";
 
             ModelInstance modelInstance = new ModelInstance()
             {
@@ -149,7 +148,6 @@ namespace BH.Engine.Adapters.Revit
                 Name = "Lines",
                 Location = location
             };
-            modelInstance.CustomData.Add(Convert.CategoryName, "Lines");
 
             return modelInstance;
         }
@@ -166,7 +164,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             InstanceProperties instanceProperties = new InstanceProperties();
-            instanceProperties.CustomData.Add(Convert.CategoryName, categoryName);
+            instanceProperties.CategoryName = categoryName;
 
             ModelInstance modelInstance = new ModelInstance()
             {
@@ -174,7 +172,6 @@ namespace BH.Engine.Adapters.Revit
                 Name = "Surface",
                 Location = location
             };
-            modelInstance.CustomData.Add(Convert.CategoryName, categoryName);
 
             return modelInstance;
         }
@@ -191,7 +188,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             InstanceProperties instanceProperties = new InstanceProperties();
-            instanceProperties.CustomData.Add(Convert.CategoryName, categoryName);
+            instanceProperties.CategoryName = categoryName;
 
             ModelInstance modelInstance = new ModelInstance()
             {
@@ -199,7 +196,6 @@ namespace BH.Engine.Adapters.Revit
                 Name = "Solid",
                 Location = location
             };
-            modelInstance.CustomData.Add(Convert.CategoryName, categoryName);
 
             return modelInstance;
         }

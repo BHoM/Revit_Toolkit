@@ -45,27 +45,25 @@ namespace BH.Revit.Engine.Core
                 return revitViewPort;
 
             settings = settings.DefaultIfNull();
-
-            string viewName = viewport.CustomDataValue("View Name") as string;
-            if (string.IsNullOrEmpty(viewName))
+            
+            if (string.IsNullOrEmpty(viewport.ViewName))
                 return null;
-
-            string sheetNumber = viewport.CustomDataValue("Sheet Number") as string;
-            if (string.IsNullOrEmpty(sheetNumber))
+            
+            if (string.IsNullOrEmpty(viewport.SheetNumber))
                 return null;
 
             List<View> viewList = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().ToList();
 #if (REVIT2020 || REVIT2021)
-            View view = viewList.Find(x => !x.IsTemplate && x.Name == viewName);
+            View view = viewList.FirstOrDefault(x => !x.IsTemplate && x.Name == viewport.ViewName);
 #else
-            View view = viewList.Find(x => !x.IsTemplate && x.ViewName == viewName);
+            View view = viewList.FirstOrDefault(x => !x.IsTemplate && x.ViewName == viewport.ViewName);
 #endif
 
             if (view == null)
                 return null;
 
             List<ViewSheet> viewSheetList = new FilteredElementCollector(document).OfClass(typeof(ViewSheet)).Cast<ViewSheet>().ToList();
-            ViewSheet viewSheet = viewSheetList.Find(x => !x.IsTemplate && !x.IsPlaceholder && x.SheetNumber == sheetNumber);
+            ViewSheet viewSheet = viewSheetList.FirstOrDefault(x => !x.IsTemplate && !x.IsPlaceholder && x.SheetNumber == viewport.SheetNumber);
             if (viewSheet == null)
                 return null;
 

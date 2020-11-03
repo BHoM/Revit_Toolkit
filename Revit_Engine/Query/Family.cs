@@ -22,6 +22,7 @@
 
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -61,7 +62,6 @@ namespace BH.Engine.Adapters.Revit
                         continue;
 
                     oM.Adapters.Revit.Properties.InstanceProperties instanceProps = Create.InstanceProperties(familyName, familyTypeName);
-                    instanceProps.CustomData[Convert.CategoryName] = categoryName;
                     instanceProperties.Add(instanceProps);
                 }
             }
@@ -71,9 +71,8 @@ namespace BH.Engine.Adapters.Revit
                 PropertiesList = instanceProperties
             };
 
-            family.CustomData[Convert.FamilyName] = familyName;
-            family.CustomData[Convert.CategoryName] = categoryName;
-            family.CustomData[Convert.FamilyPlacementTypeName] = revitFilePreview.CustomDataValue(Convert.FamilyPlacementTypeName);
+            RevitIdentifiers identifiers = new RevitIdentifiers("", -1, categoryName, familyName);
+            family.Fragments.AddOrReplace(identifiers);
 
             return family;
         }

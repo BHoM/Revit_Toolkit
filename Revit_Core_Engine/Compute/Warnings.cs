@@ -378,12 +378,7 @@ namespace BH.Revit.Engine.Core
             string message = "View Template has not been found for given BHoM ViewPlan.";
 
             if (viewPlan != null)
-            {
-                message = string.Format("{0} BHoM Guid: {1}", message, viewPlan.BHoM_Guid);
-
-                if(viewPlan.CustomData.ContainsKey(BH.Engine.Adapters.Revit.Convert.ViewTemplate))
-                    message = string.Format("{0} View Template Name: {1}", message, viewPlan.CustomData[BH.Engine.Adapters.Revit.Convert.ViewTemplate]);
-            }
+                message = string.Format("{0} BHoM Guid: {1} View Template Name: {2}", message, viewPlan.BHoM_Guid, viewPlan.TemplateName);
 
             BH.Engine.Reflection.Compute.RecordError(message);
         }

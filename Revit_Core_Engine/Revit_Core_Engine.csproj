@@ -382,7 +382,7 @@
     <Compile Include="Convert\Physical\ToRevit\Material.cs" />
     <Compile Include="Convert\Revit\ToRevit\ViewPlan.cs" />
     <Compile Include="Convert\Revit\ToRevit\Viewport.cs" />
-    <Compile Include="Convert\Revit\ToRevit\ViewSheet.cs" />
+    <Compile Include="Convert\Revit\ToRevit\Sheet.cs" />
     <Compile Include="Convert\Environment\FromRevit\Building.cs" />
     <Compile Include="Convert\Environment\FromRevit\Panel.cs" />
     <Compile Include="Convert\Environment\FromRevit\Space.cs" />

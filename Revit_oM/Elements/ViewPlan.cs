@@ -39,8 +39,11 @@ namespace BH.oM.Adapters.Revit.Elements
         [Description("Name of Revit level to which the view belongs (Associated Level).")]
         public virtual string LevelName { get; set; } = string.Empty;
 
-        [Description("If true, the object represents a Revit view template, if false, the object represents an actual Revit view.")]
-        public virtual bool IsTemplate { get; set; } = false;
+        [Description("Name of the ViewPlan correspondent with Revit view name.")]
+        public virtual string ViewName { get; set; } = string.Empty;
+
+        [Description("Name of the ViewPlan correspondent with Revit view name.")]
+        public virtual string TemplateName { get; set; } = string.Empty;
 
         /***************************************************/
     }

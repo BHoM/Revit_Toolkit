@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -21,48 +21,44 @@
  */
 
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Geometry;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Query
+    [Description("Fragment containing the geometry extracted from Revit element represented by the BHoM object.")]
+    public class RevitGeometry : IFragment, IImmutable
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Deprecated("3.2", "BH.Engine.Adapters.Revit.Query.AdjacentSpaceId is not used any more.")]
-        [Description("Gets integer representation of adjacent space Revit ElementId (stored in CustomData) for given BHoMObject.")]
-        [Input("bHoMObject", "BHoMObject to be queried.")]
-        [Output("elementId")]
-        public static int AdjacentSpaceId(this IBHoMObject bHoMObject)
+        [Description("Edge curves of Revit element represented by the BHoM object carrying this fragment.")]
+        public virtual ReadOnlyCollection<ICurve> Edges { get; } = null;
+
+        [Description("Surface geometry of Revit element represented by the BHoM object carrying this fragment.")]
+        public virtual ReadOnlyCollection<ISurface> Surfaces { get; } = null;
+
+        [Description("Meshed surfaces of Revit element represented by the BHoM object carrying this fragment.")]
+        public virtual ReadOnlyCollection<Mesh> Meshes { get; } = null;
+
+
+        /***************************************************/
+        /****            Public Constructors            ****/
+        /***************************************************/
+
+        public RevitGeometry(IEnumerable<ICurve> edges, IEnumerable<ISurface> surfaces, IEnumerable<Mesh> meshes)
         {
-            if (bHoMObject == null)
-                return -1;
-
-            object value = null;
-            if (bHoMObject.CustomData.TryGetValue("AdjacentSpaceID", out value))
-            {
-                if (value is string)
-                {
-                    int num = -1;
-                    if (int.TryParse((string)value, out num))
-                        return num;
-                }
-                else if (value is int)
-                {
-                    return (int)value;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-
-            return -1;
+            Edges = edges == null ? null : new ReadOnlyCollection<ICurve>(edges.ToList());
+            Surfaces = surfaces == null ? null : new ReadOnlyCollection<ISurface>(surfaces.ToList());
+            Meshes = meshes == null ? null : new ReadOnlyCollection<Mesh>(meshes.ToList());
         }
 
         /***************************************************/
     }
 }
+
+

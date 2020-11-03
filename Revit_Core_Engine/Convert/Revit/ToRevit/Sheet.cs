@@ -20,48 +20,41 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Settings;
+using System;
+using System.Collections.Generic;
 
-using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
-
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        [Deprecated("3.2", "BH.Engine.Adapters.Revit.Query.SpaceId is not used any more.")]
-        [Description("Gets integer representation of ElementId of Revit space element correspondent to given BHoMObject. This value is stored in CustomData under key SpaceID.")]
-        [Input("bHoMObject", "BHoMObject to be queried.")]
-        [Output("elementId")]
-        public static int SpaceId(this IBHoMObject bHoMObject)
+        public static ViewSheet ToRevitSheet(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            if (bHoMObject == null)
-                return -1;
+            if (sheet == null)
+                return null;
 
-            object value = null;
-            if (bHoMObject.CustomData.TryGetValue("SpaceID", out value))
-            {
-                if (value is string)
-                {
-                    int num = -1;
-                    if (int.TryParse((string)value, out num))
-                        return num;
-                }
-                else if (value is int)
-                {
-                    return (int)value;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
+            ViewSheet viewSheet = refObjects.GetValue<ViewSheet>(document, sheet.BHoM_Guid);
+            if (viewSheet != null)
+                return viewSheet;
 
-            return -1;
+            settings = settings.DefaultIfNull();
+
+            viewSheet = ViewSheet.Create(document, ElementId.InvalidElementId);
+            viewSheet.Name = sheet.SheetName;
+            viewSheet.SheetNumber = sheet.SheetNumber;
+
+            // Copy parameters from BHoM object to Revit element
+            viewSheet.CopyParameters(sheet, settings);
+
+            refObjects.AddOrReplace(sheet, viewSheet);
+            return viewSheet;
         }
 
         /***************************************************/

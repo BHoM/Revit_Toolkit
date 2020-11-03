@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
@@ -91,7 +92,10 @@ namespace BH.Engine.Adapters.Revit
         public static string CategoryName(this IBHoMObject bHoMObject)
         {
             string name = bHoMObject?.GetRevitIdentifiers()?.CategoryName;
-            return name ?? bHoMObject.CustomDataValue(Convert.CategoryName) as string;
+            if (string.IsNullOrWhiteSpace(name) && bHoMObject is IInstance)
+                name = ((IInstance)bHoMObject).Properties.CategoryName;
+
+            return name;
         }
 
         /***************************************************/
