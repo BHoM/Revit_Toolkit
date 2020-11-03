@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,41 +20,37 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Adapters.Revit.Settings;
-using System;
+using BH.oM.Base;
+using BH.oM.Graphics;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 
-namespace BH.Revit.Engine.Core
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Convert
+    [Description("Fragment containing the representation extracted from Revit element represented by the BHoM object.")]
+    public class RevitRepresentation : IFragment, IImmutable
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        public static ViewSheet ToRevitViewSheet(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        [Description("Mesh representation of Revit element represented by the BHoM object carrying this fragment.")]
+        public virtual ReadOnlyCollection<RenderMesh> RenderMeshes { get; } = null;
+
+
+        /***************************************************/
+        /****            Public Constructors            ****/
+        /***************************************************/
+
+        public RevitRepresentation(IEnumerable<RenderMesh> renderMeshes)
         {
-            if (sheet == null)
-                return null;
-
-            ViewSheet viewSheet = refObjects.GetValue<ViewSheet>(document, sheet.BHoM_Guid);
-            if (viewSheet != null)
-                return viewSheet;
-
-            settings = settings.DefaultIfNull();
-
-            viewSheet = ViewSheet.Create(document, ElementId.InvalidElementId);
-
-            // Copy parameters from BHoM object to Revit element
-            viewSheet.CopyParameters(sheet, settings);
-
-            refObjects.AddOrReplace(sheet, viewSheet);
-            return viewSheet;
+            RenderMeshes = renderMeshes == null ? null : new ReadOnlyCollection<RenderMesh>(renderMeshes.ToList());
         }
 
         /***************************************************/
     }
 }
+
+

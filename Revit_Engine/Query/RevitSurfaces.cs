@@ -20,34 +20,31 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit;
+using BH.oM.Base;
+using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
-        /****          Public Fields - General          ****/
-        /***************************************************/
-        
-        public const string ElementId = "Revit_elementId";
-        public const string FamilyName = "Revit_familyName";
-        public const string FamilyTypeName = "Revit_familyTypeName";
-        public const string FamilyTypeId = "Revit_familyTypeId";
-        public const string FamilyPlacementTypeName = "Revit_familyPlacementTypeName";
-        public const string CategoryName = "Revit_categoryName";
-        public const string ViewName = "Revit_viewName";
-        public const string ViewTemplate = "View Template";
-        public const string Edges = "Revit_edges";
-        public const string Surfaces = "Revit_surfaces";
-        public const string Meshes = "Revit_meshes";
-        public const string RenderMesh = "RenderMesh";
-
-
-        /***************************************************/
-        /****           Public Fields - BEnv            ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public const string CeilingPattern = "CeilingPattern";
+        [Description("Returns surface geometry of Revit element correspondent to given BHoMObject. This value is stored in RevitGeometry fragment.")]
+        [Input("bHoMObject", "BHoMObject to be queried.")]
+        [Output("surfaces")]
+        public static List<ISurface> RevitSurfaces(this IBHoMObject bHoMObject)
+        {
+            return (bHoMObject?.Fragments?.FirstOrDefault(x => x is RevitGeometry) as RevitGeometry)?.Surfaces?.ToList();
+        }
 
         /***************************************************/
     }
 }
+

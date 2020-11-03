@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -19,10 +19,14 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
+
+using BH.oM.Adapters.Revit;
 using BH.oM.Base;
+using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -32,35 +36,13 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Deprecated("3.2", "This method is a duplicate of GetProperty.")]
-        [Description("Returns integer representation of WorksetId of Revit workset correspondent to given BHoMObject. This value is stored in CustomData under key Revit_worksetId.")]
+        [PreviousVersion("4.0", "BH.Engine.Adapters.Revit.Query.Edges(BH.oM.Base.IBHoMObject)")]
+        [Description("Returns edges of Revit element correspondent to given BHoMObject. This value is stored in RevitGeometry fragment.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
-        [Output("worksetId")]
-        public static int WorksetId(this IBHoMObject bHoMObject)
+        [Output("edges")]
+        public static List<ICurve> RevitEdges(this IBHoMObject bHoMObject)
         {
-            if (bHoMObject == null)
-                return -1;
-
-            object value = null;
-            if (bHoMObject.CustomData.TryGetValue("Revit_worksetId", out value))
-            {
-                if (value is string)
-                {
-                    int num = -1;
-                    if (int.TryParse((string)value, out num))
-                        return num;
-                }
-                else if (value is int)
-                {
-                    return (int)value;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-
-            return -1;
+            return (bHoMObject?.Fragments?.FirstOrDefault(x => x is RevitGeometry) as RevitGeometry)?.Edges?.ToList();
         }
 
         /***************************************************/

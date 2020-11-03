@@ -36,6 +36,12 @@ namespace BH.oM.Adapters.Revit.Elements
         [Description("An entity storing the information about Revit sheet type.")]
         public virtual InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
 
+        [Description("Name of the Sheet correspondent with Revit sheet name.")]
+        public virtual string SheetName { get; set; } = null;
+
+        [Description("Number of the Sheet correspondent with Revit sheet number.")]
+        public virtual string SheetNumber { get; set; } = null;
+
         /***************************************************/
     }
 }

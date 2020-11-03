@@ -40,6 +40,12 @@ namespace BH.oM.Adapters.Revit.Elements
         [Description("Location of the viewport in Revit sheet space.")]
         public virtual Point Location { get; set; } = new Point() { X = 0, Y = 0, Z = 0 };
 
+        [Description("Number of the Revit sheet hosting the Viewport.")]
+        public virtual string SheetNumber { get; set; } = null;
+
+        [Description("Name of the Revit view shown in the Viewport.")]
+        public virtual string ViewName { get; set; } = null;
+
         /***************************************************/
     }
 }

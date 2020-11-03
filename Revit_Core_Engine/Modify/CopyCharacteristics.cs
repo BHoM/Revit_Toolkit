@@ -171,9 +171,6 @@ namespace BH.Revit.Engine.Core
                 material.YoungsModulus = youngsModulus.X;
                 material.ThermalExpansionCoeff = thermalExpansionCoeff.X;
                 material.PoissonsRatio = poissonsRatio.X;
-                material.CustomData["Concrete Bending Reinforcement"] = fromAsset.ConcreteBendingReinforcement;
-                material.CustomData["Concrete Shear Reinforcement"] = fromAsset.ConcreteShearReinforcement;
-                material.CustomData["Concrete Shear Strength Reduction"] = fromAsset.ConcreteShearStrengthReduction;
             }
             else if (toMaterial is Steel)
             {

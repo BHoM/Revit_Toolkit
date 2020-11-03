@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit;
 using BH.oM.Base;
 using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
@@ -35,25 +36,15 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns edges of given BHoMObject captured on Pull. This value is stored in CustomData under key Revit_edges.")]
+        [Description("Returns mesh geometry of Revit element correspondent to given BHoMObject. This value is stored in RevitGeometry fragment.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
-        [Output("edges")]
-        public static List<ICurve> Edges(this IBHoMObject bHoMObject)
+        [Output("meshes")]
+        public static List<Mesh> RevitMeshes(this IBHoMObject bHoMObject)
         {
-            if (bHoMObject == null)
-                return null;
-
-            object value = null;
-            if (bHoMObject.CustomData.TryGetValue(Convert.Edges, out value))
-            {
-                IEnumerable<object> curves = value as IEnumerable<object>;
-                if (curves != null && curves.All(x => x is ICurve))
-                    return curves.Cast<ICurve>().ToList();
-            }
-
-            return null;
+            return (bHoMObject?.Fragments?.FirstOrDefault(x => x is RevitGeometry) as RevitGeometry)?.Meshes?.ToList();
         }
 
         /***************************************************/
     }
 }
+
