@@ -85,6 +85,9 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Physical_Engine">
+      <HintPath>..\..\..\ProgramData\BHoM\Assemblies\Physical_Engine.dll</HintPath>
+    </Reference>
     <Reference Include="Physical_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_oM.dll</HintPath>
       <Private>False</Private>
@@ -171,6 +174,7 @@
     <Compile Include="Modify\SetRevitParameter.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
+    <Compile Include="Query\RevitDefiningLine.cs" />
     <Compile Include="Query\DefaultParameterSettings.cs" />
     <Compile Include="Query\GetRevitParameters.cs" />
     <Compile Include="Query\GetRevitParameterValue.cs" />
