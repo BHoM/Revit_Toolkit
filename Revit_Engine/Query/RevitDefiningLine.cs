@@ -46,8 +46,8 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Returns the in Revit defining location line of an IFramingElement, based on its z Justification Revit parameter.")]
-        [Input("element", "The IFramingElement to query the Revit defining location line of.")]
-        [Output("curve", "the location line in Revit defining the geometry of the element.")]
+        [Input("element", "The IFramingElement to query the in Revit defining location line of.")]
+        [Output("curve", "The in Revit geometry defining location line of the element.")]
         public static ICurve RevitDefiningLine(this IFramingElement element)
         {
             string zJustification = element.GetRevitParameterValue("z Justification").ToString();
