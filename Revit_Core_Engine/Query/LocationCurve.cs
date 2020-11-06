@@ -32,6 +32,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Autodesk.Revit.DB.Mechanical;
 using BH.Engine.Reflection;
+using Tolerance = BH.oM.Adapters.Revit.Tolerance;
+
 
 namespace BH.Revit.Engine.Core
 {
@@ -153,135 +155,167 @@ namespace BH.Revit.Engine.Core
             // a fitting then uses the fitting origin as either start/end
             List<BH.oM.Geometry.Point> allPoints = new List<BH.oM.Geometry.Point>();
             
+            var tolerance = BH.oM.Adapters.Revit.Tolerance.Vertex.FromSI(UnitType.UT_Length);
+            
+            BH.oM.Geometry.Line extraLine1 = null;
+            BH.oM.Geometry.Line extraLine2 = null;
+
+            List<BH.oM.Geometry.Point> endPoints = new List<BH.oM.Geometry.Point>();
+            List<BH.oM.Geometry.Point> midPoints = new List<BH.oM.Geometry.Point>();
+            
+            
             // Get connectors
             ConnectorManager connectorManager = mepCurve.ConnectorManager;
             ConnectorSet connectorSet = connectorManager.Connectors;
-            //List<bool> endPointsConnected = new List<bool>();
-            List<BH.oM.Geometry.Point> endPoints = new List<BH.oM.Geometry.Point>();
-            List<BH.oM.Geometry.Point> midPoints = new List<BH.oM.Geometry.Point>();
-            foreach (Autodesk.Revit.DB.Connector c in connectorSet)
+            List<Connector> c1Connectors = connectorSet.Cast<Connector>().ToList();
+            for (int i = 0; i < c1Connectors.Count; i++)
             {
-                //calculate end points, that are in fact the origin of its fittings if connected
-                BH.oM.Geometry.Point point = null;
-                if (c.ConnectorType == ConnectorType.End)
+                BH.oM.Geometry.Point locationToSnap = null;
+                BH.oM.Geometry.Point locationFromSnap = null;
+                
+                Connector c1 = c1Connectors[i];
+                if (c1.ConnectorType == ConnectorType.End)
                 {
-                    if (c.IsConnected)
+                    locationFromSnap = BH.Engine.Geometry.Modify.RoundCoordinates(Convert.PointFromRevit(c1.Origin),4);
+                    if (c1.IsConnected)
                     {
-                        //at each connector get the connector refs to give access to fitting
-                        ConnectorSet cSet = c.AllRefs;
-                        foreach (Connector con in cSet)
+                        List<Connector> c2Connectors = (c1.AllRefs).Cast<Connector>().ToList();
+                        for (int j = 0; j < c2Connectors.Count; j++)
                         {
-                            //check if connector owner is not the original MEP linear object
-                            if (con.Owner.Id != mepCurve.Id)
+                            Connector c2 = c2Connectors[j];
+                            if (c2.Owner.Id != c1.Owner.Id)
                             {
-                                // todo new idea
-                                // if sequence is composed of two connectors then try to find midpoint distance but,
-                                // if connector is too long it may suggest to be a bend/elbow
-                                // and therefore should be queryied and instead of forming a single line for paths,
-                                // it forms 2, 1/4 connector 3/4 line
-                                // it should connect the back and forth precisely
-                                // do 2 levels only
-                                
-                                // todo continue new idea
-                                // if sequence starts with a T that has direct connector attached,
-                                // do nothing? pick this T location
-                                
-                                
-                                
-                                //in some cases there may be a chain of fittings connected to each other,
-                                //to capture these we have to dive deep into at least 2 levels of nested conn
-                                //strategy is to check for it in only one of the endpoints of mep curve,
-                                //so as to avoid duplicates from another mep curve
-                                
-                                //this is 1 level
-                                //get fitting location
-                                Location location = con.Owner.Location;
-                                LocationPoint locationPoint = location as LocationPoint;
-
-                                // routine to check 2 level
-                                if (c.Id == 0)
+                                if (!(c2.Owner is MEPCurve))
                                 {
-                                    if (con.Owner is FamilyInstance fittingInstance)
+                                    FamilyInstance familyInstance1 = c2.Owner as FamilyInstance;
+                                    ConnectorManager connectorManager1 = familyInstance1.MEPModel.ConnectorManager;
+                                    List<Connector> c3Connectors = (connectorManager1.Connectors).Cast<Connector>().ToList();
+                                    if (c3Connectors.Count == 2)
                                     {
-                                        MEPModel fittingMEP = fittingInstance.MEPModel;
-                                        ConnectorManager fittingManager = fittingMEP.ConnectorManager;
-                                        ConnectorSet fittingSet = fittingManager.Connectors;
-                                        foreach (Connector cFitting in fittingSet)
+                                        for (int k = 0; k < c3Connectors.Count; k++)
                                         {
-                                            //check each connector to find the next fitting
-                                            ConnectorSet subFittingSet = cFitting.AllRefs;
-                                            foreach (Connector cSub in subFittingSet)
+                                            Connector c3 = c3Connectors[k];
+                                            if (c3.Origin.DistanceTo(c1.Origin) > tolerance)
                                             {
-                                                //check if connector owner ins't the original cable tray
-                                                //and if its a FamilyInstance (fitting)
-                                                if (cSub.Owner.Id != fittingInstance.Id &&
-                                                    cSub.Owner.GetType() == typeof(FamilyInstance))
+                                                if (c3.IsConnected)
                                                 {
-                                                    //mark new location to be the next fitting
-                                                    location = cSub.Owner.Location;
-                                                    locationPoint = location as LocationPoint;
+                                                    List<Connector> c4Connectors = (c3.AllRefs).Cast<Connector>().ToList();
+                                                    for (int l = 0; l < c4Connectors.Count; l++)
+                                                    {
+                                                        Connector c4 = c4Connectors[l];
+                                                        if (c4.Owner.Id != c2.Owner.Id && c4.Owner.Id != c1.Owner.Id)
+                                                        {
+                                                            if (!(c4.Owner is MEPCurve))
+                                                            {
+                                                                FamilyInstance familyInstance2 = c4.Owner as FamilyInstance;
+                                                                ConnectorManager connectorManager2 = familyInstance2.MEPModel.ConnectorManager;
+                                                                List<Connector> c5Connectors = (connectorManager2.Connectors).Cast<Connector>().ToList();
+                                                                if (c5Connectors.Count == 2)
+                                                                {
+                                                                    for (int m = 0; m < c5Connectors.Count; m++)
+                                                                    {
+                                                                        Connector c5 = c5Connectors[m];
+                                                                        if (c5.Origin.DistanceTo(c4.Origin) > tolerance)
+                                                                        {
+                                                                            locationToSnap = BH.Engine.Geometry.Modify.RoundCoordinates(Convert.PointFromRevit(c5.Origin),4);
+                                                                            BH.oM.Geometry.Line longLine = BH.Engine.Geometry.Create.Line(locationToSnap, locationFromSnap);
+                                                                            locationToSnap = BH.Engine.Geometry.Modify.RoundCoordinates(longLine.PointAtParameter(0.5),4);
+                                                                            
+                                                                            endPoints.Add(BH.Engine.Geometry.Modify.RoundCoordinates(Convert.PointFromRevit(c1.Origin),4));
+                                                                            BH.oM.Geometry.Line shortLine = BH.Engine.Geometry.Create.Line(locationToSnap, locationFromSnap);
+                                                                            
+                                                                            if (c1.Id == 0)
+                                                                                extraLine1 = shortLine;
+                                                                            else 
+                                                                                extraLine2 = shortLine;
+                                                                            
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    locationToSnap = BH.Engine.Geometry.Modify.RoundCoordinates(Convert.FromRevit((familyInstance2.Location) as LocationPoint),4);
+                                                                    BH.oM.Geometry.Line shortLine = BH.Engine.Geometry.Create.Line(locationToSnap, locationFromSnap);
+                                                                    endPoints.Add(BH.Engine.Geometry.Modify.RoundCoordinates(Convert.PointFromRevit(c1.Origin),4));
+                                                                    
+                                                                    if (c1.Id == 0)
+                                                                        extraLine1 = shortLine;
+                                                                    else 
+                                                                        extraLine2 = shortLine;
+                                                                    
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                endPoints.Add(BH.Engine.Geometry.Modify.RoundCoordinates(Convert.FromRevit((c3.Owner.Location) as LocationPoint),4));
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    endPoints.Add(BH.Engine.Geometry.Modify.RoundCoordinates(Convert.PointFromRevit(c1.Origin), 4));
+                                                    locationToSnap = BH.Engine.Geometry.Modify.RoundCoordinates(Convert.PointFromRevit(c3.Origin), 4);
+                                                    BH.oM.Geometry.Line shortLine = BH.Engine.Geometry.Create.Line(locationToSnap, locationFromSnap);
+
+                                                    if (c1.Id == 0)
+                                                    {
+                                                        extraLine1 = shortLine;
+                                                    }
+                                                    else
+                                                    {
+                                                        extraLine2 = shortLine;
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+                                    else
+                                    {
+                                        endPoints.Add(BH.Engine.Geometry.Modify.RoundCoordinates(Convert.FromRevit((familyInstance1.Location)as LocationPoint),4));
+                                    }
                                 }
-
-                                //in some cases MEP linear objects connect without fittings,
-                                //if thats the case then desired point will be its own connector origin
-                                if (locationPoint == null)
-                                {
-                                    //rounding to 4 decimal digits due to precision issues when extracting vector directions.
-                                    point = BH.Engine.Geometry.Create.Point(
-                                        Math.Round(c.Origin.PointFromRevit().X, 4),
-                                        Math.Round(c.Origin.PointFromRevit().Y, 4),
-                                        Math.Round(c.Origin.PointFromRevit().Z, 4));
-                                    endPoints.Add(point);
-                                }
-                                //else use the fitting location point
                                 else
                                 {
-                                    point = BH.Engine.Geometry.Create.Point(
-                                        Math.Round(locationPoint.Point.PointFromRevit().X, 4),
-                                        Math.Round(locationPoint.Point.PointFromRevit().Y, 4),
-                                        Math.Round(locationPoint.Point.PointFromRevit().Z, 4));
-                                    endPoints.Add(point);
+                                    endPoints.Add(BH.Engine.Geometry.Modify.RoundCoordinates(Convert.PointFromRevit(c1.Origin),4));
                                 }
                             }
                         }
                     }
-                    //if not connected at all then just use own connector origin
                     else
                     {
-                        point = BH.Engine.Geometry.Create.Point(
-                            Math.Round(c.Origin.PointFromRevit().X, 4),
-                            Math.Round(c.Origin.PointFromRevit().Y, 4), 
-                            Math.Round(c.Origin.PointFromRevit().Z, 4));
-                        endPoints.Add(point);
-                        allPoints.Add(point);
+                        endPoints.Add(BH.Engine.Geometry.Modify.RoundCoordinates(Convert.PointFromRevit(c1.Origin),4));
                     }
                 }
-                //if MEP linear object has connections that don't take fitting,
-                //then we need to store the point to later split the curve
                 else
                 {
-                    point = BH.Engine.Geometry.Create.Point(
-                        Math.Round(c.Origin.PointFromRevit().X, 4),
-                        Math.Round(c.Origin.PointFromRevit().Y, 4), 
-                        Math.Round(c.Origin.PointFromRevit().Z, 4));
-                    midPoints.Add(point);
+                    //if MEP linear object has connections that don't take fitting,
+                    //then we need to store the point to later split the curve
+                    midPoints.Add(BH.Engine.Geometry.Modify.RoundCoordinates(Convert.PointFromRevit(c1.Origin),4));
                 }
             }
-            
+
             //split MEP linear object if there was any other MEP linear object connected to it without connector
-            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(endPoints[0], endPoints[1]);
+            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(endPoints[1], endPoints[0]);
             List<BH.oM.Geometry.Line> result = new List<BH.oM.Geometry.Line>();
+            
+            if (extraLine1 != null) 
+            {
+                result.Add(extraLine1);
+            }
+            
             if (midPoints.Any())
             {
-                result = line.SplitAtPoints(midPoints);
+                result.AddRange(line.SplitAtPoints(midPoints));
             }
             else
             {
                 result.Add(line);
+            }
+            
+            if (extraLine2 != null) 
+            {
+                result.Add(extraLine2);
             }
 
             return result;
