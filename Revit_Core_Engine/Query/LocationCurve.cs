@@ -162,8 +162,7 @@ namespace BH.Revit.Engine.Core
 
             List<BH.oM.Geometry.Point> endPoints = new List<BH.oM.Geometry.Point>();
             List<BH.oM.Geometry.Point> midPoints = new List<BH.oM.Geometry.Point>();
-            
-            
+
             // Get connectors
             ConnectorManager connectorManager = mepCurve.ConnectorManager;
             ConnectorSet connectorSet = connectorManager.Connectors;
