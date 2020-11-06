@@ -27,6 +27,8 @@ using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using BH.Engine.Geometry;
+using BH.oM.MEP.Elements;
 
 namespace BH.Revit.Engine.Core
 {
@@ -41,43 +43,48 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("duct", "BHoM duct object converted from a Revit duct element.")]
-        public static BH.oM.MEP.Elements.Duct DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<BH.oM.MEP.Elements.Duct> DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            // Reuse a BHoM duct from refObjects it it has been converted before
-            BH.oM.MEP.Elements.Duct bhomDuct = refObjects.GetValue<BH.oM.MEP.Elements.Duct>(revitDuct.Id);
-            if (bhomDuct != null)
-                return bhomDuct;
-            
-            // Start and end points
-            LocationCurve locationCurve = revitDuct.Location as LocationCurve;
-            Curve curve = locationCurve.Curve;
-            BH.oM.MEP.Elements.Node startNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(0).PointFromRevit() }; // Start point
-            BH.oM.MEP.Elements.Node endNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
-            
-            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startNode.Position, endNode.Position); // BHoM line
+            // Reuse a BHoM duct from refObjects if it has been converted before
+            List<BH.oM.MEP.Elements.Duct> bhomDucts = refObjects.GetValues<BH.oM.MEP.Elements.Duct>(revitDuct.Id);
+            if (bhomDucts != null)
+            {
+                return bhomDucts;
+            }
+            else
+            {
+                bhomDucts = new List<BH.oM.MEP.Elements.Duct>();
+            }
 
-            double flowRate = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_DUCT_FLOW_PARAM); // Flow rate
-
+            List<BH.oM.Geometry.Line> queryied = Query.LocationCurveMEP(revitDuct, settings);
+            // Flow rate
+            double flowRate = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_DUCT_FLOW_PARAM); 
             BH.oM.MEP.SectionProperties.DuctSectionProperty sectionProperty = BH.Revit.Engine.Core.Query.DuctSectionProperty(revitDuct, settings);
-
             // Orientation angle
             double orientationAngle = revitDuct.OrientationAngle(settings); //ToDo - resolve in next issue, specific issue being raised
 
-            bhomDuct = BH.Engine.MEP.Create.Duct(line, flowRate, sectionProperty, orientationAngle);
+            for (int i = 0; i < queryied.Count; i++)
+            {
+                BH.oM.Geometry.Line segment = queryied[i];
+                BH.oM.MEP.Elements.Duct thisSegment = new Duct
+                {
+                    StartNode = (Node) segment.StartPoint(),
+                    EndNode = (Node) segment.EndPoint(),
+                    FlowRate = flowRate,
+                    SectionProperty = sectionProperty,
+                    OrientationAngle = orientationAngle
+                };
+                //Set identifiers, parameters & custom data
+                thisSegment.SetIdentifiers(revitDuct);
+                thisSegment.CopyParameters(revitDuct, settings.ParameterSettings);
+                thisSegment.SetProperties(revitDuct, settings.ParameterSettings);
+                bhomDucts.Add(thisSegment);
+            }
 
-            // Set the flow rate, as the Create method above does not set the flow rate with the suppliet flowRate argument
-            bhomDuct.FlowRate = flowRate;
-
-            //Set identifiers, parameters & custom data
-            bhomDuct.SetIdentifiers(revitDuct);
-            bhomDuct.CopyParameters(revitDuct, settings.ParameterSettings);
-            bhomDuct.SetProperties(revitDuct, settings.ParameterSettings);
-
-            refObjects.AddOrReplace(revitDuct.Id, bhomDuct);
-
-            return bhomDuct;
+            refObjects.AddOrReplace(revitDuct.Id, bhomDucts);
+            return bhomDucts;
         }
 
         /***************************************************/

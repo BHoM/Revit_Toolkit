@@ -232,14 +232,19 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("duct", "BHoM duct converted from a Revit duct.")]
-        public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
-                    return duct.DuctFromRevit(settings, refObjects);
+                    List<IBHoMObject> result = new List<IBHoMObject>();
+                    foreach (Duct d in duct.DuctFromRevit(settings, refObjects))
+                    {
+                        result.Add(d);
+                    }
+                    return result;
                 default:
                     return null;
             }
