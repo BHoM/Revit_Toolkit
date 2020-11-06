@@ -205,7 +205,7 @@ namespace BH.Revit.Engine.Core
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("cableTray", "BHoM cable tray converted from a Revit cable tray.")]
+        [Output("cableTray", "Resulted list of BHoM cable tray converted from a Revit cable tray.")]
         public static List<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Electrical.CableTray cableTray, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
@@ -231,7 +231,7 @@ namespace BH.Revit.Engine.Core
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("duct", "BHoM duct converted from a Revit duct.")]
+        [Output("duct", "Resulted list of BHoM duct converted from a Revit duct.")]
         public static List<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
@@ -257,15 +257,20 @@ namespace BH.Revit.Engine.Core
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("pipe", "BHoM pipe converted from a Revit pipe.")]
-        public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Plumbing.Pipe pipe, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("pipe", "Resulted list of BHoM pipe converted from a Revit pipe.")]
+        public static List<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Plumbing.Pipe pipe, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
-                    return pipe.PipeFromRevit(settings, refObjects);
+                    List<IBHoMObject> result = new List<IBHoMObject>();
+                    foreach (BH.oM.MEP.Elements.Pipe p in pipe.PipeFromRevit(settings, refObjects))
+                    {
+                        result.Add(p);
+                    }
+                    return result;
                 default:
                     return null;
             }
