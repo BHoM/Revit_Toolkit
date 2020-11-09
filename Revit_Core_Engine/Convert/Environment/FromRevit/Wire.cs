@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
             bhomWire = new BH.oM.MEP.System.Wire();
 
             // Wire segment
-            WireSegment wireSegment = BH.Engine.MEP.Create.Wire(line);
+            WireSegment wireSegment = BH.Engine.MEP.Create.WireSegment(line);
 
             bhomWire.WireSegments.Add(wireSegment);
 
