@@ -52,19 +52,21 @@ namespace BH.Engine.Adapters.Revit
         {
             string zJustification = element.GetRevitParameterValue("z Justification").ToString();
 
+            zJustification = zJustification.ToLower();
+
             ICurve definingLine = null;
 
-            if (zJustification == "Top")
+            if (zJustification == "top")
             {
                 definingLine = element.TopCentreline();
                 return definingLine;
             }
-            else if (zJustification == "Bottom")
+            else if (zJustification == "bottom")
             {
                 definingLine = element.BottomCentreline();
                 return definingLine;
             }
-            else if (zJustification == "Origin" || zJustification =="Center")
+            else if (zJustification == "origin" || zJustification == "center")
             {
                 return element.Location;
             }
