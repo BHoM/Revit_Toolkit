@@ -70,11 +70,11 @@ namespace BH.Revit.Engine.Core
             // Orientation angle
             double orientationAngle = revitCableTray.OrientationAngle(settings);
 
-            List<BH.oM.Geometry.Line> queryied = Query.LocationCurveMEP(revitCableTray, settings);
+            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitCableTray, settings);
             
-            for (int i = 0; i < queryied.Count; i++)
+            for (int i = 0; i < queried.Count; i++)
             {
-                BH.oM.Geometry.Line segment = queryied[i];
+                BH.oM.Geometry.Line segment = queried[i];
                 BH.oM.MEP.Elements.CableTray thisSegment = new CableTray
                 {
                     StartNode = (Node) segment.StartPoint(),

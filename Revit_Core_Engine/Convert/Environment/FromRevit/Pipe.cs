@@ -58,15 +58,15 @@ namespace BH.Revit.Engine.Core
                 bhomPipes = new List<BH.oM.MEP.Elements.Pipe>();
             }
 
-            List<BH.oM.Geometry.Line> queryied = Query.LocationCurveMEP(revitPipe, settings);
+            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitPipe, settings);
             // Flow rate
             double flowRate = revitPipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_FLOW_PARAM); // Flow rate 
             // Pipe section property
             BH.oM.MEP.SectionProperties.PipeSectionProperty sectionProperty = revitPipe.PipeSectionProperty(settings);
 
-            for (int i = 0; i < queryied.Count; i++)
+            for (int i = 0; i < queried.Count; i++)
             {
-                BH.oM.Geometry.Line segment = queryied[i];
+                BH.oM.Geometry.Line segment = queried[i];
                 BH.oM.MEP.Elements.Pipe thisSegment = new Pipe
                 {
                     StartNode = (Node) segment.StartPoint(),

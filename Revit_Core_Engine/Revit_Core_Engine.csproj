@@ -88,7 +88,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <AssemblyName>Revit_Core_Engine</AssemblyName>
+    <AssemblyName>Revit_Core_Engine_2020</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2020|AnyCPU'">
     <OutputPath>..\Build\</OutputPath>
@@ -298,7 +298,6 @@
     <Compile Include="Query\DuctSectionProfile.cs" />
     <Compile Include="Query\DuctSectionProperty.cs" />
     <Compile Include="Query\DuctShape.cs" />
-    <Compile Include="Query\IsEndPointsConnected.cs" />
     <Compile Include="Query\PipeSectionProperty.cs" />
     <Compile Include="Query\Profile.cs" />
     <Compile Include="Convert\Environment\FromRevit\Wire.cs" />

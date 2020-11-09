@@ -30,10 +30,6 @@ using BH.oM.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Autodesk.Revit.DB.Mechanical;
-using BH.Engine.Reflection;
-using Tolerance = BH.oM.Adapters.Revit.Tolerance;
-
 
 namespace BH.Revit.Engine.Core
 {
@@ -147,8 +143,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         
         public static List<BH.oM.Geometry.Line> LocationCurveMEP(this MEPCurve mepCurve, RevitSettings settings = null)
-        {
-            //List<BH.oM.Geometry.Line> result = new List<BH.oM.Geometry.Line>();
+        {            
             settings = settings.DefaultIfNull();
             
             // Determine start and end points, which if the MEP linear object is connected to
@@ -157,9 +152,11 @@ namespace BH.Revit.Engine.Core
             
             var tolerance = BH.oM.Adapters.Revit.Tolerance.Vertex.FromSI(UnitType.UT_Length);
             
+            //add placeholder for extra lines required to snap multi-connected fittings
             BH.oM.Geometry.Line extraLine1 = null;
             BH.oM.Geometry.Line extraLine2 = null;
 
+            //save points to recreate line later
             List<BH.oM.Geometry.Point> endPoints = new List<BH.oM.Geometry.Point>();
             List<BH.oM.Geometry.Point> midPoints = new List<BH.oM.Geometry.Point>();
 
@@ -167,6 +164,28 @@ namespace BH.Revit.Engine.Core
             ConnectorManager connectorManager = mepCurve.ConnectorManager;
             ConnectorSet connectorSet = connectorManager.Connectors;
             List<Connector> c1Connectors = connectorSet.Cast<Connector>().ToList();
+            
+            // the following logic is applied below
+            // we must get both END connectors of mepcurve SELF 
+            // for each END connector c1 check if it's connected
+            // if connected check its references (every object that refers to it)
+            // and grab c2 that is not from SELF (meaning the fitting connected to it)
+            // grab c2 object owner, if it's a fitting then get all connectors
+            // grab c3 from fitting 1 that is not c2 (retrieves the other end of fitting 1)
+            // if c3 is connected then get its references
+            // and grab c4 that is not c3
+            // grab c4 object owner, if it's a fitting then get all connectors
+            // grab c5 from fitting 2 that is not c4 (retrieves the other end of fitting 1)
+            
+            // depending on the conditions above it'll try to recreate the linear object
+            // either by a simple straight line from connector to connector
+            //     - MEP curve without fittings
+            //     - or MEP curve that connects with/without fitting
+            // or adds extra lines if MEP curve is connected by a chain (up to 2 devices) of fittings
+            //     - if this is the case then it performs the aforementioned loop to find all possible connections
+            // also any connectors that are not END in the beginning must be accounted
+            //     - mid connectors means mep curves connected without fittings (in particular cable trays)
+            
             for (int i = 0; i < c1Connectors.Count; i++)
             {
                 BH.oM.Geometry.Point locationToSnap = null;
@@ -294,7 +313,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            //split MEP linear object if there was any other MEP linear object connected to it without connector
+            //split MEP linear object if there was any other MEP linear object connected to it without fitting
             BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(endPoints[1], endPoints[0]);
             List<BH.oM.Geometry.Line> result = new List<BH.oM.Geometry.Line>();
             

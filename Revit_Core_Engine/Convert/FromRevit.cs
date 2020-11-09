@@ -213,7 +213,7 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental: 
-                    return cableTray.CableTrayFromRevit(settings, refObjects);
+                    return new List<IBHoMObject>(cableTray.CableTrayFromRevit(settings, refObjects));
                 default:
                     return null;
             }
@@ -234,7 +234,7 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
-                    return duct.DuctFromRevit(settings, refObjects);
+                    return new List<IBHoMObject>(duct.DuctFromRevit(settings, refObjects));
                 default:
                     return null;
             }
@@ -255,7 +255,7 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
-                    return pipe.PipeFromRevit(settings, refObjects);
+                    return new List<IBHoMObject>(pipe.PipeFromRevit(settings, refObjects));pipe.PipeFromRevit(settings, refObjects);
                 default:
                     return null;
             }
