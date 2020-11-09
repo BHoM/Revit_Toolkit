@@ -25,7 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Spatial.ShapeProfiles;
-using BH.oM.MEP.SectionProperties;
+using BH.oM.MEP.System.SectionProperties;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         [Input("pipe", "Revit pipe to be queried for information required for a BHoM section property.")]
         [Input("settings", "Revit adapter settings.")]
         [Output("sectionProperty", "BHoM pipe section property extracted from a Revit pipe.")]
-        public static BH.oM.MEP.SectionProperties.PipeSectionProperty PipeSectionProperty(this Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null)
+        public static BH.oM.MEP.System.SectionProperties.PipeSectionProperty PipeSectionProperty(this Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
 

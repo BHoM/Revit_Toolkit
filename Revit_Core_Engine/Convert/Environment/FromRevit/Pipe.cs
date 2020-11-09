@@ -41,25 +41,25 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("pipe", "BHoM pipe converted from a Revit pipe.")]
-        public static BH.oM.MEP.Elements.Pipe PipeFromRevit(this Autodesk.Revit.DB.Plumbing.Pipe revitPipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static BH.oM.MEP.System.Pipe PipeFromRevit(this Autodesk.Revit.DB.Plumbing.Pipe revitPipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
             // Reuse a BHoM duct from refObjects it it has been converted before
-            BH.oM.MEP.Elements.Pipe bhomPipe = refObjects.GetValue<BH.oM.MEP.Elements.Pipe>(revitPipe.Id);
+            BH.oM.MEP.System.Pipe bhomPipe = refObjects.GetValue<BH.oM.MEP.System.Pipe>(revitPipe.Id);
             if (bhomPipe != null)
                 return bhomPipe;
 
             // Start and end points
             LocationCurve locationCurve = revitPipe.Location as LocationCurve;
             Curve curve = locationCurve.Curve;
-            BH.oM.MEP.Elements.Node startNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(0).PointFromRevit() }; // Start point
-            BH.oM.MEP.Elements.Node endNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
-            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startNode.Position, endNode.Position); // BHoM line
+            BH.oM.Geometry.Point startPoint = new BH.oM.Geometry.Point { X = curve.GetEndPoint(0).X, Y = curve.GetEndPoint(0).Y, Z = curve.GetEndPoint(0).Z };
+            BH.oM.Geometry.Point endPoint = new BH.oM.Geometry.Point { X = curve.GetEndPoint(1).X, Y = curve.GetEndPoint(1).Y, Z = curve.GetEndPoint(1).Z };
+            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startPoint, endPoint); // BHoM line
             double flowRate = revitPipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_FLOW_PARAM); // Flow rate
 
             // Pipe section property
-            BH.oM.MEP.SectionProperties.PipeSectionProperty sectionProperty = revitPipe.PipeSectionProperty(settings);
+            BH.oM.MEP.System.SectionProperties.PipeSectionProperty sectionProperty = revitPipe.PipeSectionProperty(settings);
 
             // BHoM pipe
             bhomPipe = BH.Engine.MEP.Create.Pipe(line, flowRate, sectionProperty);
