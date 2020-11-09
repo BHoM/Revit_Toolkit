@@ -37,17 +37,17 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert a Revit wire into a BHoM wire.")]
+        [Description("Convert a Revit wire into a BHoM wire segment.")]
         [Input("revitWire", "Revit wire to be converted.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("wire", "BHoM wire converted from a Revit wire.")]
-        public static BH.oM.MEP.System.Wire WireFromRevit(this Autodesk.Revit.DB.Electrical.Wire revitWire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("wireSegment", "BHoM wire segment converted from a Revit wire.")]
+        public static BH.oM.MEP.System.WireSegment WireFromRevit(this Autodesk.Revit.DB.Electrical.Wire revitWire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
             // Reuse a BHoM duct from refObjects it it has been converted before
-            BH.oM.MEP.System.Wire bhomWire = refObjects.GetValue<BH.oM.MEP.System.Wire>(revitWire.Id);
+            BH.oM.MEP.System.WireSegment bhomWire = refObjects.GetValue<BH.oM.MEP.System.WireSegment>(revitWire.Id);
             if (bhomWire != null)
                 return bhomWire;
             
@@ -58,12 +58,7 @@ namespace BH.Revit.Engine.Core
             BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startPoint, endPoint); // BHoM line
 
             // Wire
-            bhomWire = new BH.oM.MEP.System.Wire();
-
-            // Wire segment
-            WireSegment wireSegment = BH.Engine.MEP.Create.WireSegment(line);
-
-            bhomWire.WireSegments.Add(wireSegment);
+            bhomWire = BH.Engine.MEP.Create.WireSegment(line);
 
             //Set identifiers, parameters & custom data
             bhomWire.SetIdentifiers(revitWire);
