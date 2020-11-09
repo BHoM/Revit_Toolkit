@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
         [Input("revitCableTray", "Revit Cable Tray to be converted.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("cableTray", "BHoM cable tray object converted from a Revit cable tray element.")]
+        [Output("cableTrays", "BHoM cable tray objects converted from a Revit cable tray elements.")]
         public static List<BH.oM.MEP.Elements.CableTray> CableTrayFromRevit(this Autodesk.Revit.DB.Electrical.CableTray revitCableTray, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();

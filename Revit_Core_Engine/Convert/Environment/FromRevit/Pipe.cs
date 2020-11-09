@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         [Input("revitPipe", "Revit pipe to be converted.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("pipe", "List of BHoM pipe converted from a Revit pipe.")]
+        [Output("pipes", "List of BHoM MEP pipes converted from a Revit pipes.")]
         public static List<BH.oM.MEP.Elements.Pipe> PipeFromRevit(this Autodesk.Revit.DB.Plumbing.Pipe revitPipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();

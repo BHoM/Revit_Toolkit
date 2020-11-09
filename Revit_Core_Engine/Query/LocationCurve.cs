@@ -146,7 +146,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         
-        public static List<BH.oM.Geometry.Line> LocationCurveMEP (this MEPCurve mepCurve, RevitSettings settings = null)
+        public static List<BH.oM.Geometry.Line> LocationCurveMEP(this MEPCurve mepCurve, RevitSettings settings = null)
         {
             //List<BH.oM.Geometry.Line> result = new List<BH.oM.Geometry.Line>();
             settings = settings.DefaultIfNull();
@@ -323,4 +323,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-

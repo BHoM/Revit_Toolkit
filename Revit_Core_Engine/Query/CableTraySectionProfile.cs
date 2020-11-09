@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
             // Create a section profile
             if (profile != null)
             {
-                return BH.Engine.MEP.Create.SectionProfile(profile as dynamic,0,0);
+                return BH.Engine.MEP.Create.SectionProfile(profile as dynamic, 0, 0);
             }
             else
             {

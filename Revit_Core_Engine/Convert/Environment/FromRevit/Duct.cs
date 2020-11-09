@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         [Input("revitDuct", "Revit duct to be converted.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("duct", "List of BHoM duct object converted from a Revit duct element.")]
+        [Output("ducts", "List of BHoM duct objects converted from a Revit duct elements.")]
         public static List<BH.oM.MEP.Elements.Duct> DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
