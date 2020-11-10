@@ -53,8 +53,8 @@ namespace BH.Revit.Engine.Core
             // Start and end points
             LocationCurve locationCurve = revitPipe.Location as LocationCurve;
             Curve curve = locationCurve.Curve;
-            BH.oM.Geometry.Point startPoint = new BH.oM.Geometry.Point { X = curve.GetEndPoint(0).X, Y = curve.GetEndPoint(0).Y, Z = curve.GetEndPoint(0).Z };
-            BH.oM.Geometry.Point endPoint = new BH.oM.Geometry.Point { X = curve.GetEndPoint(1).X, Y = curve.GetEndPoint(1).Y, Z = curve.GetEndPoint(1).Z };
+            BH.oM.Geometry.Point startPoint = curve.GetEndPoint(0).PointFromRevit();
+            BH.oM.Geometry.Point endPoint = curve.GetEndPoint(1).PointFromRevit();
             BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startPoint, endPoint); // BHoM line
             double flowRate = revitPipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_FLOW_PARAM); // Flow rate
 

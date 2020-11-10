@@ -53,8 +53,8 @@ namespace BH.Revit.Engine.Core
             
             LocationCurve locationCurve = revitWire.Location as LocationCurve;
             Curve curve = locationCurve.Curve;
-            BH.oM.Geometry.Point startPoint = new BH.oM.Geometry.Point { X = curve.GetEndPoint(0).X, Y = curve.GetEndPoint(0).Y, Z = curve.GetEndPoint(0).Z };
-            BH.oM.Geometry.Point endPoint = new BH.oM.Geometry.Point { X = curve.GetEndPoint(1).X, Y = curve.GetEndPoint(1).Y, Z = curve.GetEndPoint(1).Z };
+            BH.oM.Geometry.Point startPoint = curve.GetEndPoint(0).PointFromRevit();
+            BH.oM.Geometry.Point endPoint = curve.GetEndPoint(1).PointFromRevit();
             BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startPoint, endPoint); // BHoM line
 
             // Wire
