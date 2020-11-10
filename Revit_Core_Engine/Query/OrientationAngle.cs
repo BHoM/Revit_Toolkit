@@ -71,7 +71,7 @@ namespace BH.Revit.Engine.Core
 
             BH.oM.Geometry.ICurve bhomCurve = curve.IFromRevit(); // Convert to a BHoM curve
 
-            // Get the duct connector
+            // Get the connector
             Connector connector = null;
             foreach (Connector conn in mepCurve.ConnectorManager.Connectors)
             {
@@ -83,7 +83,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            // Coordinate system of the duct connector
+            // Coordinate system of the connector
             Transform transform = connector.CoordinateSystem;
 
             // Get the rotation

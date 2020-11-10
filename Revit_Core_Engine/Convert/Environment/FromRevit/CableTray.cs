@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert a Revit Cable Tray to a BHoM Cable Tray.")]
+        [Description("Convert a Revit Cable Tray to BHoM cable trays.")]
         [Input("revitCableTray", "Revit Cable Tray to be converted.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
@@ -80,7 +80,7 @@ namespace BH.Revit.Engine.Core
                     StartNode = (Node) segment.StartPoint(),
                     EndNode = (Node) segment.EndPoint(),
                     SectionProperty = sectionProperty,
-                    ConnectionProperty = new CableTrayConnectionProperty(),
+                    ConnectionProperty = null,
                     OrientationAngle = orientationAngle
                 };
 

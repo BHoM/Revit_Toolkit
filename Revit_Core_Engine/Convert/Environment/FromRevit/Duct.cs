@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert a Revit duct to a BHoM duct.")]
+        [Description("Convert a Revit duct to BHoM ducts.")]
         [Input("revitDuct", "Revit duct to be converted.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
