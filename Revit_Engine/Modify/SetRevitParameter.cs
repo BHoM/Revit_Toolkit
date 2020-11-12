@@ -20,8 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -59,7 +60,7 @@ namespace BH.Engine.Adapters.Revit
             
             RevitParametersToPush fragment = new RevitParametersToPush { Parameters = parameters };
 
-            IBHoMObject obj = bHoMObject.GetShallowClone();
+            IBHoMObject obj = bHoMObject.ShallowClone();
             obj.Fragments = new FragmentSet(bHoMObject.Fragments.Where(x => !(x is RevitParametersToPush)).ToList());
             obj.Fragments.Add(fragment);
             return obj;
@@ -97,7 +98,7 @@ namespace BH.Engine.Adapters.Revit
 
             RevitParametersToPush fragment = new RevitParametersToPush { Parameters = parameters };
 
-            IBHoMObject obj = bHoMObject.GetShallowClone();
+            IBHoMObject obj = bHoMObject.ShallowClone();
             obj.Fragments = new FragmentSet(bHoMObject.Fragments.Where(x => !(x is RevitParametersToPush)).ToList());
             obj.Fragments.Add(fragment);
             return obj;
