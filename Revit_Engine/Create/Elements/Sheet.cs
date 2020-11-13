@@ -32,6 +32,8 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousInputNames("sheetName", "name")]
+        [PreviousInputNames("sheetNumber", "number")]
         [Description("Creates BHoM Sheet object.")]
         [InputFromProperty("sheetName")]
         [InputFromProperty("sheetNumber")]

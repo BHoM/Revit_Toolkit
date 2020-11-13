@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.MEP.Elements;
+using BH.oM.MEP.System;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -37,33 +37,28 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert a Revit wire into a BHoM wire.")]
+        [Description("Convert a Revit wire into a BHoM wire segment.")]
         [Input("revitWire", "Revit wire to be converted.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("wire", "BHoM wire converted from a Revit wire.")]
-        public static BH.oM.MEP.Elements.Wire WireFromRevit(this Autodesk.Revit.DB.Electrical.Wire revitWire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("wireSegment", "BHoM wire segment converted from a Revit wire.")]
+        public static BH.oM.MEP.System.WireSegment WireFromRevit(this Autodesk.Revit.DB.Electrical.Wire revitWire, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
             // Reuse a BHoM duct from refObjects it it has been converted before
-            BH.oM.MEP.Elements.Wire bhomWire = refObjects.GetValue<BH.oM.MEP.Elements.Wire>(revitWire.Id);
+            BH.oM.MEP.System.WireSegment bhomWire = refObjects.GetValue<BH.oM.MEP.System.WireSegment>(revitWire.Id);
             if (bhomWire != null)
                 return bhomWire;
             
             LocationCurve locationCurve = revitWire.Location as LocationCurve;
             Curve curve = locationCurve.Curve;
-            BH.oM.MEP.Elements.Node startNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(0).PointFromRevit() }; // Start point
-            BH.oM.MEP.Elements.Node endNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
-            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startNode.Position, endNode.Position); // BHoM line
+            BH.oM.Geometry.Point startPoint = curve.GetEndPoint(0).PointFromRevit();
+            BH.oM.Geometry.Point endPoint = curve.GetEndPoint(1).PointFromRevit();
+            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startPoint, endPoint); // BHoM line
 
             // Wire
-            bhomWire = new BH.oM.MEP.Elements.Wire();
-
-            // Wire segment
-            WireSegment wireSegment = BH.Engine.MEP.Create.Wire(line);
-
-            bhomWire.WireSegments.Add(wireSegment);
+            bhomWire = BH.Engine.MEP.Create.WireSegment(line);
 
             //Set identifiers, parameters & custom data
             bhomWire.SetIdentifiers(revitWire);

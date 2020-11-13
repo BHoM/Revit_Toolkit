@@ -27,6 +27,7 @@ using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using BH.oM.Geometry;
 
 namespace BH.Revit.Engine.Core
 {
@@ -41,26 +42,24 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("duct", "BHoM duct object converted from a Revit duct element.")]
-        public static BH.oM.MEP.Elements.Duct DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static BH.oM.MEP.System.Duct DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
             // Reuse a BHoM duct from refObjects it it has been converted before
-            BH.oM.MEP.Elements.Duct bhomDuct = refObjects.GetValue<BH.oM.MEP.Elements.Duct>(revitDuct.Id);
+            BH.oM.MEP.System.Duct bhomDuct = refObjects.GetValue<BH.oM.MEP.System.Duct>(revitDuct.Id);
             if (bhomDuct != null)
                 return bhomDuct;
             
             // Start and end points
             LocationCurve locationCurve = revitDuct.Location as LocationCurve;
             Curve curve = locationCurve.Curve;
-            BH.oM.MEP.Elements.Node startNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(0).PointFromRevit() }; // Start point
-            BH.oM.MEP.Elements.Node endNode = new BH.oM.MEP.Elements.Node { Position = curve.GetEndPoint(1).PointFromRevit() }; // End point
-            
-            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startNode.Position, endNode.Position); // BHoM line
-
+            BH.oM.Geometry.Point startPoint = curve.GetEndPoint(0).PointFromRevit();
+            BH.oM.Geometry.Point endPoint = curve.GetEndPoint(1).PointFromRevit();
+            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startPoint, endPoint); // BHoM line
             double flowRate = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_DUCT_FLOW_PARAM); // Flow rate
 
-            BH.oM.MEP.SectionProperties.DuctSectionProperty sectionProperty = BH.Revit.Engine.Core.Query.DuctSectionProperty(revitDuct, settings);
+            BH.oM.MEP.System.SectionProperties.DuctSectionProperty sectionProperty = BH.Revit.Engine.Core.Query.DuctSectionProperty(revitDuct, settings);
 
             // Orientation angle
             double orientationAngle = revitDuct.OrientationAngle(settings); //ToDo - resolve in next issue, specific issue being raised

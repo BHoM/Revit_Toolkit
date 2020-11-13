@@ -32,6 +32,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousInputNames("viewName", "name")]
         [Description("Creates BHoM ViewPlan object linked to a specific Revit level.")]
         [InputFromProperty("viewName")]
         [InputFromProperty("levelName")]
@@ -43,6 +44,8 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [PreviousInputNames("viewName", "name")]
+        [PreviousInputNames("templateName", "viewTemplateName")]
         [Description("Creates BHoM ViewPlan object linked to a specific level, based on specific Revit view template.")]
         [InputFromProperty("viewName")]
         [InputFromProperty("levelName")]
