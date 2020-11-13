@@ -54,26 +54,26 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Query a Revit duct to extract its orientation angle.")]
-        [Input("duct", "Revit duct to be queried.")]
+        [Description("Query a Revit MEPCurve to extract its orientation angle.")]
+        [Input("mepCurve", "Revit MEPCurve (cable trays, ducts and pipes) to be queried.")]
         [Input("settings", "Revit adapter settings.")]
-        [Output("double", "Orientation angle of a duct in radians extracted from a Revit duct.")]
-        public static double OrientationAngle(this Duct duct, RevitSettings settings = null)
+        [Output("double", "Orientation angle of a MEPCurve in radians extracted from a Revit MEPCurve.")]
+        public static double OrientationAngle(this MEPCurve mepCurve, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
 
             double rotation;
 
-            Location location = duct.Location;
+            Location location = mepCurve.Location;
 
             LocationCurve locationCurve = location as LocationCurve;
             Curve curve = locationCurve.Curve;
 
             BH.oM.Geometry.ICurve bhomCurve = curve.IFromRevit(); // Convert to a BHoM curve
 
-            // Get the duct connector
+            // Get the connector
             Connector connector = null;
-            foreach (Connector conn in duct.ConnectorManager.Connectors)
+            foreach (Connector conn in mepCurve.ConnectorManager.Connectors)
             {
                 // Get the End connector for this duct
                 if (conn.ConnectorType == ConnectorType.End)
@@ -83,7 +83,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            // Coordinate system of the duct connector
+            // Coordinate system of the connector
             Transform transform = connector.CoordinateSystem;
 
             // Get the rotation
