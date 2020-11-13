@@ -50,7 +50,7 @@ namespace BH.Engine.Adapters.Revit
             if (parameterMap.Type == null || parameterMap.ParameterLinks == null || propertyNames == null || propertyNames.Count() == 0)
                 return parameterMap;
 
-            ParameterMap clonedMap = parameterMap.ShallowClone() as ParameterMap;
+            ParameterMap clonedMap = parameterMap.ShallowClone();
             clonedMap.ParameterLinks = parameterMap.ParameterLinks.Where(x => propertyNames.All(y => x.PropertyName != y)).ToList();
             return clonedMap;
         }
@@ -74,7 +74,7 @@ namespace BH.Engine.Adapters.Revit
             if (parameterMap == null)
                 return parameterSettings;
 
-            ParameterSettings cloneSettings = parameterSettings.ShallowClone() as ParameterSettings;
+            ParameterSettings cloneSettings = parameterSettings.ShallowClone();
             cloneSettings.ParameterMaps = new List<ParameterMap>(parameterSettings.ParameterMaps);
             cloneSettings.ParameterMaps.Remove(parameterMap);
             cloneSettings.ParameterMaps.Add(parameterMap.RemoveParameterLinks(propertyNames));

@@ -43,7 +43,7 @@ namespace BH.Engine.Adapters.Revit
             if (modelInstance == null)
                 return null;
 
-            ModelInstance modInstance = modelInstance.ShallowClone() as ModelInstance;
+            ModelInstance modInstance = modelInstance.ShallowClone();
 
             modInstance.Location = Geometry.Modify.Translate(modInstance.Location as dynamic, vector);
             

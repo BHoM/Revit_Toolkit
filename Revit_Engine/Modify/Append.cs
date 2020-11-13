@@ -47,7 +47,7 @@ namespace BH.Engine.Adapters.Revit
             if (string.IsNullOrEmpty(directory) || !Directory.Exists(directory))
                 return familyLibrary;
 
-            FamilyLibrary famLibrary = familyLibrary.ShallowClone() as FamilyLibrary;
+            FamilyLibrary famLibrary = familyLibrary.ShallowClone();
 
             DirectoryInfo directoryInfo = new DirectoryInfo(directory);
 
@@ -76,7 +76,7 @@ namespace BH.Engine.Adapters.Revit
             if (string.IsNullOrEmpty(path) || !File.Exists(path))
                 return familyLibrary;
 
-            FamilyLibrary famLibrary = familyLibrary.ShallowClone() as FamilyLibrary;
+            FamilyLibrary famLibrary = familyLibrary.ShallowClone();
 
             if (famLibrary.Dictionary == null)
                 famLibrary.Dictionary = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();

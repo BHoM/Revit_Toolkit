@@ -49,7 +49,7 @@ namespace BH.Engine.Adapters.Revit
             if (parameterMaps == null || parameterMaps.Count() == 0)
                 return parameterSettings;
 
-            ParameterSettings cloneSettings = parameterSettings.ShallowClone() as ParameterSettings;
+            ParameterSettings cloneSettings = parameterSettings.ShallowClone();
             if (cloneSettings.ParameterMaps == null)
                 cloneSettings.ParameterMaps = new List<ParameterMap>();
             else

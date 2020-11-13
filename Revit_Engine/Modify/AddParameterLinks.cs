@@ -56,7 +56,7 @@ namespace BH.Engine.Adapters.Revit
             if (propertyInfos == null)
                 return parameterMap;
 
-            ParameterMap clonedMap = parameterMap.ShallowClone() as ParameterMap;
+            ParameterMap clonedMap = parameterMap.ShallowClone();
             if (clonedMap.ParameterLinks == null)
                 clonedMap.ParameterLinks = new List<IParameterLink>();
             else
@@ -73,7 +73,7 @@ namespace BH.Engine.Adapters.Revit
                     clonedMap.ParameterLinks.Remove(existingLink);
                     if (merge)
                     {
-                        IParameterLink newLink = existingLink.ShallowClone() as IParameterLink;
+                        IParameterLink newLink = existingLink.ShallowClone();
                         newLink.ParameterNames = new HashSet<string>(existingLink.ParameterNames);
                         newLink.ParameterNames.UnionWith(parameterLink.ParameterNames);
                         clonedMap.ParameterLinks.Add(newLink);
@@ -102,7 +102,7 @@ namespace BH.Engine.Adapters.Revit
             if (type == null || parameterLinks == null || parameterLinks.Count() == 0)
                 return parameterSettings;
 
-            ParameterSettings cloneSettings = parameterSettings.ShallowClone() as ParameterSettings;
+            ParameterSettings cloneSettings = parameterSettings.ShallowClone();
             cloneSettings.ParameterMaps = new List<ParameterMap>(parameterSettings.ParameterMaps);
 
             ParameterMap parameterMap = cloneSettings.ParameterMap(type);
