@@ -20,15 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.ComponentModel;
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
-using System.Collections.Generic;
-using System.ComponentModel;
-using BH.Engine.Geometry;
+using BH.oM.MEP.System.ConnectionProperties;
 using BH.oM.MEP.System;
+using BH.oM.Reflection.Attributes;
+using BH.oM.Geometry;
+
 
 namespace BH.Revit.Engine.Core
 {
@@ -38,51 +43,55 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert a Revit pipe into BHoM pipes.")]
-        [Input("revitPipe", "Revit pipe to be converted.")]
+        [Description("Convert a Revit Cable Tray to BHoM cable trays.")]
+        [Input("revitCableTray", "Revit Cable Tray to be converted.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("pipes", "List of BHoM MEP pipes converted from a Revit pipes.")]
-        public static List<BH.oM.MEP.System.Pipe> PipeFromRevit(this Autodesk.Revit.DB.Plumbing.Pipe revitPipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("cableTrays", "BHoM cable tray objects converted from a Revit cable tray elements.")]
+        public static List<BH.oM.MEP.System.CableTray> CableTrayFromRevit(this Autodesk.Revit.DB.Electrical.CableTray revitCableTray, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-            
-            // Reuse a BHoM duct from refObjects if it has been converted before
-            List<BH.oM.MEP.System.Pipe> bhomPipes = refObjects.GetValues<BH.oM.MEP.System.Pipe>(revitPipe.Id);
-            if (bhomPipes != null)
+
+            // Reuse a BHoM cable tray from refObjects if it has been converted before
+            List<BH.oM.MEP.System.CableTray> bhomCableTrays = refObjects.GetValues<BH.oM.MEP.System.CableTray>(revitCableTray.Id);
+            if (bhomCableTrays != null)
             {
-                return bhomPipes;
+                return bhomCableTrays;
             }
             else
             {
-                bhomPipes = new List<BH.oM.MEP.System.Pipe>();
+                bhomCableTrays = new List<BH.oM.MEP.System.CableTray>();
             }
 
-            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitPipe, settings);
-            // Flow rate
-            double flowRate = revitPipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_FLOW_PARAM); // Flow rate 
-            // Pipe section property
-            BH.oM.MEP.System.SectionProperties.PipeSectionProperty sectionProperty = revitPipe.PipeSectionProperty(settings);
+            // Section properties
+            BH.oM.MEP.System.SectionProperties.CableTraySectionProperty sectionProperty = BH.Revit.Engine.Core.Query.CableTraySectionProperty(revitCableTray, settings);
 
+            // Orientation angle
+            double orientationAngle = revitCableTray.OrientationAngle(settings);
+
+            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitCableTray, settings);
+            
             for (int i = 0; i < queried.Count; i++)
             {
                 BH.oM.Geometry.Line segment = queried[i];
-                BH.oM.MEP.System.Pipe thisSegment = new Pipe
+                BH.oM.MEP.System.CableTray thisSegment = new CableTray
                 {
                     StartPoint = segment.StartPoint(),
                     EndPoint = segment.EndPoint(),
-                    FlowRate = flowRate,
-                    SectionProperty = sectionProperty
+                    SectionProperty = sectionProperty,
+                    ConnectionProperty = null,
+                    OrientationAngle = orientationAngle
                 };
+
                 //Set identifiers, parameters & custom data
-                thisSegment.SetIdentifiers(revitPipe);
-                thisSegment.CopyParameters(revitPipe, settings.ParameterSettings);
-                thisSegment.SetProperties(revitPipe, settings.ParameterSettings);
-                bhomPipes.Add(thisSegment);
+                thisSegment.SetIdentifiers(revitCableTray);
+                thisSegment.CopyParameters(revitCableTray, settings.ParameterSettings);
+                thisSegment.SetProperties(revitCableTray, settings.ParameterSettings);
+                bhomCableTrays.Add(thisSegment);
             }
-            
-            refObjects.AddOrReplace(revitPipe.Id, bhomPipes);
-            return bhomPipes;
+
+            refObjects.AddOrReplace(revitCableTray.Id, bhomCableTrays);
+            return bhomCableTrays;
         }
 
         /***************************************************/
