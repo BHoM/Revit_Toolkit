@@ -110,7 +110,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                property = property.ShallowClone() as ISectionProperty;
+                property = property.ShallowClone();
 
                 if (!materialFound)
                     BH.Engine.Reflection.Compute.RecordNote($"A matching section was found in the library. No valid material was defined in Revit, so the default material for this section was used. Revit ElementId: {familyInstance.Id.IntegerValue}");
