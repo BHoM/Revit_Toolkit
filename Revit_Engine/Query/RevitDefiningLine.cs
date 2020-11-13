@@ -54,25 +54,15 @@ namespace BH.Engine.Adapters.Revit
 
             zJustification = zJustification.ToLower();
 
-            ICurve definingLine = null;
-
             if (zJustification == "top")
-            {
-                definingLine = element.TopCentreline();
-                return definingLine;
-            }
+                return element.TopCentreline();
             else if (zJustification == "bottom")
-            {
-                definingLine = element.BottomCentreline();
-                return definingLine;
-            }
+                return element.BottomCentreline();
             else if (zJustification == "origin" || zJustification == "center")
-            {
                 return element.Location;
-            }
             else
             {
-                Engine.Reflection.Compute.RecordError("The Revit parameter z Justification is not defined for the element, will return element location line.");
+                Engine.Reflection.Compute.RecordError("Error extracting z Justification Revit parameter, will return location line.");
                 return element.Location;
             }
         }
