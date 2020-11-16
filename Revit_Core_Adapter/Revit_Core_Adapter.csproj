@@ -1,299 +1,360 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTarget="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-<PropertyGroup>
-  <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-  <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-  <ProjectGuid>{C2BD93AF-8853-4685-8BD4-223055DE1CC6}</ProjectGuid>
-  <OutputType>Library</OutputType>
-  <AppDesignerFolder>Properties</AppDesignerFolder>
-  <RootNamespace>BH.Revit.Adapter.Core</RootNamespace>
-  <AssemblyName>Revit_Core_Adapter_2018</AssemblyName>
-  <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-  <FileAlignment>512</FileAlignment>
-  <OutputPath>..\Build\</OutputPath>
-</PropertyGroup>
-<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-  <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-  <DebugSymbols>true</DebugSymbols>
-  <DebugType>full</DebugType>
-  <Optimize>false</Optimize>
-  <DefineConstants>DEBUG;TRACE;REVIT2018</DefineConstants>
-  <ErrorReport>prompt</ErrorReport>
-  <WarningLevel>4</WarningLevel>
-</PropertyGroup>
-<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-  <DebugType>pdbonly</DebugType>
-  <Optimize>true</Optimize>
-  <DefineConstants>TRACE;REVIT2018</DefineConstants>
-  <ErrorReport>prompt</ErrorReport>
-  <WarningLevel>4</WarningLevel>
-</PropertyGroup>
-<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2018|AnyCPU'">
-  <AssemblyName>Revit_Core_Adapter_2018</AssemblyName>
-  <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-  <DebugSymbols>true</DebugSymbols>
-  <DebugType>full</DebugType>
-  <OutputPath>..\Build\</OutputPath>
-  <DefineConstants>TRACE;DEBUG;REVIT2018</DefineConstants>
-  <ErrorReport>prompt</ErrorReport>
-</PropertyGroup>
-<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2019|AnyCPU'">
-  <AssemblyName>Revit_Core_Adapter_2019</AssemblyName>
-  <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-  <DebugSymbols>true</DebugSymbols>
-  <DebugType>full</DebugType>
-  <OutputPath>..\Build\</OutputPath>
-  <DefineConstants>TRACE;DEBUG;REVIT2019</DefineConstants>
-  <ErrorReport>prompt</ErrorReport>
-</PropertyGroup>
-<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2018|AnyCPU'">
-  <AssemblyName>Revit_Core_Adapter_2018</AssemblyName>
-  <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-  <DebugType>pdbonly</DebugType>
-  <Optimize>true</Optimize>
-  <OutputPath>..\Build\</OutputPath>
-  <DefineConstants>TRACE;REVIT2018</DefineConstants>
-  <ErrorReport>prompt</ErrorReport>
-</PropertyGroup>
-<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2019|AnyCPU'">
-  <AssemblyName>Revit_Core_Adapter_2019</AssemblyName>
-  <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-  <DebugType>pdbonly</DebugType>
-  <Optimize>true</Optimize>
-  <OutputPath>..\Build\</OutputPath>
-  <DefineConstants>TRACE;REVIT2019</DefineConstants>
-  <ErrorReport>prompt</ErrorReport>
-</PropertyGroup>
-<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2020|AnyCPU'">
-  <AssemblyName>Revit_Core_Adapter_2020</AssemblyName>
-  <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-  <DebugSymbols>true</DebugSymbols>
-  <DebugType>full</DebugType>
-  <OutputPath>..\Build\</OutputPath>
-  <DefineConstants>TRACE;DEBUG;REVIT2020</DefineConstants>
-  <ErrorReport>prompt</ErrorReport>
-</PropertyGroup>
-<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2020|AnyCPU'">
-  <AssemblyName>Revit_Core_Adapter_2020</AssemblyName>
-  <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-  <DebugType>pdbonly</DebugType>
-  <Optimize>true</Optimize>
-  <OutputPath>..\Build\</OutputPath>
-  <DefineConstants>TRACE;REVIT2020</DefineConstants>
-  <ErrorReport>prompt</ErrorReport>
-</PropertyGroup>
-<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2021|AnyCPU'">
-  <AssemblyName>Revit_Core_Adapter_2021</AssemblyName>
-  <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-  <DebugSymbols>true</DebugSymbols>
-  <DebugType>full</DebugType>
-  <OutputPath>..\Build\</OutputPath>
-  <DefineConstants>TRACE;DEBUG;REVIT2021</DefineConstants>
-  <ErrorReport>prompt</ErrorReport>
-</PropertyGroup>
-<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2021|AnyCPU'">
-  <AssemblyName>Revit_Core_Adapter_2021</AssemblyName>
-  <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-  <DebugType>pdbonly</DebugType>
-  <Optimize>true</Optimize>
-  <OutputPath>..\Build\</OutputPath>
-  <DefineConstants>TRACE;REVIT2021</DefineConstants>
-  <ErrorReport>prompt</ErrorReport>
-</PropertyGroup>
-<PropertyGroup Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
-  <PostBuildEvent>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C2BD93AF-8853-4685-8BD4-223055DE1CC6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <OutputPath>..\Build\</OutputPath>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BH.Revit.Adapter.Core</RootNamespace>
+    <AssemblyName>Revit_Core_Adapter_2018</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE;REVIT2018</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;REVIT2018</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2018|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;REVIT2018</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Adapter_2018</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2019|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;REVIT2019</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Adapter_2019</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2018|AnyCPU'">
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;REVIT2018</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Adapter_2018</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2019|AnyCPU'">
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;REVIT2019</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Adapter_2019</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2020|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;REVIT2020</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Adapter_2020</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2020|AnyCPU'">
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;REVIT2020</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Adapter_2020</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2021|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;REVIT2021</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Adapter_2021</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2021|AnyCPU'">
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;REVIT2021</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Adapter_2021</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Adapter_Engine">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Adapter_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Adapter_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Adapter_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="BHoM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="BHoM_Adapter">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Adapter.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="BHoM_Engine">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Data_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Geometry_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Graphics_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Graphics_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Physical_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_oM.dll</HintPath>
+	  <Private>False</Private>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="Reflection_Engine">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Reflection_oM">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
+      <HintPath>..\libs\2018\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
+      <HintPath>..\libs\2018\RevitAPIIFC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
+      <HintPath>..\libs\2018\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
+      <HintPath>..\libs\2019\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
+      <HintPath>..\libs\2019\RevitAPIIFC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
+      <HintPath>..\libs\2019\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
+      <HintPath>..\libs\2020\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
+      <HintPath>..\libs\2020\RevitAPIIFC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
+      <HintPath>..\libs\2020\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
+      <HintPath>..\libs\2021\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
+      <HintPath>..\libs\2021\RevitAPIIFC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
+      <HintPath>..\libs\2021\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Socket_Adapter">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Socket_Adapter.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Socket_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Socket_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AdapterActions\Pull.cs" />
+    <Compile Include="AdapterActions\Remove.cs" />
+    <Compile Include="CRUD\Create.cs" />
+    <Compile Include="CRUD\Delete.cs" />
+    <Compile Include="AdapterActions\Push.cs" />
+    <Compile Include="CRUD\Read.cs" />
+    <Compile Include="CRUD\Update.cs" />
+    <Compile Include="Listener\Buttons\Activate.cs" />
+    <Compile Include="Listener\Buttons\BHoMWebsite.cs" />
+    <Compile Include="Listener\Buttons\BHoMWiki.cs" />
+    <Compile Include="Listener\Buttons\Deactivate.cs" />
+    <Compile Include="Listener\Buttons\RevitToolkitWiki.cs" />
+    <Compile Include="Listener\Buttons\SetPorts.cs" />
+    <Compile Include="Listener\EventHandlers\PullEvent.cs" />
+    <Compile Include="Listener\EventHandlers\PushEvent.cs" />
+    <Compile Include="Listener\EventHandlers\RemoveEvent.cs" />
+    <Compile Include="FailuresProcessing.cs" />
+    <Compile Include="Listener\Forms\UpdatePortsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Listener\Forms\UpdatePortsForm.Designer.cs">
+      <DependentUpon>UpdatePortsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messages\Errors.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Listener\RevitListener.cs" />
+    <Compile Include="RevitListenerAdapter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
+      <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
+      <Name>Revit_Adapter</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Revit_Core_Engine\Revit_Core_Engine.csproj">
+      <Project>{4dfaf9c8-9770-4e5a-818d-eb4dab665145}</Project>
+      <Name>Revit_Core_Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj">
+      <Project>{75a99ac5-fe80-45a4-b456-1aa3b1c4bb74}</Project>
+      <Name>Revit_Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
+      <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
+      <Name>Revit_oM</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Listener\Files\BHoM_2018.Addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Listener\Files\BHoM_2019.Addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Listener\Files\BHoM_2020.Addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Listener\Files\BHoM_2021.Addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Listener\Forms\UpdatePortsForm.resx">
+      <DependentUpon>UpdatePortsForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Listener\Files\Resources\AdapterActivate16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Listener\Files\Resources\AdapterActivate32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Listener\Files\Resources\AdapterDeactivate16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Listener\Files\Resources\AdapterDeactivate32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Listener\Files\Resources\AdapterUpdate16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Listener\Files\Resources\AdapterUpdate32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Listener\Files\Resources\BHoMWebsite16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Listener\Files\Resources\Info16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Listener\Files\Resources\Info32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
+    <PostBuildEvent>
 		C:\Windows\System32\xcopy "$(ProjectDir)Listener\Files\BHoM_2018.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018\" /Y /I /E
 		xcopy "$(TargetDir)$(TargetFileName)" "C:\\ProgramData\\BHoM\\Assemblies" /Y
 		xcopy "$(TargetDir)Listener\Files\Resources"  "C:\ProgramData\BHoM\Resources\Revit" /Y /I /E
 	</PostBuildEvent>
-</PropertyGroup>
-<PropertyGroup Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
-  <PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
+    <PostBuildEvent>
 		C:\Windows\System32\xcopy "$(ProjectDir)Listener\Files\BHoM_2019.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019\" /Y /I /E
 		xcopy "$(TargetDir)$(TargetFileName)" "C:\\ProgramData\\BHoM\\Assemblies" /Y
 		xcopy "$(TargetDir)Listener\Files\Resources"  "C:\ProgramData\BHoM\Resources\Revit" /Y /I /E
 	</PostBuildEvent>
-</PropertyGroup>
-<PropertyGroup Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
-  <PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
+    <PostBuildEvent>
 		C:\Windows\System32\xcopy "$(ProjectDir)Listener\Files\BHoM_2020.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2020\" /Y /I /E
 		xcopy "$(TargetDir)$(TargetFileName)" "C:\\ProgramData\\BHoM\\Assemblies" /Y
 		xcopy "$(TargetDir)Listener\Files\Resources"  "C:\ProgramData\BHoM\Resources\Revit" /Y /I /E
 	</PostBuildEvent>
-</PropertyGroup>
-<ItemGroup>
-  <Reference Include="Adapter_Engine">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Adapter_Engine.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Adapter_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Adapter_oM.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="BHoM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="BHoM_Adapter">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Adapter.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="BHoM_Engine">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Data_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Geometry_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_oM.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Graphics_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Graphics_oM.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Physical_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_oM.dll</HintPath>
-    <Private>False</Private>
-    <SpecificVersion>False</SpecificVersion>
-  </Reference>
-  <Reference Include="PresentationCore" />
-  <Reference Include="Reflection_Engine">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_Engine.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Reflection_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_oM.dll</HintPath>
-    <Private>False</Private>
-    <SpecificVersion>False</SpecificVersion>
-  </Reference>
-  <Reference Include="RevitAPI">
-    <HintPath>..\libs\2018\RevitAPI.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="RevitAPIIFC">
-    <HintPath>..\libs\2018\RevitAPIIFC.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="RevitAPIUI">
-    <HintPath>..\libs\2018\RevitAPIUI.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="RevitAPI">
-    <HintPath>..\libs\2019\RevitAPI.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="RevitAPIIFC">
-    <HintPath>..\libs\2019\RevitAPIIFC.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="RevitAPIUI">
-    <HintPath>..\libs\2019\RevitAPIUI.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="RevitAPI">
-    <HintPath>..\libs\2020\RevitAPI.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="RevitAPIIFC">
-    <HintPath>..\libs\2020\RevitAPIIFC.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="RevitAPIUI">
-    <HintPath>..\libs\2020\RevitAPIUI.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="RevitAPI">
-    <HintPath>..\libs\2021\RevitAPI.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="RevitAPIIFC">
-    <HintPath>..\libs\2021\RevitAPIIFC.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="RevitAPIUI">
-    <HintPath>..\libs\2021\RevitAPIUI.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Socket_Adapter">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Socket_Adapter.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Socket_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Socket_oM.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="System" />
-  <Reference Include="System.Core" />
-  <Reference Include="System.Drawing" />
-  <Reference Include="System.Windows.Forms" />
-  <Reference Include="System.Xml.Linq" />
-  <Reference Include="System.Data.DataSetExtensions" />
-  <Reference Include="Microsoft.CSharp" />
-  <Reference Include="System.Data" />
-  <Reference Include="System.Net.Http" />
-  <Reference Include="System.Xml" />
-</ItemGroup>
-<ItemGroup>
-  <Compile Include="AdapterActions\Pull.cs" />
-  <Compile Include="AdapterActions\Remove.cs" />
-  <Compile Include="CRUD\Create.cs" />
-  <Compile Include="CRUD\Delete.cs" />
-  <Compile Include="AdapterActions\Push.cs" />
-  <Compile Include="CRUD\Read.cs" />
-  <Compile Include="CRUD\Update.cs" />
-  <Compile Include="Listener\Buttons\Activate.cs" />
-  <Compile Include="Listener\Buttons\BHoMWebsite.cs" />
-  <Compile Include="Listener\Buttons\BHoMWiki.cs" />
-  <Compile Include="Listener\Buttons\Deactivate.cs" />
-  <Compile Include="Listener\Buttons\RevitToolkitWiki.cs" />
-  <Compile Include="Listener\Buttons\SetPorts.cs" />
-  <Compile Include="Listener\EventHandlers\PullEvent.cs" />
-  <Compile Include="Listener\EventHandlers\PushEvent.cs" />
-  <Compile Include="Listener\EventHandlers\RemoveEvent.cs" />
-  <Compile Include="FailuresProcessing.cs" />
-  <Compile Include="Listener\Forms\UpdatePortsForm.cs" />
-  <Compile Include="Listener\Forms\UpdatePortsForm.Designer.cs" />
-  <Compile Include="Messages\Errors.cs" />
-  <Compile Include="Properties\AssemblyInfo.cs" />
-  <Compile Include="Listener\RevitListener.cs" />
-  <Compile Include="RevitListenerAdapter.cs" />
-</ItemGroup>
-<ItemGroup>
-  <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
-    <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
-    <Name>Revit_Adapter</Name>
-  </ProjectReference>
-  <ProjectReference Include="..\Revit_Core_Engine\Revit_Core_Engine.csproj">
-    <Project>{4dfaf9c8-9770-4e5a-818d-eb4dab665145}</Project>
-    <Name>Revit_Core_Engine</Name>
-  </ProjectReference>
-  <ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj">
-    <Project>{75a99ac5-fe80-45a4-b456-1aa3b1c4bb74}</Project>
-    <Name>Revit_Engine</Name>
-  </ProjectReference>
-  <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
-    <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
-    <Name>Revit_oM</Name>
-  </ProjectReference>
-</ItemGroup>
-<ItemGroup>
-  <None Include="Listener\Files\BHoM_2018.Addin" />
-  <None Include="Listener\Files\BHoM_2019.Addin" />
-  <None Include="Listener\Files\BHoM_2020.Addin" />
-  <None Include="Listener\Files\BHoM_2021.Addin" />
-</ItemGroup>
-<ItemGroup />
-<ItemGroup />
-<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" Condition="" />
-<PropertyGroup Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
-  <PostBuildEvent>
+	<PostBuildEvent>
 		C:\Windows\System32\xcopy "$(ProjectDir)Listener\Files\BHoM_2021.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2021\" /Y /I /E
 		xcopy "$(TargetDir)$(TargetFileName)" "C:\\ProgramData\\BHoM\\Assemblies" /Y
 		xcopy "$(TargetDir)Listener\Files\Resources"  "C:\ProgramData\BHoM\Resources\Revit" /Y /I /E
 	</PostBuildEvent>
-</PropertyGroup>
+  </PropertyGroup>
 </Project>
