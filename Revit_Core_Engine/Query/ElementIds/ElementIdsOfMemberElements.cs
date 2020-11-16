@@ -184,5 +184,16 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        [Description("Filters ElementIds of elements being nested members of a given Revit family instance.")]
+        [Input("document", "Revit element to be queried for its member elements.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
+        public static IEnumerable<ElementId> ElementIdsOfMemberElements(this FamilyInstance familyInstance)
+        {
+            // Note this method only returns shared nested families
+            return familyInstance.GetSubComponentIds();
+        }
+
+        /***************************************************/
     }
 }
