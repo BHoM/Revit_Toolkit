@@ -92,6 +92,23 @@ namespace BH.Revit.Adapter.Core
             if (representationConfig == null)
                 representationConfig = new PullRepresentationConfig();
 
+            if (pullConfig.IncludeNestedElements)
+            {
+                List<ElementId> elemIds = new List<ElementId>();
+                foreach (ElementId id in elementIds)
+                {
+                    elemIds.Add(id);
+                    Element element = document.GetElement(id);
+                    if (element is FamilyInstance)
+                    {
+                        FamilyInstance famInst = element as FamilyInstance;
+                        IEnumerable<ElementId> nestedElemIds = famInst.ElementIdsOfMemberElements();
+                        elemIds.AddRange(nestedElemIds);
+                    }
+                }
+                elementIds = elemIds;
+            }
+
             Options geometryOptions = BH.Revit.Engine.Core.Create.Options(ViewDetailLevel.Fine, geometryConfig.IncludeNonVisible, false);
             Options meshOptions = BH.Revit.Engine.Core.Create.Options(geometryConfig.MeshDetailLevel.ViewDetailLevel(), geometryConfig.IncludeNonVisible, false);
             Options renderMeshOptions = BH.Revit.Engine.Core.Create.Options(representationConfig.DetailLevel.ViewDetailLevel(), representationConfig.IncludeNonVisible, false);
