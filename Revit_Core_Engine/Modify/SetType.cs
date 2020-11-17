@@ -68,7 +68,7 @@ namespace BH.Revit.Engine.Core
 
         public static bool SetType(this Element element, IInstance instance, RevitSettings settings)
         {
-            ElementType elementType = instance.Properties.ElementType(element.Document, instance.BuiltInCategories(), settings);
+            ElementType elementType = instance.Properties.ElementType(element.Document, settings);
             if (elementType == null)
                 elementType = instance.IElementType(element.Document, settings);
 

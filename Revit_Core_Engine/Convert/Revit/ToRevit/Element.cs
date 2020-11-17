@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
             if (element != null)
                 return element;
 
-            if(modelInstance.Properties == null)
+            if (modelInstance.Properties == null)
             {
                 Compute.ElementTypeNotFoundWarning(modelInstance);
                 return null;
@@ -52,7 +52,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-             BuiltInCategory builtInCategory = modelInstance.Properties.BuiltInCategory(document, settings.FamilyLoadSettings);
+            BuiltInCategory builtInCategory = modelInstance.BuiltInCategory(document);
 
             if (modelInstance.Location is ISurface || modelInstance.Location is ISolid)
             {
