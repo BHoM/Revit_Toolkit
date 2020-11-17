@@ -42,10 +42,6 @@ namespace BH.oM.Adapters.Revit.Settings
         [Description("If true, Revit family parameters will be overwritten on load, if false they will not be changed.")]
         public virtual bool OverwriteParameterValues { get; set; } = true;
 
-        //TODO: DO NOT ADD IT YET!
-        //[Description("If true, Revit family parameters will be overwritten on load, if false they will not be changed.")]
-        public virtual bool TryDuplicateIfNotExists { get; set; } = true;
-
         /***************************************************/
     }
 }
