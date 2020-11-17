@@ -37,26 +37,9 @@ namespace BH.Revit.Engine.Core
 
         public static bool SetType(this FamilyInstance element, IFramingElement bHoMObject, RevitSettings settings)
         {
-            FamilySymbol familySymbol = bHoMObject.Property.ToRevitFamilySymbol(BuiltInCategory.OST_StructuralFraming, element.Document, settings);
+            FamilySymbol familySymbol = bHoMObject.Property.ToRevitElementType(element.Document, bHoMObject.BuiltInCategories(), settings);
             if (familySymbol == null)
-                familySymbol = Query.ElementType(bHoMObject, element.Document, BuiltInCategory.OST_StructuralFraming, settings.FamilyLoadSettings) as FamilySymbol;
-
-            if (familySymbol == null)
-            {
-                Compute.ElementTypeNotFoundWarning(bHoMObject);
-                return false;
-            }
-
-            return element.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, familySymbol.Id);
-        }
-
-        /***************************************************/
-
-        public static bool SetType(this FamilyInstance element, Column bHoMObject, RevitSettings settings)
-        {
-            FamilySymbol familySymbol = bHoMObject.Property.ToRevitFamilySymbol(BuiltInCategory.OST_StructuralColumns, element.Document, settings);
-            if (familySymbol == null)
-                familySymbol = Query.ElementType(bHoMObject, element.Document, BuiltInCategory.OST_StructuralColumns, settings.FamilyLoadSettings) as FamilySymbol;
+                familySymbol = bHoMObject.IElementType(element.Document, settings) as FamilySymbol;
 
             if (familySymbol == null)
             {
@@ -71,7 +54,10 @@ namespace BH.Revit.Engine.Core
 
         public static bool SetType(this HostObject element, ISurface bHoMObject, RevitSettings settings)
         {
-            HostObjAttributes hostObjAttr = bHoMObject?.Construction.ToRevitHostObjAttributes(element.Document, settings);
+            HostObjAttributes hostObjAttr = bHoMObject.Construction.ToRevitElementType(element.Document, bHoMObject.BuiltInCategories(), settings);
+            if (hostObjAttr == null)
+                hostObjAttr = bHoMObject.IElementType(element.Document, settings) as HostObjAttributes;
+
             if (hostObjAttr != null && hostObjAttr.Id.IntegerValue != element.GetTypeId().IntegerValue)
                 return element.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, hostObjAttr.Id);
 
@@ -82,8 +68,10 @@ namespace BH.Revit.Engine.Core
 
         public static bool SetType(this Element element, IInstance instance, RevitSettings settings)
         {
-            BuiltInCategory builtInCategory = instance.Properties.BuiltInCategory(element.Document, settings.FamilyLoadSettings);
-            ElementType elementType = instance.Properties.ElementType(element.Document, builtInCategory, settings.FamilyLoadSettings);
+            ElementType elementType = instance.Properties.ElementType(element.Document, instance.BuiltInCategories(), settings);
+            if (elementType == null)
+                elementType = instance.IElementType(element.Document, settings);
+
             if (elementType != null)
             {
                 try

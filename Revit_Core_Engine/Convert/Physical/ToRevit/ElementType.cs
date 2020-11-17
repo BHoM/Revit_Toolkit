@@ -34,7 +34,33 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static HostObjAttributes ToRevitHostObjAttributes(this oM.Physical.Constructions.IConstruction construction, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilySymbol ToRevitElementType(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            if (framingElementProperty == null || document == null)
+                return null;
+
+            FamilySymbol familySymbol = refObjects.GetValue<FamilySymbol>(document, framingElementProperty.BHoM_Guid);
+            if (familySymbol != null)
+                return familySymbol;
+
+            settings = settings.DefaultIfNull();
+
+            familySymbol = framingElementProperty.ElementType(document, categories, settings) as FamilySymbol;
+
+            familySymbol.CheckIfNullPush(framingElementProperty);
+            if (familySymbol == null)
+                return null;
+
+            // Copy parameters from BHoM object to Revit element
+            familySymbol.CopyParameters(framingElementProperty, settings);
+
+            refObjects.AddOrReplace(framingElementProperty, familySymbol);
+            return familySymbol;
+        }
+
+        /***************************************************/
+
+        public static HostObjAttributes ToRevitElementType(this oM.Physical.Constructions.IConstruction construction, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (construction == null || document == null)
                 return null;
@@ -45,17 +71,9 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            List<BuiltInCategory> builtInCategoryList = null;
-            BuiltInCategory buildInCategory = Query.BuiltInCategory(construction, document);
-            if (buildInCategory == BuiltInCategory.INVALID)
-                builtInCategoryList = new List<BuiltInCategory>() { BuiltInCategory.OST_Walls, BuiltInCategory.OST_Floors, BuiltInCategory.OST_Roofs };
-            else
-                builtInCategoryList = new List<BuiltInCategory>() { buildInCategory };
+            //TODO: figure out if categories can be null!
 
-            if (builtInCategoryList == null || builtInCategoryList.Count == 0)
-                return null;
-
-            elementType = construction.ElementType(document, builtInCategoryList, settings.FamilyLoadSettings, true) as HostObjAttributes;
+            elementType = construction.ElementType(document, categories, settings) as HostObjAttributes;
 
             elementType.CheckIfNullPush(construction);
             if (elementType == null)
