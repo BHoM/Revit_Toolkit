@@ -63,7 +63,7 @@ namespace BH.Revit.Engine.Core
             {
                 BoundingBoxIntersectsFilter bbif = new BoundingBoxIntersectsFilter(new Outline(bbox.Min, bbox.Max));
                 hosts = new FilteredElementCollector(familyInstance.Document).OfClass(typeof(HostObject)).WherePasses(bbif).Cast<HostObject>().ToList();
-                hosts = hosts.Where(x => x.FindInserts(true, true, true, true).Any(y => (y.IntegerValue == familyInstance.Id.IntegerValue)|| (y.IntegerValue == parentId))).ToList();
+                hosts = hosts.Where(x => x.FindInserts(true, true, true, true).Any(y => (y.IntegerValue == familyInstance.Id.IntegerValue) || (y.IntegerValue == parentId))).ToList();
             }
 
             List<ISurface> surfaces = new List<ISurface>();
@@ -73,9 +73,10 @@ namespace BH.Revit.Engine.Core
                 Document doc = familyInstance.Document;
                 Transaction t = new Transaction(doc);
 
-                FailureHandlingOptions failureHandlingOptions = t.GetFailureHandlingOptions().SetClearAfterRollback(true);
                 t.Start("Temp Delete Inserts");
                 List<ElementId> inserts = hosts.SelectMany(x => x.FindInserts(true, true, true, true)).Distinct().Where(x => x.IntegerValue != -1).ToList();
+
+                // Create dummy instance of nested element with matching parameters
                 ParameterSet instanceParams = familyInstance.Parameters;
                 List<RevitParameter> bhomParams = new List<RevitParameter>();
                 foreach (Parameter parameter in instanceParams)
@@ -83,10 +84,8 @@ namespace BH.Revit.Engine.Core
                     RevitParameter bhomParam = Convert.ParameterFromRevit(parameter);
                     bhomParams.Add(bhomParam);
                 }
-                    
                 LocationPoint locPt = familyInstance.Location as LocationPoint;
                 Element dummyInstance = doc.Create.NewFamilyInstance(locPt.Point, familyInstance.Symbol, hosts.First() as Element, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-
                 foreach (RevitParameter param in bhomParams.Where(x => !(x.Value is double)).Union(bhomParams.Where(x => x.Value is double)))
                 {
                     Parameter dummyParam = dummyInstance.GetParameters(param.Name).First<Parameter>();
@@ -94,68 +93,11 @@ namespace BH.Revit.Engine.Core
                     if (!paramsExcluded.Contains(param.Name))
                         Modify.SetParameters(dummyInstance, param.Name, param.Value);
                 }
+
                 doc.Delete(inserts);
                 doc.Regenerate();
 
-                List<List<Solid>> solidsWithOpening = new List<List<Solid>>();
-                foreach (HostObject h in hosts)
-                {
-                    solidsWithOpening.Add(h.Solids(new Options()).Select(x => SolidUtils.Clone(x)).ToList());
-                }
-
-                // Rollback and restart of the transaction is needed because otherwise the object, to which familyInstance is pointing can become invalidated.
-                t.RollBack(failureHandlingOptions);
-                t.Start();
-
-                List<CurveLoop> loops = new List<CurveLoop>();
-                try
-                {
-                    doc.Delete(inserts);
-                    doc.Regenerate();
-
-                    for (int i = 0; i < hosts.Count; i++)
-                    {
-                        HostObject h = hosts[i];
-
-                        List<Autodesk.Revit.DB.Plane> planes = h.IPanelPlanes();
-                        if (planes.Count == 0)
-                            continue;
-
-                        List<Solid> fullSolids = h.Solids(new Options()).SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
-                        if (h is Wall)
-                        {
-                            fullSolids = fullSolids.Select(x => BooleanOperationsUtils.CutWithHalfSpace(x, planes[0])).ToList();
-                            planes[0] = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(-planes[0].Normal, planes[0].Origin);
-                        }
-
-                        foreach (Solid s in fullSolids)
-                        {
-                            foreach (Solid s2 in solidsWithOpening[i])
-                            {
-                                BooleanOperationsUtils.ExecuteBooleanOperationModifyingOriginalSolid(s, s2, BooleanOperationsType.Difference);
-                            }
-
-                            foreach (Autodesk.Revit.DB.Face f in s.Faces)
-                            {
-                                PlanarFace pf = f as PlanarFace;
-                                if (pf == null)
-                                    continue;
-
-                                if (planes.Any(x => Math.Abs(1 - pf.FaceNormal.DotProduct(x.Normal)) <= settings.DistanceTolerance && Math.Abs((pf.Origin - x.Origin).DotProduct(x.Normal)) <= settings.AngleTolerance))
-                                    loops.AddRange(pf.GetEdgesAsCurveLoops());
-                            }
-                        }
-
-                    }
-
-                }
-                catch
-                {
-                    BH.Engine.Reflection.Compute.RecordError(String.Format("Geometrical processing of a Revit element failed due to an internal Revit error. Converted opening might be missing one or more of its surfaces. Revit ElementId: {0}", familyInstance.Id));
-                }
-
-                t.RollBack(failureHandlingOptions);
-                surfaces.AddRange(loops.Select(x => new PlanarSurface(x.FromRevit(), null)));
+                surfaces = GetOpeningGeometry(t, doc, hosts, inserts, familyInstance, settings);
             }
 
             else if (hosts.Count == 0)
@@ -195,73 +137,15 @@ namespace BH.Revit.Engine.Core
             {
                 Document doc = familyInstance.Document;
                 Transaction t = new Transaction(doc);
-                FailureHandlingOptions failureHandlingOptions = t.GetFailureHandlingOptions().SetClearAfterRollback(true);
+
                 t.Start("Temp Delete Inserts");
 
                 List<ElementId> inserts = hosts.SelectMany(x => x.FindInserts(true, true, true, true)).Distinct().Where(x => x.IntegerValue != familyInstance.Id.IntegerValue).ToList();
                 doc.Delete(inserts);
                 doc.Regenerate();
 
-                List<List<Solid>> solidsWithOpening = new List<List<Solid>>();
-                foreach (HostObject h in hosts)
-                {
-                    solidsWithOpening.Add(h.Solids(new Options()).Select(x => SolidUtils.Clone(x)).ToList());
-                }
-
-                // Rollback and restart of the transaction is needed because otherwise the object, to which familyInstance is pointing can become invalidated.
-                t.RollBack(failureHandlingOptions);
-                t.Start();
-
-                List<CurveLoop> loops = new List<CurveLoop>();
-                try
-                {
-                    inserts.Add(familyInstance.Id);
-                    doc.Delete(inserts);
-                    doc.Regenerate();
-
-                    for (int i = 0; i < hosts.Count; i++)
-                    {
-                        HostObject h = hosts[i];
-
-                        List<Autodesk.Revit.DB.Plane> planes = h.IPanelPlanes();
-                        if (planes.Count == 0)
-                            continue;
-
-                        List<Solid> fullSolids = h.Solids(new Options()).SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
-                        if (h is Wall)
-                        {
-                            fullSolids = fullSolids.Select(x => BooleanOperationsUtils.CutWithHalfSpace(x, planes[0])).ToList();
-                            planes[0] = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(-planes[0].Normal, planes[0].Origin);
-                        }
-
-                        foreach (Solid s in fullSolids)
-                        {
-                            foreach (Solid s2 in solidsWithOpening[i])
-                            {
-                                BooleanOperationsUtils.ExecuteBooleanOperationModifyingOriginalSolid(s, s2, BooleanOperationsType.Difference);
-                            }
-
-                            foreach (Autodesk.Revit.DB.Face f in s.Faces)
-                            {
-                                PlanarFace pf = f as PlanarFace;
-                                if (pf == null)
-                                    continue;
-
-                                if (planes.Any(x => Math.Abs(1 - pf.FaceNormal.DotProduct(x.Normal)) <= settings.DistanceTolerance && Math.Abs((pf.Origin - x.Origin).DotProduct(x.Normal)) <= settings.AngleTolerance))
-                                    loops.AddRange(pf.GetEdgesAsCurveLoops());
-                            }
-                        }
-
-                    }
-
-                }
-                catch
-                {
-                    BH.Engine.Reflection.Compute.RecordError(String.Format("Geometrical processing of a Revit element failed due to an internal Revit error. Converted opening might be missing one or more of its surfaces. Revit ElementId: {0}", familyInstance.Id));
-                }
-
-                t.RollBack(failureHandlingOptions);
-                surfaces.AddRange(loops.Select(x => new PlanarSurface(x.FromRevit(), null)));
+                inserts.Add(familyInstance.Id);
+                surfaces = GetOpeningGeometry(t, doc, hosts, inserts, familyInstance, settings);
             }
 
             if (surfaces.Count == 0)
@@ -270,6 +154,75 @@ namespace BH.Revit.Engine.Core
                 return surfaces[0];
             else
                 return new PolySurface { Surfaces = surfaces };
+        }
+
+
+        /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
+
+        private static List<ISurface> GetOpeningGeometry(Transaction t, Document doc, List<HostObject> hosts, List<ElementId> inserts, FamilyInstance familyInstance, RevitSettings settings = null)
+        {
+            List<List<Solid>> solidsWithOpening = new List<List<Solid>>();
+            foreach (HostObject h in hosts)
+            {
+                solidsWithOpening.Add(h.Solids(new Options()).Select(x => SolidUtils.Clone(x)).ToList());
+            }
+
+            // Rollback and restart of the transaction is needed because otherwise the object, to which familyInstance is pointing can become invalidated.
+            FailureHandlingOptions failureHandlingOptions = t.GetFailureHandlingOptions().SetClearAfterRollback(true);
+            t.RollBack(failureHandlingOptions);
+            t.Start();
+
+            List<ISurface> surfaces= new List<ISurface> ();
+            List<CurveLoop> loops = new List<CurveLoop>();
+            try
+            {
+                doc.Delete(inserts);
+                doc.Regenerate();
+
+                for (int i = 0; i < hosts.Count; i++)
+                {
+                    HostObject h = hosts[i];
+
+                    List<Autodesk.Revit.DB.Plane> planes = h.IPanelPlanes();
+                    if (planes.Count == 0)
+                        continue;
+
+                    List<Solid> fullSolids = h.Solids(new Options()).SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
+                    if (h is Wall)
+                    {
+                        fullSolids = fullSolids.Select(x => BooleanOperationsUtils.CutWithHalfSpace(x, planes[0])).ToList();
+                        planes[0] = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(-planes[0].Normal, planes[0].Origin);
+                    }
+
+                    foreach (Solid s in fullSolids)
+                    {
+                        foreach (Solid s2 in solidsWithOpening[i])
+                        {
+                            BooleanOperationsUtils.ExecuteBooleanOperationModifyingOriginalSolid(s, s2, BooleanOperationsType.Difference);
+                        }
+
+                        foreach (Autodesk.Revit.DB.Face f in s.Faces)
+                        {
+                            PlanarFace pf = f as PlanarFace;
+                            if (pf == null)
+                                continue;
+
+                            if (planes.Any(x => Math.Abs(1 - pf.FaceNormal.DotProduct(x.Normal)) <= settings.DistanceTolerance && Math.Abs((pf.Origin - x.Origin).DotProduct(x.Normal)) <= settings.AngleTolerance))
+                                loops.AddRange(pf.GetEdgesAsCurveLoops());
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Geometrical processing of a Revit element failed due to an internal Revit error. Converted opening might be missing one or more of its surfaces. Revit ElementId: {0}", familyInstance.Id));
+            }
+
+            t.RollBack(failureHandlingOptions);
+            surfaces.AddRange(loops.Select(x => new PlanarSurface(x.FromRevit(), null)));
+            return surfaces;
         }
 
         /***************************************************/
