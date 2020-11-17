@@ -53,7 +53,6 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             RoofType roofType = roof.Construction?.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_Roofs }, settings, refObjects) as RoofType;
-
             if (roofType == null)
                 roofType = roof.ElementType(document, settings);
 

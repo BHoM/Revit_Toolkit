@@ -289,7 +289,7 @@ namespace BH.Revit.Engine.Core
 
         public static ElementType ElementType(this IBHoMObject bHoMObject, Document document, IEnumerable<BuiltInCategory> builtInCategories, RevitSettings settings = null)
         {
-            if (bHoMObject == null || document == null || builtInCategories == null)
+            if (bHoMObject == null || document == null)
                 return null;
 
             settings = settings.DefaultIfNull();
@@ -302,7 +302,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             FilteredElementCollector collector = new FilteredElementCollector(document).OfClass(typeof(Family));
-            if (builtInCategories.Any(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID))
+            if (builtInCategories != null && builtInCategories.Any(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID))
                 collector = collector.WherePasses(new LogicalOrFilter(builtInCategories.Where(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID).Select(x => new ElementCategoryFilter(x) as ElementFilter).ToList()));
 
             List<Family> families = collector.Cast<Family>().ToList();
