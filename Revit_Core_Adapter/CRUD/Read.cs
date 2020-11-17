@@ -97,7 +97,6 @@ namespace BH.Revit.Adapter.Core
                 List<ElementId> elemIds = new List<ElementId>();
                 foreach (ElementId id in elementIds)
                 {
-                    elemIds.Add(id);
                     Element element = document.GetElement(id);
                     if (element is FamilyInstance)
                     {
@@ -106,7 +105,7 @@ namespace BH.Revit.Adapter.Core
                         elemIds.AddRange(nestedElemIds);
                     }
                 }
-                elementIds = elemIds;
+                elementIds.ToList<ElementId>().AddRange(elemIds);
             }
 
             Options geometryOptions = BH.Revit.Engine.Core.Create.Options(ViewDetailLevel.Fine, geometryConfig.IncludeNonVisible, false);
