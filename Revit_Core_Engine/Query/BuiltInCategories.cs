@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         public static HashSet<BuiltInCategory> BuiltInCategories(this oM.Adapters.Revit.Elements.Family family, Document document, bool caseSensitive = true)
         {
             if (family?.PropertiesList == null)
-                return new HashSet<BuiltInCategory>();
+                return null;
             
             return new HashSet<BuiltInCategory>(family.PropertiesList.Select(x => x.BuiltInCategory(document, caseSensitive)));
         }

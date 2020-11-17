@@ -52,11 +52,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            WallType wallType = null;
-
-            if (wall.Construction!= null)
-                wallType = wall.Construction.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_Walls }, settings, refObjects) as WallType;
-
+            WallType wallType = wall.Construction.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_Walls }, settings, refObjects) as WallType;
             if (wallType == null)
                 wallType = wall.ElementType(document,settings);
 
