@@ -42,8 +42,8 @@ namespace BH.Revit.Engine.Core
                 return elementType;
 
             settings = settings.DefaultIfNull();
-            
-            elementType = instanceProperties.ElementType(document, instanceProperties.BuiltInCategories(), settings);
+
+            elementType = instanceProperties.ElementType(document, new List<BuiltInCategory> { instanceProperties.BuiltInCategory(document) }, settings);
 
             elementType.CheckIfNullPush(instanceProperties);
             if (elementType == null)

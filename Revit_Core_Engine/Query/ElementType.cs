@@ -282,14 +282,14 @@ namespace BH.Revit.Engine.Core
 
         public static ElementType ElementType(this IBHoMObject bHoMObject, Document document, RevitSettings settings = null)
         {
-            return bHoMObject.ElementType(document, bHoMObject.BuiltInCategories(), settings);
+            return bHoMObject.ElementType(document, bHoMObject.BuiltInCategories(document), settings);
         }
 
         /***************************************************/
 
         public static ElementType ElementType(this IBHoMObject bHoMObject, Document document, IEnumerable<BuiltInCategory> builtInCategories, RevitSettings settings = null)
         {
-            if (bHoMObject == null || document == null || builtInCategories == null || !builtInCategories.Any())
+            if (bHoMObject == null || document == null || builtInCategories == null)
                 return null;
 
             settings = settings.DefaultIfNull();
@@ -302,8 +302,8 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             FilteredElementCollector collector = new FilteredElementCollector(document).OfClass(typeof(Family));
-            if (builtInCategories.All(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID))
-                collector = collector.WherePasses(new LogicalOrFilter(builtInCategories.Select(x => new ElementCategoryFilter(x) as ElementFilter).ToList()));
+            if (builtInCategories.Any(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID))
+                collector = collector.WherePasses(new LogicalOrFilter(builtInCategories.Where(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID).Select(x => new ElementCategoryFilter(x) as ElementFilter).ToList()));
 
             List<Family> families = collector.Cast<Family>().ToList();
             Family fam = families.FirstOrDefault(x => x.Name == familyName);

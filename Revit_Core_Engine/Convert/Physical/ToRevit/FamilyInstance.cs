@@ -82,7 +82,7 @@ namespace BH.Revit.Engine.Core
 
             Line columnLine = framingElement.Location.IToRevit() as Line;
 
-            FamilySymbol familySymbol = framingElement.Property.ToRevitElementType(document, framingElement.BuiltInCategories(), settings, refObjects);
+            FamilySymbol familySymbol = framingElement.Property.ToRevitElementType(document, framingElement.BuiltInCategories(document), settings, refObjects);
             if (familySymbol == null)
                 familySymbol = framingElement.ElementType(document, settings) as FamilySymbol;
 
@@ -177,7 +177,7 @@ namespace BH.Revit.Engine.Core
 
             Level level = document.LevelBelow(framingElement.Location, settings);
 
-            FamilySymbol familySymbol = framingElement.Property.ToRevitElementType(document, framingElement.BuiltInCategories(), settings, refObjects);
+            FamilySymbol familySymbol = framingElement.Property.ToRevitElementType(document, framingElement.BuiltInCategories(document), settings, refObjects);
             if (familySymbol == null)
                 familySymbol = framingElement.ElementType(document, settings) as FamilySymbol;
 

@@ -37,9 +37,10 @@ namespace BH.Revit.Engine.Core
 
         public static bool SetType(this FamilyInstance element, IFramingElement bHoMObject, RevitSettings settings)
         {
-            FamilySymbol familySymbol = bHoMObject.Property.ToRevitElementType(element.Document, bHoMObject.BuiltInCategories(), settings);
+            Document doc = element.Document;
+            FamilySymbol familySymbol = bHoMObject.Property.ToRevitElementType(doc, bHoMObject.BuiltInCategories(doc), settings);
             if (familySymbol == null)
-                familySymbol = bHoMObject.IElementType(element.Document, settings) as FamilySymbol;
+                familySymbol = bHoMObject.IElementType(doc, settings) as FamilySymbol;
 
             if (familySymbol == null)
             {
@@ -54,9 +55,10 @@ namespace BH.Revit.Engine.Core
 
         public static bool SetType(this HostObject element, ISurface bHoMObject, RevitSettings settings)
         {
-            HostObjAttributes hostObjAttr = bHoMObject.Construction.ToRevitElementType(element.Document, bHoMObject.BuiltInCategories(), settings);
+            Document doc = element.Document;
+            HostObjAttributes hostObjAttr = bHoMObject.Construction.ToRevitElementType(doc, bHoMObject.BuiltInCategories(doc), settings);
             if (hostObjAttr == null)
-                hostObjAttr = bHoMObject.IElementType(element.Document, settings) as HostObjAttributes;
+                hostObjAttr = bHoMObject.IElementType(doc, settings) as HostObjAttributes;
 
             if (hostObjAttr != null && hostObjAttr.Id.IntegerValue != element.GetTypeId().IntegerValue)
                 return element.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, hostObjAttr.Id);
