@@ -74,7 +74,7 @@ namespace BH.Revit.Adapter.Core
             if (!pullConfig.IncludeClosedWorksets)
                 worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
 
-            IEnumerable<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).RemoveGridSegmentIds(document);
+            List<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).RemoveGridSegmentIds(document).ToList<ElementId>();
             if (elementIds == null)
                 return new List<IBHoMObject>();
 
@@ -105,7 +105,7 @@ namespace BH.Revit.Adapter.Core
                         elemIds.AddRange(nestedElemIds);
                     }
                 }
-                elementIds.ToList<ElementId>().AddRange(elemIds);
+                elementIds.AddRange(elemIds);
             }
 
             Options geometryOptions = BH.Revit.Engine.Core.Create.Options(ViewDetailLevel.Fine, geometryConfig.IncludeNonVisible, false);
