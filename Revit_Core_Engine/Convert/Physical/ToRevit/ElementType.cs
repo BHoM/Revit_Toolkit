@@ -71,8 +71,6 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            //TODO: figure out if categories can be null!
-
             elementType = construction.ElementType(document, categories, settings) as HostObjAttributes;
 
             elementType.CheckIfNullPush(construction);

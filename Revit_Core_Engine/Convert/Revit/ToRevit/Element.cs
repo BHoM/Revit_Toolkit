@@ -156,7 +156,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            ElementType elementType = draftingInstance.Properties.ElementType(document, draftingInstance.BuiltInCategories(), settings);
+            ElementType elementType = draftingInstance.Properties.ElementType(document, draftingInstance.BuiltInCategories(document), settings);
 
             if (elementType != null)
             {

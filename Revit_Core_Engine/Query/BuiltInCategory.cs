@@ -39,7 +39,7 @@ namespace BH.Revit.Engine.Core
             if (string.IsNullOrEmpty(categoryName) || document?.Settings?.Categories == null)
                 return Autodesk.Revit.DB.BuiltInCategory.INVALID;
 
-            //TODO: use LabelUtils?!
+            //TODO: use LabelUtils?
             foreach (Category category in document.Settings.Categories)
             {
                 if ((caseSensitive && category.Name == categoryName) || (!caseSensitive && category.Name.ToUpper() == categoryName.ToUpper()))
