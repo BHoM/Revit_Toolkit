@@ -301,6 +301,7 @@
     <Compile Include="Convert\Physical\ToRevit\ElementType.cs" />
     <Compile Include="Create\FamilyInstance.cs" />
     <Compile Include="Create\ReferencePlane.cs" />
+    <Compile Include="Convert\Environment\ToRevit\Duct.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\DuctSectionProfile.cs" />
