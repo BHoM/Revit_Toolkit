@@ -42,33 +42,24 @@ namespace BH.Revit.Engine.Core
             FamilyLibrary familyLibrary = familyLoadSettings.FamilyLibrary;
 
             IEnumerable<string> paths = BH.Engine.Adapters.Revit.Query.Paths(familyLibrary, categoryName, familyName, familyTypeName);
-            if (paths == null || paths.Count() == 0)
+
+            string path = paths?.FirstOrDefault();
+            if (path == null)
                 return null;
-
-            string path = paths.First();
-
-            string typeName = familyTypeName;
-            if (string.IsNullOrEmpty(typeName))
+            
+            if (string.IsNullOrEmpty(familyTypeName))
             {
                 //Look for first available type name if type name not provided
-
                 RevitFilePreview revitFilePreview = BH.Engine.Adapters.Revit.Create.RevitFilePreview(path);
-                if (revitFilePreview == null)
-                    return null;
-
                 List<string> typeNameList = BH.Engine.Adapters.Revit.Query.FamilyTypeNames(revitFilePreview);
-                if (typeNameList == null || typeNameList.Count < 1)
-                    return null;
-
-                typeName = typeNameList.First();
+                familyTypeName = typeNameList?.FirstOrDefault();
             }
 
-            if (string.IsNullOrEmpty(typeName))
+            if (string.IsNullOrWhiteSpace(familyTypeName))
                 return null;
 
-            FamilySymbol familySymbol = null;
-
-            if (document.LoadFamilySymbol(path, typeName, new FamilyLoadOptions(familyLoadSettings), out familySymbol))
+            FamilySymbol familySymbol;
+            if (document.LoadFamilySymbol(path, familyTypeName, new FamilyLoadOptions(familyLoadSettings), out familySymbol))
             {
                 if (!familySymbol.IsActive)
                     familySymbol.Activate();
