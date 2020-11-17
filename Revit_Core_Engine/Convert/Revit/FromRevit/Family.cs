@@ -50,12 +50,9 @@ namespace BH.Revit.Engine.Core
             family.Name = revitFamily.Name;
 
             IEnumerable<ElementId> elementIDs = revitFamily.GetFamilySymbolIds();
-            if(elementIDs != null && elementIDs.Count() != 0 )
+            if (elementIDs != null)
             {
-                if (family.PropertiesList == null)
-                    family.PropertiesList = new List<InstanceProperties>();
-
-                foreach(ElementId elementID in elementIDs)
+                foreach (ElementId elementID in elementIDs)
                 {
                     if (elementID == null || elementID == ElementId.InvalidElementId)
                         continue;
