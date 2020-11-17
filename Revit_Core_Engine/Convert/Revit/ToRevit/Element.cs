@@ -52,7 +52,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            BuiltInCategory builtInCategory = modelInstance.Properties.BuiltInCategory(document, settings.FamilyLoadSettings);
+             BuiltInCategory builtInCategory = modelInstance.Properties.BuiltInCategory(document, settings.FamilyLoadSettings);
 
             if (modelInstance.Location is ISurface || modelInstance.Location is ISolid)
             {
@@ -69,7 +69,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                ElementType elementType = modelInstance.Properties.ElementType(document, builtInCategory, settings.FamilyLoadSettings);
+                ElementType elementType = modelInstance.Properties.ElementType(document, new List<BuiltInCategory> { builtInCategory }, settings);
                 if (elementType == null)
                 {
                     Compute.ElementTypeNotFoundWarning(modelInstance);
@@ -156,9 +156,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            BuiltInCategory builtInCategory = draftingInstance.Properties.BuiltInCategory(document, settings.FamilyLoadSettings);
-
-            ElementType elementType = draftingInstance.Properties.ElementType(document, builtInCategory, settings.FamilyLoadSettings);
+            ElementType elementType = draftingInstance.Properties.ElementType(document, draftingInstance.BuiltInCategories(), settings);
 
             if (elementType != null)
             {

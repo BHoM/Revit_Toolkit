@@ -52,33 +52,10 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            RoofType roofType = null;
-
-            if (roof.Construction != null)
-                roofType = roof.Construction.ToRevitHostObjAttributes(document, settings, refObjects) as RoofType;
+            RoofType roofType = roof.Construction?.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_Roofs }, settings, refObjects) as RoofType;
 
             if (roofType == null)
-            {
-                string familyTypeName = roof.FamilyTypeName();
-                if (!string.IsNullOrEmpty(familyTypeName))
-                {
-                    List<RoofType> roofTypeList = new FilteredElementCollector(document).OfClass(typeof(RoofType)).Cast<RoofType>().ToList().FindAll(x => x.Name == familyTypeName);
-                    if (roofTypeList != null || roofTypeList.Count() != 0)
-                        roofType = roofTypeList.First();
-                }
-            }
-
-            if (roofType == null)
-            {
-                string familyTypeName = roof.Name;
-
-                if (!string.IsNullOrEmpty(familyTypeName))
-                {
-                    List<RoofType> roofTypeList = new FilteredElementCollector(document).OfClass(typeof(RoofType)).Cast<RoofType>().ToList().FindAll(x => x.Name == familyTypeName);
-                    if (roofTypeList != null || roofTypeList.Count() != 0)
-                        roofType = roofTypeList.First();
-                }
-            }
+                roofType = roof.ElementType(document, settings);
 
             if (roofType == null)
                 return null;

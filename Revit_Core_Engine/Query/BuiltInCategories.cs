@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Base;
 using BH.oM.Physical.Elements;
 using BH.oM.Structure.Elements;
 using System;
@@ -34,7 +35,14 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<BuiltInCategory> BuiltInCategories(this Type bHoMType)
+        public static HashSet<BuiltInCategory> BuiltInCategories(this IBHoMObject bHoMObject)
+        {
+            return bHoMObject.GetType().BuiltInCategories();
+        }
+
+        /***************************************************/
+
+        public static HashSet<BuiltInCategory> BuiltInCategories(this Type bHoMType)
         {
             HashSet<BuiltInCategory> result = new HashSet<BuiltInCategory>();
             foreach (Type key in BuiltInCategoryTable.Keys)
