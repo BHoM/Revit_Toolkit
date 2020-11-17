@@ -35,24 +35,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Family Family(this IBHoMObject bHoMObject, Document document)
-        {
-            if (document == null || bHoMObject == null)
-                return null;
-
-            string familyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject);
-            if (string.IsNullOrEmpty(familyName) && !string.IsNullOrEmpty(bHoMObject.Name) && bHoMObject.Name.Contains(":"))
-                familyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject.Name);
-
-            if (string.IsNullOrWhiteSpace(familyName))
-                return null;
-
-            List<Family> familyList = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>().ToList();
-            return familyList.Find(x => x.Name == familyName);
-        }
-
-        /***************************************************/
-
         public static Family Family(this IBHoMObject bHoMObject, IEnumerable<Family> families)
         {
             if (families == null || bHoMObject == null)
