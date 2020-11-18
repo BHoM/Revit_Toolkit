@@ -57,7 +57,10 @@ namespace BH.Revit.Engine.Core
                 floorType = floor.ElementType(document, settings);
 
             if (floorType == null)
+            {
+                Compute.ElementTypeNotFoundWarning(floor);
                 return null;
+            }
 
             double bottomElevation = floor.Location.IBounds().Min.Z;
             Level level = document.LevelBelow(bottomElevation.FromSI(UnitType.UT_Length), settings);

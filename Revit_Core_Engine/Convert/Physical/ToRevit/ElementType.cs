@@ -46,8 +46,6 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             familySymbol = framingElementProperty.ElementType(document, categories, settings) as FamilySymbol;
-
-            familySymbol.CheckIfNullPush(framingElementProperty);
             if (familySymbol == null)
                 return null;
 
@@ -72,8 +70,6 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             elementType = construction.ElementType(document, categories, settings) as HostObjAttributes;
-
-            elementType.CheckIfNullPush(construction);
             if (elementType == null)
                 return null;
 

@@ -57,7 +57,10 @@ namespace BH.Revit.Engine.Core
                 wallType = wall.ElementType(document,settings);
 
             if (wallType == null)
+            {
+                Compute.ElementTypeNotFoundWarning(wall);
                 return null;
+            }
 
             BoundingBox bbox = wall.Location.IBounds();
             if (bbox == null)
