@@ -86,8 +86,7 @@ namespace BH.Revit.Engine.Core
                 {
                     if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
                         continue;
-
-                    //TODO: Use LabelUtils?
+                    
                     string categoryName = builtInCategory.CategoryName(document);
                     if (string.IsNullOrEmpty(categoryName))
                         categoryName = family.CategoryName();
