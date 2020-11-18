@@ -55,7 +55,7 @@ namespace BH.oM.Adapters.Revit.Parameters
         [Description("ElementId of view that owns the Revit element correspondent to the BHoM object that carries this fragment. -1 if the Revit element is not view-dependent.")]
         public virtual int OwnerViewId { get; } = -1;
 
-        [Description("ElementId of the parent Revit element correspondent to the BHoM object that owns this.")]
+        [Description("ElementId of the parent Revit element correspondent to the BHoM object that carries this fragment. -1 if the Revit element is not a nested element.")]
         public virtual int ParentElementId { get; } = -1;
 
 
