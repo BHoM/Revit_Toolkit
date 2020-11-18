@@ -57,8 +57,11 @@ namespace BH.Revit.Engine.Core
                 roofType = roof.ElementType(document, settings);
 
             if (roofType == null)
+            {
+                Compute.ElementTypeNotFoundWarning(roof);
                 return null;
-            
+            }
+
             Level level = document.LevelBelow(roof.Location, settings);
             if (level == null)
                 return null;
