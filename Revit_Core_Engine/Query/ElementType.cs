@@ -32,7 +32,7 @@ namespace BH.Revit.Engine.Core
     public static partial class Query
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Interface methods             ****/
         /***************************************************/
 
         public static ElementType IElementType(this IBHoMObject bHoMObject, Document document, RevitSettings settings = null)
@@ -40,25 +40,28 @@ namespace BH.Revit.Engine.Core
             return ElementType(bHoMObject as dynamic, document, settings);
         }
 
+
+        /***************************************************/
+        /****              Public methods               ****/
         /***************************************************/
 
         public static WallType ElementType(this BH.oM.Physical.Elements.Wall wall, Document document, RevitSettings settings = null)
         {
-            return new FilteredElementCollector(document).OfClass(typeof(WallType)).FirstOrDefault(x => x.Name == wall.Name) as WallType;
+            return wall.ElementType<WallType>(document);
         }
 
         /***************************************************/
 
         public static FloorType ElementType(this BH.oM.Physical.Elements.Floor floor, Document document, RevitSettings settings = null)
         {
-            return new FilteredElementCollector(document).OfClass(typeof(FloorType)).FirstOrDefault(x => x.Name == floor.Name) as FloorType;
+            return floor.ElementType<FloorType>(document);
         }
 
         /***************************************************/
 
         public static RoofType ElementType(this BH.oM.Physical.Elements.Roof roof, Document document, RevitSettings settings = null)
         {
-            return new FilteredElementCollector(document).OfClass(typeof(RoofType)).FirstOrDefault(x => x.Name == roof.Name) as RoofType;
+            return roof.ElementType<RoofType>(document);
         }
 
         /***************************************************/
@@ -70,6 +73,13 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        public static HostObjAttributes ElementType(this oM.Physical.Constructions.IConstruction construction, Document document, IEnumerable<BuiltInCategory> builtInCategories, RevitSettings settings = null)
+        {
+            return construction.ElementType<HostObjAttributes>(document, builtInCategories);
+        }
+
+        /***************************************************/
+
         public static ElementType ElementType(this IBHoMObject bHoMObject, Document document, IEnumerable<BuiltInCategory> builtInCategories, RevitSettings settings = null)
         {
             if (bHoMObject == null || document == null)
@@ -77,16 +87,8 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            string familyName = bHoMObject.FamilyName();
-            if (string.IsNullOrEmpty(familyName))
-                familyName = bHoMObject.Name.FamilyName();
-
-            string familyTypeName = bHoMObject.FamilyTypeName();
-            if (string.IsNullOrEmpty(familyTypeName))
-                familyTypeName = bHoMObject.Name.FamilyTypeName();
-
-            if (string.IsNullOrEmpty(familyTypeName))
-                familyTypeName = bHoMObject.Name;
+            string familyName, familyTypeName;
+            bHoMObject.FamilyAndTypeNames(out familyName, out familyTypeName);
 
             if (string.IsNullOrEmpty(familyTypeName))
                 return null;
@@ -147,7 +149,45 @@ namespace BH.Revit.Engine.Core
 
             return null;
         }
-        
+
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        private static T ElementType<T>(this IBHoMObject bHoMObject, Document document, IEnumerable<BuiltInCategory> builtInCategories = null) where T : HostObjAttributes
+        {
+            string familyName, familyTypeName;
+            bHoMObject.FamilyAndTypeNames(out familyName, out familyTypeName);
+            if (string.IsNullOrEmpty(familyTypeName))
+                return null;
+
+            FilteredElementCollector collector = new FilteredElementCollector(document).OfClass(typeof(T));
+            if (builtInCategories != null && builtInCategories.Any(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID))
+                collector = collector.WherePasses(new LogicalOrFilter(builtInCategories.Where(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID).Select(x => new ElementCategoryFilter(x) as ElementFilter).ToList()));
+
+            if (!string.IsNullOrWhiteSpace(familyName))
+                return collector.Cast<T>().FirstOrDefault(x => x.FamilyName == familyName && x.Name == familyTypeName);
+            else
+                return collector.FirstOrDefault(x => x.Name == familyTypeName) as T;
+        }
+
+        /***************************************************/
+
+        private static void FamilyAndTypeNames(this IBHoMObject bHoMObject, out string familyName, out string familyTypeName)
+        {
+            familyName = bHoMObject.FamilyName();
+            if (string.IsNullOrEmpty(familyName))
+                familyName = bHoMObject.Name.FamilyName();
+
+            familyTypeName = bHoMObject.FamilyTypeName();
+            if (string.IsNullOrEmpty(familyTypeName))
+                familyTypeName = bHoMObject.Name.FamilyTypeName();
+
+            if (string.IsNullOrEmpty(familyTypeName))
+                familyTypeName = bHoMObject.Name;
+        }
+
         /***************************************************/
     }
 }
