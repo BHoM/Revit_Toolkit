@@ -66,16 +66,16 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static ElementType ElementType(this IBHoMObject bHoMObject, Document document, RevitSettings settings = null)
+        public static HostObjAttributes ElementType(this oM.Physical.Constructions.IConstruction construction, Document document, IEnumerable<BuiltInCategory> builtInCategories, RevitSettings settings = null)
         {
-            return bHoMObject.ElementType(document, bHoMObject.BuiltInCategories(document), settings);
+            return construction.ElementType<HostObjAttributes>(document, builtInCategories);
         }
 
         /***************************************************/
 
-        public static HostObjAttributes ElementType(this oM.Physical.Constructions.IConstruction construction, Document document, IEnumerable<BuiltInCategory> builtInCategories, RevitSettings settings = null)
+        public static ElementType ElementType(this IBHoMObject bHoMObject, Document document, RevitSettings settings = null)
         {
-            return construction.ElementType<HostObjAttributes>(document, builtInCategories);
+            return bHoMObject.ElementType(document, bHoMObject.BuiltInCategories(document), settings);
         }
 
         /***************************************************/
@@ -93,7 +93,7 @@ namespace BH.Revit.Engine.Core
             if (string.IsNullOrEmpty(familyTypeName))
                 return null;
 
-            ElementType elementType = document.ElementType(familyName, familyTypeName, builtInCategories);
+            ElementType elementType = document.ElementType<ElementType>(familyName, familyTypeName, builtInCategories);
             if (elementType != null)
                 return elementType;
 
@@ -114,51 +114,23 @@ namespace BH.Revit.Engine.Core
             return null;
         }
 
-        /***************************************************/
-
-        public static ElementType ElementType(this Document document, string familyName, string familyTypeName, IEnumerable<BuiltInCategory> builtInCategories)
-        {
-            if (document == null || string.IsNullOrEmpty(familyTypeName))
-                return null;
-
-            if (!string.IsNullOrWhiteSpace(familyName))
-            {
-                IEnumerable<Element> collector = new FilteredElementCollector(document).OfClass(typeof(Family));
-                if (builtInCategories != null && builtInCategories.Any(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID))
-                    collector = collector.Where(x => builtInCategories.Any(y => ((Family)x).FamilyCategoryId.IntegerValue == (int)y));
-
-                Family fam = collector.FirstOrDefault(x => x.Name == familyName) as Family;
-                if (fam != null)
-                {
-                    foreach (ElementId id in fam.GetFamilySymbolIds())
-                    {
-                        ElementType et = document.GetElement(id) as ElementType;
-                        if (et?.Name == familyTypeName)
-                            return et;
-                    }
-                }
-            }
-            else
-            {
-                FilteredElementCollector collector = new FilteredElementCollector(document).OfClass(typeof(ElementType));
-                if (builtInCategories != null && builtInCategories.Any(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID))
-                    collector = collector.WherePasses(new LogicalOrFilter(builtInCategories.Where(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID).Select(x => new ElementCategoryFilter(x) as ElementFilter).ToList()));
-
-                return collector.FirstOrDefault(x => x.Name == familyTypeName) as ElementType;
-            }
-
-            return null;
-        }
-
 
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
 
-        private static T ElementType<T>(this IBHoMObject bHoMObject, Document document, IEnumerable<BuiltInCategory> builtInCategories = null) where T : HostObjAttributes
+        private static T ElementType<T>(this IBHoMObject bHoMObject, Document document, IEnumerable<BuiltInCategory> builtInCategories = null) where T : ElementType
         {
             string familyName, familyTypeName;
             bHoMObject.FamilyAndTypeNames(out familyName, out familyTypeName);
+
+            return document.ElementType<T>(familyName, familyTypeName, builtInCategories);
+        }
+
+        /***************************************************/
+
+        private static T ElementType<T>(this Document document, string familyName, string familyTypeName, IEnumerable<BuiltInCategory> builtInCategories = null) where T : ElementType
+        {
             if (string.IsNullOrEmpty(familyTypeName))
                 return null;
 
