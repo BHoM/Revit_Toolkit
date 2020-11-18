@@ -92,21 +92,20 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             ElementType elementType = document.ElementType(familyName, familyTypeName, builtInCategories);
+            if (elementType != null)
+                return elementType;
 
-            if (elementType == null)
+            //Find ElementType in FamilyLibrary
+            if (settings.FamilyLoadSettings != null && !string.IsNullOrWhiteSpace(familyName) && !string.IsNullOrWhiteSpace(familyTypeName))
             {
-                //Find ElementType in FamilyLibrary
-                if (settings.FamilyLoadSettings != null && !string.IsNullOrWhiteSpace(familyName) && !string.IsNullOrWhiteSpace(familyTypeName))
+                foreach (BuiltInCategory builtInCategory in builtInCategories)
                 {
-                    foreach (BuiltInCategory builtInCategory in builtInCategories)
-                    {
-                        if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
-                            continue;
-                        
-                        FamilySymbol familySymbol = settings.FamilyLoadSettings.LoadFamilySymbol(document, builtInCategory.CategoryName(document), familyName, familyTypeName);
-                        if (familySymbol != null)
-                            return familySymbol;
-                    }
+                    if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
+                        continue;
+
+                    FamilySymbol familySymbol = settings.FamilyLoadSettings.LoadFamilySymbol(document, builtInCategory.CategoryName(document), familyName, familyTypeName);
+                    if (familySymbol != null)
+                        return familySymbol;
                 }
             }
             
@@ -143,7 +142,7 @@ namespace BH.Revit.Engine.Core
                 if (builtInCategories != null && builtInCategories.Any(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID))
                     collector = collector.WherePasses(new LogicalOrFilter(builtInCategories.Where(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID).Select(x => new ElementCategoryFilter(x) as ElementFilter).ToList()));
 
-                return collector.FirstOrDefault(x => x.Name == familyName) as ElementType;
+                return collector.FirstOrDefault(x => x.Name == familyTypeName) as ElementType;
             }
 
             return null;
