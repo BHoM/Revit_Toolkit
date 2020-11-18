@@ -123,8 +123,11 @@ namespace BH.Revit.Engine.Core
 
             if (!string.IsNullOrWhiteSpace(familyName))
             {
-                FilteredElementCollector collector = new FilteredElementCollector(document).OfClass(typeof(Family));
-                Family fam = collector.Cast<Family>().FirstOrDefault(x => builtInCategories.Any(y => x.FamilyCategoryId.IntegerValue == (int)y) && x.Name == familyName) as Family;
+                IEnumerable<Element> collector = new FilteredElementCollector(document).OfClass(typeof(Family));
+                if (builtInCategories != null && builtInCategories.Any(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID))
+                    collector = collector.Where(x => builtInCategories.Any(y => ((Family)x).FamilyCategoryId.IntegerValue == (int)y));
+
+                Family fam = collector.FirstOrDefault(x => x.Name == familyName) as Family;
                 if (fam != null)
                 {
                     foreach (ElementId id in fam.GetFamilySymbolIds())
