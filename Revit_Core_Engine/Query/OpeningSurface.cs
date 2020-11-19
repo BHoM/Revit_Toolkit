@@ -77,43 +77,10 @@ namespace BH.Revit.Engine.Core
                 List<ElementId> inserts = hosts.SelectMany(x => x.FindInserts(true, true, true, true)).Distinct().Where(x => x.IntegerValue != -1).ToList();
 
                 // Create dummy instance of nested element with matching parameters
-                List<Parameter> instanceParams = familyInstance.GetOrderedParameters().ToList<Parameter>();
-                List<RevitParameter> bhomParams = new List<RevitParameter>();
                 LocationPoint locPt = familyInstance.Location as LocationPoint;
                 Element dummyInstance = doc.Create.NewFamilyInstance(locPt.Point, familyInstance.Symbol, hosts.First() as Element, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                foreach (Parameter parameter in instanceParams.Where(x => !(x.StorageType == StorageType.Double)).Union(instanceParams.Where(x => x.StorageType == StorageType.Double)))
-                {
-                    if (parameter.Id.IntegerValue != (int)BuiltInParameter.INSTANCE_HEAD_HEIGHT_PARAM && parameter.Id.IntegerValue != (int)BuiltInParameter.INSTANCE_SILL_HEIGHT_PARAM)
-                    {
-                        object value = null;
-                        switch (parameter.StorageType)
-                        {
-                            case StorageType.Double:
-                                value = parameter.AsDouble().ToSI(parameter.Definition.UnitType);
-                                break;
-                            case StorageType.ElementId:
-                                ElementId elementID = parameter.AsElementId();
-                                if (elementID != null)
-                                    value = elementID.IntegerValue;
-                                break;
-                            case StorageType.Integer:
-                                if (parameter.Definition.ParameterType == ParameterType.YesNo)
-                                    value = parameter.AsInteger() == 1;
-                                else if (parameter.Definition.ParameterType == ParameterType.Invalid)
-                                    value = parameter.AsValueString();
-                                else
-                                    value = parameter.AsInteger();
-                                break;
-                            case StorageType.String:
-                                value = parameter.AsString();
-                                break;
-                            case StorageType.None:
-                                value = parameter.AsValueString();
-                                break;
-                        }
-                        Modify.SetParameters(dummyInstance, parameter.Definition.Name, value);                          
-                    }                    
-                }
+                IEnumerable <BuiltInParameter> paramsToSkip= new List<BuiltInParameter> { BuiltInParameter.INSTANCE_HEAD_HEIGHT_PARAM, BuiltInParameter.INSTANCE_SILL_HEIGHT_PARAM };
+                familyInstance.CopyParameters(dummyInstance, paramsToSkip);
 
                 doc.Delete(inserts);
                 doc.Regenerate();
