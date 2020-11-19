@@ -27,6 +27,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Spatial.ShapeProfiles;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -47,53 +48,38 @@ namespace BH.Revit.Engine.Core
             if (revitDuct != null)
                 return revitDuct;
 
-            // Identify parameters
-            double flowRate = duct.FlowRate;
-
-            object ductStart = duct.StartPoint;
-            object ductEnd = duct.EndPoint;
-            //double elementThickness = duct.SectionProperty.SectionProfile.ElementProfile.
-            //double liningThickness = 
-
             // Settings
             settings = settings.DefaultIfNull();
 
+            // Duct type
+            DuctType ductType = duct.SectionProperty.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_DuctSystem }, settings, refObjects) as DuctType;
 
+            // End points
+            XYZ start = duct.StartPoint.ToRevit();
+            XYZ end = duct.EndPoint.ToRevit();
 
-            // Need to learn more about ductType
-            DuctType ductType = null;
-            ShapeType bhomDuctShape = duct.SectionProperty.SectionProfile.ElementProfile.Shape;
-            ConnectorProfileType revitDuctShape = ConnectorProfileType.Invalid;
-
-            //switch (bhomDuctShape)
-            //{
-            //    case ShapeType.Box:
-            //        return ConnectorProfileType.Rectangular;
-            //}
-
-            if (bhomDuctShape == ShapeType.Box)
-                revitDuctShape = revitDuct.DuctShape(settings);
-
-            // Set Level
-            double bottomElevation = Math.Min(duct.StartPoint.Z, duct.EndPoint.Z).FromSI(UnitType.UT_Length);
-            double topElevation = Math.Max(duct.StartPoint.Z, duct.EndPoint.Z).FromSI(UnitType.UT_Length);
-
-            Level level = document.LevelBelow(bottomElevation, settings);
+            // Level
+            Level level = document.LevelBelow(Math.Min(start.Z, end.Z), settings);
             if (level == null)
                 return null;
 
-            // Set Connectors
-            Connector startConnector = revitDuct.ConnectorManager.Lookup(0);
-            Connector endConnector = revitDuct.ConnectorManager.Lookup(1);
+            // Default system used for now
+            //TODO: in the future you could look for the existing connectors and check if any of them overlaps with start/end of this duct - if so, use it in Duct.Create.
+            // hacky/heavy way of getting all connectors in the link below - however, i would rather filter the connecting elements out by type/bounding box first for performance reasons
+            // https://thebuildingcoder.typepad.com/blog/2010/06/retrieve-mep-elements-and-connectors.html
+            MechanicalSystemType mst = new FilteredElementCollector(document).OfClass(typeof(MechanicalSystemType)).OfType<MechanicalSystemType>().FirstOrDefault();
+            revitDuct = Duct.Create(document, mst.Id, ductType.Id, level.Id, start, end);
 
-            startConnector.Origin = duct.StartPoint.ToRevit();
-            endConnector.Origin = duct.EndPoint.ToRevit();
-
-            // Create Revit Duct
-            revitDuct = Duct.Create(document, ductType.Id, level.Id, startConnector, endConnector);
 
             // Copy parameters from BHoM object to Revit element
             revitDuct.CopyParameters(duct, settings);
+
+            //TODO: copy relevant properties to parameters
+            double flowRate = duct.FlowRate;
+
+            //double elementThickness = duct.SectionProperty.SectionProfile.ElementProfile.
+            //double liningThickness = 
+
 
             // Update top and bottom offset constraints for sloping or general offsets
             //Level bottomLevel = document.GetElement(revitDuct.LookupParameterElementId(BuiltInParameter.))
