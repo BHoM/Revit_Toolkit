@@ -351,6 +351,8 @@
 		xcopy "$(TargetDir)$(TargetFileName)" "C:\\ProgramData\\BHoM\\Assemblies" /Y
 		xcopy "$(TargetDir)Listener\Files\Resources"  "C:\ProgramData\BHoM\Resources\Revit" /Y /I /E
 	</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
 	<PostBuildEvent>
 		C:\Windows\System32\xcopy "$(ProjectDir)Listener\Files\BHoM_2021.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2021\" /Y /I /E
 		xcopy "$(TargetDir)$(TargetFileName)" "C:\\ProgramData\\BHoM\\Assemblies" /Y
