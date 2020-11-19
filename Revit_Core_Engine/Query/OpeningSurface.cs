@@ -77,21 +77,42 @@ namespace BH.Revit.Engine.Core
                 List<ElementId> inserts = hosts.SelectMany(x => x.FindInserts(true, true, true, true)).Distinct().Where(x => x.IntegerValue != -1).ToList();
 
                 // Create dummy instance of nested element with matching parameters
-                ParameterSet instanceParams = familyInstance.Parameters;
+                List<Parameter> instanceParams = familyInstance.GetOrderedParameters().ToList<Parameter>();
                 List<RevitParameter> bhomParams = new List<RevitParameter>();
-                foreach (Parameter parameter in instanceParams)
-                {
-                    RevitParameter bhomParam = Convert.ParameterFromRevit(parameter);
-                    bhomParams.Add(bhomParam);
-                }
                 LocationPoint locPt = familyInstance.Location as LocationPoint;
                 Element dummyInstance = doc.Create.NewFamilyInstance(locPt.Point, familyInstance.Symbol, hosts.First() as Element, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                foreach (RevitParameter param in bhomParams.Where(x => !(x.Value is double)).Union(bhomParams.Where(x => x.Value is double)))
+                foreach (Parameter parameter in instanceParams.Where(x => !(x.StorageType == StorageType.Double)).Union(instanceParams.Where(x => x.StorageType == StorageType.Double)))
                 {
-                    Parameter dummyParam = dummyInstance.GetParameters(param.Name).First<Parameter>();
-                    List<string> paramsExcluded = new List<string> { "Sill Height", "Head Height" };
-                    if (!paramsExcluded.Contains(param.Name))
-                        Modify.SetParameters(dummyInstance, param.Name, param.Value);
+                    if (parameter.Id.IntegerValue != (int)BuiltInParameter.INSTANCE_HEAD_HEIGHT_PARAM && parameter.Id.IntegerValue != (int)BuiltInParameter.INSTANCE_SILL_HEIGHT_PARAM)
+                    {
+                        object value = null;
+                        switch (parameter.StorageType)
+                        {
+                            case StorageType.Double:
+                                value = parameter.AsDouble().ToSI(parameter.Definition.UnitType);
+                                break;
+                            case StorageType.ElementId:
+                                ElementId elementID = parameter.AsElementId();
+                                if (elementID != null)
+                                    value = elementID.IntegerValue;
+                                break;
+                            case StorageType.Integer:
+                                if (parameter.Definition.ParameterType == ParameterType.YesNo)
+                                    value = parameter.AsInteger() == 1;
+                                else if (parameter.Definition.ParameterType == ParameterType.Invalid)
+                                    value = parameter.AsValueString();
+                                else
+                                    value = parameter.AsInteger();
+                                break;
+                            case StorageType.String:
+                                value = parameter.AsString();
+                                break;
+                            case StorageType.None:
+                                value = parameter.AsValueString();
+                                break;
+                        }
+                        Modify.SetParameters(dummyInstance, parameter.Definition.Name, value);                          
+                    }                    
                 }
 
                 doc.Delete(inserts);
