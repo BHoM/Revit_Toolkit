@@ -20,13 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Linq;
-using System.Collections.Generic;
-
+using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Adapters.Revit.Settings;
-
-using Autodesk.Revit.DB;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -38,12 +37,12 @@ namespace BH.Revit.Engine.Core
 
         public static Family LoadFamily(this FamilyLoadSettings familyLoadSettings, Document document, string categoryName, string familyName)
         {
-            if (familyLoadSettings == null || familyLoadSettings.FamilyLibrary == null || document == null)
+            if (familyLoadSettings?.FamilyLibrary == null || document == null)
                 return null;
 
             FamilyLibrary familyLibrary = familyLoadSettings.FamilyLibrary;
 
-            IEnumerable<string> paths = BH.Engine.Adapters.Revit.Query.Paths(familyLibrary, categoryName, familyName, null);
+            IEnumerable<string> paths = familyLibrary.Paths(categoryName, familyName, null);
 
             string path = paths?.FirstOrDefault();
             if (path == null)
@@ -51,6 +50,7 @@ namespace BH.Revit.Engine.Core
 
             Family family;
             document.LoadFamily(path, new FamilyLoadOptions(familyLoadSettings), out family);
+
             return family;
         }
 
