@@ -59,15 +59,13 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [ToBeRemoved("4.0", "This method has been replaced by a simple property query.")]
         [Description("Gets the name of Revit family represented by RevitFilePreview.")]
         [Input("revitFilePreview", "RevitFilePreview to be queried.")]
         [Output("familyName")]
         public static string FamilyName(this oM.Adapters.Revit.Generic.RevitFilePreview revitFilePreview)
         {
-            if (revitFilePreview == null || string.IsNullOrWhiteSpace(revitFilePreview.Path))
-                return null;
-
-            return System.IO.Path.GetFileNameWithoutExtension(revitFilePreview.Path);
+            return revitFilePreview?.FamilyName;
         }
 
         /***************************************************/

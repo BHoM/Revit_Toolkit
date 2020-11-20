@@ -25,6 +25,7 @@ using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -47,8 +48,6 @@ namespace BH.Engine.Adapters.Revit
             if (string.IsNullOrEmpty(directory) || !Directory.Exists(directory))
                 return familyLibrary;
 
-            FamilyLibrary famLibrary = familyLibrary.ShallowClone();
-
             DirectoryInfo directoryInfo = new DirectoryInfo(directory);
 
             SearchOption searchOption = SearchOption.AllDirectories;
@@ -56,10 +55,7 @@ namespace BH.Engine.Adapters.Revit
                 searchOption = SearchOption.TopDirectoryOnly;
 
             FileInfo[] fileInfos = directoryInfo.GetFiles("*.rfa", searchOption);
-            foreach (FileInfo fileInfo in fileInfos)
-                famLibrary = famLibrary.Append(fileInfo.FullName);
-
-            return famLibrary;
+            return familyLibrary.Append(fileInfos.Select(x => x.FullName));
         }
 
         /***************************************************/
@@ -70,44 +66,41 @@ namespace BH.Engine.Adapters.Revit
         [Output("familyLibrary")]
         public static FamilyLibrary Append(this FamilyLibrary familyLibrary, string path)
         {
+            return familyLibrary.Append(new List<string> { path });
+        }
+
+        /***************************************************/
+
+        [Description("Adds a range of paths to existing FamilyLibrary.")]
+        [Input("familyLibrary", "FamilyLibrary to be extended.")]
+        [Input("paths", "A collection of paths to Revit files to be added.")]
+        [Output("familyLibrary")]
+        public static FamilyLibrary Append(this FamilyLibrary familyLibrary, IEnumerable<string> paths)
+        {
             if (familyLibrary == null)
                 return null;
 
-            if (string.IsNullOrEmpty(path) || !File.Exists(path))
+            List<RevitFilePreview> families = new List<RevitFilePreview>();
+            foreach(string path in paths)
+            {
+                if (familyLibrary.Files != null && familyLibrary.Files.Any(x => x.Path == path))
+                    continue;
+
+                RevitFilePreview family = Create.RevitFilePreview(path);
+                if (family != null)
+                    families.Add(family);
+            }
+
+            if (families.Count == 0)
                 return familyLibrary;
 
-            FamilyLibrary famLibrary = familyLibrary.ShallowClone();
+            FamilyLibrary newLibrary = familyLibrary.ShallowClone();
+            newLibrary.Files = families;
 
-            if (famLibrary.Dictionary == null)
-                famLibrary.Dictionary = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+            if (familyLibrary.Files != null)
+                newLibrary.Files.AddRange(familyLibrary.Files);
 
-            string familyName = Path.GetFileNameWithoutExtension(path);
-            RevitFilePreview revitFilePreview = Create.RevitFilePreview(path);
-
-            string categoryName = revitFilePreview.CategoryName();
-
-            Dictionary<string, Dictionary<string, string>> categoryDictionary = null;
-
-            if (!famLibrary.Dictionary.TryGetValue(categoryName, out categoryDictionary))
-            {
-                categoryDictionary = new Dictionary<string, Dictionary<string, string>>();
-                famLibrary.Dictionary.Add(categoryName, categoryDictionary);
-            }
-
-            foreach (string typeName in revitFilePreview.FamilyTypeNames())
-            {
-                Dictionary<string, string> typeDictionary = null;
-                if (!categoryDictionary.TryGetValue(typeName, out typeDictionary))
-                {
-                    typeDictionary = new Dictionary<string, string>();
-                    categoryDictionary.Add(typeName, typeDictionary);
-                }
-
-                if (!typeDictionary.ContainsKey(familyName))
-                    typeDictionary.Add(familyName, path);
-            }
-
-            return famLibrary;
+            return newLibrary;
         }
 
         /***************************************************/
