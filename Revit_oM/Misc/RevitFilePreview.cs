@@ -26,7 +26,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
-namespace BH.oM.Adapters.Revit.Generic
+namespace BH.oM.Adapters.Revit
 {
     [Description("Wrapper for Revit family file (.rfa) that stores basic information about it such as family category, familiy type names etc.")]
     public class RevitFilePreview : BHoMObject, IImmutable

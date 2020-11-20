@@ -22,7 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using System.Collections.Generic;
 using System.Linq;

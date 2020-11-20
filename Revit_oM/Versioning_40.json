@@ -1,0 +1,24 @@
+﻿{
+  "Namespace": {
+    "ToNew": 
+	{
+
+    },
+    "ToOld": 
+	{
+
+    }
+  },
+  "Type": {
+    "ToNew": 
+	{
+		"BH.oM.Adapters.Revit.Generic.FamilyLibrary": "BH.oM.Adapters.Revit.FamilyLibrary",
+		"BH.oM.Adapters.Revit.Generic.RevitFilePreview": "BH.oM.Adapters.Revit.RevitFilePreview"
+    },
+    "ToOld": 
+	{
+		"BH.oM.Adapters.Revit.FamilyLibrary": "BH.oM.Adapters.Revit.Generic.FamilyLibrary",
+		"BH.oM.Adapters.Revit.RevitFilePreview": "BH.oM.Adapters.Revit.Generic.RevitFilePreview",
+    }
+  }
+}
