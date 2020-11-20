@@ -41,20 +41,29 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [ToBeRemoved("4.0", "This method brings no added value plus same effect can be achieved easily by calling XDocument(string).")]
         [Description("Retrieves XDocument from header of a Revit family file (.rfa) wrapped by RevitFilePreview.")]
         [Input("revitFilePreview", "RevitFilePreview to be queried.")]
         [Output("xDocument")]
         public static XDocument XDocument(this RevitFilePreview revitFilePreview)
         {
-            if (revitFilePreview == null)
+            return revitFilePreview?.Path.XDocument();
+        }
+
+        /***************************************************/
+
+        public static XDocument XDocument(this string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
                 return null;
 
-            string path = revitFilePreview.Path;
-
-            if (string.IsNullOrWhiteSpace(revitFilePreview.Path) || !File.Exists(revitFilePreview.Path))
+            if (!File.Exists(path))
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Revit file does not exist under path {path}.");
                 return null;
+            }
 
-            if (File.Exists(revitFilePreview.Path))
+            if (File.Exists(path))
             {
                 StorageInfo storageInfo = (StorageInfo)InvokeStorageRootMethod(null, "Open", path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
@@ -75,6 +84,7 @@ namespace BH.Engine.Adapters.Revit
                             }
                             catch
                             {
+                                BH.Engine.Reflection.Compute.RecordError($"Internal error occurred when attempting to convert a file under path {path} into RevitFilePreview.");
                                 return null;
                             }
 
@@ -86,6 +96,7 @@ namespace BH.Engine.Adapters.Revit
                                 }
                                 catch
                                 {
+                                    BH.Engine.Reflection.Compute.RecordError($"Internal error occurred when attempting to convert a file under path {path} into RevitFilePreview.");
                                     return null;
                                 }
                             }

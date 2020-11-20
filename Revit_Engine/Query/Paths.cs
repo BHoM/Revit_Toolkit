@@ -42,53 +42,21 @@ namespace BH.Engine.Adapters.Revit
         [Output("paths")]
         public static IEnumerable<string> Paths(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null, string typeName = null)
         {
-            if (familyLibrary == null || familyLibrary.Dictionary == null || familyLibrary.Dictionary.Keys.Count == 0)
+            if (familyLibrary?.Files == null)
                 return null;
 
-            List<string> pathList = new List<string>();
+            IEnumerable<RevitFilePreview> files = familyLibrary?.Files;
 
-            List<Dictionary<string, Dictionary<string, string>>> categoryDictionary = new List<Dictionary<string, Dictionary<string, string>>>();
+            if (!string.IsNullOrWhiteSpace(categoryName))
+                files = files.Where(x => x.CategoryName == categoryName);
 
-            if (string.IsNullOrEmpty(categoryName))
-                categoryDictionary = familyLibrary.Dictionary.Values.ToList();
-            else
-            {
-                Dictionary<string, Dictionary<string, string>> catDict = null;
-                if (familyLibrary.Dictionary.TryGetValue(categoryName, out catDict))
-                    categoryDictionary.Add(catDict);
-            }
+            if (!string.IsNullOrWhiteSpace(familyName))
+                files = files.Where(x => x.FamilyName == familyName);
 
-            List<Dictionary<string, string>> typeDictionary = new List<Dictionary<string, string>>();
-            if (string.IsNullOrEmpty(typeName))
-            {
-                foreach (Dictionary<string, Dictionary<string, string>> dictionary_Category in categoryDictionary)
-                    typeDictionary.AddRange(dictionary_Category.Values);
-            }
-            else
-            {
-                foreach (Dictionary<string, Dictionary<string, string>> catDict in categoryDictionary)
-                {
-                    Dictionary<string, string> familyDictionary = null;
-                    if (catDict.TryGetValue(typeName, out familyDictionary))
-                        typeDictionary.Add(familyDictionary);
-                }
-            }
+            if (!string.IsNullOrWhiteSpace(typeName))
+                files = files.Where(x => x.FamilyTypeNames.Any(y => y == typeName));
 
-            if (string.IsNullOrEmpty(familyName))
-            {
-                typeDictionary.ForEach(x => pathList.AddRange(x.Values));
-            }
-            else
-            {
-                foreach (Dictionary<string, string> familyDictionary in typeDictionary)
-                {
-                    string path = null;
-                    if (familyDictionary.TryGetValue(familyName, out path))
-                        pathList.Add(path);
-                }
-            }
-
-            return pathList.Distinct();
+            return files.Select(x => x.Path);
         }
 
         /***************************************************/
