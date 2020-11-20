@@ -24,7 +24,7 @@ using System.Collections.Generic;
 using BH.oM.Base;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Generic
+namespace BH.oM.Adapters.Revit
 {
     [Description("Library of Revit families that can be loaded to the model.")]
     public class FamilyLibrary : BHoMObject
