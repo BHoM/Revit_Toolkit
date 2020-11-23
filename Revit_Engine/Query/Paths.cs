@@ -42,7 +42,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("paths")]
         public static List<string> Paths(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null, string typeName = null)
         {
-            return familyLibrary.RevitFilePreviews()?.Select(x => x.Path).ToList();
+            return familyLibrary?.RevitFilePreviews()?.Select(x => x.Path).ToList();
         }
 
         /***************************************************/
