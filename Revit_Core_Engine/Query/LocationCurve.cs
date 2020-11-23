@@ -142,7 +142,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         
-        public static List<BH.oM.Geometry.Line> LocationCurveMEP(this MEPCurve mepCurve, RevitSettings settings = null)
+        public static List<BH.oM.Geometry.Line> LocationCurveMEP(this MEPCurve mepCurve, out bool isStartConnected, out bool isEndConnected, RevitSettings settings = null)
         {            
             settings = settings.DefaultIfNull();
             
@@ -164,6 +164,8 @@ namespace BH.Revit.Engine.Core
             ConnectorManager connectorManager = mepCurve.ConnectorManager;
             ConnectorSet connectorSet = connectorManager.Connectors;
             List<Connector> c1Connectors = connectorSet.Cast<Connector>().ToList();
+            isStartConnected = false;
+            isEndConnected = false;
             
             // the following logic is applied below
             // we must get both END connectors of mepcurve SELF 
@@ -241,31 +243,50 @@ namespace BH.Revit.Engine.Core
                                                                             
                                                                             endPoints.Add(BH.Engine.Geometry.Modify.RoundCoordinates(Convert.PointFromRevit(c1.Origin),4));
                                                                             BH.oM.Geometry.Line shortLine = BH.Engine.Geometry.Create.Line(locationToSnap, locationFromSnap);
-                                                                            
+
                                                                             if (c1.Id == 0)
+                                                                            {
                                                                                 extraLine1 = shortLine;
-                                                                            else 
+                                                                                if (c5.IsConnected)
+                                                                                    isStartConnected = true;
+                                                                            }
+                                                                            else
+                                                                            {
                                                                                 extraLine2 = shortLine;
-                                                                            
+                                                                                if (c5.IsConnected)
+                                                                                    isEndConnected = true;
+                                                                            }
                                                                         }
                                                                     }
                                                                 }
                                                                 else
                                                                 {
+                                                                    //meaning this fitting could be a T or a cross shape
                                                                     locationToSnap = BH.Engine.Geometry.Modify.RoundCoordinates(Convert.FromRevit((familyInstance2.Location) as LocationPoint),4);
                                                                     BH.oM.Geometry.Line shortLine = BH.Engine.Geometry.Create.Line(locationToSnap, locationFromSnap);
                                                                     endPoints.Add(BH.Engine.Geometry.Modify.RoundCoordinates(Convert.PointFromRevit(c1.Origin),4));
                                                                     
                                                                     if (c1.Id == 0)
+                                                                    {
                                                                         extraLine1 = shortLine;
-                                                                    else 
+                                                                        if (c5Connectors.Any(x => x.IsConnected == true))
+                                                                            isStartConnected = true;
+                                                                    }
+                                                                    else
+                                                                    {
                                                                         extraLine2 = shortLine;
-                                                                    
+                                                                        if (c5Connectors.Any(x => x.IsConnected == true))
+                                                                            isEndConnected = true;
+                                                                    }
                                                                 }
                                                             }
                                                             else
                                                             {
                                                                 endPoints.Add(BH.Engine.Geometry.Modify.RoundCoordinates(Convert.FromRevit((c3.Owner.Location) as LocationPoint),4));
+                                                                if (c1.Id == 0)
+                                                                    isStartConnected = true;
+                                                                else
+                                                                    isEndConnected = true;
                                                             }
                                                         }
                                                     }
@@ -290,12 +311,31 @@ namespace BH.Revit.Engine.Core
                                     }
                                     else
                                     {
+                                        //meaning fitting could be a T or a cross
                                         endPoints.Add(BH.Engine.Geometry.Modify.RoundCoordinates(Convert.FromRevit((familyInstance1.Location)as LocationPoint),4));
+                                        if (c1.Id == 0)
+                                        {
+                                            if (c3Connectors.Any(x => x.IsConnected == true))
+                                                isStartConnected = true;
+                                        }
+                                        else
+                                        {
+                                            if (c3Connectors.Any(x => x.IsConnected == true))
+                                                isEndConnected = true;
+                                        }
                                     }
                                 }
                                 else
                                 {
                                     endPoints.Add(BH.Engine.Geometry.Modify.RoundCoordinates(Convert.PointFromRevit(c1.Origin),4));
+                                    if (c1.Id == 0)
+                                    {
+                                        isStartConnected = true; // because c1 is connected
+                                    }
+                                    else
+                                    {
+                                        isEndConnected = true; //because c1 is connected
+                                    }
                                 }
                             }
                         }
@@ -314,7 +354,7 @@ namespace BH.Revit.Engine.Core
             }
 
             //split MEP linear object if there was any other MEP linear object connected to it without fitting
-            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(endPoints[1], endPoints[0]);
+            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(endPoints[0], endPoints[1]);
             List<BH.oM.Geometry.Line> result = new List<BH.oM.Geometry.Line>();
             
             if (extraLine1 != null) 
