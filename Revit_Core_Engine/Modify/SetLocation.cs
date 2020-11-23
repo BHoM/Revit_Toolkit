@@ -123,8 +123,15 @@ namespace BH.Revit.Engine.Core
                     updated = true;
                 }
             }
-            
-            double rotationDifference = element.OrientationAngleColumn(settings) - ((ConstantFramingProperty)column.Property).OrientationAngle;
+
+            double rotation = 0;
+            ConstantFramingProperty framingProperty = column.Property as ConstantFramingProperty;
+            if (framingProperty == null)
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("BHoM object's property is not a ConstantFramingProperty, therefore its orientation angle could not be retrieved. BHoM_Guid: {0}", column.BHoM_Guid));
+            else
+                rotation = ((ConstantFramingProperty)column.Property).OrientationAngle;
+
+            double rotationDifference = element.OrientationAngleColumn(settings) - rotation;
             if (Math.Abs(rotationDifference) > settings.AngleTolerance)
             {
                 double rotationParamValue = element.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);

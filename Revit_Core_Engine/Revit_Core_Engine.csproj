@@ -292,14 +292,18 @@
   <ItemGroup>
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Room.cs" />
+    <Compile Include="Convert\Environment\FromRevit\CableTray.cs" />
+    <Compile Include="Convert\Environment\FromRevit\Duct.cs" />
+    <Compile Include="Convert\Environment\FromRevit\Pipe.cs" />
+    <Compile Include="Convert\Physical\ToRevit\ElementType.cs" />
+    <Compile Include="Query\CableTraySectionProfile.cs" />
+    <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\DuctSectionProfile.cs" />
     <Compile Include="Query\DuctSectionProperty.cs" />
     <Compile Include="Query\DuctShape.cs" />
     <Compile Include="Query\PipeSectionProperty.cs" />
     <Compile Include="Query\Profile.cs" />
     <Compile Include="Convert\Environment\FromRevit\Wire.cs" />
-    <Compile Include="Convert\Environment\FromRevit\Pipe.cs" />
-    <Compile Include="Convert\Environment\FromRevit\Duct.cs" />
     <Compile Include="Convert\Environment\FromRevit\EnergyAnalysisModel.cs" />
     <Compile Include="Convert\Environment\ToRevit\Space.cs" />
     <Compile Include="Convert\Geometry\FromRevit\Mesh.cs" />
@@ -327,9 +331,7 @@
     <Compile Include="Convert\Physical\FromRevit\Roof.cs" />
     <Compile Include="Convert\Physical\FromRevit\Wall.cs" />
     <Compile Include="Convert\Physical\FromRevit\Window.cs" />
-    <Compile Include="Convert\Physical\ToRevit\HostObjAttributes.cs" />
     <Compile Include="Convert\Physical\ToRevit\FamilyInstance.cs" />
-    <Compile Include="Convert\Physical\ToRevit\FamilySymbol.cs" />
     <Compile Include="Convert\Revit\FromRevit\BHoMObject.cs" />
     <Compile Include="Convert\Revit\FromRevit\DraftingInstance.cs" />
     <Compile Include="Convert\Environment\FromRevit\SolidMaterial.cs" />

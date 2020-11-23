@@ -83,7 +83,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Filters ElementIds of elements being members of a given Revit group.")]
-        [Input("document", "Revit group to be queried for its member elements.")]
+        [Input("group", "Revit group to be queried for its member elements.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfMemberElements(this Group group)
         {
@@ -105,7 +105,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Filters ElementIds of elements being members of a given Revit assembly.")]
-        [Input("document", "Revit assembly to be queried for its member elements.")]
+        [Input("assemblyInstance", "Revit assembly to be queried for its member elements.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfMemberElements(this AssemblyInstance assemblyInstance)
         {
@@ -115,7 +115,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Filters ElementIds of elements being members of a given Revit mechanical system.")]
-        [Input("document", "Revit mechanical system to be queried for its member elements.")]
+        [Input("mechanicalSystem", "Revit mechanical system to be queried for its member elements.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfMemberElements(this Autodesk.Revit.DB.Mechanical.MechanicalSystem mechanicalSystem)
         {
@@ -137,7 +137,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Filters ElementIds of elements being members of a given Revit piping system.")]
-        [Input("document", "Revit piping system to be queried for its member elements.")]
+        [Input("pipingSystem", "Revit piping system to be queried for its member elements.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfMemberElements(this Autodesk.Revit.DB.Plumbing.PipingSystem pipingSystem)
         {
@@ -159,7 +159,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Filters ElementIds of elements being members of a given Revit electrical system.")]
-        [Input("document", "Revit electrical system to be queried for its member elements.")]
+        [Input("electricalSystem", "Revit electrical system to be queried for its member elements.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfMemberElements(this Autodesk.Revit.DB.Electrical.ElectricalSystem electricalSystem)
         {
@@ -176,11 +176,22 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Filters ElementIds of elements being members of a given Revit selection set.")]
-        [Input("document", "Revit selection set to be queried for its member elements.")]
+        [Input("selectionSet", "Revit selection set to be queried for its member elements.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfMemberElements(this SelectionFilterElement selectionSet)
         {
             return selectionSet.GetElementIds();
+        }
+
+        /***************************************************/
+
+        [Description("Filters ElementIds of elements being nested members of a given Revit family instance.")]
+        [Input("familyInstance", "Revit element to be queried for its member elements.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
+        public static IEnumerable<ElementId> ElementIdsOfMemberElements(this FamilyInstance familyInstance)
+        {
+            // Note this method only returns shared nested families
+            return familyInstance.GetSubComponentIds();
         }
 
         /***************************************************/

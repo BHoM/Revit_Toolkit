@@ -20,10 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
 using System.Collections.Generic;
 using System.Linq;
-
-using Autodesk.Revit.DB;
 
 
 namespace BH.Revit.Engine.Core
@@ -44,23 +43,6 @@ namespace BH.Revit.Engine.Core
                     return category.Name;
 
             return null;
-        }
-
-        /***************************************************/
-
-        public static string CategoryName(this Document document, string familyName)
-        {
-            if (document == null || string.IsNullOrEmpty(familyName))
-                return null;
-
-            List<ElementType> elementTypes = new FilteredElementCollector(document).OfClass(typeof(ElementType)).Cast<ElementType>().ToList();
-
-            ElementType elementType = elementTypes.Find(x => x.FamilyName == familyName && x.Category != null);
-
-            if (elementType == null)
-                return null;
-
-            return elementType.Category.Name;
         }
 
         /***************************************************/

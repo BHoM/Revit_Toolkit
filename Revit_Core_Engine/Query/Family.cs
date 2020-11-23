@@ -35,24 +35,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Family Family(this IBHoMObject bHoMObject, Document document)
-        {
-            if (document == null || bHoMObject == null)
-                return null;
-
-            string familyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject);
-            if (string.IsNullOrEmpty(familyName) && !string.IsNullOrEmpty(bHoMObject.Name) && bHoMObject.Name.Contains(":"))
-                familyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject.Name);
-
-            if (string.IsNullOrWhiteSpace(familyName))
-                return null;
-
-            List<Family> familyList = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>().ToList();
-            return familyList.Find(x => x.Name == familyName);
-        }
-
-        /***************************************************/
-
         public static Family Family(this IBHoMObject bHoMObject, IEnumerable<Family> families)
         {
             if (families == null || bHoMObject == null)
@@ -104,7 +86,7 @@ namespace BH.Revit.Engine.Core
                 {
                     if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
                         continue;
-
+                    
                     string categoryName = builtInCategory.CategoryName(document);
                     if (string.IsNullOrEmpty(categoryName))
                         categoryName = family.CategoryName();
@@ -118,13 +100,6 @@ namespace BH.Revit.Engine.Core
             return null;
         }
 
-        /***************************************************/
-
-        public static Family Family(this oM.Adapters.Revit.Elements.Family family, Document document, BuiltInCategory builtInCategory, FamilyLoadSettings familyLoadSettings = null)
-        {
-            return Family(family, document, new BuiltInCategory[] { builtInCategory }, familyLoadSettings);
-        }
-        
         /***************************************************/
     }
 }

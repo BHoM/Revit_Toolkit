@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
@@ -55,7 +56,7 @@ namespace BH.Engine.Adapters.Revit
             if (propertyInfos == null)
                 return parameterMap;
 
-            ParameterMap clonedMap = parameterMap.GetShallowClone() as ParameterMap;
+            ParameterMap clonedMap = parameterMap.ShallowClone();
             if (clonedMap.ParameterLinks == null)
                 clonedMap.ParameterLinks = new List<IParameterLink>();
             else
@@ -72,7 +73,7 @@ namespace BH.Engine.Adapters.Revit
                     clonedMap.ParameterLinks.Remove(existingLink);
                     if (merge)
                     {
-                        IParameterLink newLink = existingLink.GetShallowClone() as IParameterLink;
+                        IParameterLink newLink = existingLink.ShallowClone();
                         newLink.ParameterNames = new HashSet<string>(existingLink.ParameterNames);
                         newLink.ParameterNames.UnionWith(parameterLink.ParameterNames);
                         clonedMap.ParameterLinks.Add(newLink);
@@ -101,7 +102,7 @@ namespace BH.Engine.Adapters.Revit
             if (type == null || parameterLinks == null || parameterLinks.Count() == 0)
                 return parameterSettings;
 
-            ParameterSettings cloneSettings = parameterSettings.GetShallowClone() as ParameterSettings;
+            ParameterSettings cloneSettings = parameterSettings.ShallowClone();
             cloneSettings.ParameterMaps = new List<ParameterMap>(parameterSettings.ParameterMaps);
 
             ParameterMap parameterMap = cloneSettings.ParameterMap(type);

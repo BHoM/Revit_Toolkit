@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
@@ -42,7 +43,7 @@ namespace BH.Engine.Adapters.Revit
             if (modelInstance == null)
                 return null;
 
-            ModelInstance modInstance = modelInstance.GetShallowClone() as ModelInstance;
+            ModelInstance modInstance = modelInstance.ShallowClone();
 
             modInstance.Location = Geometry.Modify.Translate(modInstance.Location as dynamic, vector);
             

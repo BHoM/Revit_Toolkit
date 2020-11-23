@@ -81,17 +81,15 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             Line columnLine = framingElement.Location.IToRevit() as Line;
-            
-            FamilySymbol familySymbol = framingElement.Property.ToRevitFamilySymbol(BuiltInCategory.OST_StructuralColumns, document, settings, refObjects);
+
+            FamilySymbol familySymbol = framingElement.Property.ToRevitElementType(document, framingElement.BuiltInCategories(document), settings, refObjects);
+            if (familySymbol == null)
+                familySymbol = framingElement.ElementType(document, settings) as FamilySymbol;
+
             if (familySymbol == null)
             {
-                familySymbol = framingElement.ElementType(document, BuiltInCategory.OST_StructuralColumns, settings.FamilyLoadSettings) as FamilySymbol;
-
-                if (familySymbol == null)
-                {
-                    Compute.ElementTypeNotFoundWarning(framingElement);
-                    return null;
-                }
+                Compute.ElementTypeNotFoundWarning(framingElement);
+                return null;
             }
 
             FamilyPlacementType familyPlacementType = familySymbol.Family.FamilyPlacementType;
@@ -179,16 +177,14 @@ namespace BH.Revit.Engine.Core
 
             Level level = document.LevelBelow(framingElement.Location, settings);
 
-            FamilySymbol familySymbol = framingElement.Property.ToRevitFamilySymbol(BuiltInCategory.OST_StructuralFraming, document, settings, refObjects);
+            FamilySymbol familySymbol = framingElement.Property.ToRevitElementType(document, framingElement.BuiltInCategories(document), settings, refObjects);
+            if (familySymbol == null)
+                familySymbol = framingElement.ElementType(document, settings) as FamilySymbol;
+
             if (familySymbol == null)
             {
-                familySymbol = framingElement.ElementType(document, BuiltInCategory.OST_StructuralFraming, settings.FamilyLoadSettings) as FamilySymbol;
-
-                if (familySymbol == null)
-                {
-                    Compute.ElementTypeNotFoundWarning(framingElement);
-                    return null;
-                }
+                Compute.ElementTypeNotFoundWarning(framingElement);
+                return null;
             }
 
             FamilyPlacementType familyPlacementType = familySymbol.Family.FamilyPlacementType;

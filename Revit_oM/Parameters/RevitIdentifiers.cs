@@ -55,12 +55,15 @@ namespace BH.oM.Adapters.Revit.Parameters
         [Description("ElementId of view that owns the Revit element correspondent to the BHoM object that carries this fragment. -1 if the Revit element is not view-dependent.")]
         public virtual int OwnerViewId { get; } = -1;
 
+        [Description("ElementId of the parent Revit element correspondent to the BHoM object that carries this fragment. -1 if the Revit element is not a nested element.")]
+        public virtual int ParentElementId { get; } = -1;
+
 
         /***************************************************/
         /****            Public Constructors            ****/
         /***************************************************/
 
-        public RevitIdentifiers(string uniqueId = "", int elementId = -1, string categoryName = "", string familyName = "", string familyTypeName = "", int familyTypeId = -1, int ownerViewId = -1)
+        public RevitIdentifiers(string uniqueId = "", int elementId = -1, string categoryName = "", string familyName = "", string familyTypeName = "", int familyTypeId = -1, int ownerViewId = -1, int parentElementId = -1)
         {
             UniqueId = uniqueId;
             ElementId = elementId;
@@ -69,6 +72,7 @@ namespace BH.oM.Adapters.Revit.Parameters
             FamilyTypeName = familyTypeName;
             FamilyTypeId = familyTypeId;
             OwnerViewId = ownerViewId;
+            ParentElementId = parentElementId;
         }
 
         /***************************************************/

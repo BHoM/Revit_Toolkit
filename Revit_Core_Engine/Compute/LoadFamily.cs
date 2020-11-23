@@ -44,17 +44,14 @@ namespace BH.Revit.Engine.Core
             FamilyLibrary familyLibrary = familyLoadSettings.FamilyLibrary;
 
             IEnumerable<string> paths = BH.Engine.Adapters.Revit.Query.Paths(familyLibrary, categoryName, familyName, null);
-            if (paths == null || paths.Count() == 0)
+
+            string path = paths?.FirstOrDefault();
+            if (path == null)
                 return null;
 
-            string path = paths.First();
-
-            Family family = null;
-
-            if (document.LoadFamily(path, new FamilyLoadOptions(familyLoadSettings), out family))
-                return family;
-
-            return null;
+            Family family;
+            document.LoadFamily(path, new FamilyLoadOptions(familyLoadSettings), out family);
+            return family;
         }
 
         /***************************************************/

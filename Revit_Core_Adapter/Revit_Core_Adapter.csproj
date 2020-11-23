@@ -150,6 +150,10 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Graphics_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Physical_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_oM.dll</HintPath>
+	  <Private>False</Private>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="Reflection_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_Engine.dll</HintPath>
@@ -349,17 +353,10 @@
 	</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
-    <PostBuildEvent>
+	<PostBuildEvent>
 		C:\Windows\System32\xcopy "$(ProjectDir)Listener\Files\BHoM_2021.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2021\" /Y /I /E
 		xcopy "$(TargetDir)$(TargetFileName)" "C:\\ProgramData\\BHoM\\Assemblies" /Y
 		xcopy "$(TargetDir)Listener\Files\Resources"  "C:\ProgramData\BHoM\Resources\Revit" /Y /I /E
 	</PostBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

@@ -39,7 +39,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Extract a BHoM duct profile from a Revit duct.")]
-        [Input("duct", "Revit duct to extract relevant profie information from.")]
+        [Input("duct", "Revit duct to extract relevant profile information from.")]
         [Input("settings", "Revit adapter settings.")]
         [Output("profile", "BHoM duct profile extracted from a Revit duct.")]
         public static IProfile Profile(this Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null)
@@ -78,11 +78,29 @@ namespace BH.Revit.Engine.Core
                     return null;
             }
         }
+        
+        [Description("Extract a BHoM cable tray profile from a Revit cable tray.")]
+        [Input("cableTray", "Revit cable tray to extract relevant profile information from.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Output("profile", "BHoM cable tray profile extracted from a Revit cable tray.")]
+        public static IProfile Profile(this Autodesk.Revit.DB.Electrical.CableTray cableTray, RevitSettings settings = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            // Cable Trays are always rectangular
+            double boxHeight = cableTray.Height.ToSI(UnitType.UT_Electrical_CableTraySize);
+            double boxWidth = cableTray.Width.ToSI(UnitType.UT_Electrical_CableTraySize);
+            double boxThickness = 0.001519;
+            double outerRadius = 0;
+            double innerRadius = 0;
+
+            return BH.Engine.Spatial.Create.BoxProfile(boxHeight, boxWidth, boxThickness, outerRadius, innerRadius);
+        }
 
         /***************************************************/
 
         [Description("Extract a BHoM pipe profile from a Revit pipe.")]
-        [Input("pipe", "Revit pipe to extract relevant profie information from.")]
+        [Input("pipe", "Revit pipe to extract relevant profile information from.")]
         [Input("settings", "Revit adapter settings.")]
         [Output("profile", "BHoM pipe profile extracted from a Revit pipe.")]
         public static IProfile Profile(this Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null)
@@ -104,7 +122,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Extract a BHoM tube profile from a Revit wire. A tube profile is used in this case to facilitate the extraction of the wire diameter because a dedicated BHoM profile for a wire is not available.")]
-        [Input("wire", "Revit wire to extract relevant profie information from.")]
+        [Input("wire", "Revit wire to extract relevant profile information from.")]
         [Input("settings", "Revit adapter settings.")]
         [Output("profile", "BHoM tube profile extracted from a Revit wire.")]
         public static IProfile Profile(this Autodesk.Revit.DB.Electrical.Wire wire, RevitSettings settings = null)

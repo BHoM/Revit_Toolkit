@@ -52,33 +52,15 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            FloorType floorType = floor.Construction?.ToRevitHostObjAttributes(document, settings, refObjects) as FloorType;
-            
+            FloorType floorType = floor.Construction?.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_Floors }, settings, refObjects) as FloorType;
             if (floorType == null)
-            {
-                string familyTypeName = floor.FamilyTypeName();
-                if (!string.IsNullOrEmpty(familyTypeName))
-                {
-                    List<FloorType> floorTypeList = new FilteredElementCollector(document).OfClass(typeof(FloorType)).Cast<FloorType>().ToList().FindAll(x => x.Name == familyTypeName);
-                    if (floorTypeList != null || floorTypeList.Count() != 0)
-                        floorType = floorTypeList.First();
-                }
-            }
+                floorType = floor.ElementType(document, settings);
 
             if (floorType == null)
             {
-                string familyTypeName = floor.Name;
-
-                if (!string.IsNullOrEmpty(familyTypeName))
-                {
-                    List<FloorType> floorTypeList = new FilteredElementCollector(document).OfClass(typeof(FloorType)).Cast<FloorType>().ToList().FindAll(x => x.Name == familyTypeName);
-                    if (floorTypeList != null || floorTypeList.Count() != 0)
-                        floorType = floorTypeList.First();
-                }
-            }
-            
-            if (floorType == null)
+                Compute.ElementTypeNotFoundWarning(floor);
                 return null;
+            }
 
             double bottomElevation = floor.Location.IBounds().Min.Z;
             Level level = document.LevelBelow(bottomElevation.FromSI(UnitType.UT_Length), settings);

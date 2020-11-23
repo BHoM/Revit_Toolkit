@@ -37,6 +37,20 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Gets Revit category name from BHoMObject.")]
+        [Input("bHoMObject", "BHoMObject to be queried.")]
+        [Output("categoryName")]
+        public static string CategoryName(this IBHoMObject bHoMObject)
+        {
+            string name = bHoMObject?.GetRevitIdentifiers()?.CategoryName;
+            if (string.IsNullOrWhiteSpace(name) && bHoMObject is IInstance)
+                name = ((IInstance)bHoMObject).Properties.CategoryName;
+
+            return name;
+        }
+
+        /***************************************************/
+
         [Description("Gets Revit category name from RevitFilePreview.")]
         [Input("revitFilePreview", "RevitFilePreview to be queried.")]
         [Output("categoryName")]
@@ -45,7 +59,7 @@ namespace BH.Engine.Adapters.Revit
             if (revitFilePreview == null)
                 return null;
 
-            return CategoryName(revitFilePreview.XDocument());
+            return revitFilePreview.XDocument().CategoryName();
         }
 
         /***************************************************/
@@ -82,20 +96,6 @@ namespace BH.Engine.Adapters.Revit
             }
 
             return null;
-        }
-
-        /***************************************************/
-
-        [Description("Gets Revit category name from BHoMObject.")]
-        [Input("bHoMObject", "BHoMObject to be queried.")]
-        [Output("categoryName")]
-        public static string CategoryName(this IBHoMObject bHoMObject)
-        {
-            string name = bHoMObject?.GetRevitIdentifiers()?.CategoryName;
-            if (string.IsNullOrWhiteSpace(name) && bHoMObject is IInstance)
-                name = ((IInstance)bHoMObject).Properties.CategoryName;
-
-            return name;
         }
 
         /***************************************************/
