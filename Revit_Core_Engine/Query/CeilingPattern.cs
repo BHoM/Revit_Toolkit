@@ -33,6 +33,7 @@ using BH.oM.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using Autodesk.Revit.UI;
 using System.Xml.Schema;
+using BH.Engine.Adapters.Revit;
 
 namespace BH.Revit.Engine.Core
 {
@@ -64,24 +65,26 @@ namespace BH.Revit.Engine.Core
                 return new List<oM.Geometry.Line>();
             }
 
+            XYZ alignment = ceiling.CeilingPatternAlignment(material, settings);
+
             List<oM.Geometry.Line> result = new List<oM.Geometry.Line>();
             if (surface == null)
             {
                 //This would need to be extended to take openings from Values into account
                 foreach (PlanarSurface srf in ceiling.PanelSurfaces(ceiling.FindInserts(true, true, true, true), settings).Keys)
                 {
-                    result.AddRange(material.CeilingPattern(srf, settings));
+                    result.AddRange(material.CeilingPattern(srf, settings, alignment));
                 }
             }
             else
-                result.AddRange(material.CeilingPattern(surface, settings));
+                result.AddRange(material.CeilingPattern(surface, settings, alignment));
 
             return result;
         }
 
         /***************************************************/
 
-        public static List<BH.oM.Geometry.Line> CeilingPattern(this Material revitMaterial, PlanarSurface surface, RevitSettings settings)
+        public static List<BH.oM.Geometry.Line> CeilingPattern(this Material revitMaterial, PlanarSurface surface, RevitSettings settings, XYZ origin = null)
         {
             BoundingBox box = surface.IBounds();
             double z = surface.ExternalBoundary.IControlPoints().Max(x => x.Z);
@@ -117,13 +120,14 @@ namespace BH.Revit.Engine.Core
                 FillPattern fillPattern = fillPatternElement.GetFillPattern();
                 if (fillPattern == null || fillPattern.IsSolidFill)
                     return new List<oM.Geometry.Line>(); //Skip solid filled patterns
-
+                
                 IList<FillGrid> fillGridList = fillPattern.GetFillGrids();
                 foreach (FillGrid grid in fillGridList)
                 {
                     double offset = grid.Offset.ToSI(UnitType.UT_Length);
-                    double currentY = box.Min.Y - yLength;
-                    double currentX = box.Min.X - xLength;
+
+                    double currentY = ((int)((box.Min.Y - yLength) / offset)) * offset;
+                    double currentX = ((int)((box.Min.X - xLength) / offset)) * offset;
 
                     double minNum = currentX;
                     double maxNum = (box.Max.X + xLength);
@@ -132,6 +136,14 @@ namespace BH.Revit.Engine.Core
                     {
                         minNum = currentY;
                         maxNum = (box.Max.Y + yLength);
+                    }
+
+                    if (origin != null)
+                    {
+                        if (grid.Angle.ToSI(UnitType.UT_Angle) > settings.AngleTolerance)
+                            minNum += (origin.Y % grid.Offset).ToSI(UnitType.UT_Length);
+                        else
+                            minNum += (origin.X % grid.Offset).ToSI(UnitType.UT_Length);
                     }
 
                     while ((minNum + offset) < maxNum)
@@ -198,6 +210,95 @@ namespace BH.Revit.Engine.Core
             patterns.AddRange(boundarySegments); //Close off the ceiling pattern for its own use
 
             return patterns;
+        }
+
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        private static XYZ CeilingPatternAlignment(this Ceiling ceiling, Material material, RevitSettings settings)
+        {
+            if (ceiling == null || material == null)
+                return null;
+
+            Document doc = ceiling.Document;
+
+            FillPatternElement fillPatternElement;
+#if (REVIT2020 || REVIT2021)
+            fillPatternElement = doc.GetElement(material.SurfaceForegroundPatternId) as FillPatternElement;
+#else
+            fillPatternElement = doc.GetElement(material.SurfacePatternId) as FillPatternElement;
+#endif
+
+            FillPattern fp = fillPatternElement?.GetFillPattern();
+            if (fp == null || fp.GridCount != 2)
+                return null;
+
+            XYZ result = null;
+            settings = settings.DefaultIfNull();
+
+            Options o = new Options();
+            o.ComputeReferences = true;
+            foreach (GeometryObject go in ceiling.get_Geometry(o))
+            {
+                if (go is Solid)
+                {
+                    foreach (Autodesk.Revit.DB.Face f in ((Solid)go).Faces)
+                    {
+                        PlanarFace pf = f as PlanarFace;
+                        if (pf == null)
+                            continue;
+
+                        if (1 + pf.FaceNormal.DotProduct(XYZ.BasisZ) > settings.AngleTolerance)
+                            continue;
+                        
+                        ReferenceArray horR = new ReferenceArray();
+                        string stable = f.Reference.ConvertToStableRepresentation(doc) + "/2";
+                        Reference href = Reference.ParseFromStableRepresentation(doc, stable);
+                        horR.Append(href);
+
+                        stable = f.Reference.ConvertToStableRepresentation(doc) + "/" + (2 + fp.GridCount * 2).ToString();
+                        href = Reference.ParseFromStableRepresentation(doc, stable);
+                        horR.Append(href);
+
+                        ReferenceArray verR = new ReferenceArray();
+                        stable = f.Reference.ConvertToStableRepresentation(doc) + "/1";
+                        href = Reference.ParseFromStableRepresentation(doc, stable);
+                        verR.Append(href);
+
+                        stable = f.Reference.ConvertToStableRepresentation(doc) + "/" + (1 + fp.GridCount * 2).ToString();
+                        href = Reference.ParseFromStableRepresentation(doc, stable);
+                        verR.Append(href);
+
+                        //TODO: WILL ONLY WORK ON ORTHO, ALIGN ROTATION!
+                        using (Transaction t = new Transaction(doc, "temp dim"))
+                        {
+                            t.Start();
+                            Dimension horDim = doc.Create.NewDimension(doc.ActiveView, Autodesk.Revit.DB.Line.CreateBound(XYZ.Zero, pf.XVector), horR);
+                            Dimension verDim = doc.Create.NewDimension(doc.ActiveView, Autodesk.Revit.DB.Line.CreateBound(XYZ.Zero, pf.YVector), verR);
+
+                            Transform tr = Transform.CreateRotation(XYZ.BasisZ, pf.XVector.AngleOnPlaneTo(XYZ.BasisX, XYZ.BasisZ));
+                            double x = tr.OfPoint(horDim.Origin).X;
+                            double y = tr.OfPoint(verDim.Origin).Y;
+                            t.RollBack();
+
+                            foreach (FillGrid fg in fp.GetFillGrids())
+                            {
+                                if (fg.Angle.ToSI(UnitType.UT_Angle) > settings.AngleTolerance)
+                                    y += fg.Offset * 0.5;
+                                else
+                                    x += fg.Offset * 0.5;
+                            }
+
+                            result = tr.Inverse.OfPoint(new XYZ(x, y, 0));
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
         /***************************************************/
