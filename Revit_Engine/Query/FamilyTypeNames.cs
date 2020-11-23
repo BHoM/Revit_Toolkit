@@ -42,10 +42,9 @@ namespace BH.Engine.Adapters.Revit
         [Output("familyTypeNames")]
         public static List<string> FamilyTypeNames(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null)
         {
-            if (familyLibrary?.Files == null)
-                return null;
-
             IEnumerable<RevitFilePreview> files = familyLibrary?.Files;
+            if (files == null)
+                return null;
 
             if (!string.IsNullOrWhiteSpace(categoryName))
                 files = files.Where(x => x.CategoryName == categoryName);

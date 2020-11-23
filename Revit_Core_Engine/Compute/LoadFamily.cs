@@ -22,7 +22,6 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,9 +39,7 @@ namespace BH.Revit.Engine.Core
             if (familyLoadSettings?.FamilyLibrary == null || document == null)
                 return null;
 
-            FamilyLibrary familyLibrary = familyLoadSettings.FamilyLibrary;
-
-            IEnumerable<string> paths = familyLibrary.Paths(categoryName, familyName, null);
+            IEnumerable<string> paths = familyLoadSettings.FamilyLibrary.Paths(categoryName, familyName, null);
 
             string path = paths?.FirstOrDefault();
             if (path == null)
