@@ -69,7 +69,17 @@ namespace BH.Revit.Engine.Core
             // Orientation angle
             double orientationAngle = revitCableTray.OrientationAngle(settings);
 
-            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitCableTray, settings);
+            bool isStartConnected = false;
+            bool isEndConnected = false;
+            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitCableTray, out isStartConnected, out isEndConnected, settings);
+            Vector revitCableTrayVector = BH.Engine.Geometry.Modify.RoundCoordinates(
+                VectorFromRevit((revitCableTray.Location as LocationCurve).Curve.GetEndPoint(0) -
+                                (revitCableTray.Location as LocationCurve).Curve.GetEndPoint(1)),4).Normalise();
+            if (queried.Count > 2)
+            {
+                //required to assert connector property later
+                queried = MatchRevitOrder(queried, revitCableTray);
+            }
             
             for (int i = 0; i < queried.Count; i++)
             {
@@ -79,9 +89,58 @@ namespace BH.Revit.Engine.Core
                     StartPoint = segment.StartPoint(),
                     EndPoint = segment.EndPoint(),
                     SectionProperty = sectionProperty,
-                    ConnectionProperty = null,
+                    ConnectionProperty = new CableTrayConnectionProperty(),
                     OrientationAngle = orientationAngle
                 };
+                Vector bhomCableTrayVector = BH.Engine.Geometry.Modify.RoundCoordinates((thisSegment.StartPoint - thisSegment.EndPoint),4).Normalise();
+
+                if (queried.Count > 1)
+                {
+                    if (i == 0)
+                    {
+                        if (revitCableTrayVector == bhomCableTrayVector)
+                        {
+                            thisSegment.ConnectionProperty.IsStartConnected = isStartConnected;
+                            thisSegment.ConnectionProperty.IsEndConnected = true;
+                        }
+                        else
+                        {
+                            thisSegment.ConnectionProperty.IsStartConnected = true;
+                            thisSegment.ConnectionProperty.IsEndConnected = isStartConnected;   
+                        }
+                    }
+                    else if (i == queried.Count - 1)
+                    {
+                        if (revitCableTrayVector == bhomCableTrayVector)
+                        {
+                            thisSegment.ConnectionProperty.IsStartConnected = true;
+                            thisSegment.ConnectionProperty.IsEndConnected = isEndConnected;
+                        }
+                        else
+                        {
+                            thisSegment.ConnectionProperty.IsStartConnected = isEndConnected;
+                            thisSegment.ConnectionProperty.IsEndConnected = true;   
+                        }
+                    }
+                    else
+                    {
+                        thisSegment.ConnectionProperty.IsStartConnected = true;
+                        thisSegment.ConnectionProperty.IsEndConnected = true;
+                    }
+                }
+                else
+                {
+                    if (revitCableTrayVector == bhomCableTrayVector)
+                    {
+                        thisSegment.ConnectionProperty.IsStartConnected = isStartConnected;
+                        thisSegment.ConnectionProperty.IsEndConnected = isEndConnected;
+                    }
+                    else
+                    {
+                        thisSegment.ConnectionProperty.IsStartConnected = isEndConnected;
+                        thisSegment.ConnectionProperty.IsEndConnected = isStartConnected;   
+                    }
+                }
 
                 //Set identifiers, parameters & custom data
                 thisSegment.SetIdentifiers(revitCableTray);
@@ -94,6 +153,22 @@ namespace BH.Revit.Engine.Core
             return bhomCableTrays;
         }
 
+        /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
+        
+        [Description("Re-orders converted BHoM Line list to match the direction from the reference MEPCurve.")]
+        private static List<BH.oM.Geometry.Line> MatchRevitOrder(List<BH.oM.Geometry.Line> linesToMatch, MEPCurve reference)
+        {
+            LocationCurve locationCurve = reference.Location as LocationCurve;
+            Curve curve = locationCurve.Curve;
+            BH.oM.Geometry.Point referenceStart = BH.Revit.Engine.Core.Convert.PointFromRevit(curve.GetEndPoint(0));
+
+            List<BH.oM.Geometry.Line> result = linesToMatch.OrderBy(x => x.Start.Distance(referenceStart)).ToList();
+
+            return result;
+        }
+        
         /***************************************************/
     }
 }
