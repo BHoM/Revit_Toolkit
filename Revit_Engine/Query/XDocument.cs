@@ -63,51 +63,48 @@ namespace BH.Engine.Adapters.Revit
                 return null;
             }
 
-            if (File.Exists(path))
-            {
-                StorageInfo storageInfo = (StorageInfo)InvokeStorageRootMethod(null, "Open", path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            StorageInfo storageInfo = (StorageInfo)InvokeStorageRootMethod(null, "Open", path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-                if (storageInfo != null)
+            if (storageInfo != null)
+            {
+                XDocument document = null;
+                StreamInfo[] streamInfo = storageInfo.GetStreams();
+                List<string> names = streamInfo.ToList().ConvertAll(x => x.Name);
+                foreach (StreamInfo sInfo in streamInfo)
                 {
-                    XDocument document = null;
-                    StreamInfo[] streamInfo = storageInfo.GetStreams();
-                    List<string> names = streamInfo.ToList().ConvertAll(x => x.Name);
-                    foreach (StreamInfo sInfo in streamInfo)
+                    if (sInfo.Name.Equals("PartAtom"))
                     {
-                        if (sInfo.Name.Equals("PartAtom"))
+                        byte[] bytes = ParseStreamInfo(sInfo);
+
+                        try
                         {
-                            byte[] bytes = ParseStreamInfo(sInfo);
-                            
+                            document = System.Xml.Linq.XDocument.Parse(Encoding.UTF8.GetString(bytes));
+                        }
+                        catch
+                        {
+                            BH.Engine.Reflection.Compute.RecordError($"Internal error occurred when attempting to convert a file under path {path} into RevitFilePreview.");
+                            return null;
+                        }
+
+                        if (document == null)
+                        {
                             try
                             {
-                                document = System.Xml.Linq.XDocument.Parse(Encoding.UTF8.GetString(bytes));
+                                document = System.Xml.Linq.XDocument.Parse(Encoding.Default.GetString(bytes));
                             }
                             catch
                             {
                                 BH.Engine.Reflection.Compute.RecordError($"Internal error occurred when attempting to convert a file under path {path} into RevitFilePreview.");
                                 return null;
                             }
-
-                            if (document == null)
-                            {
-                                try
-                                {
-                                    document = System.Xml.Linq.XDocument.Parse(Encoding.Default.GetString(bytes));
-                                }
-                                catch
-                                {
-                                    BH.Engine.Reflection.Compute.RecordError($"Internal error occurred when attempting to convert a file under path {path} into RevitFilePreview.");
-                                    return null;
-                                }
-                            }
-
-                            break;
                         }
-                    }
 
-                    CloseStorageInfo(storageInfo);
-                    return document;
+                        break;
+                    }
                 }
+
+                CloseStorageInfo(storageInfo);
+                return document;
             }
 
             return null;
