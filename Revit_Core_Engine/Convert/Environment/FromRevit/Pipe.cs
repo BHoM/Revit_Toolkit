@@ -57,10 +57,8 @@ namespace BH.Revit.Engine.Core
             {
                 bhomPipes = new List<BH.oM.MEP.System.Pipe>();
             }
-
-            bool isStartConnected = false;
-            bool isEndConnected = false;
-            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitPipe,out isStartConnected, out isEndConnected, settings);
+            
+            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitPipe, settings);
             // Flow rate
             double flowRate = revitPipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_FLOW_PARAM); // Flow rate 
             // Pipe section property
