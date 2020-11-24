@@ -1,223 +1,223 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTarget="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-<PropertyGroup>
-  <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-  <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-  <ProjectGuid>{75A99AC5-FE80-45A4-B456-1AA3B1C4BB74}</ProjectGuid>
-  <OutputType>Library</OutputType>
-  <AppDesignerFolder>Properties</AppDesignerFolder>
-  <RootNamespace>BH.Engine.Revit</RootNamespace>
-  <AssemblyName>Revit_Engine</AssemblyName>
-  <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-  <FileAlignment>512</FileAlignment>
-</PropertyGroup>
-<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-  <DebugSymbols>true</DebugSymbols>
-  <DebugType>full</DebugType>
-  <Optimize>false</Optimize>
-  <OutputPath>..\Build\</OutputPath>
-  <DefineConstants>DEBUG;TRACE</DefineConstants>
-  <ErrorReport>prompt</ErrorReport>
-  <WarningLevel>4</WarningLevel>
-</PropertyGroup>
-<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-  <DebugType>pdbonly</DebugType>
-  <Optimize>true</Optimize>
-  <OutputPath>..\Build\</OutputPath>
-  <DefineConstants>TRACE</DefineConstants>
-  <ErrorReport>prompt</ErrorReport>
-  <WarningLevel>4</WarningLevel>
-</PropertyGroup>
-<ItemGroup>
-  <Reference Include="Analytical_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Analytical_oM.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Architecture_Engine">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Architecture_Engine.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Architecture_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Architecture_oM.dll</HintPath>
-    <Private>False</Private>
-    <SpecificVersion>False</SpecificVersion>
-  </Reference>
-  <Reference Include="BHoM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="BHoM_Engine">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Data_Engine">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Data_Engine.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Data_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Dimensional_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Dimensional_oM.dll</HintPath>
-    <Private>False</Private>
-    <SpecificVersion>False</SpecificVersion>
-  </Reference>
-  <Reference Include="Environment_Engine">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Environment_Engine.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Environment_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Environment_oM.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Geometry_Engine">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Geometry_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_oM.dll</HintPath>
-    <Private>False</Private>
-    <SpecificVersion>False</SpecificVersion>
-  </Reference>
-  <Reference Include="Library_Engine">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Physical_Engine">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_Engine.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Physical_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_oM.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Reflection_Engine">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_Engine.dll</HintPath>
-    <Private>False</Private>
-    <SpecificVersion>False</SpecificVersion>
-  </Reference>
-  <Reference Include="Reflection_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_oM.dll</HintPath>
-    <Private>False</Private>
-  </Reference>
-  <Reference Include="Structure_oM">
-    <HintPath>C:\ProgramData\BHoM\Assemblies\Structure_oM.dll</HintPath>
-    <Private>False</Private>
-    <SpecificVersion>False</SpecificVersion>
-  </Reference>
-  <Reference Include="System" />
-  <Reference Include="System.Core" />
-  <Reference Include="System.Xml.Linq" />
-  <Reference Include="System.Data.DataSetExtensions" />
-  <Reference Include="Microsoft.CSharp" />
-  <Reference Include="System.Data" />
-  <Reference Include="System.Net.Http" />
-  <Reference Include="System.Xml" />
-  <Reference Include="WindowsBase" />
-</ItemGroup>
-<ItemGroup>
-  <Compile Include="Compute\SortByPerformance.cs" />
-  <Compile Include="Create\Config\RevitPushConfig.cs" />
-  <Compile Include="Create\Config\RevitPullConfig.cs" />
-  <Compile Include="Create\Config\RevitRemoveConfig.cs" />
-  <Compile Include="Create\Elements\DraftingInstance.cs" />
-  <Compile Include="Create\Elements\ViewPlan.cs" />
-  <Compile Include="Create\Elements\ModelInstance.cs" />
-  <Compile Include="Create\Generic\ParameterLinks.cs" />
-  <Compile Include="Create\Properties\InstanceProperties.cs" />
-  <Compile Include="Create\Requests\EnergyAnalysisModelRequest.cs" />
-  <Compile Include="Create\Requests\FilterActiveView.cs" />
-  <Compile Include="Create\Requests\FilterByActiveWorkset.cs" />
-  <Compile Include="Create\Requests\FilterByCategory.cs" />
-  <Compile Include="Create\Requests\FilterByDBTypeName.cs" />
-  <Compile Include="Create\Requests\FilterByFamilyAndTypeName.cs" />
-  <Compile Include="Create\Requests\FilterByFamilyType.cs" />
-  <Compile Include="Create\Requests\FilterByParameterBool.cs" />
-  <Compile Include="Create\Requests\FilterByParameterExistence.cs" />
-  <Compile Include="Create\Requests\FilterByParameterInteger.cs" />
-  <Compile Include="Create\Requests\FilterByParameterNumber.cs" />
-  <Compile Include="Create\Requests\FilterByParameterText.cs" />
-  <Compile Include="Create\Requests\FilterBySelectionSet.cs" />
-  <Compile Include="Create\Requests\FilterByUniqueIds.cs" />
-  <Compile Include="Create\Requests\FilterByUsage.cs" />
-  <Compile Include="Create\Requests\FilterByWorkset.cs" />
-  <Compile Include="Create\Requests\FilterFamilyByName.cs" />
-  <Compile Include="Create\Requests\FilterFamilyTypeByName.cs" />
-  <Compile Include="Create\Requests\FilterMemberElements.cs" />
-  <Compile Include="Create\Requests\FilterModelElements.cs" />
-  <Compile Include="Create\Requests\FilterRequest.cs" />
-  <Compile Include="Create\Requests\FilterByElementIds.cs" />
-  <Compile Include="Create\Requests\FilterByParameterElementId.cs" />
-  <Compile Include="Create\Requests\FilterViewByName.cs" />
-  <Compile Include="Create\Requests\FilterViewsByType.cs" />
-  <Compile Include="Create\Requests\FilterViewTemplateByName.cs" />
-  <Compile Include="Create\Requests\SelectionRequest.cs" />
-  <Compile Include="Create\Requests\FilterByViewSpecific.cs" />
-  <Compile Include="Create\Requests\FilterByVisibleInView.cs" />
-  <Compile Include="Create\Requests\FilterTypesOfFamily.cs" />
-  <Compile Include="Create\Requests\FilterViewsByTemplate.cs" />
-  <Compile Include="Create\Settings\ParameterSettings.cs" />
-  <Compile Include="Create\Generic\FamilyLibrary.cs" />
-  <Compile Include="Create\Generic\ParameterMap.cs" />
-  <Compile Include="Create\Generic\RevitFilePreview.cs" />
-  <Compile Include="Create\Settings\FamilyLoadSettings.cs" />
-  <Compile Include="Create\Settings\ConnectionSettings.cs" />
-  <Compile Include="Create\Settings\RevitSettings.cs" />
-  <Compile Include="Create\Elements\Viewport.cs" />
-  <Compile Include="Create\Elements\Sheet.cs" />
-  <Compile Include="Modify\AddParameterMaps.cs" />
-  <Compile Include="Modify\AddParameterLinks.cs" />
-  <Compile Include="Modify\DefaultIfNull.cs" />
-  <Compile Include="Modify\RemoveParameterLinks.cs" />
-  <Compile Include="Modify\RemoveParameterMaps.cs" />
-  <Compile Include="Modify\SetRevitParameter.cs" />
-  <Compile Include="Modify\SetTag.cs" />
-  <Compile Include="Modify\Move.cs" />
-  <Compile Include="Query\RevitDefiningLine.cs" />
-  <Compile Include="Query\DefaultParameterSettings.cs" />
-  <Compile Include="Query\GetRevitParameters.cs" />
-  <Compile Include="Query\GetRevitParameterValue.cs" />
-  <Compile Include="Query\InnerPolyCurves.cs" />
-  <Compile Include="Query\Family.cs" />
-  <Compile Include="Query\ParameterLinks.cs" />
-  <Compile Include="Query\GetRevitIdentifiers.cs" />
-  <Compile Include="Query\RevitEdges.cs" />
-  <Compile Include="Query\RevitMeshes.cs" />
-  <Compile Include="Query\RevitSurfaces.cs" />
-  <Compile Include="Query\XDocument.cs" />
-  <Compile Include="Query\RevitFilePreviews.cs" />
-  <Compile Include="Query\CurrentDomainAssembly.cs" />
-  <Compile Include="Query\FamilyTypeFullName.cs" />
-  <Compile Include="Query\MapPropertyInfos.cs" />
-  <Compile Include="Query\ParameterNames.cs" />
-  <Compile Include="Query\ParameterMap.cs" />
-  <Compile Include="Query\OuterPolyCurves.cs" />
-  <Compile Include="Query\Plane.cs" />
-  <Compile Include="Query\FamilyTypeName.cs" />
-  <Compile Include="Modify\Append.cs" />
-  <Compile Include="Modify\RemoveIdentifiers.cs" />
-  <Compile Include="Properties\AssemblyInfo.cs" />
-  <Compile Include="Query\CategoryNames.cs" />
-  <Compile Include="Query\FamilyName.cs" />
-  <Compile Include="Query\CategoryName.cs" />
-  <Compile Include="Query\ElementId.cs" />
-  <Compile Include="Query\Discipline.cs" />
-  <Compile Include="Query\Paths.cs" />
-  <Compile Include="Query\OmniClass.cs" />
-  <Compile Include="Query\FamilyTypeNames.cs" />
-  <Compile Include="Query\UniqueId.cs" />
-</ItemGroup>
-<ItemGroup>
-  <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
-    <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
-    <Name>Revit_oM</Name>
-  </ProjectReference>
-</ItemGroup>
-<ItemGroup />
-<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" Condition="" />
-<PropertyGroup>
-  <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
-</PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{75A99AC5-FE80-45A4-B456-1AA3B1C4BB74}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BH.Engine.Revit</RootNamespace>
+    <AssemblyName>Revit_Engine</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Analytical_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Analytical_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Architecture_Engine">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Architecture_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Architecture_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Architecture_oM.dll</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="BHoM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="BHoM_Engine">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Data_Engine">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Data_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Data_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Dimensional_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Dimensional_oM.dll</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Environment_Engine">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Environment_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Environment_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Environment_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Geometry_Engine">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Geometry_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_oM.dll</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Library_Engine">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Physical_Engine">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Physical_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Reflection_Engine">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_Engine.dll</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Reflection_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Structure_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Structure_oM.dll</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Compute\SortByPerformance.cs" />
+    <Compile Include="Create\Config\RevitPushConfig.cs" />
+    <Compile Include="Create\Config\RevitPullConfig.cs" />
+    <Compile Include="Create\Config\RevitRemoveConfig.cs" />
+    <Compile Include="Create\Elements\DraftingInstance.cs" />
+    <Compile Include="Create\Elements\ViewPlan.cs" />
+    <Compile Include="Create\Elements\ModelInstance.cs" />
+    <Compile Include="Create\Generic\ParameterLinks.cs" />
+    <Compile Include="Create\Properties\InstanceProperties.cs" />
+    <Compile Include="Create\Requests\EnergyAnalysisModelRequest.cs" />
+    <Compile Include="Create\Requests\FilterActiveView.cs" />
+    <Compile Include="Create\Requests\FilterByActiveWorkset.cs" />
+    <Compile Include="Create\Requests\FilterByCategory.cs" />
+    <Compile Include="Create\Requests\FilterByDBTypeName.cs" />
+    <Compile Include="Create\Requests\FilterByFamilyAndTypeName.cs" />
+    <Compile Include="Create\Requests\FilterByFamilyType.cs" />
+    <Compile Include="Create\Requests\FilterByParameterBool.cs" />
+    <Compile Include="Create\Requests\FilterByParameterExistence.cs" />
+    <Compile Include="Create\Requests\FilterByParameterInteger.cs" />
+    <Compile Include="Create\Requests\FilterByParameterNumber.cs" />
+    <Compile Include="Create\Requests\FilterByParameterText.cs" />
+    <Compile Include="Create\Requests\FilterBySelectionSet.cs" />
+    <Compile Include="Create\Requests\FilterByUniqueIds.cs" />
+    <Compile Include="Create\Requests\FilterByUsage.cs" />
+    <Compile Include="Create\Requests\FilterByWorkset.cs" />
+    <Compile Include="Create\Requests\FilterFamilyByName.cs" />
+    <Compile Include="Create\Requests\FilterFamilyTypeByName.cs" />
+    <Compile Include="Create\Requests\FilterMemberElements.cs" />
+    <Compile Include="Create\Requests\FilterModelElements.cs" />
+    <Compile Include="Create\Requests\FilterRequest.cs" />
+    <Compile Include="Create\Requests\FilterByElementIds.cs" />
+    <Compile Include="Create\Requests\FilterByParameterElementId.cs" />
+    <Compile Include="Create\Requests\FilterViewByName.cs" />
+    <Compile Include="Create\Requests\FilterViewsByType.cs" />
+    <Compile Include="Create\Requests\FilterViewTemplateByName.cs" />
+    <Compile Include="Create\Requests\SelectionRequest.cs" />
+    <Compile Include="Create\Requests\FilterByViewSpecific.cs" />
+    <Compile Include="Create\Requests\FilterByVisibleInView.cs" />
+    <Compile Include="Create\Requests\FilterTypesOfFamily.cs" />
+    <Compile Include="Create\Requests\FilterViewsByTemplate.cs" />
+    <Compile Include="Create\Settings\ParameterSettings.cs" />
+    <Compile Include="Create\Generic\FamilyLibrary.cs" />
+    <Compile Include="Create\Generic\ParameterMap.cs" />
+    <Compile Include="Create\Generic\RevitFilePreview.cs" />
+    <Compile Include="Create\Settings\FamilyLoadSettings.cs" />
+    <Compile Include="Create\Settings\ConnectionSettings.cs" />
+    <Compile Include="Create\Settings\RevitSettings.cs" />
+    <Compile Include="Create\Elements\Viewport.cs" />
+    <Compile Include="Create\Elements\Sheet.cs" />
+    <Compile Include="Modify\AddParameterMaps.cs" />
+    <Compile Include="Modify\AddParameterLinks.cs" />
+    <Compile Include="Modify\DefaultIfNull.cs" />
+    <Compile Include="Modify\RemoveParameterLinks.cs" />
+    <Compile Include="Modify\RemoveParameterMaps.cs" />
+    <Compile Include="Modify\SetRevitParameter.cs" />
+    <Compile Include="Modify\SetTag.cs" />
+    <Compile Include="Modify\Move.cs" />
+    <Compile Include="Query\ZJustifiedCurve.cs" />
+    <Compile Include="Query\DefaultParameterSettings.cs" />
+    <Compile Include="Query\GetRevitParameters.cs" />
+    <Compile Include="Query\GetRevitParameterValue.cs" />
+    <Compile Include="Query\InnerPolyCurves.cs" />
+    <Compile Include="Query\Family.cs" />
+    <Compile Include="Query\ParameterLinks.cs" />
+    <Compile Include="Query\GetRevitIdentifiers.cs" />
+    <Compile Include="Query\RevitEdges.cs" />
+    <Compile Include="Query\RevitMeshes.cs" />
+    <Compile Include="Query\RevitSurfaces.cs" />
+    <Compile Include="Query\XDocument.cs" />
+    <Compile Include="Query\RevitFilePreviews.cs" />
+    <Compile Include="Query\CurrentDomainAssembly.cs" />
+    <Compile Include="Query\FamilyTypeFullName.cs" />
+    <Compile Include="Query\MapPropertyInfos.cs" />
+    <Compile Include="Query\ParameterNames.cs" />
+    <Compile Include="Query\ParameterMap.cs" />
+    <Compile Include="Query\OuterPolyCurves.cs" />
+    <Compile Include="Query\Plane.cs" />
+    <Compile Include="Query\FamilyTypeName.cs" />
+    <Compile Include="Modify\Append.cs" />
+    <Compile Include="Modify\RemoveIdentifiers.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Query\CategoryNames.cs" />
+    <Compile Include="Query\FamilyName.cs" />
+    <Compile Include="Query\CategoryName.cs" />
+    <Compile Include="Query\ElementId.cs" />
+    <Compile Include="Query\Discipline.cs" />
+    <Compile Include="Query\Paths.cs" />
+    <Compile Include="Query\OmniClass.cs" />
+    <Compile Include="Query\FamilyTypeNames.cs" />
+    <Compile Include="Query\UniqueId.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
+      <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
+      <Name>Revit_oM</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" Condition="" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>
