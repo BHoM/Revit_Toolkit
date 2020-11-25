@@ -175,7 +175,7 @@
     <Compile Include="Modify\SetRevitParameter.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
-    <Compile Include="Query\Class1.cs" />
+    <Compile Include="Query\ZJustifiedCurve.cs" />
     <Compile Include="Query\DefaultParameterSettings.cs" />
     <Compile Include="Query\GetRevitParameters.cs" />
     <Compile Include="Query\GetRevitParameterValue.cs" />
