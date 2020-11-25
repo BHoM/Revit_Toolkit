@@ -20,22 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Xml.Linq;
-using BH.Engine;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
-using BH.Engine.Environment;
-using BH.oM.Environment.Fragments;
-using System.Net.NetworkInformation;
 using BH.Engine.Physical;
-using System.Runtime.Remoting.Messaging;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -45,24 +34,27 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the in Revit defining location line of an IFramingElement, based on its z Justification Revit parameter.")]
+        [Description("Returns the driving curve of the given IFramingElement adjusted based on the 'z Justification' parameter value pulled from Revit.  Important: neither z offset nor any y justification is taken into account.")]
         [Input("element", "The IFramingElement to query the in Revit defining location line of.")]
         [Output("curve", "The in Revit geometry defining location line of the element.")]
-        public static ICurve RevitDefiningLine(this IFramingElement element)
+        public static ICurve ZJustifiedCurve(this IFramingElement element)
         {
-            string zJustification = element.GetRevitParameterValue("z Justification").ToString();
+            if (element == null)
+                return null;
 
-            zJustification = zJustification.ToLower();
+            string zJustification = element.GetRevitParameterValue("z Justification")?.ToString().ToLower();
 
             if (zJustification == "top")
                 return element.TopCentreline();
             else if (zJustification == "bottom")
                 return element.BottomCentreline();
-            else if (zJustification == "origin" || zJustification == "center")
+            else if (zJustification == "center")
+                return element.GeometricalCentreline();
+            else if (zJustification == "origin")
                 return element.Location;
             else
             {
-                Engine.Reflection.Compute.RecordError("Error extracting z Justification Revit parameter, will return location line.");
+                Engine.Reflection.Compute.RecordError("Error extracting z Justification Revit parameter, location curve of the BHoM object has been returned.");
                 return element.Location;
             }
         }
