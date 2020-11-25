@@ -19,7 +19,6 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
@@ -47,7 +46,7 @@ namespace BH.Engine.Adapters.Revit
             if (string.IsNullOrEmpty(directory) || !Directory.Exists(directory))
                 return familyLibrary;
 
-            FamilyLibrary famLibrary = familyLibrary.ShallowClone();
+            FamilyLibrary famLibrary = familyLibrary.GetShallowClone() as FamilyLibrary;
 
             DirectoryInfo directoryInfo = new DirectoryInfo(directory);
 
@@ -76,7 +75,7 @@ namespace BH.Engine.Adapters.Revit
             if (string.IsNullOrEmpty(path) || !File.Exists(path))
                 return familyLibrary;
 
-            FamilyLibrary famLibrary = familyLibrary.ShallowClone();
+            FamilyLibrary famLibrary = familyLibrary.GetShallowClone() as FamilyLibrary;
 
             if (famLibrary.Dictionary == null)
                 famLibrary.Dictionary = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();

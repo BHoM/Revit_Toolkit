@@ -27,8 +27,6 @@ using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
-using BH.Engine.Geometry;
-using BH.oM.MEP.System;
 
 namespace BH.Revit.Engine.Core
 {
@@ -38,51 +36,45 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert a Revit pipe into BHoM pipes.")]
+        [Description("Convert a Revit pipe into a BHoM pipe.")]
         [Input("revitPipe", "Revit pipe to be converted.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("pipes", "List of BHoM MEP pipes converted from a Revit pipes.")]
-        public static List<BH.oM.MEP.System.Pipe> PipeFromRevit(this Autodesk.Revit.DB.Plumbing.Pipe revitPipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("pipe", "BHoM pipe converted from a Revit pipe.")]
+        public static BH.oM.MEP.System.Pipe PipeFromRevit(this Autodesk.Revit.DB.Plumbing.Pipe revitPipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-            
-            // Reuse a BHoM duct from refObjects if it has been converted before
-            List<BH.oM.MEP.System.Pipe> bhomPipes = refObjects.GetValues<BH.oM.MEP.System.Pipe>(revitPipe.Id);
-            if (bhomPipes != null)
-            {
-                return bhomPipes;
-            }
-            else
-            {
-                bhomPipes = new List<BH.oM.MEP.System.Pipe>();
-            }
 
-            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitPipe, settings);
-            // Flow rate
-            double flowRate = revitPipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_FLOW_PARAM); // Flow rate 
+            // Reuse a BHoM duct from refObjects it it has been converted before
+            BH.oM.MEP.System.Pipe bhomPipe = refObjects.GetValue<BH.oM.MEP.System.Pipe>(revitPipe.Id);
+            if (bhomPipe != null)
+                return bhomPipe;
+
+            // Start and end points
+            LocationCurve locationCurve = revitPipe.Location as LocationCurve;
+            Curve curve = locationCurve.Curve;
+            BH.oM.Geometry.Point startPoint = curve.GetEndPoint(0).PointFromRevit();
+            BH.oM.Geometry.Point endPoint = curve.GetEndPoint(1).PointFromRevit();
+            BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startPoint, endPoint); // BHoM line
+            double flowRate = revitPipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_FLOW_PARAM); // Flow rate
+
             // Pipe section property
             BH.oM.MEP.System.SectionProperties.PipeSectionProperty sectionProperty = revitPipe.PipeSectionProperty(settings);
 
-            for (int i = 0; i < queried.Count; i++)
-            {
-                BH.oM.Geometry.Line segment = queried[i];
-                BH.oM.MEP.System.Pipe thisSegment = new Pipe
-                {
-                    StartPoint = segment.StartPoint(),
-                    EndPoint = segment.EndPoint(),
-                    FlowRate = flowRate,
-                    SectionProperty = sectionProperty
-                };
-                //Set identifiers, parameters & custom data
-                thisSegment.SetIdentifiers(revitPipe);
-                thisSegment.CopyParameters(revitPipe, settings.ParameterSettings);
-                thisSegment.SetProperties(revitPipe, settings.ParameterSettings);
-                bhomPipes.Add(thisSegment);
-            }
-            
-            refObjects.AddOrReplace(revitPipe.Id, bhomPipes);
-            return bhomPipes;
+            // BHoM pipe
+            bhomPipe = BH.Engine.MEP.Create.Pipe(line, flowRate, sectionProperty);
+
+            // Set the flow rate, as the Create method above does not set the flow rate with the suppliet flowRate argument
+            bhomPipe.FlowRate = flowRate;
+
+            //Set identifiers, parameters & custom data
+            bhomPipe.SetIdentifiers(revitPipe);
+            bhomPipe.CopyParameters(revitPipe, settings.ParameterSettings);
+            bhomPipe.SetProperties(revitPipe, settings.ParameterSettings);
+
+            refObjects.AddOrReplace(revitPipe.Id, bhomPipe);
+
+            return bhomPipe;
         }
 
         /***************************************************/

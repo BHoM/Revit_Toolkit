@@ -21,11 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Base;
 using BH.Engine.Geometry;
-using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+using System;
 
 namespace BH.Revit.Engine.Core
 {
@@ -100,8 +99,8 @@ namespace BH.Revit.Engine.Core
             {
                 double param1 = nc.GetEndParameter(0);
                 double param2 = nc.GetEndParameter(1);
-                Curve c1 = nc.DeepClone();
-                Curve c2 = nc.DeepClone();
+                Curve c1 = nc.Clone();
+                Curve c2 = nc.Clone();
                 c1.MakeBound(param1, (param1 + param2) * 0.5);
                 c2.MakeBound((param1 + param2) * 0.5, param2);
                 return new List<Curve> { c1, c2 };

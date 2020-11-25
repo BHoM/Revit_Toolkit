@@ -23,7 +23,6 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
-using BH.Engine.Base;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
@@ -110,7 +109,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                property = property.ShallowClone();
+                property = property.GetShallowClone() as ISectionProperty;
 
                 if (!materialFound)
                     BH.Engine.Reflection.Compute.RecordNote($"A matching section was found in the library. No valid material was defined in Revit, so the default material for this section was used. Revit ElementId: {familyInstance.Id.IntegerValue}");

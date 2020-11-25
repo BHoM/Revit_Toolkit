@@ -684,7 +684,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            return BHS.Create.FreeFormProfile(profileCurves);
+            return new FreeFormProfile(profileCurves);
         }
 
         /***************************************************/

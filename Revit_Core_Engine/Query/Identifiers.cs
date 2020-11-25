@@ -73,7 +73,6 @@ namespace BH.Revit.Engine.Core
             string familyTypeName = "";
             int familyTypeId = -1;
             int ownerViewId = -1;
-            int parentElementId = -1;
 
             Parameter parameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
             if (parameter != null)
@@ -94,17 +93,7 @@ namespace BH.Revit.Engine.Core
             if (element.ViewSpecific)
                 ownerViewId = element.OwnerViewId.IntegerValue;
 
-            if (element is FamilyInstance)
-            {
-                FamilyInstance famInstance = element as FamilyInstance;
-                Element parentElement = famInstance.SuperComponent;
-                if (parentElement != null)
-                {
-                    parentElementId = parentElement.Id.IntegerValue;
-                }
-            }
-
-            return new RevitIdentifiers(element.UniqueId, element.Id.IntegerValue, categoryName, familyName, familyTypeName, familyTypeId, ownerViewId, parentElementId);
+            return new RevitIdentifiers(element.UniqueId, element.Id.IntegerValue, categoryName, familyName, familyTypeName, familyTypeId, ownerViewId);
         }
 
         /***************************************************/

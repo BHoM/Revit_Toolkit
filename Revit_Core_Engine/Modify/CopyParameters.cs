@@ -138,37 +138,5 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-
-        public static void CopyParameters(this Element elementFrom, Element elementTo, IEnumerable<BuiltInParameter> toSkip = null)
-        {
-            List<Parameter> fromParams = elementFrom.GetOrderedParameters().ToList<Parameter>();
-            List<Parameter> toParams = elementTo.GetOrderedParameters().ToList<Parameter>();
-
-            foreach (Parameter paramFrom in fromParams)
-            {
-                Parameter paramTo = toParams.FirstOrDefault(x => x.Id.IntegerValue == paramFrom.Id.IntegerValue);
-                if (paramTo == null || paramTo.IsReadOnly || (toSkip != null && toSkip.Any(x => (int)x == paramTo.Id.IntegerValue)))
-                    continue;
-
-                switch (paramFrom.StorageType)
-                {
-                    case StorageType.Double:
-                        paramTo.Set(paramFrom.AsDouble());
-                        break;
-                    case StorageType.ElementId:
-                        paramTo.Set(paramFrom.AsElementId());
-                        break;
-                    case StorageType.Integer:
-                        paramTo.Set(paramFrom.AsInteger());
-                        break;
-                    case StorageType.String:
-                        paramTo.Set(paramFrom.AsString());
-                        break;
-                    case StorageType.None:
-                        paramTo.Set(paramFrom.AsValueString());
-                        break;
-                }
-            }
-        }
     }
 }

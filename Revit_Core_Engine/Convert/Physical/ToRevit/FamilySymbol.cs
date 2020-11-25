@@ -30,11 +30,12 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Convert
     {
+
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public static FamilySymbol ToRevitElementType(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilySymbol ToRevitFamilySymbol(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, BuiltInCategory category, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (framingElementProperty == null || document == null)
                 return null;
@@ -45,7 +46,9 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            familySymbol = framingElementProperty.ElementType(document, categories, settings) as FamilySymbol;
+            familySymbol = framingElementProperty.ElementType(document, category, settings.FamilyLoadSettings) as FamilySymbol;
+
+            familySymbol.CheckIfNullPush(framingElementProperty);
             if (familySymbol == null)
                 return null;
 
@@ -54,30 +57,6 @@ namespace BH.Revit.Engine.Core
 
             refObjects.AddOrReplace(framingElementProperty, familySymbol);
             return familySymbol;
-        }
-
-        /***************************************************/
-
-        public static HostObjAttributes ToRevitElementType(this oM.Physical.Constructions.IConstruction construction, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
-        {
-            if (construction == null || document == null)
-                return null;
-
-            HostObjAttributes elementType = refObjects.GetValue<HostObjAttributes>(document, construction.BHoM_Guid);
-            if (elementType != null)
-                return elementType;
-
-            settings = settings.DefaultIfNull();
-
-            elementType = construction.ElementType(document, categories, settings) as HostObjAttributes;
-            if (elementType == null)
-                return null;
-
-            // Copy parameters from BHoM object to Revit element
-            elementType.CopyParameters(construction, settings);
-
-            refObjects.AddOrReplace(construction, elementType);
-            return elementType;
         }
 
         /***************************************************/

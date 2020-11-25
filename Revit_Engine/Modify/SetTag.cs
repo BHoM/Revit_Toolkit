@@ -20,7 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Base;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
@@ -43,7 +42,7 @@ namespace BH.Engine.Adapters.Revit
             if (bHoMObject == null)
                 return null;
 
-            IBHoMObject obj = bHoMObject.ShallowClone();
+            IBHoMObject obj = bHoMObject.GetShallowClone();
 
             if (obj.Tags == null)
                 obj.Tags = new HashSet<string>();

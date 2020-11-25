@@ -47,9 +47,6 @@ namespace BH.oM.Adapters.Revit
         [Description("Configuration specifying representation to be pulled and passed to RevitRepresentation fragment.")]
         public virtual PullRepresentationConfig RepresentationConfig { get; set; } = new PullRepresentationConfig();
 
-        [Description("Elements nested within families will be processed if true.")]
-        public virtual bool IncludeNestedElements { get; set; } = true;
-
         /***************************************************/
     }
 }

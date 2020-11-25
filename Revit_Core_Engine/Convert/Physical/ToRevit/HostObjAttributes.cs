@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -23,39 +23,49 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Spatial.ShapeProfiles;
-using BH.oM.Reflection.Attributes;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Convert
     {
         /***************************************************/
         /****               Public Methods              ****/
         /***************************************************/
-        
-        [Description("Query a Revit cable tray to extract a BHoM cable tray section profile.")]
-        [Input("revitCableTray", "Revit cable tray to be queried for information needed for a BHoM section profile.")]
-        [Input("settings", "Revit adapter settings.")]
-        [Output("profile", "BHoM section profile for a cable tray extracted from a Revit cable tray.")]
-        public static BH.oM.MEP.System.SectionProperties.SectionProfile CableTraySectionProfile(this Autodesk.Revit.DB.Electrical.CableTray revitCableTray, RevitSettings settings = null)
+
+        public static HostObjAttributes ToRevitHostObjAttributes(this oM.Physical.Constructions.IConstruction construction, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
+            if (construction == null || document == null)
+                return null;
+
+            HostObjAttributes elementType = refObjects.GetValue<HostObjAttributes>(document, construction.BHoM_Guid);
+            if (elementType != null)
+                return elementType;
+
             settings = settings.DefaultIfNull();
 
-            IProfile profile = revitCableTray.Profile(settings);
-            
-            // Create a section profile
-            if (profile != null)
-            {
-                return BH.Engine.MEP.Create.SectionProfile(profile as dynamic, 0, 0);
-            }
+            List<BuiltInCategory> builtInCategoryList = null;
+            BuiltInCategory buildInCategory = Query.BuiltInCategory(construction, document);
+            if (buildInCategory == BuiltInCategory.INVALID)
+                builtInCategoryList = new List<BuiltInCategory>() { BuiltInCategory.OST_Walls, BuiltInCategory.OST_Floors, BuiltInCategory.OST_Roofs };
             else
-            {
+                builtInCategoryList = new List<BuiltInCategory>() { buildInCategory };
+
+            if (builtInCategoryList == null || builtInCategoryList.Count == 0)
                 return null;
-            }
+
+            elementType = construction.ElementType(document, builtInCategoryList, settings.FamilyLoadSettings, true) as HostObjAttributes;
+
+            elementType.CheckIfNullPush(construction);
+            if (elementType == null)
+                return null;
+
+            // Copy parameters from BHoM object to Revit element
+            elementType.CopyParameters(construction, settings);
+
+            refObjects.AddOrReplace(construction, elementType);
+            return elementType;
         }
 
         /***************************************************/

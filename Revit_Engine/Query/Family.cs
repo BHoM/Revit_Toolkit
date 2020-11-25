@@ -62,12 +62,14 @@ namespace BH.Engine.Adapters.Revit
                         continue;
 
                     oM.Adapters.Revit.Properties.InstanceProperties instanceProps = Create.InstanceProperties(familyName, familyTypeName);
-                    instanceProps.CategoryName = categoryName;
                     instanceProperties.Add(instanceProps);
                 }
             }
 
-            Family family = new Family { PropertiesList = instanceProperties };
+            Family family = new Family()
+            {
+                PropertiesList = instanceProperties
+            };
 
             RevitIdentifiers identifiers = new RevitIdentifiers("", -1, categoryName, familyName);
             family.Fragments.AddOrReplace(identifiers);

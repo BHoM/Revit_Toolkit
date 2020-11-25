@@ -21,13 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Base;
 using BH.oM.Physical.Elements;
 using BH.oM.Structure.Elements;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,28 +34,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static HashSet<BuiltInCategory> BuiltInCategories(this oM.Adapters.Revit.Elements.Family family, Document document, bool caseSensitive = true)
-        {
-            if (family?.PropertiesList == null)
-                return null;
-            
-            return new HashSet<BuiltInCategory>(family.PropertiesList.Select(x => x.BuiltInCategory(document, caseSensitive)));
-        }
-
-        /***************************************************/
-
-        public static HashSet<BuiltInCategory> BuiltInCategories(this IBHoMObject bHoMObject, Document document, bool caseSensitive = true)
-        {
-            BuiltInCategory category = document.BuiltInCategory(bHoMObject.CategoryName(), caseSensitive);
-            if (category != Autodesk.Revit.DB.BuiltInCategory.INVALID)
-                return new HashSet<BuiltInCategory> { category };
-
-            return bHoMObject.GetType().BuiltInCategories();
-        }
-
-        /***************************************************/
-
-        public static HashSet<BuiltInCategory> BuiltInCategories(this Type bHoMType)
+        public static IEnumerable<BuiltInCategory> BuiltInCategories(this Type bHoMType)
         {
             HashSet<BuiltInCategory> result = new HashSet<BuiltInCategory>();
             foreach (Type key in BuiltInCategoryTable.Keys)
@@ -70,6 +46,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
             
+
             return result;
         }
 

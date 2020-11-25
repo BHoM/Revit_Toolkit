@@ -20,7 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
@@ -48,7 +47,7 @@ namespace BH.Engine.Adapters.Revit
 
             if (bHoMObject.Fragments.Any(x => x is RevitIdentifiers))
             {
-                IBHoMObject obj = bHoMObject.ShallowClone();
+                IBHoMObject obj = bHoMObject.GetShallowClone();
                 obj.Fragments = new FragmentSet(bHoMObject.Fragments.Where(x => !(x is RevitIdentifiers)).ToList());
                 return obj;
             }

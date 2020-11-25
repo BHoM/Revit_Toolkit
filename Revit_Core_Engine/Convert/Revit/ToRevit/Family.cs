@@ -49,9 +49,9 @@ namespace BH.Revit.Engine.Core
                     instanceProperties.ToRevitElementType(document, settings, refObjects);
             }
 
-            HashSet<BuiltInCategory> categories = family.BuiltInCategories(document);
+            BuiltInCategory builtInCategory = family.BuiltInCategory(document, settings.FamilyLoadSettings);
 
-            revitFamily = family.Family(document, categories, settings.FamilyLoadSettings);
+            revitFamily = family.Family(document, builtInCategory, settings.FamilyLoadSettings);
 
             revitFamily.CheckIfNullPush(family);
             if (revitFamily == null)

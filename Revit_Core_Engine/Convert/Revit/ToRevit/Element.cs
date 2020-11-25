@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
             if (element != null)
                 return element;
 
-            if (modelInstance.Properties == null)
+            if(modelInstance.Properties == null)
             {
                 Compute.ElementTypeNotFoundWarning(modelInstance);
                 return null;
@@ -52,7 +52,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            BuiltInCategory builtInCategory = modelInstance.BuiltInCategory(document);
+            BuiltInCategory builtInCategory = modelInstance.Properties.BuiltInCategory(document, settings.FamilyLoadSettings);
 
             if (modelInstance.Location is ISurface || modelInstance.Location is ISolid)
             {
@@ -69,7 +69,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                ElementType elementType = modelInstance.Properties.ElementType(document, new List<BuiltInCategory> { builtInCategory }, settings);
+                ElementType elementType = modelInstance.Properties.ElementType(document, builtInCategory, settings.FamilyLoadSettings);
                 if (elementType == null)
                 {
                     Compute.ElementTypeNotFoundWarning(modelInstance);
@@ -156,7 +156,9 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            ElementType elementType = draftingInstance.Properties.ElementType(document, draftingInstance.BuiltInCategories(document), settings);
+            BuiltInCategory builtInCategory = draftingInstance.Properties.BuiltInCategory(document, settings.FamilyLoadSettings);
+
+            ElementType elementType = draftingInstance.Properties.ElementType(document, builtInCategory, settings.FamilyLoadSettings);
 
             if (elementType != null)
             {
@@ -272,18 +274,18 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Element ToRevitMEPElement(this ModelInstance modelInstance, MEPCurveType mEPType)
+        private static Element ToRevitMEPElement(this ModelInstance modelInstance, MEPCurveType MEPType)
         {
-            if (mEPType == null || modelInstance == null)
+            if (MEPType == null || modelInstance == null)
                 return null;
 
             if (!(modelInstance.Location is ICurve))
             {
-                Compute.InvalidFamilyPlacementTypeWarning(modelInstance, mEPType);
+                Compute.InvalidFamilyPlacementTypeWarning(modelInstance, MEPType);
                 return null;
             }
 
-            Document document = mEPType.Document;
+            Document document = MEPType.Document;
 
             BH.oM.Geometry.Line line = modelInstance.Location as BH.oM.Geometry.Line;
             
@@ -298,19 +300,19 @@ namespace BH.Revit.Engine.Core
             XYZ startPoint = revitLine.GetEndPoint(0);
             XYZ endPoint = revitLine.GetEndPoint(1);
 
-            if (mEPType is Autodesk.Revit.DB.Electrical.CableTrayType)
-                return Autodesk.Revit.DB.Electrical.CableTray.Create(document, mEPType.Id, startPoint, endPoint, level.Id);
-            else if (mEPType is Autodesk.Revit.DB.Electrical.ConduitType)
-                return Autodesk.Revit.DB.Electrical.Conduit.Create(document, mEPType.Id, startPoint, endPoint, level.Id);
-            else if (mEPType is Autodesk.Revit.DB.Plumbing.PipeType)
+            if (MEPType is Autodesk.Revit.DB.Electrical.CableTrayType)
+                return Autodesk.Revit.DB.Electrical.CableTray.Create(document, MEPType.Id, startPoint, endPoint, level.Id);
+            else if (MEPType is Autodesk.Revit.DB.Electrical.ConduitType)
+                return Autodesk.Revit.DB.Electrical.Conduit.Create(document, MEPType.Id, startPoint, endPoint, level.Id);
+            else if (MEPType is Autodesk.Revit.DB.Plumbing.PipeType)
             {
                 Autodesk.Revit.DB.Plumbing.PipingSystemType pst = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipingSystemType)).OfType<Autodesk.Revit.DB.Plumbing.PipingSystemType>().FirstOrDefault();
-                return Autodesk.Revit.DB.Plumbing.Pipe.Create(document, pst.Id, mEPType.Id, level.Id, startPoint, endPoint);
+                return Autodesk.Revit.DB.Plumbing.Pipe.Create(document, pst.Id, MEPType.Id, level.Id, startPoint, endPoint);
             }
-            else if (mEPType is Autodesk.Revit.DB.Mechanical.DuctType)
+            else if (MEPType is Autodesk.Revit.DB.Mechanical.DuctType)
             {
                 Autodesk.Revit.DB.Mechanical.MechanicalSystemType mst = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Mechanical.MechanicalSystemType)).OfType<Autodesk.Revit.DB.Mechanical.MechanicalSystemType>().FirstOrDefault();
-                return Autodesk.Revit.DB.Mechanical.Duct.Create(document, mst.Id, mEPType.Id, level.Id, startPoint, endPoint);
+                return Autodesk.Revit.DB.Mechanical.Duct.Create(document, mst.Id, MEPType.Id, level.Id, startPoint, endPoint);
             }
             else
                 return null;

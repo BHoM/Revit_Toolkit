@@ -52,15 +52,36 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            WallType wallType = wall.Construction.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_Walls }, settings, refObjects) as WallType;
-            if (wallType == null)
-                wallType = wall.ElementType(document,settings);
+            WallType wallType = null;
+
+            if (wall.Construction!= null)
+                wallType = wall.Construction.ToRevitHostObjAttributes(document, settings, refObjects) as WallType;
 
             if (wallType == null)
             {
-                Compute.ElementTypeNotFoundWarning(wall);
-                return null;
+                string familyTypeName = wall.FamilyTypeName();
+                if (!string.IsNullOrEmpty(familyTypeName))
+                {
+                    List<WallType> wallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).Cast<WallType>().ToList().FindAll(x => x.Name == familyTypeName);
+                    if (wallTypeList != null || wallTypeList.Count() != 0)
+                        wallType = wallTypeList.First();
+                }
             }
+
+            if (wallType == null)
+            {
+                string familyTypeName = wall.Name;
+
+                if (!string.IsNullOrEmpty(familyTypeName))
+                {
+                    List < WallType> wallTypeList = new FilteredElementCollector(document).OfClass(typeof(WallType)).Cast<WallType>().ToList().FindAll(x => x.Name == familyTypeName);
+                    if (wallTypeList != null || wallTypeList.Count() != 0)
+                        wallType = wallTypeList.First();
+                }
+            }
+
+            if (wallType == null)
+                return null;
 
             BoundingBox bbox = wall.Location.IBounds();
             if (bbox == null)
