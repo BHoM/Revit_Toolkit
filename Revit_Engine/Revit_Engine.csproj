@@ -85,6 +85,10 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Physical_Engine, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ProgramData\BHoM\Assemblies\Physical_Engine.dll</HintPath>
+    </Reference>
     <Reference Include="Physical_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_oM.dll</HintPath>
       <Private>False</Private>
@@ -171,6 +175,7 @@
     <Compile Include="Modify\SetRevitParameter.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
+    <Compile Include="Query\Class1.cs" />
     <Compile Include="Query\DefaultParameterSettings.cs" />
     <Compile Include="Query\GetRevitParameters.cs" />
     <Compile Include="Query\GetRevitParameterValue.cs" />
