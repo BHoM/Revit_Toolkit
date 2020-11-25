@@ -20,11 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Xml.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,20 +32,17 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an object that stores basic information about Revit family file (.rfa) such as family category, family type names etc.")]
+        [Description("Creates an object that stores basic information about Revit family file (.rfa) such as family category, familiy type names etc.")]
         [InputFromProperty("path")]
         [Output("revitFilePreview")]
         public static RevitFilePreview RevitFilePreview(string path)
         {
-            XDocument xDocument = path.XDocument();
-            if (xDocument == null)
-                return null;
+            RevitFilePreview revitFilePreview = new RevitFilePreview()
+            {
+                Path = path
+            };
 
-            string categoryName = xDocument.CategoryName();
-            string familyName = System.IO.Path.GetFileNameWithoutExtension(path);
-            List<string> familyTypeNames = xDocument.FamilyTypeNames();
-
-            return new RevitFilePreview(path, categoryName, familyName, familyTypeNames);
+            return revitFilePreview;
         }
 
         /***************************************************/

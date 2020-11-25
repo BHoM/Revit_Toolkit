@@ -20,48 +20,60 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Generic;
-using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
+using Autodesk.Revit.DB;
 
-namespace BH.Engine.Adapters.Revit
+
+namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
-        [Description("Returns all RevitFilePreviews inside FamilyLibrary that meet Revit category, family and family type name requirements.")]
-        [Input("familyLibrary", "FamilyLibrary to be queried.")]
-        [Input("categoryName", "Name of Revit category to be sought for. Optional: if null, all items to be taken.")]
-        [Input("familyName", "Name of Revit family to be sought for. Optional: if null, all items to be taken.")]
-        [Input("familyTypeName", "Name of Revit family type to be sought for. Optional: if null, all items to be taken.")]
-        [Output("revitFilePreviews")]
-        public static List<RevitFilePreview> RevitFilePreviews(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null, string familyTypeName = null)
+        
+        public static IEnumerable<FamilySymbol> FamilySymbols(this oM.Adapters.Revit.Generic.RevitFilePreview revitFilePreview, Document document)
         {
-            if (familyLibrary == null || familyLibrary.Dictionary == null || familyLibrary.Dictionary.Keys.Count == 0)
+            if (document == null || revitFilePreview == null)
                 return null;
 
-            IEnumerable<string> paths = familyLibrary.Paths(categoryName, familyName, familyTypeName);
-            if (paths == null)
+            IEnumerable<Family> families = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>();
+            if (families == null)
                 return null;
 
-            List<RevitFilePreview> result = new List<RevitFilePreview>();
-            if (paths.Count() == 0)
-                return result;
+            string categoryName = BH.Engine.Adapters.Revit.Query.CategoryName(revitFilePreview);
 
-            foreach (string path in paths)
-                result.Add(Create.RevitFilePreview(path));
+            string name = System.IO.Path.GetFileNameWithoutExtension(revitFilePreview.Path);
+            if (string.IsNullOrEmpty(name))
+                return null;
 
+            foreach (Family revitFamily in families)
+            {
+                if (revitFamily.IsInPlace || !revitFamily.IsUserCreated || revitFamily.FamilyCategory == null)
+                    continue;
 
-            return result;
+                if (!string.IsNullOrEmpty(categoryName) && !revitFamily.FamilyCategory.Name.Equals(categoryName))
+                    continue;
+
+                if(revitFamily.Name == name)
+                {
+                    IEnumerable<ElementId> elementIDs = revitFamily.GetFamilySymbolIds();
+                    if (elementIDs == null)
+                        return null;
+
+                    List<FamilySymbol> result = new List<FamilySymbol>();
+                    foreach (ElementId id in elementIDs)
+                        result.Add(document.GetElement(id) as FamilySymbol);
+
+                    return result;
+                }
+            }
+
+            return null;
         }
 
         /***************************************************/
     }
 }
-

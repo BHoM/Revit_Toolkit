@@ -98,22 +98,17 @@ namespace BH.Revit.Engine.Core
                 return elementType;
 
             //Find ElementType in FamilyLibrary
-            if (settings.FamilyLoadSettings?.FamilyLibrary?.Files != null)
+            if (settings.FamilyLoadSettings != null && !string.IsNullOrWhiteSpace(familyName) && !string.IsNullOrWhiteSpace(familyTypeName))
             {
-                if (builtInCategories != null && builtInCategories.Any(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID))
+                foreach (BuiltInCategory builtInCategory in builtInCategories)
                 {
-                    foreach (BuiltInCategory builtInCategory in builtInCategories)
-                    {
-                        if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
-                            continue;
+                    if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
+                        continue;
 
-                        FamilySymbol familySymbol = settings.FamilyLoadSettings.LoadFamilySymbol(document, builtInCategory.CategoryName(document), familyName, familyTypeName);
-                        if (familySymbol != null)
-                            return familySymbol;
-                    }
+                    FamilySymbol familySymbol = settings.FamilyLoadSettings.LoadFamilySymbol(document, builtInCategory.CategoryName(document), familyName, familyTypeName);
+                    if (familySymbol != null)
+                        return familySymbol;
                 }
-                else
-                    return settings.FamilyLoadSettings.LoadFamilySymbol(document, null, familyName, familyTypeName);
             }
             
             return null;

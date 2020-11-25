@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -42,28 +42,52 @@ namespace BH.Engine.Adapters.Revit
         [Output("familyTypeNames")]
         public static List<string> FamilyTypeNames(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null)
         {
-            IEnumerable<RevitFilePreview> files = familyLibrary?.Files;
-            if (files == null)
+            if (familyLibrary == null)
                 return null;
 
-            if (!string.IsNullOrWhiteSpace(categoryName))
-                files = files.Where(x => x.CategoryName == categoryName);
+            List<string> familyTypeNames = new List<string>();
 
-            if (!string.IsNullOrWhiteSpace(familyName))
-                files = files.Where(x => x.FamilyName == familyName);
+            List<Dictionary<string, Dictionary<string, string>>> categoryDictionary = new List<Dictionary<string, Dictionary<string, string>>>();
 
-            return files.SelectMany(x => x.FamilyTypeNames).ToList();
+            if (string.IsNullOrEmpty(categoryName))
+                categoryDictionary = familyLibrary.Dictionary.Values.ToList();
+            else
+            {
+                Dictionary<string, Dictionary<string, string>> categoryDict = null;
+                if (familyLibrary.Dictionary.TryGetValue(categoryName, out categoryDict))
+                    categoryDictionary.Add(categoryDict);
+            }
+
+            foreach (Dictionary<string, Dictionary<string, string>> catDict in categoryDictionary)
+            {
+                if (string.IsNullOrEmpty(familyName))
+                {
+                    familyTypeNames.AddRange(catDict.Keys);
+                }
+                else
+                {
+                    foreach (KeyValuePair<string, Dictionary<string, string>> kvp in catDict)
+                    {
+                        if (kvp.Value.ContainsKey(familyName))
+                            familyTypeNames.Add(kvp.Key);
+                    }
+                }
+            }
+
+            return familyTypeNames;
         }
 
         /***************************************************/
-
-        [ToBeRemoved("4.0", "This method has been replaced by a simple property query.")]
+        
         [Description("Gets all Revit family type names owned by Revit family represented by RevitFilePreview.")]
         [Input("revitFilePreview", "RevitFilePreview to be queried.")]
         [Output("familyTypeNames")]
         public static List<string> FamilyTypeNames(this RevitFilePreview revitFilePreview)
         {
-            return revitFilePreview?.FamilyTypeNames?.ToList();
+            if (revitFilePreview == null)
+                return null;
+
+            return FamilyTypeNames(revitFilePreview.XDocument());
         }
 
         /***************************************************/

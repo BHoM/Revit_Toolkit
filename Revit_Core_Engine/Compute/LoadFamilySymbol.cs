@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Generic;
 using BH.oM.Adapters.Revit.Settings;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,15 +34,28 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static FamilySymbol LoadFamilySymbol(this FamilyLoadSettings familyLoadSettings, Document document, string categoryName, string familyName, string familyTypeName)
+        public static FamilySymbol LoadFamilySymbol(this FamilyLoadSettings familyLoadSettings, Document document, string categoryName, string familyName, string familyTypeName = null)
         {
-            if (familyLoadSettings?.FamilyLibrary == null || document == null)
+            if (familyLoadSettings == null || familyLoadSettings.FamilyLibrary == null || document == null)
                 return null;
 
-            IEnumerable<string> paths = familyLoadSettings.FamilyLibrary.Paths(categoryName, familyName, familyTypeName);
+            FamilyLibrary familyLibrary = familyLoadSettings.FamilyLibrary;
+
+            IEnumerable<string> paths = BH.Engine.Adapters.Revit.Query.Paths(familyLibrary, categoryName, familyName, familyTypeName);
 
             string path = paths?.FirstOrDefault();
             if (path == null)
+                return null;
+            
+            if (string.IsNullOrEmpty(familyTypeName))
+            {
+                //Look for first available type name if type name not provided
+                RevitFilePreview revitFilePreview = BH.Engine.Adapters.Revit.Create.RevitFilePreview(path);
+                List<string> typeNameList = BH.Engine.Adapters.Revit.Query.FamilyTypeNames(revitFilePreview);
+                familyTypeName = typeNameList?.FirstOrDefault();
+            }
+
+            if (string.IsNullOrWhiteSpace(familyTypeName))
                 return null;
 
             FamilySymbol familySymbol;
