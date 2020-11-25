@@ -34,15 +34,14 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the driving curve of the given IFramingElement adjusted based on the 'z Justification' parameter value pulled from Revit.  Important: neither z offset nor any y justification is taken into account.")]
+        [Description("Returns the driving curve of the given IFramingElement adjusted based on the 'z Justification' parameter value pulled from Revit.")]
         [Input("element", "The IFramingElement to query the in Revit defining location line of.")]
         [Output("curve", "The in Revit geometry defining location line of the element.")]
         public static ICurve ZJustifiedCurve(this IFramingElement element)
         {
-            if (element == null)
-                return null;
-            
-            string zJustification = element.GetRevitParameterValue("z Justification")?.ToString().ToLower();
+            string zJustification = element.GetRevitParameterValue("z Justification").ToString();
+
+            zJustification = zJustification.ToLower();
 
             if (zJustification == "top")
                 return element.TopCentreline();
