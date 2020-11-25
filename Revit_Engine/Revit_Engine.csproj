@@ -85,9 +85,9 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Physical_Engine, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Physical_Engine">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\ProgramData\BHoM\Assemblies\Physical_Engine.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_Engine.dll</HintPath>
     </Reference>
     <Reference Include="Physical_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_oM.dll</HintPath>
