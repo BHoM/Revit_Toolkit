@@ -20,10 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Adapters.Revit;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -33,6 +34,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [ToBeRemoved("4.0", "The method does not bring any added value, only contaminates the code base.")]
         [Description("Gets all Revit category names from FamilyLibrary for given family name and family type name.")]
         [Input("familyLibrary", "FamilyLibrary to be queried.")]
         [Input("familyName", "Family name to be sought for.")]
@@ -40,45 +42,14 @@ namespace BH.Engine.Adapters.Revit
         [Output("categoryNames")]
         public static List<string> CategoryNames(this FamilyLibrary familyLibrary, string familyName, string familyTypeName = null)
         {
-            if (familyLibrary == null || familyLibrary.Dictionary == null)
+            if (familyLibrary?.Files == null)
                 return null;
 
-            List<string> categoryNames = new List<string>();
+            IEnumerable<RevitFilePreview> files = familyLibrary.Files.Where(x => x.FamilyName == familyName);
+            if (!string.IsNullOrWhiteSpace(familyTypeName))
+                files = files.Where(x => x.FamilyTypeNames.Any(y => y == familyTypeName));
 
-            foreach (KeyValuePair<string, Dictionary<string, Dictionary<string, string>>> kvp in familyLibrary.Dictionary)
-            {
-                Dictionary<string, Dictionary<string, string>> typeDictionary = kvp.Value;
-
-                List<Dictionary<string, string>> familyDictionary = new List<Dictionary<string, string>>();
-                if(string.IsNullOrEmpty(familyTypeName))
-                {
-                    foreach (KeyValuePair<string, Dictionary<string, string>> keyValuePair_Type in typeDictionary)
-                        familyDictionary.Add(keyValuePair_Type.Value);
-                }
-                else if(kvp.Value.ContainsKey(familyTypeName))
-                {
-                    familyDictionary.Add(typeDictionary[familyTypeName]);
-                }
-
-                if(string.IsNullOrEmpty(familyName))
-                {
-                    if (familyDictionary.Count > 0)
-                        categoryNames.Add(kvp.Key);
-                }
-                else
-                {
-                    foreach (Dictionary<string, string> dict in familyDictionary)
-                    {
-                        if (dict.ContainsKey(familyName))
-                        {
-                            categoryNames.Add(kvp.Key);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            return categoryNames;
+            return files.Select(x => x.CategoryName).Distinct().ToList();
         }
 
         /***************************************************/

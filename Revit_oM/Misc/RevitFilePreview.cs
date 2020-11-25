@@ -21,19 +21,44 @@
  */
 
 using BH.oM.Base;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 
-namespace BH.oM.Adapters.Revit.Generic
+namespace BH.oM.Adapters.Revit
 {
-    [Description("Wrapper for Revit family file (.rfa) that stores basic information about it such as family category, familiy type names etc. Prototype, currently with limited functionality.")]
-    public class RevitFilePreview : BHoMObject
+    [Description("Wrapper for Revit family file (.rfa) that stores basic information about it such as family category, familiy type names etc.")]
+    public class RevitFilePreview : BHoMObject, IImmutable
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
         [Description("Path to the Revit family file wrapped by this object.")]
-        public virtual string Path { get; set; } = null;
+        public virtual string Path { get; } = string.Empty;
+
+        [Description("Name of the Revit category, to which belongs the family wrapped by this object.")]
+        public virtual string CategoryName { get; } = string.Empty;
+
+        [Description("Name of the Revit family wrapped by this object.")]
+        public virtual string FamilyName { get; } = string.Empty;
+
+        [Description("Names of the family types contained within the Revit family wrapped by this object.")]
+        public virtual ReadOnlyCollection<string> FamilyTypeNames { get; } = null;
+        
+
+        /***************************************************/
+        /****            Public Constructors            ****/
+        /***************************************************/
+
+        public RevitFilePreview(string path, string categoryName, string familyName, IEnumerable<string> familyTypeNames)
+        {
+            Path = path;
+            CategoryName = categoryName;
+            FamilyName = familyName;
+            FamilyTypeNames = new ReadOnlyCollection<string>(familyTypeNames.ToList());
+        }
 
         /***************************************************/
     }

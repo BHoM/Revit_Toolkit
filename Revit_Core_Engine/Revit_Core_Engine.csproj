@@ -459,7 +459,6 @@
     <Compile Include="Query\RevitTypes.cs" />
     <Compile Include="Query\SectionShape.cs" />
     <Compile Include="Query\Solids.cs" />
-    <Compile Include="Query\FamilySymbols.cs" />
     <Compile Include="Query\OpeningType.cs" />
     <Compile Include="Query\StringValue.cs" />
     <Compile Include="Modify\StructuralTypeFilter.cs" />

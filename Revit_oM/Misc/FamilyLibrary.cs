@@ -24,16 +24,17 @@ using System.Collections.Generic;
 using BH.oM.Base;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Generic
+namespace BH.oM.Adapters.Revit
 {
-    [Description("Library of Revit families that can be loaded to the model. Prototype, currently with limited functionality.")]
+    [Description("Library of Revit families that can be loaded to the model.")]
     public class FamilyLibrary : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
-        
-        public virtual Dictionary<string, Dictionary<string, Dictionary<string, string>>> Dictionary { get; set; } = null;
+
+        [Description("A list of Revit family files managed by the library.")]
+        public virtual List<RevitFilePreview> Files { get; set; } = new List<RevitFilePreview>();
 
         /***************************************************/
     }

@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Adapters.Revit;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -43,22 +43,20 @@ namespace BH.Engine.Adapters.Revit
         [Output("revitFilePreviews")]
         public static List<RevitFilePreview> RevitFilePreviews(this FamilyLibrary familyLibrary, string categoryName = null, string familyName = null, string familyTypeName = null)
         {
-            if (familyLibrary == null || familyLibrary.Dictionary == null || familyLibrary.Dictionary.Keys.Count == 0)
+            IEnumerable<RevitFilePreview> files = familyLibrary?.Files;
+            if (files == null)
                 return null;
 
-            IEnumerable<string> paths = familyLibrary.Paths(categoryName, familyName, familyTypeName);
-            if (paths == null)
-                return null;
+            if (!string.IsNullOrWhiteSpace(categoryName))
+                files = files.Where(x => x.CategoryName == categoryName);
 
-            List<RevitFilePreview> result = new List<RevitFilePreview>();
-            if (paths.Count() == 0)
-                return result;
+            if (!string.IsNullOrWhiteSpace(familyName))
+                files = files.Where(x => x.FamilyName == familyName);
 
-            foreach (string path in paths)
-                result.Add(Create.RevitFilePreview(path));
+            if (!string.IsNullOrWhiteSpace(familyTypeName))
+                files = files.Where(x => x.FamilyTypeNames.Any(y => y == familyTypeName));
 
-
-            return result;
+            return files.ToList();
         }
 
         /***************************************************/

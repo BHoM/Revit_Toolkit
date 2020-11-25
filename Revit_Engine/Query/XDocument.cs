@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Generic;
+using BH.oM.Adapters.Revit;
 using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
@@ -41,62 +41,70 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [ToBeRemoved("4.0", "This method brings no added value plus same effect can be achieved easily by calling XDocument(string).")]
         [Description("Retrieves XDocument from header of a Revit family file (.rfa) wrapped by RevitFilePreview.")]
         [Input("revitFilePreview", "RevitFilePreview to be queried.")]
         [Output("xDocument")]
         public static XDocument XDocument(this RevitFilePreview revitFilePreview)
         {
-            if (revitFilePreview == null)
+            return revitFilePreview?.Path.XDocument();
+        }
+
+        /***************************************************/
+
+        public static XDocument XDocument(this string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
                 return null;
 
-            string path = revitFilePreview.Path;
-
-            if (string.IsNullOrWhiteSpace(revitFilePreview.Path) || !File.Exists(revitFilePreview.Path))
-                return null;
-
-            if (File.Exists(revitFilePreview.Path))
+            if (!File.Exists(path))
             {
-                StorageInfo storageInfo = (StorageInfo)InvokeStorageRootMethod(null, "Open", path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                BH.Engine.Reflection.Compute.RecordError($"Revit file does not exist under path {path}.");
+                return null;
+            }
 
-                if (storageInfo != null)
+            StorageInfo storageInfo = (StorageInfo)InvokeStorageRootMethod(null, "Open", path, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            if (storageInfo != null)
+            {
+                XDocument document = null;
+                StreamInfo[] streamInfo = storageInfo.GetStreams();
+                List<string> names = streamInfo.ToList().ConvertAll(x => x.Name);
+                foreach (StreamInfo sInfo in streamInfo)
                 {
-                    XDocument document = null;
-                    StreamInfo[] streamInfo = storageInfo.GetStreams();
-                    List<string> names = streamInfo.ToList().ConvertAll(x => x.Name);
-                    foreach (StreamInfo sInfo in streamInfo)
+                    if (sInfo.Name.Equals("PartAtom"))
                     {
-                        if (sInfo.Name.Equals("PartAtom"))
+                        byte[] bytes = ParseStreamInfo(sInfo);
+
+                        try
                         {
-                            byte[] bytes = ParseStreamInfo(sInfo);
-                            
+                            document = System.Xml.Linq.XDocument.Parse(Encoding.UTF8.GetString(bytes));
+                        }
+                        catch
+                        {
+                            BH.Engine.Reflection.Compute.RecordError($"Internal error occurred when attempting to convert a file under path {path} into RevitFilePreview.");
+                            return null;
+                        }
+
+                        if (document == null)
+                        {
                             try
                             {
-                                document = System.Xml.Linq.XDocument.Parse(Encoding.UTF8.GetString(bytes));
+                                document = System.Xml.Linq.XDocument.Parse(Encoding.Default.GetString(bytes));
                             }
                             catch
                             {
+                                BH.Engine.Reflection.Compute.RecordError($"Internal error occurred when attempting to convert a file under path {path} into RevitFilePreview.");
                                 return null;
                             }
-
-                            if (document == null)
-                            {
-                                try
-                                {
-                                    document = System.Xml.Linq.XDocument.Parse(Encoding.Default.GetString(bytes));
-                                }
-                                catch
-                                {
-                                    return null;
-                                }
-                            }
-
-                            break;
                         }
-                    }
 
-                    CloseStorageInfo(storageInfo);
-                    return document;
+                        break;
+                    }
                 }
+
+                CloseStorageInfo(storageInfo);
+                return document;
             }
 
             return null;

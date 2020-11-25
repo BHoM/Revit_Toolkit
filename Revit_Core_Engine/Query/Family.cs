@@ -35,66 +35,37 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Family Family(this IBHoMObject bHoMObject, IEnumerable<Family> families)
-        {
-            if (families == null || bHoMObject == null)
-                return null;
-
-            string familyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject);
-            if (string.IsNullOrEmpty(familyName) && !string.IsNullOrEmpty(bHoMObject.Name) && bHoMObject.Name.Contains(":"))
-                familyName = BH.Engine.Adapters.Revit.Query.FamilyName(bHoMObject.Name);
-
-            if (string.IsNullOrWhiteSpace(familyName))
-                return null;
-
-            foreach (Family family in families)
-            {
-                if (family.Name == familyName)
-                    return family;
-            }
-
-            return null;
-        }
-
-        /***************************************************/
-
         public static Family Family(this oM.Adapters.Revit.Elements.Family family, Document document, IEnumerable<BuiltInCategory> builtInCategories, FamilyLoadSettings familyLoadSettings = null)
         {
-            if (family == null || document == null || builtInCategories == null || builtInCategories.Count() == 0)
+            if (family == null || string.IsNullOrWhiteSpace(family.Name) || document == null)
                 return null;
 
             //Find Existing Family in Document
-            foreach (BuiltInCategory builtInCategory in builtInCategories)
-            {
-                List<Family> familyList;
-                if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
-                    familyList = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>().ToList();
-                else
-                    familyList = new FilteredElementCollector(document).OfClass(typeof(Family)).OfCategory(builtInCategory).Cast<Family>().ToList();
+            FilteredElementCollector collector = new FilteredElementCollector(document).OfClass(typeof(Family));
+            if (builtInCategories != null && builtInCategories.Any(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID))
+                collector = collector.WherePasses(new LogicalOrFilter(builtInCategories.Where(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID).Select(x => new ElementCategoryFilter(x) as ElementFilter).ToList()));
 
-                Family revitFamily = Family(family, familyList);
-                if (revitFamily != null)
-                    return revitFamily;
-            }
-
-            string familyName = family.FamilyName();
+            Family revitFamily = collector.FirstOrDefault(x => x.Name == family.Name) as Family;
+            if (revitFamily != null)
+                return revitFamily;
 
             //Find ElementType in FamilyLibrary
-            if (familyLoadSettings != null && !string.IsNullOrWhiteSpace(familyName))
+            if (familyLoadSettings != null)
             {
-                foreach (BuiltInCategory builtInCategory in builtInCategories)
+                if (builtInCategories != null && builtInCategories.Any(x => x != Autodesk.Revit.DB.BuiltInCategory.INVALID))
                 {
-                    if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
-                        continue;
-                    
-                    string categoryName = builtInCategory.CategoryName(document);
-                    if (string.IsNullOrEmpty(categoryName))
-                        categoryName = family.CategoryName();
+                    foreach (BuiltInCategory builtInCategory in builtInCategories)
+                    {
+                        if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
+                            continue;
 
-                    Family revitFamily = familyLoadSettings.LoadFamily(document, categoryName, familyName);
-                    if (revitFamily != null)
-                        return revitFamily;
+                        revitFamily = familyLoadSettings.LoadFamily(document, builtInCategory.CategoryName(document), family.Name);
+                        if (revitFamily != null)
+                            return revitFamily;
+                    }
                 }
+                else
+                    return familyLoadSettings.LoadFamily(document, null, family.Name);
             }
 
             return null;
