@@ -84,8 +84,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            BH.oM.Environment.Climate.Location location = new BH.oM.Environment.Climate.Location() { Latitude = latitude, Longitude = longitude };
-            building = new Building { Elevation = elevation, Location = location };
+            building = BH.Engine.Environment.Create.Building(elevation: elevation, latitude: latitude, longitude: longitude);
 
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment() { ElementID = projectInfo.Id.IntegerValue.ToString(), Description = projectInfo.OrganizationDescription, TypeName = projectInfo.Name };
