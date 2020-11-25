@@ -12,7 +12,6 @@
     <AssemblyName>Revit_Core_Adapter_2018</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -104,7 +103,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <AssemblyName>Revit_Core_Adapter_2021</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2021|AnyCPU'">
@@ -153,7 +152,7 @@
     </Reference>
     <Reference Include="Physical_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_oM.dll</HintPath>
-      <Private>False</Private>
+	  <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="Reflection_Engine">
@@ -354,7 +353,7 @@
 	</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
-    <PostBuildEvent>
+	<PostBuildEvent>
 		C:\Windows\System32\xcopy "$(ProjectDir)Listener\Files\BHoM_2021.Addin" "C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2021\" /Y /I /E
 		xcopy "$(TargetDir)$(TargetFileName)" "C:\\ProgramData\\BHoM\\Assemblies" /Y
 		xcopy "$(TargetDir)Listener\Files\Resources"  "C:\ProgramData\BHoM\Resources\Revit" /Y /I /E
