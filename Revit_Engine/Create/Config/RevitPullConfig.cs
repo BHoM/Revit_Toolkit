@@ -32,7 +32,25 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
+        
+        [Description("Creates a pull action-specific configuration used for adapter interaction with Revit.")]
+        [InputFromProperty("discipline")]
+        [InputFromProperty("includeClosedWorksets")]
+        [InputFromProperty("includeNestedElements")]
+        [InputFromProperty("geometryConfig")]
+        [InputFromProperty("representationConfig")]
+        [InputFromProperty("pullMaterialTakeOff")]
+        [Output("revitPullConfig")]
+        public static RevitPullConfig RevitPullConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, bool includeNestedElements = true, PullGeometryConfig geometryConfig = null, PullRepresentationConfig representationConfig = null, bool pullMaterialTakeOff = false)
+        {
+            return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, IncludeNestedElements = includeNestedElements, GeometryConfig = geometryConfig, RepresentationConfig = representationConfig, PullMaterialTakeOff = pullMaterialTakeOff };
+        }
 
+        /***************************************************/
+        /****            Deprecated methods             ****/
+        /***************************************************/
+
+        [ToBeRemoved("4.0", "Replaced with a new version with updated number and order of parameters.")]
         [Description("Creates a pull action-specific configuration used for adapter interaction with Revit.")]
         [InputFromProperty("discipline")]
         [InputFromProperty("includeClosedWorksets")]
@@ -44,10 +62,6 @@ namespace BH.Engine.Adapters.Revit
         {
             return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, GeometryConfig = geometryConfig, RepresentationConfig = representationConfig, IncludeNestedElements = includeNestedElements };
         }
-
-        /***************************************************/
-        /****            Deprecated methods             ****/
-        /***************************************************/
 
         [Deprecated("3.3", "Inputs of this method have changed.")]
         [InputFromProperty("discipline")]

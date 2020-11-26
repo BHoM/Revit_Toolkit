@@ -122,8 +122,18 @@ namespace BH.Revit.Adapter.Core
                     continue;
                 
                 IEnumerable<IBHoMObject> iBHoMObjects = Read(element, discipline, revitSettings, refObjects);
-                if (iBHoMObjects != null && iBHoMObjects.Count() != 0)
+                if (iBHoMObjects != null && iBHoMObjects.Any())
                 {
+                    if (pullConfig.PullMaterialTakeOff)
+                    {
+                        foreach (IBHoMObject iBHoMObject in iBHoMObjects)
+                        {
+                            RevitMaterialTakeOff takeoff = element.MaterialTakeoff(revitSettings, refObjects);
+                            if (takeoff != null)
+                                iBHoMObject.Fragments.AddOrReplace(takeoff);
+                        }
+                    }
+
                     List<ICurve> edges = null;
                     if (geometryConfig.PullEdges)
                         edges = element.Curves(geometryOptions, revitSettings, true).FromRevit();
