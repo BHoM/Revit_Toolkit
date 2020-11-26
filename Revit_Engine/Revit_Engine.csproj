@@ -181,6 +181,7 @@
     <Compile Include="Query\GetRevitParameterValue.cs" />
     <Compile Include="Query\InnerPolyCurves.cs" />
     <Compile Include="Query\Family.cs" />
+    <Compile Include="Query\MaterialTakeOff.cs" />
     <Compile Include="Query\ParameterLinks.cs" />
     <Compile Include="Query\GetRevitIdentifiers.cs" />
     <Compile Include="Query\RevitEdges.cs" />

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -21,37 +21,36 @@
  */
 
 using BH.oM.Base;
-using BH.oM.Adapter;
-using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Physical.Materials;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("Configuration used for adapter interaction with Revit on Pull action.")]
-    public class RevitPullConfig: ActionConfig
+    [Description("A fragment containing the information about material take off extracted on a Revit element on Pull.")]
+    public class RevitMaterialTakeOff : IObject, IFragment, IImmutable
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Discipline used on pull action. Default is Physical.")]
-        public virtual Discipline Discipline { get; set; } = Discipline.Undefined;
+        [Description("Total volume of a Revit element correspondent to the BHoM object carrying this fragment.")]
+        public virtual double TotalVolume { get; } = 0;
 
-        [Description("Elements from closed worksets will be processed if true.")]
-        public virtual bool IncludeClosedWorksets { get; set; } = false;
+        [Description("Material composition of a Revit element correspondent to the BHoM object carrying this fragment.")]
+        public virtual MaterialComposition MaterialComposition { get; } = null;
 
-        [Description("Elements nested within families will be processed if true.")]
-        public virtual bool IncludeNestedElements { get; set; } = true;
 
-        [Description("Configuration specifying which geometry should be pulled and passed to RevitGeometry fragment.")]
-        public virtual PullGeometryConfig GeometryConfig { get; set; } = new PullGeometryConfig();
+        /***************************************************/
+        /****            Public Constructors            ****/
+        /***************************************************/
 
-        [Description("Configuration specifying representation to be pulled and passed to RevitRepresentation fragment.")]
-        public virtual PullRepresentationConfig RepresentationConfig { get; set; } = new PullRepresentationConfig();
-
-        [Description("Material take offs of each pulled element will be attached to resultant BHoMObjects as fragments if true.")]
-        public virtual bool PullMaterialTakeOff { get; set; } = false;
+        public RevitMaterialTakeOff(double totalVolume, MaterialComposition materialComposition)
+        {
+            TotalVolume = totalVolume;
+            MaterialComposition = materialComposition;
+        }
 
         /***************************************************/
     }

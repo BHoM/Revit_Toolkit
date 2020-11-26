@@ -56,6 +56,9 @@
     <Reference Include="Graphics_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Graphics_oM.dll</HintPath>
     </Reference>
+    <Reference Include="Physical_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_oM.dll</HintPath>
+    </Reference>
     <Reference Include="Quantities_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Quantities_oM.dll</HintPath>
       <Private>False</Private>
@@ -88,6 +91,7 @@
     <Compile Include="Enums\RevitViewType.cs" />
     <Compile Include="Enums\TextComparisonType.cs" />
     <Compile Include="Misc\RevitGeometry.cs" />
+    <Compile Include="Misc\RevitMaterialTakeOff.cs" />
     <Compile Include="Misc\RevitRepresentation.cs" />
     <Compile Include="Misc\Tolerance.cs" />
     <Compile Include="Parameters\ElementTypeParameterLink.cs" />

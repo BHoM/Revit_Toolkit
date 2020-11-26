@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,38 +20,32 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit;
 using BH.oM.Base;
-using BH.oM.Adapter;
-using BH.oM.Adapters.Revit.Enums;
-using System.Collections.Generic;
+using BH.oM.Physical.Elements;
+using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
+using System.Linq;
 
-namespace BH.oM.Adapters.Revit
+namespace BH.Engine.Adapters.Revit
 {
-    [Description("Configuration used for adapter interaction with Revit on Pull action.")]
-    public class RevitPullConfig: ActionConfig
+    public static partial class Query
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Discipline used on pull action. Default is Physical.")]
-        public virtual Discipline Discipline { get; set; } = Discipline.Undefined;
+        [Description("Queries the material take off information extracted from a Revit element on Pull and stored in RevitMaterialTakeOff fragment attached to a given BHoMObject.")]
+        [Input("bHoMObject", "BHoMObject to be queried for the material take off information extracted from a Revit element on Pull.")]
+        [Output("takeOff", "Material take off information in a form of an ExplicitBulk.")]
+        public static ExplicitBulk MaterialTakeoff(this IBHoMObject bHoMObject)
+        {
+            RevitMaterialTakeOff takeOff = bHoMObject?.Fragments?.FirstOrDefault(x => x is RevitMaterialTakeOff) as RevitMaterialTakeOff;
+            if (takeOff == null)
+                return null;
 
-        [Description("Elements from closed worksets will be processed if true.")]
-        public virtual bool IncludeClosedWorksets { get; set; } = false;
-
-        [Description("Elements nested within families will be processed if true.")]
-        public virtual bool IncludeNestedElements { get; set; } = true;
-
-        [Description("Configuration specifying which geometry should be pulled and passed to RevitGeometry fragment.")]
-        public virtual PullGeometryConfig GeometryConfig { get; set; } = new PullGeometryConfig();
-
-        [Description("Configuration specifying representation to be pulled and passed to RevitRepresentation fragment.")]
-        public virtual PullRepresentationConfig RepresentationConfig { get; set; } = new PullRepresentationConfig();
-
-        [Description("Material take offs of each pulled element will be attached to resultant BHoMObjects as fragments if true.")]
-        public virtual bool PullMaterialTakeOff { get; set; } = false;
+            return new ExplicitBulk { MaterialComposition = takeOff.MaterialComposition, Volume = takeOff.TotalVolume };
+        }
 
         /***************************************************/
     }
