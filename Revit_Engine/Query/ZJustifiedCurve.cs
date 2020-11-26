@@ -25,6 +25,7 @@ using System.ComponentModel;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using BH.Engine.Physical;
+using BH.Engine.Geometry;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -49,7 +50,11 @@ namespace BH.Engine.Adapters.Revit
             else if (zJustification == "bottom")
                 return element.BottomCentreline();
             else if (zJustification == "center")
-                return element.GeometricalCentreline();
+            {
+                Point start = element.TopCentreline().IStartPoint().Translate(0.5 * (element.BottomCentreline().IStartPoint() - element.TopCentreline().IStartPoint()));
+                Point end = element.TopCentreline().IEndPoint().Translate(0.5 * (element.BottomCentreline().IEndPoint() - element.TopCentreline().IEndPoint()));
+                return new Line {Start = start, End = end};
+            }
             else if (zJustification == "origin")
                 return element.Location;
             else
