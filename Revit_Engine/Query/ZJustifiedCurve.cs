@@ -51,8 +51,10 @@ namespace BH.Engine.Adapters.Revit
                 return element.BottomCentreline();
             else if (zJustification == "center")
             {
-                Point start = element.TopCentreline().IStartPoint().Translate(0.5 * (element.BottomCentreline().IStartPoint() - element.TopCentreline().IStartPoint()));
-                Point end = element.TopCentreline().IEndPoint().Translate(0.5 * (element.BottomCentreline().IEndPoint() - element.TopCentreline().IEndPoint()));
+                ICurve top = element.TopCentreline();
+                ICurve bottom = element.BottomCentreline();
+                Point start = (top.IStartPoint() + bottom.IStartPoint()) * 0.5;
+                Point end = (top.IEndPoint() + bottom.IEndPoint()) * 0.5;
                 return new Line {Start = start, End = end};
             }
             else if (zJustification == "origin")
