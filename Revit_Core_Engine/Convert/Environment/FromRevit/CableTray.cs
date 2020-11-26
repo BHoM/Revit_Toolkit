@@ -71,13 +71,7 @@ namespace BH.Revit.Engine.Core
             bool isEndConnected = false;
             List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitCableTray, out isStartConnected, out isEndConnected, settings);
 
-            if (queried.Count > 2)
-            {
-                //required to assert connector property later
-                queried = MatchRevitOrder(queried, revitCableTray);
-            }
-            
-            Vector revitCableTrayVector = ((revitCableTray.Location as LocationCurve).Curve as Autodesk.Revit.DB.Line).Direction.VectorFromRevit().RoundCoordinates(4);
+            Vector revitCableTrayVector = BH.Engine.Geometry.Modify.RoundCoordinates(VectorFromRevit((revitCableTray.Location as LocationCurve).Curve.GetEndPoint(0) - (revitCableTray.Location as LocationCurve).Curve.GetEndPoint(1)),4).Normalise();
             
             for (int i = 0; i < queried.Count; i++)
             {
@@ -150,20 +144,6 @@ namespace BH.Revit.Engine.Core
 
             refObjects.AddOrReplace(revitCableTray.Id, bhomCableTrays);
             return bhomCableTrays;
-        }
-
-        /***************************************************/
-        /****              Private Methods              ****/
-        /***************************************************/
-        
-        [Description("Re-orders converted BHoM Line list to match the direction from the reference MEPCurve.")]
-        private static List<BH.oM.Geometry.Line> MatchRevitOrder(List<BH.oM.Geometry.Line> linesToMatch, MEPCurve reference)
-        {
-            LocationCurve locationCurve = reference.Location as LocationCurve;
-            Curve curve = locationCurve.Curve;
-            BH.oM.Geometry.Point referenceStart = curve.GetEndPoint(0).PointFromRevit();
-
-            return linesToMatch.OrderBy(x => x.Start.Distance(referenceStart)).ToList();
         }
         
         /***************************************************/
