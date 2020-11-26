@@ -29,7 +29,9 @@ using BH.oM.Physical.Elements;
 using BH.oM.Reflection;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Revit.Engine.Core
 {
@@ -142,6 +144,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         
+        [Description("Queries an MEPCurve and its fitting connectors to create a list of BHoM lines.")]
+        [Input("mepCurve", "Revit MEPCurve to be queried.")]
+        [Input("isStartConnected", "An OUT operator to also extract whether the start of the MEPCurve is connected to something.")]
+        [Input("isEndConnected", "An OUT operator to also extract whether the end of the MEPCurve is connected to something.")]
+        [Output("locationCurveMEP", "BHoM lines list queried from the MEPCurve and its fitting connectors.")]
         public static List<BH.oM.Geometry.Line> LocationCurveMEP(this MEPCurve mepCurve, out bool isStartConnected, out bool isEndConnected, RevitSettings settings = null)
         {            
             settings = settings.DefaultIfNull();
@@ -376,15 +383,44 @@ namespace BH.Revit.Engine.Core
                 result.Add(extraLine2);
             }
 
-            return result;
+            return MatchRevitOrder(result,mepCurve);
         }
         
         /***************************************************/
+        
+        [Description("Queries an MEPCurve and its fitting connectors to create a list of BHoM lines.")]
+        [Input("mepCurve", "Revit MEPCurve to be queried.")]
+        [Output("locationCurveMEP", "BHoM lines list queried from the MEPCurve and its fitting connectors.")]
         public static List<BH.oM.Geometry.Line> LocationCurveMEP(this MEPCurve mepCurve, RevitSettings settings = null)
         {
             bool dummyIsStartConnected = false;
             bool dummyIsEndConnected = false;
             return LocationCurveMEP(mepCurve, out dummyIsStartConnected, out dummyIsEndConnected, settings);
+        }
+        
+        /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
+        
+        [Description("Re-orders converted BHoM Line list to match the direction from the reference MEPCurve.")]
+        [Input("linesToMatch", "The BHoM lines list to be re-ordered.")]
+        [Input("reference", "The MEPCurve to reference the direction order.")]
+        [Output("matchRevitOrder", "BHoM lines re-ordered to match reference MEPCurve direction.")]
+        private static List<BH.oM.Geometry.Line> MatchRevitOrder(List<BH.oM.Geometry.Line> linesToMatch, MEPCurve reference)
+        {
+            LocationCurve locationCurve = reference.Location as LocationCurve;
+            Curve curve = locationCurve.Curve;
+            BH.oM.Geometry.Point referenceStart = curve.GetEndPoint(0).PointFromRevit().RoundCoordinates(4);
+            BH.oM.Geometry.Point referenceEnd = curve.GetEndPoint(1).PointFromRevit().RoundCoordinates(4);
+
+            List<BH.oM.Geometry.Point> controlPoints = linesToMatch.SelectMany(x => x.ControlPoints()).ToList().CullDuplicates();
+            Polyline polyline = BH.Engine.Geometry.Create.Polyline(controlPoints);
+
+            if (referenceStart.IsEqual(polyline.StartPoint()) || referenceEnd.IsEqual(polyline.EndPoint()))
+                return polyline.SubParts();
+            else
+                return polyline.Flip().SubParts();    
+            
         }
         
         /***************************************************/
