@@ -380,14 +380,6 @@ namespace BH.Revit.Engine.Core
         }
         
         /***************************************************/
-        public static List<BH.oM.Geometry.Line> LocationCurveMEP(this MEPCurve mepCurve, RevitSettings settings = null)
-        {
-            bool dummyIsStartConnected = false;
-            bool dummyIsEndConnected = false;
-            return LocationCurveMEP(mepCurve, out dummyIsStartConnected, out dummyIsEndConnected, settings);
-        }
-        
-        /***************************************************/
     }
 }
 
