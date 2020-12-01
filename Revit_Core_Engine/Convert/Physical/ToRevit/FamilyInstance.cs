@@ -95,7 +95,7 @@ namespace BH.Revit.Engine.Core
             FamilyPlacementType familyPlacementType = familySymbol.Family.FamilyPlacementType;
             if (familyPlacementType != FamilyPlacementType.CurveBased && familyPlacementType != FamilyPlacementType.CurveBasedDetail && familyPlacementType != FamilyPlacementType.CurveDrivenStructural && familyPlacementType != FamilyPlacementType.TwoLevelsBased)
             {
-                Compute.InvalidFamilyPlacementTypeWarning(framingElement, familySymbol);
+                Compute.InvalidFamilyPlacementTypeError(framingElement, familySymbol);
                 return null;
             }
 
@@ -190,7 +190,7 @@ namespace BH.Revit.Engine.Core
             FamilyPlacementType familyPlacementType = familySymbol.Family.FamilyPlacementType;
             if (familyPlacementType != FamilyPlacementType.CurveBased && familyPlacementType != FamilyPlacementType.CurveBasedDetail && familyPlacementType != FamilyPlacementType.CurveDrivenStructural && familyPlacementType != FamilyPlacementType.TwoLevelsBased)
             {
-                Compute.InvalidFamilyPlacementTypeWarning(framingElement, familySymbol);
+                Compute.InvalidFamilyPlacementTypeError(framingElement, familySymbol);
                 return null;
             }
 

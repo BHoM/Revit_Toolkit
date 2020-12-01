@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Base;
 using System;
 
@@ -44,13 +45,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        internal static void NullDocumentError()
-        {
-            BH.Engine.Reflection.Compute.RecordError("BHoM object could not be read because Revit document does not exist.");
-        }
-
-        /***************************************************/
-
         internal static void ConvertBeforePushError(this IBHoMObject iBHoMObject, Type typeToConvert)
         {
             BH.Engine.Reflection.Compute.RecordError(string.Format("{0} has to be converted to {1} before pushing. BHoM object Guid: {2}", iBHoMObject.GetType().Name, typeToConvert.Name, iBHoMObject.BHoM_Guid));
@@ -61,6 +55,41 @@ namespace BH.Revit.Engine.Core
         internal static void NoPanelLocationError(this Element element)
         {
             BH.Engine.Reflection.Compute.RecordError(string.Format("Location of the Revit {0} could not be converted to BHoM, and therefore the output BHoM object will have empty location and no openings. Please note that BHoM panel conversion supports only planar faces. Revit ElementId: {1}", element.GetType().Name, element.Id.IntegerValue));
+        }
+
+        /***************************************************/
+
+        internal static void InvalidFamilyPlacementTypeError(this IBHoMObject bHoMObject, ElementType elementType)
+        {
+            BH.Engine.Reflection.Compute.RecordError($"BHoM Object location does not match with the required placement type of Revit family. BHoM Guid: {bHoMObject.BHoM_Guid}, Revit ElementId: {elementType.Id.IntegerValue}");
+        }
+
+        /***************************************************/
+
+        internal static void FamilyPlacementTypeNotSupportedError(this IInstance instance, FamilySymbol familySymbol)
+        {
+            BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} is not supported. BHoM Guid: {instance.BHoM_Guid}, Revit ElementId: {familySymbol.Id.IntegerValue}");
+        }
+
+        /***************************************************/
+
+        internal static void FamilyPlacementTypeDraftingError(this ModelInstance modelInstance, FamilySymbol familySymbol)
+        {
+            BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} indicates that the family is a drafting family. Please use DraftingInstance instead of a ModelInstance in order to push it. BHoM Guid: {modelInstance.BHoM_Guid}, Revit ElementId: {familySymbol.Id.IntegerValue}");
+        }
+
+        /***************************************************/
+
+        internal static void FamilyPlacementTypeModelError(this DraftingInstance draftingInstance, FamilySymbol familySymbol)
+        {
+            BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} indicates that the family is a model family. Please use ModelInstance instead of a DraftingInstance in order to push it. BHoM Guid: {draftingInstance.BHoM_Guid}, Revit ElementId: {familySymbol.Id.IntegerValue}");
+        }
+
+        /***************************************************/
+
+        internal static void InvalidRegionSurfaceError(this DraftingInstance draftingInstance)
+        {
+            BH.Engine.Reflection.Compute.RecordError($"Only DraftingInstances with locations as PlanarSurfaces or PolySurfaces consisting of PlanarSurfaces can be converted into a FilledRegion. BHoM_Guid: {draftingInstance.BHoM_Guid}");
         }
 
         /***************************************************/
