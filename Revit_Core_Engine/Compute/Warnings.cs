@@ -319,36 +319,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        internal static void InvalidFamilyPlacementTypeWarning(this IBHoMObject iBHoMObject, ElementType elementType)
-        {
-            string message = "BHoM Object location does not match with the required placement type of Revit family";
-
-            if (iBHoMObject != null)
-                message = string.Format("{0} BHoM Guid: {1}", message, iBHoMObject.BHoM_Guid);
-
-            if (elementType != null)
-                message = string.Format("{0} Element Id : {1}", message, elementType.Id.IntegerValue);
-
-            BH.Engine.Reflection.Compute.RecordWarning(message);
-        }
-
-        /***************************************************/
-
-        internal static void FamilyPlacementTypeNotSupportedWarning(this IBHoMObject iBHoMObject, ElementType elementType)
-        {
-            string message = "lacement type of Revit family is not supported.";
-
-            if (iBHoMObject != null)
-                message = string.Format("{0} BHoM Guid: {1}", message, iBHoMObject.BHoM_Guid);
-
-            if (elementType != null)
-                message = string.Format("{0} Element Id : {1}", message, elementType.Id.IntegerValue);
-
-            BH.Engine.Reflection.Compute.RecordWarning(message);
-        }
-
-        /***************************************************/
-
         internal static void ElementTypeNotFoundWarning(this IBHoMObject iBHoMObject)
         {
             string message = "Element type has not been found for given BHoM Object.";
@@ -385,24 +355,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        internal static void NullObjectPropertiesWarining(this ModelInstance modelInstance)
+        internal static void NullObjectPropertiesWarning(this IInstance instance)
         {
-            string message = "Generic Object has no object properties.";
+            string message = "The instance has no object properties.";
 
-            if (modelInstance != null)
-                message = string.Format("{0} BHoM Guid: {1}", message, modelInstance.BHoM_Guid);
-
-            BH.Engine.Reflection.Compute.RecordError(message);
-        }
-
-        /***************************************************/
-
-        internal static void NullObjectPropertiesWarining(this DraftingInstance draftingInstance)
-        {
-            string message = "Drafting Object has no object properties.";
-
-            if (draftingInstance != null)
-                message = string.Format("{0} BHoM Guid: {1}", message, draftingInstance.BHoM_Guid);
+            if (instance != null)
+                message = string.Format("{0} BHoM Guid: {1}", message, instance.BHoM_Guid);
 
             BH.Engine.Reflection.Compute.RecordError(message);
         }

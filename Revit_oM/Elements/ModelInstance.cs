@@ -40,6 +40,12 @@ namespace BH.oM.Adapters.Revit.Elements
         [Description("Location of the instance in in three dimensional space.")]
         public virtual IGeometry Location { get; set; } = new Point();
 
+        [Description("Orientation of the instance in 3 dimensional space. Applicable only to point-based ModelInstances.")]
+        public virtual Basis Orientation { get; set; } = Basis.XY;
+
+        [Description("Revit ElementId of the host element.")]
+        public virtual int Host { get; set; } = -1;
+
         /***************************************************/
     }
 }

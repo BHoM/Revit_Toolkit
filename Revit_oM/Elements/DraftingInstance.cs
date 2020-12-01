@@ -40,6 +40,9 @@ namespace BH.oM.Adapters.Revit.Elements
         [Description("Location of the instance in three dimensional space.")]
         public virtual IGeometry Location { get; set; } = new Point();
 
+        [Description("Orientation of the instance in 2 dimensional space (only X and Y vectors are relevant). Applicable only to point-based DraftingInstances.")]
+        public virtual Basis Orientation { get; set; } = Basis.XY;
+
         [Description("Name of Revit view to which the instance belongs.")]
         public virtual string ViewName { get; set; } = string.Empty;
 
