@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static FamilyInstance FamilyInstance(Document document, FamilySymbol familySymbol, XYZ origin, Transform orientation, Element host = null, RevitSettings settings = null)
+        public static FamilyInstance FamilyInstance(Document document, FamilySymbol familySymbol, XYZ origin, Transform orientation = null, Element host = null, RevitSettings settings = null)
         {
             if (document == null || familySymbol == null || origin == null)
                 return null;
