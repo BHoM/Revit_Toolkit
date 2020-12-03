@@ -60,12 +60,14 @@ namespace BH.Revit.Engine.Core
                         if (element.ViewSpecific)
                             iBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingInstance(objectProperties, element.Document.GetElement(element.OwnerViewId).Name, iGeometry as dynamic);
                         else
+                        {
                             iBHoMObject = BH.Engine.Adapters.Revit.Create.ModelInstance(objectProperties, iGeometry as dynamic);
+                            if (iBHoMObject is ModelInstance && (element as FamilyInstance)?.Host != null)
+                                ((ModelInstance)iBHoMObject).Host = (element as FamilyInstance).Host.Id.IntegerValue;
+                        }
 
                         if (iGeometry is BH.oM.Geometry.Point)
                         {
-                            //TODO: remember about local CS of sections!
-
                             Basis orientation = null;
                             if (element is FamilyInstance)
                             {
