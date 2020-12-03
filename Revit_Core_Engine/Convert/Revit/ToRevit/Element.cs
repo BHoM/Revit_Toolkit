@@ -645,8 +645,29 @@ namespace BH.Revit.Engine.Core
                         XYZ xyz = ((oM.Geometry.Point)location).ToRevit();
                         FamilyInstance familyInstance = view.Document.Create.NewFamilyInstance(xyz, familySymbol, view);
 
-                        //TODO: orient here, remember about relative CS of views/sections
-                        //ElementTransformUtils.GetTransformFromViewToView
+                        if (draftingInstance.Orientation != null)
+                        {
+                            XYZ z = draftingInstance.Orientation.Z.ToRevit().Normalize();
+                            if (1 - Math.Abs(view.ViewDirection.DotProduct(z)) > settings.AngleTolerance)
+                                draftingInstance.ProjectedOnViewPlaneWarning(familyInstance);
+
+                            XYZ x = draftingInstance.Orientation.X.ToRevit().Normalize();
+                            double angle;
+                            if (1 - Math.Abs(view.ViewDirection.DotProduct(x)) > settings.AngleTolerance)
+                            {
+                                XYZ xDir = draftingInstance.Orientation.Y.ToRevit().CrossProduct(view.ViewDirection);
+                                angle = view.RightDirection.AngleOnPlaneTo(xDir, view.ViewDirection);
+                            }
+                            else
+                            {
+                                XYZ yDir = view.ViewDirection.CrossProduct(draftingInstance.Orientation.X.ToRevit());
+                                angle = view.UpDirection.AngleOnPlaneTo(yDir, view.ViewDirection);
+                            }
+
+                            Autodesk.Revit.DB.Line dir = Autodesk.Revit.DB.Line.CreateBound(xyz, xyz + view.ViewDirection);
+                            ElementTransformUtils.RotateElement(view.Document, familyInstance.Id, dir, angle);
+                        }
+
                         return familyInstance;
                     }
                     else
@@ -787,7 +808,7 @@ namespace BH.Revit.Engine.Core
         {
             double minDist = double.MaxValue;
             reference = null;
-
+            
             Options opt = new Options();
             opt.ComputeReferences = true;
             List<Autodesk.Revit.DB.Face> faces = element.Faces(opt);
@@ -887,7 +908,7 @@ namespace BH.Revit.Engine.Core
 
             Vector result = new Vector { X = x.X, Y = x.Y };
             if (result.Length() < settings.DistanceTolerance)
-                result = Vector.XAxis;
+                result = basis.Y.CrossProduct(basis.Z);
 
             return result;
         }
