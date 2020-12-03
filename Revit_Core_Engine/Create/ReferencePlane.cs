@@ -21,50 +21,44 @@
  */
 
 using Autodesk.Revit.DB;
-using System.Collections.Generic;
-using System.Linq;
+using BH.oM.Geometry;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Create
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public static Transform ToRevit(this oM.Geometry.TransformMatrix transformMatrix)
+        public static ReferencePlane ReferencePlane(Document document, BH.oM.Geometry.Point origin, Basis orientation, string name = "")
         {
-            if (transformMatrix == null)
+            if (origin == null || orientation == null)
                 return null;
 
-            XYZ translation = new XYZ(transformMatrix.Matrix[3, 0].FromSI(UnitType.UT_Length), transformMatrix.Matrix[3, 1].FromSI(UnitType.UT_Length), transformMatrix.Matrix[3, 2].FromSI(UnitType.UT_Length));
-            XYZ basisX = new XYZ(transformMatrix.Matrix[0, 0], transformMatrix.Matrix[1, 0], transformMatrix.Matrix[2, 0]);
-            XYZ basisY = new XYZ(transformMatrix.Matrix[0, 1], transformMatrix.Matrix[1, 1], transformMatrix.Matrix[2, 1]);
-            XYZ basisZ = new XYZ(transformMatrix.Matrix[0, 2], transformMatrix.Matrix[1, 2], transformMatrix.Matrix[2, 2]);
-            Transform transform = Transform.CreateTranslation(translation);
-            transform.set_Basis(0, basisX);
-            transform.set_Basis(1, basisY);
-            transform.set_Basis(2, basisZ);
-            return transform;
+            return Create.ReferencePlane(document, origin.ToRevit(), orientation.ToRevit(), name);
         }
 
         /***************************************************/
 
-        public static Transform ToRevit(this oM.Geometry.Basis basis)
+        public static ReferencePlane ReferencePlane(Document document, XYZ point, Transform orientation, string name = "")
         {
-            if (basis == null)
+            if (point == null || orientation == null)
                 return null;
 
-            XYZ basisX = new XYZ(basis.X.X, basis.X.Y, basis.X.Z);
-            XYZ basisY = new XYZ(basis.Y.X, basis.Y.Y, basis.Y.Z);
-            XYZ basisZ = new XYZ(basis.Z.X, basis.Z.Y, basis.Z.Z);
-            Transform transform = Transform.Identity;
-            transform.set_Basis(0, basisX);
-            transform.set_Basis(1, basisY);
-            transform.set_Basis(2, basisZ);
-            return transform;
+            XYZ dir1 = orientation.BasisZ.CrossProduct(XYZ.BasisZ);
+            XYZ dir2 = orientation.BasisZ.CrossProduct(dir1);
+            ReferencePlane rp = document.Create.NewReferencePlane(point, point + dir1, dir2, document.ActiveView);
+            if (rp.Normal.DotProduct(orientation.BasisZ) < 0)
+                rp.Flip();
+
+            if (!string.IsNullOrWhiteSpace(name))
+                rp.Name = name;
+
+            return rp;
         }
 
         /***************************************************/
     }
 }
+

@@ -299,6 +299,8 @@
     <Compile Include="Convert\Geometry\FromRevit\Transform.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Transform.cs" />
     <Compile Include="Convert\Physical\ToRevit\ElementType.cs" />
+    <Compile Include="Create\FamilyInstance.cs" />
+    <Compile Include="Create\ReferencePlane.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\DuctSectionProfile.cs" />
@@ -374,6 +376,7 @@
     <Compile Include="Query\ElementIds\ElementIdsByExclusion.cs" />
     <Compile Include="Query\LocationCurve.cs" />
     <Compile Include="Query\ReferenceIdentifier.cs" />
+    <Compile Include="Query\StructuralType.cs" />
     <Compile Include="Query\Workset.cs" />
     <Compile Include="Create\CurveArray.cs" />
     <Compile Include="Create\Options.cs" />

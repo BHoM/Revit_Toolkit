@@ -391,19 +391,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        internal static void InvalidTwoLevelLocationWarning(this IBHoMObject iBHoMObject, ElementType elementType)
-        {
-            string message = "Location line of the two-level based element is upside-down";
-            if (iBHoMObject != null)
-                message = string.Format("{0} BHoM Guid: {1}", message, iBHoMObject.BHoM_Guid);
-
-            if (elementType != null)
-                message = string.Format("{0} Element Id : {1}", message, elementType.Id.IntegerValue);
-
-        }
-
-        /***************************************************/
-
         internal static void CurveToBHoMNotImplemented(this Curve curve)
         {
             BH.Engine.Reflection.Compute.RecordError(string.Format("Conversion for curve type {0} to BHoM is not implemented.", curve.GetType().ToString().Split('.').Last()));
@@ -462,16 +449,32 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        internal static void ProjectedOnXYWarning(this ModelInstance modelInstance, FamilyInstance familyInstance)
+        internal static void ProjectedOnXYWarning(this FamilyInstance familyInstance)
         {
-            BH.Engine.Reflection.Compute.RecordWarning($"Family with placement type OneLevelBased needs to be placed vertically, therefore transform out of XY plane has been ignored. BHoM Guid: {modelInstance.BHoM_Guid}, ElementId: {familyInstance?.Id.IntegerValue}");
+            FamilyPlacementType fpt = ((FamilySymbol)familyInstance.Document.GetElement(familyInstance.GetTypeId())).Family.FamilyPlacementType;
+            BH.Engine.Reflection.Compute.RecordWarning($"Family with placement type {fpt} needs to be placed vertically, therefore transform out of XY plane has been ignored. ElementId: {familyInstance?.Id.IntegerValue}");
         }
 
         /***************************************************/
 
-        internal static void ProjectedOnViewPlaneWarning(this DraftingInstance draftingInstance, FamilyInstance familyInstance)
+        internal static void ProjectedOnViewPlaneWarning(this FamilyInstance familyInstance)
         {
-            BH.Engine.Reflection.Compute.RecordWarning($"Drafting family needs to have orientation perpendicular to the view plane, therefore transform out of view plane has been ignored. BHoM Guid: {draftingInstance.BHoM_Guid}, ElementId: {familyInstance?.Id.IntegerValue}");
+            BH.Engine.Reflection.Compute.RecordWarning($"Drafting family needs to have orientation perpendicular to the view plane, therefore transform out of view plane has been ignored. BHoM Guid: ElementId: {familyInstance?.Id.IntegerValue}");
+        }
+
+        /***************************************************/
+
+        internal static void HostIgnoredWarning(this FamilyInstance familyInstance)
+        {
+            FamilyPlacementType fpt = ((FamilySymbol)familyInstance.Document.GetElement(familyInstance.GetTypeId())).Family.FamilyPlacementType;
+            BH.Engine.Reflection.Compute.RecordWarning($"Family with placement type {fpt} does not need a host element, therefore the input host has been ignored. ElementId: {familyInstance?.Id.IntegerValue}");
+        }
+
+        /***************************************************/
+
+        internal static void CurveBasedNonHostedWarning(this FamilyInstance familyInstance)
+        {
+            BH.Engine.Reflection.Compute.RecordWarning($"A curve-based non-structural element has been created without a host. There is a high chance it got created in a wrong location due to a Revit bug, therefore it is recommended to inspect the element. ElementId: {familyInstance.Id.IntegerValue}");
         }
 
         /***************************************************/
