@@ -42,7 +42,7 @@ namespace BH.oM.Adapters.Revit.Parameters
         [Description("Id of the Revit element correspondent to the BHoM object that carries this fragment. " +
             "In Revit, this is called 'ElementId'." +
             "This Id may change when the object is modified.")]
-        public virtual object Id { get; } = -1;
+        public virtual object Id { get; set; } = -1;
 
         [Description("Category of the Revit element correspondent to the BHoM object that carries this fragment.")]
         public virtual string CategoryName { get; } = "";
