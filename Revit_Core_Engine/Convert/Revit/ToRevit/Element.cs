@@ -311,41 +311,12 @@ namespace BH.Revit.Engine.Core
                 Level level = document.LevelBelow(point, settings);
                 if (level == null)
                     return null;
-
-                //bool projected = false;
-                //XYZ xdir = XYZ.BasisX;
-                //if (modelInstance.Orientation?.X != null)
-                //{
-                //    Vector x = modelInstance.Orientation.X;
-                //    if (Math.Abs(x.Z) > settings.AngleTolerance)
-                //        projected = true;
-
-                //    Vector newX = new Vector { X = x.X, Y = x.Y };
-                //    if (newX.Length() > settings.DistanceTolerance)
-                //        xdir = newX.ToRevit();
-                //}
-
-                XYZ xdir = modelInstance.Orientation.ProjectedX(settings).ToRevit();
                 
+                XYZ xdir = modelInstance.Orientation.ProjectedX(settings).ToRevit();
                 familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, xdir, level, StructuralType.NonStructural);
 
                 if (modelInstance.Orientation?.X != null && Math.Abs(modelInstance.Orientation.X.Z) > settings.AngleTolerance)
                     modelInstance.ProjectedOnXYWarning(familyInstance);
-
-                //document.Regenerate();
-                //XYZ location = ((LocationPoint)familyInstance.Location).Point;
-                //if (Math.Abs(location.Z - xyz.Z) > settings.DistanceTolerance)
-                //{
-                //    ElementTransformUtils.MoveElement(document, familyInstance.Id, xyz - location);
-                //    document.Regenerate();
-                //}
-
-                //Basis orientation = modelInstance.Orientation;
-                //if (orientation != null && 1 - orientation.Z.DotProduct(Vector.ZAxis) > settings.AngleTolerance)
-                //    modelInstance.ProjectedOnXYWarning(familyInstance);
-
-                //orientation = orientation.ProjectOnXY(settings);
-                //familyInstance.Orient(orientation, settings);
             }
             else
             {
@@ -714,44 +685,6 @@ namespace BH.Revit.Engine.Core
         /****          Private Methods - Others         ****/
         /***************************************************/
 
-        //private static void Orient(this FamilyInstance familyInstance, Basis orientation, RevitSettings settings)
-        //{
-        //    if (orientation == null)
-        //        return;
-
-        //    Document doc = familyInstance.Document;
-        //    XYZ origin = ((LocationPoint)familyInstance.Location).Point;
-
-        //    double angle;
-        //    Autodesk.Revit.DB.Line dir;
-        //    if (1 - Vector.ZAxis.DotProduct(orientation.Z) > settings.AngleTolerance)
-        //    {
-        //        Vector normal;
-        //        if (1 - Math.Abs(Vector.ZAxis.DotProduct(orientation.Z)) > settings.AngleTolerance)
-        //            normal = Vector.ZAxis.CrossProduct(orientation.Z);
-        //        else
-        //            normal = Vector.XAxis;
-
-        //        angle = Vector.ZAxis.SignedAngle(orientation.Z, normal);
-        //        if (Math.Abs(angle) > settings.AngleTolerance)
-        //        {
-        //            dir = Autodesk.Revit.DB.Line.CreateBound(origin, origin + normal.ToRevit());
-        //            ElementTransformUtils.RotateElement(doc, familyInstance.Id, dir, angle);
-        //            doc.Regenerate();
-        //        }
-        //    }
-
-        //    angle = Vector.XAxis.SignedAngle(orientation.X, Vector.ZAxis);
-        //    if (Math.Abs(angle) > settings.AngleTolerance)
-        //    {
-        //        dir = Autodesk.Revit.DB.Line.CreateBound(origin, origin + XYZ.BasisZ);
-        //        ElementTransformUtils.RotateElement(doc, familyInstance.Id, dir, angle);
-        //        doc.Regenerate();
-        //    }
-        //}
-
-        /***************************************************/
-
         private static XYZ ClosestPointOn(this Element element, XYZ refPoint, out Reference reference, XYZ normal = null, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
@@ -849,54 +782,6 @@ namespace BH.Revit.Engine.Core
 
             return Autodesk.Revit.DB.Line.CreateBound(startOnFace, endOnFace);
         }
-
-        /***************************************************/
-
-        //private static Basis ProjectOnXY(this Basis basis, RevitSettings settings)
-        //{
-        //    if (1 - basis.Z.DotProduct(Vector.ZAxis) <= settings.AngleTolerance)
-        //        return basis;
-
-        //    Vector x = new Vector { X = basis.X.X, Y = basis.X.Y };
-        //    Vector y = new Vector { X = basis.Y.X, Y = basis.Y.Y };
-        //    if (x.Length() < settings.DistanceTolerance)
-        //    {
-        //        y = y.Normalise();
-        //        x = y.CrossProduct(Vector.ZAxis);
-        //    }
-        //    else if (y.Length() < settings.DistanceTolerance)
-        //    {
-        //        x = x.Normalise();
-        //        y = Vector.ZAxis.CrossProduct(x);
-        //    }
-        //    else
-        //    {
-        //        x = x.Normalise();
-        //        y = y.Normalise();
-        //    }
-
-        //    return new Basis(x, y, Vector.ZAxis);
-        //}
-
-        /***************************************************/
-
-        //private static XYZ ProjectedX(this ModelInstance modelInstance, RevitSettings settings, out bool projected)
-        //{
-        //    projected = false;
-        //    XYZ xdir = XYZ.BasisX;
-        //    if (modelInstance.Orientation?.X != null)
-        //    {
-        //        Vector x = modelInstance.Orientation.X;
-        //        if (Math.Abs(x.Z) > settings.AngleTolerance)
-        //            projected = true;
-
-        //        Vector newX = new Vector { X = x.X, Y = x.Y };
-        //        if (newX.Length() > settings.DistanceTolerance)
-        //            xdir = newX.ToRevit();
-        //    }
-
-        //    return xdir;
-        //}
 
         /***************************************************/
 
