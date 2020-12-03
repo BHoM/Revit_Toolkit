@@ -64,14 +64,7 @@ namespace BH.Revit.Engine.Core
             BH.Engine.Reflection.Compute.RecordError($"BHoM Object location does not match with the required placement type of Revit family. BHoM Guid: {bHoMObject.BHoM_Guid}, Revit ElementId: {elementType.Id.IntegerValue}");
         }
 
-        ///***************************************************/
-
-        //internal static void FamilyPlacementTypeNotSupportedError(this IInstance instance, FamilySymbol familySymbol)
-        //{
-        //    BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} is not supported. BHoM Guid: {instance.BHoM_Guid}, Revit ElementId: {familySymbol.Id.IntegerValue}");
-        //}
-
-        ///***************************************************/
+        /***************************************************/
 
         internal static void FamilyPlacementTypeDraftingError(this FamilySymbol familySymbol)
         {
@@ -100,18 +93,12 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-
-        //internal static void FamilyPlacementTypeNotSupportedError(this FamilySymbol familySymbol)
-        //{
-        //    BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} is not supported. Revit ElementId: {familySymbol.Id.IntegerValue}");
-        //}
-
-        /***************************************************/
         
         internal static void InvalidTwoLevelLocationError(this FamilySymbol familySymbol)
         {
             BH.Engine.Reflection.Compute.RecordWarning($"Location line of the two-level based element is upside-down, which is not allowed for given family placement type. ElementId: {familySymbol.Id.IntegerValue}");
         }
-        
+
+        /***************************************************/
     }
 }
