@@ -565,7 +565,7 @@ namespace BH.Revit.Engine.Core
 
                 Basis orientation = modelInstance.Orientation;
                 Reference reference;
-                if (orientation != null && 1 - orientation.Z.DotProduct(Vector.ZAxis) > settings.AngleTolerance)
+                if (orientation != null && 1 - Math.Abs(orientation.Z.DotProduct(Vector.ZAxis)) > settings.AngleTolerance)
                 {
                     //TODO: take it out to a separate Create method, do renaming
                     Transform transform = orientation.ToRevit();
