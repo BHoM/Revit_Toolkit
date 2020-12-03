@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
             SectionProfile sectionProfile = revitCableTray.CableTraySectionProfile(settings);
 
             // Cable Tray section property
-            return BH.Engine.MEP.Create.CableTraySectionProperty(new CableTrayMaterial(), sectionProfile);
+            return BH.Engine.MEP.Create.CableTraySectionProperty(new oM.Physical.Materials.Material(), sectionProfile);
         }
 
         /***************************************************/
