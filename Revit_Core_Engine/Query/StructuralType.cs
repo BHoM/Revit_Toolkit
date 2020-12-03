@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
 
         public static StructuralType StructuralType(this BuiltInCategory category)
         {
-            StructuralType structuralType = Autodesk.Revit.DB.Structure.StructuralType.UnknownFraming;
+            StructuralType structuralType = Autodesk.Revit.DB.Structure.StructuralType.NonStructural;
             if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains(category))
                 structuralType = Autodesk.Revit.DB.Structure.StructuralType.Column;
             else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains(category))
