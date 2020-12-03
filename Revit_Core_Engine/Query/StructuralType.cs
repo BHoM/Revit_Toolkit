@@ -21,26 +21,28 @@
  */
 
 using Autodesk.Revit.DB;
-using System.Collections.Generic;
-using System.Linq;
+using Autodesk.Revit.DB.Structure;
+using System;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public static oM.Geometry.Basis BasisFromRevit(this Transform transform)
+        public static StructuralType StructuralType(this BuiltInCategory category)
         {
-            if (transform == null)
-                return null;
+            StructuralType structuralType = Autodesk.Revit.DB.Structure.StructuralType.UnknownFraming;
+            if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains(category))
+                structuralType = Autodesk.Revit.DB.Structure.StructuralType.Column;
+            else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains(category))
+                structuralType = Autodesk.Revit.DB.Structure.StructuralType.Brace;
+            else if (typeof(BH.oM.Physical.Elements.IFramingElement).BuiltInCategories().Contains(category))
+                structuralType = Autodesk.Revit.DB.Structure.StructuralType.Beam;
 
-            BH.oM.Geometry.Vector x = new oM.Geometry.Vector { X = transform.BasisX.X, Y = transform.BasisX.Y, Z = transform.BasisX.Z };
-            BH.oM.Geometry.Vector y = new oM.Geometry.Vector { X = transform.BasisY.X, Y = transform.BasisY.Y, Z = transform.BasisY.Z };
-            BH.oM.Geometry.Vector z = new oM.Geometry.Vector { X = transform.BasisZ.X, Y = transform.BasisZ.Y, Z = transform.BasisZ.Z };
-            return new oM.Geometry.Basis(x, y, z);
+            return structuralType;
         }
 
         /***************************************************/

@@ -214,336 +214,340 @@ namespace BH.Revit.Engine.Core
 
         private static Element ToRevitElement(this ModelInstance modelInstance, FamilySymbol familySymbol, RevitSettings settings)
         {
-            switch (familySymbol.Family.FamilyPlacementType)
-            {
-                case FamilyPlacementType.OneLevelBased:
-                case FamilyPlacementType.OneLevelBasedHosted:
-                    return modelInstance.ToRevitElement_OneLevelBased(familySymbol, settings);
-                case FamilyPlacementType.TwoLevelsBased:
-                    return modelInstance.ToRevitElement_TwoLevelsBased(familySymbol, settings);
-                case FamilyPlacementType.WorkPlaneBased:
-                    return modelInstance.ToRevitElement_WorkPlaneBased(familySymbol, settings);
-                case FamilyPlacementType.CurveBased:
-                    return modelInstance.ToRevitElement_CurveBased(familySymbol, settings);
-                case FamilyPlacementType.CurveDrivenStructural:
-                    return modelInstance.ToRevitElement_CurveDrivenStructural(familySymbol, settings);
-                case FamilyPlacementType.ViewBased:
-                case FamilyPlacementType.CurveBasedDetail:
-                    Compute.FamilyPlacementTypeDraftingError(modelInstance, familySymbol);
-                    return null;
-                default:
-                    Compute.FamilyPlacementTypeNotSupportedError(modelInstance, familySymbol);
-                    return null;
-            }
-        }
+            //switch (familySymbol.Family.FamilyPlacementType)
+            //{
+            //    case FamilyPlacementType.OneLevelBased:
+            //    case FamilyPlacementType.OneLevelBasedHosted:
+            //        return modelInstance.ToRevitElement_OneLevelBased(familySymbol, settings);
+            //    case FamilyPlacementType.TwoLevelsBased:
+            //        return modelInstance.ToRevitElement_TwoLevelsBased(familySymbol, settings);
+            //    case FamilyPlacementType.WorkPlaneBased:
+            //        return modelInstance.ToRevitElement_WorkPlaneBased(familySymbol, settings);
+            //    case FamilyPlacementType.CurveBased:
+            //        return modelInstance.ToRevitElement_CurveBased(familySymbol, settings);
+            //    case FamilyPlacementType.CurveDrivenStructural:
+            //        return modelInstance.ToRevitElement_CurveDrivenStructural(familySymbol, settings);
+            //    case FamilyPlacementType.ViewBased:
+            //    case FamilyPlacementType.CurveBasedDetail:
+            //        Compute.FamilyPlacementTypeDraftingError(modelInstance, familySymbol);
+            //        return null;
+            //    default:
+            //        Compute.FamilyPlacementTypeNotSupportedError(modelInstance, familySymbol);
+            //        return null;
+            //}
 
-        /***************************************************/
-
-        private static Element ToRevitElement_CurveBased(this ModelInstance modelInstance, FamilySymbol familySymbol, RevitSettings settings)
-        {
-            if (familySymbol == null || modelInstance == null)
-                return null;
-
-            if (!(modelInstance.Location is ICurve))
-            {
-                Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
-                return null;
-            }
-
-            Document document = familySymbol.Document;
-
-            ICurve curve = (ICurve)modelInstance.Location;
-
-            Level level = familySymbol.Document.LevelBelow(curve, settings);
-            if (level == null)
-                return null;
-
-            Curve revitCurve = curve.IToRevit();
-            if (revitCurve == null)
-                return null;
-
-            FamilyInstance familyInstance = null;
-            if (modelInstance.Host == -1)
-                familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, StructuralType.NonStructural);
+            Document doc = familySymbol.Document;
+            if (modelInstance.Location is BH.oM.Geometry.Point)
+                return Create.FamilyInstance(doc, familySymbol, ((BH.oM.Geometry.Point)modelInstance.Location).ToRevit(), modelInstance.Orientation.ToRevit(), doc.GetElement(new ElementId(modelInstance.Host)), settings);
+            if (modelInstance.Location is ICurve)
+                return Create.FamilyInstance(doc, familySymbol, ((ICurve)modelInstance.Location).IToRevit(), doc.GetElement(new ElementId(modelInstance.Host)), settings);
             else
             {
-                if (revitCurve is Autodesk.Revit.DB.Line)
-                {
-                    Element host = document.GetElement(new ElementId(modelInstance.Host));
-                    if (host != null)
-                    {
-                        Reference reference;
-                        Autodesk.Revit.DB.Line location = host.ClosestLineOn((Autodesk.Revit.DB.Line)revitCurve, out reference);
-                        if (location != null && reference != null)
-                            familyInstance = document.Create.NewFamilyInstance(reference, location, familySymbol);
-                    }
-                }
-                else
-                {
-                    Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
-                    return null;
-                }
+                BH.Engine.Reflection.Compute.RecordError($"A family could not be created based on the given ModelInstance because its location was neither a point nor a curve. BHoM_Guid: {modelInstance.BHoM_Guid}");
+                return null;
             }
-
-            return familyInstance;
         }
 
         /***************************************************/
 
-        private static Element ToRevitElement_OneLevelBased(this ModelInstance modelInstance, FamilySymbol familySymbol, RevitSettings settings)
-        {
-            if (familySymbol == null || modelInstance == null)
-                return null;
+        //private static Element ToRevitElement_CurveBased(this ModelInstance modelInstance, FamilySymbol familySymbol, RevitSettings settings)
+        //{
+        //    if (familySymbol == null || modelInstance == null)
+        //        return null;
 
-            if (!(modelInstance.Location is oM.Geometry.Point))
-            {
-                Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
-                return null;
-            }
+        //    if (!(modelInstance.Location is ICurve))
+        //    {
+        //        Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
+        //        return null;
+        //    }
 
-            Document document = familySymbol.Document;
+        //    Document document = familySymbol.Document;
 
-            oM.Geometry.Point point = (oM.Geometry.Point)modelInstance.Location;
-            XYZ xyz = point.ToRevit();
-            FamilyInstance familyInstance = null;
-            if (modelInstance.Host == -1)
-            {
-                Level level = document.LevelBelow(point, settings);
-                if (level == null)
-                    return null;
+        //    ICurve curve = (ICurve)modelInstance.Location;
+
+        //    Level level = familySymbol.Document.LevelBelow(curve, settings);
+        //    if (level == null)
+        //        return null;
+
+        //    Curve revitCurve = curve.IToRevit();
+        //    if (revitCurve == null)
+        //        return null;
+
+        //    FamilyInstance familyInstance = null;
+        //    if (modelInstance.Host == -1)
+        //        familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, StructuralType.NonStructural);
+        //    else
+        //    {
+        //        if (revitCurve is Autodesk.Revit.DB.Line)
+        //        {
+        //            Element host = document.GetElement(new ElementId(modelInstance.Host));
+        //            if (host != null)
+        //            {
+        //                Reference reference;
+        //                Autodesk.Revit.DB.Line location = host.ClosestLineOn((Autodesk.Revit.DB.Line)revitCurve, out reference);
+        //                if (location != null && reference != null)
+        //                    familyInstance = document.Create.NewFamilyInstance(reference, location, familySymbol);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
+        //            return null;
+        //        }
+        //    }
+
+        //    return familyInstance;
+        //}
+
+        ///***************************************************/
+
+        //private static Element ToRevitElement_OneLevelBased(this ModelInstance modelInstance, FamilySymbol familySymbol, RevitSettings settings)
+        //{
+        //    if (familySymbol == null || modelInstance == null)
+        //        return null;
+
+        //    if (!(modelInstance.Location is oM.Geometry.Point))
+        //    {
+        //        Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
+        //        return null;
+        //    }
+
+        //    Document document = familySymbol.Document;
+
+        //    oM.Geometry.Point point = (oM.Geometry.Point)modelInstance.Location;
+        //    XYZ xyz = point.ToRevit();
+        //    FamilyInstance familyInstance = null;
+        //    if (modelInstance.Host == -1)
+        //    {
+        //        Level level = document.LevelBelow(point, settings);
+        //        if (level == null)
+        //            return null;
                 
-                XYZ xdir = modelInstance.Orientation.ProjectedX(settings).ToRevit();
-                familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, xdir, level, StructuralType.NonStructural);
+        //        XYZ xdir = modelInstance.Orientation.ProjectedX(settings).ToRevit();
+        //        familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, xdir, level, StructuralType.NonStructural);
 
-                if (modelInstance.Orientation?.X != null && Math.Abs(modelInstance.Orientation.X.Z) > settings.AngleTolerance)
-                    modelInstance.ProjectedOnXYWarning(familyInstance);
-            }
-            else
-            {
-                Element host = document.GetElement(new ElementId(modelInstance.Host));
-                if (host != null)
-                {
-                    if (modelInstance.Orientation?.X == null)
-                        familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, host, StructuralType.NonStructural);
-                    else
-                    {
-                        XYZ refDir = modelInstance.Orientation.X.ToRevit();
-                        familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, refDir, host, StructuralType.NonStructural);
-                    }
-                }
-                else
-                {
-                    //TODO: host not found error - relevant to other methods, make em uniform!
-                }
-            }
+        //        if (modelInstance.Orientation?.X != null && Math.Abs(modelInstance.Orientation.X.Z) > settings.AngleTolerance)
+        //            modelInstance.ProjectedOnXYWarning(familyInstance);
+        //    }
+        //    else
+        //    {
+        //        Element host = document.GetElement(new ElementId(modelInstance.Host));
+        //        if (host != null)
+        //        {
+        //            if (modelInstance.Orientation?.X == null)
+        //                familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, host, StructuralType.NonStructural);
+        //            else
+        //            {
+        //                XYZ refDir = modelInstance.Orientation.X.ToRevit();
+        //                familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, refDir, host, StructuralType.NonStructural);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            //TODO: host not found error - relevant to other methods, make em uniform!
+        //        }
+        //    }
 
-            return familyInstance;
-        }
+        //    return familyInstance;
+        //}
 
-        /***************************************************/
+        ///***************************************************/
 
-        private static Element ToRevitElement_CurveDrivenStructural(this ModelInstance modelInstance, FamilySymbol familySymbol, RevitSettings settings)
-        {
-            if (familySymbol == null || modelInstance == null)
-                return null;
+        //private static Element ToRevitElement_CurveDrivenStructural(this ModelInstance modelInstance, FamilySymbol familySymbol, RevitSettings settings)
+        //{
+        //    if (familySymbol == null || modelInstance == null)
+        //        return null;
 
-            if (!(modelInstance.Location is ICurve))
-            {
-                Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
-                return null;
-            }
+        //    if (!(modelInstance.Location is ICurve))
+        //    {
+        //        Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
+        //        return null;
+        //    }
 
-            StructuralType structuralType = StructuralType.NonStructural;
+        //    StructuralType structuralType = StructuralType.NonStructural;
 
-            BuiltInCategory builtInCategory = (BuiltInCategory)familySymbol.Category.Id.IntegerValue;
-            switch (builtInCategory)
-            {
-                case BuiltInCategory.OST_StructuralColumns:
-                    structuralType = StructuralType.Column;
-                    break;
-                case BuiltInCategory.OST_StructuralFraming:
-                    structuralType = StructuralType.Beam;
-                    break;
-            }
+        //    BuiltInCategory builtInCategory = (BuiltInCategory)familySymbol.Category.Id.IntegerValue;
+        //    switch (builtInCategory)
+        //    {
+        //        case BuiltInCategory.OST_StructuralColumns:
+        //            structuralType = StructuralType.Column;
+        //            break;
+        //        case BuiltInCategory.OST_StructuralFraming:
+        //            structuralType = StructuralType.Beam;
+        //            break;
+        //    }
 
-            if (structuralType == StructuralType.NonStructural)
-                return null;
+        //    if (structuralType == StructuralType.NonStructural)
+        //        return null;
 
-            Document document = familySymbol.Document;
+        //    Document document = familySymbol.Document;
 
-            ICurve curve = (ICurve)modelInstance.Location;
+        //    ICurve curve = (ICurve)modelInstance.Location;
 
-            Level level = document.LevelBelow(curve, settings);
-            if (level == null)
-                return null;
+        //    Level level = document.LevelBelow(curve, settings);
+        //    if (level == null)
+        //        return null;
 
-            Curve revitCurve = curve.IToRevit();
-            return document.Create.NewFamilyInstance(revitCurve, familySymbol, level, structuralType);
-        }
+        //    Curve revitCurve = curve.IToRevit();
+        //    return document.Create.NewFamilyInstance(revitCurve, familySymbol, level, structuralType);
+        //}
 
-        /***************************************************/
+        ///***************************************************/
 
-        private static Element ToRevitElement_TwoLevelsBased(this ModelInstance modelInstance, FamilySymbol familySymbol, RevitSettings settings)
-        {
-            if (familySymbol == null || modelInstance == null)
-                return null;
+        //private static Element ToRevitElement_TwoLevelsBased(this ModelInstance modelInstance, FamilySymbol familySymbol, RevitSettings settings)
+        //{
+        //    if (familySymbol == null || modelInstance == null)
+        //        return null;
             
-            BuiltInCategory builtInCategory = (BuiltInCategory)familySymbol.Category.Id.IntegerValue;
+        //    BuiltInCategory builtInCategory = (BuiltInCategory)familySymbol.Category.Id.IntegerValue;
 
-            StructuralType structuralType = StructuralType.NonStructural;
-            if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains(builtInCategory))
-                structuralType = StructuralType.Column;
-            else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains(builtInCategory))
-                structuralType = StructuralType.Brace;
-            else if (typeof(BH.oM.Physical.Elements.IFramingElement).BuiltInCategories().Contains(builtInCategory))
-                structuralType = StructuralType.Beam;
+        //    StructuralType structuralType = StructuralType.NonStructural;
+        //    if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains(builtInCategory))
+        //        structuralType = StructuralType.Column;
+        //    else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains(builtInCategory))
+        //        structuralType = StructuralType.Brace;
+        //    else if (typeof(BH.oM.Physical.Elements.IFramingElement).BuiltInCategories().Contains(builtInCategory))
+        //        structuralType = StructuralType.Beam;
 
-            Document document = familySymbol.Document;
+        //    Document document = familySymbol.Document;
 
-            if (modelInstance.Location is oM.Geometry.Point)
-            {
-                oM.Geometry.Point point = (oM.Geometry.Point)modelInstance.Location;
+        //    if (modelInstance.Location is oM.Geometry.Point)
+        //    {
+        //        oM.Geometry.Point point = (oM.Geometry.Point)modelInstance.Location;
 
-                Level level = document.LevelBelow(point, settings);
-                if (level == null)
-                    return null;
+        //        Level level = document.LevelBelow(point, settings);
+        //        if (level == null)
+        //            return null;
 
-                XYZ xyz = point.ToRevit();
-                FamilyInstance familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, level, structuralType);
+        //        XYZ xyz = point.ToRevit();
+        //        FamilyInstance familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, level, structuralType);
 
-                Vector x = modelInstance.Orientation?.X;
-                if (x != null)
-                {
-                    if (Math.Abs(x.Z) > settings.AngleTolerance)
-                        modelInstance.ProjectedOnXYWarning(familyInstance);
+        //        Vector x = modelInstance.Orientation?.X;
+        //        if (x != null)
+        //        {
+        //            if (Math.Abs(x.Z) > settings.AngleTolerance)
+        //                modelInstance.ProjectedOnXYWarning(familyInstance);
 
-                    Vector xdir = modelInstance.Orientation.ProjectedX(settings);
-                    double angle = Vector.XAxis.SignedAngle(xdir, Vector.ZAxis);
-                    if (Math.Abs(angle) > settings.AngleTolerance)
-                    {
-                        Autodesk.Revit.DB.Line dir = Autodesk.Revit.DB.Line.CreateBound(xyz, xyz + XYZ.BasisZ);
-                        ElementTransformUtils.RotateElement(document, familyInstance.Id, dir, angle);
-                        document.Regenerate();
-                    }
-                }
+        //            Vector xdir = modelInstance.Orientation.ProjectedX(settings);
+        //            double angle = Vector.XAxis.SignedAngle(xdir, Vector.ZAxis);
+        //            if (Math.Abs(angle) > settings.AngleTolerance)
+        //            {
+        //                Autodesk.Revit.DB.Line dir = Autodesk.Revit.DB.Line.CreateBound(xyz, xyz + XYZ.BasisZ);
+        //                ElementTransformUtils.RotateElement(document, familyInstance.Id, dir, angle);
+        //                document.Regenerate();
+        //            }
+        //        }
 
-                return familyInstance;
-            }
-            else if (modelInstance.Location is oM.Geometry.Line)
-            {
-                oM.Geometry.Line line = (oM.Geometry.Line)modelInstance.Location;
-                if (line.Start.Z > line.End.Z)
-                {
-                    Compute.InvalidTwoLevelLocationWarning(modelInstance, familySymbol);
-                    return null;
-                }
+        //        return familyInstance;
+        //    }
+        //    else if (modelInstance.Location is oM.Geometry.Line)
+        //    {
+        //        oM.Geometry.Line line = (oM.Geometry.Line)modelInstance.Location;
+        //        if (line.Start.Z > line.End.Z)
+        //        {
+        //            Compute.InvalidTwoLevelLocationWarning(modelInstance, familySymbol);
+        //            return null;
+        //        }
 
-                Level level = document.LevelBelow(line.Start, settings);
-                if (level == null)
-                    return null;
+        //        Level level = document.LevelBelow(line.Start, settings);
+        //        if (level == null)
+        //            return null;
 
-                Curve curve = line.ToRevit();
-                return document.Create.NewFamilyInstance(curve, familySymbol, level, structuralType);
-            }
-            else
-            {
-                Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
-                return null;
-            }
-        }
+        //        Curve curve = line.ToRevit();
+        //        return document.Create.NewFamilyInstance(curve, familySymbol, level, structuralType);
+        //    }
+        //    else
+        //    {
+        //        Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
+        //        return null;
+        //    }
+        //}
 
-        /***************************************************/
+        ///***************************************************/
 
-        private static Element ToRevitElement_WorkPlaneBased(this ModelInstance modelInstance, FamilySymbol familySymbol, RevitSettings settings)
-        {
-            if (familySymbol == null || modelInstance == null)
-                return null;
+        //private static Element ToRevitElement_WorkPlaneBased(this ModelInstance modelInstance, FamilySymbol familySymbol, RevitSettings settings)
+        //{
+        //    if (familySymbol == null || modelInstance == null)
+        //        return null;
 
-            Document document = familySymbol.Document;
+        //    Document document = familySymbol.Document;
 
-            FamilyInstance familyInstance = null;
-            if (modelInstance.Host != -1)
-            {
-                Element host = document.GetElement(new ElementId(modelInstance.Host));
-                if (host == null)
-                    return null;
+        //    FamilyInstance familyInstance = null;
+        //    if (modelInstance.Host != -1)
+        //    {
+        //        Element host = document.GetElement(new ElementId(modelInstance.Host));
+        //        if (host == null)
+        //            return null;
 
-                if (modelInstance.Location is BH.oM.Geometry.Point)
-                {
-                    XYZ xyz = ((BH.oM.Geometry.Point)modelInstance.Location).ToRevit();
-                    Reference reference;
-                    XYZ location = host.ClosestPointOn(xyz, out reference);
-                    if (location == null || reference == null)
-                        return null;
+        //        if (modelInstance.Location is BH.oM.Geometry.Point)
+        //        {
+        //            XYZ xyz = ((BH.oM.Geometry.Point)modelInstance.Location).ToRevit();
+        //            Reference reference;
+        //            XYZ location = host.ClosestPointOn(xyz, out reference);
+        //            if (location == null || reference == null)
+        //                return null;
 
-                    XYZ refDir = XYZ.BasisX;
-                    if (modelInstance.Orientation?.X != null)
-                    {
-                        Basis orientation = modelInstance.Orientation;
-                        refDir = orientation.X.ToRevit();
-                        if (orientation.Z.DotProduct(orientation.X.CrossProduct(orientation.Y)) < 0)
-                            refDir = -refDir;
-                    }
+        //            XYZ refDir = XYZ.BasisX;
+        //            if (modelInstance.Orientation?.X != null)
+        //            {
+        //                Basis orientation = modelInstance.Orientation;
+        //                refDir = orientation.X.ToRevit();
+        //                if (orientation.Z.DotProduct(orientation.X.CrossProduct(orientation.Y)) < 0)
+        //                    refDir = -refDir;
+        //            }
 
-                    familyInstance = document.Create.NewFamilyInstance(reference, location, refDir, familySymbol);
-                }
-                else if (modelInstance.Location is BH.oM.Geometry.Line)
-                {
-                    Autodesk.Revit.DB.Line revitLine = ((BH.oM.Geometry.Line)modelInstance.Location).ToRevit();
-                    Reference reference;
-                    Autodesk.Revit.DB.Line location = host.ClosestLineOn(revitLine, out reference);
-                    if (location == null || reference == null)
-                        return null;
+        //            familyInstance = document.Create.NewFamilyInstance(reference, location, refDir, familySymbol);
+        //        }
+        //        else if (modelInstance.Location is BH.oM.Geometry.Line)
+        //        {
+        //            Autodesk.Revit.DB.Line revitLine = ((BH.oM.Geometry.Line)modelInstance.Location).ToRevit();
+        //            Reference reference;
+        //            Autodesk.Revit.DB.Line location = host.ClosestLineOn(revitLine, out reference);
+        //            if (location == null || reference == null)
+        //                return null;
 
-                    familyInstance = document.Create.NewFamilyInstance(reference, location, familySymbol);
-                }
-                else
-                {
-                    Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
-                    return null;
-                }
-            }
-            else
-            {
-                if (!(modelInstance.Location is oM.Geometry.Point))
-                {
-                    Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
-                    return null;
-                }
+        //            familyInstance = document.Create.NewFamilyInstance(reference, location, familySymbol);
+        //        }
+        //        else
+        //        {
+        //            Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
+        //            return null;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (!(modelInstance.Location is oM.Geometry.Point))
+        //        {
+        //            Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
+        //            return null;
+        //        }
                 
-                oM.Geometry.Point point = (oM.Geometry.Point)modelInstance.Location;
-                XYZ xyz = point.ToRevit();
+        //        oM.Geometry.Point point = (oM.Geometry.Point)modelInstance.Location;
+        //        XYZ xyz = point.ToRevit();
 
-                Basis orientation = modelInstance.Orientation;
-                Reference reference;
-                if (orientation != null && 1 - Math.Abs(orientation.Z.DotProduct(Vector.ZAxis)) > settings.AngleTolerance)
-                {
-                    //TODO: take it out to a separate Create method, do renaming
-                    Transform transform = orientation.ToRevit();
-                    XYZ dir1 = transform.BasisZ.CrossProduct(XYZ.BasisZ);
-                    XYZ dir2 = transform.BasisZ.CrossProduct(dir1);
-                    ReferencePlane rp = document.Create.NewReferencePlane(xyz, xyz + dir1, dir2, document.ActiveView);
-                    if (rp.Normal.DotProduct(transform.BasisZ) < 0)
-                        rp.Flip();
+        //        Basis orientation = modelInstance.Orientation;
+        //        Reference reference;
+        //        if (orientation != null && 1 - Math.Abs(orientation.Z.DotProduct(Vector.ZAxis)) > settings.AngleTolerance)
+        //        {
+        //            ReferencePlane rp = Create.ReferencePlane(document, point, orientation);
+        //            reference = rp?.GetReference();
+        //        }
+        //        else
+        //            reference = document.LevelBelow(point, settings).GetPlaneReference();
 
-                    reference = rp.GetReference();
-                }
-                else
-                    reference = document.LevelBelow(point, settings).GetPlaneReference();
+        //        XYZ refDir = XYZ.BasisX;
+        //        if (orientation?.X != null)
+        //        {
+        //            refDir = orientation.X.ToRevit();
+        //            if (orientation.Z.DotProduct(orientation.X.CrossProduct(orientation.Y)) < 0)
+        //                refDir = -refDir;
+        //        }
 
-                XYZ refDir = XYZ.BasisX;
-                if (orientation?.X != null)
-                {
-                    refDir = orientation.X.ToRevit();
-                    if (orientation.Z.DotProduct(orientation.X.CrossProduct(orientation.Y)) < 0)
-                        refDir = -refDir;
-                }
+        //        familyInstance = document.Create.NewFamilyInstance(reference, xyz, refDir, familySymbol);
+        //    }
 
-                familyInstance = document.Create.NewFamilyInstance(reference, xyz, refDir, familySymbol);
-            }
-
-            return familyInstance;
-        }
+        //    return familyInstance;
+        //}
 
 
         /***************************************************/
@@ -606,61 +610,71 @@ namespace BH.Revit.Engine.Core
 
         private static Element ToRevitElement(this DraftingInstance draftingInstance, FamilySymbol familySymbol, View view, RevitSettings settings)
         {
-            IGeometry location = draftingInstance.Location;
-            
-            switch (familySymbol.Family.FamilyPlacementType)
-            {
-                case FamilyPlacementType.ViewBased:
-                    if (location is oM.Geometry.Point)
-                    {
-                        XYZ xyz = ((oM.Geometry.Point)location).ToRevit();
-                        FamilyInstance familyInstance = view.Document.Create.NewFamilyInstance(xyz, familySymbol, view);
+            if (draftingInstance?.Location == null)
+                return null;
 
-                        if (draftingInstance.Orientation != null)
-                        {
-                            XYZ z = draftingInstance.Orientation.Z.ToRevit().Normalize();
-                            if (1 - Math.Abs(view.ViewDirection.DotProduct(z)) > settings.AngleTolerance)
-                                draftingInstance.ProjectedOnViewPlaneWarning(familyInstance);
+            if (draftingInstance.Location is ICurve)
+                return Create.FamilyInstance(familySymbol.Document, familySymbol, ((ICurve)draftingInstance.Location).IToRevit(), view, settings);
+            else if (draftingInstance.Location is BH.oM.Geometry.Point)
+                return Create.FamilyInstance(familySymbol.Document, familySymbol, ((BH.oM.Geometry.Point)draftingInstance.Location).ToRevit(), draftingInstance.Orientation.ToRevit(), view, settings);
+            else
+                return null;
 
-                            XYZ x = draftingInstance.Orientation.X.ToRevit().Normalize();
-                            double angle;
-                            if (1 - Math.Abs(view.ViewDirection.DotProduct(x)) > settings.AngleTolerance)
-                            {
-                                XYZ xDir = draftingInstance.Orientation.Y.ToRevit().CrossProduct(view.ViewDirection);
-                                angle = view.RightDirection.AngleOnPlaneTo(xDir, view.ViewDirection);
-                            }
-                            else
-                            {
-                                XYZ yDir = view.ViewDirection.CrossProduct(draftingInstance.Orientation.X.ToRevit());
-                                angle = view.UpDirection.AngleOnPlaneTo(yDir, view.ViewDirection);
-                            }
+            //IGeometry location = draftingInstance.Location;
 
-                            Autodesk.Revit.DB.Line dir = Autodesk.Revit.DB.Line.CreateBound(xyz, xyz + view.ViewDirection);
-                            ElementTransformUtils.RotateElement(view.Document, familyInstance.Id, dir, angle);
-                        }
+            //switch (familySymbol.Family.FamilyPlacementType)
+            //{
+            //    case FamilyPlacementType.ViewBased:
+            //        if (location is oM.Geometry.Point)
+            //        {
+            //            XYZ xyz = ((oM.Geometry.Point)location).ToRevit();
+            //            FamilyInstance familyInstance = view.Document.Create.NewFamilyInstance(xyz, familySymbol, view);
 
-                        return familyInstance;
-                    }
-                    else
-                    {
-                        Compute.InvalidFamilyPlacementTypeError(draftingInstance, familySymbol);
-                        return null;
-                    }
-                case FamilyPlacementType.CurveBasedDetail:
-                    if (location is oM.Geometry.Line)
-                    {
-                        Autodesk.Revit.DB.Line revitLine = ((oM.Geometry.Line)location).ToRevit();
-                        return view.Document.Create.NewFamilyInstance(revitLine, familySymbol, view);
-                    }
-                    else
-                    {
-                        Compute.InvalidFamilyPlacementTypeError(draftingInstance, familySymbol);
-                        return null;
-                    }
-                default:
-                    Compute.FamilyPlacementTypeModelError(draftingInstance, familySymbol);
-                    return null;
-            }
+            //            if (draftingInstance.Orientation != null)
+            //            {
+            //                XYZ z = draftingInstance.Orientation.Z.ToRevit().Normalize();
+            //                if (1 - Math.Abs(view.ViewDirection.DotProduct(z)) > settings.AngleTolerance)
+            //                    draftingInstance.ProjectedOnViewPlaneWarning(familyInstance);
+
+            //                XYZ x = draftingInstance.Orientation.X.ToRevit().Normalize();
+            //                double angle;
+            //                if (1 - Math.Abs(view.ViewDirection.DotProduct(x)) > settings.AngleTolerance)
+            //                {
+            //                    XYZ xDir = draftingInstance.Orientation.Y.ToRevit().CrossProduct(view.ViewDirection);
+            //                    angle = view.RightDirection.AngleOnPlaneTo(xDir, view.ViewDirection);
+            //                }
+            //                else
+            //                {
+            //                    XYZ yDir = view.ViewDirection.CrossProduct(draftingInstance.Orientation.X.ToRevit());
+            //                    angle = view.UpDirection.AngleOnPlaneTo(yDir, view.ViewDirection);
+            //                }
+
+            //                Autodesk.Revit.DB.Line dir = Autodesk.Revit.DB.Line.CreateBound(xyz, xyz + view.ViewDirection);
+            //                ElementTransformUtils.RotateElement(view.Document, familyInstance.Id, dir, angle);
+            //            }
+
+            //            return familyInstance;
+            //        }
+            //        else
+            //        {
+            //            Compute.InvalidFamilyPlacementTypeError(draftingInstance, familySymbol);
+            //            return null;
+            //        }
+            //    case FamilyPlacementType.CurveBasedDetail:
+            //        if (location is oM.Geometry.Line)
+            //        {
+            //            Autodesk.Revit.DB.Line revitLine = ((oM.Geometry.Line)location).ToRevit();
+            //            return view.Document.Create.NewFamilyInstance(revitLine, familySymbol, view);
+            //        }
+            //        else
+            //        {
+            //            Compute.InvalidFamilyPlacementTypeError(draftingInstance, familySymbol);
+            //            return null;
+            //        }
+            //    default:
+            //        Compute.FamilyPlacementTypeModelError(draftingInstance, familySymbol);
+            //        return null;
+            //}
         }
 
 
@@ -685,119 +699,119 @@ namespace BH.Revit.Engine.Core
         /****          Private Methods - Others         ****/
         /***************************************************/
 
-        private static XYZ ClosestPointOn(this Element element, XYZ refPoint, out Reference reference, XYZ normal = null, RevitSettings settings = null)
-        {
-            settings = settings.DefaultIfNull();
-            normal = normal?.Normalize();
+        //private static XYZ ClosestPointOn(this Element element, XYZ refPoint, out Reference reference, XYZ normal = null, RevitSettings settings = null)
+        //{
+        //    settings = settings.DefaultIfNull();
+        //    normal = normal?.Normalize();
 
-            double minDist = double.MaxValue;
-            reference = null;
+        //    double minDist = double.MaxValue;
+        //    reference = null;
 
-            Options opt = new Options();
-            opt.ComputeReferences = true;
-            List<Autodesk.Revit.DB.Face> faces = element.Faces(opt);
-            IntersectionResult ir;
-            XYZ pointOnFace = null;
+        //    Options opt = new Options();
+        //    opt.ComputeReferences = true;
+        //    List<Autodesk.Revit.DB.Face> faces = element.Faces(opt);
+        //    IntersectionResult ir;
+        //    XYZ pointOnFace = null;
 
-            foreach (Autodesk.Revit.DB.Face face in faces)
-            {
-                ir = face.Project(refPoint);
-                if (ir == null || ir.XYZPoint == null)
-                    continue;
+        //    foreach (Autodesk.Revit.DB.Face face in faces)
+        //    {
+        //        ir = face.Project(refPoint);
+        //        if (ir == null || ir.XYZPoint == null)
+        //            continue;
 
-                double dist = ir.Distance;
-                if (normal != null)
-                {
-                    double normalFactor = normal.DotProduct(face.ComputeNormal(ir.UVPoint));
-                    if (normalFactor < settings.AngleTolerance)
-                        continue;
+        //        double dist = ir.Distance;
+        //        if (normal != null)
+        //        {
+        //            double normalFactor = normal.DotProduct(face.ComputeNormal(ir.UVPoint));
+        //            if (normalFactor < settings.AngleTolerance)
+        //                continue;
 
-                    dist /= normalFactor;
-                }
+        //            dist /= normalFactor;
+        //        }
 
-                if (dist < minDist)
-                {
-                    minDist = dist;
-                    pointOnFace = ir.XYZPoint;
-                    reference = face.Reference;
-                }
-            }
+        //        if (dist < minDist)
+        //        {
+        //            minDist = dist;
+        //            pointOnFace = ir.XYZPoint;
+        //            reference = face.Reference;
+        //        }
+        //    }
 
-            if (pointOnFace == null || reference == null)
-                return null;
+        //    if (pointOnFace == null || reference == null)
+        //        return null;
             
-            if (element is FamilyInstance && !((FamilyInstance)element).HasModifiedGeometry())
-            {
-                string instRef = ((FamilyInstance)element).UniqueId + ":0:INSTANCE:" + reference.ConvertToStableRepresentation(element.Document);
-                reference = Reference.ParseFromStableRepresentation(element.Document, instRef);
-            }
+        //    if (element is FamilyInstance && !((FamilyInstance)element).HasModifiedGeometry())
+        //    {
+        //        string instRef = ((FamilyInstance)element).UniqueId + ":0:INSTANCE:" + reference.ConvertToStableRepresentation(element.Document);
+        //        reference = Reference.ParseFromStableRepresentation(element.Document, instRef);
+        //    }
             
-            return pointOnFace;
-        }
+        //    return pointOnFace;
+        //}
 
-        /***************************************************/
+        ///***************************************************/
 
-        private static Autodesk.Revit.DB.Line ClosestLineOn(this Element element, Autodesk.Revit.DB.Line refLine, out Reference reference)
-        {
-            double minDist = double.MaxValue;
-            reference = null;
+        //private static Autodesk.Revit.DB.Line ClosestLineOn(this Element element, Autodesk.Revit.DB.Line refLine, out Reference reference)
+        //{
+        //    double minDist = double.MaxValue;
+        //    reference = null;
             
-            Options opt = new Options();
-            opt.ComputeReferences = true;
-            List<Autodesk.Revit.DB.Face> faces = element.Faces(opt);
-            IntersectionResult ir1, ir2;
-            XYZ start = refLine.GetEndPoint(0);
-            XYZ end = refLine.GetEndPoint(1);
-            XYZ startOnFace = null;
-            XYZ endOnFace = null;
+        //    Options opt = new Options();
+        //    opt.ComputeReferences = true;
+        //    List<Autodesk.Revit.DB.Face> faces = element.Faces(opt);
+        //    IntersectionResult ir1, ir2;
+        //    XYZ start = refLine.GetEndPoint(0);
+        //    XYZ end = refLine.GetEndPoint(1);
+        //    XYZ startOnFace = null;
+        //    XYZ endOnFace = null;
 
-            foreach (Autodesk.Revit.DB.Face face in faces)
-            {
-                if (!(face is PlanarFace))
-                    continue;
+        //    foreach (Autodesk.Revit.DB.Face face in faces)
+        //    {
+        //        if (!(face is PlanarFace))
+        //            continue;
 
-                ir1 = face.Project(start);
-                ir2 = face.Project(end);
-                if (ir1?.XYZPoint == null || ir2?.XYZPoint == null)
-                    continue;
+        //        ir1 = face.Project(start);
+        //        ir2 = face.Project(end);
+        //        if (ir1?.XYZPoint == null || ir2?.XYZPoint == null)
+        //            continue;
 
-                double totDist = ir1.Distance + ir2.Distance;
-                if (totDist < minDist)
-                {
-                    minDist = totDist;
-                    startOnFace = ir1.XYZPoint;
-                    endOnFace = ir2.XYZPoint;
-                    reference = face.Reference;
-                }
-            }
+        //        double totDist = ir1.Distance + ir2.Distance;
+        //        if (totDist < minDist)
+        //        {
+        //            minDist = totDist;
+        //            startOnFace = ir1.XYZPoint;
+        //            endOnFace = ir2.XYZPoint;
+        //            reference = face.Reference;
+        //        }
+        //    }
 
-            if (startOnFace == null || endOnFace == null || reference == null)
-                return null;
+        //    if (startOnFace == null || endOnFace == null || reference == null)
+        //        return null;
 
-            if (element is FamilyInstance && !((FamilyInstance)element).HasModifiedGeometry())
-            {
-                string instRef = ((FamilyInstance)element).UniqueId + ":0:INSTANCE:" + reference.ConvertToStableRepresentation(element.Document);
-                reference = Reference.ParseFromStableRepresentation(element.Document, instRef);
-            }
+        //    if (element is FamilyInstance && !((FamilyInstance)element).HasModifiedGeometry())
+        //    {
+        //        string instRef = ((FamilyInstance)element).UniqueId + ":0:INSTANCE:" + reference.ConvertToStableRepresentation(element.Document);
+        //        reference = Reference.ParseFromStableRepresentation(element.Document, instRef);
+        //    }
 
-            return Autodesk.Revit.DB.Line.CreateBound(startOnFace, endOnFace);
-        }
+        //    return Autodesk.Revit.DB.Line.CreateBound(startOnFace, endOnFace);
+        //}
 
-        /***************************************************/
+        ///***************************************************/
 
-        private static Vector ProjectedX(this Basis basis, RevitSettings settings)
-        {
-            Vector x = basis?.X;
-            if (x == null)
-                return Vector.XAxis;
+        //private static Vector ProjectedX(this Basis basis, RevitSettings settings)
+        //{
+        //    Vector x = basis?.X;
+        //    if (x == null)
+        //        return Vector.XAxis;
 
-            Vector result = new Vector { X = x.X, Y = x.Y };
-            if (result.Length() < settings.DistanceTolerance)
-                result = basis.Y.CrossProduct(basis.Z);
+        //    Vector result = new Vector { X = x.X, Y = x.Y };
+        //    if (result.Length() < settings.DistanceTolerance)
+        //        result = basis.Y.CrossProduct(basis.Z);
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        /***************************************************/
+        ///***************************************************/
     }
 }

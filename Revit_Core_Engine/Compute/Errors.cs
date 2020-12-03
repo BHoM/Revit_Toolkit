@@ -64,25 +64,32 @@ namespace BH.Revit.Engine.Core
             BH.Engine.Reflection.Compute.RecordError($"BHoM Object location does not match with the required placement type of Revit family. BHoM Guid: {bHoMObject.BHoM_Guid}, Revit ElementId: {elementType.Id.IntegerValue}");
         }
 
-        /***************************************************/
+        ///***************************************************/
 
-        internal static void FamilyPlacementTypeNotSupportedError(this IInstance instance, FamilySymbol familySymbol)
+        //internal static void FamilyPlacementTypeNotSupportedError(this IInstance instance, FamilySymbol familySymbol)
+        //{
+        //    BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} is not supported. BHoM Guid: {instance.BHoM_Guid}, Revit ElementId: {familySymbol.Id.IntegerValue}");
+        //}
+
+        ///***************************************************/
+
+        internal static void FamilyPlacementTypeDraftingError(this FamilySymbol familySymbol)
         {
-            BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} is not supported. BHoM Guid: {instance.BHoM_Guid}, Revit ElementId: {familySymbol.Id.IntegerValue}");
+            BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} indicates that the family is a drafting family. Please use DraftingInstance instead of a ModelInstance in order to push it. Revit ElementId: {familySymbol.Id.IntegerValue}");
         }
 
         /***************************************************/
 
-        internal static void FamilyPlacementTypeDraftingError(this ModelInstance modelInstance, FamilySymbol familySymbol)
+        internal static void FamilyPlacementTypeModelError(this FamilySymbol familySymbol)
         {
-            BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} indicates that the family is a drafting family. Please use DraftingInstance instead of a ModelInstance in order to push it. BHoM Guid: {modelInstance.BHoM_Guid}, Revit ElementId: {familySymbol.Id.IntegerValue}");
+            BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} indicates that the family is a model family. Please use ModelInstance instead of a DraftingInstance in order to push it. Revit ElementId: {familySymbol.Id.IntegerValue}");
         }
 
         /***************************************************/
 
-        internal static void FamilyPlacementTypeModelError(this DraftingInstance draftingInstance, FamilySymbol familySymbol)
+        internal static void LinearOnlyError(this FamilySymbol familySymbol)
         {
-            BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} indicates that the family is a model family. Please use ModelInstance instead of a DraftingInstance in order to push it. BHoM Guid: {draftingInstance.BHoM_Guid}, Revit ElementId: {familySymbol.Id.IntegerValue}");
+            BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} accepts only linear curves. Please use ModelInstance instead of a DraftingInstance in order to push it. Revit ElementId: {familySymbol.Id.IntegerValue}");
         }
 
         /***************************************************/
@@ -93,5 +100,18 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        //internal static void FamilyPlacementTypeNotSupportedError(this FamilySymbol familySymbol)
+        //{
+        //    BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} is not supported. Revit ElementId: {familySymbol.Id.IntegerValue}");
+        //}
+
+        /***************************************************/
+        
+        internal static void InvalidTwoLevelLocationError(this FamilySymbol familySymbol)
+        {
+            BH.Engine.Reflection.Compute.RecordWarning($"Location line of the two-level based element is upside-down, which is not allowed for given family placement type. ElementId: {familySymbol.Id.IntegerValue}");
+        }
+        
     }
 }

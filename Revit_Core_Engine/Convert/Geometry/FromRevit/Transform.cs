@@ -34,6 +34,9 @@ namespace BH.Revit.Engine.Core
 
         public static oM.Geometry.TransformMatrix FromRevit(this Transform transform)
         {
+            if (transform == null)
+                return null;
+
             oM.Geometry.TransformMatrix transformMatrix = new oM.Geometry.TransformMatrix();
             transformMatrix.Matrix[0, 0] = transform.BasisX.X;
             transformMatrix.Matrix[1, 0] = transform.BasisX.Y;

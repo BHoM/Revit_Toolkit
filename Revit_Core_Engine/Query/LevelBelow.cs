@@ -62,5 +62,25 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        public static Level LevelBelow(this Document document, XYZ point, RevitSettings settings = null, bool closestIfNotFound = true)
+        {
+            if (point == null)
+                return null;
+
+            return document.LevelBelow(point.Z, settings, closestIfNotFound);
+        }
+
+        /***************************************************/
+
+        public static Level LevelBelow(this Document document, Curve curve, RevitSettings settings = null, bool closestIfNotFound = true)
+        {
+            if (curve == null || !curve.IsBound)
+                return null;
+
+            return document.LevelBelow(curve.Tessellate().Min(x => x.Z), settings, closestIfNotFound);
+        }
+
+        /***************************************************/
     }
 }
