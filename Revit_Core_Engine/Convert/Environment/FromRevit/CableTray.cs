@@ -20,7 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
@@ -33,7 +32,6 @@ using BH.oM.MEP.System.ConnectionProperties;
 using BH.oM.MEP.System;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Geometry;
-
 
 namespace BH.Revit.Engine.Core
 {
@@ -69,7 +67,11 @@ namespace BH.Revit.Engine.Core
             // Orientation angle
             double orientationAngle = revitCableTray.OrientationAngle(settings);
 
-            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitCableTray, settings);
+            bool isStartConnected = false;
+            bool isEndConnected = false;
+            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitCableTray, out isStartConnected, out isEndConnected, settings);
+
+            Vector revitCableTrayVector = BH.Engine.Geometry.Modify.RoundCoordinates(VectorFromRevit((revitCableTray.Location as LocationCurve).Curve.GetEndPoint(0) - (revitCableTray.Location as LocationCurve).Curve.GetEndPoint(1)),4).Normalise();
             
             for (int i = 0; i < queried.Count; i++)
             {
@@ -79,9 +81,59 @@ namespace BH.Revit.Engine.Core
                     StartPoint = segment.StartPoint(),
                     EndPoint = segment.EndPoint(),
                     SectionProperty = sectionProperty,
-                    ConnectionProperty = null,
+                    ConnectionProperty = new CableTrayConnectionProperty(),
                     OrientationAngle = orientationAngle
                 };
+                
+                Vector bhomCableTrayVector = BH.Engine.Geometry.Modify.RoundCoordinates((thisSegment.StartPoint - thisSegment.EndPoint),4).Normalise();
+
+                if (queried.Count > 1)
+                {
+                    if (i == 0) //meaning it's the start segment of the revit cable tray that was split
+                    {
+                        if (BH.Engine.Geometry.Query.IsEqual(revitCableTrayVector, bhomCableTrayVector))
+                        {
+                            thisSegment.ConnectionProperty.IsStartConnected = isStartConnected;
+                            thisSegment.ConnectionProperty.IsEndConnected = true;
+                        }
+                        else
+                        {
+                            thisSegment.ConnectionProperty.IsStartConnected = true;
+                            thisSegment.ConnectionProperty.IsEndConnected = isStartConnected;   
+                        }
+                    }
+                    else if (i == queried.Count - 1) //meaning it's the end segment of the revit cable tray that was split
+                    {
+                        if (BH.Engine.Geometry.Query.IsEqual(revitCableTrayVector, bhomCableTrayVector))
+                        {
+                            thisSegment.ConnectionProperty.IsStartConnected = true;
+                            thisSegment.ConnectionProperty.IsEndConnected = isEndConnected;
+                        }
+                        else
+                        {
+                            thisSegment.ConnectionProperty.IsStartConnected = isEndConnected;
+                            thisSegment.ConnectionProperty.IsEndConnected = true;   
+                        }
+                    }
+                    else //meaning it's all mid segments of the revit cable tray that was split
+                    {
+                        thisSegment.ConnectionProperty.IsStartConnected = true;
+                        thisSegment.ConnectionProperty.IsEndConnected = true;
+                    }
+                }
+                else
+                {
+                    if (BH.Engine.Geometry.Query.IsEqual(revitCableTrayVector, bhomCableTrayVector))
+                    {
+                        thisSegment.ConnectionProperty.IsStartConnected = isStartConnected;
+                        thisSegment.ConnectionProperty.IsEndConnected = isEndConnected;
+                    }
+                    else
+                    {
+                        thisSegment.ConnectionProperty.IsStartConnected = isEndConnected;
+                        thisSegment.ConnectionProperty.IsEndConnected = isStartConnected;   
+                    }
+                }
 
                 //Set identifiers, parameters & custom data
                 thisSegment.SetIdentifiers(revitCableTray);
@@ -93,7 +145,7 @@ namespace BH.Revit.Engine.Core
             refObjects.AddOrReplace(revitCableTray.Id, bhomCableTrays);
             return bhomCableTrays;
         }
-
+        
         /***************************************************/
     }
 }

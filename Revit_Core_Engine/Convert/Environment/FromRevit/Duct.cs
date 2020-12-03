@@ -57,8 +57,9 @@ namespace BH.Revit.Engine.Core
             {
                 bhomDucts = new List<BH.oM.MEP.System.Duct>();
             }
-
+            
             List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitDuct, settings);
+            
             // Flow rate
             double flowRate = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_DUCT_FLOW_PARAM); 
             BH.oM.MEP.System.SectionProperties.DuctSectionProperty sectionProperty = BH.Revit.Engine.Core.Query.DuctSectionProperty(revitDuct, settings);
