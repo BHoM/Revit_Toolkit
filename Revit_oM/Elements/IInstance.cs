@@ -40,6 +40,9 @@ namespace BH.oM.Adapters.Revit.Elements
         [Description("Location of the instance in space.")]
         IGeometry Location { get; set; }
 
+        [Description("Orientation of the instance in 2 or 3 dimensional space (depending on dimensionality of the instance). Applicable only to point-based instances.")]
+        Basis Orientation { get; set; }
+
         /***************************************************/
     }
 }

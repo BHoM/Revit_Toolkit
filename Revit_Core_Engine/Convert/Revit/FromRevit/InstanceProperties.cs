@@ -44,6 +44,7 @@ namespace BH.Revit.Engine.Core
                 return instanceProperties;
 
             instanceProperties = BH.Engine.Adapters.Revit.Create.InstanceProperties(elementType.FamilyName, elementType.Name);
+            instanceProperties.CategoryName = elementType.Category?.Name;
 
             //Set identifiers, parameters & custom data
             instanceProperties.SetIdentifiers(elementType);
@@ -66,6 +67,7 @@ namespace BH.Revit.Engine.Core
 
             instanceProperties = BH.Engine.Adapters.Revit.Create.InstanceProperties(null, null);
             instanceProperties.Name = graphicStyle.Name;
+            instanceProperties.CategoryName = graphicStyle.Category?.Name;
 
             //Set identifiers, parameters & custom data
             instanceProperties.SetIdentifiers(graphicStyle);

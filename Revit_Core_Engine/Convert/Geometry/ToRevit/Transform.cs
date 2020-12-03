@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -21,37 +21,44 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Base;
-using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace BH.Revit.Adapter.Core
+namespace BH.Revit.Engine.Core
 {
-    public partial class RevitListenerAdapter
+    public static partial class Convert
     {
         /***************************************************/
-        /****              Private methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        private static void NullObjectCreateError(Type type)
+        public static Transform ToRevit(this oM.Geometry.TransformMatrix transformMatrix)
         {
-            BH.Engine.Reflection.Compute.RecordError(string.Format("Revit object could not be created. BHoM {0} is null", type.Name));
+            XYZ translation = new XYZ(transformMatrix.Matrix[3, 0].FromSI(UnitType.UT_Length), transformMatrix.Matrix[3, 1].FromSI(UnitType.UT_Length), transformMatrix.Matrix[3, 2].FromSI(UnitType.UT_Length));
+            XYZ basisX = new XYZ(transformMatrix.Matrix[0, 0], transformMatrix.Matrix[1, 0], transformMatrix.Matrix[2, 0]);
+            XYZ basisY = new XYZ(transformMatrix.Matrix[0, 1], transformMatrix.Matrix[1, 1], transformMatrix.Matrix[2, 1]);
+            XYZ basisZ = new XYZ(transformMatrix.Matrix[0, 2], transformMatrix.Matrix[1, 2], transformMatrix.Matrix[2, 2]);
+            Transform transform = Transform.CreateTranslation(translation);
+            transform.set_Basis(0, basisX);
+            transform.set_Basis(1, basisY);
+            transform.set_Basis(2, basisZ);
+            return transform;
         }
 
         /***************************************************/
 
-        private static void ObjectNotCreatedError(IBHoMObject iBHoMObject, Exception ex)
+        public static Transform ToRevit(this oM.Geometry.Basis basis)
         {
-            BH.Engine.Reflection.Compute.RecordError($"Revit object could not be created due to the following exception:\n{ex.Message}\nBHoM object Guid: {iBHoMObject.BHoM_Guid}");
-        }
-
-        /***************************************************/
-
-        private static void ObjectNotUpdatedError(Element element, IBHoMObject iBHoMObject)
-        {
-            BH.Engine.Reflection.Compute.RecordError(string.Format("Revit object could not be updated. Revit ElementId: {0} BHoM object Guid: {1}", element.Id, iBHoMObject.BHoM_Guid));
+            XYZ basisX = new XYZ(basis.X.X, basis.X.Y, basis.X.Z);
+            XYZ basisY = new XYZ(basis.Y.X, basis.Y.Y, basis.Y.Z);
+            XYZ basisZ = new XYZ(basis.Z.X, basis.Z.Y, basis.Z.Z);
+            Transform transform = Transform.Identity;
+            transform.set_Basis(0, basisX);
+            transform.set_Basis(1, basisY);
+            transform.set_Basis(2, basisZ);
+            return transform;
         }
 
         /***************************************************/
     }
 }
-

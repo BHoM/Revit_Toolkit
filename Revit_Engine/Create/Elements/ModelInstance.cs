@@ -39,12 +39,14 @@ namespace BH.Engine.Adapters.Revit
         [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
         [InputFromProperty("location")]
         [Output("modelInstance")]
-        public static ModelInstance ModelInstance(string familyName, string familyTypeName, Point location)
+        public static ModelInstance ModelInstance(string familyName, string familyTypeName, Point location, Basis orientation = null)
         {
+            //TODO: deprecate this! add input descs
+
             if (location == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
                 return null;
 
-            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location);
+            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location, orientation);
         }
 
         /***************************************************/
@@ -68,8 +70,10 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("properties")]
         [InputFromProperty("location")]
         [Output("modelInstance")]
-        public static ModelInstance ModelInstance(InstanceProperties properties, Point location)
+        public static ModelInstance ModelInstance(InstanceProperties properties, Point location, Basis orientation = null)
         {
+            //TODO: deprecate this! add input descs
+
             if (properties == null || location == null)
                 return null;
 
@@ -77,7 +81,8 @@ namespace BH.Engine.Adapters.Revit
             {
                 Properties = properties,
                 Name = properties.Name,
-                Location = location
+                Location = location,
+                Orientation = orientation
             };
 
             return modelInstance;

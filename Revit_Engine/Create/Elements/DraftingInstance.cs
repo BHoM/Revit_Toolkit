@@ -44,12 +44,14 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("viewName")]
         [InputFromProperty("location")]
         [Output("draftingInstance")]
-        public static DraftingInstance DraftingInstance(string familyName, string familyTypeName, string viewName, Point location)
+        public static DraftingInstance DraftingInstance(string familyName, string familyTypeName, string viewName, Point location, Basis orientation = null)
         {
+            //TODO: deprecate this! add input descs
+
             if (string.IsNullOrWhiteSpace(familyName) || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(viewName) || location == null)
                 return null;
 
-            return DraftingInstance(Create.InstanceProperties(familyName, familyTypeName), viewName, location);
+            return DraftingInstance(Create.InstanceProperties(familyName, familyTypeName), viewName, location, orientation);
         }
 
         /***************************************************/
@@ -59,8 +61,10 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("viewName")]
         [InputFromProperty("location")]
         [Output("draftingInstance")]
-        public static DraftingInstance DraftingInstance(InstanceProperties properties, string viewName, Point location)
+        public static DraftingInstance DraftingInstance(InstanceProperties properties, string viewName, Point location, Basis orientation = null)
         {
+            //TODO: deprecate this! add input descs
+
             if (properties == null || string.IsNullOrWhiteSpace(viewName) || location == null)
                 return null;
 
@@ -69,7 +73,8 @@ namespace BH.Engine.Adapters.Revit
                 Properties = properties,
                 Name = properties.Name,
                 ViewName = viewName,
-                Location = location
+                Location = location,
+                Orientation = orientation
             };
 
             return draftingInstance;

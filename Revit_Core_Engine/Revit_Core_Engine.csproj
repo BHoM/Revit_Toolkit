@@ -295,6 +295,9 @@
     <Compile Include="Convert\Environment\FromRevit\CableTray.cs" />
     <Compile Include="Convert\Environment\FromRevit\Duct.cs" />
     <Compile Include="Convert\Environment\FromRevit\Pipe.cs" />
+    <Compile Include="Convert\Geometry\FromRevit\Basis.cs" />
+    <Compile Include="Convert\Geometry\FromRevit\Transform.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\Transform.cs" />
     <Compile Include="Convert\Physical\ToRevit\ElementType.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />

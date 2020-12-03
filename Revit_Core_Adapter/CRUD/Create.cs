@@ -78,9 +78,9 @@ namespace BH.Revit.Adapter.Core
 
                 return element;
             }
-            catch
+            catch (Exception ex)
             {
-                ObjectNotCreatedError(bHoMObject);
+                ObjectNotCreatedError(bHoMObject, ex);
                 return null;
             }
         }
