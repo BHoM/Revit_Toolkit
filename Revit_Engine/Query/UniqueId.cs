@@ -38,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("uniqueId")]
         public static string UniqueId(this IBHoMObject bHoMObject)
         {
-            return bHoMObject?.GetRevitIdentifiers()?.UniqueId;
+            return bHoMObject?.GetRevitIdentifiers()?.PersistentId.ToString();
         }
 
         /***************************************************/

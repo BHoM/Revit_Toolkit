@@ -43,7 +43,7 @@ namespace BH.Engine.Adapters.Revit
 
             RevitIdentifiers identifiers = bHoMObject.GetRevitIdentifiers();
             if (identifiers != null)
-                return identifiers.ElementId;
+                return (int)identifiers.Id;
             else
                 return -1;
         }
