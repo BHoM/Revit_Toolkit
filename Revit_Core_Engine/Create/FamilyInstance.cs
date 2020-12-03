@@ -169,14 +169,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             BuiltInCategory builtInCategory = (BuiltInCategory)familySymbol.Category.Id.IntegerValue;
-
-            StructuralType structuralType = StructuralType.NonStructural;
-            if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains(builtInCategory))
-                structuralType = StructuralType.Column;
-            else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains(builtInCategory))
-                structuralType = StructuralType.Brace;
-            else if (typeof(BH.oM.Physical.Elements.IFramingElement).BuiltInCategories().Contains(builtInCategory))
-                structuralType = StructuralType.Beam;
+            StructuralType structuralType = builtInCategory.StructuralType();
 
             FamilyInstance familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, level, structuralType);
 
