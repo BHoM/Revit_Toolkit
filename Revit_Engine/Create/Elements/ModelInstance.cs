@@ -38,15 +38,15 @@ namespace BH.Engine.Adapters.Revit
         [Input("familyName", "Name of Revit family to be used when creating the element.")]
         [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
         [InputFromProperty("location")]
+        [InputFromProperty("orientation")]
+        [InputFromProperty("hostId")]
         [Output("modelInstance")]
-        public static ModelInstance ModelInstance(string familyName, string familyTypeName, Point location, Basis orientation = null)
+        public static ModelInstance ModelInstance(string familyName, string familyTypeName, Point location, Basis orientation = null, int hostId = -1)
         {
-            //TODO: deprecate this! add input descs
-
             if (location == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
                 return null;
 
-            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location, orientation);
+            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location, orientation, hostId);
         }
 
         /***************************************************/
@@ -55,13 +55,14 @@ namespace BH.Engine.Adapters.Revit
         [Input("familyName", "Name of Revit family to be used when creating the element.")]
         [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
         [InputFromProperty("location")]
+        [InputFromProperty("hostId")]
         [Output("modelInstance")]
-        public static ModelInstance ModelInstance(string familyName, string familyTypeName, ICurve location)
+        public static ModelInstance ModelInstance(string familyName, string familyTypeName, ICurve location, int hostId = -1)
         {
             if (location == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
                 return null;
 
-            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location);
+            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location, hostId);
         }
 
         /***************************************************/
@@ -69,11 +70,11 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates ModelInstance object based on point location and BHoM InstanceProperties. Such ModelInstance can be pushed to Revit as a point-driven element, e.g. chair.")]
         [InputFromProperty("properties")]
         [InputFromProperty("location")]
+        [InputFromProperty("orientation")]
+        [InputFromProperty("hostId")]
         [Output("modelInstance")]
-        public static ModelInstance ModelInstance(InstanceProperties properties, Point location, Basis orientation = null)
+        public static ModelInstance ModelInstance(InstanceProperties properties, Point location, Basis orientation = null, int hostId = -1)
         {
-            //TODO: deprecate this! add input descs
-
             if (properties == null || location == null)
                 return null;
 
@@ -93,8 +94,9 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates ModelInstance object based on curve location and BHoM InstanceProperties. Such ModelInstance can be pushed to Revit as a point-driven element, e.g. chair.")]
         [InputFromProperty("properties")]
         [InputFromProperty("location")]
+        [InputFromProperty("hostId")]
         [Output("modelInstance")]
-        public static ModelInstance ModelInstance(InstanceProperties properties, ICurve location)
+        public static ModelInstance ModelInstance(InstanceProperties properties, ICurve location, int hostId = -1)
         {
             if (properties == null || location == null)
                 return null;
@@ -229,6 +231,59 @@ namespace BH.Engine.Adapters.Revit
             };
 
             return modelInstance;
+        }
+
+
+        /***************************************************/
+        /****            Deprecated methods             ****/
+        /***************************************************/
+
+        [ToBeRemoved("4.0", "Replaced with same named method with more parameters.")]
+        [Description("Creates ModelInstance object based on point location, Revit family name and family type name. Such ModelInstance can be pushed to Revit as a point-driven element, e.g. chair.")]
+        [Input("familyName", "Name of Revit family to be used when creating the element.")]
+        [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
+        [InputFromProperty("location")]
+        [Output("modelInstance")]
+        public static ModelInstance ModelInstance(string familyName, string familyTypeName, Point location)
+        {
+            return Create.ModelInstance(familyName, familyTypeName, location, null, -1);
+        }
+
+        /***************************************************/
+
+        [ToBeRemoved("4.0", "Replaced with same named method with more parameters.")]
+        [Description("Creates ModelInstance object based on curve location, Revit family name and family type name. Such ModelInstance can be pushed to Revit as a curve-driven element, e.g. duct.")]
+        [Input("familyName", "Name of Revit family to be used when creating the element.")]
+        [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
+        [InputFromProperty("location")]
+        [Output("modelInstance")]
+        public static ModelInstance ModelInstance(string familyName, string familyTypeName, ICurve location)
+        {
+            return Create.ModelInstance(familyName, familyTypeName, location, -1);
+        }
+
+        /***************************************************/
+
+        [ToBeRemoved("4.0", "Replaced with same named method with more parameters.")]
+        [Description("Creates ModelInstance object based on point location and BHoM InstanceProperties. Such ModelInstance can be pushed to Revit as a point-driven element, e.g. chair.")]
+        [InputFromProperty("properties")]
+        [InputFromProperty("location")]
+        [Output("modelInstance")]
+        public static ModelInstance ModelInstance(InstanceProperties properties, Point location)
+        {
+            return Create.ModelInstance(properties, location, null, -1);
+        }
+
+        /***************************************************/
+
+        [ToBeRemoved("4.0", "Replaced with same named method with more parameters.")]
+        [Description("Creates ModelInstance object based on curve location and BHoM InstanceProperties. Such ModelInstance can be pushed to Revit as a point-driven element, e.g. chair.")]
+        [InputFromProperty("properties")]
+        [InputFromProperty("location")]
+        [Output("modelInstance")]
+        public static ModelInstance ModelInstance(InstanceProperties properties, ICurve location)
+        {
+            return Create.ModelInstance(properties, location, -1);
         }
 
         /***************************************************/

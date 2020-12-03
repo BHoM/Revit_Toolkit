@@ -215,9 +215,9 @@ namespace BH.Revit.Engine.Core
         {
             Document doc = familySymbol.Document;
             if (modelInstance.Location is BH.oM.Geometry.Point)
-                return Create.FamilyInstance(doc, familySymbol, ((BH.oM.Geometry.Point)modelInstance.Location).ToRevit(), modelInstance.Orientation.ToRevit(), doc.GetElement(new ElementId(modelInstance.Host)), settings);
+                return Create.FamilyInstance(doc, familySymbol, ((BH.oM.Geometry.Point)modelInstance.Location).ToRevit(), modelInstance.Orientation.ToRevit(), doc.GetElement(new ElementId(modelInstance.HostId)), settings);
             if (modelInstance.Location is ICurve)
-                return Create.FamilyInstance(doc, familySymbol, ((ICurve)modelInstance.Location).IToRevit(), doc.GetElement(new ElementId(modelInstance.Host)), settings);
+                return Create.FamilyInstance(doc, familySymbol, ((ICurve)modelInstance.Location).IToRevit(), doc.GetElement(new ElementId(modelInstance.HostId)), settings);
             else
             {
                 BH.Engine.Reflection.Compute.RecordError($"A family could not be created based on the given ModelInstance because its location was neither a point nor a curve. BHoM_Guid: {modelInstance.BHoM_Guid}");
