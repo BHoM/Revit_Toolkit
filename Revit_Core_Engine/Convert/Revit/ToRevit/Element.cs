@@ -765,7 +765,8 @@ namespace BH.Revit.Engine.Core
             IntersectionResult ir;
             XYZ pointOnFace = null;
 
-            if (element is FamilyInstance && !((FamilyInstance)element).HasModifiedGeometry())
+            bool famInst = element is FamilyInstance && !((FamilyInstance)element).HasModifiedGeometry();
+            if (famInst)
                 refPoint = ((FamilyInstance)element).GetTotalTransform().Inverse.OfPoint(refPoint);
 
             foreach (Autodesk.Revit.DB.Face face in faces)
@@ -787,9 +788,16 @@ namespace BH.Revit.Engine.Core
 
             if (pointOnFace == null || reference == null)
                 return null;
+            
+            if (famInst)
+            {
+                FamilyInstance fi = ((FamilyInstance)element);
+                pointOnFace = fi.GetTotalTransform().OfPoint(pointOnFace);
 
-            if (element is FamilyInstance && !((FamilyInstance)element).HasModifiedGeometry())
-                pointOnFace = ((FamilyInstance)element).GetTotalTransform().OfPoint(pointOnFace);
+                string instRef = fi.UniqueId + ":0:INSTANCE:" + reference.ConvertToStableRepresentation(element.Document);
+                reference = Reference.ParseFromStableRepresentation(element.Document, instRef);
+            }
+
 
             return pointOnFace;
         }
