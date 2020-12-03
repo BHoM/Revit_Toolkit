@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.Adapter.Revit;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Properties;
@@ -67,8 +68,15 @@ namespace BH.Revit.Engine.Core
 
                             Basis orientation = null;
                             if (element is FamilyInstance)
-                                orientation = ((FamilyInstance)element).GetTotalTransform()?.BasisFromRevit();
+                            {
+                                FamilyInstance fi = ((FamilyInstance)element);
+                                XYZ x = fi.HandOrientation;
+                                XYZ y = fi.FacingOrientation;
+                                XYZ z = fi.GetTotalTransform().BasisZ;
 
+                                orientation = new Basis(new Vector { X = x.X, Y = x.Y, Z = x.Z }, new Vector { X = y.X, Y = y.Y, Z = y.Z }, new Vector { X = z.X, Y = z.Y, Z = z.Z });
+                            }
+                            
                             ((IInstance)iBHoMObject).Orientation = orientation;
                         }
                     }
