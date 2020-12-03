@@ -352,7 +352,7 @@ namespace BH.Revit.Engine.Core
                 Element host = document.GetElement(new ElementId(modelInstance.Host));
                 if (host != null)
                 {
-                    if (modelInstance.Orientation == null)
+                    if (modelInstance.Orientation?.X == null)
                         familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, host, StructuralType.NonStructural);
                     else
                     {
@@ -526,8 +526,13 @@ namespace BH.Revit.Engine.Core
                         return null;
 
                     XYZ refDir = XYZ.BasisX;
-                    if (modelInstance.Orientation != null)
-                        refDir = modelInstance.Orientation.X.ToRevit();
+                    if (modelInstance.Orientation?.X != null)
+                    {
+                        Basis orientation = modelInstance.Orientation;
+                        refDir = orientation.X.ToRevit();
+                        if (orientation.Z.DotProduct(orientation.X.CrossProduct(orientation.Y)) < 0)
+                            refDir = -refDir;
+                    }
 
                     familyInstance = document.Create.NewFamilyInstance(reference, location, refDir, familySymbol);
                 }
@@ -575,11 +580,15 @@ namespace BH.Revit.Engine.Core
                 else
                     reference = document.LevelBelow(point, settings).GetPlaneReference();
 
-                XYZ xdir = XYZ.BasisX;
+                XYZ refDir = XYZ.BasisX;
                 if (orientation?.X != null)
-                    xdir = orientation.X.ToRevit();
+                {
+                    refDir = orientation.X.ToRevit();
+                    if (orientation.Z.DotProduct(orientation.X.CrossProduct(orientation.Y)) < 0)
+                        refDir = -refDir;
+                }
 
-                familyInstance = document.Create.NewFamilyInstance(reference, xyz, xdir, familySymbol);
+                familyInstance = document.Create.NewFamilyInstance(reference, xyz, refDir, familySymbol);
             }
 
             return familyInstance;
@@ -870,7 +879,7 @@ namespace BH.Revit.Engine.Core
         //}
 
         /***************************************************/
-        
+
         //private static XYZ ProjectedX(this ModelInstance modelInstance, RevitSettings settings, out bool projected)
         //{
         //    projected = false;
