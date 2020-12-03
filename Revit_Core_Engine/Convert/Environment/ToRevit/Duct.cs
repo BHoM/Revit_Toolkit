@@ -28,6 +28,7 @@ using BH.oM.Spatial.ShapeProfiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BH.oM.MEP.System.SectionProperties;
 
 namespace BH.Revit.Engine.Core
 {
@@ -70,20 +71,120 @@ namespace BH.Revit.Engine.Core
             MechanicalSystemType mst = new FilteredElementCollector(document).OfClass(typeof(MechanicalSystemType)).OfType<MechanicalSystemType>().FirstOrDefault();
             revitDuct = Duct.Create(document, mst.Id, ductType.Id, level.Id, start, end);
 
-
             // Copy parameters from BHoM object to Revit element
             revitDuct.CopyParameters(duct, settings);
 
-            //TODO: copy relevant properties to parameters
+            double orientationAngle = duct.OrientationAngle;
+            if (Math.Abs(orientationAngle) > settings.AngleTolerance)
+            {
+                ElementTransformUtils.RotateElement(document, revitDuct.Id, Line.CreateBound(start, end), orientationAngle);
+            }
+
+            SectionProfile sectionProfile = duct.SectionProperty.SectionProfile;
+            if (sectionProfile == null)
+            {
+                //throw error or warning
+            }
+
+            DuctSectionProperty ductSectionProperty = duct.SectionProperty;
+
+            //ToDo: Check builtInParameter for correct value. This is not functioning as expected
             double flowRate = duct.FlowRate;
+            revitDuct.SetParameter(BuiltInParameter.RBS_DUCT_FLOW_PARAM, flowRate);
 
-            //double elementThickness = duct.SectionProperty.SectionProfile.ElementProfile.
-            //double liningThickness = 
+            double hydraulicDiameter = ductSectionProperty.HydraulicDiameter;
+            revitDuct.SetParameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM, hydraulicDiameter);
 
+            if (ductType.Shape == ConnectorProfileType.Rectangular)
+            {
+                BoxProfile elementProfile = sectionProfile.ElementProfile as BoxProfile;
+                if (elementProfile == null)
+                    return null;
 
-            // Update top and bottom offset constraints for sloping or general offsets
-            //Level bottomLevel = document.GetElement(revitDuct.LookupParameterElementId(BuiltInParameter.))
+                //Set Height
+                double profileHeight = elementProfile.Height;
+                revitDuct.SetParameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM, profileHeight);
 
+                //Set Width
+                double profileWidth = elementProfile.Width;
+                revitDuct.SetParameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM, profileWidth);
+
+                //Set LiningProfile
+                BoxProfile liningProfile = sectionProfile.LiningProfile as BoxProfile;
+                if (liningProfile != null)
+                {
+                    double liningThickness = liningProfile.Thickness;
+
+                    //Get first available ductLiningType from document
+                    Autodesk.Revit.DB.Mechanical.DuctLiningType dlt = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Mechanical.DuctLiningType)).FirstOrDefault() as Autodesk.Revit.DB.Mechanical.DuctLiningType;
+                    if (dlt == null)
+                    {
+                        BH.Engine.Reflection.Compute.RecordError("You must first create a duct with lining in your Revit model.");
+                        return null;
+                    }
+                    //Create ductLining
+                    Autodesk.Revit.DB.Mechanical.DuctLining dl = Autodesk.Revit.DB.Mechanical.DuctLining.Create(document, revitDuct.Id, dlt.Id, liningThickness);
+                }
+
+                //Set InsulationProfile
+                BoxProfile insulationProfile = sectionProfile.InsulationProfile as BoxProfile;
+                if (insulationProfile != null)
+                {
+                    double insulationThickness = insulationProfile.Thickness;
+
+                    //Get first available ductLiningType from document
+                    Autodesk.Revit.DB.Mechanical.DuctInsulationType dit = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Mechanical.DuctInsulationType)).FirstOrDefault() as Autodesk.Revit.DB.Mechanical.DuctInsulationType;
+                    if (dit == null)
+                    {
+                        BH.Engine.Reflection.Compute.RecordError("You must first create a duct with insulation in your Revit model.");
+                        return null;
+                    }
+                    //Create ductInsulation
+                    Autodesk.Revit.DB.Mechanical.DuctInsulation di = Autodesk.Revit.DB.Mechanical.DuctInsulation.Create(document, revitDuct.Id, dit.Id, insulationThickness);
+                }
+
+                //Set EquivalentDiameter
+                double circularEquivalentDiameter = ductSectionProperty.CircularEquivalentDiameter;
+                revitDuct.SetParameter(BuiltInParameter.RBS_EQ_DIAMETER_PARAM, circularEquivalentDiameter);           
+
+                //Parameters not found in RevitAPI, needs further investigation. Not critical for current workflows. 
+                //double profileThickness = elementProfile.Thickness;
+                //double profileOuterRadius = elementProfile.OuterRadius;
+                //double profileInnerRadius = elementProfile.InnerRadius;
+            }
+            else if (ductType.Shape == ConnectorProfileType.Round)
+            {
+                TubeProfile elementProfile = sectionProfile.ElementProfile as TubeProfile;
+                if (elementProfile == null)
+                    return null;
+
+                //ToDo: Do the same thing that was done with the box profiles above
+
+                double diameter = elementProfile.Diameter;
+                revitDuct.SetParameter(BuiltInParameter.RBS_CURVE_DIAMETER_PARAM, diameter);
+
+                TubeProfile liningProfile = sectionProfile.LiningProfile as TubeProfile;
+                if(liningProfile != null)
+                {
+                    double liningThickness = liningProfile.Thickness;
+                    revitDuct.SetParameter(BuiltInParameter.RBS_REFERENCE_LINING_THICKNESS, liningThickness);
+                }
+
+                TubeProfile insulationProfile = sectionProfile.InsulationProfile as TubeProfile;
+                if (insulationProfile != null)
+                {
+                    double insulationThickness = liningProfile.Thickness;
+                    revitDuct.SetParameter(BuiltInParameter.RBS_REFERENCE_INSULATION_THICKNESS, insulationThickness);
+                }
+
+                //Parameters not found in RevitAPI, needs further investigation. Not critical for current workflows. 
+                //double profileThickness = elementProfile.Thickness;
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordError("No objects created. Only Box or TubeProfiles are supported.");
+                return null;
+            }
 
             refObjects.AddOrReplace(duct, revitDuct);
             return revitDuct;

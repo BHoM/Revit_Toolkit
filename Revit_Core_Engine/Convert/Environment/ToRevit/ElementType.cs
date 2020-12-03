@@ -51,14 +51,15 @@ namespace BH.Revit.Engine.Core
                 return elementType;
 
             List<Autodesk.Revit.DB.Mechanical.DuctType> ductTypes = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Mechanical.DuctType)).Cast<Autodesk.Revit.DB.Mechanical.DuctType>().ToList();
+
             if (property.SectionProfile.ElementProfile is BH.oM.Spatial.ShapeProfiles.BoxProfile)
                 elementType = ductTypes.FirstOrDefault(x => x.FamilyName == "Rectangular Duct");
-            else if (property.SectionProfile.ElementProfile is BH.oM.Spatial.ShapeProfiles.CircleProfile)
+            else if (property.SectionProfile.ElementProfile is BH.oM.Spatial.ShapeProfiles.TubeProfile)
                 elementType = ductTypes.FirstOrDefault(x => x.FamilyName == "Round Duct");
 
             if (elementType != null)
             {
-                //warning about first type in the model
+                BH.Engine.Reflection.Compute.RecordNote("Duct is being pushed as the first type available in the Revit model.");
             }
             else
                 return null;
