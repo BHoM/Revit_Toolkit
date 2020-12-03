@@ -461,6 +461,13 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        internal static void ProjectedOnXYWarning(this ModelInstance modelInstance, FamilyInstance familyInstance)
+        {
+            BH.Engine.Reflection.Compute.RecordWarning($"Family with placement type OneLevelBased needs to be placed vertically, transform out of XY plane has been ignored. BHoM Guid: {modelInstance.BHoM_Guid}, ElementId: {familyInstance?.Id.IntegerValue}");
+        }
+
+        /***************************************************/
     }
 }
 

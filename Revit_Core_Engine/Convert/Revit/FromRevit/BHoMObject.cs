@@ -60,6 +60,17 @@ namespace BH.Revit.Engine.Core
                             iBHoMObject = BH.Engine.Adapters.Revit.Create.DraftingInstance(objectProperties, element.Document.GetElement(element.OwnerViewId).Name, iGeometry as dynamic);
                         else
                             iBHoMObject = BH.Engine.Adapters.Revit.Create.ModelInstance(objectProperties, iGeometry as dynamic);
+
+                        if (iGeometry is BH.oM.Geometry.Point)
+                        {
+                            //TODO: remember about local CS of sections!
+
+                            Basis orientation = null;
+                            if (element is FamilyInstance)
+                                orientation = ((FamilyInstance)element).GetTotalTransform()?.BasisFromRevit();
+
+                            ((IInstance)iBHoMObject).Orientation = orientation;
+                        }
                     }
                 }
             }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -19,35 +19,27 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
-using BH.oM.Adapters.Revit.Properties;
-using BH.oM.Base;
-using BH.oM.Geometry;
-using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Elements
+using Autodesk.Revit.DB;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace BH.Revit.Engine.Core
 {
-    [Description("A generic wrapper BHoM type corresponding to any view-independent Revit element (model elements, e.g. duct or beam). On Push it can be used to generate or update Revit model elements that do not have a correspondent BHoM type, on Pull all Revit model elements that do not have explicit Convert method for given discipline will be converted to ModelInstance.")]
-    public class ModelInstance : BHoMObject, IInstance
+    public static partial class Convert
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Information about Revit family type of the instance.")]
-        public virtual InstanceProperties Properties { get; set; } = new InstanceProperties();
-
-        [Description("Location of the instance in in three dimensional space.")]
-        public virtual IGeometry Location { get; set; } = new Point();
-
-        [Description("Orientation of the instance in 3 dimensional space. Applicable only to point-based ModelInstances.")]
-        public virtual Basis Orientation { get; set; } = null;
-
-        [Description("Revit ElementId of the host element.")]
-        public virtual int Host { get; set; } = -1;
+        public static oM.Geometry.Basis BasisFromRevit(this Transform transform)
+        {
+            BH.oM.Geometry.Vector x = new oM.Geometry.Vector { X = transform.BasisX.X, Y = transform.BasisX.Y, Z = transform.BasisX.Z };
+            BH.oM.Geometry.Vector y = new oM.Geometry.Vector { X = transform.BasisY.X, Y = transform.BasisY.Y, Z = transform.BasisY.Z };
+            BH.oM.Geometry.Vector z = new oM.Geometry.Vector { X = transform.BasisZ.X, Y = transform.BasisZ.Y, Z = transform.BasisZ.Z };
+            return new oM.Geometry.Basis(x, y, z);
+        }
 
         /***************************************************/
     }
 }
-
-

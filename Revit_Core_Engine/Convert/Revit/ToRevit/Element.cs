@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
@@ -135,7 +136,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            return ToRevitElement(modelInstance, elementType as dynamic);
+            return ToRevitElement(modelInstance, elementType as dynamic, settings);
         }
 
         /***************************************************/
@@ -263,17 +264,24 @@ namespace BH.Revit.Engine.Core
 
             FamilyInstance familyInstance = null;
             if (modelInstance.Host == -1)
-                familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
+                familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, StructuralType.NonStructural);
             else
             {
                 if (revitCurve is Autodesk.Revit.DB.Line)
                 {
                     Element host = document.GetElement(new ElementId(modelInstance.Host));
-                    //TODO: project on face and place using NewFamilyInstance(Face, Line, FamilySymbol)
+                    if (host != null)
+                    {
+                        Reference reference;
+                        Autodesk.Revit.DB.Line location = host.ClosestLineOn((Autodesk.Revit.DB.Line)revitCurve, out reference);
+                        if (location != null && reference != null)
+                            familyInstance = document.Create.NewFamilyInstance(reference, location, familySymbol);
+                    }
                 }
                 else
                 {
-                    //TODO: error that needs to be a line
+                    Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
+                    return null;
                 }
             }
 
@@ -296,22 +304,66 @@ namespace BH.Revit.Engine.Core
             Document document = familySymbol.Document;
 
             oM.Geometry.Point point = (oM.Geometry.Point)modelInstance.Location;
-
-            Level level = document.LevelBelow(point, settings);
-            if (level == null)
-                return null;
-
             XYZ xyz = point.ToRevit();
             FamilyInstance familyInstance = null;
             if (modelInstance.Host == -1)
             {
-                familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                document.Regenerate();
-                familyInstance.Orient(modelInstance.Orientation, settings);
+                Level level = document.LevelBelow(point, settings);
+                if (level == null)
+                    return null;
+
+                //bool projected = false;
+                //XYZ xdir = XYZ.BasisX;
+                //if (modelInstance.Orientation?.X != null)
+                //{
+                //    Vector x = modelInstance.Orientation.X;
+                //    if (Math.Abs(x.Z) > settings.AngleTolerance)
+                //        projected = true;
+
+                //    Vector newX = new Vector { X = x.X, Y = x.Y };
+                //    if (newX.Length() > settings.DistanceTolerance)
+                //        xdir = newX.ToRevit();
+                //}
+
+                XYZ xdir = modelInstance.Orientation.ProjectedX(settings).ToRevit();
+                
+                familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, xdir, level, StructuralType.NonStructural);
+
+                if (modelInstance.Orientation?.X != null && Math.Abs(modelInstance.Orientation.X.Z) > settings.AngleTolerance)
+                    modelInstance.ProjectedOnXYWarning(familyInstance);
+
+                //document.Regenerate();
+                //XYZ location = ((LocationPoint)familyInstance.Location).Point;
+                //if (Math.Abs(location.Z - xyz.Z) > settings.DistanceTolerance)
+                //{
+                //    ElementTransformUtils.MoveElement(document, familyInstance.Id, xyz - location);
+                //    document.Regenerate();
+                //}
+
+                //Basis orientation = modelInstance.Orientation;
+                //if (orientation != null && 1 - orientation.Z.DotProduct(Vector.ZAxis) > settings.AngleTolerance)
+                //    modelInstance.ProjectedOnXYWarning(familyInstance);
+
+                //orientation = orientation.ProjectOnXY(settings);
+                //familyInstance.Orient(orientation, settings);
             }
             else
             {
-                //TODO: find closest point, place oriented using NewFamilyInstance(XYZ, FamilySymbol, XYZ, Element, StructuralType)
+                Element host = document.GetElement(new ElementId(modelInstance.Host));
+                if (host != null)
+                {
+                    if (modelInstance.Orientation == null)
+                        familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, host, StructuralType.NonStructural);
+                    else
+                    {
+                        XYZ refDir = modelInstance.Orientation.X.ToRevit();
+                        familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, refDir, host, StructuralType.NonStructural);
+                    }
+                }
+                else
+                {
+                    //TODO: host not found error - relevant to other methods, make em uniform!
+                }
             }
 
             return familyInstance;
@@ -330,20 +382,20 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            Autodesk.Revit.DB.Structure.StructuralType structuralType = Autodesk.Revit.DB.Structure.StructuralType.NonStructural;
+            StructuralType structuralType = StructuralType.NonStructural;
 
             BuiltInCategory builtInCategory = (BuiltInCategory)familySymbol.Category.Id.IntegerValue;
             switch (builtInCategory)
             {
                 case BuiltInCategory.OST_StructuralColumns:
-                    structuralType = Autodesk.Revit.DB.Structure.StructuralType.Column;
+                    structuralType = StructuralType.Column;
                     break;
                 case BuiltInCategory.OST_StructuralFraming:
-                    structuralType = Autodesk.Revit.DB.Structure.StructuralType.Beam;
+                    structuralType = StructuralType.Beam;
                     break;
             }
 
-            if (structuralType == Autodesk.Revit.DB.Structure.StructuralType.NonStructural)
+            if (structuralType == StructuralType.NonStructural)
                 return null;
 
             Document document = familySymbol.Document;
@@ -367,15 +419,13 @@ namespace BH.Revit.Engine.Core
             
             BuiltInCategory builtInCategory = (BuiltInCategory)familySymbol.Category.Id.IntegerValue;
 
-            Autodesk.Revit.DB.Structure.StructuralType structuralType;
+            StructuralType structuralType = StructuralType.NonStructural;
             if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains(builtInCategory))
-                structuralType = Autodesk.Revit.DB.Structure.StructuralType.Column;
+                structuralType = StructuralType.Column;
             else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains(builtInCategory))
-                structuralType = Autodesk.Revit.DB.Structure.StructuralType.Brace;
+                structuralType = StructuralType.Brace;
             else if (typeof(BH.oM.Physical.Elements.IFramingElement).BuiltInCategories().Contains(builtInCategory))
-                structuralType = Autodesk.Revit.DB.Structure.StructuralType.Beam;
-            else
-                return null;
+                structuralType = StructuralType.Beam;
 
             Document document = familySymbol.Document;
 
@@ -388,10 +438,45 @@ namespace BH.Revit.Engine.Core
                     return null;
 
                 XYZ xyz = point.ToRevit();
+
                 FamilyInstance familyInstance = document.Create.NewFamilyInstance(xyz, familySymbol, level, structuralType);
 
-                //TODO: add orientation here!
+                
+
+
+                Vector x = modelInstance.Orientation?.X;
+                if (x != null)
+                {
+                    if (Math.Abs(x.Z) > settings.AngleTolerance)
+                        modelInstance.ProjectedOnXYWarning(familyInstance);
+
+                    Vector xdir = modelInstance.Orientation.ProjectedX(settings);
+                    double angle = Vector.XAxis.SignedAngle(xdir, Vector.ZAxis);
+                    if (Math.Abs(angle) > settings.AngleTolerance)
+                    {
+                        Autodesk.Revit.DB.Line dir = Autodesk.Revit.DB.Line.CreateBound(xyz, xyz + XYZ.BasisZ);
+                        ElementTransformUtils.RotateElement(document, familyInstance.Id, dir, angle);
+                        document.Regenerate();
+                    }
+                }
+
                 return familyInstance;
+
+                //document.Regenerate();
+                //XYZ location = ((LocationPoint)familyInstance.Location).Point;
+                //if (Math.Abs(location.Z - xyz.Z) > settings.DistanceTolerance)
+                //{
+                //    ElementTransformUtils.MoveElement(document, familyInstance.Id, xyz - location);
+                //    document.Regenerate();
+                //}
+
+                //Basis orientation = modelInstance.Orientation;
+                //if (orientation != null && 1 - orientation.Z.DotProduct(Vector.ZAxis) > settings.AngleTolerance)
+                //    modelInstance.ProjectedOnXYWarning(familyInstance);
+
+                //orientation = orientation.ProjectOnXY(settings);
+                //familyInstance.Orient(orientation, settings);
+                //return familyInstance;
             }
             else if (modelInstance.Location is oM.Geometry.Line)
             {
@@ -407,10 +492,7 @@ namespace BH.Revit.Engine.Core
                     return null;
 
                 Curve curve = line.ToRevit();
-                FamilyInstance familyInstance = document.Create.NewFamilyInstance(curve, familySymbol, level, structuralType);
-
-                //TODO: add orientation here!
-                return familyInstance;
+                return document.Create.NewFamilyInstance(curve, familySymbol, level, structuralType);
             }
             else
             {
@@ -428,48 +510,42 @@ namespace BH.Revit.Engine.Core
 
             Document document = familySymbol.Document;
 
-            FamilyInstance familyInstance;
-            Element host = document.GetElement(new ElementId(modelInstance.Host));
-            if (host != null)
+            FamilyInstance familyInstance = null;
+            if (modelInstance.Host != -1)
             {
-                //TODO:
-                // 2 scenarios needed:
-                // - point-based, create transformed using NewFamilyInstance(Face, XYZ, XYZ, FamilySymbol)
-                // - curve-based, NewFamilyInstance(Face, Line, FamilySymbol) - make sure its line
-
-                double minDist = double.MaxValue;
-                Reference reference = null;
-
-                Options opt = new Options();
-                opt.ComputeReferences = true;
-                List<Autodesk.Revit.DB.Face> faces = host.Faces(opt);
-                IntersectionResult ir;
-                XYZ pointOnFace = null;
-
-                if (host is FamilyInstance && !((FamilyInstance)host).HasModifiedGeometry())
-                    location = ((FamilyInstance)host).GetTotalTransform().Inverse.OfPoint(location);
-
-                foreach (Autodesk.Revit.DB.Face face in faces)
-                {
-                    ir = face.Project(location);
-                    if (ir == null || ir.XYZPoint == null)
-                        continue;
-
-                    if (ir.Distance < minDist)
-                    {
-                        minDist = ir.Distance;
-                        pointOnFace = ir.XYZPoint;
-                        reference = face.Reference;
-                    }
-                }
-
-                if (pointOnFace == null || reference == null)
+                Element host = document.GetElement(new ElementId(modelInstance.Host));
+                if (host == null)
                     return null;
 
-                if (host is FamilyInstance && !((FamilyInstance)host).HasModifiedGeometry())
-                    pointOnFace = ((FamilyInstance)host).GetTotalTransform().OfPoint(pointOnFace);
+                if (modelInstance.Location is BH.oM.Geometry.Point)
+                {
+                    XYZ xyz = ((BH.oM.Geometry.Point)modelInstance.Location).ToRevit();
+                    Reference reference;
+                    XYZ location = host.ClosestPointOn(xyz, out reference);
+                    if (location == null || reference == null)
+                        return null;
 
-                familyInstance = document.Create.NewFamilyInstance(reference, pointOnFace, XYZ.BasisX, familySymbol);
+                    XYZ refDir = XYZ.BasisX;
+                    if (modelInstance.Orientation != null)
+                        refDir = modelInstance.Orientation.X.ToRevit();
+
+                    familyInstance = document.Create.NewFamilyInstance(reference, location, refDir, familySymbol);
+                }
+                else if (modelInstance.Location is BH.oM.Geometry.Line)
+                {
+                    Autodesk.Revit.DB.Line revitLine = ((BH.oM.Geometry.Line)modelInstance.Location).ToRevit();
+                    Reference reference;
+                    Autodesk.Revit.DB.Line location = host.ClosestLineOn(revitLine, out reference);
+                    if (location == null || reference == null)
+                        return null;
+
+                    familyInstance = document.Create.NewFamilyInstance(reference, location, familySymbol);
+                }
+                else
+                {
+                    Compute.InvalidFamilyPlacementTypeError(modelInstance, familySymbol);
+                    return null;
+                }
             }
             else
             {
@@ -480,23 +556,31 @@ namespace BH.Revit.Engine.Core
                 }
                 
                 oM.Geometry.Point point = (oM.Geometry.Point)modelInstance.Location;
-                XYZ location = point.ToRevit();
+                XYZ xyz = point.ToRevit();
 
-                Level level = document.LevelBelow(point, settings);
-                if (level == null)
-                    return null;
+                Basis orientation = modelInstance.Orientation;
+                Reference reference;
+                if (orientation != null && 1 - orientation.Z.DotProduct(Vector.ZAxis) > settings.AngleTolerance)
+                {
+                    //TODO: take it out to a separate Create method, do renaming
+                    Transform transform = orientation.ToRevit();
+                    XYZ dir1 = transform.BasisZ.CrossProduct(XYZ.BasisZ);
+                    XYZ dir2 = transform.BasisZ.CrossProduct(dir1);
+                    ReferencePlane rp = document.Create.NewReferencePlane(xyz, xyz + dir1, dir2, document.ActiveView);
+                    if (rp.Normal.DotProduct(transform.BasisZ) < 0)
+                        rp.Flip();
 
-                familyInstance = document.Create.NewFamilyInstance(location, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
+                    reference = rp.GetReference();
+                }
+                else
+                    reference = document.LevelBelow(point, settings).GetPlaneReference();
 
-                document.Regenerate();
-                familyInstance.Orient(modelInstance.Orientation, settings);
+                XYZ xdir = XYZ.BasisX;
+                if (orientation?.X != null)
+                    xdir = orientation.X.ToRevit();
+
+                familyInstance = document.Create.NewFamilyInstance(reference, xyz, xdir, familySymbol);
             }
-
-            //document.Regenerate();
-            //if (host != null)
-            //    familyInstance.OrientHosted(modelInstance.Orientation, settings);
-            //else
-            //    familyInstance.Orient(modelInstance.Orientation, settings);
 
             return familyInstance;
         }
@@ -573,6 +657,7 @@ namespace BH.Revit.Engine.Core
                         FamilyInstance familyInstance = view.Document.Create.NewFamilyInstance(xyz, familySymbol, view);
 
                         //TODO: orient here, remember about relative CS of views/sections
+                        //ElementTransformUtils.GetTransformFromViewToView
                         return familyInstance;
                     }
                     else
@@ -616,59 +701,205 @@ namespace BH.Revit.Engine.Core
 
 
         /***************************************************/
-        /****       Private Methods - Orientation       ****/
+        /****          Private Methods - Others         ****/
         /***************************************************/
 
-        private static void OrientHosted(this FamilyInstance familyInstance, Basis orientation, RevitSettings settings)
-        {
-            Document doc = familyInstance.Document;
-            XYZ normal = familyInstance.GetTotalTransform().BasisZ;
-            XYZ origin = ((LocationPoint)familyInstance.Location).Point;
+        //private static void Orient(this FamilyInstance familyInstance, Basis orientation, RevitSettings settings)
+        //{
+        //    if (orientation == null)
+        //        return;
 
-            double angle = Vector.XAxis.SignedAngle(orientation.X, normal.VectorFromRevit());
-            if (Math.Abs(angle) > settings.AngleTolerance)
-            {
-                Autodesk.Revit.DB.Line dir = Autodesk.Revit.DB.Line.CreateBound(origin, origin + normal);
-                ElementTransformUtils.RotateElement(doc, familyInstance.Id, dir, angle);
-                doc.Regenerate();
-            }
-        }
+        //    Document doc = familyInstance.Document;
+        //    XYZ origin = ((LocationPoint)familyInstance.Location).Point;
+
+        //    double angle;
+        //    Autodesk.Revit.DB.Line dir;
+        //    if (1 - Vector.ZAxis.DotProduct(orientation.Z) > settings.AngleTolerance)
+        //    {
+        //        Vector normal;
+        //        if (1 - Math.Abs(Vector.ZAxis.DotProduct(orientation.Z)) > settings.AngleTolerance)
+        //            normal = Vector.ZAxis.CrossProduct(orientation.Z);
+        //        else
+        //            normal = Vector.XAxis;
+
+        //        angle = Vector.ZAxis.SignedAngle(orientation.Z, normal);
+        //        if (Math.Abs(angle) > settings.AngleTolerance)
+        //        {
+        //            dir = Autodesk.Revit.DB.Line.CreateBound(origin, origin + normal.ToRevit());
+        //            ElementTransformUtils.RotateElement(doc, familyInstance.Id, dir, angle);
+        //            doc.Regenerate();
+        //        }
+        //    }
+
+        //    angle = Vector.XAxis.SignedAngle(orientation.X, Vector.ZAxis);
+        //    if (Math.Abs(angle) > settings.AngleTolerance)
+        //    {
+        //        dir = Autodesk.Revit.DB.Line.CreateBound(origin, origin + XYZ.BasisZ);
+        //        ElementTransformUtils.RotateElement(doc, familyInstance.Id, dir, angle);
+        //        doc.Regenerate();
+        //    }
+        //}
 
         /***************************************************/
 
-        private static void Orient(this FamilyInstance familyInstance, Basis orientation, RevitSettings settings)
+        private static XYZ ClosestPointOn(this Element element, XYZ refPoint, out Reference reference, XYZ normal = null, RevitSettings settings = null)
         {
-            Document doc = familyInstance.Document;
-            XYZ origin = ((LocationPoint)familyInstance.Location).Point;
+            settings = settings.DefaultIfNull();
+            normal = normal?.Normalize();
 
-            double angle;
-            Autodesk.Revit.DB.Line dir;
-            if (1 - Vector.ZAxis.DotProduct(orientation.Z) > settings.AngleTolerance)
+            double minDist = double.MaxValue;
+            reference = null;
+
+            Options opt = new Options();
+            opt.ComputeReferences = true;
+            List<Autodesk.Revit.DB.Face> faces = element.Faces(opt);
+            IntersectionResult ir;
+            XYZ pointOnFace = null;
+
+            if (element is FamilyInstance && !((FamilyInstance)element).HasModifiedGeometry())
+                refPoint = ((FamilyInstance)element).GetTotalTransform().Inverse.OfPoint(refPoint);
+
+            foreach (Autodesk.Revit.DB.Face face in faces)
             {
-                Vector normal;
-                if (1 - Math.Abs(Vector.ZAxis.DotProduct(orientation.Z)) > settings.AngleTolerance)
-                    normal = Vector.ZAxis.CrossProduct(orientation.Z);
-                else
-                    normal = Vector.XAxis;
-
-                angle = Vector.ZAxis.SignedAngle(orientation.Z, normal);
-                if (Math.Abs(angle) > settings.AngleTolerance)
+                ir = face.Project(refPoint);
+                if (ir == null || ir.XYZPoint == null)
+                    continue;
+                
+                if (ir.Distance < minDist)
                 {
-                    dir = Autodesk.Revit.DB.Line.CreateBound(origin, origin + normal.ToRevit());
-                    ElementTransformUtils.RotateElement(doc, familyInstance.Id, dir, angle);
-                    doc.Regenerate();
+                    if (normal != null && 1 - normal.DotProduct(face.ComputeNormal(ir.UVPoint)) > settings.AngleTolerance)
+                        continue;
+
+                    minDist = ir.Distance;
+                    pointOnFace = ir.XYZPoint;
+                    reference = face.Reference;
                 }
             }
 
-            angle = Vector.XAxis.SignedAngle(orientation.X, Vector.ZAxis);
-            if (Math.Abs(angle) > settings.AngleTolerance)
-            {
-                dir = Autodesk.Revit.DB.Line.CreateBound(origin, origin + XYZ.BasisZ);
-                ElementTransformUtils.RotateElement(doc, familyInstance.Id, dir, angle);
-                doc.Regenerate();
-            }
+            if (pointOnFace == null || reference == null)
+                return null;
+
+            if (element is FamilyInstance && !((FamilyInstance)element).HasModifiedGeometry())
+                pointOnFace = ((FamilyInstance)element).GetTotalTransform().OfPoint(pointOnFace);
+
+            return pointOnFace;
         }
 
         /***************************************************/
+
+        private static Autodesk.Revit.DB.Line ClosestLineOn(this Element element, Autodesk.Revit.DB.Line refLine, out Reference reference)
+        {
+            double minDist = double.MaxValue;
+            reference = null;
+
+            Options opt = new Options();
+            opt.ComputeReferences = true;
+            List<Autodesk.Revit.DB.Face> faces = element.Faces(opt);
+            IntersectionResult ir1, ir2;
+            XYZ start = refLine.GetEndPoint(0);
+            XYZ end = refLine.GetEndPoint(1);
+            XYZ startOnFace = null;
+            XYZ endOnFace = null;
+
+            if (element is FamilyInstance && !((FamilyInstance)element).HasModifiedGeometry())
+            {
+                Transform t = ((FamilyInstance)element).GetTotalTransform();
+                start = t.Inverse.OfPoint(start);
+                end = t.Inverse.OfPoint(end);
+            }
+
+            foreach (Autodesk.Revit.DB.Face face in faces)
+            {
+                if (!(face is PlanarFace))
+                    continue;
+
+                ir1 = face.Project(start);
+                ir2 = face.Project(end);
+                if (ir1?.XYZPoint == null || ir2?.XYZPoint == null)
+                    continue;
+
+                double totDist = ir1.Distance + ir2.Distance;
+                if (totDist < minDist)
+                {
+                    minDist = totDist;
+                    startOnFace = ir1.XYZPoint;
+                    endOnFace = ir2.XYZPoint;
+                    reference = face.Reference;
+                }
+            }
+
+            if (startOnFace == null || endOnFace == null || reference == null)
+                return null;
+
+            if (element is FamilyInstance && !((FamilyInstance)element).HasModifiedGeometry())
+            {
+                Transform t = ((FamilyInstance)element).GetTotalTransform();
+                start = t.OfPoint(start);
+                end = t.OfPoint(end);
+            }
+
+            return Autodesk.Revit.DB.Line.CreateBound(startOnFace, endOnFace);
+        }
+
+        /***************************************************/
+
+        //private static Basis ProjectOnXY(this Basis basis, RevitSettings settings)
+        //{
+        //    if (1 - basis.Z.DotProduct(Vector.ZAxis) <= settings.AngleTolerance)
+        //        return basis;
+
+        //    Vector x = new Vector { X = basis.X.X, Y = basis.X.Y };
+        //    Vector y = new Vector { X = basis.Y.X, Y = basis.Y.Y };
+        //    if (x.Length() < settings.DistanceTolerance)
+        //    {
+        //        y = y.Normalise();
+        //        x = y.CrossProduct(Vector.ZAxis);
+        //    }
+        //    else if (y.Length() < settings.DistanceTolerance)
+        //    {
+        //        x = x.Normalise();
+        //        y = Vector.ZAxis.CrossProduct(x);
+        //    }
+        //    else
+        //    {
+        //        x = x.Normalise();
+        //        y = y.Normalise();
+        //    }
+
+        //    return new Basis(x, y, Vector.ZAxis);
+        //}
+
+        /***************************************************/
+        
+        //private static XYZ ProjectedX(this ModelInstance modelInstance, RevitSettings settings, out bool projected)
+        //{
+        //    projected = false;
+        //    XYZ xdir = XYZ.BasisX;
+        //    if (modelInstance.Orientation?.X != null)
+        //    {
+        //        Vector x = modelInstance.Orientation.X;
+        //        if (Math.Abs(x.Z) > settings.AngleTolerance)
+        //            projected = true;
+
+        //        Vector newX = new Vector { X = x.X, Y = x.Y };
+        //        if (newX.Length() > settings.DistanceTolerance)
+        //            xdir = newX.ToRevit();
+        //    }
+
+        //    return xdir;
+        //}
+
+        private static Vector ProjectedX(this Basis basis, RevitSettings settings)
+        {
+            Vector x = basis?.X;
+            if (x == null)
+                return Vector.XAxis;
+
+            Vector result = new Vector { X = x.X, Y = x.Y };
+            if (result.Length() < settings.DistanceTolerance)
+                result = Vector.XAxis;
+
+            return result;
+        }
     }
 }
