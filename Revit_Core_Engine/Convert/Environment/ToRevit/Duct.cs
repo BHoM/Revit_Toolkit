@@ -69,6 +69,9 @@ namespace BH.Revit.Engine.Core
             // hacky/heavy way of getting all connectors in the link below - however, i would rather filter the connecting elements out by type/bounding box first for performance reasons
             // https://thebuildingcoder.typepad.com/blog/2010/06/retrieve-mep-elements-and-connectors.html
             MechanicalSystemType mst = new FilteredElementCollector(document).OfClass(typeof(MechanicalSystemType)).OfType<MechanicalSystemType>().FirstOrDefault();
+
+            // add note about first avail
+
             revitDuct = Duct.Create(document, mst.Id, ductType.Id, level.Id, start, end);
 
             // Copy parameters from BHoM object to Revit element
