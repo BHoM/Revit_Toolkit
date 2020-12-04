@@ -40,6 +40,9 @@ namespace BH.Revit.Engine.Core
 
         public static Autodesk.Revit.DB.Plumbing.Pipe ToRevitPipe(this oM.MEP.System.Pipe pipe, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
+            if (document == null)
+                return null;
+
             // Check valid pipe object
             if (pipe == null)
                 return null;
@@ -71,7 +74,7 @@ namespace BH.Revit.Engine.Core
 
             Autodesk.Revit.DB.Plumbing.PipingSystemType pst = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipingSystemType)).OfType<Autodesk.Revit.DB.Plumbing.PipingSystemType>().FirstOrDefault();
 
-            revitPipe = Autodesk.Revit.DB.Plumbing.Pipe.Create(document, pst.Id, pipeType.Id, level.Id, start, end);
+            BH.Engine.Reflection.Compute.RecordWarning("Pipe creation will utilise the first available PipingSystemType from the Revit model.");
 
             // Copy parameters from BHoM object to Revit element
             revitPipe.CopyParameters(pipe, settings);
@@ -85,9 +88,8 @@ namespace BH.Revit.Engine.Core
 
             PipeSectionProperty pipeSectionProperty = pipe.SectionProperty;
 
-            // ToDo: Verify builtInParameter for correct value. This is not functioning as expected
             double flowRate = pipe.FlowRate;
-            revitPipe.SetParameter(BuiltInParameter.RBS_DUCT_FLOW_PARAM, flowRate); //Not being set correctly.
+            revitPipe.SetParameter(BuiltInParameter.RBS_PIPE_FLOW_PARAM, flowRate);
 
             // Round Pipe 
             if (revitPipe.Shape() == ConnectorProfileType.Round)
@@ -100,7 +102,11 @@ namespace BH.Revit.Engine.Core
                 double diameter = elementProfile.Diameter;
                 revitPipe.SetParameter(BuiltInParameter.RBS_PIPE_DIAMETER_PARAM, diameter);
 
-                // Pipe Lining is not supported in RevitAPI.
+                // Outer and Inner Diameters
+                double outDiameter = elementProfile.Diameter;
+                double inDiameter = (((outDiameter / 2) - elementProfile.Thickness) * 2);
+                revitPipe.SetParameter(BuiltInParameter.RBS_PIPE_OUTER_DIAMETER, outDiameter);
+                revitPipe.SetParameter(BuiltInParameter.RBS_PIPE_INNER_DIAM_PARAM, inDiameter);
 
                 // Set InsulationProfile
                 TubeProfile insulationProfile = sectionProfile.InsulationProfile as TubeProfile;
@@ -112,20 +118,20 @@ namespace BH.Revit.Engine.Core
                     Autodesk.Revit.DB.Plumbing.PipeInsulationType pit = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipeInsulationType)).FirstOrDefault() as Autodesk.Revit.DB.Plumbing.PipeInsulationType;
                     if (pit == null)
                     {
-                        BH.Engine.Reflection.Compute.RecordError("You must first create a pipe with insulation in your Revit model.");
+                        BH.Engine.Reflection.Compute.RecordError("Any pipe insulation type needs to be present in the Revit model in order to push pipes with insulation.");
                         return null;
                     }
                     // Create pipe Insulation
                     Autodesk.Revit.DB.Plumbing.PipeInsulation pIn = Autodesk.Revit.DB.Plumbing.PipeInsulation.Create(document, revitPipe.Id, pit.Id, insulationThickness);
                 }        
-                // Parameters not found in RevitAPI for Pipes, needs further investigation. Not critical for current workflows. 
-                // double profileThickness = elementProfile.Thickness;
             }
             else
             {
                 BH.Engine.Reflection.Compute.RecordError("No objects created. Only TubeProfiles are supported for Pipes.");
                 return null;
             }
+
+            revitPipe = Autodesk.Revit.DB.Plumbing.Pipe.Create(document, pst.Id, pipeType.Id, level.Id, start, end);
 
             refObjects.AddOrReplace(pipe, revitPipe);
             return revitPipe;
