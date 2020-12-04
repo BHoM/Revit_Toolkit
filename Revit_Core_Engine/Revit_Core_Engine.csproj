@@ -299,7 +299,6 @@
     <Compile Include="Convert\Geometry\FromRevit\Transform.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Transform.cs" />
     <Compile Include="Convert\Environment\ToRevit\CableTray.cs" />
-    <Compile Include="Convert\Environment\ToRevit\Wire.cs" />
     <Compile Include="Convert\Environment\ToRevit\Pipe.cs" />
     <Compile Include="Convert\Environment\ToRevit\Duct.cs" />
     <Compile Include="Convert\Environment\ToRevit\ElementType.cs" />

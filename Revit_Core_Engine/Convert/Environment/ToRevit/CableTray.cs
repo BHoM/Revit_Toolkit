@@ -43,7 +43,10 @@ namespace BH.Revit.Engine.Core
 
         public static Autodesk.Revit.DB.Electrical.CableTray ToRevitCableTray(this oM.MEP.System.CableTray cableTray, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            // Check valid pipe object
+            if (document == null)
+                return null;
+
+            // Check valid cableTray object
             if (cableTray == null)
                 return null;
 
@@ -67,8 +70,6 @@ namespace BH.Revit.Engine.Core
             if (level == null)
                 return null;
 
-            revitTray = Autodesk.Revit.DB.Electrical.CableTray.Create(document, trayType.Id, start, end, level.Id);
-
             // Copy parameters from BHoM object to Revit element
             revitTray.CopyParameters(cableTray, settings);
 
@@ -79,14 +80,7 @@ namespace BH.Revit.Engine.Core
                 ElementTransformUtils.RotateElement(document, revitTray.Id, Line.CreateBound(start, end), orientationAngle);
             }
 
-            SectionProfile sectionProfile = cableTray.SectionProperty.SectionProfile;
-            if (sectionProfile == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("CableTray creation requires a SectionProfile. \n No elements created.");
-                return null;
-            }
-
-            CableTraySectionProperty cableTraySectionProperty = cableTray.SectionProperty; // ToDo: Look into tray properties 
+            SectionProfile sectionProfile = cableTray.SectionProperty?.SectionProfile;
 
             BoxProfile elementProfile = sectionProfile.ElementProfile as BoxProfile;
             if (elementProfile == null)
@@ -100,7 +94,7 @@ namespace BH.Revit.Engine.Core
             double profileWidth = elementProfile.Width;
             revitTray.SetParameter(BuiltInParameter.RBS_CABLETRAY_WIDTH_PARAM, profileWidth);
 
-            //// ToDo: Verify builtInParameter for correct value. This is not functioning as expected
+            revitTray = Autodesk.Revit.DB.Electrical.CableTray.Create(document, trayType.Id, start, end, level.Id);
 
             refObjects.AddOrReplace(cableTray, revitTray);
             return revitTray;
