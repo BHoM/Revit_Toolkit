@@ -38,6 +38,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("4.0", "BH.Engine.Adapters.Revit.Create.DraftingInstance(System.String, System.String, System.String, BH.oM.Geometry.Point)")]
         [Description("Creates DraftingInstance object based on point location, Revit family name and family type name. Such DraftingInstance can be pushed to Revit as a point-driven drafting element.")]
         [Input("familyName", "Name of Revit family to be used when creating the element.")]
         [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
@@ -55,6 +56,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [PreviousVersion("4.0", "BH.Engine.Adapters.Revit.Create.DraftingInstance(BH.oM.Adapters.Revit.Properties.InstanceProperties, System.String, BH.oM.Geometry.Point)")]
         [Description("Creates DraftingInstance object based on point location and BHoM InstanceProperties. Such DraftingInstance can be pushed to Revit as a point-driven drafting element.")]
         [InputFromProperty("properties")]
         [InputFromProperty("viewName")]
@@ -235,36 +237,6 @@ namespace BH.Engine.Adapters.Revit
             };
 
             return draftingInstance;
-        }
-
-
-        /***************************************************/
-        /****            Deprecated methods             ****/
-        /***************************************************/
-
-        [ToBeRemoved("4.0", "Replaced with same named method with more parameters.")]
-        [Description("Creates DraftingInstance object based on point location, Revit family name and family type name. Such DraftingInstance can be pushed to Revit as a point-driven drafting element.")]
-        [Input("familyName", "Name of Revit family to be used when creating the element.")]
-        [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
-        [InputFromProperty("viewName")]
-        [InputFromProperty("location")]
-        [Output("draftingInstance")]
-        public static DraftingInstance DraftingInstance(string familyName, string familyTypeName, string viewName, Point location)
-        {
-            return Create.DraftingInstance(familyName, familyTypeName, viewName, location, null);
-        }
-
-        /***************************************************/
-
-        [ToBeRemoved("4.0", "Replaced with same named method with more parameters.")]
-        [Description("Creates DraftingInstance object based on point location and BHoM InstanceProperties. Such DraftingInstance can be pushed to Revit as a point-driven drafting element.")]
-        [InputFromProperty("properties")]
-        [InputFromProperty("viewName")]
-        [InputFromProperty("location")]
-        [Output("draftingInstance")]
-        public static DraftingInstance DraftingInstance(InstanceProperties properties, string viewName, Point location)
-        {
-            return Create.DraftingInstance(properties, viewName, location, null);
         }
 
         /***************************************************/
