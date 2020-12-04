@@ -43,7 +43,7 @@ namespace BH.oM.Adapters.Revit.Elements
         [Description("Orientation of the instance in 3 dimensional space. Applicable only to point-based ModelInstances. If null, a default orientation will be applied.")]
         public virtual Basis Orientation { get; set; } = null;
 
-        [Description("Revit ElementId of the host element.")]
+        [Description("Revit ElementId of the host element. -1 indicates no host for the given instance")]
         public virtual int HostId { get; set; } = -1;
 
         /***************************************************/
