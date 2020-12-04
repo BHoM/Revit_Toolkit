@@ -157,7 +157,11 @@ namespace BH.Revit.Engine.Core
             if (orientation?.BasisX == null)
                 return document.Create.NewFamilyInstance(origin, familySymbol, host, StructuralType.NonStructural);
             else
-                return document.Create.NewFamilyInstance(origin, familySymbol, orientation.BasisX, host, StructuralType.NonStructural);
+            {
+                FamilyInstance familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, orientation.BasisX, host, StructuralType.NonStructural);
+                familyInstance.CheckIfSameNormal(orientation.BasisZ, settings);
+                return familyInstance;
+            }
         }
 
         /***************************************************/
@@ -183,7 +187,7 @@ namespace BH.Revit.Engine.Core
                 double angle = XYZ.BasisX.AngleOnPlaneTo(xdir, XYZ.BasisZ);
                 if (Math.Abs(angle) > settings.AngleTolerance)
                 {
-                    Autodesk.Revit.DB.Line dir = Autodesk.Revit.DB.Line.CreateBound(origin, origin + XYZ.BasisZ);
+                    Line dir = Line.CreateBound(origin, origin + XYZ.BasisZ);
                     ElementTransformUtils.RotateElement(document, familyInstance.Id, dir, angle);
                     document.Regenerate();
                 }
@@ -214,7 +218,9 @@ namespace BH.Revit.Engine.Core
                         refDir = -refDir;
                 }
 
-                return document.Create.NewFamilyInstance(reference, location, refDir, familySymbol);
+                FamilyInstance familyInstance = document.Create.NewFamilyInstance(reference, location, refDir, familySymbol);
+                familyInstance.CheckIfSameNormal(orientation?.BasisZ, settings);
+                return familyInstance;
             }
             else
             {
@@ -250,7 +256,7 @@ namespace BH.Revit.Engine.Core
 
         private static FamilyInstance FamilyInstance_TwoLevelsBased(Document document, FamilySymbol familySymbol, Curve curve, Element host, RevitSettings settings)
         {
-            Autodesk.Revit.DB.Line line = curve as Autodesk.Revit.DB.Line;
+            Line line = curve as Line;
             if (line == null)
             {
                 familySymbol.LinearOnlyError();
@@ -281,14 +287,14 @@ namespace BH.Revit.Engine.Core
 
         private static FamilyInstance FamilyInstance_WorkPlaneBased(Document document, FamilySymbol familySymbol, Curve curve, Element host, RevitSettings settings)
         {
-            Autodesk.Revit.DB.Line line = curve as Autodesk.Revit.DB.Line;
+            Line line = curve as Line;
             if (line == null)
             {
                 familySymbol.LinearOnlyError();
                 return null;
             }
 
-            Autodesk.Revit.DB.Line location;
+            Line location;
             Reference reference;
             if (host != null)
                 location = host.ClosestLineOn(line, out reference);
@@ -320,7 +326,7 @@ namespace BH.Revit.Engine.Core
 
         private static FamilyInstance FamilyInstance_CurveBased(Document document, FamilySymbol familySymbol, Curve curve, Element host, RevitSettings settings)
         {
-            Autodesk.Revit.DB.Line line = curve as Autodesk.Revit.DB.Line;
+            Line line = curve as Line;
             if (line == null)
             {
                 familySymbol.LinearOnlyError();
@@ -340,7 +346,7 @@ namespace BH.Revit.Engine.Core
             else
             {
                 Reference reference;
-                Autodesk.Revit.DB.Line location = host.ClosestLineOn((Autodesk.Revit.DB.Line)line, out reference);
+                Line location = host.ClosestLineOn((Line)line, out reference);
                 if (location != null && reference != null)
                     familyInstance = document.Create.NewFamilyInstance(reference, location, familySymbol);
             }
@@ -392,7 +398,7 @@ namespace BH.Revit.Engine.Core
                     angle = view.UpDirection.AngleOnPlaneTo(yDir, view.ViewDirection);
                 }
 
-                Autodesk.Revit.DB.Line dir = Autodesk.Revit.DB.Line.CreateBound(origin, origin + view.ViewDirection);
+                Line dir = Line.CreateBound(origin, origin + view.ViewDirection);
                 ElementTransformUtils.RotateElement(view.Document, familyInstance.Id, dir, angle);
             }
 
@@ -403,7 +409,7 @@ namespace BH.Revit.Engine.Core
 
         private static FamilyInstance FamilyInstance_CurveBasedDetail(Document document, FamilySymbol familySymbol, Curve curve, View view, RevitSettings settings)
         {
-            Autodesk.Revit.DB.Line line = curve as Autodesk.Revit.DB.Line;
+            Line line = curve as Line;
             if (line == null)
             {
                 familySymbol.LinearOnlyError();
@@ -470,7 +476,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Autodesk.Revit.DB.Line ClosestLineOn(this Element element, Autodesk.Revit.DB.Line refLine, out Reference reference)
+        private static Line ClosestLineOn(this Element element, Line refLine, out Reference reference)
         {
             double minDist = double.MaxValue;
             reference = null;
@@ -513,7 +519,7 @@ namespace BH.Revit.Engine.Core
                 reference = Reference.ParseFromStableRepresentation(element.Document, instRef);
             }
 
-            return Autodesk.Revit.DB.Line.CreateBound(startOnFace, endOnFace);
+            return Line.CreateBound(startOnFace, endOnFace);
         }
 
         /***************************************************/
@@ -529,6 +535,14 @@ namespace BH.Revit.Engine.Core
                 result = basis.BasisY.CrossProduct(basis.BasisZ);
 
             return result;
+        }
+
+        /***************************************************/
+
+        private static void CheckIfSameNormal(this FamilyInstance familyInstance, XYZ normal, RevitSettings settings)
+        {
+            if (normal != null && 1 - Math.Abs(familyInstance.GetTotalTransform().BasisZ.DotProduct(normal.Normalize())) > settings.AngleTolerance)
+                BH.Engine.Reflection.Compute.RecordWarning($"The orientation used to create the family instance was not perpendicular to the face on which the instance was placed. The orientation out of plane has been ignored. ElementId: {familyInstance.Id.IntegerValue}");
         }
 
         /***************************************************/
