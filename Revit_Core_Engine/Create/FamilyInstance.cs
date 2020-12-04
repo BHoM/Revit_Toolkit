@@ -235,7 +235,11 @@ namespace BH.Revit.Engine.Core
                         refDir = -refDir;
                 }
 
-                return document.Create.NewFamilyInstance(reference, origin, refDir, familySymbol);
+                FamilyInstance familyInstance = document.Create.NewFamilyInstance(reference, origin, refDir, familySymbol);
+                if (document.GetElement(reference.ElementId) is ReferencePlane)
+                    familyInstance.ReferencePlaneCreatedWarning();
+
+                return familyInstance;
             }
         }
         
@@ -306,6 +310,8 @@ namespace BH.Revit.Engine.Core
 
             if (host == null)
                 familyInstance.CurveBasedNonHostedWarning();
+            else
+                familyInstance.CurveBasedHostedWarning();
 
             return familyInstance;
         }
