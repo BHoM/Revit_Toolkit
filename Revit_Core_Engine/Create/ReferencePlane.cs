@@ -31,16 +31,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static ReferencePlane ReferencePlane(Document document, BH.oM.Geometry.Point origin, Basis orientation, string name = "")
-        {
-            if (origin == null || orientation == null)
-                return null;
-
-            return Create.ReferencePlane(document, origin.ToRevit(), orientation.ToRevit(), name);
-        }
-
-        /***************************************************/
-
         public static ReferencePlane ReferencePlane(Document document, XYZ point, Transform orientation, string name = "")
         {
             if (point == null || orientation == null)
