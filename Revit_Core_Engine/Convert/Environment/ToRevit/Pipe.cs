@@ -82,6 +82,7 @@ namespace BH.Revit.Engine.Core
             if (pst == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("No valid PipingSystemType can be found in the Revit model. Creating a revit Pipe requires a PipingSystemType.");
+                return null;
             }
 
             BH.Engine.Reflection.Compute.RecordWarning("Pipe creation will utilise the first available PipingSystemType from the Revit model.");
@@ -95,10 +96,12 @@ namespace BH.Revit.Engine.Core
 
             PipeSectionProperty pipeSectionProperty = pipe.SectionProperty;
 
+            // Create Revit Pipe
             revitPipe = Autodesk.Revit.DB.Plumbing.Pipe.Create(document, pst.Id, pipeType.Id, level.Id, start, end);
             if (revitPipe == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("No Revit Pipe has been created. Please check inputs prior to push attempt.");
+                return null;
             }
 
             // Copy parameters from BHoM object to Revit element
@@ -107,12 +110,18 @@ namespace BH.Revit.Engine.Core
             double flowRate = pipe.FlowRate;
             revitPipe.SetParameter(BuiltInParameter.RBS_PIPE_FLOW_PARAM, flowRate);
 
+            // Get first available pipeLiningType from document
+            Autodesk.Revit.DB.Plumbing.PipeInsulationType pit = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipeInsulationType)).FirstOrDefault() as Autodesk.Revit.DB.Plumbing.PipeInsulationType;
+            if (pit == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Any pipe insulation type needs to be present in the Revit model in order to push pipes with insulation.\n" +
+                    "Pipe has been created but no insulation has been applied.");
+            }
+
             // Round Pipe 
-            if (revitPipe.Shape() == ConnectorProfileType.Round)
+            if (sectionProfile.ElementProfile is TubeProfile)
             {
                 TubeProfile elementProfile = sectionProfile.ElementProfile as TubeProfile;
-                if (elementProfile == null)
-                    return null;
 
                 // Set Element Diameter
                 double diameter = elementProfile.Diameter;
@@ -125,26 +134,13 @@ namespace BH.Revit.Engine.Core
                 revitPipe.SetParameter(BuiltInParameter.RBS_PIPE_INNER_DIAM_PARAM, inDiameter);
 
                 // Set InsulationProfile
-                TubeProfile insulationProfile = sectionProfile.InsulationProfile as TubeProfile;
-                if (insulationProfile != null)
+                if (pit != null)
                 {
+                    TubeProfile insulationProfile = sectionProfile.InsulationProfile as TubeProfile;
                     double insulationThickness = insulationProfile.Thickness;
-
-                    // Get first available pipeLiningType from document
-                    Autodesk.Revit.DB.Plumbing.PipeInsulationType pit = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipeInsulationType)).FirstOrDefault() as Autodesk.Revit.DB.Plumbing.PipeInsulationType;
-                    if (pit == null)
-                    {
-                        BH.Engine.Reflection.Compute.RecordError("Any pipe insulation type needs to be present in the Revit model in order to push pipes with insulation.");
-                        return null;
-                    }
                     // Create pipe Insulation
                     Autodesk.Revit.DB.Plumbing.PipeInsulation pIn = Autodesk.Revit.DB.Plumbing.PipeInsulation.Create(document, revitPipe.Id, pit.Id, insulationThickness);
-                }        
-            }
-            else
-            {
-                BH.Engine.Reflection.Compute.RecordError("No pipe objects created as only TubeProfiles are supported.");
-                return null;
+                }       
             }
 
             refObjects.AddOrReplace(pipe, revitPipe);

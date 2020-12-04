@@ -82,6 +82,7 @@ namespace BH.Revit.Engine.Core
             if (revitTray == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("No Revit CableTray has been created. Please check inputs prior to push attempt.");
+                return null;
             }
 
             // Copy parameters from BHoM object to Revit element
