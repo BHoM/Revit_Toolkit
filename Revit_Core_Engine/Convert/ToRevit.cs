@@ -166,6 +166,19 @@ namespace BH.Revit.Engine.Core
             return pipe.ToRevitPipe(document, settings, refObjects);
         }
 
+        /***************************************************/
+
+        public static Element ToRevit(this BH.oM.MEP.System.WireSegment wire, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            return wire.ToRevitWire(document, settings, refObjects);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this BH.oM.MEP.System.CableTray cableTray, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            return cableTray.ToRevitCableTray(document, settings, refObjects);
+        }
 
         /***************************************************/
         /****             Disallowed Types              ****/
