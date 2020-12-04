@@ -159,6 +159,13 @@ namespace BH.Revit.Engine.Core
             return duct.ToRevitDuct(document, settings, refObjects);
         }
 
+        /***************************************************/
+
+        public static Element ToRevit(this BH.oM.MEP.System.Pipe pipe, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            return pipe.ToRevitPipe(document, settings, refObjects);
+        }
+
 
         /***************************************************/
         /****             Disallowed Types              ****/

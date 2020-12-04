@@ -56,10 +56,125 @@ namespace BH.Revit.Engine.Core
                 elementType = ductTypes.FirstOrDefault(x => x.FamilyName == "Rectangular Duct");
             else if (property.SectionProfile.ElementProfile is BH.oM.Spatial.ShapeProfiles.TubeProfile)
                 elementType = ductTypes.FirstOrDefault(x => x.FamilyName == "Round Duct");
+            // Add more shapeProfiles when available
 
             if (elementType != null)
             {
                 BH.Engine.Reflection.Compute.RecordNote("Duct is being pushed as the first type available in the Revit model.");
+            }
+            else
+                return null;
+
+            // Copy parameters from BHoM object to Revit element
+            elementType.CopyParameters(property, settings);
+
+            refObjects.AddOrReplace(property, elementType);
+            return elementType;
+        }
+
+        /***************************************************/
+
+        // Todo Check FamilyName == Round Pipe @ 96
+
+        public static Autodesk.Revit.DB.Plumbing.PipeType ToRevitElementType(this oM.MEP.System.SectionProperties.PipeSectionProperty property, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            if (property == null || document == null)
+                return null;
+
+            Autodesk.Revit.DB.Plumbing.PipeType elementType = refObjects.GetValue<Autodesk.Revit.DB.Plumbing.PipeType>(document, property.BHoM_Guid);
+            if (elementType != null)
+                return elementType;
+
+            settings = settings.DefaultIfNull();
+
+            elementType = property.ElementType(document, categories, settings) as Autodesk.Revit.DB.Plumbing.PipeType;
+            if (elementType != null)
+                return elementType;
+
+            List<Autodesk.Revit.DB.Plumbing.PipeType> pipeTypes = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipeType)).Cast<Autodesk.Revit.DB.Plumbing.PipeType>().ToList();
+
+            if (property.SectionProfile.ElementProfile is BH.oM.Spatial.ShapeProfiles.TubeProfile)
+                elementType = pipeTypes.FirstOrDefault(x => x.FamilyName == "Round Pipe"); // Todo: Check this.
+
+            if (elementType != null)
+            {
+                BH.Engine.Reflection.Compute.RecordNote("Pipe is being pushed as the first type available in the Revit model.");
+            }
+            else
+                return null;
+
+            // Copy parameters from BHoM object to Revit element
+            elementType.CopyParameters(property, settings);
+
+            refObjects.AddOrReplace(property, elementType);
+            return elementType;
+        }
+
+        /***************************************************/
+
+        // Todo Check FamilyName == Round Wire @ 134
+
+        public static Autodesk.Revit.DB.Electrical.WireType ToRevitElementType(this oM.MEP.System.SectionProperties.WireSectionProperty property, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            if (property == null || document == null)
+                return null;
+
+            Autodesk.Revit.DB.Electrical.WireType elementType = refObjects.GetValue<Autodesk.Revit.DB.Electrical.WireType>(document, property.BHoM_Guid);
+            if (elementType != null)
+                return elementType;
+
+            settings = settings.DefaultIfNull();
+
+            elementType = property.ElementType(document, categories, settings) as Autodesk.Revit.DB.Electrical.WireType;
+            if (elementType != null)
+                return elementType;
+
+            List<Autodesk.Revit.DB.Electrical.WireType> wireTypes = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Electrical.WireType)).Cast<Autodesk.Revit.DB.Electrical.WireType>().ToList();
+
+            if (property.SectionProfile.ElementProfile is BH.oM.Spatial.ShapeProfiles.TubeProfile)
+                elementType = wireTypes.FirstOrDefault(x => x.FamilyName == "Round Wire"); // ToDo: Check this.
+
+            if (elementType != null)
+            {
+                BH.Engine.Reflection.Compute.RecordNote("Wire is being pushed as the first type available in the Revit model.");
+            }
+            else
+                return null;
+
+            // Copy parameters from BHoM object to Revit element
+            elementType.CopyParameters(property, settings);
+
+            refObjects.AddOrReplace(property, elementType);
+            return elementType;
+        }
+
+        /***************************************************/
+
+        // Todo Check FamilyName == Default @ 173
+
+        public static Autodesk.Revit.DB.Electrical.CableTrayType ToRevitElementType(this oM.MEP.System.SectionProperties.CableTraySectionProperty property, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            if (property == null || document == null)
+                return null;
+
+            Autodesk.Revit.DB.Electrical.CableTrayType elementType = refObjects.GetValue<Autodesk.Revit.DB.Electrical.CableTrayType>(document, property.BHoM_Guid);
+            if (elementType != null)
+                return elementType;
+
+            settings = settings.DefaultIfNull();
+
+            elementType = property.ElementType(document, categories, settings) as Autodesk.Revit.DB.Electrical.CableTrayType;
+            if (elementType != null)
+                return elementType;
+
+            List<Autodesk.Revit.DB.Electrical.CableTrayType> trayTypes = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Electrical.CableTrayType)).Cast<Autodesk.Revit.DB.Electrical.CableTrayType>().ToList();
+
+            if (property.SectionProfile.ElementProfile is BH.oM.Spatial.ShapeProfiles.TubeProfile)
+                elementType = trayTypes.FirstOrDefault(x => x.FamilyName == "Default"); // ToDo: Check this.
+
+            if (elementType != null)
+            {
+                BH.Engine.Reflection.Compute.RecordNote("CableTray is being pushed as the first type available in the Revit model.");
             }
             else
                 return null;
