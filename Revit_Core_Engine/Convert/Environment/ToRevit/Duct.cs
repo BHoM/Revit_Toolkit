@@ -97,7 +97,7 @@ namespace BH.Revit.Engine.Core
             revitDuct.SetParameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM, hydraulicDiameter);
 
             // Rectangular Duct 
-            if (ductType.Shape == ConnectorProfileType.Rectangular)
+            if (revitDuct.Shape() == ConnectorProfileType.Rectangular)
             {
                 BoxProfile elementProfile = sectionProfile.ElementProfile as BoxProfile;
                 if (elementProfile == null)
@@ -153,7 +153,7 @@ namespace BH.Revit.Engine.Core
                 //double profileOuterRadius = elementProfile.OuterRadius;
                 //double profileInnerRadius = elementProfile.InnerRadius;
             }
-            else if (ductType.Shape == ConnectorProfileType.Round)
+            else if (revitDuct.Shape() == ConnectorProfileType.Round)
             {
                 TubeProfile elementProfile = sectionProfile.ElementProfile as TubeProfile;
                 if (elementProfile == null)

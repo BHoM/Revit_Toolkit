@@ -34,14 +34,14 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Determines whether a Revit duct is round, rectangular or oval.")]
-        [Input("duct", "Revit duct to check in order to determine its shape.")]
+        [Description("Determines whether a Revit MEPCurve is round, rectangular or oval.")]
+        [Input("mEPCurve", "Revit MEPCurve to check in order to determine its shape.")]
         [Input("settings", "Revit adapter settings.")]
-        [Output("ductShape", "Shape of a duct, which can be eiher round, rectangular or oval. If the shape of the duct cannot be determined, an invalid connector shape is returned.")]
-        public static Autodesk.Revit.DB.ConnectorProfileType DuctShape(this Autodesk.Revit.DB.Mechanical.Duct duct, RevitSettings settings = null)
+        [Output("shape", "Shape of an MEPCurve, which can be eiher round, rectangular or oval. If the shape of the MEPCurve cannot be determined, an invalid connector shape is returned.")]
+        public static Autodesk.Revit.DB.ConnectorProfileType Shape(this MEPCurve mEPCurve, RevitSettings settings = null)
         {
             // Input validation
-            if (duct == null)
+            if (mEPCurve == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Duct not provided. Please input a Autodesk.Revit.DB.Mechanical.Duct object.");
 
@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
 
 #if REVIT2018
             // Get the duct connector shape in Revit 2018 by extracting it from one of the duct connectors
-            foreach (Connector connector in duct.ConnectorManager.Connectors)
+            foreach (Connector connector in mEPCurve.ConnectorManager.Connectors)
             {
                 // Get the End connector for this duct
                 if (connector.ConnectorType == ConnectorType.End)

@@ -90,7 +90,7 @@ namespace BH.Revit.Engine.Core
             revitPipe.SetParameter(BuiltInParameter.RBS_DUCT_FLOW_PARAM, flowRate); //Not being set correctly.
 
             // Round Pipe 
-            if (pipeType.Shape == ConnectorProfileType.Round)
+            if (revitPipe.Shape() == ConnectorProfileType.Round)
             {
                 TubeProfile elementProfile = sectionProfile.ElementProfile as TubeProfile;
                 if (elementProfile == null)
