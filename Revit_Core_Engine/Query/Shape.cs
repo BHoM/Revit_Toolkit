@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Mechanical;
+using Autodesk.Revit.DB.Plumbing;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
@@ -62,8 +63,7 @@ namespace BH.Revit.Engine.Core
             // Return an Invalid connector shape if no primary connector is found
             return ConnectorProfileType.Invalid;
 #else
-            // Get the shape of this duct
-            return duct.DuctType.Shape;
+            return (mEPCurve.Document.GetElement(mEPCurve.GetTypeId()) as MEPCurveType).Shape;
 #endif
         }
 

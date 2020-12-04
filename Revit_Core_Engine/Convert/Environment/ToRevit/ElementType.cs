@@ -94,7 +94,7 @@ namespace BH.Revit.Engine.Core
             List<Autodesk.Revit.DB.Plumbing.PipeType> pipeTypes = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipeType)).Cast<Autodesk.Revit.DB.Plumbing.PipeType>().ToList();
 
             if (property.SectionProfile.ElementProfile is BH.oM.Spatial.ShapeProfiles.TubeProfile)
-                elementType = pipeTypes.FirstOrDefault(x => x.FamilyName == "Round Pipe"); // Todo: Check this.
+                elementType = pipeTypes.FirstOrDefault(x => x.FamilyName == "Pipe Types");
 
             if (elementType != null)
             {
