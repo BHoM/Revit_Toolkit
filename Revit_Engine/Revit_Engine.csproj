@@ -81,6 +81,11 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Graphics_oM, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\ProgramData\BHoM\Assemblies\Graphics_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Library_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
@@ -176,6 +181,7 @@
     <Compile Include="Modify\SetRevitParameter.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
+    <Compile Include="Query\RenderMeshes.cs" />
     <Compile Include="Query\ZJustifiedCurve.cs" />
     <Compile Include="Query\DefaultParameterSettings.cs" />
     <Compile Include="Query\GetRevitParameters.cs" />
