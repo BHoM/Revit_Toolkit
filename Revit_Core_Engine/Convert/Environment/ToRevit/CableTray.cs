@@ -38,9 +38,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        // ToDo for method functionality from top to bottom: 
-        // SectionProperty.ToRevitElementType to BuiltInCategory is unknown and currently set to OST_CableTrayRun
-
         public static Autodesk.Revit.DB.Electrical.CableTray ToRevitCableTray(this oM.MEP.System.CableTray cableTray, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (document == null)
@@ -60,6 +57,11 @@ namespace BH.Revit.Engine.Core
 
             // CableTray type
             Autodesk.Revit.DB.Electrical.CableTrayType trayType = cableTray.SectionProperty.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_CableTrayRun }, settings, refObjects) as Autodesk.Revit.DB.Electrical.CableTrayType;
+            if (trayType == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("No valid family has been found in the Revit model. CableTray creation requires the presence of the default CableTray Family Type.");
+                return null;
+            }
 
             // End points
             XYZ start = cableTray.StartPoint.ToRevit();
@@ -69,6 +71,18 @@ namespace BH.Revit.Engine.Core
             Level level = document.LevelBelow(Math.Min(start.Z, end.Z), settings);
             if (level == null)
                 return null;
+
+            SectionProfile sectionProfile = cableTray.SectionProperty?.SectionProfile;
+
+            BoxProfile elementProfile = sectionProfile.ElementProfile as BoxProfile;
+            if (elementProfile == null)
+                return null;
+
+            revitTray = Autodesk.Revit.DB.Electrical.CableTray.Create(document, trayType.Id, start, end, level.Id);
+            if (revitTray == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("No Revit CableTray has been created. Please check inputs prior to push attempt.");
+            }
 
             // Copy parameters from BHoM object to Revit element
             revitTray.CopyParameters(cableTray, settings);
@@ -80,12 +94,6 @@ namespace BH.Revit.Engine.Core
                 ElementTransformUtils.RotateElement(document, revitTray.Id, Line.CreateBound(start, end), orientationAngle);
             }
 
-            SectionProfile sectionProfile = cableTray.SectionProperty?.SectionProfile;
-
-            BoxProfile elementProfile = sectionProfile.ElementProfile as BoxProfile;
-            if (elementProfile == null)
-                return null;
-
             // Set Height
             double profileHeight = elementProfile.Height;
             revitTray.SetParameter(BuiltInParameter.RBS_CABLETRAY_HEIGHT_PARAM, profileHeight);
@@ -93,8 +101,6 @@ namespace BH.Revit.Engine.Core
             // Set Width
             double profileWidth = elementProfile.Width;
             revitTray.SetParameter(BuiltInParameter.RBS_CABLETRAY_WIDTH_PARAM, profileWidth);
-
-            revitTray = Autodesk.Revit.DB.Electrical.CableTray.Create(document, trayType.Id, start, end, level.Id);
 
             refObjects.AddOrReplace(cableTray, revitTray);
             return revitTray;
