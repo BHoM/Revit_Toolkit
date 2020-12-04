@@ -57,6 +57,11 @@ namespace BH.Revit.Engine.Core
 
             // Duct type
             DuctType ductType = duct.SectionProperty.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_DuctSystem }, settings, refObjects) as DuctType;
+            if (ductType == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("No valid family has been found in the Revit model. Duct creation requires the presence of the default Duct Family Type.");
+                return null;
+            }
 
             // End points
             XYZ start = duct.StartPoint.ToRevit();
@@ -73,7 +78,26 @@ namespace BH.Revit.Engine.Core
             // https://thebuildingcoder.typepad.com/blog/2010/06/retrieve-mep-elements-and-connectors.html
             MechanicalSystemType mst = new FilteredElementCollector(document).OfClass(typeof(MechanicalSystemType)).OfType<MechanicalSystemType>().FirstOrDefault();
 
+            if(mst == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("No valid MechanicalSystemType can be found in the Revit model. Creating a revit Duct requires a MechanicalSystemType.");
+            }
+
             BH.Engine.Reflection.Compute.RecordWarning("Duct creation will utilise the first available MechanicalSystemType from the Revit model.");
+
+            SectionProfile sectionProfile = duct.SectionProperty?.SectionProfile;
+
+            DuctSectionProperty ductSectionProperty = duct.SectionProperty;
+            if(ductSectionProperty == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Duct creation requires a valid DuctSectionProperty.");
+            }
+
+            revitDuct = Duct.Create(document, mst.Id, ductType.Id, level.Id, start, end);
+            if (revitDuct == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("No Revit Duct has been created. Please check inputs prior to push attempt.");
+            }
 
             // Copy parameters from BHoM object to Revit element
             revitDuct.CopyParameters(duct, settings);
@@ -83,10 +107,6 @@ namespace BH.Revit.Engine.Core
             {
                 ElementTransformUtils.RotateElement(document, revitDuct.Id, Line.CreateBound(start, end), orientationAngle);
             }
-
-            SectionProfile sectionProfile = duct.SectionProperty.SectionProfile;
-
-            DuctSectionProperty ductSectionProperty = duct.SectionProperty;
 
             double flowRate = duct.FlowRate;
             revitDuct.SetParameter(BuiltInParameter.RBS_DUCT_FLOW_PARAM, flowRate);
@@ -189,17 +209,12 @@ namespace BH.Revit.Engine.Core
                     // Create ductInsulation
                     Autodesk.Revit.DB.Mechanical.DuctInsulation di = Autodesk.Revit.DB.Mechanical.DuctInsulation.Create(document, revitDuct.Id, dit.Id, insulationThickness);
                 }
-                //Parameters not found in RevitAPI for Round Ducts, needs further investigation. Not critical for current workflows. 
-                //double profileThickness = elementProfile.Thickness;
-                //Oval Ducts are currently unsupported in the BHoM. No ShapeProfile exists. 
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError("No objects created. Only Box or TubeProfiles are supported.");
+                BH.Engine.Reflection.Compute.RecordError("No ducts created as only Box or TubeProfiles are supported.");
                 return null;
             }
-
-            revitDuct = Duct.Create(document, mst.Id, ductType.Id, level.Id, start, end);
 
             refObjects.AddOrReplace(duct, revitDuct);
             return revitDuct;

@@ -57,6 +57,11 @@ namespace BH.Revit.Engine.Core
 
             // Pipe type
             Autodesk.Revit.DB.Plumbing.PipeType pipeType = pipe.SectionProperty.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_PipingSystem }, settings, refObjects) as Autodesk.Revit.DB.Plumbing.PipeType;
+            if(pipeType == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("No valid family has been found in the Revit model. Pipe creation requires the presence of the default Pipe Family Type.");
+                return null;
+            }
 
             // End points
             XYZ start = pipe.StartPoint.ToRevit();
@@ -74,10 +79,12 @@ namespace BH.Revit.Engine.Core
 
             Autodesk.Revit.DB.Plumbing.PipingSystemType pst = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipingSystemType)).OfType<Autodesk.Revit.DB.Plumbing.PipingSystemType>().FirstOrDefault();
 
-            BH.Engine.Reflection.Compute.RecordWarning("Pipe creation will utilise the first available PipingSystemType from the Revit model.");
+            if (pst == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("No valid PipingSystemType can be found in the Revit model. Creating a revit Pipe requires a PipingSystemType.");
+            }
 
-            // Copy parameters from BHoM object to Revit element
-            revitPipe.CopyParameters(pipe, settings);
+            BH.Engine.Reflection.Compute.RecordWarning("Pipe creation will utilise the first available PipingSystemType from the Revit model.");
 
             SectionProfile sectionProfile = pipe.SectionProperty.SectionProfile;
             if (sectionProfile == null)
@@ -87,6 +94,15 @@ namespace BH.Revit.Engine.Core
             }
 
             PipeSectionProperty pipeSectionProperty = pipe.SectionProperty;
+
+            revitPipe = Autodesk.Revit.DB.Plumbing.Pipe.Create(document, pst.Id, pipeType.Id, level.Id, start, end);
+            if (revitPipe == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("No Revit Pipe has been created. Please check inputs prior to push attempt.");
+            }
+
+            // Copy parameters from BHoM object to Revit element
+            revitPipe.CopyParameters(pipe, settings);
 
             double flowRate = pipe.FlowRate;
             revitPipe.SetParameter(BuiltInParameter.RBS_PIPE_FLOW_PARAM, flowRate);
@@ -127,11 +143,9 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError("No objects created. Only TubeProfiles are supported for Pipes.");
+                BH.Engine.Reflection.Compute.RecordError("No pipe objects created as only TubeProfiles are supported.");
                 return null;
             }
-
-            revitPipe = Autodesk.Revit.DB.Plumbing.Pipe.Create(document, pst.Id, pipeType.Id, level.Id, start, end);
 
             refObjects.AddOrReplace(pipe, revitPipe);
             return revitPipe;
