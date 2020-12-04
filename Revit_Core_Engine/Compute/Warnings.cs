@@ -478,6 +478,20 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        internal static void CurveBasedHostedWarning(this FamilyInstance familyInstance)
+        {
+            BH.Engine.Reflection.Compute.RecordWarning($"A curve-based non-structural element has been created with a host. That functionality had not been tested, therefore it is recommended to inspect the element. ElementId: {familyInstance.Id.IntegerValue}");
+        }
+
+        /***************************************************/
+
+        internal static void ReferencePlaneCreatedWarning(this FamilyInstance familyInstance)
+        {
+            BH.Engine.Reflection.Compute.RecordWarning($"A dedicated reference plane has been created in order to place the family instance in the correct location. ElementId: {familyInstance.Id.IntegerValue}");
+        }
+
+        /***************************************************/
     }
 }
 
