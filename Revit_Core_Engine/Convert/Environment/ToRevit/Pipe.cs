@@ -111,11 +111,15 @@ namespace BH.Revit.Engine.Core
             revitPipe.SetParameter(BuiltInParameter.RBS_PIPE_FLOW_PARAM, flowRate);
 
             // Get first available pipeLiningType from document
-            Autodesk.Revit.DB.Plumbing.PipeInsulationType pit = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipeInsulationType)).FirstOrDefault() as Autodesk.Revit.DB.Plumbing.PipeInsulationType;
-            if (pit == null)
+            Autodesk.Revit.DB.Plumbing.PipeInsulationType pit = null;
+            if (sectionProfile.InsulationProfile != null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Any pipe insulation type needs to be present in the Revit model in order to push pipes with insulation.\n" +
-                    "Pipe has been created but no insulation has been applied.");
+                pit = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipeInsulationType)).FirstOrDefault() as Autodesk.Revit.DB.Plumbing.PipeInsulationType;
+                if (pit == null)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Any pipe insulation type needs to be present in the Revit model in order to push pipes with insulation.\n" +
+                        "Pipe has been created but no insulation has been applied.");
+                }
             }
 
             // Round Pipe 
