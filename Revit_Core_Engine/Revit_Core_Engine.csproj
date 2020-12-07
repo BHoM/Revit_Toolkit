@@ -292,16 +292,16 @@
   <ItemGroup>
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Room.cs" />
-    <Compile Include="Convert\Environment\FromRevit\CableTray.cs" />
-    <Compile Include="Convert\Environment\FromRevit\Duct.cs" />
-    <Compile Include="Convert\Environment\FromRevit\Pipe.cs" />
+    <Compile Include="Convert\MEP\FromRevit\CableTray.cs" />
+    <Compile Include="Convert\MEP\FromRevit\Duct.cs" />
+    <Compile Include="Convert\MEP\FromRevit\Pipe.cs" />
     <Compile Include="Convert\Geometry\FromRevit\Basis.cs" />
     <Compile Include="Convert\Geometry\FromRevit\Transform.cs" />
     <Compile Include="Convert\Geometry\ToRevit\Transform.cs" />
-    <Compile Include="Convert\Environment\ToRevit\CableTray.cs" />
-    <Compile Include="Convert\Environment\ToRevit\Pipe.cs" />
-    <Compile Include="Convert\Environment\ToRevit\Duct.cs" />
-    <Compile Include="Convert\Environment\ToRevit\ElementType.cs" />
+    <Compile Include="Convert\MEP\ToRevit\CableTray.cs" />
+    <Compile Include="Convert\MEP\ToRevit\Pipe.cs" />
+    <Compile Include="Convert\MEP\ToRevit\Duct.cs" />
+    <Compile Include="Convert\MEP\ToRevit\ElementType.cs" />
     <Compile Include="Convert\Physical\ToRevit\ElementType.cs" />
     <Compile Include="Create\FamilyInstance.cs" />
     <Compile Include="Create\ReferencePlane.cs" />
@@ -313,7 +313,7 @@
     <Compile Include="Query\MaterialTakeOff.cs" />
     <Compile Include="Query\PipeSectionProperty.cs" />
     <Compile Include="Query\Profile.cs" />
-    <Compile Include="Convert\Environment\FromRevit\Wire.cs" />
+    <Compile Include="Convert\MEP\FromRevit\Wire.cs" />
     <Compile Include="Convert\Environment\FromRevit\EnergyAnalysisModel.cs" />
     <Compile Include="Convert\Environment\ToRevit\Space.cs" />
     <Compile Include="Convert\Geometry\FromRevit\Mesh.cs" />
