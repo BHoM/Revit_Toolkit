@@ -91,23 +91,54 @@ namespace BH.Revit.Engine.Core
 
         public static List<Curve> ToRevitCurves(this BH.oM.Geometry.NurbsCurve curve)
         {
-            Curve nc = curve.ToRevit();
-            if (nc == null)
-                return null;
-
-            //Split the curve in half when it is closed.
-            if (nc.GetEndPoint(0).DistanceTo(nc.GetEndPoint(1)) <= BH.oM.Adapters.Revit.Tolerance.Vertex)
-            {
-                double param1 = nc.GetEndParameter(0);
-                double param2 = nc.GetEndParameter(1);
-                Curve c1 = nc.DeepClone();
-                Curve c2 = nc.DeepClone();
-                c1.MakeBound(param1, (param1 + param2) * 0.5);
-                c2.MakeBound((param1 + param2) * 0.5, param2);
-                return new List<Curve> { c1, c2 };
-            }
+            if (curve.ControlPoints.Count == 2)
+                return new List<Curve> { new oM.Geometry.Line { Start = curve.ControlPoints[0], End = curve.ControlPoints[1] }.ToRevit() };
             else
-                return new List<Curve> { nc };
+            {
+                List<double> knots = curve.Knots.ToList();
+                knots.Insert(0, knots[0]);
+                knots.Add(knots[knots.Count - 1]);
+                List<XYZ> controlPoints = curve.ControlPoints.Select(x => x.ToRevit()).ToList();
+
+                try
+                {
+                    Curve nc = NurbSpline.CreateCurve(curve.Degree(), knots, controlPoints, curve.Weights);
+
+                    //Split the curve in half when it is closed.
+                    if (nc.GetEndPoint(0).DistanceTo(nc.GetEndPoint(1)) <= BH.oM.Adapters.Revit.Tolerance.Vertex)
+                    {
+                        double param1 = nc.GetEndParameter(0);
+                        double param2 = nc.GetEndParameter(1);
+                        Curve c1 = nc.DeepClone();
+                        Curve c2 = nc.DeepClone();
+                        c1.MakeBound(param1, (param1 + param2) * 0.5);
+                        c2.MakeBound((param1 + param2) * 0.5, param2);
+                        return new List<Curve> { c1, c2 };
+                    }
+                    else
+                        return new List<Curve> { nc };
+                }
+                catch
+                {
+                    BH.Engine.Reflection.Compute.RecordWarning("Conversion of a nurbs curve from BHoM to Revit failed. An approximate, 100-segment polyline has been created instead.");
+                    
+                    List<XYZ> pts = new List<XYZ>();
+                    int k = 100;
+                    for (int i = 0; i <= k; i++)
+                    {
+                        double t = i / (double)k;
+                        pts.Add(curve.PointAtParameter(t).ToRevit());
+                    }
+
+                    List<Curve> result = new List<Curve>();
+                    for (int i = 1; i < pts.Count; i++)
+                    {
+                        result.Add(Line.CreateBound(pts[i - 1], pts[i]));
+                    }
+
+                    return result;
+                }
+            }
         }
 
         /***************************************************/
