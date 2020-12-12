@@ -62,8 +62,8 @@ namespace BH.Revit.Adapter.Core.Forms
             // 
             // InputPort
             // 
-            this.InputPort.Location = new System.Drawing.Point(9, 30);
-            this.InputPort.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.InputPort.Location = new System.Drawing.Point(12, 37);
+            this.InputPort.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.InputPort.Maximum = new decimal(new int[] {
             65000,
             0,
@@ -75,7 +75,7 @@ namespace BH.Revit.Adapter.Core.Forms
             0,
             0});
             this.InputPort.Name = "InputPort";
-            this.InputPort.Size = new System.Drawing.Size(131, 20);
+            this.InputPort.Size = new System.Drawing.Size(175, 22);
             this.InputPort.TabIndex = 0;
             this.InputPort.Value = new decimal(new int[] {
             14128,
@@ -85,8 +85,8 @@ namespace BH.Revit.Adapter.Core.Forms
             // 
             // OutputPort
             // 
-            this.OutputPort.Location = new System.Drawing.Point(9, 75);
-            this.OutputPort.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.OutputPort.Location = new System.Drawing.Point(12, 92);
+            this.OutputPort.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.OutputPort.Maximum = new decimal(new int[] {
             65000,
             0,
@@ -98,7 +98,7 @@ namespace BH.Revit.Adapter.Core.Forms
             0,
             0});
             this.OutputPort.Name = "OutputPort";
-            this.OutputPort.Size = new System.Drawing.Size(131, 20);
+            this.OutputPort.Size = new System.Drawing.Size(175, 22);
             this.OutputPort.TabIndex = 1;
             this.OutputPort.Value = new decimal(new int[] {
             14129,
@@ -109,29 +109,27 @@ namespace BH.Revit.Adapter.Core.Forms
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 10);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Location = new System.Drawing.Point(13, 12);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(93, 13);
+            this.label1.Size = new System.Drawing.Size(73, 17);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Input port number:";
+            this.label1.Text = "Push port:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 58);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Location = new System.Drawing.Point(13, 71);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(101, 13);
+            this.label2.Size = new System.Drawing.Size(64, 17);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Output port number:";
+            this.label2.Text = "Pull port:";
             // 
             // OkBtn
             // 
-            this.OkBtn.Location = new System.Drawing.Point(80, 105);
-            this.OkBtn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.OkBtn.Location = new System.Drawing.Point(107, 127);
+            this.OkBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.OkBtn.Name = "OkBtn";
-            this.OkBtn.Size = new System.Drawing.Size(60, 35);
+            this.OkBtn.Size = new System.Drawing.Size(80, 27);
             this.OkBtn.TabIndex = 4;
             this.OkBtn.Text = "OK";
             this.OkBtn.UseVisualStyleBackColor = true;
@@ -140,10 +138,10 @@ namespace BH.Revit.Adapter.Core.Forms
             // CancelBtn
             // 
             this.CancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CancelBtn.Location = new System.Drawing.Point(9, 105);
-            this.CancelBtn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.CancelBtn.Location = new System.Drawing.Point(12, 127);
+            this.CancelBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.CancelBtn.Name = "CancelBtn";
-            this.CancelBtn.Size = new System.Drawing.Size(60, 35);
+            this.CancelBtn.Size = new System.Drawing.Size(80, 27);
             this.CancelBtn.TabIndex = 5;
             this.CancelBtn.Text = "Cancel";
             this.CancelBtn.UseVisualStyleBackColor = true;
@@ -152,10 +150,10 @@ namespace BH.Revit.Adapter.Core.Forms
             // UpdatePortsForm
             // 
             this.AcceptButton = this.OkBtn;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.CancelBtn;
-            this.ClientSize = new System.Drawing.Size(171, 161);
+            this.ClientSize = new System.Drawing.Size(198, 166);
             this.ControlBox = false;
             this.Controls.Add(this.CancelBtn);
             this.Controls.Add(this.OkBtn);
@@ -163,7 +161,7 @@ namespace BH.Revit.Adapter.Core.Forms
             this.Controls.Add(this.label1);
             this.Controls.Add(this.OutputPort);
             this.Controls.Add(this.InputPort);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "UpdatePortsForm";
             this.Text = "Set Ports";
             ((System.ComponentModel.ISupportInitialize)(this.InputPort)).EndInit();
