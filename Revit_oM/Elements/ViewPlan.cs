@@ -36,13 +36,13 @@ namespace BH.oM.Adapters.Revit.Elements
         [Description("An entity storing the information about Revit view type.")]
         public virtual InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
 
-        [Description("Name of Revit level to which the view belongs (Associated Level).")]
+        [Description("Name of Revit level to which the Revit view belongs (Associated Level parameter).")]
         public virtual string LevelName { get; set; } = string.Empty;
 
-        [Description("Name of the ViewPlan correspondent with Revit view name.")]
+        [Description("Name of the Revit view.")]
         public virtual string ViewName { get; set; } = string.Empty;
 
-        [Description("Name of the ViewPlan correspondent with Revit view name.")]
+        [Description("Name of the view template applied to the Revit view.")]
         public virtual string TemplateName { get; set; } = string.Empty;
 
         /***************************************************/
