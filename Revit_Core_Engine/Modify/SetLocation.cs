@@ -47,13 +47,38 @@ namespace BH.Revit.Engine.Core
             if (instance.Location == null)
                 return false;
 
-            if (element.ViewSpecific && !(instance is DraftingInstance) || !element.ViewSpecific && !(instance is ModelInstance))
-            {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Updating location of drafting elements is only allowed based on DraftingInstances, while updating location of model elements is only allowed based on ModelInstances. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, instance.BHoM_Guid));
+            return SetLocation(element, instance.Location as dynamic, settings);
+        }
+
+        /***************************************************/
+
+        public static bool SetLocation(this FamilyInstance element, IInstance instance, RevitSettings settings)
+        {
+            if (instance.Location == null)
                 return false;
+
+            bool success = SetLocation(element, instance.Location as dynamic, settings);
+
+            XYZ location = (element.Location as LocationPoint)?.Point;
+            if (location != null && instance.Location is BH.oM.Geometry.Point && instance.Orientation?.X != null)
+            {
+                Transform transform = element.GetTotalTransform();
+                XYZ newX = instance.Orientation.X.ToRevit().Normalize();
+                if (1 - Math.Abs(transform.BasisX.DotProduct(newX)) > settings.AngleTolerance)
+                {
+                    if (1 - Math.Abs(transform.BasisZ.DotProduct(instance.Orientation.Z.ToRevit().Normalize())) > settings.AngleTolerance)
+                        BH.Engine.Reflection.Compute.RecordWarning($"The orientation applied to the family instance on update has different normal than the original one. The orientation out of plane has been ignored. ElementId: {element.Id.IntegerValue}");
+
+                    double angle = transform.BasisX.AngleOnPlaneTo(newX, transform.BasisZ);
+                    if (Math.Abs(angle) > settings.AngleTolerance)
+                    {
+                        ElementTransformUtils.RotateElement(element.Document, element.Id, Autodesk.Revit.DB.Line.CreateBound(location, location + transform.BasisZ), angle);
+                        success = true;
+                    }
+                }
             }
 
-            return SetLocation(element, instance.Location as dynamic, settings);
+            return success;
         }
 
         /***************************************************/
