@@ -62,6 +62,8 @@ namespace BH.Revit.Adapter.Core.Forms
             // 
             // InputPort
             // 
+            this.InputPort.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.InputPort.Location = new System.Drawing.Point(16, 55);
             this.InputPort.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.InputPort.Maximum = new decimal(new int[] {
@@ -75,7 +77,7 @@ namespace BH.Revit.Adapter.Core.Forms
             0,
             0});
             this.InputPort.Name = "InputPort";
-            this.InputPort.Size = new System.Drawing.Size(193, 22);
+            this.InputPort.Size = new System.Drawing.Size(208, 22);
             this.InputPort.TabIndex = 0;
             this.InputPort.Value = new decimal(new int[] {
             14128,
@@ -85,6 +87,8 @@ namespace BH.Revit.Adapter.Core.Forms
             // 
             // OutputPort
             // 
+            this.OutputPort.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.OutputPort.Location = new System.Drawing.Point(16, 131);
             this.OutputPort.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.OutputPort.Maximum = new decimal(new int[] {
@@ -98,7 +102,7 @@ namespace BH.Revit.Adapter.Core.Forms
             0,
             0});
             this.OutputPort.Name = "OutputPort";
-            this.OutputPort.Size = new System.Drawing.Size(193, 22);
+            this.OutputPort.Size = new System.Drawing.Size(208, 22);
             this.OutputPort.TabIndex = 1;
             this.OutputPort.Value = new decimal(new int[] {
             14129,
@@ -108,15 +112,18 @@ namespace BH.Revit.Adapter.Core.Forms
             // 
             // label1
             // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.Location = new System.Drawing.Point(13, 12);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(196, 41);
+            this.label1.Size = new System.Drawing.Size(211, 41);
             this.label1.TabIndex = 2;
             this.label1.Text = "Push port (must be equal to ConnectorSettings.PushPort):";
             // 
             // OkBtn
             // 
-            this.OkBtn.Location = new System.Drawing.Point(129, 166);
+            this.OkBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.OkBtn.Location = new System.Drawing.Point(144, 166);
             this.OkBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.OkBtn.Name = "OkBtn";
             this.OkBtn.Size = new System.Drawing.Size(80, 27);
@@ -127,8 +134,9 @@ namespace BH.Revit.Adapter.Core.Forms
             // 
             // CancelBtn
             // 
+            this.CancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.CancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CancelBtn.Location = new System.Drawing.Point(43, 166);
+            this.CancelBtn.Location = new System.Drawing.Point(58, 166);
             this.CancelBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.CancelBtn.Name = "CancelBtn";
             this.CancelBtn.Size = new System.Drawing.Size(80, 27);
@@ -139,9 +147,11 @@ namespace BH.Revit.Adapter.Core.Forms
             // 
             // label2
             // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.Location = new System.Drawing.Point(13, 88);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(196, 41);
+            this.label2.Size = new System.Drawing.Size(211, 41);
             this.label2.TabIndex = 6;
             this.label2.Text = "Pull port (must be equal to ConnectorSettings.PullPort):";
             // 
@@ -151,7 +161,7 @@ namespace BH.Revit.Adapter.Core.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.CancelBtn;
-            this.ClientSize = new System.Drawing.Size(216, 206);
+            this.ClientSize = new System.Drawing.Size(236, 206);
             this.ControlBox = false;
             this.Controls.Add(this.label2);
             this.Controls.Add(this.CancelBtn);
