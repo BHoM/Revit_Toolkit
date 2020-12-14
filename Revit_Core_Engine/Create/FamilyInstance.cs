@@ -159,7 +159,10 @@ namespace BH.Revit.Engine.Core
             else
             {
                 FamilyInstance familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, orientation.BasisX, host, StructuralType.NonStructural);
-                familyInstance.CheckIfSameNormal(orientation.BasisZ, settings);
+
+                if (1 - Math.Abs(familyInstance.GetTotalTransform().BasisY.DotProduct(orientation.BasisY.Normalize())) > settings.AngleTolerance)
+                    BH.Engine.Reflection.Compute.RecordWarning($"The orientation used to create the family instance was not perpendicular to the face on which the instance was placed. The orientation out of plane has been ignored. ElementId: {familyInstance.Id.IntegerValue}");
+                
                 return familyInstance;
             }
         }
@@ -219,7 +222,10 @@ namespace BH.Revit.Engine.Core
                 }
 
                 FamilyInstance familyInstance = document.Create.NewFamilyInstance(reference, location, refDir, familySymbol);
-                familyInstance.CheckIfSameNormal(orientation?.BasisZ, settings);
+
+                if (orientation?.BasisZ != null && 1 - Math.Abs(familyInstance.GetTotalTransform().BasisZ.DotProduct(orientation.BasisZ.Normalize())) > settings.AngleTolerance)
+                    BH.Engine.Reflection.Compute.RecordWarning($"The orientation used to create the family instance was not perpendicular to the face on which the instance was placed. The orientation out of plane has been ignored. ElementId: {familyInstance.Id.IntegerValue}");
+                
                 return familyInstance;
             }
             else
@@ -535,14 +541,6 @@ namespace BH.Revit.Engine.Core
                 result = basis.BasisY.CrossProduct(basis.BasisZ);
 
             return result;
-        }
-
-        /***************************************************/
-
-        private static void CheckIfSameNormal(this FamilyInstance familyInstance, XYZ normal, RevitSettings settings)
-        {
-            if (normal != null && 1 - Math.Abs(familyInstance.GetTotalTransform().BasisZ.DotProduct(normal.Normalize())) > settings.AngleTolerance)
-                BH.Engine.Reflection.Compute.RecordWarning($"The orientation used to create the family instance was not perpendicular to the face on which the instance was placed. The orientation out of plane has been ignored. ElementId: {familyInstance.Id.IntegerValue}");
         }
 
         /***************************************************/
