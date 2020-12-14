@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using System;
@@ -65,7 +66,10 @@ namespace BH.Revit.Engine.Core
         {
             bool isElement = new ElementIsElementTypeFilter(true).PassesFilter(element);
             if (isElement)
-                element.ISetType(bHoMObject, settings);
+            {
+                if (element.ISetType(bHoMObject, settings))
+                    element.Document.Regenerate();
+            }
 
             element.CopyParameters(bHoMObject, settings);
 
@@ -85,6 +89,44 @@ namespace BH.Revit.Engine.Core
                 element.ISetLocation(bHoMObject, settings);
 
             return true;
+        }
+
+        /***************************************************/
+
+        public static bool Update(this FamilyInstance element, ModelInstance bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            if (element.ViewSpecific)
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Updating drafting elements using ModelInstances is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(bHoMObject.Properties?.CategoryName) && element.Category?.Name != bHoMObject.Properties.CategoryName)
+                BH.Engine.Reflection.Compute.RecordWarning($"Updating the category of an existing Revit element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
+
+            if ((element.Host == null && bHoMObject.HostId != -1) || (element.Host != null && element.Host.Id.IntegerValue != bHoMObject.HostId))
+                BH.Engine.Reflection.Compute.RecordWarning($"Updating the host of an existing hosted element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
+
+            return ((Element)element).Update(bHoMObject, settings, setLocationOnUpdate);
+        }
+
+        /***************************************************/
+
+        public static bool Update(this FamilyInstance element, DraftingInstance bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            if (!element.ViewSpecific || element.OwnerViewId == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Updating model elements using DraftingInstances is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(bHoMObject.Properties?.CategoryName) && element.Category?.Name != bHoMObject.Properties.CategoryName)
+                BH.Engine.Reflection.Compute.RecordWarning($"Updating the category of an existing Revit element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
+
+            if (!string.IsNullOrWhiteSpace(bHoMObject.ViewName) && (element.Document.GetElement(element.OwnerViewId) as View)?.Name != bHoMObject.ViewName)
+                BH.Engine.Reflection.Compute.RecordWarning($"Updating the owner view of an existing Revit element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
+
+            return ((Element)element).Update(bHoMObject, settings, setLocationOnUpdate);
         }
 
         /***************************************************/
