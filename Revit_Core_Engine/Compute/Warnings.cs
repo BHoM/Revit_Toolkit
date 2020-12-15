@@ -474,7 +474,14 @@ namespace BH.Revit.Engine.Core
 
         internal static void CurveBasedNonHostedWarning(this FamilyInstance familyInstance)
         {
-            BH.Engine.Reflection.Compute.RecordWarning($"A curve-based non-structural element has been created without a host. There is a high chance it got created in a wrong location due to a Revit bug, therefore it is recommended to inspect the element. ElementId: {familyInstance.Id.IntegerValue}");
+            BH.Engine.Reflection.Compute.RecordWarning($"A curve-based non-structural element has been created without a host. There is a high chance it got created in a wrong location due to Revit limitations, therefore it is recommended to inspect the element. ElementId: {familyInstance.Id.IntegerValue}");
+        }
+
+        /***************************************************/
+
+        internal static void TwoLevelBasedByPointWarning(this FamilyInstance familyInstance)
+        {
+            BH.Engine.Reflection.Compute.RecordWarning($"A point-based, two level based element has been created. There is a high chance it got created in a wrong location due to Revit limitations, therefore it is recommended to inspect the element. ElementId: {familyInstance.Id.IntegerValue}");
         }
 
         /***************************************************/
