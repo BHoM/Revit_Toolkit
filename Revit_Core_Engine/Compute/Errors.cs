@@ -96,7 +96,7 @@ namespace BH.Revit.Engine.Core
         
         internal static void InvalidTwoLevelLocationError(this FamilySymbol familySymbol)
         {
-            BH.Engine.Reflection.Compute.RecordWarning($"Location line of the two-level based element is upside-down, which is not allowed for given family placement type. ElementId: {familySymbol.Id.IntegerValue}");
+            BH.Engine.Reflection.Compute.RecordError($"Location line of the two-level based element is upside-down, which is not allowed for given family placement type. ElementId: {familySymbol.Id.IntegerValue}");
         }
 
         /***************************************************/
