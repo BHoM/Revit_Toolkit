@@ -309,6 +309,8 @@
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\DuctSectionProfile.cs" />
     <Compile Include="Query\DuctSectionProperty.cs" />
+    <Compile Include="Query\IsInside.cs" />
+    <Compile Include="Query\IsOnFace.cs" />
     <Compile Include="Query\Shape.cs" />
     <Compile Include="Query\MaterialTakeOff.cs" />
     <Compile Include="Query\PipeSectionProperty.cs" />
