@@ -26,6 +26,7 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -140,6 +141,8 @@ namespace BH.Revit.Engine.Core
 
             XYZ xdir = orientation.ProjectedX(settings);
             FamilyInstance familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, xdir, level, StructuralType.NonStructural);
+            if (familyInstance == null)
+                return null;
 
             if (orientation?.BasisX != null && Math.Abs(orientation.BasisX.Z) > settings.AngleTolerance)
                 familyInstance.ProjectedOnXYWarning();
@@ -154,17 +157,35 @@ namespace BH.Revit.Engine.Core
 
         private static FamilyInstance FamilyInstance_OneLevelBasedHosted(Document document, FamilySymbol familySymbol, XYZ origin, Transform orientation, Element host, RevitSettings settings)
         {
+            if (host == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Element could not be created: instantiation of families with placement type of {familySymbol.Family.FamilyPlacementType} requires a host. ElementId: {familySymbol.Id.IntegerValue}");
+                return null;
+            }
+            
+            FamilyInstance familyInstance;
             if (orientation?.BasisX == null)
-                return document.Create.NewFamilyInstance(origin, familySymbol, host, StructuralType.NonStructural);
+            {
+                familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, host, StructuralType.NonStructural);
+                if (familyInstance == null)
+                    return null;
+            }
             else
             {
-                FamilyInstance familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, orientation.BasisX, host, StructuralType.NonStructural);
+                familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, orientation.BasisX, host, StructuralType.NonStructural);
+                if (familyInstance == null)
+                    return null;
 
+                document.Regenerate();
                 if (1 - Math.Abs(familyInstance.GetTotalTransform().BasisY.DotProduct(orientation.BasisY.Normalize())) > settings.AngleTolerance)
                     BH.Engine.Reflection.Compute.RecordWarning($"The orientation used to create the family instance was not perpendicular to the face on which the instance was placed. The orientation out of plane has been ignored. ElementId: {familyInstance.Id.IntegerValue}");
-                
-                return familyInstance;
             }
+
+            List<Solid> hostSolids = host.Solids(new Options());
+            if (hostSolids != null && hostSolids.All(x => !origin.IsInside(x, settings.DistanceTolerance)))
+                BH.Engine.Reflection.Compute.RecordWarning($"The input location point for creation of a family instance was outside of the host solid, the point has been snapped to the host. ElementId: {familyInstance.Id.IntegerValue}");
+
+            return familyInstance;
         }
 
         /***************************************************/
@@ -179,6 +200,10 @@ namespace BH.Revit.Engine.Core
             StructuralType structuralType = builtInCategory.StructuralType();
 
             FamilyInstance familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, level, structuralType);
+            if (familyInstance == null)
+                return null;
+
+            familyInstance.TwoLevelBasedByPointWarning();
 
             XYZ x = orientation?.BasisX;
             if (x != null)
@@ -209,7 +234,8 @@ namespace BH.Revit.Engine.Core
             if (host != null)
             {
                 Reference reference;
-                XYZ location = host.ClosestPointOn(origin, out reference);
+                bool closest;
+                XYZ location = host.ClosestPointOn(origin, out reference, out closest, orientation?.BasisZ, settings);
                 if (location == null || reference == null)
                     return null;
 
@@ -222,10 +248,18 @@ namespace BH.Revit.Engine.Core
                 }
 
                 FamilyInstance familyInstance = document.Create.NewFamilyInstance(reference, location, refDir, familySymbol);
+                if (familyInstance == null)
+                    return null;
 
+                document.Regenerate();
                 if (orientation?.BasisZ != null && 1 - Math.Abs(familyInstance.GetTotalTransform().BasisZ.DotProduct(orientation.BasisZ.Normalize())) > settings.AngleTolerance)
                     BH.Engine.Reflection.Compute.RecordWarning($"The orientation used to create the family instance was not perpendicular to the face on which the instance was placed. The orientation out of plane has been ignored. ElementId: {familyInstance.Id.IntegerValue}");
-                
+
+                if (!closest)
+                    BH.Engine.Reflection.Compute.RecordWarning($"The location point of the created family instance has been snapped to the closest host element's face with normal matching the local Z of the BHoM object's orientation, skipping closer faces with non-matching normals. ElementId: {familyInstance.Id.IntegerValue}");
+                else if (origin.DistanceTo(location) > settings.DistanceTolerance)
+                    BH.Engine.Reflection.Compute.RecordWarning($"The location point of the created family instance has been snapped to the closest face of the host element. ElementId: {familyInstance.Id.IntegerValue}");
+
                 return familyInstance;
             }
             else
@@ -248,6 +282,9 @@ namespace BH.Revit.Engine.Core
                 }
 
                 FamilyInstance familyInstance = document.Create.NewFamilyInstance(reference, origin, refDir, familySymbol);
+                if (familyInstance == null)
+                    return null;
+
                 if (document.GetElement(reference.ElementId) is ReferencePlane)
                     familyInstance.ReferencePlaneCreatedWarning();
 
@@ -283,6 +320,9 @@ namespace BH.Revit.Engine.Core
             StructuralType structuralType = builtInCategory.StructuralType();
 
             FamilyInstance familyInstance = document.Create.NewFamilyInstance(line, familySymbol, level, structuralType);
+            if (familyInstance == null)
+                return null;
+
             if (host != null)
                 familyInstance.HostIgnoredWarning();
 
@@ -319,6 +359,8 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             FamilyInstance familyInstance = document.Create.NewFamilyInstance(reference, location, familySymbol);
+            if (familyInstance == null)
+                return null;
 
             if (host == null)
                 familyInstance.CurveBasedNonHostedWarning();
@@ -347,14 +389,20 @@ namespace BH.Revit.Engine.Core
             if (host == null)
             {
                 familyInstance = document.Create.NewFamilyInstance(line, familySymbol, level, StructuralType.NonStructural);
+                if (familyInstance == null)
+                    return null;
+
                 familyInstance.CurveBasedNonHostedWarning();
             }
             else
             {
                 Reference reference;
-                Line location = host.ClosestLineOn((Line)line, out reference);
+                Line location = host.ClosestLineOn(line, out reference);
                 if (location != null && reference != null)
                     familyInstance = document.Create.NewFamilyInstance(reference, location, familySymbol);
+
+                if (location.GetEndPoint(0).DistanceTo(line.GetEndPoint(0)) > settings.DistanceTolerance || location.GetEndPoint(1).DistanceTo(line.GetEndPoint(1)) > settings.DistanceTolerance)
+                    BH.Engine.Reflection.Compute.RecordWarning($"The location line of the created family instance has been snapped to the closest face of the host element. ElementId: {familyInstance.Id.IntegerValue}");
             }
 
             return familyInstance;
@@ -372,6 +420,9 @@ namespace BH.Revit.Engine.Core
             StructuralType structuralType = builtInCategory.StructuralType();
             
             FamilyInstance familyInstance = document.Create.NewFamilyInstance(curve, familySymbol, level, structuralType);
+            if (familyInstance == null)
+                return null;
+
             if (host != null)
                 familyInstance.HostIgnoredWarning();
 
@@ -386,6 +437,8 @@ namespace BH.Revit.Engine.Core
         private static FamilyInstance FamilyInstance_ViewBased(Document document, FamilySymbol familySymbol, XYZ origin, Transform orientation, View view, RevitSettings settings)
         {
             FamilyInstance familyInstance = view.Document.Create.NewFamilyInstance(origin, familySymbol, view);
+            if (familyInstance == null)
+                return null;
 
             if (orientation?.BasisZ != null)
             {
@@ -430,39 +483,44 @@ namespace BH.Revit.Engine.Core
         /****          Private Methods - Others         ****/
         /***************************************************/
 
-        private static XYZ ClosestPointOn(this Element element, XYZ refPoint, out Reference reference, XYZ normal = null, RevitSettings settings = null)
+        private static XYZ ClosestPointOn(this Element element, XYZ refPoint, out Reference reference, out bool closest, XYZ normal = null, RevitSettings settings = null)
         {
+            closest = true;
             settings = settings.DefaultIfNull();
             normal = normal?.Normalize();
 
+            double minFactoredDist = double.MaxValue;
             double minDist = double.MaxValue;
             reference = null;
 
             Options opt = new Options();
             opt.ComputeReferences = true;
-            List<Autodesk.Revit.DB.Face> faces = element.Faces(opt);
+            List<Face> faces = element.Faces(opt);
             IntersectionResult ir;
             XYZ pointOnFace = null;
 
-            foreach (Autodesk.Revit.DB.Face face in faces)
+            foreach (Face face in faces)
             {
                 ir = face.Project(refPoint);
                 if (ir == null || ir.XYZPoint == null)
                     continue;
 
-                double dist = ir.Distance;
+                if (ir.Distance < minDist)
+                    minDist = ir.Distance;
+
+                double factoredDist = ir.Distance;
                 if (normal != null)
                 {
                     double normalFactor = normal.DotProduct(face.ComputeNormal(ir.UVPoint));
                     if (normalFactor < settings.AngleTolerance)
                         continue;
 
-                    dist /= normalFactor;
+                    factoredDist /= normalFactor;
                 }
 
-                if (dist < minDist)
+                if (factoredDist < minFactoredDist)
                 {
-                    minDist = dist;
+                    minFactoredDist = factoredDist;
                     pointOnFace = ir.XYZPoint;
                     reference = face.Reference;
                 }
@@ -470,6 +528,8 @@ namespace BH.Revit.Engine.Core
 
             if (pointOnFace == null || reference == null)
                 return null;
+
+            closest = !(refPoint.DistanceTo(pointOnFace) - minDist > settings.DistanceTolerance);
 
             if (element is FamilyInstance && !((FamilyInstance)element).HasModifiedGeometry())
             {
@@ -489,14 +549,14 @@ namespace BH.Revit.Engine.Core
 
             Options opt = new Options();
             opt.ComputeReferences = true;
-            List<Autodesk.Revit.DB.Face> faces = element.Faces(opt);
+            List<Face> faces = element.Faces(opt);
             IntersectionResult ir1, ir2;
             XYZ start = refLine.GetEndPoint(0);
             XYZ end = refLine.GetEndPoint(1);
             XYZ startOnFace = null;
             XYZ endOnFace = null;
 
-            foreach (Autodesk.Revit.DB.Face face in faces)
+            foreach (Face face in faces)
             {
                 if (!(face is PlanarFace))
                     continue;
