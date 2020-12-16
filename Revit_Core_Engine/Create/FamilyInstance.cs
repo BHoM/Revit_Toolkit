@@ -181,9 +181,13 @@ namespace BH.Revit.Engine.Core
                     BH.Engine.Reflection.Compute.RecordWarning($"The orientation used to create the family instance was not perpendicular to the face on which the instance was placed. The orientation out of plane has been ignored. ElementId: {familyInstance.Id.IntegerValue}");
             }
 
-            List<Solid> hostSolids = host.Solids(new Options());
-            if (hostSolids != null && hostSolids.All(x => !origin.IsInside(x, settings.DistanceTolerance)))
-                BH.Engine.Reflection.Compute.RecordWarning($"The input location point for creation of a family instance was outside of the host solid, the point has been snapped to the host. ElementId: {familyInstance.Id.IntegerValue}");
+            XYZ location = (familyInstance.Location as LocationPoint)?.Point;
+            if (location != null && location.DistanceTo(origin) > settings.DistanceTolerance)
+            {
+                List<Solid> hostSolids = host.Solids(new Options());
+                if (hostSolids == null && hostSolids.All(x => !origin.IsInside(x, settings.DistanceTolerance)))
+                    BH.Engine.Reflection.Compute.RecordWarning($"The input location point for creation of a family instance was outside of the host solid, the point has been snapped to the host. ElementId: {familyInstance.Id.IntegerValue}");
+            }
 
             return familyInstance;
         }
@@ -401,7 +405,7 @@ namespace BH.Revit.Engine.Core
                 if (location != null && reference != null)
                     familyInstance = document.Create.NewFamilyInstance(reference, location, familySymbol);
 
-                if (location.GetEndPoint(0).DistanceTo(line.GetEndPoint(0)) > settings.DistanceTolerance || location.GetEndPoint(1).DistanceTo(line.GetEndPoint(1)) > settings.DistanceTolerance)
+                if (familyInstance != null && location.GetEndPoint(0).DistanceTo(line.GetEndPoint(0)) > settings.DistanceTolerance || location.GetEndPoint(1).DistanceTo(line.GetEndPoint(1)) > settings.DistanceTolerance)
                     BH.Engine.Reflection.Compute.RecordWarning($"The location line of the created family instance has been snapped to the closest face of the host element. ElementId: {familyInstance.Id.IntegerValue}");
             }
 
