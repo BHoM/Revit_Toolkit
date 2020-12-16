@@ -393,9 +393,7 @@ namespace BH.Revit.Engine.Core
         [Output("locationCurveMEP", "BHoM lines list queried from the MEPCurve and its fitting connectors.")]
         public static List<BH.oM.Geometry.Line> LocationCurveMEP(this MEPCurve mepCurve, RevitSettings settings = null)
         {
-            bool dummyIsStartConnected = false;
-            bool dummyIsEndConnected = false;
-            return LocationCurveMEP(mepCurve, out dummyIsStartConnected, out dummyIsEndConnected, settings);
+            return new List<oM.Geometry.Line> { ((mepCurve?.Location as LocationCurve)?.Curve as Autodesk.Revit.DB.Line)?.FromRevit() };
         }
         
         /***************************************************/
