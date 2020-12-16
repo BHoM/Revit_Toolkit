@@ -33,7 +33,7 @@ namespace BH.Revit.Engine.Core
 
         public static bool IsOnFace(this XYZ point, Face face, double tolerance)
         {
-            IntersectionResult ir = face.Project(point);
+            IntersectionResult ir = face?.Project(point);
             return ir != null && ir.Distance <= tolerance;
         }
 

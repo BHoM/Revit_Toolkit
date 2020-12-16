@@ -33,6 +33,9 @@ namespace BH.Revit.Engine.Core
 
         public static bool IsInside(this XYZ point, Solid solid, double tolerance)
         {
+            if (solid == null || solid.Volume < tolerance)
+                return false;
+
             SolidCurveIntersectionOptions sco = new SolidCurveIntersectionOptions();
             sco.ResultType = SolidCurveIntersectionMode.CurveSegmentsInside;
 
