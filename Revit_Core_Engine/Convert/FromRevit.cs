@@ -254,7 +254,7 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
-                    return new List<IBHoMObject>(pipe.PipeFromRevit(settings, refObjects));pipe.PipeFromRevit(settings, refObjects);
+                    return new List<IBHoMObject>(pipe.PipeFromRevit(settings, refObjects));
                 default:
                     return null;
             }
