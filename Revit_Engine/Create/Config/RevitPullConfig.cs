@@ -75,21 +75,5 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
-
-        [ToBeRemoved("3.2", "Non-applicable due to the changes in RevitPullConfig class.")]
-        [Description("Creates a pull action-specific configuration used for adapter interaction with Revit.")]
-        [InputFromProperty("discipline")]
-        [InputFromProperty("includeClosedWorksets")]
-        [InputFromProperty("pullEdges")]
-        [InputFromProperty("includeNonVisible")]
-        [Output("revitPullConfig")]
-        public static RevitPullConfig RevitPullConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, bool pullEdges = false, bool pullSurfaces = false, bool includeNonVisible = false)
-        {
-            PullGeometryConfig geometryConfig = new PullGeometryConfig { PullEdges = pullEdges, PullSurfaces = pullSurfaces, IncludeNonVisible = includeNonVisible };
-            PullRepresentationConfig representationConfig = new PullRepresentationConfig();
-            return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, GeometryConfig = geometryConfig, RepresentationConfig = representationConfig };
-        }
-
-        /***************************************************/
     }
 }
