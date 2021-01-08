@@ -34,7 +34,6 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("3.2", "BH.Engine.Adapters.Revit.Create.FilterFamilyTypesOfFamily(BH.oM.Base.IBHoMObject)")]
         [Description("Creates IRequest that filters Revit Family Types of input Family.")]
         [Input("bHoMObject", "BHoMObject that contains ElementId of a correspondent Revit element in RevitIdentifiers fragment attached to it - usually previously pulled from Revit.")]
         [Output("request", "Created request.")]
