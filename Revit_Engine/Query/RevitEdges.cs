@@ -36,7 +36,6 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("4.0", "BH.Engine.Adapters.Revit.Query.Edges(BH.oM.Base.IBHoMObject)")]
         [Description("Returns edges of Revit element correspondent to given BHoMObject. This value is stored in RevitGeometry fragment.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
         [Output("edges")]

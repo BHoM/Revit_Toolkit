@@ -38,7 +38,6 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("4.0", "BH.Engine.Adapters.Revit.Create.DraftingInstance(System.String, System.String, System.String, BH.oM.Geometry.Point)")]
         [Description("Creates DraftingInstance object based on point location, Revit family name and family type name. Such DraftingInstance can be pushed to Revit as a point-driven drafting element.")]
         [Input("familyName", "Name of Revit family to be used when creating the element.")]
         [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
@@ -56,7 +55,6 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [PreviousVersion("4.0", "BH.Engine.Adapters.Revit.Create.DraftingInstance(BH.oM.Adapters.Revit.Properties.InstanceProperties, System.String, BH.oM.Geometry.Point)")]
         [Description("Creates DraftingInstance object based on point location and BHoM InstanceProperties. Such DraftingInstance can be pushed to Revit as a point-driven drafting element.")]
         [InputFromProperty("properties")]
         [InputFromProperty("viewName")]
