@@ -174,6 +174,13 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        public static Element ToRevit(this oM.Physical.Reinforcement.IReinforcingBar reinforcement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            return reinforcement.IToRevitRebar(document, settings, refObjects);
+        }
+
+        /***************************************************/
         /****             Disallowed Types              ****/
         /***************************************************/
 

@@ -310,6 +310,7 @@
     <Compile Include="Convert\MEP\ToRevit\ElementType.cs" />
     <Compile Include="Convert\Physical\ToRevit\ElementType.cs" />
     <Compile Include="Convert\Revit\Internal\ToSolid.cs" />
+    <Compile Include="Convert\Physical\ToRevit\Rebar.cs" />
     <Compile Include="Create\FamilyInstance.cs" />
     <Compile Include="Create\ReferencePlane.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
