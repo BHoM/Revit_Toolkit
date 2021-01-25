@@ -132,7 +132,15 @@ namespace BH.Revit.Engine.Core
                 doc.Delete(inserts);
                 doc.Regenerate();
 
-                inserts.Add(familyInstance.Id);
+                try
+                {
+                    inserts.Add(familyInstance.Id);
+                }
+                catch
+                {
+
+                }
+
                 surfaces = GetOpeningGeometry(t, doc, hosts, inserts, familyInstance, settings);
             }
 
