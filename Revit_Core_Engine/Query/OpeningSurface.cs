@@ -213,11 +213,16 @@ namespace BH.Revit.Engine.Core
             }
             catch
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Geometrical processing of a Revit element failed due to an internal Revit error. Converted opening might be missing one or more of its surfaces. Revit ElementId: {0}", familyInstance.Id));
+                loops = null;
             }
 
             t.RollBack(failureHandlingOptions);
-            surfaces.AddRange(loops.Select(x => new PlanarSurface(x.FromRevit(), null)));
+
+            if (loops != null)
+                surfaces.AddRange(loops.Select(x => new PlanarSurface(x.FromRevit(), null)));
+            else if (surfaces.Count != 0)
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Geometrical processing of a Revit element failed due to an internal Revit error. Converted opening might be missing one or more of its surfaces. Revit ElementId: {0}", familyInstance.Id));
+
             return surfaces;
         }
 
