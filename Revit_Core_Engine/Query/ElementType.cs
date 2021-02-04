@@ -95,7 +95,10 @@ namespace BH.Revit.Engine.Core
 
             ElementType elementType = document.ElementType<ElementType>(familyName, familyTypeName, builtInCategories);
             if (elementType != null)
+            {
+                elementType.Activate();
                 return elementType;
+            }
 
             //Find ElementType in FamilyLibrary
             if (settings.FamilyLoadSettings?.FamilyLibrary?.Files != null)
