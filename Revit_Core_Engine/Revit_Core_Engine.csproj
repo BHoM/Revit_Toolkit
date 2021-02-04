@@ -290,6 +290,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compute\Activate.cs" />
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Room.cs" />
     <Compile Include="Convert\MEP\FromRevit\CableTray.cs" />
