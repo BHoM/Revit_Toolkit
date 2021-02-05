@@ -73,7 +73,7 @@ namespace BH.Revit.Adapter.Core
             if (discipline == Discipline.Undefined)
                 discipline = Discipline.Physical;
 
-            Dictionary<RevitLinkInstance, IRequest> requestsByLinks = request.SplitRequestTreeByLinks(this.Document);
+            Dictionary<Document, IRequest> requestsByLinks = request.SplitRequestTreeByLinks(this.Document);
             if (requestsByLinks == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Pull failed due to issues with the request tree. Please try to simplify the used Request and try again.");
@@ -95,18 +95,15 @@ namespace BH.Revit.Adapter.Core
             Options renderMeshOptions = BH.Revit.Engine.Core.Create.Options(representationConfig.DetailLevel.ViewDetailLevel(), representationConfig.IncludeNonVisible, false);
 
             List<IBHoMObject> result = new List<IBHoMObject>();
-            foreach (KeyValuePair<RevitLinkInstance, IRequest> requestByLink in requestsByLinks)
+            foreach (KeyValuePair<Document, IRequest> requestByLink in requestsByLinks)
             {
-                Document document;
+                Document document = requestByLink.Key;
                 TransformMatrix transform = null;
-                if (requestByLink.Key == null)
+
+                if (document != this.Document)
                 {
-                    document = this.Document;
-                }
-                else
-                {
-                    document = requestByLink.Key.GetLinkDocument();
-                    transform = requestByLink.Key.GetTotalTransform().FromRevit();
+                    RevitLinkInstance linkInstance = new FilteredElementCollector(this.Document).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().FirstOrDefault(x => x.GetLinkDocument().Title == document.Title);
+                    transform = linkInstance.GetTotalTransform().FromRevit();
                 }
 
                 //TODO: WRAP THIS INTO A SEPARATE METHOD FROM HERE!
