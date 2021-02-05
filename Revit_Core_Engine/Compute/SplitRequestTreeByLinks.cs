@@ -41,16 +41,15 @@ namespace BH.Engine.Adapters.Revit
         //[Description("Groups and sorts IRequests by their estimated execution time in order to execute fastest first. Order from slowest to fastest: IParameterRequest, IlogicalRequests, others. ")]
         //[Input("requests", "A collection of IRequests to be sorted.")]
         //[Output("sortedRequests")]
-        public static Dictionary<RevitLinkInstance, IRequest> SplitRequestTreeByLinks(this IRequest request, Document document)
+        public static Dictionary<Document, IRequest> SplitRequestTreeByLinks(this IRequest request, Document document)
         {
-            IEnumerable<RevitLinkInstance> linkInstances = new FilteredElementCollector(document).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>();
-            Dictionary<string, RevitLinkInstance> linkInstancesByNames = linkInstances.ToDictionary(x => (document.GetElement(x.GetTypeId()) as RevitLinkType)?.Name?.ToLower(), x => x);
+            List<Document> linkDocs = new FilteredElementCollector(document).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().Select(x=>x.GetLinkDocument()).ToList();
 
-            Dictionary<RevitLinkInstance, IRequest> requestsByLinks = new Dictionary<RevitLinkInstance, IRequest>();
+            Dictionary<Document, IRequest> requestsByLinks = new Dictionary<Document, IRequest>();
             List<IRequest> splitPerDoc = request.SplitRequestTreeByType(typeof(FilterByLink));
             foreach (IRequest splitRequest in splitPerDoc)
             {
-                if (!splitRequest.TryOrganizeByLink(linkInstancesByNames, requestsByLinks))
+                if (!splitRequest.TryOrganizeByLink(document, linkDocs, requestsByLinks))
                     return null;
             }
 
@@ -62,7 +61,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static bool TryOrganizeByLink(this IRequest request, Dictionary<string, RevitLinkInstance> linkInstancesByNames, Dictionary<RevitLinkInstance, IRequest> requestsByLinks)
+        private static bool TryOrganizeByLink(this IRequest request, Document mainDocument, List<Document> linkDocuments, Dictionary<Document, IRequest> requestsByLinks)
         {
             if (request == null)
                 return false;
@@ -78,7 +77,7 @@ namespace BH.Engine.Adapters.Revit
             List<IRequest> linkRequests = request.AllRequestsOfType(typeof(FilterByLink));
             if (linkRequests.Count == 0)
             {
-                requestsByLinks.AddRequestByLink(request, null);
+                requestsByLinks.AddRequestByLink(request, mainDocument);
                 return true;
             }
             else if (linkRequests.Count == 1)
@@ -97,18 +96,16 @@ namespace BH.Engine.Adapters.Revit
                     linkName += ".rvt";
                 }
 
-                RevitLinkInstance linkInstance;
-                if (!linkInstancesByNames.ContainsKey(linkName))
+                Document linkDoc = linkDocuments.FirstOrDefault(x => x.Title == linkName);
+                if (linkDoc == null)
                 {
                     BH.Engine.Reflection.Compute.RecordError($"Active Revit document does not contain link named {linkName}.");
                     return false;
                 }
-                else
-                    linkInstance = linkInstancesByNames[linkName];
 
                 request.RemoveSubRequest(linkRequest);
                 request = request.SimplifyRequestTree();
-                requestsByLinks.AddRequestByLink(request, linkInstance);
+                requestsByLinks.AddRequestByLink(request, linkDoc);
 
                 return true;
             }
@@ -118,11 +115,11 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        private static void AddRequestByLink(this Dictionary<RevitLinkInstance, IRequest> requestsByLinks, IRequest request, RevitLinkInstance linkInstance)
+        private static void AddRequestByLink(this Dictionary<Document, IRequest> requestsByLinks, IRequest request, Document document)
         {
-            if (requestsByLinks.ContainsKey(linkInstance))
+            if (requestsByLinks.ContainsKey(document))
             {
-                IRequest requestByLink = requestsByLinks[linkInstance];
+                IRequest requestByLink = requestsByLinks[document];
                 if (requestByLink is LogicalOrFilter)
                     ((LogicalOrRequest)requestByLink).Requests.Add(request);
                 else
@@ -130,11 +127,11 @@ namespace BH.Engine.Adapters.Revit
                     LogicalOrRequest newHead = new LogicalOrRequest();
                     newHead.Requests.Add(requestByLink);
                     newHead.Requests.Add(request);
-                    requestsByLinks[linkInstance] = newHead;
+                    requestsByLinks[document] = newHead;
                 }
             }
             else
-                requestsByLinks[linkInstance] = request;
+                requestsByLinks[document] = request;
         }
 
         /***************************************************/
