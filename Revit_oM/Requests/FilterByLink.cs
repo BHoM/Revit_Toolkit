@@ -25,14 +25,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements of a Revit category.")]
+    [Description("IRequest that filters all elements from a Revit link with given name.")]
     public class FilterByLink : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the link file to pull from, case insensitive.")]
+        [Description("Name of the link file (not whole file path) to pull from, case insensitive.")]
         public virtual string LinkName { get; set; } = "";
 
         /***************************************************/
