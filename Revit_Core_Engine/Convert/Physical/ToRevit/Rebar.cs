@@ -23,10 +23,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
-using BH.Engine.Geometry;
-using BH.Engine.Reflection;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
 using BH.oM.Physical.Reinforcement;
 using System;
 using System.Collections.Generic;
@@ -72,7 +69,7 @@ namespace BH.Revit.Engine.Core
 
             //getting host
             Element host = null;
-            try
+            try //remove try-catch
             {
                 host = document.GetElement(new ElementId((int)bar.CustomData["host"]));
             }
@@ -99,7 +96,7 @@ namespace BH.Revit.Engine.Core
 
 
             rebar.CopyParameters(bar, settings);
-            rebar.SetLocation(bar, settings);
+            //rebar.SetLocation(bar, settings);
 
             refObjects.AddOrReplace(bar, rebar);
             return rebar;
@@ -107,25 +104,62 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static Rebar ToRevitRebar(this Stirrup reinforcement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Rebar ToRevitRebar(this Stirrup stirrup, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            if (reinforcement == null || document == null)
+            if (stirrup == null || document == null)
                 return null;
 
-            Rebar rebar = refObjects.GetValue<Rebar>(document, reinforcement.BHoM_Guid);
+            Rebar rebar = refObjects.GetValue<Rebar>(document, stirrup.BHoM_Guid);
             if (rebar != null)
                 return rebar;
 
             settings = settings.DefaultIfNull();
-            
-            //     //
-            // WIP //
-            //     //
 
-            rebar.CopyParameters(reinforcement, settings);
-            rebar.SetLocation(reinforcement, settings);
+            /*** copyPaste from .Rebar  ***/
+            //works, but maybe can be improved
 
-            refObjects.AddOrReplace(reinforcement, rebar);
+            //getting bar type
+            string barTypeName = ((int)(stirrup.Diameter * 1000)).ToString();
+            RebarBarType barType = new FilteredElementCollector(document).OfClass(typeof(RebarBarType)).Where(x => x.Name == barTypeName).FirstOrDefault() as RebarBarType;
+            if (barType == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Revit project does not contain adequate rebar family for one or more rebars.");
+                return null;
+            }
+
+            //getting host
+            Element host = null;
+            try
+            {
+                host = document.GetElement(new ElementId((int)stirrup.CustomData["host"]));
+            }
+            catch (KeyNotFoundException e)
+            {
+                BH.Engine.Reflection.Compute.RecordError("One or more rebars does not contain information about the host.");
+                return null;
+            }
+            if (host == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("One or more selected hosts does not exist in the Revit project.");
+                return null;
+            }
+
+            //creating rebar
+            RebarFreeFormValidationResult rffvr = new RebarFreeFormValidationResult();
+
+            List<List<Curve>> curves = new List<List<Curve>> { stirrup.CentreCurve.IToRevitCurves() };  //
+            IList<IList<Curve>> iListCurves = new List<IList<Curve>>();                                 // Needed to convert
+            foreach (List<Curve> list in curves)                                                        // List<List<Curve>> -> IList<IList<Curve>>
+                iListCurves.Add(list);                                                                  //
+
+            rebar = Rebar.CreateFreeForm(document, barType, host, iListCurves, out rffvr);
+
+            rebar.CopyParameters(stirrup, settings);
+            //rebar.SetLocation(stirrup, settings);
+
+            /*** end of copypaste       ***/
+
+            refObjects.AddOrReplace(stirrup, rebar);
             return rebar;
         }
 
