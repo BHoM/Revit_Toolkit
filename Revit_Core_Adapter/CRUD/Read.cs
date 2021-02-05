@@ -21,10 +21,12 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Data.Requests;
@@ -45,10 +47,7 @@ namespace BH.Revit.Adapter.Core
 
         protected override IEnumerable<IBHoMObject> Read(IRequest request, ActionConfig actionConfig = null)
         {
-            Autodesk.Revit.UI.UIDocument uiDocument = this.UIDocument;
-            Document document = this.Document;
-
-            ICollection<ElementId> selected = uiDocument.Selection.GetElementIds();
+            ICollection<ElementId> selected = this.UIDocument.Selection.GetElementIds();
 
             if (request == null)
             {
@@ -70,17 +69,16 @@ namespace BH.Revit.Adapter.Core
                 return new List<IBHoMObject>();
             }
 
-            IEnumerable<ElementId> worksetPrefilter = null;
-            if (!pullConfig.IncludeClosedWorksets)
-                worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
-
-            List<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).RemoveGridSegmentIds(document).ToList<ElementId>();
-            if (elementIds == null)
-                return new List<IBHoMObject>();
-
             Discipline discipline = requestDiscipline.Value;
             if (discipline == Discipline.Undefined)
                 discipline = Discipline.Physical;
+
+            Dictionary<RevitLinkInstance, IRequest> requestsByLinks = request.SplitRequestTreeByLinks(this.Document);
+            if (requestsByLinks == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Pull failed due to issues with the request tree. Please try to simplify the used Request and try again.");
+                return new List<IBHoMObject>();
+            }
 
             RevitSettings revitSettings = RevitSettings.DefaultIfNull();
 
@@ -92,88 +90,115 @@ namespace BH.Revit.Adapter.Core
             if (representationConfig == null)
                 representationConfig = new PullRepresentationConfig();
 
-            if (pullConfig.IncludeNestedElements)
-            {
-                List<ElementId> elemIds = new List<ElementId>();
-                foreach (ElementId id in elementIds)
-                {
-                    Element element = document.GetElement(id);
-                    if (element is FamilyInstance)
-                    {
-                        FamilyInstance famInst = element as FamilyInstance;
-                        IEnumerable<ElementId> nestedElemIds = famInst.ElementIdsOfMemberElements();
-                        elemIds.AddRange(nestedElemIds);
-                    }
-                }
-                elementIds.AddRange(elemIds);
-            }
-
             Options geometryOptions = BH.Revit.Engine.Core.Create.Options(ViewDetailLevel.Fine, geometryConfig.IncludeNonVisible, false);
             Options meshOptions = BH.Revit.Engine.Core.Create.Options(geometryConfig.MeshDetailLevel.ViewDetailLevel(), geometryConfig.IncludeNonVisible, false);
             Options renderMeshOptions = BH.Revit.Engine.Core.Create.Options(representationConfig.DetailLevel.ViewDetailLevel(), representationConfig.IncludeNonVisible, false);
 
             List<IBHoMObject> result = new List<IBHoMObject>();
-            Dictionary<string, List<IBHoMObject>> refObjects = new Dictionary<string, List<IBHoMObject>>();
-            
-            foreach (ElementId id in elementIds)
+            foreach (KeyValuePair<RevitLinkInstance, IRequest> requestByLink in requestsByLinks)
             {
-                Element element = document.GetElement(id);
-                if (element == null)
-                    continue;
-                
-                IEnumerable<IBHoMObject> iBHoMObjects = Read(element, discipline, revitSettings, refObjects);
-                if (iBHoMObjects != null && iBHoMObjects.Any())
+                Document document;
+                TransformMatrix transform = null;
+                if (requestByLink.Key == null)
                 {
-                    if (pullConfig.PullMaterialTakeOff)
+                    document = this.Document;
+                }
+                else
+                {
+                    document = requestByLink.Key.GetLinkDocument();
+                    transform = requestByLink.Key.GetTotalTransform().FromRevit();
+                }
+
+                //TODO: WRAP THIS INTO A SEPARATE METHOD FROM HERE!
+                IEnumerable<ElementId> worksetPrefilter = null;
+                if (!pullConfig.IncludeClosedWorksets)
+                    worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
+
+                List<ElementId> elementIds = requestByLink.Value.IElementIds(new UIDocument(document), worksetPrefilter).RemoveGridSegmentIds(document).ToList<ElementId>();
+                if (elementIds == null)
+                    return new List<IBHoMObject>();
+
+                if (pullConfig.IncludeNestedElements)
+                {
+                    List<ElementId> elemIds = new List<ElementId>();
+                    foreach (ElementId id in elementIds)
                     {
-                        foreach (IBHoMObject iBHoMObject in iBHoMObjects)
+                        Element element = document.GetElement(id);
+                        if (element is FamilyInstance)
                         {
-                            RevitMaterialTakeOff takeoff = element.MaterialTakeoff(revitSettings, refObjects);
-                            if (takeoff != null)
-                                iBHoMObject.Fragments.AddOrReplace(takeoff);
+                            FamilyInstance famInst = element as FamilyInstance;
+                            IEnumerable<ElementId> nestedElemIds = famInst.ElementIdsOfMemberElements();
+                            elemIds.AddRange(nestedElemIds);
                         }
                     }
+                    elementIds.AddRange(elemIds);
+                }
 
-                    List<ICurve> edges = null;
-                    if (geometryConfig.PullEdges)
-                        edges = element.Curves(geometryOptions, revitSettings, true).FromRevit();
+                Dictionary<string, List<IBHoMObject>> refObjects = new Dictionary<string, List<IBHoMObject>>();
 
-                    List<ISurface> surfaces = null;
-                    if (geometryConfig.PullSurfaces)
-                        surfaces = element.Faces(geometryOptions, revitSettings).Select(x => x.IFromRevit()).ToList();
+                foreach (ElementId id in elementIds)
+                {
+                    Element element = document.GetElement(id);
+                    if (element == null)
+                        continue;
 
-                    List<oM.Geometry.Mesh> meshes = null;
-                    if (geometryConfig.PullMeshes)
-                        meshes = element.MeshedGeometry(meshOptions, revitSettings);
+                    //TODO: transform somewhere!
+                    IEnumerable<IBHoMObject> iBHoMObjects = Read(element, discipline, revitSettings, refObjects);
 
-                    if (geometryConfig.PullEdges || geometryConfig.PullSurfaces || geometryConfig.PullMeshes)
+
+                    if (iBHoMObjects != null && iBHoMObjects.Any())
                     {
-                        RevitGeometry geometry = new RevitGeometry(edges, surfaces, meshes);
-                        foreach (IBHoMObject iBHoMObject in iBHoMObjects)
+                        if (pullConfig.PullMaterialTakeOff)
                         {
-                            iBHoMObject.Fragments.AddOrReplace(geometry);
+                            foreach (IBHoMObject iBHoMObject in iBHoMObjects)
+                            {
+                                RevitMaterialTakeOff takeoff = element.MaterialTakeoff(revitSettings, refObjects);
+                                if (takeoff != null)
+                                    iBHoMObject.Fragments.AddOrReplace(takeoff);
+                            }
                         }
-                    }
-                    
-                    if (representationConfig.PullRenderMesh)
-                    {
-                        List<RenderMesh> renderMeshes = element.RenderMeshes(renderMeshOptions, revitSettings);
-                        RevitRepresentation representation = new RevitRepresentation(renderMeshes);
-                        foreach (IBHoMObject iBHoMObject in iBHoMObjects)
-                        {
-                            iBHoMObject.Fragments.AddOrReplace(representation);
-                        }
-                    }
 
-                    result.AddRange(iBHoMObjects);
+                        List<ICurve> edges = null;
+                        if (geometryConfig.PullEdges)
+                            edges = element.Curves(geometryOptions, revitSettings, true).FromRevit();
+
+                        List<ISurface> surfaces = null;
+                        if (geometryConfig.PullSurfaces)
+                            surfaces = element.Faces(geometryOptions, revitSettings).Select(x => x.IFromRevit()).ToList();
+
+                        List<oM.Geometry.Mesh> meshes = null;
+                        if (geometryConfig.PullMeshes)
+                            meshes = element.MeshedGeometry(meshOptions, revitSettings);
+
+                        if (geometryConfig.PullEdges || geometryConfig.PullSurfaces || geometryConfig.PullMeshes)
+                        {
+                            RevitGeometry geometry = new RevitGeometry(edges, surfaces, meshes);
+                            foreach (IBHoMObject iBHoMObject in iBHoMObjects)
+                            {
+                                iBHoMObject.Fragments.AddOrReplace(geometry);
+                            }
+                        }
+
+                        if (representationConfig.PullRenderMesh)
+                        {
+                            List<RenderMesh> renderMeshes = element.RenderMeshes(renderMeshOptions, revitSettings);
+                            RevitRepresentation representation = new RevitRepresentation(renderMeshes);
+                            foreach (IBHoMObject iBHoMObject in iBHoMObjects)
+                            {
+                                iBHoMObject.Fragments.AddOrReplace(representation);
+                            }
+                        }
+
+                        result.AddRange(iBHoMObjects);
+                    }
                 }
             }
-
+            
             bool[] activePulls = new bool[] { geometryConfig.PullEdges, geometryConfig.PullSurfaces, geometryConfig.PullMeshes, representationConfig.PullRenderMesh };
             if (activePulls.Count(x => x == true) > 1)
                 BH.Engine.Reflection.Compute.RecordWarning("Pull of more than one geometry/representation type has been specified in RevitPullConfig. Please consider this can be time consuming due to the amount of conversions.");
 
-            uiDocument.Selection.SetElementIds(selected);
+            this.UIDocument.Selection.SetElementIds(selected);
 
             return result;
         }
@@ -198,6 +223,7 @@ namespace BH.Revit.Adapter.Core
                 BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, exception.Message));
             }
 
+            //TODO: RunExtensionMethod(transform) here! And implement it on all basic types
             List<IBHoMObject> result = new List<IBHoMObject>();
             if (obj != null)
             {
