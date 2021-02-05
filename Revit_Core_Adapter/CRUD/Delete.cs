@@ -47,8 +47,7 @@ namespace BH.Revit.Adapter.Core
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
                 return 0;
             }
-
-            UIDocument uiDocument = this.UIDocument;
+            
             Document document = this.Document;
             RevitRemoveConfig removeConfig = actionConfig as RevitRemoveConfig;
 
@@ -56,7 +55,7 @@ namespace BH.Revit.Adapter.Core
             if (!removeConfig.IncludeClosedWorksets)
                 worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
 
-            IEnumerable<ElementId> elementIds = request.IElementIds(uiDocument, worksetPrefilter).RemoveGridSegmentIds(document);
+            IEnumerable<ElementId> elementIds = request.IElementIds(document, worksetPrefilter).RemoveGridSegmentIds(document);
 
             List<ElementId> deletedIds = Delete(elementIds, document, removeConfig.RemovePinned);
             if (deletedIds == null)
