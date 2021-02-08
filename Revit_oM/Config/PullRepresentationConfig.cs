@@ -22,12 +22,13 @@
 
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Base;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
     [Description("Configuration used to specify representation to be pulled and passed to RevitRepresentation fragment.")]
-    public class PullRepresentationConfig
+    public class PullRepresentationConfig : IObject
     {
         /***************************************************/
         /****             Public Properties             ****/

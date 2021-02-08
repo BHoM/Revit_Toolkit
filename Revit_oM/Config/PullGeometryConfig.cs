@@ -22,12 +22,13 @@
 
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Base;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
     [Description("Configuration used to specify which geometry should be pulled and passed to RevitGeometry fragment.")]
-    public class PullGeometryConfig
+    public class PullGeometryConfig : IObject
     {
         /***************************************************/
         /****             Public Properties             ****/
