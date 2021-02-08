@@ -499,6 +499,14 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        internal static void TransformNotImplementedWarning(this Element element)
+        {
+            BH.Engine.Reflection.Compute.RecordWarning($"Transform method has not been implemented in convert from {element.GetType()} to type BHoM.\n" +
+                                                        $"All elements of type {element.GetType()} coming from link {element.Document.Title} will be be pulled in coordinate system of the link, not the host model.");
+        }
+
+        /***************************************************/
     }
 }
 
