@@ -111,7 +111,7 @@ namespace BH.Revit.Adapter.Core
                 UIApplication uiApp = new UIApplication(document.Application);
                 Document mainDoc = uiApp.ActiveUIDocument.Document;
                 RevitLinkInstance linkInstance = new FilteredElementCollector(mainDoc).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().FirstOrDefault(x => x.GetLinkDocument().Title == document.Title);
-                linkTransform = linkInstance.GetTotalTransform();
+                linkTransform = linkInstance.GetTotalTransform().Inverse;
                 bHoMTransform = linkTransform.FromRevit();
             }
 
