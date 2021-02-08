@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         /****      Convert Revit elements to BHoM       ****/
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this ProjectInfo projectInfo, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this ProjectInfo projectInfo, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> FromRevit(this EnergyAnalysisDetailModel energyAnalysisModel, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> FromRevit(this EnergyAnalysisDetailModel energyAnalysisModel, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -66,8 +66,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> FromRevit(this FamilyInstance familyInstance, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> FromRevit(this FamilyInstance familyInstance, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                familyInstance.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 case Discipline.Structural:
@@ -98,7 +101,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this FamilySymbol familySymbol, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this FamilySymbol familySymbol, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -112,8 +115,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> FromRevit(this Wall wall, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> FromRevit(this Wall wall, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                wall.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 case Discipline.Environmental:
@@ -130,8 +136,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> FromRevit(this Ceiling ceiling, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> FromRevit(this Ceiling ceiling, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                ceiling.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 case Discipline.Environmental:
@@ -146,8 +155,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> FromRevit(this Floor floor, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> FromRevit(this Floor floor, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                floor.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 case Discipline.Environmental:
@@ -164,8 +176,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> FromRevit(this RoofBase roofBase, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> FromRevit(this RoofBase roofBase, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                roofBase.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 case Discipline.Environmental:
@@ -182,7 +197,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this HostObjAttributes hostObjAttributes, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this HostObjAttributes hostObjAttributes, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -205,8 +220,11 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("cableTrays", "Resulted list of BHoM cable trays converted from a Revit cable trays.")]
-        public static List<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Electrical.CableTray cableTray, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Electrical.CableTray cableTray, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                cableTray.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 case Discipline.Architecture:
@@ -226,8 +244,11 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("ducts", "Resulted list of BHoM ducts converted from a Revit ducts.")]
-        public static List<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                duct.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 case Discipline.Architecture:
@@ -247,8 +268,11 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("pipes", "Resulted list of BHoM MEP pipes converted from a Revit pipes.")]
-        public static List<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Plumbing.Pipe pipe, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Plumbing.Pipe pipe, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                pipe.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 case Discipline.Architecture:
@@ -268,8 +292,11 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("wire", "BHoM wire converted from a Revit wire.")]
-        public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Electrical.Wire wire, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Electrical.Wire wire, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                wire.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 case Discipline.Architecture:
@@ -283,8 +310,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this Level level, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this Level level, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                level.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 default:
@@ -294,8 +324,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this Grid grid, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this Grid grid, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                grid.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 default:
@@ -305,8 +338,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this MultiSegmentGrid grid, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this MultiSegmentGrid grid, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                grid.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 default:
@@ -316,7 +352,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this ElementType elementType, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this ElementType elementType, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -327,7 +363,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this GraphicsStyle graphicStyle, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this GraphicsStyle graphicStyle, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -338,8 +374,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this SpatialElement spatialElement, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this SpatialElement spatialElement, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                spatialElement.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 case Discipline.Environmental:
@@ -354,8 +393,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this EnergyAnalysisSpace energyAnalysisSpace, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this EnergyAnalysisSpace energyAnalysisSpace, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                energyAnalysisSpace.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 case Discipline.Environmental:
@@ -369,8 +411,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this EnergyAnalysisSurface energyAnalysisSurface, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this EnergyAnalysisSurface energyAnalysisSurface, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                energyAnalysisSurface.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 case Discipline.Environmental:
@@ -384,8 +429,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this EnergyAnalysisOpening energyAnalysisOpening, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this EnergyAnalysisOpening energyAnalysisOpening, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (transform?.IsIdentity == false)
+                energyAnalysisOpening.TransformNotImplementedWarning();
+
             switch (discipline)
             {
                 case Discipline.Environmental:
@@ -399,7 +447,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this ViewSheet viewSheet, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this ViewSheet viewSheet, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -410,7 +458,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this Viewport viewport, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this Viewport viewport, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -421,7 +469,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this ViewPlan viewPlan, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this ViewPlan viewPlan, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -432,7 +480,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this Material material, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this Material material, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -449,7 +497,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this Family family, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this Family family, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -460,8 +508,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this CurveElement curveElement, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this CurveElement curveElement, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (!curveElement.ViewSpecific && transform?.IsIdentity == false)
+                curveElement.TransformNotImplementedWarning();
+
+
             switch (discipline)
             {
                 default:
@@ -471,7 +523,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this FilledRegion filledRegion, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this FilledRegion filledRegion, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             switch (discipline)
             {
@@ -485,7 +537,7 @@ namespace BH.Revit.Engine.Core
         /****             Fallback Methods              ****/
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this Element element, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             return null;
         }
@@ -502,7 +554,7 @@ namespace BH.Revit.Engine.Core
         /****             Interface Methods             ****/
         /***************************************************/
 
-        public static object IFromRevit(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static object IFromRevit(this Element element, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (element == null)
             {
@@ -510,7 +562,9 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            var result = FromRevit(element as dynamic, discipline, settings, refObjects);
+            //material, family, elementType, view, graphicsStyle
+
+            var result = FromRevit(element as dynamic, discipline, transform, settings, refObjects);
             if (result == null || (typeof(IEnumerable<object>).IsAssignableFrom(result.GetType()) && ((IEnumerable<object>)result).Count(x => x != null) == 0))
             {
                 result = element.ObjectFromRevit(discipline, settings, refObjects);

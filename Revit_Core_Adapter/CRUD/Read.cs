@@ -105,14 +105,12 @@ namespace BH.Revit.Adapter.Core
         public static IEnumerable<IBHoMObject> Read(Document document, IRequest request, RevitPullConfig pullConfig, Discipline discipline, RevitSettings settings)
         {
             Transform linkTransform = null;
-            TransformMatrix bHoMTransform = null;
             if (document.IsLinked)
             {
                 UIApplication uiApp = new UIApplication(document.Application);
                 Document mainDoc = uiApp.ActiveUIDocument.Document;
-                RevitLinkInstance linkInstance = new FilteredElementCollector(mainDoc).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().FirstOrDefault(x => x.GetLinkDocument().Title == document.Title);
+                RevitLinkInstance linkInstance = new FilteredElementCollector(mainDoc).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().FirstOrDefault(x => x.GetLinkDocument().PathName == document.PathName);
                 linkTransform = linkInstance.GetTotalTransform().Inverse;
-                bHoMTransform = linkTransform.FromRevit();
             }
 
             IEnumerable<ElementId> worksetPrefilter = null;
@@ -160,7 +158,7 @@ namespace BH.Revit.Adapter.Core
                 if (element == null)
                     continue;
 
-                IEnumerable<IBHoMObject> iBHoMObjects = Read(element, discipline, settings, bHoMTransform, refObjects);
+                IEnumerable<IBHoMObject> iBHoMObjects = Read(element, discipline, linkTransform, settings, refObjects);
                 
                 if (iBHoMObjects != null && iBHoMObjects.Any())
                 {
@@ -214,7 +212,7 @@ namespace BH.Revit.Adapter.Core
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> Read(Element element, Discipline discipline, RevitSettings settings, TransformMatrix transform, Dictionary<string, List<IBHoMObject>> refObjects)
+        public static IEnumerable<IBHoMObject> Read(Element element, Discipline discipline, Transform transform, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects)
         {
             if (element == null || !element.IsValidObject)
                 return new List<IBHoMObject>();
@@ -222,14 +220,13 @@ namespace BH.Revit.Adapter.Core
             object obj = null;
             try
             {
-                obj = element.IFromRevit(discipline, settings, refObjects);
+                obj = element.IFromRevit(discipline, transform, settings, refObjects);
             }
             catch (Exception exception)
             {
                 BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, exception.Message));
             }
-
-            //TODO: RunExtensionMethod(transform) here! And implement it on all basic types
+            
             List<IBHoMObject> result = new List<IBHoMObject>();
             if (obj != null)
             {
