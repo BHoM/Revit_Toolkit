@@ -96,12 +96,29 @@ namespace BH.Engine.Adapters.Revit
                     linkName += ".rvt";
                 }
 
-                Document linkDoc = linkDocuments.FirstOrDefault(x => x.Title == linkName);
-                if (linkDoc == null)
+                bool fullPath = linkName.Contains("\\");
+                List<Document> validDocs;
+                if (fullPath)
+                    validDocs = linkDocuments.Where(x => x.PathName.ToLower() == linkName).ToList();
+                else
+                    validDocs = linkDocuments.Where(x => x.Title.ToLower() == linkName).ToList();
+
+                if (validDocs.Count == 0)
                 {
-                    BH.Engine.Reflection.Compute.RecordError($"Active Revit document does not contain link named {linkName}.");
+                    if (fullPath)
+                        BH.Engine.Reflection.Compute.RecordError($"Active Revit document does not contain link under path {linkName}.");
+                    else
+                        BH.Engine.Reflection.Compute.RecordError($"Active Revit document does not contain link named {linkName}.");
+
                     return false;
                 }
+                else if (validDocs.Count != 1)
+                {
+                    BH.Engine.Reflection.Compute.RecordError($"There is more than one link document named {linkName} - please use full link path in request instead of link name to pull.");
+                    return false;
+                }
+
+                Document linkDoc = validDocs[0];
 
                 request.RemoveSubRequest(linkRequest);
                 request = request.SimplifyRequestTree();

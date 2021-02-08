@@ -32,7 +32,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the link file (not whole file path) to pull from, case insensitive.")]
+        [Description("Name of the link file (alternatively whole file path) to pull from, case insensitive.")]
         public virtual string LinkName { get; set; } = "";
 
         /***************************************************/
