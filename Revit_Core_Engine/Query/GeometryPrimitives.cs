@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static List<GeometryObject> GeometryPrimitives(this Element element, Options options, RevitSettings settings = null)
+        public static List<GeometryObject> GeometryPrimitives(this Element element, Options options, Transform transform = null, RevitSettings settings = null)
         {
             if (element == null)
                 return null;
@@ -82,10 +82,15 @@ namespace BH.Revit.Engine.Core
             GeometryElement geometryElement = element.get_Geometry(options);
             if (geometryElement == null)
                 return new List<GeometryObject>();
-
-            Transform transform = null;
+            
             if (element is FamilyInstance)
-                transform = ((FamilyInstance)element).GetTotalTransform();
+            {
+                Transform instanceTransform = ((FamilyInstance)element).GetTotalTransform();
+                if (transform == null)
+                    transform = instanceTransform;
+                else
+                    transform = transform.Multiply(instanceTransform);
+            }
 
             return geometryElement.GeometryPrimitives(transform, settings);
         }

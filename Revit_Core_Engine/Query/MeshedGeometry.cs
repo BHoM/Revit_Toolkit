@@ -33,14 +33,14 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<oM.Geometry.Mesh> MeshedGeometry(this Element element, Options options, RevitSettings settings = null)
+        public static List<oM.Geometry.Mesh> MeshedGeometry(this Element element, Options options, Transform transform = null, RevitSettings settings = null)
         {
             if (element == null)
                 return null;
 
-            List<oM.Geometry.Mesh> result = element.Faces(options, settings).Select(x => x.Triangulate(options.DetailLevel.FaceTriangulationFactor()).MeshFromRevit()).ToList();
-            result.AddRange(element.GeometryPrimitives(options, settings).Where(x => x is Mesh).Cast<Mesh>().Select(x => x.MeshFromRevit()));
-            result.AddRange(element.Curves(options, settings, false).Select(x => x.MeshFromRevit()));
+            List<oM.Geometry.Mesh> result = element.Faces(options, transform, settings).Select(x => x.Triangulate(options.DetailLevel.FaceTriangulationFactor()).MeshFromRevit()).ToList();
+            result.AddRange(element.GeometryPrimitives(options, transform, settings).Where(x => x is Mesh).Cast<Mesh>().Select(x => x.MeshFromRevit()));
+            result.AddRange(element.Curves(options, transform, settings, false).Select(x => x.MeshFromRevit()));
             return result;
         }
 
