@@ -39,6 +39,12 @@ namespace BH.Revit.Engine.Core
 
         public static List<BH.oM.Geometry.Line> CeilingPattern(this Ceiling ceiling, RevitSettings settings, PlanarSurface surface = null)
         {
+            if (ceiling.Document.IsLinked)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning($"It is not allowed to pull the ceiling patterns from linked models - please open the document {ceiling.Document.PathName} and pull directly from it instead.");
+                return new List<oM.Geometry.Line>();
+            }
+
             CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
             CompoundStructure comStruct = ceilingType.GetCompoundStructure();
 
