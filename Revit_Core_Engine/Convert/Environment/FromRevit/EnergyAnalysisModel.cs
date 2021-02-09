@@ -39,6 +39,12 @@ namespace BH.Revit.Engine.Core
 
         public static List<IBHoMObject> EnergyAnalysisModelFromRevit(this EnergyAnalysisDetailModel energyAnalysisModel, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (energyAnalysisModel.Document.IsLinked)
+            {
+                BH.Engine.Reflection.Compute.RecordError($"It is not allowed to pull the energy analysis model from link - please open the document {energyAnalysisModel.Document.PathName} and pull directly from it.");
+                return null;
+            }
+
             settings = settings.DefaultIfNull();
 
             ElementId modelId = energyAnalysisModel.Id;
