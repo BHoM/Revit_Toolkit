@@ -38,9 +38,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public Methods               ****/
         /***************************************************/
 
-        //[Description("Groups and sorts IRequests by their estimated execution time in order to execute fastest first. Order from slowest to fastest: IParameterRequest, IlogicalRequests, others. ")]
-        //[Input("requests", "A collection of IRequests to be sorted.")]
-        //[Output("sortedRequests")]
+        [Description("Decomposes a tree created by a set of nested ILogicalRequests into a dictionary of Revit documents (both host and linked) and the IRequests relevant to them, which in total represents the same request as the original IRequest.")]
+        [Input("request", "An IRequest to be split into a dictionary of Revit documents and the IRequests relevant to them.")]
+        [Input("document", "Host document to be used as the basis of the splitting routine.")]
+        [Output("splitRequests", "A dictionary of Revit documents (both host and linked) and the IRequests relevant to them, which in total represents the same request as the input IRequest.")]
         public static Dictionary<Document, IRequest> SplitRequestTreeByLinks(this IRequest request, Document document)
         {
             List<Document> linkDocs = new FilteredElementCollector(document).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().Select(x=>x.GetLinkDocument()).ToList();
