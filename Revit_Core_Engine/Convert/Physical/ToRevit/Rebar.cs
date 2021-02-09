@@ -50,7 +50,6 @@ namespace BH.Revit.Engine.Core
         public static Rebar ToRevitRebar(this PrimaryReinforcingBar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             return ToRevitRebar((IReinforcingBar)bar, document, settings, refObjects);
-
         }
 
         /***************************************************/
@@ -113,7 +112,7 @@ namespace BH.Revit.Engine.Core
                 iListCurves.Add(list);                                                              //
 
             rebar = Rebar.CreateFreeForm(document, barType, host, iListCurves, out rffvr);
-            
+
             rebar.CopyParameters(bar, settings);
 
             refObjects.AddOrReplace(bar, rebar);
