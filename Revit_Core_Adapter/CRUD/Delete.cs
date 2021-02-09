@@ -23,8 +23,10 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Data;
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Base;
 using BH.oM.Data.Requests;
 using BH.Revit.Engine.Core;
@@ -44,10 +46,16 @@ namespace BH.Revit.Adapter.Core
         {
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
+                BH.Engine.Reflection.Compute.RecordError("Deletion could not be executed because provided IRequest is null.");
                 return 0;
             }
-            
+
+            if (request.AllRequestsOfType(typeof(FilterByLink)).Count != 0)
+            {
+                BH.Engine.Reflection.Compute.RecordError($"It is not allowed to remove objects from Revit links - please remove the requests of type {nameof(FilterByLink)} from the request.");
+                return 0;
+            }
+
             Document document = this.Document;
             RevitRemoveConfig removeConfig = actionConfig as RevitRemoveConfig;
 
