@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
         {
             if (energyAnalysisModel.Document.IsLinked)
             {
-                BH.Engine.Reflection.Compute.RecordError($"It is not allowed to pull the energy analysis model from link - please open the document {energyAnalysisModel.Document.PathName} and pull directly from it.");
+                BH.Engine.Reflection.Compute.RecordError($"It is not allowed to pull the energy analysis model from linked models - please open the document {energyAnalysisModel.Document.PathName} and pull directly from it instead.");
                 return null;
             }
 
