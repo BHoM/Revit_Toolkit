@@ -27,7 +27,6 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using System;
 using System.Collections.Generic;
-using BH.oM.Physical.Materials;
 
 namespace BH.Revit.Engine.Core
 {
@@ -125,7 +124,7 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-  
+
         public static Element ToRevit(this BH.oM.Environment.Elements.Space space, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             return space.ToRevitSpace(document, settings, refObjects);
@@ -179,6 +178,7 @@ namespace BH.Revit.Engine.Core
         {
             return reinforcement.IToRevitRebar(document, settings, refObjects);
         }
+
 
         /***************************************************/
         /****             Disallowed Types              ****/
