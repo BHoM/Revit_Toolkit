@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         /****            Interface methods              ****/
         /***************************************************/
 
-        public static FamilyInstance IToRevitRebar(this IReinforcingBar reinforcement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Rebar IToRevitRebar(this IReinforcingBar reinforcement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             return ToRevitRebar(reinforcement as dynamic, document, settings, refObjects);
         }
@@ -48,6 +48,24 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         public static Rebar ToRevitRebar(this PrimaryReinforcingBar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            return ToRevitRebar((IReinforcingBar)bar, document, settings, refObjects);
+
+        }
+
+        /***************************************************/
+
+        public static Rebar ToRevitRebar(this Stirrup stirrup, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            return ToRevitRebar((IReinforcingBar)stirrup, document, settings, refObjects);
+        }
+
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        private static Rebar ToRevitRebar(this IReinforcingBar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (bar == null || document == null)
                 return null;
@@ -66,18 +84,20 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Reflection.Compute.RecordError("Revit project does not contain adequate rebar family for one or more rebars.");
                 return null;
             }
+            barType.SetParameter(BuiltInParameter.REBAR_STANDARD_BEND_DIAMETER, bar.BendRadius * 2);
+            barType.SetParameter(BuiltInParameter.REBAR_STANDARD_HOOK_BEND_DIAMETER, bar.BendRadius * 2);
+            barType.SetParameter(BuiltInParameter.REBAR_BAR_STIRRUP_BEND_DIAMETER, bar.BendRadius * 2);
 
             //getting host
             Element host = null;
-            try //remove try-catch
-            {
+            if (bar.CustomData.ContainsKey("host"))
                 host = document.GetElement(new ElementId((int)bar.CustomData["host"]));
-            }
-            catch (KeyNotFoundException e)
+            else
             {
                 BH.Engine.Reflection.Compute.RecordError("One or more rebars does not contain information about the host.");
                 return null;
             }
+
             if (host == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("One or more selected hosts does not exist in the Revit project.");
@@ -86,17 +106,15 @@ namespace BH.Revit.Engine.Core
 
             //creating rebar
             RebarFreeFormValidationResult rffvr = new RebarFreeFormValidationResult();
-                        
+
             List<List<Curve>> curves = new List<List<Curve>> { bar.CentreCurve.IToRevitCurves() };  //
             IList<IList<Curve>> iListCurves = new List<IList<Curve>>();                             // Needed to convert
             foreach (List<Curve> list in curves)                                                    // List<List<Curve>> -> IList<IList<Curve>>
                 iListCurves.Add(list);                                                              //
 
             rebar = Rebar.CreateFreeForm(document, barType, host, iListCurves, out rffvr);
-
-
+            
             rebar.CopyParameters(bar, settings);
-            //rebar.SetLocation(bar, settings);
 
             refObjects.AddOrReplace(bar, rebar);
             return rebar;
@@ -104,65 +122,5 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static Rebar ToRevitRebar(this Stirrup stirrup, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
-        {
-            if (stirrup == null || document == null)
-                return null;
-
-            Rebar rebar = refObjects.GetValue<Rebar>(document, stirrup.BHoM_Guid);
-            if (rebar != null)
-                return rebar;
-
-            settings = settings.DefaultIfNull();
-
-            /*** copyPaste from .Rebar  ***/
-            //works, but maybe can be improved
-
-            //getting bar type
-            string barTypeName = ((int)(stirrup.Diameter * 1000)).ToString();
-            RebarBarType barType = new FilteredElementCollector(document).OfClass(typeof(RebarBarType)).Where(x => x.Name == barTypeName).FirstOrDefault() as RebarBarType;
-            if (barType == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Revit project does not contain adequate rebar family for one or more rebars.");
-                return null;
-            }
-
-            //getting host
-            Element host = null;
-            try
-            {
-                host = document.GetElement(new ElementId((int)stirrup.CustomData["host"]));
-            }
-            catch (KeyNotFoundException e)
-            {
-                BH.Engine.Reflection.Compute.RecordError("One or more rebars does not contain information about the host.");
-                return null;
-            }
-            if (host == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("One or more selected hosts does not exist in the Revit project.");
-                return null;
-            }
-
-            //creating rebar
-            RebarFreeFormValidationResult rffvr = new RebarFreeFormValidationResult();
-
-            List<List<Curve>> curves = new List<List<Curve>> { stirrup.CentreCurve.IToRevitCurves() };  //
-            IList<IList<Curve>> iListCurves = new List<IList<Curve>>();                                 // Needed to convert
-            foreach (List<Curve> list in curves)                                                        // List<List<Curve>> -> IList<IList<Curve>>
-                iListCurves.Add(list);                                                                  //
-
-            rebar = Rebar.CreateFreeForm(document, barType, host, iListCurves, out rffvr);
-
-            rebar.CopyParameters(stirrup, settings);
-            //rebar.SetLocation(stirrup, settings);
-
-            /*** end of copypaste       ***/
-
-            refObjects.AddOrReplace(stirrup, rebar);
-            return rebar;
-        }
-
-        /***************************************************/
     }
 }
