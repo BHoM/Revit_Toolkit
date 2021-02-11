@@ -56,7 +56,7 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             // CableTray type
-            Autodesk.Revit.DB.Electrical.CableTrayType trayType = cableTray.SectionProperty.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_CableTrayRun }, settings, refObjects) as Autodesk.Revit.DB.Electrical.CableTrayType;
+            Autodesk.Revit.DB.Electrical.CableTrayType trayType = cableTray.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_CableTrayRun }, settings, refObjects) as Autodesk.Revit.DB.Electrical.CableTrayType;
             if (trayType == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("No valid family has been found in the Revit model. CableTray creation requires the presence of the default CableTray Family Type.");
@@ -64,19 +64,19 @@ namespace BH.Revit.Engine.Core
             }
 
             // End points
-            XYZ start = cableTray.StartPoint.ToRevit();
-            XYZ end = cableTray.EndPoint.ToRevit();
+            XYZ start = cableTray.StartPoint.Position.ToRevit();
+            XYZ end = cableTray.EndPoint.Position.ToRevit();
 
             // Level
             Level level = document.LevelBelow(Math.Min(start.Z, end.Z), settings);
             if (level == null)
                 return null;
 
-            SectionProfile sectionProfile = cableTray.SectionProperty?.SectionProfile;
+            List<SectionProfile> sectionProfile = cableTray.SectionProfile;
 
-            BoxProfile elementProfile = sectionProfile.ElementProfile as BoxProfile;
-            if (elementProfile == null)
-                return null;
+            //BoxProfile elementProfile = sectionProfile.ElementProfile as BoxProfile;
+            //if (elementProfile == null)
+            //    return null;
 
             revitTray = Autodesk.Revit.DB.Electrical.CableTray.Create(document, trayType.Id, start, end, level.Id);
             if (revitTray == null)
@@ -96,11 +96,11 @@ namespace BH.Revit.Engine.Core
             }
 
             // Set Height
-            double profileHeight = elementProfile.Height;
+            double profileHeight = cableTray.ElementSize.Height;
             revitTray.SetParameter(BuiltInParameter.RBS_CABLETRAY_HEIGHT_PARAM, profileHeight);
 
             // Set Width
-            double profileWidth = elementProfile.Width;
+            double profileWidth = cableTray.ElementSize.Width;
             revitTray.SetParameter(BuiltInParameter.RBS_CABLETRAY_WIDTH_PARAM, profileWidth);
 
             refObjects.AddOrReplace(cableTray, revitTray);

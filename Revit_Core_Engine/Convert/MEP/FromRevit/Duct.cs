@@ -71,7 +71,7 @@ namespace BH.Revit.Engine.Core
                 BH.oM.Geometry.Line segment = queried[i];
                 BH.oM.MEP.System.Duct thisSegment = new Duct
                 {
-                    StartPoint = segment.StartPoint(),
+                    StartPoint = segment.StartPoint(), 
                     EndPoint = segment.EndPoint(),
                     FlowRate = flowRate,
                     SectionProperty = sectionProperty,

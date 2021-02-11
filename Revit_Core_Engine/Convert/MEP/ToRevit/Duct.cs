@@ -29,6 +29,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.MEP.System.SectionProperties;
+using BH.Engine.MEP;
+using BH.oM.MEP.Fragments;
 
 namespace BH.Revit.Engine.Core
 {
@@ -56,7 +58,7 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             // Duct type
-            DuctType ductType = duct.SectionProperty.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_DuctSystem }, settings, refObjects) as DuctType;
+            DuctType ductType = duct.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_DuctSystem }, settings, refObjects) as DuctType;
             if (ductType == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("No valid family has been found in the Revit model. Duct creation requires the presence of the default Duct Family Type.");
@@ -64,8 +66,8 @@ namespace BH.Revit.Engine.Core
             }
 
             // End points
-            XYZ start = duct.StartPoint.ToRevit();
-            XYZ end = duct.EndPoint.ToRevit();
+            XYZ start = duct.StartPoint.Position.ToRevit();
+            XYZ end = duct.EndPoint.Position.ToRevit();
 
             // Level
             Level level = document.LevelBelow(Math.Min(start.Z, end.Z), settings);
@@ -84,17 +86,14 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Reflection.Compute.RecordError("No valid MechanicalSystemType can be found in the Revit model. Creating a revit Duct requires a MechanicalSystemType.");
                 return null;
             }
-
             BH.Engine.Reflection.Compute.RecordWarning("Duct creation will utilise the first available MechanicalSystemType from the Revit model.");
 
-            SectionProfile sectionProfile = duct.SectionProperty?.SectionProfile;
+            List<SectionProfile> sectionProfile = duct.SectionProfile;
             if (sectionProfile == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Duct creation requires a valid SectionProfile.");
                 return null;
             }
-
-            DuctSectionProperty ductSectionProperty = duct.SectionProperty;
 
             // Create Revit Duct
             revitDuct = Duct.Create(document, mst.Id, ductType.Id, level.Id, start, end);
@@ -113,14 +112,14 @@ namespace BH.Revit.Engine.Core
                 ElementTransformUtils.RotateElement(document, revitDuct.Id, Line.CreateBound(start, end), orientationAngle);
             }
 
-            double flowRate = duct.FlowRate;
+            double flowRate = duct.Flow.Select(x => x.FlowRate).Sum();
             revitDuct.SetParameter(BuiltInParameter.RBS_DUCT_FLOW_PARAM, flowRate);
 
-            double hydraulicDiameter = ductSectionProperty.HydraulicDiameter;
+            double hydraulicDiameter = duct.HydraulicDiameter();
             revitDuct.SetParameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM, hydraulicDiameter);
 
             DuctLiningType dlt = null;
-            if (sectionProfile.LiningProfile != null)
+            if (duct.SectionProfile.Where(x => x.Type == oM.MEP.Enums.ProfileType.Lining).Count() > 0)
             {
                 // Get first available ductLiningType from document
                 dlt = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Mechanical.DuctLiningType)).FirstOrDefault() as Autodesk.Revit.DB.Mechanical.DuctLiningType;
@@ -131,8 +130,8 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            DuctInsulationType dit = null;
-            if (sectionProfile.InsulationProfile != null)
+            DuctInsulationType dit = null;            
+            if (duct.SectionProfile.Where(x => x.Type == oM.MEP.Enums.ProfileType.Insulation).Count() > 0)
             {
                 dit = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Mechanical.DuctInsulationType)).FirstOrDefault() as Autodesk.Revit.DB.Mechanical.DuctInsulationType;
                 if (dit == null)
@@ -142,24 +141,28 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
+            ShapeType elementShape = duct.ElementSize.Shape;
+
             // Rectangular Duct 
-            if (sectionProfile.ElementProfile is BoxProfile)
+            if (elementShape is ShapeType.Box)
             {
-                BoxProfile elementProfile = sectionProfile.ElementProfile as BoxProfile;
+                //BoxProfile elementProfile = sectionProfile.ElementProfile as BoxProfile;
+                DimensionalFragment elementSize = duct.ElementSize;
 
                 // Set Height
-                double profileHeight = elementProfile.Height;
+                double profileHeight = elementSize.Height;
                 revitDuct.SetParameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM, profileHeight);
 
                 // Set Width
-                double profileWidth = elementProfile.Width;
+                double profileWidth = elementSize.Width;
                 revitDuct.SetParameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM, profileWidth);
 
                 // Set LiningProfile
                 if (dlt != null)
                 {
-                    BoxProfile liningProfile = sectionProfile.LiningProfile as BoxProfile;
-                    double liningThickness = liningProfile.Thickness;
+                    //BoxProfile liningProfile = sectionProfile.LiningProfile as BoxProfile;
+                    double liningThickness = duct.SectionProfile.Where(x => x.Type == BH.oM.MEP.Enums.ProfileType.Lining).First().Layer.Select(x => x.Thickness).Sum();
+                    ;
                     // Create ductLining
                     Autodesk.Revit.DB.Mechanical.DuctLining dl = Autodesk.Revit.DB.Mechanical.DuctLining.Create(document, revitDuct.Id, dlt.Id, liningThickness);
                 }
@@ -167,28 +170,28 @@ namespace BH.Revit.Engine.Core
                 // Set InsulationProfile
                 if (dit != null)
                 {
-                    BoxProfile insulationProfile = sectionProfile.InsulationProfile as BoxProfile;
-                    double insulationThickness = insulationProfile.Thickness;
+                    //BoxProfile insulationProfile = sectionProfile.InsulationProfile as BoxProfile;
+                    double insulationThickness = duct.SectionProfile.Where(x => x.Type == BH.oM.MEP.Enums.ProfileType.Insulation).First().Layer.Select(x => x.Thickness).Sum();
                     // Create ductInsulation
                     Autodesk.Revit.DB.Mechanical.DuctInsulation di = Autodesk.Revit.DB.Mechanical.DuctInsulation.Create(document, revitDuct.Id, dit.Id, insulationThickness);
                 }
 
                 // Set EquivalentDiameter
-                double circularEquivalentDiameter = ductSectionProperty.CircularEquivalentDiameter;
+                double circularEquivalentDiameter = BH.Engine.MEP.Query.CircularEquivalentDiameter(duct);
                 revitDuct.SetParameter(BuiltInParameter.RBS_EQ_DIAMETER_PARAM, circularEquivalentDiameter);
             }
-            else if (sectionProfile.ElementProfile is TubeProfile)
+            else if (elementShape is ShapeType.Tube)
             {
-                TubeProfile elementProfile = sectionProfile.ElementProfile as TubeProfile;
+                //TubeProfile elementProfile = sectionProfile.ElementProfile as TubeProfile;
 
-                double diameter = elementProfile.Diameter;
+                double diameter = duct.ElementSize.Diameter;
                 revitDuct.SetParameter(BuiltInParameter.RBS_CURVE_DIAMETER_PARAM, diameter);
 
                 // Set LiningProfile
                 if (dlt != null)
                 {
-                    TubeProfile liningProfile = sectionProfile.LiningProfile as TubeProfile;
-                    double liningThickness = liningProfile.Thickness;
+                    //TubeProfile liningProfile = sectionProfile.LiningProfile as TubeProfile;
+                    double liningThickness = duct.SectionProfile.Where(x => x.Type == BH.oM.MEP.Enums.ProfileType.Lining).First().Layer.Select(x => x.Thickness).Sum();
                     //Create ductLining
                     Autodesk.Revit.DB.Mechanical.DuctLining dl = Autodesk.Revit.DB.Mechanical.DuctLining.Create(document, revitDuct.Id, dlt.Id, liningThickness);
                 }
@@ -196,8 +199,8 @@ namespace BH.Revit.Engine.Core
                 // Set InsulationProfile
                 if (dit != null)
                 {
-                    TubeProfile insulationProfile = sectionProfile.InsulationProfile as TubeProfile;
-                    double insulationThickness = insulationProfile.Thickness;
+                    //TubeProfile insulationProfile = sectionProfile.InsulationProfile as TubeProfile;
+                    double insulationThickness = duct.SectionProfile.Where(x => x.Type == BH.oM.MEP.Enums.ProfileType.Insulation).First().Layer.Select(x => x.Thickness).Sum();
                     // Create ductInsulation
                     Autodesk.Revit.DB.Mechanical.DuctInsulation di = Autodesk.Revit.DB.Mechanical.DuctInsulation.Create(document, revitDuct.Id, dit.Id, insulationThickness);
                 }

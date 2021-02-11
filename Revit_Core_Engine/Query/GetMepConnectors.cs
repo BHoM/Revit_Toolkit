@@ -20,13 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.MEP.System.SectionProperties;
+using BH.oM.MEP.Fragments;
 using BH.oM.Reflection.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.Collections.Generic;
+using BH.oM.MEP.System.ConnectionProperties;
 
 namespace BH.Revit.Engine.Core
 {
@@ -36,20 +37,19 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Query a Revit duct to extract a BHoM duct section property.")]
-        [Input("revitDuct", "Revit duct to be queried for information required for a BHoM section property.")]
+        [Description("Query a Revit MEP element to extract a BHoM FlowFragment.")]
+        [Input("revitDuct", "Revit MEP element to be queried for information required for a BHoM MEP Element.")]
         [Input("settings", "Revit adapter settings.")]
-        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("sectionProperty", "BHoM duct section property extracted from a Revit duct.")]
-        public static BH.oM.MEP.System.SectionProperties.DuctSectionProperty DuctSectionProperty(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null)
+        [Output("ductFlow", "BHoM duct flow property extracted from a Revit duct.")]
+        public static ConnectionProperty GetMepConnectors(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
 
-            // Duct section profile
-            SectionProfile sectionProfile = revitDuct.DuctSectionProfile(settings);
+            // Element Size - help building a new fragment. 
+            ConnectionProperty connectionProperty = new ConnectionProperty();
 
             // Duct section property
-            return BH.Engine.MEP.Create.DuctSectionProperty(sectionProfile);
+            return connectionProperty;
         }
 
         /***************************************************/

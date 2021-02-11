@@ -26,6 +26,8 @@ using BH.oM.Adapters.Revit.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BH.oM.Spatial.ShapeProfiles;
+using BH.oM.MEP.System;
 
 namespace BH.Revit.Engine.Core
 {
@@ -35,26 +37,28 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static Autodesk.Revit.DB.Mechanical.DuctType ToRevitElementType(this oM.MEP.System.SectionProperties.DuctSectionProperty property, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Autodesk.Revit.DB.Mechanical.DuctType ToRevitElementType(this Duct duct, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            if (property == null || document == null)
+            ShapeType profile = duct.ElementSize.Shape;
+
+            if (duct == null || document == null)
                 return null;
 
-            Autodesk.Revit.DB.Mechanical.DuctType elementType = refObjects.GetValue<Autodesk.Revit.DB.Mechanical.DuctType>(document, property.BHoM_Guid);
+            Autodesk.Revit.DB.Mechanical.DuctType elementType = refObjects.GetValue<Autodesk.Revit.DB.Mechanical.DuctType>(document, duct.BHoM_Guid);
             if (elementType != null)
                 return elementType;
 
             settings = settings.DefaultIfNull();
 
-            elementType = property.ElementType(document, categories, settings) as Autodesk.Revit.DB.Mechanical.DuctType;
+            elementType = duct.ElementType(document, categories, settings) as Autodesk.Revit.DB.Mechanical.DuctType;
             if (elementType != null)
                 return elementType;
 
             List<Autodesk.Revit.DB.Mechanical.DuctType> ductTypes = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Mechanical.DuctType)).Cast<Autodesk.Revit.DB.Mechanical.DuctType>().ToList();
 
-            if (property.SectionProfile.ElementProfile is BH.oM.Spatial.ShapeProfiles.BoxProfile)
+            if (profile is ShapeType.Box)
                 elementType = ductTypes.FirstOrDefault(x => x.FamilyName == "Rectangular Duct");
-            else if (property.SectionProfile.ElementProfile is BH.oM.Spatial.ShapeProfiles.TubeProfile)
+            else if (profile is ShapeType.Tube)
                 elementType = ductTypes.FirstOrDefault(x => x.FamilyName == "Round Duct");
             // Add more shapeProfiles when available
 
@@ -66,32 +70,34 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             // Copy parameters from BHoM object to Revit element
-            elementType.CopyParameters(property, settings);
+            elementType.CopyParameters(duct, settings);
 
-            refObjects.AddOrReplace(property, elementType);
+            refObjects.AddOrReplace(duct, elementType);
             return elementType;
         }
 
         /***************************************************/
 
-        public static Autodesk.Revit.DB.Plumbing.PipeType ToRevitElementType(this oM.MEP.System.SectionProperties.PipeSectionProperty property, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Autodesk.Revit.DB.Plumbing.PipeType ToRevitElementType(this oM.MEP.System.Pipe pipe, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            if (property == null || document == null)
+            ShapeType profile = pipe.ElementSize.Shape;
+
+            if (pipe == null || document == null)
                 return null;
 
-            Autodesk.Revit.DB.Plumbing.PipeType elementType = refObjects.GetValue<Autodesk.Revit.DB.Plumbing.PipeType>(document, property.BHoM_Guid);
+            Autodesk.Revit.DB.Plumbing.PipeType elementType = refObjects.GetValue<Autodesk.Revit.DB.Plumbing.PipeType>(document, pipe.BHoM_Guid);
             if (elementType != null)
                 return elementType;
 
             settings = settings.DefaultIfNull();
 
-            elementType = property.ElementType(document, categories, settings) as Autodesk.Revit.DB.Plumbing.PipeType;
+            elementType = pipe.ElementType(document, categories, settings) as Autodesk.Revit.DB.Plumbing.PipeType;
             if (elementType != null)
                 return elementType;
 
             List<Autodesk.Revit.DB.Plumbing.PipeType> pipeTypes = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipeType)).Cast<Autodesk.Revit.DB.Plumbing.PipeType>().ToList();
 
-            if (property.SectionProfile.ElementProfile is BH.oM.Spatial.ShapeProfiles.TubeProfile)
+            if (profile is ShapeType.Tube)
                 elementType = pipeTypes.FirstOrDefault(x => x.FamilyName == "Pipe Types");
 
             if (elementType != null)
@@ -102,32 +108,34 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             // Copy parameters from BHoM object to Revit element
-            elementType.CopyParameters(property, settings);
+            elementType.CopyParameters(pipe, settings);
 
-            refObjects.AddOrReplace(property, elementType);
+            refObjects.AddOrReplace(pipe, elementType);
             return elementType;
         }
 
         /***************************************************/
 
-        public static Autodesk.Revit.DB.Electrical.CableTrayType ToRevitElementType(this oM.MEP.System.SectionProperties.CableTraySectionProperty property, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Autodesk.Revit.DB.Electrical.CableTrayType ToRevitElementType(this CableTray cableTray, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            if (property == null || document == null)
+            ShapeType profile = cableTray.ElementSize.Shape;
+
+            if (cableTray == null || document == null)
                 return null;
 
-            Autodesk.Revit.DB.Electrical.CableTrayType elementType = refObjects.GetValue<Autodesk.Revit.DB.Electrical.CableTrayType>(document, property.BHoM_Guid);
+            Autodesk.Revit.DB.Electrical.CableTrayType elementType = refObjects.GetValue<Autodesk.Revit.DB.Electrical.CableTrayType>(document, cableTray.BHoM_Guid);
             if (elementType != null)
                 return elementType;
 
             settings = settings.DefaultIfNull();
 
-            elementType = property.ElementType(document, categories, settings) as Autodesk.Revit.DB.Electrical.CableTrayType;
+            elementType = cableTray.ElementType(document, categories, settings) as Autodesk.Revit.DB.Electrical.CableTrayType;
             if (elementType != null)
                 return elementType;
 
             List<Autodesk.Revit.DB.Electrical.CableTrayType> trayTypes = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Electrical.CableTrayType)).Cast<Autodesk.Revit.DB.Electrical.CableTrayType>().ToList();
 
-            if (property.SectionProfile.ElementProfile is BH.oM.Spatial.ShapeProfiles.BoxProfile)
+            if (profile is ShapeType.Box)
                 elementType = trayTypes.FirstOrDefault(x => x.FamilyName == "Cable Tray with Fittings");
 
             if (elementType != null)
@@ -138,9 +146,9 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             // Copy parameters from BHoM object to Revit element
-            elementType.CopyParameters(property, settings);
+            elementType.CopyParameters(cableTray, settings);
 
-            refObjects.AddOrReplace(property, elementType);
+            refObjects.AddOrReplace(cableTray, elementType);
             return elementType;
         }
 
