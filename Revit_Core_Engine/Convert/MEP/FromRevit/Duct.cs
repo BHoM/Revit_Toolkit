@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using BH.Engine.Geometry;
 using BH.oM.MEP.System;
+using BH.oM.MEP.Fragments;
+using BH.oM.MEP.System.ConnectionProperties;
 
 namespace BH.Revit.Engine.Core
 {
@@ -59,23 +61,42 @@ namespace BH.Revit.Engine.Core
             }
             
             List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitDuct, settings);
-            
-            // Flow rate
-            double flowRate = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_DUCT_FLOW_PARAM); 
-            BH.oM.MEP.System.SectionProperties.DuctSectionProperty sectionProperty = BH.Revit.Engine.Core.Query.DuctSectionProperty(revitDuct, settings);
+
+            // Element Sizing 
+            // TODO DuctElementSize() help
+            DimensionalFragment elementSize = Query.DuctElementSize(revitDuct, settings);
+
+            // Section Profile
+            List<BH.oM.MEP.System.SectionProperties.SectionProfile> sectionProfile = Query.DuctSectionProfile(revitDuct, settings);
+
             // Orientation angle
             double orientationAngle = revitDuct.OrientationAngle(settings); //ToDo - resolve in next issue, specific issue being raised
+
+            // Coincident Elements 
+            // TODO Coincident Elements - Fittings, Valves, Dampers
+            List<ICoincident> coincidentElements = new List<ICoincident>();
+
+            // Flow Properties 
+            // TODO FlowFragment creation in method
+            List<FlowFragment> flow = Query.DuctFlow(revitDuct, settings);
+
+            // Connection properties
+            // TODO figure out connections
+            ConnectionProperty connectionProperty = Query.GetMepConnectors(revitDuct, settings);
 
             for (int i = 0; i < queried.Count; i++)
             {
                 BH.oM.Geometry.Line segment = queried[i];
                 BH.oM.MEP.System.Duct thisSegment = new Duct
                 {
-                    StartPoint = segment.StartPoint(), 
-                    EndPoint = segment.EndPoint(),
-                    FlowRate = flowRate,
-                    SectionProperty = sectionProperty,
-                    OrientationAngle = orientationAngle
+                    ElementSize = elementSize,
+                    StartPoint = (Node)segment.StartPoint(),
+                    EndPoint = (Node)segment.EndPoint(),                    
+                    SectionProfile = sectionProfile,
+                    OrientationAngle = orientationAngle,
+                    CoincidentElements = coincidentElements,
+                    Flow = flow,
+                    ConnectionProperty = connectionProperty
                 };
                 //Set identifiers, parameters & custom data
                 thisSegment.SetIdentifiers(revitDuct);

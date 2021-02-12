@@ -308,8 +308,11 @@
     <Compile Include="Create\ReferencePlane.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
+    <Compile Include="Query\DuctElementSection.cs" />
+    <Compile Include="Query\GetMepConnectors.cs" />
+    <Compile Include="Query\DuctFlow.cs" />
+    <Compile Include="Query\DuctElementSize.cs" />
     <Compile Include="Query\DuctSectionProfile.cs" />
-    <Compile Include="Query\DuctSectionProperty.cs" />
     <Compile Include="Query\IsInside.cs" />
     <Compile Include="Query\IsOnFace.cs" />
     <Compile Include="Query\Shape.cs" />

@@ -26,6 +26,7 @@ using BH.oM.MEP.System.SectionProperties;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
 using BH.oM.MEP.Fragments;
+using Autodesk.Revit.DB;
 
 namespace BH.Revit.Engine.Core
 {
@@ -44,9 +45,9 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             // Element Size - help building a new fragment. 
-            DimensionalFragment elementSize = new DimensionalFragment();
+            DimensionalFragment elementSize = new DimensionalFragment() { Height = revitDuct.LookupParameterDouble(BuiltInParameter), Width = 0, Shape = oM.Spatial.ShapeProfiles.ShapeType.Box, Diameter = 0, InnerRadius = 0, OuterRadius = 0};
 
-            // Duct section property
+            // Duct section property 
             return elementSize;
         }
 

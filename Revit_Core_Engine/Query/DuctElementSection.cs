@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Input("revitDuct", "Revit duct to be queried for information needed for a BHoM section profile.")]
         [Input("settings", "Revit adapter settings.")]
         [Output("profile", "BHoM section profile for a duct extracted from a Revit duct.")]
-        public static BH.oM.MEP.System.SectionProperties.SectionProperty DuctSectionProfile(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null)
+        public static ElementSection ElementSection(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
 
@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
             // Create a section property
             if (profile != null)
             {
-                return BH.Engine.MEP.Create.sectionProperty(elementSize, sectionProfiles);
+                return BH.Engine.MEP.Create.ElementSection(elementSize, sectionProfiles);
             }
             else
             {

@@ -40,16 +40,20 @@ namespace BH.Revit.Engine.Core
         [Input("revitDuct", "Revit duct to be queried for information required for a BHoM section property.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("sectionProperty", "BHoM duct section property extracted from a Revit duct.")]
-        public static BH.oM.MEP.System.SectionProperties.SectionProperty DuctSectionProperty(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null)
+        [Output("sectionProfile", "BHoM duct section property extracted from a Revit duct.")]
+        public static List<SectionProfile> DuctSectionProfile(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
 
-            // Duct section profile
-            SectionProfile sectionProfile = revitDuct.DuctSectionProfile(settings);
+            // 
+            object ductSection = revitDuct.DuctSectionProfile();
+
+            // Duct element section
+            ElementSection elementSection = new oM.MEP.System.SectionProperties.ElementSection() { ElementSize = , };
+
 
             // Duct section property
-            return BH.Engine.MEP.Create.sectionProperty(elementSize, sectionProfile);
+            return BH.Engine.MEP.Create.SectionProfile(elementSize, sectionProfile);
         }
 
         /***************************************************/

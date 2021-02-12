@@ -40,12 +40,12 @@ namespace BH.Revit.Engine.Core
         [Input("revitDuct", "Revit MEP element to be queried for information required for a BHoM MEP Element.")]
         [Input("settings", "Revit adapter settings.")]
         [Output("ductFlow", "BHoM duct flow property extracted from a Revit duct.")]
-        public static List<FlowFragment> DuctFlow(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null)
+        public static FlowFragment DuctFlow(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
 
             // Element Size - help building a new fragment. 
-            FlowFragment flowFragment = new FlowFragment();
+            FlowFragment flowFragment = new FlowFragment() { Type = BH.oM.MEP.Enums.FlowType.Air , FlowRate = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_DUCT_FLOW_PARAM), PressureDrop = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_PRESSURE_DROP), LossCoefficient = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_LOSS_COEFFICIENT)};
 
             double flow = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_DUCT_FLOW_PARAM);
 

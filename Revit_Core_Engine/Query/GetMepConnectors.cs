@@ -45,8 +45,8 @@ namespace BH.Revit.Engine.Core
         {
             settings = settings.DefaultIfNull();
 
-            // Element Size - help building a new fragment. 
-            ConnectionProperty connectionProperty = new ConnectionProperty();
+            // Connection Property
+            ConnectionProperty connectionProperty = new ConnectionProperty() { StartFitting = null, EndFitting = null, IsStartConnected = false, IsEndConnected = false};
 
             // Duct section property
             return connectionProperty;
