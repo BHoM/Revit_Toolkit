@@ -156,6 +156,7 @@
     <Compile Include="Create\Requests\FilterRequest.cs" />
     <Compile Include="Create\Requests\FilterByElementIds.cs" />
     <Compile Include="Create\Requests\FilterByParameterElementId.cs" />
+    <Compile Include="Create\Requests\FilterTypesOfFamily.cs" />
     <Compile Include="Create\Requests\FilterViewByName.cs" />
     <Compile Include="Create\Requests\FilterViewsByType.cs" />
     <Compile Include="Create\Requests\FilterViewTemplateByName.cs" />
