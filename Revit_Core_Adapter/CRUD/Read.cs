@@ -76,7 +76,7 @@ namespace BH.Revit.Adapter.Core
             Dictionary<Document, IRequest> requestsByLinks = request.SplitRequestTreeByLinks(this.Document);
             if (requestsByLinks == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Pull failed due to issues with the request containing {nameof(FilterByLink)}. Please try to simplify the used Request and try again.");
+                BH.Engine.Reflection.Compute.RecordError($"Pull failed due to issues with the request containing {nameof(FilterByLink)}. Please try to restructure the used Request and try again.");
                 return new List<IBHoMObject>();
             }
 
