@@ -89,6 +89,18 @@ namespace BH.Engine.Adapters.Revit
                     return false;
                 }
 
+                if (request.AllRequestsOfType(typeof(FilterByActiveWorkset)).Count != 0)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("It is not allowed to combine active workset requests with link requests - Revit selection does not work with links.");
+                    return false;
+                }
+
+                if (request.AllRequestsOfType(typeof(FilterActiveView)).Count != 0)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("It is not allowed to combine active view requests with link requests - Revit selection does not work with links.");
+                    return false;
+                }
+
                 FilterByLink linkRequest = (FilterByLink)linkRequests[0];
                 string linkName = linkRequest.LinkName.ToLower(); ;
                 if (!linkName.EndsWith(".rvt"))
