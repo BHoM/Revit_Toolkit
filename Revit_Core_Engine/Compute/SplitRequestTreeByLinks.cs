@@ -112,9 +112,9 @@ namespace BH.Engine.Adapters.Revit
                 bool fullPath = linkName.Contains("\\");
                 List<Document> validDocs;
                 if (fullPath)
-                    validDocs = linkDocuments.Where(x => x.PathName.ToLower() == linkName).ToList();
+                    validDocs = linkDocuments.Where(x => x.PathName.ToLower() == linkRequest.LinkName).ToList();
                 else
-                    validDocs = linkDocuments.Where(x => x.Title.ToLower() == linkName).ToList();
+                    validDocs = linkDocuments.Where(x => x.Title.ToLower() == linkRequest.LinkName).ToList();
 
                 if (validDocs.Count == 0)
                 {
