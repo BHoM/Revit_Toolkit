@@ -112,16 +112,16 @@ namespace BH.Engine.Adapters.Revit
                 bool fullPath = linkName.Contains("\\");
                 List<Document> validDocs;
                 if (fullPath)
-                    validDocs = linkDocuments.Where(x => x.PathName.ToLower() == linkRequest.LinkName).ToList();
+                    validDocs = linkDocuments.Where(x => x.PathName.ToLower() == linkName).ToList();
                 else
-                    validDocs = linkDocuments.Where(x => x.Title.ToLower() == linkRequest.LinkName).ToList();
+                    validDocs = linkDocuments.Where(x => x.Title.ToLower() == linkName).ToList();
 
                 if (validDocs.Count == 0)
                 {
                     if (fullPath)
-                        BH.Engine.Reflection.Compute.RecordError($"Active Revit document does not contain link under path {linkName}.");
+                        BH.Engine.Reflection.Compute.RecordError($"Active Revit document does not contain link under path {linkRequest.LinkName}.");
                     else
-                        BH.Engine.Reflection.Compute.RecordError($"Active Revit document does not contain link named {linkName}.");
+                        BH.Engine.Reflection.Compute.RecordError($"Active Revit document does not contain link named {linkRequest.LinkName}.");
 
                     return false;
                 }
