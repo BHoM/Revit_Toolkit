@@ -44,13 +44,13 @@ namespace BH.Engine.Adapters.Revit
         [Output("splitRequests", "A dictionary of Revit documents (both host and linked) and the IRequests relevant to them, which in total represents the same request as the input IRequest.")]
         public static Dictionary<Document, IRequest> SplitRequestTreeByLinks(this IRequest request, Document document)
         {
-            List<Document> linkDocs = new FilteredElementCollector(document).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().Select(x=>x.GetLinkDocument()).ToList();
+            List<RevitLinkInstance> linkInstances = new FilteredElementCollector(document).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().ToList();
 
             Dictionary<Document, IRequest> requestsByLinks = new Dictionary<Document, IRequest>();
             List<IRequest> splitPerDoc = request.SplitRequestTreeByType(typeof(FilterByLink));
             foreach (IRequest splitRequest in splitPerDoc)
             {
-                if (!splitRequest.TryOrganizeByLink(document, linkDocs, requestsByLinks))
+                if (!splitRequest.TryOrganizeByLink(document, linkInstances, requestsByLinks))
                     return null;
             }
 
@@ -62,7 +62,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static bool TryOrganizeByLink(this IRequest request, Document mainDocument, List<Document> linkDocuments, Dictionary<Document, IRequest> requestsByLinks)
+        private static bool TryOrganizeByLink(this IRequest request, Document document, List<RevitLinkInstance> linkInstances, Dictionary<Document, IRequest> requestsByLinks)
         {
             if (request == null)
                 return false;
@@ -78,7 +78,7 @@ namespace BH.Engine.Adapters.Revit
             List<IRequest> linkRequests = request.AllRequestsOfType(typeof(FilterByLink));
             if (linkRequests.Count == 0)
             {
-                requestsByLinks.AddRequestByLink(request, mainDocument);
+                requestsByLinks.AddRequestByLink(request, document);
                 return true;
             }
             else if (linkRequests.Count == 1)
@@ -102,7 +102,7 @@ namespace BH.Engine.Adapters.Revit
                 }
 
                 FilterByLink linkRequest = (FilterByLink)linkRequests[0];
-                string linkName = linkRequest.LinkName.ToLower(); ;
+                string linkName = linkRequest.LinkName.ToLower();
                 if (!linkName.EndsWith(".rvt"))
                 {
                     BH.Engine.Reflection.Compute.RecordWarning($"Link name {linkName} inside a link request does not end with .rvt - the suffix has been added.");
@@ -110,13 +110,13 @@ namespace BH.Engine.Adapters.Revit
                 }
 
                 bool fullPath = linkName.Contains("\\");
-                List<Document> validDocs;
+                List<RevitLinkInstance> validLinks;
                 if (fullPath)
-                    validDocs = linkDocuments.Where(x => x.PathName.ToLower() == linkName).ToList();
+                    validLinks = linkInstances.Where(x => x.GetLinkDocument().PathName.ToLower() == linkName).ToList();
                 else
-                    validDocs = linkDocuments.Where(x => x.Title.ToLower() == linkName).ToList();
+                    validLinks = linkInstances.Where(x => (document.GetElement(x.GetTypeId()) as RevitLinkType)?.Name?.ToLower() == linkName).ToList();
 
-                if (validDocs.Count == 0)
+                if (validLinks.Count == 0)
                 {
                     if (fullPath)
                         BH.Engine.Reflection.Compute.RecordError($"Active Revit document does not contain link under path {linkRequest.LinkName}.");
@@ -125,13 +125,13 @@ namespace BH.Engine.Adapters.Revit
 
                     return false;
                 }
-                else if (validDocs.Count != 1)
+                else if (validLinks.Count != 1)
                 {
                     BH.Engine.Reflection.Compute.RecordError($"There is more than one link document named {linkName} - please use full link path in request instead of link name to pull.");
                     return false;
                 }
 
-                Document linkDoc = validDocs[0];
+                Document linkDoc = validLinks[0].GetLinkDocument();
 
                 request.RemoveSubRequest(linkRequest);
                 request = request.SimplifyRequestTree();
