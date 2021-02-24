@@ -271,6 +271,13 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        public static IEnumerable<ElementId> ElementIds(this FilterByScopeBox request, Document document, IEnumerable<ElementId> ids = null)
+        {
+            return document.ElementIdsByScopeBox(request.BoxName, ids);
+        }
+
+        /***************************************************/
+
 
         public static IEnumerable<ElementId> ElementIds(this LogicalAndRequest request, Document document, IEnumerable<ElementId> ids = null)
         {
