@@ -72,8 +72,11 @@ namespace BH.Revit.Engine.Core
             string familyName = "";
             string familyTypeName = "";
             int familyTypeId = -1;
+            string workset = "";
+            int hostId = -1;
             int ownerViewId = -1;
             int parentElementId = -1;
+            string linkPath = "";
 
             Parameter parameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
             if (parameter != null)
@@ -91,6 +94,14 @@ namespace BH.Revit.Engine.Core
             if (parameter != null)
                 int.TryParse(parameter.AsValueString(), out familyTypeId);
 
+            parameter = element.get_Parameter(BuiltInParameter.ELEM_PARTITION_PARAM);
+            if (parameter != null)
+                workset = parameter.AsValueString();
+
+            Element host = (element as FamilyInstance)?.Host;
+            if (host != null)
+                hostId = host.Id.IntegerValue;
+
             if (element.ViewSpecific)
                 ownerViewId = element.OwnerViewId.IntegerValue;
 
@@ -104,7 +115,10 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            return new RevitIdentifiers(element.UniqueId, element.Id.IntegerValue, categoryName, familyName, familyTypeName, familyTypeId, ownerViewId, parentElementId);
+            if (element.Document.IsLinked)
+                linkPath = element.Document.PathName;
+
+            return new RevitIdentifiers(element.UniqueId, element.Id.IntegerValue, categoryName, familyName, familyTypeName, familyTypeId, workset, hostId, ownerViewId, parentElementId, linkPath);
         }
 
         /***************************************************/
