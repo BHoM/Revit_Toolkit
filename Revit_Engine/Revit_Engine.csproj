@@ -181,7 +181,10 @@
     <Compile Include="Modify\SetRevitParameter.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
+    <Compile Include="Query\HostId.cs" />
+    <Compile Include="Query\LinkPath.cs" />
     <Compile Include="Query\RenderMeshes.cs" />
+    <Compile Include="Query\Workset.cs" />
     <Compile Include="Query\ZJustifiedCurve.cs" />
     <Compile Include="Query\DefaultParameterSettings.cs" />
     <Compile Include="Query\GetRevitParameters.cs" />
