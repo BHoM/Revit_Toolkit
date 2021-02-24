@@ -37,7 +37,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("path", "Path to the link document containing the Revit element correspondent to given BHoM object. Empty if the Revit element is not a link element.")]
         public static string LinkPath(this IBHoMObject bHoMObject)
         {
-            return bHoMObject?.GetRevitIdentifiers()?.Workset;
+            return bHoMObject?.GetRevitIdentifiers()?.LinkPath;
         }
 
         /***************************************************/
