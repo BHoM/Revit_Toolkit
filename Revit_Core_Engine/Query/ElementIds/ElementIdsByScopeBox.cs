@@ -35,11 +35,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Filters ElementIds of elements that are visible in a view.")]
-        //[Input("document", "Revit document to be processed.")]
-        //[Input("viewId", "ElementId of the Revit view in which the filtered elements are visible.")]
-        //[Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
-        //[Output("elementIds", "Collection of filtered ElementIds.")]
+        [Description("Filters ElementIds of elements that intersect or are contained in a Scope Box with the given name.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("boxName", "Name of the Revit Scope Box to be used as a geometrical filter.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByScopeBox(this Document document, string boxName, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
@@ -57,13 +57,13 @@ namespace BH.Revit.Engine.Core
                 {
                     Transform linkTransform = document.LinkTransform();
                     box = SolidUtils.CreateTransformed(box, linkTransform.Inverse);
-                    BH.Engine.Reflection.Compute.RecordNote($"Scope Box named {boxName} has not been found in the link document, but i");
+                    BH.Engine.Reflection.Compute.RecordNote($"The Scope Box named {boxName} used to filter the elements was found in the document hosting the link document it was originally requested with.");
                 }
             }
 
             if (box == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Couldn't find a Scope Box named {boxName}");
+                BH.Engine.Reflection.Compute.RecordError($"Couldn't find a Scope Box named {boxName}.");
                 return new HashSet<ElementId>();
             }
 

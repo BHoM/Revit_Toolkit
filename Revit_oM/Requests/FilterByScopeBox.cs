@@ -25,14 +25,15 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    //[Description("IRequest that filters all elements from a Revit link with given name or path.")]
+    [Description("IRequest that filters all Revit elements that intersect or are contained in a Scope Box with the given name.\n" +
+                 "In case of combining this request with FilterByLink, the Scope Box will be sought for in both link document as well as the host document.")]
     public class FilterByScopeBox : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        //[Description("Name of the link file (alternatively whole file path) to pull from, case insensitive.")]
+        [Description("Name of the Revit Scope Box to be used as a geometrical filter.")]
         public virtual string BoxName { get; set; } = "";
 
         /***************************************************/
