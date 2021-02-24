@@ -106,12 +106,7 @@ namespace BH.Revit.Adapter.Core
         {
             Transform linkTransform = null;
             if (document.IsLinked)
-            {
-                UIApplication uiApp = new UIApplication(document.Application);
-                Document mainDoc = uiApp.ActiveUIDocument.Document;
-                RevitLinkInstance linkInstance = new FilteredElementCollector(mainDoc).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().FirstOrDefault(x => x.GetLinkDocument().PathName == document.PathName);
-                linkTransform = linkInstance.GetTotalTransform().Inverse;
-            }
+                linkTransform = document.LinkTransform().Inverse;
 
             IEnumerable<ElementId> worksetPrefilter = null;
             if (!pullConfig.IncludeClosedWorksets)
