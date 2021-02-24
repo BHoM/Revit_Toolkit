@@ -50,7 +50,7 @@ namespace BH.Engine.Adapters.Revit
                     parameterRequests.Add(request);
                 else if (request is ILogicalRequest)
                     logicalRequests.Add(request);
-                else if (request is FilterByUsage || request is FilterModelElements)
+                else if (request is FilterByUsage || request is FilterModelElements || request is FilterByScopeBox)
                     eachElementRequests.Add(request);
                 else
                     allRequests.Add(request);
