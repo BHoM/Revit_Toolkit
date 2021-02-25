@@ -144,10 +144,8 @@ namespace BH.Adapter.Revit
             if (m_ReturnEvents == null)
                 return;
 
-            Engine.Reflection.Query.CurrentEvents().AddRange(m_ReturnEvents);
-            Engine.Reflection.Query.AllEvents().AddRange(m_ReturnEvents);
-
-            m_ReturnEvents = new List<Event>();
+            m_ReturnEvents.ForEach(x => Engine.Reflection.Compute.RecordEvent(x));
+            m_ReturnEvents.Clear();
         }
 
         /***************************************************/
