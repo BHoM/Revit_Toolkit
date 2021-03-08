@@ -665,6 +665,12 @@ namespace BH.Revit.Engine.Core
             if (result == null || (typeof(IEnumerable<object>).IsAssignableFrom(result.GetType()) && ((IEnumerable<object>)result).Count(x => x != null) == 0))
             {
                 result = element.ObjectFromRevit(discipline, settings, refObjects);
+                if (result is BH.oM.Adapters.Revit.Elements.ModelInstance && transform?.IsIdentity == false)
+                {
+                    TransformMatrix bHoMTransform = transform.FromRevit();
+                    result = result.Transform(bHoMTransform);
+                }
+
                 element.NotConvertedWarning(discipline);
             }
 
