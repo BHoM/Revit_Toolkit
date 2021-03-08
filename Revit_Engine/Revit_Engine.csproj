@@ -181,6 +181,7 @@
     <Compile Include="Modify\SetRevitParameter.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
+    <Compile Include="Modify\Transform.cs" />
     <Compile Include="Query\HostId.cs" />
     <Compile Include="Query\LinkPath.cs" />
     <Compile Include="Query\RenderMeshes.cs" />
