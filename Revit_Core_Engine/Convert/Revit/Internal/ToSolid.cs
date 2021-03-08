@@ -45,21 +45,21 @@ namespace BH.Revit.Engine.Core
             if (ge == null)
                 return null;
 
-            Transform t = null;
+            Transform transform = null;
             foreach (GeometryObject go in ge)
             {
                 Line l = go as Line;
                 if (l != null && Math.Abs(l.Direction.DotProduct(XYZ.BasisZ)) < settings.AngleTolerance)
                 {
-                    t = Transform.CreateRotation(XYZ.BasisZ, XYZ.BasisX.AngleTo(l.Direction));
+                    transform = Transform.CreateRotation(XYZ.BasisZ, XYZ.BasisX.AngleTo(l.Direction));
                     break;
                 }
             }
 
-            if (t == null)
+            if (transform == null)
                 return null;
 
-            BoundingBoxXYZ bbox = ge.GetTransformed(t).GetBoundingBox();
+            BoundingBoxXYZ bbox = ge.GetTransformed(transform).GetBoundingBox();
 
             XYZ pt0 = new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Min.Z);
             XYZ pt1 = new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Min.Z);
@@ -85,7 +85,7 @@ namespace BH.Revit.Engine.Core
             loopList.Add(baseLoop);
 
             Solid solid = GeometryCreationUtilities.CreateExtrusionGeometry(loopList, XYZ.BasisZ, height);
-            return SolidUtils.CreateTransformed(solid, t.Inverse);
+            return SolidUtils.CreateTransformed(solid, transform.Inverse);
         }
 
         /***************************************************/
