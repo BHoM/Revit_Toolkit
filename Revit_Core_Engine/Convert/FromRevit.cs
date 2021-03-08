@@ -374,7 +374,7 @@ namespace BH.Revit.Engine.Core
                 default:
                     BH.oM.Geometry.SettingOut.Level result = level.LevelFromRevit(settings, refObjects);
                     if (result != null && transform?.IsIdentity == false)
-                        result.Elevation += transform.BasisZ.Z.ToSI(UnitType.UT_Length);
+                        result.Elevation += transform.Origin.Z.ToSI(UnitType.UT_Length);
 
                     return result;
             }
