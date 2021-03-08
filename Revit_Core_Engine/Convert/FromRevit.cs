@@ -668,7 +668,7 @@ namespace BH.Revit.Engine.Core
                 if (result is BH.oM.Adapters.Revit.Elements.ModelInstance && transform?.IsIdentity == false)
                 {
                     TransformMatrix bHoMTransform = transform.FromRevit();
-                    result = result.Transform(bHoMTransform);
+                    result = (result as BH.oM.Adapters.Revit.Elements.IInstance).Transform(bHoMTransform);
                 }
 
                 element.NotConvertedWarning(discipline);
