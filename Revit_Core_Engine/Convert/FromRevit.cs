@@ -73,7 +73,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IEnumerable<IElement> FromRevit(this FamilyInstance familyInstance, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> FromRevit(this FamilyInstance familyInstance, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IEnumerable<IElement> result = null;
             switch (discipline)
@@ -103,10 +103,10 @@ namespace BH.Revit.Engine.Core
             if (result != null && transform?.IsIdentity == false)
             {
                 TransformMatrix bHoMTransform = transform.FromRevit();
-                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+                result = result.Select(x => x?.ITransform(bHoMTransform));
             }
 
-            return result;
+            return result?.Cast<IBHoMObject>().ToList();
         }
 
         /***************************************************/
@@ -125,7 +125,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IEnumerable<IElement2D> FromRevit(this Wall wall, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> FromRevit(this Wall wall, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IEnumerable<IElement2D> result = null;
             switch (discipline)
@@ -145,15 +145,15 @@ namespace BH.Revit.Engine.Core
             if (result != null && transform?.IsIdentity == false)
             {
                 TransformMatrix bHoMTransform = transform.FromRevit();
-                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+                result = result.Select(x => x.ITransform(bHoMTransform));
             }
 
-            return result;
+            return result?.Cast<IBHoMObject>().ToList();
         }
 
         /***************************************************/
 
-        public static IEnumerable<IElement2D> FromRevit(this Ceiling ceiling, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> FromRevit(this Ceiling ceiling, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IEnumerable<IElement2D> result = null;
             switch (discipline)
@@ -170,15 +170,15 @@ namespace BH.Revit.Engine.Core
             if (result != null && transform?.IsIdentity == false)
             {
                 TransformMatrix bHoMTransform = transform.FromRevit();
-                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+                result = result.Select(x => x.ITransform(bHoMTransform));
             }
 
-            return result;
+            return result?.Cast<IBHoMObject>().ToList();
         }
 
         /***************************************************/
 
-        public static IEnumerable<IElement2D> FromRevit(this Floor floor, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> FromRevit(this Floor floor, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IEnumerable<IElement2D> result = null;
             switch (discipline)
@@ -198,15 +198,15 @@ namespace BH.Revit.Engine.Core
             if (result != null && transform?.IsIdentity == false)
             {
                 TransformMatrix bHoMTransform = transform.FromRevit();
-                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+                result = result.Select(x => x.ITransform(bHoMTransform));
             }
 
-            return result;
+            return result?.Cast<IBHoMObject>().ToList();
         }
 
         /***************************************************/
 
-        public static IEnumerable<IElement2D> FromRevit(this RoofBase roofBase, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> FromRevit(this RoofBase roofBase, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IEnumerable<IElement2D> result = null;
             switch (discipline)
@@ -226,10 +226,10 @@ namespace BH.Revit.Engine.Core
             if (result != null && transform?.IsIdentity == false)
             {
                 TransformMatrix bHoMTransform = transform.FromRevit();
-                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+                result = result.Select(x => x.ITransform(bHoMTransform));
             }
 
-            return result;
+            return result?.Cast<IBHoMObject>().ToList();
         }
 
         /***************************************************/
@@ -257,7 +257,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("cableTrays", "Resulted list of BHoM cable trays converted from a Revit cable trays.")]
-        public static IEnumerable<IElement1D> FromRevit(this Autodesk.Revit.DB.Electrical.CableTray cableTray, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Electrical.CableTray cableTray, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IEnumerable<IElement1D> result = null;
             switch (discipline)
@@ -272,10 +272,10 @@ namespace BH.Revit.Engine.Core
             if (result != null && transform?.IsIdentity == false)
             {
                 TransformMatrix bHoMTransform = transform.FromRevit();
-                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+                result = result.Select(x => x.ITransform(bHoMTransform));
             }
 
-            return result;
+            return result?.Cast<IBHoMObject>().ToList();
         }
         
         /***************************************************/
@@ -286,7 +286,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("ducts", "Resulted list of BHoM ducts converted from a Revit ducts.")]
-        public static IEnumerable<IElement1D> FromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IEnumerable<IElement1D> result = null;
             switch (discipline)
@@ -301,10 +301,10 @@ namespace BH.Revit.Engine.Core
             if (result != null && transform?.IsIdentity == false)
             {
                 TransformMatrix bHoMTransform = transform.FromRevit();
-                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+                result = result.Select(x => x.ITransform(bHoMTransform));
             }
 
-            return result;
+            return result?.Cast<IBHoMObject>().ToList();
         }
 
         /***************************************************/
@@ -315,7 +315,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("pipes", "Resulted list of BHoM MEP pipes converted from a Revit pipes.")]
-        public static IEnumerable<IElement1D> FromRevit(this Autodesk.Revit.DB.Plumbing.Pipe pipe, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Plumbing.Pipe pipe, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IEnumerable<IElement1D> result = null;
             switch (discipline)
@@ -330,10 +330,10 @@ namespace BH.Revit.Engine.Core
             if (result != null && transform?.IsIdentity == false)
             {
                 TransformMatrix bHoMTransform = transform.FromRevit();
-                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+                result = result.Select(x => x.ITransform(bHoMTransform));
             }
 
-            return result;
+            return result?.Cast<IBHoMObject>().ToList();
         }
 
         /***************************************************/
@@ -344,7 +344,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("wire", "BHoM wire converted from a Revit wire.")]
-        public static IElement1D FromRevit(this Autodesk.Revit.DB.Electrical.Wire wire, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Electrical.Wire wire, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IElement1D result = null;
             switch (discipline)
@@ -362,7 +362,7 @@ namespace BH.Revit.Engine.Core
                 result = result.ITransform(bHoMTransform);
             }
 
-            return result;
+            return result as IBHoMObject;
         }
 
         /***************************************************/
@@ -382,7 +382,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IElement1D FromRevit(this Grid grid, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this Grid grid, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IElement1D result = null;
             switch (discipline)
@@ -398,12 +398,12 @@ namespace BH.Revit.Engine.Core
                 result = result.ITransform(bHoMTransform);
             }
 
-            return result;
+            return result as IBHoMObject;
         }
 
         /***************************************************/
 
-        public static IElement1D FromRevit(this MultiSegmentGrid grid, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this MultiSegmentGrid grid, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IElement1D result = null;
             switch (discipline)
@@ -419,7 +419,7 @@ namespace BH.Revit.Engine.Core
                 result = result.ITransform(bHoMTransform);
             }
 
-            return result;
+            return result as IBHoMObject;
         }
 
         /***************************************************/
@@ -446,7 +446,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IElement2D FromRevit(this SpatialElement spatialElement, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this SpatialElement spatialElement, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IElement2D result = null;
             switch (discipline)
@@ -466,12 +466,12 @@ namespace BH.Revit.Engine.Core
                 result = result.ITransform(bHoMTransform);
             }
 
-            return result;
+            return result as IBHoMObject;
         }
 
         /***************************************************/
 
-        public static IElement2D FromRevit(this EnergyAnalysisSpace energyAnalysisSpace, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this EnergyAnalysisSpace energyAnalysisSpace, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IElement2D result = null;
             switch (discipline)
@@ -489,12 +489,12 @@ namespace BH.Revit.Engine.Core
                 result = result.ITransform(bHoMTransform);
             }
 
-            return result;
+            return result as IBHoMObject;
         }
 
         /***************************************************/
 
-        public static IElement2D FromRevit(this EnergyAnalysisSurface energyAnalysisSurface, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this EnergyAnalysisSurface energyAnalysisSurface, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IElement2D result = null;
             switch (discipline)
@@ -512,12 +512,12 @@ namespace BH.Revit.Engine.Core
                 result = result.ITransform(bHoMTransform);
             }
 
-            return result;
+            return result as IBHoMObject;
         }
 
         /***************************************************/
 
-        public static IElement2D FromRevit(this EnergyAnalysisOpening energyAnalysisOpening, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this EnergyAnalysisOpening energyAnalysisOpening, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             IElement2D result = null;
             switch (discipline)
@@ -535,7 +535,7 @@ namespace BH.Revit.Engine.Core
                 result = result.ITransform(bHoMTransform);
             }
 
-            return result;
+            return result as IBHoMObject;
         }
 
         /***************************************************/
@@ -601,7 +601,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static BH.oM.Adapters.Revit.Elements.IInstance FromRevit(this CurveElement curveElement, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject FromRevit(this CurveElement curveElement, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             BH.oM.Adapters.Revit.Elements.IInstance result = null;
             switch (discipline)
