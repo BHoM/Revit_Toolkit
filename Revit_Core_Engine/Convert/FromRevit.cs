@@ -23,14 +23,21 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using Autodesk.Revit.DB.Structure;
+using BH.Engine.Architecture;
+using BH.Engine.Physical;
+using BH.Engine.Revit;
+using BH.Engine.Spatial;
+using BH.Engine.Structure;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Dimensional;
 using BH.oM.Geometry;
-using System.Collections.Generic;
-using System.Linq;
-using System.ComponentModel;
 using BH.oM.Reflection.Attributes;
+using BH.oM.Structure.Elements;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -66,37 +73,40 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> FromRevit(this FamilyInstance familyInstance, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IElement> FromRevit(this FamilyInstance familyInstance, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                familyInstance.TransformNotImplementedWarning();
-
+            IEnumerable<IElement> result = null;
             switch (discipline)
             {
                 case Discipline.Structural:
-                    if (typeof(BH.oM.Structure.Elements.Bar).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                        return familyInstance.BarsFromRevit(settings, refObjects).Cast<IBHoMObject>();
-                    else
-                        return null;
+                    if (typeof(Bar).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                        result = familyInstance.BarsFromRevit(settings, refObjects);
+                    break;
                 case Discipline.Physical:
                 case Discipline.Architecture:
                     if (typeof(BH.oM.Physical.Elements.Window).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                        return new List<IBHoMObject> { familyInstance.WindowFromRevit(settings, refObjects) };
-                    if (typeof(BH.oM.Physical.Elements.Door).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                        return new List<IBHoMObject> { familyInstance.DoorFromRevit(settings, refObjects) };
-                    if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue) || familyInstance.StructuralType == StructuralType.Column)
-                        return new List<IBHoMObject> { familyInstance.ColumnFromRevit(settings, refObjects) };
-                    if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue) || familyInstance.StructuralType == StructuralType.Brace)
-                        return new List<IBHoMObject> { familyInstance.BracingFromRevit(settings, refObjects) };
-                    if (typeof(BH.oM.Physical.Elements.Beam).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                        return new List<IBHoMObject> { familyInstance.BeamFromRevit(settings, refObjects) };
-                    else
-                        return null;
+                        result = new List<IElement> { familyInstance.WindowFromRevit(settings, refObjects) };
+                    else if (typeof(BH.oM.Physical.Elements.Door).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                        result = new List<IElement> { familyInstance.DoorFromRevit(settings, refObjects) };
+                    else if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue) || familyInstance.StructuralType == StructuralType.Column)
+                        result = new List<IElement> { familyInstance.ColumnFromRevit(settings, refObjects) };
+                    else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue) || familyInstance.StructuralType == StructuralType.Brace)
+                        result = new List<IElement> { familyInstance.BracingFromRevit(settings, refObjects) };
+                    else if (typeof(BH.oM.Physical.Elements.Beam).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                        result = new List<IElement> { familyInstance.BeamFromRevit(settings, refObjects) };
+                    break;
                 case Discipline.Environmental:
-                    return new List<IBHoMObject> { familyInstance.EnvironmentPanelFromRevit(settings, refObjects) };
-                default:
-                    return null;
+                    result = new List<IElement> { familyInstance.EnvironmentPanelFromRevit(settings, refObjects) };
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+            }
+
+            return result;
         }
 
         /***************************************************/
@@ -115,84 +125,111 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> FromRevit(this Wall wall, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IElement2D> FromRevit(this Wall wall, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                wall.TransformNotImplementedWarning();
-
+            IEnumerable<IElement2D> result = null;
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    return wall.EnvironmentPanelsFromRevit(settings, refObjects);
+                    result = wall.EnvironmentPanelsFromRevit(settings, refObjects);
+                    break;
                 case Discipline.Structural:
-                    return wall.StructuralPanelsFromRevit(settings, refObjects);
+                    result = wall.StructuralPanelsFromRevit(settings, refObjects);
+                    break;
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return new List<IBHoMObject> { wall.WallFromRevit(settings, refObjects) };
-                default:
-                    return null;
+                    result = new List<IElement2D> { wall.WallFromRevit(settings, refObjects) };
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+            }
+
+            return result;
         }
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> FromRevit(this Ceiling ceiling, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IElement2D> FromRevit(this Ceiling ceiling, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                ceiling.TransformNotImplementedWarning();
-
+            IEnumerable<IElement2D> result = null;
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    return ceiling.EnvironmentPanelsFromRevit(settings, refObjects);
+                    result = ceiling.EnvironmentPanelsFromRevit(settings, refObjects);
+                    break;
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return new List<IBHoMObject> { ceiling.CeilingFromRevit(settings, refObjects) };
-                default:
-                    return null;
+                    result = new List<IElement2D> { ceiling.CeilingFromRevit(settings, refObjects) };
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+            }
+
+            return result;
         }
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> FromRevit(this Floor floor, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IElement2D> FromRevit(this Floor floor, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                floor.TransformNotImplementedWarning();
-
+            IEnumerable<IElement2D> result = null;
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    return floor.EnvironmentPanelsFromRevit(settings, refObjects);
+                    result = floor.EnvironmentPanelsFromRevit(settings, refObjects);
+                    break;
                 case Discipline.Structural:
-                    return floor.StructuralPanelsFromRevit(settings, refObjects);
+                    result = floor.StructuralPanelsFromRevit(settings, refObjects);
+                    break;
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return new List<IBHoMObject> { floor.FloorFromRevit(settings, refObjects) };
-                default:
-                    return null;
+                    result = new List<IElement2D> { floor.FloorFromRevit(settings, refObjects) };
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+            }
+
+            return result;
         }
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> FromRevit(this RoofBase roofBase, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IElement2D> FromRevit(this RoofBase roofBase, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                roofBase.TransformNotImplementedWarning();
-
+            IEnumerable<IElement2D> result = null;
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    return roofBase.EnvironmentPanelsFromRevit(settings, refObjects);
+                    result = roofBase.EnvironmentPanelsFromRevit(settings, refObjects);
+                    break;
                 case Discipline.Structural:
-                    return roofBase.StructuralPanelsFromRevit(settings, refObjects);
+                    result = roofBase.StructuralPanelsFromRevit(settings, refObjects);
+                    break;
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return new List<IBHoMObject> { roofBase.RoofFromRevit(settings, refObjects) };
-                default:
-                    return null;
+                    result = new List<IElement2D> { roofBase.RoofFromRevit(settings, refObjects) };
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+            }
+
+            return result;
         }
 
         /***************************************************/
@@ -220,20 +257,25 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("cableTrays", "Resulted list of BHoM cable trays converted from a Revit cable trays.")]
-        public static List<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Electrical.CableTray cableTray, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IElement1D> FromRevit(this Autodesk.Revit.DB.Electrical.CableTray cableTray, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                cableTray.TransformNotImplementedWarning();
-
+            IEnumerable<IElement1D> result = null;
             switch (discipline)
             {
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                case Discipline.Environmental: 
-                    return new List<IBHoMObject>(cableTray.CableTrayFromRevit(settings, refObjects));
-                default:
-                    return null;
+                case Discipline.Environmental:
+                    result = new List<IElement1D>(cableTray.CableTrayFromRevit(settings, refObjects));
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+            }
+
+            return result;
         }
         
         /***************************************************/
@@ -244,20 +286,25 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("ducts", "Resulted list of BHoM ducts converted from a Revit ducts.")]
-        public static List<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IElement1D> FromRevit(this Autodesk.Revit.DB.Mechanical.Duct duct, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                duct.TransformNotImplementedWarning();
-
+            IEnumerable<IElement1D> result = null;
             switch (discipline)
             {
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
-                    return new List<IBHoMObject>(duct.DuctFromRevit(settings, refObjects));
-                default:
-                    return null;
+                    result = new List<IElement1D>(duct.DuctFromRevit(settings, refObjects));
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+            }
+
+            return result;
         }
 
         /***************************************************/
@@ -268,20 +315,25 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("pipes", "Resulted list of BHoM MEP pipes converted from a Revit pipes.")]
-        public static List<IBHoMObject> FromRevit(this Autodesk.Revit.DB.Plumbing.Pipe pipe, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IElement1D> FromRevit(this Autodesk.Revit.DB.Plumbing.Pipe pipe, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                pipe.TransformNotImplementedWarning();
-
+            IEnumerable<IElement1D> result = null;
             switch (discipline)
             {
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
-                    return new List<IBHoMObject>(pipe.PipeFromRevit(settings, refObjects));
-                default:
-                    return null;
+                    result = new List<IElement1D>(pipe.PipeFromRevit(settings, refObjects));
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.Select(x => x.ITransform(bHoMTransform)).ToList();
+            }
+
+            return result;
         }
 
         /***************************************************/
@@ -292,62 +344,82 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("wire", "BHoM wire converted from a Revit wire.")]
-        public static IBHoMObject FromRevit(this Autodesk.Revit.DB.Electrical.Wire wire, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IElement1D FromRevit(this Autodesk.Revit.DB.Electrical.Wire wire, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                wire.TransformNotImplementedWarning();
-
+            IElement1D result = null;
             switch (discipline)
             {
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
-                    return wire.WireFromRevit(settings, refObjects);
-                default:
-                    return null;
+                    result = wire.WireFromRevit(settings, refObjects);
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.ITransform(bHoMTransform);
+            }
+
+            return result;
         }
 
         /***************************************************/
 
         public static IBHoMObject FromRevit(this Level level, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                level.TransformNotImplementedWarning();
-
             switch (discipline)
             {
                 default:
-                    return level.LevelFromRevit(settings, refObjects);
+                    BH.oM.Geometry.SettingOut.Level result = level.LevelFromRevit(settings, refObjects);
+                    if (result != null && transform?.IsIdentity == false)
+                        result.Elevation += transform.BasisZ.Z.ToSI(UnitType.UT_Length);
+
+                    return result;
             }
         }
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this Grid grid, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IElement1D FromRevit(this Grid grid, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                grid.TransformNotImplementedWarning();
-
+            IElement1D result = null;
             switch (discipline)
             {
                 default:
-                    return grid.GridFromRevit(settings, refObjects);
+                    result = grid.GridFromRevit(settings, refObjects);
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.ITransform(bHoMTransform);
+            }
+
+            return result;
         }
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this MultiSegmentGrid grid, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IElement1D FromRevit(this MultiSegmentGrid grid, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                grid.TransformNotImplementedWarning();
-
+            IElement1D result = null;
             switch (discipline)
             {
                 default:
-                    return grid.GridFromRevit(settings, refObjects);
+                    result = grid.GridFromRevit(settings, refObjects);
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.ITransform(bHoMTransform);
+            }
+
+            return result;
         }
 
         /***************************************************/
@@ -374,75 +446,96 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this SpatialElement spatialElement, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IElement2D FromRevit(this SpatialElement spatialElement, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                spatialElement.TransformNotImplementedWarning();
-
+            IElement2D result = null;
             switch (discipline)
             {
                 case Discipline.Environmental:
-                    return spatialElement.SpaceFromRevit(settings, refObjects);
+                    result = spatialElement.SpaceFromRevit(settings, refObjects);
+                    break;
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return spatialElement.RoomFromRevit(settings, refObjects);
-                default:
-                    return null;
+                    result = spatialElement.RoomFromRevit(settings, refObjects);
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.ITransform(bHoMTransform);
+            }
+
+            return result;
         }
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this EnergyAnalysisSpace energyAnalysisSpace, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IElement2D FromRevit(this EnergyAnalysisSpace energyAnalysisSpace, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                energyAnalysisSpace.TransformNotImplementedWarning();
-
+            IElement2D result = null;
             switch (discipline)
             {
                 case Discipline.Environmental:
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return energyAnalysisSpace.SpaceFromRevit(settings, refObjects);
-                default:
-                    return null;
+                    result = energyAnalysisSpace.SpaceFromRevit(settings, refObjects);
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.ITransform(bHoMTransform);
+            }
+
+            return result;
         }
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this EnergyAnalysisSurface energyAnalysisSurface, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IElement2D FromRevit(this EnergyAnalysisSurface energyAnalysisSurface, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                energyAnalysisSurface.TransformNotImplementedWarning();
-
+            IElement2D result = null;
             switch (discipline)
             {
                 case Discipline.Environmental:
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return energyAnalysisSurface.EnvironmentPanelFromRevit(settings, refObjects);
-                default:
-                    return null;
+                    result = energyAnalysisSurface.EnvironmentPanelFromRevit(settings, refObjects);
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.ITransform(bHoMTransform);
+            }
+
+            return result;
         }
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this EnergyAnalysisOpening energyAnalysisOpening, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IElement2D FromRevit(this EnergyAnalysisOpening energyAnalysisOpening, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (transform?.IsIdentity == false)
-                energyAnalysisOpening.TransformNotImplementedWarning();
-
+            IElement2D result = null;
             switch (discipline)
             {
                 case Discipline.Environmental:
                 case Discipline.Architecture:
                 case Discipline.Physical:
-                    return energyAnalysisOpening.EnvironmentPanelFromRevit(null, settings, refObjects);
-                default:
-                    return null;
+                    result = energyAnalysisOpening.EnvironmentPanelFromRevit(null, settings, refObjects);
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.ITransform(bHoMTransform);
+            }
+
+            return result;
         }
 
         /***************************************************/
@@ -508,17 +601,23 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IBHoMObject FromRevit(this CurveElement curveElement, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static BH.oM.Adapters.Revit.Elements.IInstance FromRevit(this CurveElement curveElement, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (!curveElement.ViewSpecific && transform?.IsIdentity == false)
-                curveElement.TransformNotImplementedWarning();
-
-
+            BH.oM.Adapters.Revit.Elements.IInstance result = null;
             switch (discipline)
             {
                 default:
-                    return curveElement.InstanceFromRevit(settings, refObjects);
+                    result = curveElement.InstanceFromRevit(settings, refObjects);
+                    break;
             }
+
+            if (result != null && transform?.IsIdentity == false)
+            {
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.Transform(bHoMTransform);
+            }
+
+            return result;
         }
 
         /***************************************************/
@@ -561,8 +660,6 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Reflection.Compute.RecordWarning("BHoM object could not be read because Revit element does not exist.");
                 return null;
             }
-
-            //material, family, elementType, view, graphicsStyle
 
             var result = FromRevit(element as dynamic, discipline, transform, settings, refObjects);
             if (result == null || (typeof(IEnumerable<object>).IsAssignableFrom(result.GetType()) && ((IEnumerable<object>)result).Count(x => x != null) == 0))
