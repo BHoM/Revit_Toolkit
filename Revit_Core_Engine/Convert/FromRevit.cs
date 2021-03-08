@@ -611,7 +611,7 @@ namespace BH.Revit.Engine.Core
                     break;
             }
 
-            if (result != null && transform?.IsIdentity == false)
+            if (result is BH.oM.Adapters.Revit.Elements.ModelInstance && transform?.IsIdentity == false)
             {
                 TransformMatrix bHoMTransform = transform.FromRevit();
                 result = result.Transform(bHoMTransform);
