@@ -31,7 +31,7 @@ namespace BH.Engine.Revit
     public static partial class Modify
     {
         /***************************************************/
-        /**** Interface Methods - IElements             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
         [Description("Transforms the IInstance's location and orientation by the transform matrix. Only rigid body transformations are supported.")]
