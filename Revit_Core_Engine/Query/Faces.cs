@@ -33,9 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<Face> Faces(this Element element, Options options, Transform transform = null, RevitSettings settings = null)
+        public static List<Face> Faces(this Element element, Options options, RevitSettings settings = null)
         {
-            List<GeometryObject> geometryPrimitives = element.GeometryPrimitives(options, transform, settings);
+            List<GeometryObject> geometryPrimitives = element.GeometryPrimitives(options, settings);
             if (geometryPrimitives == null)
                 return null;
 

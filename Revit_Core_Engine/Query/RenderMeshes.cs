@@ -35,13 +35,13 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<RenderMesh> RenderMeshes(this Element element, Options options, Transform transform = null, RevitSettings settings = null)
+        public static List<RenderMesh> RenderMeshes(this Element element, Options options, RevitSettings settings = null)
         {
             if (element == null)
                 return null;
 
             List<RenderMesh> result = new List<RenderMesh>();
-            foreach (Face face in element.Faces(options, transform, settings))
+            foreach (Face face in element.Faces(options, settings))
             {
                 RenderMesh renderMesh = face.Triangulate(options.DetailLevel.FaceTriangulationFactor()).MeshFromRevit().ToRenderMesh();
                 System.Drawing.Color color = face.Color(element.Document);
@@ -54,7 +54,7 @@ namespace BH.Revit.Engine.Core
                 result.Add(renderMesh);
             }
 
-            foreach (Curve curve in element.Curves(options, transform, settings, false))
+            foreach (Curve curve in element.Curves(options, settings, false))
             {
                 RenderMesh renderMesh = curve.MeshFromRevit().ToRenderMesh();
                 System.Drawing.Color color = curve.Color(element.Document);
@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
                 result.Add(renderMesh);
             }
 
-            result.AddRange(element.GeometryPrimitives(options, transform, settings).Where(x => x is Mesh).Cast<Mesh>().Select(x => x.MeshFromRevit().ToRenderMesh()));
+            result.AddRange(element.GeometryPrimitives(options, settings).Where(x => x is Mesh).Cast<Mesh>().Select(x => x.MeshFromRevit().ToRenderMesh()));
             return result;
         }
 

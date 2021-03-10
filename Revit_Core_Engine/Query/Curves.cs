@@ -33,9 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<Curve> Curves(this Element element, Options options, Transform transform = null, RevitSettings settings = null, bool includeEdges = false)
+        public static List<Curve> Curves(this Element element, Options options, RevitSettings settings = null, bool includeEdges = false)
         {
-            List<GeometryObject> geometryPrimitives = element.GeometryPrimitives(options, transform, settings);
+            List<GeometryObject> geometryPrimitives = element.GeometryPrimitives(options, settings);
             if (geometryPrimitives == null)
                 return null;
 

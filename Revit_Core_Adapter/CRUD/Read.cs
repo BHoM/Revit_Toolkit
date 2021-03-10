@@ -23,6 +23,8 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
+using BH.Engine.Graphics;
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
@@ -146,7 +148,11 @@ namespace BH.Revit.Adapter.Core
 
             Dictionary<string, List<IBHoMObject>> refObjects = new Dictionary<string, List<IBHoMObject>>();
 
-            List<IBHoMObject> result = new List<IBHoMObject>();
+            TransformMatrix bHoMTransform = null;
+            if (linkTransform?.IsIdentity == false)
+                bHoMTransform = linkTransform.FromRevit();
+
+                List<IBHoMObject> result = new List<IBHoMObject>();
             foreach (ElementId id in elementIds)
             {
                 Element element = document.GetElement(id);
@@ -169,15 +175,27 @@ namespace BH.Revit.Adapter.Core
 
                     List<ICurve> edges = null;
                     if (geometryConfig.PullEdges)
-                        edges = element.Curves(geometryOptions, linkTransform?.Inverse, settings, true).FromRevit();
+                    {
+                        edges = element.Curves(geometryOptions, settings, true).FromRevit();
+                        if (bHoMTransform != null)
+                            edges = edges.Select(x => x.ITransform(bHoMTransform)).ToList();
+                    }
 
                     List<ISurface> surfaces = null;
                     if (geometryConfig.PullSurfaces)
-                        surfaces = element.Faces(geometryOptions, linkTransform?.Inverse, settings).Select(x => x.IFromRevit()).ToList();
+                    {
+                        surfaces = element.Faces(geometryOptions, settings).Select(x => x.IFromRevit()).ToList();
+                        if (bHoMTransform != null)
+                            surfaces = surfaces.Select(x => x.ITransform(bHoMTransform)).ToList();
+                    }
 
                     List<oM.Geometry.Mesh> meshes = null;
                     if (geometryConfig.PullMeshes)
-                        meshes = element.MeshedGeometry(meshOptions, linkTransform?.Inverse, settings);
+                    {
+                        meshes = element.MeshedGeometry(meshOptions, settings);
+                        if (bHoMTransform != null)
+                            meshes = meshes.Select(x => x.Transform(bHoMTransform)).ToList();
+                    }
 
                     if (geometryConfig.PullEdges || geometryConfig.PullSurfaces || geometryConfig.PullMeshes)
                     {
@@ -190,7 +208,10 @@ namespace BH.Revit.Adapter.Core
 
                     if (representationConfig.PullRenderMesh)
                     {
-                        List<RenderMesh> renderMeshes = element.RenderMeshes(renderMeshOptions, linkTransform?.Inverse, settings);
+                        List<RenderMesh> renderMeshes = element.RenderMeshes(renderMeshOptions, settings);
+                        if (bHoMTransform != null)
+                            renderMeshes = renderMeshes.Select(x => x.Transform(bHoMTransform)).ToList();
+
                         RevitRepresentation representation = new RevitRepresentation(renderMeshes);
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
