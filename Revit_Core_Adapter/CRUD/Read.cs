@@ -169,15 +169,15 @@ namespace BH.Revit.Adapter.Core
 
                     List<ICurve> edges = null;
                     if (geometryConfig.PullEdges)
-                        edges = element.Curves(geometryOptions, linkTransform.Inverse, settings, true).FromRevit();
+                        edges = element.Curves(geometryOptions, linkTransform?.Inverse, settings, true).FromRevit();
 
                     List<ISurface> surfaces = null;
                     if (geometryConfig.PullSurfaces)
-                        surfaces = element.Faces(geometryOptions, linkTransform.Inverse, settings).Select(x => x.IFromRevit()).ToList();
+                        surfaces = element.Faces(geometryOptions, linkTransform?.Inverse, settings).Select(x => x.IFromRevit()).ToList();
 
                     List<oM.Geometry.Mesh> meshes = null;
                     if (geometryConfig.PullMeshes)
-                        meshes = element.MeshedGeometry(meshOptions, linkTransform.Inverse, settings);
+                        meshes = element.MeshedGeometry(meshOptions, linkTransform?.Inverse, settings);
 
                     if (geometryConfig.PullEdges || geometryConfig.PullSurfaces || geometryConfig.PullMeshes)
                     {
@@ -190,7 +190,7 @@ namespace BH.Revit.Adapter.Core
 
                     if (representationConfig.PullRenderMesh)
                     {
-                        List<RenderMesh> renderMeshes = element.RenderMeshes(renderMeshOptions, linkTransform.Inverse, settings);
+                        List<RenderMesh> renderMeshes = element.RenderMeshes(renderMeshOptions, linkTransform?.Inverse, settings);
                         RevitRepresentation representation = new RevitRepresentation(renderMeshes);
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
