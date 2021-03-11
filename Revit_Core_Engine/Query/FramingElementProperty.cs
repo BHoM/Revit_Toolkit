@@ -27,6 +27,8 @@ using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Physical.FramingProperties;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using BH.Engine.Geometry;
 
 namespace BH.Revit.Engine.Core
 {
@@ -67,6 +69,25 @@ namespace BH.Revit.Engine.Core
             IProfile profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
             if (profile == null)
                 familyInstance.Symbol.NotConvertedWarning();
+
+            if (familyInstance.Mirrored)
+            {
+                if (profile is FreeFormProfile)
+                {
+                    BH.oM.Geometry.Plane mirror = new oM.Geometry.Plane { Normal = BH.oM.Geometry.Vector.XAxis };
+                    profile = BH.Engine.Spatial.Create.FreeFormProfile(profile.Edges.Select(x => x.IMirror(mirror)));
+                }
+                else if (profile is AngleProfile)
+                {
+                    AngleProfile angle = ((AngleProfile)profile);
+                    profile = BH.Engine.Spatial.Create.AngleProfile(angle.Height, angle.Width, angle.WebThickness, angle.FlangeThickness, angle.RootRadius, angle.ToeRadius, true, false);
+                }
+                else if (profile is ChannelProfile)
+                {
+                    ChannelProfile channel = ((ChannelProfile)profile);
+                    profile = BH.Engine.Spatial.Create.ChannelProfile(channel.Height, channel.FlangeWidth, channel.WebThickness, channel.FlangeThickness, channel.RootRadius, channel.ToeRadius, true);
+                }
+            }
             
             double rotation = familyInstance.OrientationAngle(settings);
             
