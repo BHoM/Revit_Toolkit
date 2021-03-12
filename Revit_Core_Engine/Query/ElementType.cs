@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
@@ -62,6 +63,20 @@ namespace BH.Revit.Engine.Core
         public static RoofType ElementType(this BH.oM.Physical.Elements.Roof roof, Document document, RevitSettings settings = null)
         {
             return roof.ElementType<RoofType>(document);
+        }
+
+        /***************************************************/
+
+        public static RebarBarType ElementType(this oM.Physical.Reinforcement.IReinforcingBar bar, Document document, RevitSettings settings = null)
+        {
+            RebarBarType result = bar.ElementType<RebarBarType>(document);
+            if (result == null)
+            {
+                string barTypeName = ((int)(bar.Diameter * 1000)).ToString();
+                return new FilteredElementCollector(document).OfClass(typeof(RebarBarType)).Where(x => x.Name == barTypeName).FirstOrDefault() as RebarBarType;
+            }
+
+            return result;
         }
 
         /***************************************************/
@@ -118,7 +133,7 @@ namespace BH.Revit.Engine.Core
                 else
                     return settings.FamilyLoadSettings.LoadFamilySymbol(document, null, familyName, familyTypeName);
             }
-            
+
             return null;
         }
 

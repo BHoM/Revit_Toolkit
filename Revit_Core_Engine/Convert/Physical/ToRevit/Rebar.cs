@@ -75,18 +75,6 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            //getting bar type
-            string barTypeName = ((int)(bar.Diameter * 1000)).ToString();
-            RebarBarType barType = new FilteredElementCollector(document).OfClass(typeof(RebarBarType)).Where(x => x.Name == barTypeName).FirstOrDefault() as RebarBarType;
-            if (barType == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Revit project does not contain adequate rebar family for one or more rebars.");
-                return null;
-            }
-            barType.SetParameter(BuiltInParameter.REBAR_STANDARD_BEND_DIAMETER, bar.BendRadius * 2);
-            barType.SetParameter(BuiltInParameter.REBAR_STANDARD_HOOK_BEND_DIAMETER, bar.BendRadius * 2);
-            barType.SetParameter(BuiltInParameter.REBAR_BAR_STIRRUP_BEND_DIAMETER, bar.BendRadius * 2);
-
             //getting host
             Element host = null;
             if (bar.CustomData.ContainsKey("host"))
@@ -99,9 +87,22 @@ namespace BH.Revit.Engine.Core
 
             if (host == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("One or more selected hosts does not exist in the Revit project.");
+                BH.Engine.Reflection.Compute.RecordError($"Rebar host with ID: {bar.CustomData["host"]} does not exist in the Revit project.");
                 return null;
             }
+
+            //getting bar type
+            RebarBarType barType = bar.ElementType(document, settings);
+            if (barType == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Revit project does not contain rebar family containing type with matching diameter for one or more rebars.");
+                return null;
+            }
+
+            //setting bend radiuses
+            barType.SetParameter(BuiltInParameter.REBAR_STANDARD_BEND_DIAMETER, bar.BendRadius * 2);
+            barType.SetParameter(BuiltInParameter.REBAR_STANDARD_HOOK_BEND_DIAMETER, bar.BendRadius * 2);
+            barType.SetParameter(BuiltInParameter.REBAR_BAR_STIRRUP_BEND_DIAMETER, bar.BendRadius * 2);
 
             //creating rebar
             RebarFreeFormValidationResult rffvr = new RebarFreeFormValidationResult();
@@ -112,6 +113,16 @@ namespace BH.Revit.Engine.Core
                 iListCurves.Add(list);                                                              //
 
             rebar = Rebar.CreateFreeForm(document, barType, host, iListCurves, out rffvr);
+
+            //setting hooks
+            if (bar.GetType() == typeof(Stirrup))
+            {
+                RebarHookType rht = new FilteredElementCollector(document).OfClass(typeof(RebarHookType)).Where(x => x.Name == "Standard - 90 deg.").FirstOrDefault() as RebarHookType;
+                rebar.SetHookTypeId(0, rht.Id);
+                rebar.SetHookTypeId(1, rht.Id);
+                rebar.SetHookOrientation(0, RebarHookOrientation.Left);
+                rebar.SetHookOrientation(1, RebarHookOrientation.Left);
+            }
 
             rebar.CopyParameters(bar, settings);
 
