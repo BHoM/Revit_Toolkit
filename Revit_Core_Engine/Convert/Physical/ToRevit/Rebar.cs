@@ -77,8 +77,8 @@ namespace BH.Revit.Engine.Core
 
             //getting host
             Element host = null;
-            if (bar.CustomData.ContainsKey("host"))
-                host = document.GetElement(new ElementId((int)bar.CustomData["host"]));
+            if (bar.CustomData.ContainsKey("HostId"))
+                host = document.GetElement(new ElementId((int)bar.CustomData["HostId"]));
             else
             {
                 BH.Engine.Reflection.Compute.RecordError("One or more rebars does not contain information about the host.");
@@ -95,7 +95,7 @@ namespace BH.Revit.Engine.Core
             RebarBarType barType = bar.ElementType(document, settings);
             if (barType == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Revit project does not contain rebar family containing type with matching diameter for one or more rebars.");
+                BH.Engine.Reflection.Compute.RecordError($"Revit project does not contain rebar family containing type with matching diameter for one or more rebars.\nMissing Family: \"Rebar Bar : {(int)(bar.Diameter * 1000)}\"");
                 return null;
             }
 
