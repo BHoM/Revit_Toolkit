@@ -322,6 +322,7 @@
     <Compile Include="Query\IsInside.cs" />
     <Compile Include="Query\IsOnFace.cs" />
     <Compile Include="Query\LinkTransform.cs" />
+    <Compile Include="Query\Passes.cs" />
     <Compile Include="Query\Shape.cs" />
     <Compile Include="Query\MaterialTakeOff.cs" />
     <Compile Include="Query\PipeSectionProperty.cs" />
