@@ -321,6 +321,7 @@
     <Compile Include="Query\HostDocument.cs" />
     <Compile Include="Query\IsInside.cs" />
     <Compile Include="Query\IsOnFace.cs" />
+    <Compile Include="Query\LinkPanelFaces.cs" />
     <Compile Include="Query\LinkTransform.cs" />
     <Compile Include="Query\Shape.cs" />
     <Compile Include="Query\MaterialTakeOff.cs" />
