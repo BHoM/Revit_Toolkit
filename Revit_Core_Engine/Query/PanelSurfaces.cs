@@ -45,7 +45,9 @@ namespace BH.Revit.Engine.Core
                 return hostObject.PanelSurfaces_HostDocument(insertsToIgnore, settings);
             else
             {
-                //TODO: warning?
+                BH.Engine.Reflection.Compute.RecordWarning("Pulling panels and openings from Revit link documents is simplified compared to pulling directly from the host document, therefore it may result in degraded output.\n" +
+                                                           "In case of requirement for best possible outcome, it is recommended to open the link document in Revit and pull the elements directly from there.");
+
                 return hostObject.PanelSurfaces_LinkDocument(insertsToIgnore, settings);
             }
         }
