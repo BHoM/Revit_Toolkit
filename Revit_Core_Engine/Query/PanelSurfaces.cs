@@ -210,7 +210,7 @@ namespace BH.Revit.Engine.Core
                         List<ICurve> edges = new List<ICurve>();
                         foreach (Edge e in ea)
                         {
-                            Curve crv = e.AsCurve();
+                            Curve crv = e.AsCurveFollowingFace(pf);
                             if (!crv.IsEdge(edgeFaces, settings))
                                 edges.Add(crv.IFromRevit());
                         }
@@ -237,7 +237,7 @@ namespace BH.Revit.Engine.Core
                     {
                         foreach(Edge e in ea)
                         {
-                            loop.Curves.Add(e.AsCurve().IFromRevit());
+                            loop.Curves.Add(e.AsCurveFollowingFace(pf).IFromRevit());
                         }
                     }
 
