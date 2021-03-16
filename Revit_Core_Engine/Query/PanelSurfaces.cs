@@ -21,8 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.IFC;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 using System;
@@ -39,14 +39,30 @@ namespace BH.Revit.Engine.Core
 
         public static Dictionary<PlanarSurface, List<PlanarSurface>> PanelSurfaces(this HostObject hostObject, IEnumerable<ElementId> insertsToIgnore = null, RevitSettings settings = null)
         {
-            Document doc = hostObject.Document;
             settings = settings.DefaultIfNull();
-            
-            Dictionary<PlanarSurface, List<PlanarSurface>> result = new Dictionary<PlanarSurface, List<PlanarSurface>>();
 
-            List <Autodesk.Revit.DB.Plane> planes = hostObject.IPanelPlanes();
+            if (!hostObject.Document.IsLinked)
+                return hostObject.PanelSurfaces_HostDocument(insertsToIgnore, settings);
+            else
+            {
+                //TODO: warning?
+                return hostObject.PanelSurfaces_LinkDocument(insertsToIgnore, settings);
+            }
+        }
+
+
+        /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
+
+        private static Dictionary<PlanarSurface, List<PlanarSurface>> PanelSurfaces_HostDocument(this HostObject hostObject, IEnumerable<ElementId> insertsToIgnore = null, RevitSettings settings = null)
+        {
+            List<Autodesk.Revit.DB.Plane> planes = hostObject.IPanelPlanes();
             if (planes.Count == 0)
                 return null;
+
+            Document doc = hostObject.Document;
+            Dictionary<PlanarSurface, List<PlanarSurface>> result = new Dictionary<PlanarSurface, List<PlanarSurface>>();
 
             IList<ElementId> inserts = hostObject.FindInserts(true, true, true, true);
             if (insertsToIgnore != null)
@@ -160,6 +176,82 @@ namespace BH.Revit.Engine.Core
             }
 
             t.RollBack(failureHandlingOptions);
+
+            return result;
+        }
+
+        /***************************************************/
+
+        private static Dictionary<PlanarSurface, List<PlanarSurface>> PanelSurfaces_LinkDocument(this HostObject hostObject, IEnumerable<ElementId> insertsToIgnore = null, RevitSettings settings = null)
+        {
+            List<Autodesk.Revit.DB.Face> faces = hostObject.ILinkPanelFaces(settings);
+            List<PlanarFace> planarFaces = faces.Where(x => x is PlanarFace).Cast<PlanarFace>().ToList();
+            if (faces.Count != planarFaces.Count)
+                BH.Engine.Reflection.Compute.RecordWarning($"Some faces of the link element were not planar and could not be retrieved.\n ElementId: {hostObject.Id} Document: {hostObject.Document.PathName}");
+
+            Dictionary<PlanarSurface, List<PlanarSurface>> result = new Dictionary<PlanarSurface, List<PlanarSurface>>();
+            List<Autodesk.Revit.DB.Face> edgeFaces = null;
+            if (insertsToIgnore != null && insertsToIgnore.Any())
+                edgeFaces = hostObject.Faces(new Options(), settings).Where(x => hostObject.GetGeneratingElementIds(x).Any(y => insertsToIgnore.Any(z => y.IntegerValue == z.IntegerValue))).ToList();
+
+            foreach (PlanarFace pf in planarFaces)
+            {
+                ICurve outline = null;
+                List<ICurve> openings = new List<ICurve>();
+                int k = 0;
+                foreach (EdgeArray ea in pf.EdgeLoops)
+                {
+                    k++;
+                    PolyCurve loop = new PolyCurve();
+                    if (edgeFaces != null)
+                    {
+                        List<ICurve> edges = new List<ICurve>();
+                        foreach (Edge e in ea)
+                        {
+                            Curve crv = e.AsCurve();
+                            if (!crv.IsEdge(edgeFaces, settings))
+                                edges.Add(crv.IFromRevit());
+                        }
+                        
+                        for (int i = edges.Count - 1; i > 0; i--)
+                        {
+                            BH.oM.Geometry.Point pt1 = edges[i - 1].IEndPoint();
+                            BH.oM.Geometry.Point pt2 = edges[i].IStartPoint();
+                            if (pt1.Distance(pt2) > settings.DistanceTolerance)
+                                edges.Insert(i, new BH.oM.Geometry.Line { Start = pt1, End = pt2 });
+                        }
+
+                        if (edges.Count != 0)
+                        {
+                            BH.oM.Geometry.Point end = edges.Last().IEndPoint();
+                            BH.oM.Geometry.Point start = edges[0].IStartPoint();
+                            if (end.Distance(start) > settings.DistanceTolerance)
+                                edges.Add(new BH.oM.Geometry.Line { Start = end, End = start });
+
+                            loop.Curves = edges;
+                        }
+                    }
+                    else
+                    {
+                        foreach(Edge e in ea)
+                        {
+                            loop.Curves.Add(e.AsCurve().IFromRevit());
+                        }
+                    }
+
+                    if (loop.Curves.Count == 0)
+                        continue;
+
+                    if (k == 1)
+                        outline = loop;
+                    else
+                        openings.Add(loop);
+
+                }
+
+                if (outline != null)
+                    result.Add(new PlanarSurface(outline, new List<ICurve>()), openings.Select(x => new PlanarSurface(x, new List<ICurve>())).ToList());
+            }
 
             return result;
         }
