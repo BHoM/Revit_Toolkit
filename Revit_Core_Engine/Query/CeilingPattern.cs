@@ -241,6 +241,7 @@ namespace BH.Revit.Engine.Core
             o.ComputeReferences = true;
             Document hostDoc = doc.IsLinked ? doc.HostDocument() : doc;
             RevitLinkInstance linkInstance = doc.IsLinked ? doc.LinkInstance() : null;
+            Transform linkTransform = linkInstance == null ? Transform.Identity : linkInstance.GetTotalTransform();
 
             foreach (GeometryObject go in ceiling.get_Geometry(o))
             {
@@ -271,10 +272,6 @@ namespace BH.Revit.Engine.Core
                         
                         using (Transaction t = new Transaction(hostDoc, "temp dim"))
                         {
-
-                            Transform wtf = linkInstance.GetTotalTransform();
-
-
                             t.Start();
                             Dimension horDim = hostDoc.Create.NewDimension(hostDoc.ActiveView, Autodesk.Revit.DB.Line.CreateBound(XYZ.Zero, pf.XVector), horR);
                             Dimension verDim = hostDoc.Create.NewDimension(hostDoc.ActiveView, Autodesk.Revit.DB.Line.CreateBound(XYZ.Zero, pf.YVector), verR);
@@ -282,18 +279,11 @@ namespace BH.Revit.Engine.Core
                             ElementTransformUtils.MoveElement(hostDoc, verDim.Id, XYZ.BasisX);
 
                             rotation = -(horDim.Curve as Autodesk.Revit.DB.Line).Direction.AngleOnPlaneTo(XYZ.BasisX, XYZ.BasisZ);
-
-                            if (linkInstance != null)
-                            {
-                                rotation += wtf.BasisX.AngleOnPlaneTo(XYZ.BasisX, XYZ.BasisZ);
-                            }
-
+                            rotation += linkTransform.BasisX.AngleOnPlaneTo(XYZ.BasisX, XYZ.BasisZ);
                             Transform tr = Transform.CreateRotation(XYZ.BasisZ, rotation);
 
-
-
-                            double x = tr.Inverse.OfPoint(wtf.Inverse.OfPoint(horDim.Origin)).X;
-                            double y = tr.Inverse.OfPoint(wtf.Inverse.OfPoint(verDim.Origin)).Y;
+                            double x = tr.Inverse.OfPoint(linkTransform.Inverse.OfPoint(horDim.Origin)).X;
+                            double y = tr.Inverse.OfPoint(linkTransform.Inverse.OfPoint(verDim.Origin)).Y;
                             t.RollBack();
 
                             foreach (FillGrid fg in fp.GetFillGrids())
@@ -305,10 +295,6 @@ namespace BH.Revit.Engine.Core
                             }
 
                             result = tr.OfPoint(new XYZ(x, y, 0));
-
-
-
-
                             break;
                         }
                     }
