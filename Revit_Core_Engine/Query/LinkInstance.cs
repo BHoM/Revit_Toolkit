@@ -31,9 +31,20 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Transform LinkTransform(this Document linkDocument)
+        public static RevitLinkInstance LinkInstance(this Document linkDocument)
         {
-            return linkDocument.LinkInstance()?.GetTotalTransform();
+            Document mainDoc = linkDocument.HostDocument();
+            if (linkDocument == mainDoc)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning($"The document under path {linkDocument.PathName} is a host document.");
+                return null;
+            }
+
+            RevitLinkInstance linkInstance = new FilteredElementCollector(mainDoc).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().FirstOrDefault(x => x.GetLinkDocument().PathName == linkDocument.PathName);
+            if (linkInstance == null)
+                BH.Engine.Reflection.Compute.RecordError($"The link pointing to path {linkDocument.PathName} could not be found in active Revit document.");
+
+            return linkInstance;
         }
 
         /***************************************************/
