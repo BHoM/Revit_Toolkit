@@ -21,19 +21,44 @@
  */
 
 using Autodesk.Revit.DB;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Compute
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****               Internal methods            ****/
         /***************************************************/
 
-        public static Transform LinkTransform(this Document linkDocument)
+        public static Reference PrepareForLinkDimensioning(this Reference reference, Document hostDocument)
         {
-            return linkDocument.LinkInstance()?.GetTotalTransform();
+            if (reference.LinkedElementId.IntegerValue == -1)
+                return null;
+
+            string[] ss = reference.ConvertToStableRepresentation(hostDocument).Split(':');
+            string res = string.Empty;
+            bool first = true;
+            foreach (string s in ss)
+            {
+                string t = s;
+                if (s.Contains("RVTLINK"))
+                {
+                    if (res.EndsWith(":0"))
+                        t = "RVTLINK";
+                    else
+                        t = "0:RVTLINK";
+                }
+
+                if (!first)
+                    res = string.Concat(res, ":", t);
+                else
+                {
+                    res = t;
+                    first = false;
+                }
+            }
+
+            return Reference.ParseFromStableRepresentation(hostDocument, res);
         }
 
         /***************************************************/
