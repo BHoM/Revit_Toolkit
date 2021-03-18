@@ -35,14 +35,14 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates IRequest that filters Revit Family Types of input Family.")]
-        [Input("bHoMObject", "BHoMObject that contains ElementId of a correspondent Revit element in RevitIdentifiers fragment attached to it - usually previously pulled from Revit.")]
+        [Input("family", "BHoMObject that represents the pulled Revit family (contains its ElementId in RevitIdentifiers).")]
         [Output("request", "Created request.")]
-        public static FilterTypesOfFamily FilterTypesOfFamily(IBHoMObject bHoMObject)
+        public static FilterTypesOfFamily FilterTypesOfFamily(IBHoMObject family)
         {
-            int elementId = bHoMObject.ElementId();
+            int elementId = family.ElementId();
             if (elementId == -1)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", family.BHoM_Guid));
                 return null;
             }
             else

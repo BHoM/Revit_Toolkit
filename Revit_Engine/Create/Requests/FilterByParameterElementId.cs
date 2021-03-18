@@ -36,14 +36,14 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Creates IRequest that filters elements by given parameter value criterion.")]
         [InputFromProperty("parameterName")]
-        [Input("bHoMObject", "BHoMObject that contains (in its RevitIdentifiers) an ElementId of a correspondent Revit element that has been previously pulled.")]
+        [Input("idElement", "BHoMObject that represents the pulled Revit element to extract the ElementId from (contains its ElementId in RevitIdentifiers).")]
         [Output("request", "Created request.")]
-        public static FilterByParameterElementId FilterByParameterElementId(string parameterName, IBHoMObject bHoMObject)
+        public static FilterByParameterElementId FilterByParameterElementId(string parameterName, IBHoMObject idElement)
         {
-            int elementId = bHoMObject.ElementId();
+            int elementId = idElement.ElementId();
             if (elementId == -1)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", idElement.BHoM_Guid));
                 return null;
             }
             else

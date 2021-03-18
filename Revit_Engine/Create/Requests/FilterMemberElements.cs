@@ -35,14 +35,14 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates IRequest that filters elements being members of selection sets, assemblies, systems etc.")]
-        [Input("bHoMObject", "BHoMObject that contains (in its RevitIdentifiers) an ElementId of a correspondent Revit element that has been previously pulled.")]
+        [Input("element", "BHoMObject that represents the pulled Revit element (contains its ElementId in RevitIdentifiers).")]
         [Output("request", "Created request.")]
-        public static FilterMemberElements FilterMemberElements(IBHoMObject bHoMObject)
+        public static FilterMemberElements FilterMemberElements(IBHoMObject element)
         {
-            int elementId = bHoMObject.ElementId();
+            int elementId = element.ElementId();
             if (elementId == -1)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", element.BHoM_Guid));
                 return null;
             }
             else
