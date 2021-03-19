@@ -77,7 +77,7 @@ namespace BH.Revit.Engine.Core
                 surfaces = familyInstance.OpeningSurfaces_LinkDocument(hosts, parentElem, settings);
             }
 
-            if (surfaces.Count == 0)
+            if (surfaces == null || surfaces.Count == 0)
                 return null;
             else if (surfaces.Count == 1)
                 return surfaces[0];
