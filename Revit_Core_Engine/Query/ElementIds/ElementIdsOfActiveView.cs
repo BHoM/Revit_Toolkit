@@ -43,6 +43,12 @@ namespace BH.Revit.Engine.Core
             if (document == null)
                 return null;
 
+            if (document.IsLinked)
+            {
+                BH.Engine.Reflection.Compute.RecordError("It is not allowed to combine active view requests with link requests.");
+                return null;
+            }
+
             if (ids != null && !ids.Contains(document.ActiveView.Id))
                 return new List<ElementId>();
             else

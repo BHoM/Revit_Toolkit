@@ -91,6 +91,12 @@ namespace BH.Revit.Engine.Core
 
         public static IEnumerable<ElementId> ElementIds(this FilterByActiveWorkset request, Document document, IEnumerable<ElementId> ids = null)
         {
+            if (document.IsLinked)
+            {
+                BH.Engine.Reflection.Compute.RecordError("It is not allowed to combine active workset requests with link requests.");
+                return null;
+            }
+
             return document.ElementIdsByWorksets(new List<WorksetId> { document.ActiveWorksetId() }, ids);
         }
 
@@ -105,6 +111,12 @@ namespace BH.Revit.Engine.Core
 
         public static IEnumerable<ElementId> ElementIds(this SelectionRequest request, Document document, IEnumerable<ElementId> ids = null)
         {
+            if (document.IsLinked)
+            {
+                BH.Engine.Reflection.Compute.RecordError("It is not allowed to combine selection requests with link requests - Revit selection does not work with links.");
+                return null;
+            }
+
             return new UIDocument(document).ElementIdsBySelection(ids);
         }
 
@@ -290,6 +302,8 @@ namespace BH.Revit.Engine.Core
             foreach (IRequest subRequest in request.Requests.SortByPerformance())
             {
                 result = subRequest.IElementIds(document, result);
+                if (result == null)
+                    return null;
             }
 
             return result;
@@ -302,7 +316,11 @@ namespace BH.Revit.Engine.Core
             HashSet<ElementId> result = new HashSet<ElementId>();
             foreach (IRequest subRequest in request.Requests)
             {
-                result.UnionWith(subRequest.IElementIds(document, ids));
+                IEnumerable<ElementId> subResult = subRequest.IElementIds(document, ids);
+                if (subResult == null)
+                    return null;
+
+                result.UnionWith(subResult);
             }
 
             return result;
@@ -313,6 +331,9 @@ namespace BH.Revit.Engine.Core
         public static IEnumerable<ElementId> ElementIds(this LogicalNotRequest request, Document document, IEnumerable<ElementId> ids = null)
         {
             IEnumerable<ElementId> toExclude = request.Request.IElementIds(document);
+            if (toExclude == null)
+                return null;
+
             return document.ElementIdsByExclusion(toExclude, ids);
         }
 
