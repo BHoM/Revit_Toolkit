@@ -179,7 +179,7 @@ namespace BH.Revit.Engine.Core
                         pc.Curves.Add(new BH.oM.Geometry.Line { Start = pc.EndPoint(), End = pc.StartPoint() });
                 }
 
-                return new List<ISurface>(outlines.Select(x => new PlanarSurface(x, null)));
+                return new List<ISurface>(outlines.Select(x => new PlanarSurface(x, new List<ICurve>())));
             }
             else
                 return familyInstance.OpeningSurfaces_Curtain();
