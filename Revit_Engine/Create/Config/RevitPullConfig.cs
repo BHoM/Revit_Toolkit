@@ -63,17 +63,6 @@ namespace BH.Engine.Adapters.Revit
             return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, GeometryConfig = geometryConfig, RepresentationConfig = representationConfig, IncludeNestedElements = includeNestedElements };
         }
 
-        [Deprecated("3.3", "Inputs of this method have changed.")]
-        [InputFromProperty("discipline")]
-        [InputFromProperty("includeClosedWorksets")]
-        [InputFromProperty("geometryConfig")]
-        [InputFromProperty("representationConfig")]
-        [Output("revitPullConfig")]
-        public static RevitPullConfig RevitPullConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, PullGeometryConfig geometryConfig = null, PullRepresentationConfig representationConfig = null)
-        {
-            return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, GeometryConfig = geometryConfig, RepresentationConfig = representationConfig };
-        }
-
         /***************************************************/
     }
 }
