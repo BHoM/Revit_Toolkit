@@ -24,6 +24,7 @@ using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
@@ -63,6 +64,23 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location, hostId);
+        }
+
+        /***************************************************/
+
+        //[Description("Creates ModelInstance object based on point location, Revit family name and family type name. Such ModelInstance can be pushed to Revit as a point-driven element, e.g. chair.")]
+        //[Input("familyName", "Name of Revit family to be used when creating the element.")]
+        //[Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
+        //[InputFromProperty("location")]
+        //[InputFromProperty("orientation")]
+        //[InputFromProperty("hostId")]
+        //[Output("modelInstance")]
+        public static ModelInstance ModelInstance(string familyName, string familyTypeName, List<Point> location)
+        {
+            if (location == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
+                return null;
+
+            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location);
         }
 
         /***************************************************/
@@ -108,6 +126,30 @@ namespace BH.Engine.Adapters.Revit
                 Name = properties.Name,
                 Location = location,
                 HostId = hostId
+            };
+
+            return modelInstance;
+        }
+
+        /***************************************************/
+
+        //[Description("Creates ModelInstance object based on point location, Revit family name and family type name. Such ModelInstance can be pushed to Revit as a point-driven element, e.g. chair.")]
+        //[Input("familyName", "Name of Revit family to be used when creating the element.")]
+        //[Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
+        //[InputFromProperty("location")]
+        //[InputFromProperty("orientation")]
+        //[InputFromProperty("hostId")]
+        //[Output("modelInstance")]
+        public static ModelInstance ModelInstance(InstanceProperties properties, List<Point> location)
+        {
+            if (properties == null || location == null)
+                return null;
+
+            ModelInstance modelInstance = new ModelInstance()
+            {
+                Properties = properties,
+                Name = properties.Name,
+                Location = new CompositeGeometry { Elements = new List<IGeometry>(location) },
             };
 
             return modelInstance;
