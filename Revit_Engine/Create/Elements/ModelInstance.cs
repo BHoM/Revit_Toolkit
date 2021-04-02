@@ -68,7 +68,8 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Creates ModelInstance object based on collection of points, Revit family name and family type name. Such ModelInstance can be pushed to Revit as an Adaptive Component.")]
+        [Description("Creates ModelInstance object based on collection of points, Revit family name and family type name. Such ModelInstance can be pushed to Revit as an Adaptive Component.\n"
+                   + "The collection of points may contain either only the location points or both location points and shape handles, in order correspondent to the order of adaptive points in the family definition.")]
         [Input("familyName", "Name of Revit family to be used when creating the element.")]
         [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
         [InputFromProperty("location")]
@@ -131,7 +132,8 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Creates ModelInstance object based on collection of points and BHoM InstanceProperties. Such ModelInstance can be pushed to Revit as an Adaptive Component.")]
+        [Description("Creates ModelInstance object based on collection of points and BHoM InstanceProperties. Such ModelInstance can be pushed to Revit as an Adaptive Component.\n"
+                   + "The collection of points may contain either only the location points or both location points and shape handles, in order correspondent to the order of adaptive points in the family definition.")]
         [InputFromProperty("properties")]
         [InputFromProperty("location")]
         [Output("modelInstance")]
