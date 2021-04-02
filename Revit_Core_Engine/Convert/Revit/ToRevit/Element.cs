@@ -214,9 +214,21 @@ namespace BH.Revit.Engine.Core
         private static Element ToRevitElement(this ModelInstance modelInstance, FamilySymbol familySymbol, RevitSettings settings)
         {
             Document doc = familySymbol.Document;
-            if (modelInstance.Location is BH.oM.Geometry.Point)
+            if (AdaptiveComponentInstanceUtils.IsAdaptiveFamilySymbol(familySymbol))
+            {
+                List<IGeometry> pts = (modelInstance.Location as CompositeGeometry)?.Elements;
+                if (pts == null || !pts.All(x => x is BH.oM.Geometry.Point))
+                {
+                    BH.Engine.Reflection.Compute.RecordError($"A family could not be created based on the given ModelInstance because its family type is adaptive, but location was neither a collection of points. BHoM_Guid: {modelInstance.BHoM_Guid}");
+                    return null;
+                }
+
+                return Create.AdaptiveComponent(doc, familySymbol, pts.Select(x => ((BH.oM.Geometry.Point)x).ToRevit()).ToList(), settings);
+            }
+
+            if (modelInstance.Location is BH.oM.Geometry.Point) 
                 return Create.FamilyInstance(doc, familySymbol, ((BH.oM.Geometry.Point)modelInstance.Location).ToRevit(), modelInstance.Orientation.ToRevit(), doc.GetElement(new ElementId(modelInstance.HostId)), settings);
-            if (modelInstance.Location is ICurve)
+            else if (modelInstance.Location is ICurve)
                 return Create.FamilyInstance(doc, familySymbol, ((ICurve)modelInstance.Location).IToRevit(), doc.GetElement(new ElementId(modelInstance.HostId)), settings);
             else
             {
