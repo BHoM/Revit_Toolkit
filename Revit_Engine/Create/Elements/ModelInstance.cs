@@ -68,13 +68,11 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        //[Description("Creates ModelInstance object based on point location, Revit family name and family type name. Such ModelInstance can be pushed to Revit as a point-driven element, e.g. chair.")]
-        //[Input("familyName", "Name of Revit family to be used when creating the element.")]
-        //[Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
-        //[InputFromProperty("location")]
-        //[InputFromProperty("orientation")]
-        //[InputFromProperty("hostId")]
-        //[Output("modelInstance")]
+        [Description("Creates ModelInstance object based on collection of points, Revit family name and family type name. Such ModelInstance can be pushed to Revit as an Adaptive Component.")]
+        [Input("familyName", "Name of Revit family to be used when creating the element.")]
+        [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
+        [InputFromProperty("location")]
+        [Output("modelInstance")]
         public static ModelInstance ModelInstance(string familyName, string familyTypeName, List<Point> location)
         {
             if (location == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
@@ -110,7 +108,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Creates ModelInstance object based on curve location and BHoM InstanceProperties. Such ModelInstance can be pushed to Revit as a point-driven element, e.g. chair.")]
+        [Description("Creates ModelInstance object based on curve location and BHoM InstanceProperties. Such ModelInstance can be pushed to Revit as a curve-driven element, e.g. duct.")]
         [InputFromProperty("properties")]
         [InputFromProperty("location")]
         [InputFromProperty("hostId")]
@@ -133,13 +131,10 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        //[Description("Creates ModelInstance object based on point location, Revit family name and family type name. Such ModelInstance can be pushed to Revit as a point-driven element, e.g. chair.")]
-        //[Input("familyName", "Name of Revit family to be used when creating the element.")]
-        //[Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
-        //[InputFromProperty("location")]
-        //[InputFromProperty("orientation")]
-        //[InputFromProperty("hostId")]
-        //[Output("modelInstance")]
+        [Description("Creates ModelInstance object based on collection of points and BHoM InstanceProperties. Such ModelInstance can be pushed to Revit as an Adaptive Component.")]
+        [InputFromProperty("properties")]
+        [InputFromProperty("location")]
+        [Output("modelInstance")]
         public static ModelInstance ModelInstance(InstanceProperties properties, List<Point> location)
         {
             if (properties == null || location == null)
