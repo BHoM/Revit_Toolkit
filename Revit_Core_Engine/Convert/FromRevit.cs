@@ -75,38 +75,53 @@ namespace BH.Revit.Engine.Core
 
         public static IEnumerable<IBHoMObject> FromRevit(this FamilyInstance familyInstance, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            IEnumerable<IElement> result = null;
-            switch (discipline)
+            if (AdaptiveComponentInstanceUtils.IsAdaptiveComponentInstance(familyInstance))
             {
-                case Discipline.Structural:
-                    if (typeof(Bar).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                        result = familyInstance.BarsFromRevit(settings, refObjects);
-                    break;
-                case Discipline.Physical:
-                case Discipline.Architecture:
-                    if (typeof(BH.oM.Physical.Elements.Window).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                        result = new List<IElement> { familyInstance.WindowFromRevit(settings, refObjects) };
-                    else if (typeof(BH.oM.Physical.Elements.Door).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                        result = new List<IElement> { familyInstance.DoorFromRevit(settings, refObjects) };
-                    else if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue) || familyInstance.StructuralType == StructuralType.Column)
-                        result = new List<IElement> { familyInstance.ColumnFromRevit(settings, refObjects) };
-                    else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue) || familyInstance.StructuralType == StructuralType.Brace)
-                        result = new List<IElement> { familyInstance.BracingFromRevit(settings, refObjects) };
-                    else if (typeof(BH.oM.Physical.Elements.Beam).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                        result = new List<IElement> { familyInstance.BeamFromRevit(settings, refObjects) };
-                    break;
-                case Discipline.Environmental:
-                    result = new List<IElement> { familyInstance.EnvironmentPanelFromRevit(settings, refObjects) };
-                    break;
-            }
+                BH.oM.Adapters.Revit.Elements.ModelInstance instance = familyInstance.ModelInstanceFromRevit(settings, refObjects);
 
-            if (result != null && transform?.IsIdentity == false)
+                if (instance != null && transform?.IsIdentity == false)
+                {
+                    TransformMatrix bHoMTransform = transform.FromRevit();
+                    instance = instance.Transform(bHoMTransform) as BH.oM.Adapters.Revit.Elements.ModelInstance;
+                }
+
+                return new List<IBHoMObject> { instance };
+            }
+            else
             {
-                TransformMatrix bHoMTransform = transform.FromRevit();
-                result = result.Select(x => x?.ITransform(bHoMTransform));
-            }
+                IEnumerable<IElement> result = null;
+                switch (discipline)
+                {
+                    case Discipline.Structural:
+                        if (typeof(Bar).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                            result = familyInstance.BarsFromRevit(settings, refObjects);
+                        break;
+                    case Discipline.Physical:
+                    case Discipline.Architecture:
+                        if (typeof(BH.oM.Physical.Elements.Window).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                            result = new List<IElement> { familyInstance.WindowFromRevit(settings, refObjects) };
+                        else if (typeof(BH.oM.Physical.Elements.Door).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                            result = new List<IElement> { familyInstance.DoorFromRevit(settings, refObjects) };
+                        else if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue) || familyInstance.StructuralType == StructuralType.Column)
+                            result = new List<IElement> { familyInstance.ColumnFromRevit(settings, refObjects) };
+                        else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue) || familyInstance.StructuralType == StructuralType.Brace)
+                            result = new List<IElement> { familyInstance.BracingFromRevit(settings, refObjects) };
+                        else if (typeof(BH.oM.Physical.Elements.Beam).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                            result = new List<IElement> { familyInstance.BeamFromRevit(settings, refObjects) };
+                        break;
+                    case Discipline.Environmental:
+                        result = new List<IElement> { familyInstance.EnvironmentPanelFromRevit(settings, refObjects) };
+                        break;
+                }
 
-            return result?.Cast<IBHoMObject>().ToList();
+                if (result != null && transform?.IsIdentity == false)
+                {
+                    TransformMatrix bHoMTransform = transform.FromRevit();
+                    result = result.Select(x => x?.ITransform(bHoMTransform));
+                }
+
+                return result?.Cast<IBHoMObject>().ToList();
+            }
         }
 
         /***************************************************/
