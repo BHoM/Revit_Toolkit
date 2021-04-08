@@ -313,8 +313,8 @@
     <Compile Include="Convert\Revit\FromRevit\ModelInstance.cs" />
     <Compile Include="Convert\Revit\Internal\ToSolid.cs" />
     <Compile Include="Convert\Physical\ToRevit\Rebar.cs" />
-    <Compile Include="Create\AdaptiveComponent.cs" />
-    <Compile Include="Create\FamilyInstance.cs" />
+    <Compile Include="Create\FamilyInstance\AdaptiveComponent.cs" />
+    <Compile Include="Create\FamilyInstance\FamilyInstance.cs" />
     <Compile Include="Create\ReferencePlane.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
