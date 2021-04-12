@@ -157,15 +157,15 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Structural:
                     result = wall.StructuralPanelsFromRevit(settings, refObjects);
                     break;
-                case Discipline.Architecture:
-                case Discipline.Physical:
-                    result = new List<IElement2D> { wall.WallFromRevit(settings, refObjects) };
-                    break;
                 case Discipline.Facade:
                     if (wall.CurtainGrid != null)
                         result = new List<IElement2D> { wall.FacadeCurtainWallFromRevit(settings, refObjects) };
                     else
                         result = new List<IElement2D> { wall.FacadePanelFromRevit(settings, refObjects) };
+                    break;
+                case Discipline.Architecture:
+                case Discipline.Physical:
+                    result = new List<IElement2D> { wall.WallFromRevit(settings, refObjects) };
                     break;
             }
 
@@ -188,6 +188,7 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Environmental:
                     result = ceiling.EnvironmentPanelsFromRevit(settings, refObjects);
                     break;
+                case Discipline.Facade:
                 case Discipline.Architecture:
                 case Discipline.Physical:
                     result = new List<IElement2D> { ceiling.CeilingFromRevit(settings, refObjects) };
@@ -216,6 +217,7 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Structural:
                     result = floor.StructuralPanelsFromRevit(settings, refObjects);
                     break;
+                case Discipline.Facade:
                 case Discipline.Architecture:
                 case Discipline.Physical:
                     result = new List<IElement2D> { floor.FloorFromRevit(settings, refObjects) };
@@ -244,6 +246,7 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Structural:
                     result = roofBase.StructuralPanelsFromRevit(settings, refObjects);
                     break;
+                case Discipline.Facade:
                 case Discipline.Architecture:
                 case Discipline.Physical:
                     result = new List<IElement2D> { roofBase.RoofFromRevit(settings, refObjects) };
@@ -267,6 +270,7 @@ namespace BH.Revit.Engine.Core
             {
                 case Discipline.Structural:
                     return hostObjAttributes.SurfacePropertyFromRevit(null, settings, refObjects) as IBHoMObject;
+                case Discipline.Facade:
                 case Discipline.Architecture:
                 case Discipline.Physical:
                 case Discipline.Environmental:
@@ -481,6 +485,7 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Environmental:
                     result = spatialElement.SpaceFromRevit(settings, refObjects);
                     break;
+                case Discipline.Facade:
                 case Discipline.Architecture:
                 case Discipline.Physical:
                     result = spatialElement.RoomFromRevit(settings, refObjects);
@@ -503,6 +508,7 @@ namespace BH.Revit.Engine.Core
             IElement2D result = null;
             switch (discipline)
             {
+                case Discipline.Facade:
                 case Discipline.Environmental:
                 case Discipline.Architecture:
                 case Discipline.Physical:
@@ -526,6 +532,7 @@ namespace BH.Revit.Engine.Core
             IElement2D result = null;
             switch (discipline)
             {
+                case Discipline.Facade:
                 case Discipline.Environmental:
                 case Discipline.Architecture:
                 case Discipline.Physical:
@@ -549,6 +556,7 @@ namespace BH.Revit.Engine.Core
             IElement2D result = null;
             switch (discipline)
             {
+                case Discipline.Facade:
                 case Discipline.Environmental:
                 case Discipline.Architecture:
                 case Discipline.Physical:
@@ -608,6 +616,7 @@ namespace BH.Revit.Engine.Core
                     return material.SolidMaterialFromRevit(settings, refObjects);
                 case Discipline.Structural:
                     return material.MaterialFragmentFromRevit(null, settings, refObjects);
+                case Discipline.Facade:
                 case Discipline.Physical:
                     return material.MaterialFromRevit(null, settings, refObjects);
                 default:
