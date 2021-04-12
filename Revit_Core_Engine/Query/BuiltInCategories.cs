@@ -25,6 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Base;
 using BH.oM.Physical.Elements;
 using BH.oM.Structure.Elements;
+using BH.oM.Facade.Elements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -167,6 +168,12 @@ namespace BH.Revit.Engine.Core
                 {
                     Autodesk.Revit.DB.BuiltInCategory.OST_Doors,
                     Autodesk.Revit.DB.BuiltInCategory.OST_Windows,
+                }
+            },
+            {
+                typeof (FrameEdge), new BuiltInCategory[]
+                {
+                    Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallMullions,
                 }
             },
         };
