@@ -161,7 +161,14 @@ namespace BH.Revit.Engine.Core
                     Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener,
                     Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther
                 }
-            }
+            },
+            {
+                typeof (BH.oM.Facade.Elements.Opening), new BuiltInCategory[]
+                {
+                    Autodesk.Revit.DB.BuiltInCategory.OST_Doors,
+                    Autodesk.Revit.DB.BuiltInCategory.OST_Windows,
+                }
+            },
         };
 
         /***************************************************/

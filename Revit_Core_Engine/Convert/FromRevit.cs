@@ -155,6 +155,12 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Physical:
                     result = new List<IElement2D> { wall.WallFromRevit(settings, refObjects) };
                     break;
+                case Discipline.Facade:
+                    if (wall.CurtainGrid != null)
+                        result = new List<IElement2D> { wall.FacadeCurtainWallFromRevit(settings, refObjects) };
+                    else
+                        result = new List<IElement2D> { wall.FacadePanelFromRevit(settings, refObjects) };
+                    break;
             }
 
             if (result != null && transform?.IsIdentity == false)
