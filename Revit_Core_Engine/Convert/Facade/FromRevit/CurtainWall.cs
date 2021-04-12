@@ -20,29 +20,34 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.ComponentModel;
+using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
+using BH.Engine.Facade;
+using BH.Engine.Geometry;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Geometry;
+using BH.oM.Physical.Constructions;
+using BH.oM.Facade.Elements;
+using BH.oM.Facade.SectionProperties;
+using System;
+using System.Collections.Generic;
 
-namespace BH.oM.Adapters.Revit.Enums
+namespace BH.Revit.Engine.Core
 {
-    /***************************************************/
-
-    [Description("Enumerator allowing choosing to which discipline (and corresponding namespace) should Revit elements be converted on pull.")]
-    public enum Discipline
+    public static partial class Convert
     {
-        [Description("Default discipline to be used.")]
-        Undefined,
-        [Description("Elements to be converted to types from BH.oM.Environment. If no suitable conversion exists, default discipline to be used.")]
-        Environmental,
-        [Description("Elements to be converted to types from BH.oM.Structure. If no suitable conversion exists, default discipline to be used.")]
-        Structural,
-        [Description("Elements to be converted to types from BH.oM.Architecture. If no suitable conversion exists, default discipline to be used.")]
-        Architecture,
-        [Description("Elements to be converted to types from BH.oM.Physical. If no suitable conversion exists, default discipline to be used.")]
-        Physical,
-        [Description("Elements to be converted to types from BH.oM.Physical. If no suitable conversion exists, default discipline to be used.")]
-        Facade,
-    }
+        /***************************************************/
+        /****               Public Methods              ****/
+        /***************************************************/
 
-    /***************************************************/
+        public static oM.Facade.Elements.CurtainWall FacadeCurtainWallFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            BH.Engine.Reflection.Compute.RecordError("Conversion of CurtainWalls from Revit for the Facade discipline is not yet implemented."); 
+            return null;
+        }
+
+        /***************************************************/
+    }
 }
 

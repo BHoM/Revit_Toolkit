@@ -169,6 +169,16 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Environment_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Facade_Engine">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Facade_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Facade_oM">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Facade_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Geometry_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
       <Private>False</Private>
@@ -299,6 +309,7 @@
     <Compile Include="Compute\PrepareForLinkDimensioning.cs" />
     <Compile Include="Compute\SplitRequestTreeByLinks.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Room.cs" />
+    <Compile Include="Convert\Facade\FromRevit\FrameEdge.cs" />
     <Compile Include="Convert\MEP\FromRevit\CableTray.cs" />
     <Compile Include="Convert\MEP\FromRevit\Duct.cs" />
     <Compile Include="Convert\MEP\FromRevit\Pipe.cs" />
@@ -404,6 +415,9 @@
     <Compile Include="Create\Options.cs" />
     <Compile Include="Compute\LoadFamily.cs" />
     <Compile Include="Modify\AddOrReplace.cs" />
+    <Compile Include="Convert\Facade\FromRevit\Opening.cs" />
+    <Compile Include="Convert\Facade\FromRevit\Panel.cs" />
+    <Compile Include="Convert\Facade\FromRevit\CurtainWall.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Ceiling.cs" />
     <Compile Include="Convert\Revit\FromRevit\ViewPlan.cs" />
     <Compile Include="Convert\Structure\FromRevit\MaterialFragment.cs" />
