@@ -112,6 +112,12 @@ namespace BH.Revit.Engine.Core
                     case Discipline.Environmental:
                         result = new List<IElement> { familyInstance.EnvironmentPanelFromRevit(settings, refObjects) };
                         break;
+                    case Discipline.Facade:
+                        if (typeof(BH.oM.Facade.Elements.Opening).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                            result = new List<IElement> { familyInstance.FacadeOpeningFromRevit(settings, refObjects) };
+                        else if (typeof(BH.oM.Facade.Elements.FrameEdge).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                            result = new List<IElement> { familyInstance.FacadeFrameEdgeFromRevit(settings, refObjects) };
+                        break;
                 }
 
                 if (result != null && transform?.IsIdentity == false)
