@@ -255,6 +255,13 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        public static IEnumerable<ElementId> ElementIds(this FilterLinkInstance request, Document document, IEnumerable<ElementId> ids = null)
+        {
+            return document.ElementIdsOfLinkInstances(request.LinkName, ids);
+        }
+
+        /***************************************************/
+
         public static IEnumerable<ElementId> ElementIds(this EnergyAnalysisModelRequest request, Document document, IEnumerable<ElementId> ids = null)
         {
             return document.ElementIdsOfEnergyAnalysisModel(ids);
