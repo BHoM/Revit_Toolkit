@@ -25,7 +25,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements from a Revit link with given name or path.")]
+    [Description("IRequest that filters all elements from a Revit link with given file name/path, Name parameter value or ElementId.")]
     public class FilterByLink : IRequest
     {
         /***************************************************/

@@ -34,15 +34,15 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Creates IRequest that filters elements visible in a given Revit view.")]
-        //[Input("view", "BHoMObject that represents the pulled Revit view (contains its ElementId in RevitIdentifiers).")]
-        //[Output("request", "Created request.")]
-        public static FilterByLink FilterByLink(IBHoMObject link)
+        [Description("Creates IRequest that filters elements from the given Revit link instance.")]
+        [Input("linkInstance", "BHoMObject that represents the pulled Revit link instance (contains its ElementId in RevitIdentifiers fragment).")]
+        [Output("request", "Created request.")]
+        public static FilterByLink FilterByLink(IBHoMObject linkInstance)
         {
-            int elementId = link.ElementId();
+            int elementId = linkInstance.ElementId();
             if (elementId == -1)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Valid ElementId has not been found. BHoM Guid: {link.BHoM_Guid}");
+                BH.Engine.Reflection.Compute.RecordError($"Valid ElementId has not been found. BHoM Guid: {linkInstance.BHoM_Guid}");
                 return null;
             }
             else
