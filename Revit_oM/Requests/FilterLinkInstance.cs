@@ -31,9 +31,12 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
-
-        //[Description("Name of the link file (alternatively whole file path) to pull from, case insensitive.")]
+        
+        [Description("Name of the link file (alternatively whole file path, Name parameter value or ElementId) used to filter the Revit link instances. Optional: if left blank, all link instances in the document will be filtered.")]
         public virtual string LinkName { get; set; } = "";
+
+        [Description("If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        public virtual bool CaseSensitive { get; set; } = true;
 
         /***************************************************/
     }

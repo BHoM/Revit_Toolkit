@@ -84,7 +84,7 @@ namespace BH.Engine.Adapters.Revit
             else if (linkRequests.Count == 1)
             {
                 FilterByLink linkRequest = (FilterByLink)linkRequests[0];
-                List<ElementId> linkInstanceIds = document.ElementIdsOfLinkInstances(linkRequest.LinkName);
+                List<ElementId> linkInstanceIds = document.ElementIdsOfLinkInstances(linkRequest.LinkName, linkRequest.CaseSensitive);
 
                 if (linkInstanceIds.Count == 1)
                 {
