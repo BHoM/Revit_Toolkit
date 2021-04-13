@@ -71,7 +71,7 @@ namespace BH.Revit.Engine.Core
             }
 
             //Create default constructions for initial facade elem creation
-            oM.Physical.Constructions.Construction glazingConst = BH.Engine.Physical.Create.Construction("Default Glazing Construction");
+            oM.Physical.Constructions.Construction glazingConst = familyInstance.GlazingConstruction();
 
             List<oM.Physical.FramingProperties.ConstantFramingProperty> frameEdgeSectionProps = new List<oM.Physical.FramingProperties.ConstantFramingProperty>();
             oM.Physical.Materials.Material alumMullion = new oM.Physical.Materials.Material { Name = "Aluminum" };
@@ -91,6 +91,11 @@ namespace BH.Revit.Engine.Core
 
             FrameEdgeProperty defaultEdgeProp = new FrameEdgeProperty { Name = "Default Edge Property", SectionProperties = frameEdgeSectionProps };
             opening = BH.Engine.Facade.Create.Opening(edges, glazingConst, defaultEdgeProp, familyInstance.FamilyTypeFullName());
+
+            if (familyInstance.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Windows)
+                opening.Type = OpeningType.Window;
+            if (familyInstance.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors)
+                opening.Type = OpeningType.Door;
 
             //Set identifiers, parameters & custom data
             opening.SetIdentifiers(familyInstance);

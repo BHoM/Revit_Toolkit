@@ -26,7 +26,8 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Environment.MaterialFragments;
+using BH.oM.Physical.Constructions;
+
 
 namespace BH.Revit.Engine.Core
 {
@@ -36,46 +37,32 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static oM.Physical.Constructions.Construction Construction(this EnergyAnalysisOpening energyAnalysisOpening, RevitSettings settings = null)
+        public static oM.Physical.Constructions.Construction GlazingConstruction(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
-            if (energyAnalysisOpening == null)
+            if (familyInstance == null)
                 return null;
 
-            Element element = energyAnalysisOpening.Element();
-            if (element == null)
-                return null;
+            //Try to get glazing material name from parameters
+            string constName = "Default Glazing Construction";
+            BH.oM.Physical.Materials.Material bhomMat = new oM.Physical.Materials.Material { Name = "Default Glazing Material" };
+            
 
-            return element.EnergyAnalysisElementName().Construction(energyAnalysisOpening.OpeningType.ToString());
-        }
+            ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
+            foreach (Parameter p in elementType.Parameters)
+            {
+                if (p.Definition.Name.Contains("Glass") && p.StorageType == StorageType.ElementId && familyInstance.Document.GetElement(p.AsElementId()) is Material)
+                {
+                    Material materialElem = familyInstance.Document.GetElement(p.AsElementId()) as Material;
+                    constName = materialElem.Name;
+                    bhomMat = new oM.Physical.Materials.Material { Name = constName, Properties = materialElem.MaterialProperties() };
+                    break;
+                }
+            }
+            List<Layer> bhomLayers = new List<Layer> { new Layer { Name = constName, Material = bhomMat, Thickness = 0.01 } };
 
-        /***************************************************/
+            BH.oM.Physical.Constructions.Construction glazingConstruction = new oM.Physical.Constructions.Construction { Name = constName, Layers = bhomLayers };
 
-        public static oM.Physical.Constructions.Construction Construction(this string constructionName, string materialName)
-        {
-            if (string.IsNullOrEmpty(constructionName) || string.IsNullOrEmpty(materialName))
-                return null;
-
-            string matName = null;
-            if (!string.IsNullOrEmpty(materialName))
-                matName = string.Format("Default {0} Material", materialName);
-            else
-                matName = "Default Material";
-
-            SolidMaterial transparentMaterialProperties = new SolidMaterial();
-            transparentMaterialProperties.Name = matName;
-
-            oM.Physical.Materials.Material material = new oM.Physical.Materials.Material();
-            material.Properties.Add(transparentMaterialProperties);
-
-            oM.Physical.Constructions.Construction construction = new oM.Physical.Constructions.Construction();
-            construction.Name = constructionName;
-
-            oM.Physical.Constructions.Layer layer = new oM.Physical.Constructions.Layer();
-            layer.Material = material;
-
-            construction.Layers.Add(layer);
-
-            return construction;
+            return glazingConstruction;
         }
 
         /***************************************************/

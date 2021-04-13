@@ -229,9 +229,10 @@ namespace BH.Revit.Engine.Core
         private static List<ISurface> GetOpeningGeometry(Transaction t, Document doc, List<HostObject> hosts, List<ElementId> inserts, FamilyInstance familyInstance, RevitSettings settings = null)
         {
             List<List<Solid>> solidsWithOpening = new List<List<Solid>>();
+            hosts.RemoveAll(x => x.IsValidObject == false);
             foreach (HostObject h in hosts)
             {
-                solidsWithOpening.Add(h.Solids(new Options()).Select(x => SolidUtils.Clone(x)).ToList());
+                    solidsWithOpening.Add(h.Solids(new Options()).Select(x => SolidUtils.Clone(x)).ToList());
             }
 
             // Rollback and restart of the transaction is needed because otherwise the object, to which familyInstance is pointing can become invalidated.
