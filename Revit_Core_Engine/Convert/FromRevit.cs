@@ -116,7 +116,7 @@ namespace BH.Revit.Engine.Core
                         if (typeof(BH.oM.Facade.Elements.Opening).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
                             result = new List<IElement> { familyInstance.FacadeOpeningFromRevit(settings, refObjects) };
                         else if (typeof(BH.oM.Facade.Elements.FrameEdge).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                            result = new List<IElement> { familyInstance.FacadeFrameEdgeFromRevit(settings, refObjects) };
+                            result = new List<IElement> { familyInstance.FrameEdgeFromRevit(settings, refObjects) };
                         break;
                 }
 
@@ -159,7 +159,7 @@ namespace BH.Revit.Engine.Core
                     break;
                 case Discipline.Facade:
                     if (wall.CurtainGrid != null)
-                        result = new List<IElement2D> { wall.FacadeCurtainWallFromRevit(settings, refObjects) };
+                        result = new List<IElement2D> { wall.CurtainWallFromRevit(settings, refObjects) };
                     else
                         result = new List<IElement2D> { wall.FacadePanelFromRevit(settings, refObjects) };
                     break;

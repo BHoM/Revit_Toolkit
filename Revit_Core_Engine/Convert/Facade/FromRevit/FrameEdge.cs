@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Facade.Elements.FrameEdge FacadeFrameEdgeFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static oM.Facade.Elements.FrameEdge FrameEdgeFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             BH.Engine.Reflection.Compute.RecordError("Conversion of FrameEdges from Revit for the Facade discipline is not yet implemented.");
             return null;
