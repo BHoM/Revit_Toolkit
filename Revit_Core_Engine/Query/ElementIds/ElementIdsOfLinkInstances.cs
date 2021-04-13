@@ -35,13 +35,13 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Filters ElementIds of Revit views that have a given name. If view name is left blank, ElementIds of all views in the document will be filtered.")]
-        //[Input("document", "Revit document to be processed.")]
-        //[Input("viewName", "Name used to filter the Revit views. Optional: if left blank, ElementIds of all views in the document will be filtered.")]
-        //[Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
-        //[Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
-        //[Output("elementIds", "Collection of filtered ElementIds.")]
-        public static List<ElementId> ElementIdsOfLinkInstances(this Document document, string linkName = null, IEnumerable<ElementId> ids = null)
+        [Description("Filters ElementIds of Revit link instances that have a given file name/path, Name parameter value or ElementId. If link name is left blank, ElementIds of all link instances in the document will be filtered.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("linkName", "File name/path, Name parameter value or ElementId used to filter the Revit link instances. Optional: if left blank, ElementIds of all link instances in the document will be filtered.")]
+        [Input("caseSensitive", "If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
+        public static List<ElementId> ElementIdsOfLinkInstances(this Document document, string linkName = null, bool caseSensitive = true, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
@@ -54,8 +54,6 @@ namespace BH.Revit.Engine.Core
             if (string.IsNullOrWhiteSpace(linkName))
                 return allInstances.Select(x => x.Id).ToList();
 
-            linkName = linkName.ToLower();
-
             // Try get the link doc by its link instance Id
             int id;
             if (int.TryParse(linkName, out id))
@@ -65,22 +63,40 @@ namespace BH.Revit.Engine.Core
                     return new List<ElementId> { instance.Id };
             }
 
+            string casedLinkName = linkName;
+            if (!caseSensitive)
+                casedLinkName = casedLinkName.ToLower();
+
             // Get the links by link name parameter.
-            List<ElementId> result = allInstances.Where(x => x.LookupParameterString(BuiltInParameter.RVT_LINK_INSTANCE_NAME).ToLower() == linkName).Select(x => x.Id).ToList();
+            List<ElementId> result;
+            if (caseSensitive)
+                result = allInstances.Where(x => x.LookupParameterString(BuiltInParameter.RVT_LINK_INSTANCE_NAME) == casedLinkName).Select(x => x.Id).ToList();
+            else
+                result = allInstances.Where(x => x.LookupParameterString(BuiltInParameter.RVT_LINK_INSTANCE_NAME).ToLower() == casedLinkName).Select(x => x.Id).ToList();
 
             // Get the links by file name or path.
             bool suffix = false;
-            if (!linkName.EndsWith(".rvt"))
+            if (!casedLinkName.ToLower().EndsWith(".rvt"))
             {
-                linkName += ".rvt";
+                casedLinkName += ".rvt";
                 suffix = true;
             }
 
             List<RevitLinkInstance> fromPath;
-            if (linkName.Contains("\\"))
-                fromPath = allInstances.Where(x => x.GetLinkDocument().PathName.ToLower() == linkName).ToList();
+            if (casedLinkName.Contains("\\"))
+            {
+                if (caseSensitive)
+                    fromPath = allInstances.Where(x => x.GetLinkDocument().PathName == casedLinkName).ToList();
+                else
+                    fromPath = allInstances.Where(x => x.GetLinkDocument().PathName.ToLower() == casedLinkName).ToList();
+            }
             else
-                fromPath = allInstances.Where(x => (document.GetElement(x.GetTypeId()) as RevitLinkType)?.Name?.ToLower() == linkName).ToList();
+            {
+                if (caseSensitive)
+                    fromPath = allInstances.Where(x => (document.GetElement(x.GetTypeId()) as RevitLinkType)?.Name == casedLinkName).ToList();
+                else
+                    fromPath = allInstances.Where(x => (document.GetElement(x.GetTypeId()) as RevitLinkType)?.Name?.ToLower() == casedLinkName).ToList();
+            }
 
             fromPath = fromPath.Where(x => result.All(y => y.IntegerValue != x.Id.IntegerValue)).ToList();
             result.AddRange(fromPath.Select(x => x.Id));
