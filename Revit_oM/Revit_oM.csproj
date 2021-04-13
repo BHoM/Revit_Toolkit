@@ -107,6 +107,7 @@
     <Compile Include="Parameters\RevitPulledParameters.cs" />
     <Compile Include="Requests\FilterByLink.cs" />
     <Compile Include="Requests\FilterByScopeBox.cs" />
+    <Compile Include="Requests\FilterLinkInstance.cs" />
     <Compile Include="Requests\IParameterRequest.cs" />
     <Compile Include="Elements\IView.cs" />
     <Compile Include="Elements\IInstance.cs" />
