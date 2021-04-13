@@ -341,6 +341,7 @@
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\CategoriesWithBoundParameters.cs" />
+    <Compile Include="Query\GlazingConstruction.cs" />
     <Compile Include="Query\DuctSectionProfile.cs" />
     <Compile Include="Query\DuctSectionProperty.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByScopeBox.cs" />
