@@ -43,8 +43,62 @@ namespace BH.Revit.Engine.Core
 
         public static oM.Facade.Elements.Opening FacadeOpeningFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            BH.Engine.Reflection.Compute.RecordError("Conversion of Openings from Revit for the Facade discipline is not yet implemented.");
-            return null;
+            return familyInstance.FacadeOpeningFromRevit(null, settings, refObjects);
+        }
+
+        public static oM.Facade.Elements.Opening FacadeOpeningFromRevit(this FamilyInstance familyInstance, HostObject host = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            if (familyInstance == null)
+                return null;
+
+            settings = settings.DefaultIfNull();
+
+            string refId = familyInstance.Id.ReferenceIdentifier(host);
+            oM.Facade.Elements.Opening opening = refObjects.GetValue<oM.Facade.Elements.Opening>(refId);
+            if (opening != null)
+                return opening;
+
+            BH.oM.Geometry.ISurface location = familyInstance.OpeningSurface(host, settings);
+            if (location == null)
+            {
+                if (host == null)
+                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("Location of the window could not be retrieved from the model (possibly it has zero area or lies on a non-planar face). A window object without location has been returned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
+                else
+                {
+                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("Location of the window could not be retrieved from the model (possibly it has zero area or lies on a non-planar face), the opening has been skipped. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
+                    return null;
+                }
+            }
+
+            //Create default constructions for initial facade elem creation
+            oM.Physical.Constructions.Construction glazingConst = BH.Engine.Physical.Create.Construction("Default Glazing Construction");
+
+            List<oM.Physical.FramingProperties.ConstantFramingProperty> frameEdgeSectionProps = new List<oM.Physical.FramingProperties.ConstantFramingProperty>();
+            oM.Physical.Materials.Material alumMullion = new oM.Physical.Materials.Material { Name = "Aluminum" };
+            BH.oM.Spatial.ShapeProfiles.RectangleProfile rect = BH.Engine.Spatial.Create.RectangleProfile(0.1, 0.2);
+
+            Vector offsetVector = new Vector { X = 0.1 };
+            List<ICurve> mullionCrvs = new List<ICurve>();
+            foreach (ICurve crv in rect.Edges)
+            {
+                mullionCrvs.Add(crv.ITranslate(offsetVector));
+            }
+
+            oM.Spatial.ShapeProfiles.FreeFormProfile edgeProf = BH.Engine.Spatial.Create.FreeFormProfile(mullionCrvs, false);
+            oM.Physical.FramingProperties.ConstantFramingProperty frameEdgeProp = new oM.Physical.FramingProperties.ConstantFramingProperty { Name = "Default Frame Edge Section Prop", Material = alumMullion, Profile = edgeProf };
+            frameEdgeSectionProps.Add(frameEdgeProp);
+            List<ICurve> edges = location.IExternalEdges();
+
+            FrameEdgeProperty defaultEdgeProp = new FrameEdgeProperty { Name = "Default Edge Property", SectionProperties = frameEdgeSectionProps };
+            opening = BH.Engine.Facade.Create.Opening(edges, glazingConst, defaultEdgeProp, familyInstance.FamilyTypeFullName());
+
+            //Set identifiers, parameters & custom data
+            opening.SetIdentifiers(familyInstance);
+            opening.CopyParameters(familyInstance, settings.ParameterSettings);
+            opening.SetProperties(familyInstance, settings.ParameterSettings);
+
+            refObjects.AddOrReplace(refId, opening);
+            return opening;
         }
 
         /***************************************************/
