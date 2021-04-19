@@ -98,11 +98,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static FamilySymbol NewFamily(ConstantFramingProperty framingElementProperty, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null)
+        public static FamilySymbol NewColumnFamily(ConstantFramingProperty framingElementProperty, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null)
         {
-            //get a document/open a family/whatever
-
-            Document doc = null;
+            //Create a new family Document
+            Autodesk.Revit.ApplicationServices.Application app = document.Application;
+            
+            Document familyDoc = app.NewFamilyDocument("myFavoriteColumnTemplate"); //what family template to grab?
 
             string name = framingElementProperty.Name;
 
@@ -123,15 +124,16 @@ namespace BH.Revit.Engine.Core
             double height = 1;
 
             //Create the Extrusion
-            Extrusion unitColumn = doc.FamilyCreate.NewExtrusion(true, profileCurves, lowerRefLevel, height);
+            Extrusion unitColumn = familyDoc.FamilyCreate.NewExtrusion(true, profileCurves, lowerRefLevel, height);
+            familyDoc.FamilyCreate.NewAlignment(sideView, unitColumn.top, upperRefLevel); //get top reference of extrusion?
 
-            doc.FamilyCreate.NewAlignment(sideView, unitColumn.top, upperRefLevel);
-
-            FamilyManager famMgr = doc.FamilyManager;
+            FamilyManager famMgr = familyDoc.FamilyManager;
             famMgr.NewType(name);
 
-            Family fam = document.LoadFamily(doc);
-            FamilySymbol familySymbol = document.
+            Family fam = document.LoadFamily(familyDoc);
+            FamilySymbol familySymbol = null; // get familySymbol from loaded family?
+            familyDoc.Close();
+
             return familySymbol;
         }
     }
