@@ -25,6 +25,9 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using System;
 using System.Collections.Generic;
+using BH.Engine.Reflection;
+using BH.oM.Physical.FramingProperties;
+using BH.oM.Spatial.ShapeProfiles;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,26 +37,39 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static FamilySymbol ToRevitElementType(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilySymbol ToRevitElementType(this IFramingElementProperty framingElementProperty, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (framingElementProperty == null || document == null)
                 return null;
 
+            //if a FamilySymbol matching the FramingElementProperty is already in model, use it.
             FamilySymbol familySymbol = refObjects.GetValue<FamilySymbol>(document, framingElementProperty.BHoM_Guid);
             if (familySymbol != null)
                 return familySymbol;
 
+
             settings = settings.DefaultIfNull();
 
+            //Try to find a FamilySymbol matching the FramingElementProperty in the family library files specified in the revit config
             familySymbol = framingElementProperty.ElementType(document, categories, settings) as FamilySymbol;
-            if (familySymbol == null)
-                return null;
+            if (familySymbol != null)
+            {
+                // Copy parameters from BHoM object to Revit element
+                familySymbol.CopyParameters(framingElementProperty, settings);
 
-            // Copy parameters from BHoM object to Revit element
-            familySymbol.CopyParameters(framingElementProperty, settings);
+                refObjects.AddOrReplace(framingElementProperty, familySymbol);
+                return familySymbol;
+            }
 
-            refObjects.AddOrReplace(framingElementProperty, familySymbol);
-            return familySymbol;
+            //Make a new family (not implemented)
+            familySymbol = NewFamily(framingElementProperty as ConstantFramingProperty, document, categories, settings);
+            if (familySymbol != null)
+                return familySymbol;
+
+            //Give up
+            BH.Engine.Reflection.Compute.RecordWarning($"No FamilySymbol could be found in the model matching {framingElementProperty.Name}, and no FamilySymbol could be found in the specified Family Library File.");
+            return null;
+
         }
 
         /***************************************************/
@@ -81,6 +97,43 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        public static FamilySymbol NewFamily(ConstantFramingProperty framingElementProperty, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null)
+        {
+            //get a document/open a family/whatever
+
+            Document doc = null;
+
+            string name = framingElementProperty.Name;
+
+            //Get the profile curve and convert to Revit craps
+            FreeFormProfile profile = framingElementProperty.Profile as FreeFormProfile;
+            CurveArray curves = new CurveArray() { };
+            foreach(Curve curve in profile.Edges)
+            {
+                curves.Append(curve);
+            }
+            CurveArrArray profileCurves = new CurveArrArray() { };
+            profileCurves.Append(curves);
+
+            //Add the other bits
+            SketchPlane lowerRefLevel = null;
+            SketchPlane upperRefLevel = null;
+            View sideView = null;
+            double height = 1;
+
+            //Create the Extrusion
+            Extrusion unitColumn = doc.FamilyCreate.NewExtrusion(true, profileCurves, lowerRefLevel, height);
+
+            doc.FamilyCreate.NewAlignment(sideView, unitColumn.top, upperRefLevel);
+
+            FamilyManager famMgr = doc.FamilyManager;
+            famMgr.NewType(name);
+
+            Family fam = document.LoadFamily(doc);
+            FamilySymbol familySymbol = document.
+            return familySymbol;
+        }
     }
 }
 
