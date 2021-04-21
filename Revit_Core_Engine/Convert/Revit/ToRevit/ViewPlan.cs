@@ -58,28 +58,8 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             levelElementID = level.Id;
-
-            ElementId viewFamilyTypeElementID = ElementId.InvalidElementId;
-
-            IEnumerable<ElementType> viewFamilyTypes = new FilteredElementCollector(document).OfClass(typeof(ViewFamilyType)).Cast<ElementType>();
-            foreach (ViewFamilyType viewFamilyType in viewFamilyTypes)
-            {
-                if(viewFamilyType.FamilyName == "Floor Plan")
-                {
-                    viewFamilyTypeElementID = viewFamilyType.Id;
-                    break;
-                }
-            }
-
-            if (viewFamilyTypeElementID == ElementId.InvalidElementId)
-                return null;
             
-            revitViewPlan = ViewPlan.Create(document, viewFamilyTypeElementID, levelElementID);
-#if (REVIT2020 || REVIT2021)
-            revitViewPlan.Name = viewPlan.ViewName;
-#else
-            revitViewPlan.ViewName = viewPlan.ViewName;
-#endif
+            ElementId viewTemplateId = ElementId.InvalidElementId;
             
             if (!string.IsNullOrWhiteSpace(viewPlan.TemplateName))
             {
@@ -88,8 +68,11 @@ namespace BH.Revit.Engine.Core
                 if (viewPlanTemplate == null)
                     Compute.ViewTemplateNotExistsWarning(viewPlan);
                 else
-                    revitViewPlan.ViewTemplateId = viewPlanTemplate.Id;
+                    viewTemplateId = viewPlanTemplate.Id;
             }
+
+            revitViewPlan = Create.ViewPlan(document, level, viewPlan.ViewName, null, viewTemplateId) as ViewPlan;
+
 
             // Copy parameters from BHoM object to Revit element
             revitViewPlan.CopyParameters(viewPlan, settings);
