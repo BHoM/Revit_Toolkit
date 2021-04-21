@@ -43,8 +43,41 @@ namespace BH.Revit.Engine.Core
 
         public static oM.Facade.Elements.CurtainWall CurtainWallFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            BH.Engine.Reflection.Compute.RecordError("Conversion of CurtainWalls from Revit for the Facade discipline is not yet implemented."); 
-            return null;
+            if (wall == null)
+                return null;
+
+            settings = settings.DefaultIfNull();
+
+            CurtainWall bHoMCurtainWall = refObjects.GetValue<CurtainWall>(wall.Id);
+            if (bHoMCurtainWall != null)
+                return bHoMCurtainWall;
+
+            if (wall.StackedWallOwnerId != null && wall.StackedWallOwnerId != ElementId.InvalidElementId)
+                return null; 
+            
+            List<oM.Facade.Elements.Opening> curtainPanels = wall.CurtainGrid.FacadeCurtainPanels(wall.Document, settings, refObjects);
+            List<FrameEdge> extEdges = new List<FrameEdge> ();
+
+            if (curtainPanels == null || curtainPanels.Count == 0)
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {0}", wall.Id.IntegerValue));
+            else
+            {
+
+            }
+
+            bHoMCurtainWall = new CurtainWall { ExternalEdges = extEdges, Openings = curtainPanels, Name = wall.WallType.Name };
+            if (bHoMCurtainWall == null)
+                return null;
+
+            bHoMCurtainWall.Name = wall.FamilyTypeFullName();
+
+            //Set identifiers, parameters & custom data
+            bHoMCurtainWall.SetIdentifiers(wall);
+            bHoMCurtainWall.CopyParameters(wall, settings.ParameterSettings);
+            bHoMCurtainWall.SetProperties(wall, settings.ParameterSettings);
+
+            refObjects.AddOrReplace(wall.Id, bHoMCurtainWall);
+            return bHoMCurtainWall;
         }
 
         /***************************************************/
