@@ -25,6 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Facade;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base;
 using BH.oM.Geometry;
 using BH.oM.Physical.Constructions;
@@ -53,17 +54,21 @@ namespace BH.Revit.Engine.Core
                 return bHoMCurtainWall;
 
             if (wall.StackedWallOwnerId != null && wall.StackedWallOwnerId != ElementId.InvalidElementId)
-                return null; 
-            
+                return null;
+
+            List<FrameEdge> extEdges = new List<FrameEdge>(); 
+            List<ICurve> cwEdgeCrvs = wall.CurtainWallCurves();
+            foreach (ICurve crv in cwEdgeCrvs)
+            {
+                FrameEdge frameEdge = new FrameEdge { Curve = crv };
+                if (frameEdge != null)
+                    extEdges.Add(frameEdge);
+            }
+
             List<oM.Facade.Elements.Opening> curtainPanels = wall.CurtainGrid.FacadeCurtainPanels(wall.Document, settings, refObjects);
-            List<FrameEdge> extEdges = new List<FrameEdge> ();
 
             if (curtainPanels == null || curtainPanels.Count == 0)
                 BH.Engine.Reflection.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {0}", wall.Id.IntegerValue));
-            else
-            {
-
-            }
 
             bHoMCurtainWall = new CurtainWall { ExternalEdges = extEdges, Openings = curtainPanels, Name = wall.WallType.Name };
             if (bHoMCurtainWall == null)
