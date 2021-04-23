@@ -100,13 +100,20 @@ namespace BH.Revit.Engine.Core
             if (bHoMObject == null || document == null)
                 return null;
 
-            settings = settings.DefaultIfNull();
-
             string familyName, familyTypeName;
             bHoMObject.FamilyAndTypeNames(out familyName, out familyTypeName);
 
+            return document.ElementType(familyName, familyTypeName, builtInCategories);
+        }
+
+        /***************************************************/
+
+        public static ElementType ElementType(this Document document, string familyName, string familyTypeName, IEnumerable<BuiltInCategory> builtInCategories = null, RevitSettings settings = null)
+        {
             if (string.IsNullOrEmpty(familyTypeName))
                 return null;
+
+            settings = settings.DefaultIfNull();
 
             ElementType elementType = document.ElementType<ElementType>(familyName, familyTypeName, builtInCategories);
             if (elementType != null)
