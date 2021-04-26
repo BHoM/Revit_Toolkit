@@ -107,10 +107,10 @@ namespace BH.Revit.Engine.Core
             {
                 try
                 {
-#if (REVIT2020 || REVIT2021)
-                    result.Name = viewName;
-#else
+#if (REVIT2018 || REVIT2019)
                     result.ViewName = viewName;
+#else
+                    result.Name = viewName;
 #endif
                 }
                 catch
@@ -156,9 +156,9 @@ namespace BH.Revit.Engine.Core
 
                     result.CropBox = bb;
                     
-                    //changes the view's far clip to expected length of line based family (x1.5 offset) 
-                    Parameter viewFarClip = result.get_Parameter(BuiltInParameter.VIEWER_BOUND_OFFSET_FAR);
-                    viewFarClip.Set(boundingBoxXyz.Min.DistanceTo(boundingBoxXyz.Max) * 1.5);
+                    //changes the view's far clip to the the eye and target line's length (x1.5 offset)
+                    result.SetParameter(BuiltInParameter.VIEWER_BOUND_OFFSET_FAR,boundingBoxXyz.Min.DistanceTo(boundingBoxXyz.Max) * 1.5);
+
                 }
                 catch (Exception)
                 {
@@ -187,14 +187,16 @@ namespace BH.Revit.Engine.Core
             XYZ planarEye = new XYZ(eye.X,eye.Y,0);
             XYZ planarTarget = new XYZ(target.X,target.Y,0);
             XYZ planarNormal = (planarTarget - planarEye).Normalize();
-            double feetHfov = Core.Convert.FromSI(horizontalFieldOfView,UnitType.UT_Length);;
+            double feetHfov = Core.Convert.FromSI(horizontalFieldOfView,UnitType.UT_Length);
 
             //get vertical and horizontal angle
             double verticalAngle = ((XYZ.BasisZ.AngleTo(normal) * 180 / Math.PI) - 90) * (-1);
             double horizontalAngle = XYZ.BasisX.AngleOnPlaneTo(planarNormal, XYZ.BasisZ) * 180 / Math.PI;
+            double verticalRadians = BH.Engine.Units.Convert.FromDegree(verticalAngle);
+            double horizontalRadians = BH.Engine.Units.Convert.FromDegree(horizontalAngle);
 
             //create view orientation
-            ViewOrientation3D viewOrientation3D = new ViewOrientation3D(eye, CombineHorizontalWithVerticalAngles(horizontalAngle, verticalAngle + 90), CombineHorizontalWithVerticalAngles(horizontalAngle, verticalAngle));
+            ViewOrientation3D viewOrientation3D = new ViewOrientation3D(eye, CombineHorizontalWithVerticalAngles(horizontalRadians, verticalRadians + Math.PI/2), CombineHorizontalWithVerticalAngles(horizontalRadians, verticalRadians));
 
             //information can be found here
             //https://knowledge.autodesk.com/support/revit-products/learn-explore/caas/CloudHelp/cloudhelp/2014/ENU/Revit/files/GUID-A7FA8DBC-830E-482D-9B66-147399524442-htm.html
@@ -237,18 +239,15 @@ namespace BH.Revit.Engine.Core
         }
         
         /***************************************************/
-        /****              Internal Methods             ****/
+        /****              Private Methods              ****/
         /***************************************************/
         
-        [Description("Creates a unit vector by rotating the global X axis around global Z axis by angleHorizontalAxis, and then rotating the resultant vector in the global Y axis around the global Z axis by angleVerticalAxis.")]
-        [Input("angleHorizontalAxis", "The angle from horizontal axis.")]
-        [Input("angleVerticalAxis", "The angle from vertical axis.")]
+        [Description("Creates a unit vector by rotating the global X axis around global Z axis by radiansHorizontalAxis, and then rotating the resultant vector in the global Y axis around the global Z axis by radiansVerticalAxis.")]
+        [Input("radiansHorizontalAxis", "The angle in radians from horizontal axis.")]
+        [Input("radiansVerticalAxis", "The angle in radians from vertical axis.")]
         [Output("vector","The vector representing the direction of combining the two given angles and their axis.")]
-        private static XYZ CombineHorizontalWithVerticalAngles(double angleHorizontalAxis, double angleVerticalAxis)
+        private static XYZ CombineHorizontalWithVerticalAngles(double radiansHorizontalAxis, double radiansVerticalAxis)
         {
-            double radiansHorizontalAxis = BH.Engine.Units.Convert.FromDegree(angleHorizontalAxis);
-            double radiansVerticalAxis = BH.Engine.Units.Convert.FromDegree(angleVerticalAxis);
-
             double a = Math.Cos(radiansHorizontalAxis);
             double b = Math.Sin(radiansHorizontalAxis);
             double c = Math.Tan(radiansVerticalAxis);

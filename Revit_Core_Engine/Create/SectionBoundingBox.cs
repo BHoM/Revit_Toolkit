@@ -37,31 +37,33 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Creates BoundingBoxXYZ to be used in the creation of Section or Elevation views from a curve.")]
-        [Input("curve", "The curve to be used as a plane and direction of the view.")]
-        [Input("height", "The height of the view.")]
+        [Input("line", "The straight line to be used as a plane and direction of the view.")]
+        [Input("bottomElevation", "The negative bottom elevation height of the view in relation to the line.")]
+        [Input("height", "The height of the view in relation to the line.")]
         [Input("depth", "The depth of the view.")]
         [Output("sectionBoundingBox","The curve's BoundingBoxXYZ to be used when creating Section or Elevation views.")]
-        public static BoundingBoxXYZ SectionBoundingBox(Curve curve, double height, double offset = 0, double depth = 15)
+        public static BoundingBoxXYZ SectionBoundingBox(Autodesk.Revit.DB.Line line, double bottomElevation, double height, double offset = 0, double depth = 15)
         {
             BoundingBoxXYZ result = new BoundingBoxXYZ();
 
             //calculates the sizes of a BB
-            double lengthOffseted = curve.Length + offset;
+            double lengthOffseted = line.Length + offset;
             double heightOffseted = height + (offset / 2);
+            double bottomOffseted = bottomElevation - (offset / 2);
 
             result.Enabled = true;
 
             result.Max = new XYZ(lengthOffseted / 2, heightOffseted, depth);
-            result.Min = new XYZ(-lengthOffseted / 2, -offset / 2, 0);
+            result.Min = new XYZ(-lengthOffseted / 2, bottomOffseted, 0);
 
             //transform to view coordinates
-            XYZ direction = (curve.GetEndPoint(1) - curve.GetEndPoint(0)).Normalize();
+            XYZ direction = (line.GetEndPoint(1) - line.GetEndPoint(0)).Normalize();
             XYZ up = XYZ.BasisZ;
             XYZ viewDirection = direction.CrossProduct(up);
 
             Transform transform = Transform.Identity;
 
-            XYZ midPoint = curve.Evaluate(0.5, true);
+            XYZ midPoint = line.Evaluate(0.5, true);
 
             transform.Origin = midPoint;
             transform.BasisX = direction;
