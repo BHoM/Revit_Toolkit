@@ -59,7 +59,6 @@ namespace BH.Revit.Engine.Core
             points.Add(p5);
 
             Polyline polyline = BH.Engine.Geometry.Create.Polyline(points);
-            //PolyCurve polyCurve = BH.Engine.Geometry.Create.PolyCurve(polyline.Geometry().ElementCurves());
 
             return polyline.ToRevitCurveLoop();
         }
