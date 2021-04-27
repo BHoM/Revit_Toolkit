@@ -23,9 +23,11 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Dimensional;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using BH.oM.Facade.Elements;
+using BH.Engine.Facade;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +45,8 @@ namespace BH.Revit.Engine.Core
             if (curtainGrid == null)
                 return null;
 
+            List<IElement1D> cwMullions = curtainGrid.CurtainWallMullions(document, settings, refObjects).Select(x => x as IElement1D).ToList();
+
             List<oM.Facade.Elements.Opening> result = new List<oM.Facade.Elements.Opening>();
             List<Element> panels = curtainGrid.GetPanelIds().Select(x => document.GetElement(x)).ToList();
             List<CurtainCell> cells = curtainGrid.GetCurtainCells().ToList();
@@ -57,6 +61,18 @@ namespace BH.Revit.Engine.Core
 
                 foreach (PolyCurve pc in cells[i].CurveLoops.FromRevit())
                 {
+                    oM.Facade.Elements.Opening bHoMOpening = panel.FacadeOpeningFromRevit(settings, refObjects);
+                    List<FrameEdge> edges = bHoMOpening.Edges;
+                    foreach  (FrameEdge edge in edges)
+                    {
+                        List<FrameEdge> adjEdges = edge.AdjacentElements(cwMullions).OfType<FrameEdge>().ToList() ;
+                        if (adjEdges.Count > 0)
+                            edge.FrameEdgeProperty = adjEdges[0].FrameEdgeProperty;
+                        else
+                            edge.FrameEdgeProperty = null;
+                    }
+                    bHoMOpening.Edges = edges;
+
                     result.Add(panel.FacadeOpeningFromRevit(settings, refObjects));
                 }
             }

@@ -23,6 +23,8 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit;
 using BH.oM.Geometry;
+using BH.oM.Dimensional;
+using BH.Engine.Facade;
 using System;
 using System.Collections.Generic;
 
@@ -38,15 +40,23 @@ namespace BH.Revit.Engine.Core
         public static List<ICurve> CurtainWallCurves(this Wall wall)
         {
             List<ICurve> result = new List<ICurve>();
+            List<IElement1D> allCrvs = new List<IElement1D>();
 
             PullGeometryConfig geometryConfig = new PullGeometryConfig();
             Options geometryOptions = Create.Options(Autodesk.Revit.DB.ViewDetailLevel.Fine, geometryConfig.IncludeNonVisible = true, false);
             List<Curve> objs = wall.Curves(geometryOptions);
             foreach (Curve crv in objs)
             {
-                result.Add(crv.IFromRevit());
+                allCrvs.Add(crv.IFromRevit());
             }
+            
             //Get only external curves from all curves
+            foreach (ICurve crv in allCrvs)
+            {
+                List<IElement1D> adjElems = crv.AdjacentElements(allCrvs);
+                if (adjElems.Count == 1)
+                    result.Add(crv);
+            }
 
             return result;
         }
