@@ -126,6 +126,7 @@
   <ItemGroup>
     <Reference Include="Units_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Units_Engine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Analytical_oM">
       <SpecificVersion>False</SpecificVersion>
