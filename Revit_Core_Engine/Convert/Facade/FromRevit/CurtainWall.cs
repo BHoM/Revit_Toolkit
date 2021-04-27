@@ -28,10 +28,12 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Adapters.Revit;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using BH.oM.Dimensional;
 using BH.oM.Physical.Constructions;
 using BH.oM.Facade.Elements;
 using BH.oM.Facade.SectionProperties;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
@@ -56,8 +58,11 @@ namespace BH.Revit.Engine.Core
             if (wall.StackedWallOwnerId != null && wall.StackedWallOwnerId != ElementId.InvalidElementId)
                 return null;
 
-            List<FrameEdge> extEdges = new List<FrameEdge>(); 
-            List<ICurve> cwEdgeCrvs = wall.CurtainWallCurves();
+            IEnumerable<oM.Facade.Elements.Opening> curtainPanels = wall.CurtainGrid.FacadeCurtainPanels(wall.Document, settings, refObjects);
+
+            // Get external edges of whole curtain wall
+            List<FrameEdge> extEdges = new List<FrameEdge>();
+            List<IElement1D> cwEdgeCrvs = curtainPanels.ExternalEdges();
             foreach (ICurve crv in cwEdgeCrvs)
             {
                 FrameEdge frameEdge = new FrameEdge { Curve = crv };
@@ -65,12 +70,10 @@ namespace BH.Revit.Engine.Core
                     extEdges.Add(frameEdge);
             }
 
-            List<oM.Facade.Elements.Opening> curtainPanels = wall.CurtainGrid.FacadeCurtainPanels(wall.Document, settings, refObjects);
-
-            if (curtainPanels == null || curtainPanels.Count == 0)
+            if (curtainPanels == null || curtainPanels.ToList().Count == 0)
                 BH.Engine.Reflection.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {0}", wall.Id.IntegerValue));
 
-            bHoMCurtainWall = new CurtainWall { ExternalEdges = extEdges, Openings = curtainPanels, Name = wall.WallType.Name };
+            bHoMCurtainWall = new CurtainWall { ExternalEdges = extEdges, Openings = curtainPanels.ToList(), Name = wall.WallType.Name };
             if (bHoMCurtainWall == null)
                 return null;
 

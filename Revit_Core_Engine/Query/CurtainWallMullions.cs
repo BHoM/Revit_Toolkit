@@ -43,28 +43,17 @@ namespace BH.Revit.Engine.Core
             if (curtainGrid == null)
                 return null;
 
-            //List<IOpening> result = new List<IOpening>();
-            //List<Element> panels = curtainGrid.GetPanelIds().Select(x => document.GetElement(x)).ToList();
-            //List<CurtainCell> cells = curtainGrid.GetCurtainCells().ToList();
-            //if (panels.Count != cells.Count)
-            //    return null;
+            List<FrameEdge> result = new List<FrameEdge>();
+            List<Element> mullions = curtainGrid.GetMullionIds().Select(x => document.GetElement(x)).ToList();
+            if (mullions.Count == 0)
+                return null;
 
-            //for (int i = 0; i < panels.Count; i++)
-            //{
-            //    FamilyInstance panel = panels[i] as FamilyInstance;
-            //    if (panel == null || panel.get_BoundingBox(null) == null)
-            //        continue;
+            foreach (Mullion mullion in mullions)
+            {
+                result.Add(mullion.FrameEdgeFromRevit(settings, refObjects));
+            }
 
-            //    foreach (PolyCurve pc in cells[i].CurveLoops.FromRevit())
-            //    {
-            //        if (panel.Category.Id.IntegerValue == (int)Autodesk.Revit.DB.BuiltInCategory.OST_Doors)
-            //            result.Add(panel.DoorFromRevit(settings, refObjects));
-            //        else
-            //            result.Add(panel.WindowFromRevit(settings, refObjects));
-            //    }
-            //}
-            
-            return null;
+            return result;
         }
 
         /***************************************************/

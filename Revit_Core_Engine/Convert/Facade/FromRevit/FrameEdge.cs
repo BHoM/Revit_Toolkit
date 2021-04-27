@@ -43,8 +43,33 @@ namespace BH.Revit.Engine.Core
 
         public static oM.Facade.Elements.FrameEdge FrameEdgeFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            BH.Engine.Reflection.Compute.RecordError("Conversion of FrameEdges from Revit for the Facade discipline is not yet implemented.");
-            return null;
+            Mullion mullion = familyInstance as Mullion;            
+            if (mullion == null)
+                return null;
+
+            settings = settings.DefaultIfNull();
+
+            FrameEdge bHoMFrameEdge = refObjects.GetValue<FrameEdge>(mullion.Id);
+            if (bHoMFrameEdge != null)
+                return bHoMFrameEdge;
+
+            BH.oM.Geometry.ICurve location = mullion.LocationCurve.IFromRevit();
+            if (location == null)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Location of the frame edge could not be retrieved from the model. A frame edge without location has been returned. Revit ElementId: {0}", mullion.Id.IntegerValue));
+            }
+
+            FrameEdgeProperty prop = new FrameEdgeProperty { Name = mullion.FamilyTypeFullName() };
+
+            bHoMFrameEdge = new FrameEdge { Curve = location, FrameEdgeProperty = prop, Name = mullion.FamilyTypeFullName() };
+
+            //Set identifiers, parameters & custom data
+            bHoMFrameEdge.SetIdentifiers(mullion);
+            bHoMFrameEdge.CopyParameters(mullion, settings.ParameterSettings);
+            bHoMFrameEdge.SetProperties(mullion, settings.ParameterSettings);
+
+            refObjects.AddOrReplace(mullion.Id, bHoMFrameEdge);
+            return bHoMFrameEdge;
         }
 
         /***************************************************/
