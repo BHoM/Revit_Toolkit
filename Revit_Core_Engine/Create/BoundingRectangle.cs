@@ -39,9 +39,10 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Creates a rectangular CurveLoop by querying an element's bounding box and getting its bottom perimeter.")]
-        [Input("element", "The element to query the bounding box for its rectangular bound.")]                                                                                                                                                                                                            
+        [Input("element", "The element to query the bounding box for its rectangular bound.")]
+        [Input("offset", "The offset value to apply to the resulting bounding box, enlarging or shrinking it.")]
         [Output("RectangleBounding", "A rectangular CurveLoop that fits the element in the horizontal plane.")]
-        public static CurveLoop BoundingRectangle(Element element)
+        public static CurveLoop BoundingRectangle(Element element, double offset = 0)
         {
             BoundingBoxXYZ bb = element.get_BoundingBox(element.Document.ActiveView);
 
@@ -49,17 +50,16 @@ namespace BH.Revit.Engine.Core
             Point p2 = new XYZ(bb.Min.X, bb.Max.Y, bb.Min.Z).PointFromRevit();
             Point p3 = new XYZ(bb.Max.X, bb.Max.Y, bb.Min.Z).PointFromRevit();
             Point p4 = new XYZ(bb.Max.X, bb.Min.Y, bb.Min.Z).PointFromRevit();
-            Point p5 = new XYZ(bb.Min.X, bb.Min.Y, bb.Min.Z).PointFromRevit();
-            
+
             List<Point> points = new List<Point>();
             points.Add(p1);
             points.Add(p2);
             points.Add(p3);
             points.Add(p4);
-            points.Add(p5);
+            points.Add(p1);
 
-            Polyline polyline = BH.Engine.Geometry.Create.Polyline(points);
-
+            Polyline polyline = BH.Engine.Geometry.Create.Polyline(points).Offset(offset);
+            
             return polyline.ToRevitCurveLoop();
         }
 

@@ -40,6 +40,7 @@ namespace BH.Revit.Engine.Core
         [Input("line", "The straight line to be used as a plane and direction of the view.")]
         [Input("bottomElevation", "The negative bottom elevation height of the view in relation to the line.")]
         [Input("height", "The height of the view in relation to the line.")]
+        [Input("offset", "The offset value to apply to the resulting bounding box, enlarging or shrinking it.")]
         [Input("depth", "The depth of the view.")]
         [Output("sectionBoundingBox","The curve's BoundingBoxXYZ to be used when creating Section or Elevation views.")]
         public static BoundingBoxXYZ SectionBoundingBox(Autodesk.Revit.DB.Line line, double bottomElevation, double height, double offset = 0, double depth = 15)
