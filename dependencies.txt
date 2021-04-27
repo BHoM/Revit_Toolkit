@@ -1,4 +1,5 @@
 BHoM/BHoM
 BHoM/BHoM_Engine
 BHoM/BHoM_Adapter
+BHoM/Localisation_Toolkit
 BHoM/Socket_Toolkit
