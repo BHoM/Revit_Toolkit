@@ -190,13 +190,11 @@ namespace BH.Revit.Engine.Core
             double feetHfov = Core.Convert.FromSI(horizontalFieldOfView,UnitType.UT_Length);
 
             //get vertical and horizontal angle
-            double verticalAngle = ((XYZ.BasisZ.AngleTo(normal) * 180 / Math.PI) - 90) * (-1);
-            double horizontalAngle = XYZ.BasisX.AngleOnPlaneTo(planarNormal, XYZ.BasisZ) * 180 / Math.PI;
-            double verticalRadians = BH.Engine.Units.Convert.FromDegree(verticalAngle);
-            double horizontalRadians = BH.Engine.Units.Convert.FromDegree(horizontalAngle);
+            double verticalAngle = (XYZ.BasisZ.AngleTo(normal) - Math.PI / 2) * (-1);
+            double horizontalAngle = XYZ.BasisX.AngleOnPlaneTo(planarNormal, XYZ.BasisZ);
 
             //create view orientation
-            ViewOrientation3D viewOrientation3D = new ViewOrientation3D(eye, CombineHorizontalWithVerticalAngles(horizontalRadians, verticalRadians + Math.PI/2), CombineHorizontalWithVerticalAngles(horizontalRadians, verticalRadians));
+            ViewOrientation3D viewOrientation3D = new ViewOrientation3D(eye, CombineHorizontalWithVerticalAngles(horizontalAngle, verticalAngle + Math.PI/2), CombineHorizontalWithVerticalAngles(horizontalAngle, verticalAngle));
 
             //information can be found here
             //https://knowledge.autodesk.com/support/revit-products/learn-explore/caas/CloudHelp/cloudhelp/2014/ENU/Revit/files/GUID-A7FA8DBC-830E-482D-9B66-147399524442-htm.html
@@ -258,4 +256,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
