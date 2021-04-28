@@ -200,7 +200,7 @@ namespace BH.Revit.Engine.Core
             //https://knowledge.autodesk.com/support/revit-products/learn-explore/caas/CloudHelp/cloudhelp/2014/ENU/Revit/files/GUID-A7FA8DBC-830E-482D-9B66-147399524442-htm.html
                 
             //rotate center point to the right side, representing HFOV start point
-            double angleToRotate = BH.Engine.Units.Convert.FromDegree(90);
+            double angleToRotate = Math.PI / 2;
             Transform t1 = Transform.CreateRotationAtPoint(XYZ.BasisZ, angleToRotate * -1, target);
             XYZ rotate = target.Add((feetHfov / 2) * (planarNormal * -1));
             XYZ hfovLeft = t1.OfPoint(rotate);
