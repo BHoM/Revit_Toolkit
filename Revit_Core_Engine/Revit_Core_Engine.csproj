@@ -124,10 +124,6 @@
     <AssemblyName>Revit_Core_Engine_2021</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Units_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Units_Engine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Analytical_oM">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\ProgramData\BHoM\Assemblies\Analytical_oM.dll</HintPath>
