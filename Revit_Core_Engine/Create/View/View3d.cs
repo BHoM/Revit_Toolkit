@@ -187,7 +187,6 @@ namespace BH.Revit.Engine.Core
             XYZ planarEye = new XYZ(eye.X,eye.Y,0);
             XYZ planarTarget = new XYZ(target.X,target.Y,0);
             XYZ planarNormal = (planarTarget - planarEye).Normalize();
-            double feetHfov = Core.Convert.FromSI(horizontalFieldOfView,UnitType.UT_Length);
 
             //get vertical and horizontal angle
             double verticalAngle = (XYZ.BasisZ.AngleTo(normal) - Math.PI / 2) * (-1);
@@ -202,14 +201,14 @@ namespace BH.Revit.Engine.Core
             //rotate center point to the right side, representing HFOV start point
             double angleToRotate = Math.PI / 2;
             Transform t1 = Transform.CreateRotationAtPoint(XYZ.BasisZ, angleToRotate * -1, target);
-            XYZ rotate = target.Add((feetHfov / 2) * (planarNormal * -1));
+            XYZ rotate = target.Add((horizontalFieldOfView / 2) * (planarNormal * -1));
             XYZ hfovLeft = t1.OfPoint(rotate);
-            XYZ bottomLeft = hfovLeft.Add(((viewRatio * feetHfov) / 2) * (viewOrientation3D.UpDirection * -1));
+            XYZ bottomLeft = hfovLeft.Add(((viewRatio * horizontalFieldOfView) / 2) * (viewOrientation3D.UpDirection * -1));
 
             //for the right
             Transform t2 = Transform.CreateRotationAtPoint(XYZ.BasisZ, angleToRotate, target);
             XYZ hfovRight = t2.OfPoint(rotate);
-            XYZ topRight = hfovRight.Add(((viewRatio * feetHfov) / 2) * viewOrientation3D.UpDirection);
+            XYZ topRight = hfovRight.Add(((viewRatio * horizontalFieldOfView) / 2) * viewOrientation3D.UpDirection);
 
             //lines for top and bottom
             Line topLine = Line.CreateBound(topRight, eye);
