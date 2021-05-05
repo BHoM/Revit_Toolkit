@@ -175,7 +175,7 @@ namespace BH.Revit.Engine.Core
         [Input("uiDoc", "Revit current UI document to be processed.")]
         [Input("eye", "The 3D view eye point in XYZ, where the perspective starts.")]
         [Input("target", "The 3D view target point in XYZ, where the perspective is looking at.")]
-        [Input("horizontalFieldOfView", "The view's horizontal dimension at target, e.g. if target is a door then perhaps 1 meter will allow the view to see it entirely.")]
+        [Input("horizontalFieldOfView", "The view's horizontal dimension at target in feet, e.g. if target is a door then perhaps 3 feet will allow the view to see it entirely.")]
         [Input("viewRatio", "Optional, the view's lens/screen ratio in height/width, commonly 9/16.")]
         [Input("viewName", "Optional, name of the new view.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
