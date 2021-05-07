@@ -96,22 +96,30 @@ namespace BH.Revit.Engine.Core
 
             if (parentElement != null) // Indicates element is a nested instance and needs different approach to extract location
             {
-                Document doc = familyInstance.Document;
-                Transaction t = new Transaction(doc);
+                Document doc = familyInstance.Document; 
+                if (hosts.Count != 0)
+                {
+                    Transaction t = new Transaction(doc);
 
-                t.Start("Temp Delete Inserts");
-                List<ElementId> inserts = hosts.SelectMany(x => x.FindInserts(true, true, true, true)).Distinct().Where(x => x.IntegerValue != -1).ToList();
+                    t.Start("Temp Delete Inserts");
+                    List<ElementId> inserts = hosts.SelectMany(x => x.FindInserts(true, true, true, true)).Distinct().Where(x => x.IntegerValue != -1).ToList();
 
-                // Create dummy instance of nested element with matching parameters
-                LocationPoint locPt = familyInstance.Location as LocationPoint;
-                Element dummyInstance = doc.Create.NewFamilyInstance(locPt.Point, familyInstance.Symbol, hosts.First() as Element, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                IEnumerable<BuiltInParameter> paramsToSkip = new List<BuiltInParameter> { BuiltInParameter.INSTANCE_HEAD_HEIGHT_PARAM, BuiltInParameter.INSTANCE_SILL_HEIGHT_PARAM };
-                familyInstance.CopyParameters(dummyInstance, paramsToSkip);
+                    // Create dummy instance of nested element with matching parameters
+                    LocationPoint locPt = familyInstance.Location as LocationPoint;
+                    Element dummyInstance = null;
 
-                doc.Delete(inserts);
-                doc.Regenerate();
+                    dummyInstance = doc.Create.NewFamilyInstance(locPt.Point, familyInstance.Symbol, hosts.First() as Element, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
+                    IEnumerable<BuiltInParameter> paramsToSkip = new List<BuiltInParameter> { BuiltInParameter.INSTANCE_HEAD_HEIGHT_PARAM, BuiltInParameter.INSTANCE_SILL_HEIGHT_PARAM };
+                    familyInstance.CopyParameters(dummyInstance, paramsToSkip);
 
-                return GetOpeningGeometry(t, doc, hosts, inserts, familyInstance, settings);
+                    doc.Delete(inserts);
+                    doc.Regenerate();
+
+                    return GetOpeningGeometry(t, doc, hosts, inserts, familyInstance, settings);
+                }
+                else
+                    return familyInstance.GetUnhostedOpeningGeometry(doc, settings);
+
             }
             else if (hosts.Count != 0)
             {
@@ -225,7 +233,13 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+        private static List<ISurface> GetUnhostedOpeningGeometry(this FamilyInstance familyInstance, Document doc, RevitSettings settings = null)
+        {
+            List<ISurface> surfaces = new List<ISurface>();
+            return surfaces;
+        }
 
+        /***************************************************/
         private static List<ISurface> GetOpeningGeometry(Transaction t, Document doc, List<HostObject> hosts, List<ElementId> inserts, FamilyInstance familyInstance, RevitSettings settings = null)
         {
             List<List<Solid>> solidsWithOpening = new List<List<Solid>>();
