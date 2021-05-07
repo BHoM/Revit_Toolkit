@@ -168,6 +168,7 @@ namespace BH.Revit.Engine.Core
                 {
                     Autodesk.Revit.DB.BuiltInCategory.OST_Doors,
                     Autodesk.Revit.DB.BuiltInCategory.OST_Windows,
+                    Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels
                 }
             },
             {

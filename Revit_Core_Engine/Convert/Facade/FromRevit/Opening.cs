@@ -31,6 +31,7 @@ using BH.oM.Physical.Constructions;
 using BH.oM.Facade.Elements;
 using BH.oM.Facade.SectionProperties;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
@@ -58,21 +59,7 @@ namespace BH.Revit.Engine.Core
             if (opening != null)
                 return opening;
 
-            BH.oM.Geometry.ISurface location = familyInstance.OpeningSurface(host, settings);
-            if (location == null)
-            {
-                if (host == null)
-                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("Location of the window could not be retrieved from the model (possibly it has zero area or lies on a non-planar face). A window object without location has been returned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
-                else
-                {
-                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("Location of the window could not be retrieved from the model (possibly it has zero area or lies on a non-planar face), the opening has been skipped. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
-                    return null;
-                }
-            }
-
-            //Create default constructions for initial facade elem creation
-            oM.Physical.Constructions.Construction glazingConst = familyInstance.GlazingConstruction();
-
+            // Create FrameEdgeProperties, currently only using default
             List<oM.Physical.FramingProperties.ConstantFramingProperty> frameEdgeSectionProps = new List<oM.Physical.FramingProperties.ConstantFramingProperty>();
             oM.Physical.Materials.Material alumMullion = new oM.Physical.Materials.Material { Name = "Aluminum" };
             BH.oM.Spatial.ShapeProfiles.RectangleProfile rect = BH.Engine.Spatial.Create.RectangleProfile(0.1, 0.2);
@@ -87,10 +74,32 @@ namespace BH.Revit.Engine.Core
             oM.Spatial.ShapeProfiles.FreeFormProfile edgeProf = BH.Engine.Spatial.Create.FreeFormProfile(mullionCrvs, false);
             oM.Physical.FramingProperties.ConstantFramingProperty frameEdgeProp = new oM.Physical.FramingProperties.ConstantFramingProperty { Name = "Default Frame Edge Section Prop", Material = alumMullion, Profile = edgeProf };
             frameEdgeSectionProps.Add(frameEdgeProp);
-            List<ICurve> edges = location.IExternalEdges();
-
             FrameEdgeProperty defaultEdgeProp = new FrameEdgeProperty { Name = "Default Edge Property", SectionProperties = frameEdgeSectionProps };
-            opening = BH.Engine.Facade.Create.Opening(edges, glazingConst, defaultEdgeProp, familyInstance.FamilyTypeFullName());
+
+            BH.oM.Geometry.ISurface location = familyInstance.OpeningSurface(host, settings);
+
+            List<FrameEdge> edges = new List<FrameEdge>();
+            if (location == null)
+            {
+                if (host == null)
+                {
+                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("Location of the window could not be retrieved from the model (possibly it has zero area or lies on a non-planar face). A window object without location has been returned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
+                }
+                else
+                {
+                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("Location of the window could not be retrieved from the model (possibly it has zero area or lies on a non-planar face), the opening has been skipped. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
+                    return null;
+                }
+            }
+            else
+            {
+                edges = location.IExternalEdges().Select( x => new FrameEdge { Curve = x, FrameEdgeProperty = defaultEdgeProp }).ToList();
+            }
+
+            //Create default constructions for initial facade elem creation
+            oM.Physical.Constructions.Construction glazingConst = familyInstance.GlazingConstruction();
+
+            opening = new BH.oM.Facade.Elements.Opening { Name = familyInstance.FamilyTypeFullName(), Edges = edges, OpeningConstruction = glazingConst };
 
             if (familyInstance.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Windows)
                 opening.Type = OpeningType.Window;
