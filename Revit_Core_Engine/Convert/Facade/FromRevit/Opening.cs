@@ -93,7 +93,8 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                edges = location.IExternalEdges().Select( x => new FrameEdge { Curve = x, FrameEdgeProperty = defaultEdgeProp }).ToList();
+                List<ICurve> extCrvs = location.IExternalEdges().SelectMany(x => x.ISubParts()).ToList();
+                edges = extCrvs.Select( x => new FrameEdge { Curve = x, FrameEdgeProperty = defaultEdgeProp }).ToList();
             }
 
             //Create default constructions for initial facade elem creation
