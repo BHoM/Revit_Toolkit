@@ -329,7 +329,7 @@
     <Compile Include="Create\BoundingRectangle.cs" />
     <Compile Include="Create\ReferencePlane.cs" />
     <Compile Include="Create\SectionBoundingBox.cs" />
-    <Compile Include="Create\View\View3d.cs" />
+    <Compile Include="Create\View\View3D.cs" />
     <Compile Include="Create\View\ViewPlan.cs" />
     <Compile Include="Create\View\ViewSection.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
