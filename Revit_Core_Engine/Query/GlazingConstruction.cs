@@ -44,17 +44,16 @@ namespace BH.Revit.Engine.Core
 
             //Try to get glazing material name from parameters
             string constName = "Default Glazing Construction";
-            BH.oM.Physical.Materials.Material bhomMat = new oM.Physical.Materials.Material { Name = "Default Glazing Material" };
-            
+            BH.oM.Physical.Materials.Material bhomMat = new oM.Physical.Materials.Material { Name = "Default Glazing Material" };          
 
             ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
             foreach (Parameter p in elementType.Parameters)
             {
+                //Gets first material that is applied to a parameter containing glass in the string. This covers default Revit parameters and most other cases, but not all cases as the parameter may havea different name.
                 if (p.Definition.Name.Contains("Glass") && p.StorageType == StorageType.ElementId && familyInstance.Document.GetElement(p.AsElementId()) is Material)
                 {
                     Material materialElem = familyInstance.Document.GetElement(p.AsElementId()) as Material;
-                    constName = materialElem.Name;
-                    bhomMat = new oM.Physical.Materials.Material { Name = constName, Properties = materialElem.MaterialProperties() };
+                    bhomMat = materialElem.MaterialFromRevit();
                     break;
                 }
             }
