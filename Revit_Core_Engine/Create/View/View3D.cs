@@ -35,19 +35,18 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Creates and returns a new ISOMETRIC 3D view in the current Revit file.")]
-        [Input("uiDoc", "Revit current UI document to be processed.")]
+        [Input("document", "Revit current document to be processed.")]
         [Input("viewName", "Optional, name of the new view.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
         [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]        
         [Output("view3D", "The new view.")]        
-        public static View View3D(this Autodesk.Revit.UI.UIDocument uiDoc, string viewName = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse)
+        public static View View3D(this Document document, string viewName = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse)
         {
-            Document doc = uiDoc.Document;
             View result = null;
 
-            ViewFamilyType vft = Query.ViewFamilyType(doc, ViewFamily.ThreeDimensional);
+            ViewFamilyType vft = Query.ViewFamilyType(document, ViewFamily.ThreeDimensional);
 
-            result = Autodesk.Revit.DB.View3D.CreateIsometric(doc, vft.Id);
+            result = Autodesk.Revit.DB.View3D.CreateIsometric(document, vft.Id);
             result.DetailLevel = viewDetailLevel;
 
             if (viewTemplateId != null)
@@ -84,14 +83,14 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         
         [Description("Creates and returns a new PERSPECTIVE 3D view in the current Revit file based on the view's constructed bounding box and orientation.")]
-        [Input("uiDoc", "Revit current UI document to be processed.")]
+        [Input("document", "Revit current document to be processed.")]
         [Input("viewName", "Optional, name of the new view.")]
         [Input("boundingBoxXyz", "Optional, the BoundingBoxXYZ to fit the perspective view")]
-        [Input("viewOrientation3d", "Optional, the orientation to which the perspective view will be set.")]
+        [Input("viewOrientation3D", "Optional, the orientation to which the perspective view will be set.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
         [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]        
         [Output("view3D", "The new 3D view.")]       
-        public static View View3D(this Document document, string viewName = null, BoundingBoxXYZ boundingBoxXyz = null, ViewOrientation3D viewOrientation3d = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse) 
+        public static View View3D(this Document document, string viewName = null, BoundingBoxXYZ boundingBoxXyz = null, ViewOrientation3D viewOrientation3D = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse) 
         {
             //for information about a perspective boundingbox and its orientation see here:
             //https://knowledge.autodesk.com/support/revit-products/learn-explore/caas/CloudHelp/cloudhelp/2014/ENU/Revit/files/GUID-A7FA8DBC-830E-482D-9B66-147399524442-htm.html
@@ -131,11 +130,11 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            if (viewOrientation3d != null)
+            if (viewOrientation3D != null)
             {
                 try
                 {
-                    result.SetOrientation(viewOrientation3d);
+                    result.SetOrientation(viewOrientation3D);
                 }
                 catch (Exception)
                 {
@@ -172,7 +171,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Creates and returns a new PERSPECTIVE 3D view in the current Revit file.")]
-        [Input("uiDoc", "Revit current UI document to be processed.")]
+        [Input("document", "Revit current document to be processed.")]
         [Input("eye", "The 3D view eye point in XYZ, where the perspective starts.")]
         [Input("target", "The 3D view target point in XYZ, where the perspective is looking at.")]
         [Input("horizontalFieldOfView", "The view's horizontal dimension at target in feet, e.g. if target is a door then perhaps 3 feet will allow the view to see it entirely.")]
