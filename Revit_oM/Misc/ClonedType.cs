@@ -21,22 +21,18 @@
  */
 
 using BH.oM.Base;
-using BH.oM.Graphics;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.oM.Adapters.Revit
 {
-    //[Description("An object representing the.")]
+    [Description("An object representing a cloned Revit type, to be pushed in order to create a new type.")]
     public class ClonedType : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        //[Description("Mesh representation of Revit element represented by the BHoM object carrying this fragment.")]
+        [Description("ElementId of the source Revit type to be cloned.")]
         public virtual int SourceTypeId { get; set; } = -1;
 
         /***************************************************/
