@@ -22,6 +22,7 @@
 
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
@@ -177,6 +178,13 @@ namespace BH.Revit.Engine.Core
         public static Element ToRevit(this BH.oM.Physical.Reinforcement.IReinforcingBar reinforcement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             return reinforcement.IToRevitRebar(document, settings, refObjects);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this ClonedType clonedType, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            return clonedType.ToRevitElementType(document, settings, refObjects);
         }
 
 

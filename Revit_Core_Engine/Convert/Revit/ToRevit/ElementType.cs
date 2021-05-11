@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
 using System;
@@ -51,6 +52,39 @@ namespace BH.Revit.Engine.Core
             elementType.CopyParameters(instanceProperties, settings);
 
             refObjects.AddOrReplace(instanceProperties, elementType);
+            return elementType;
+        }
+
+        /***************************************************/
+
+        public static ElementType ToRevitElementType(this ClonedType clonedType, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            ElementType elementType = refObjects.GetValue<ElementType>(document, clonedType.BHoM_Guid);
+            if (elementType != null)
+                return elementType;
+
+            settings = settings.DefaultIfNull();
+
+            Element source = document.GetElement(new ElementId(clonedType.SourceTypeId));
+            if (source == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError($"The element with ElementId {clonedType.SourceTypeId} does not exist in the active Revit document.");
+                return null;
+            }
+
+            ElementType sourceType = source as ElementType;
+            if (sourceType == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError($"The element with ElementId {clonedType.SourceTypeId} exists in the active Revit document, but it is not an element type.");
+                return null;
+            }
+
+            elementType = sourceType.Duplicate(clonedType.Name);
+
+            // Copy parameters from BHoM object to Revit element
+            elementType.CopyParameters(clonedType, settings);
+
+            refObjects.AddOrReplace(clonedType, elementType);
             return elementType;
         }
 
