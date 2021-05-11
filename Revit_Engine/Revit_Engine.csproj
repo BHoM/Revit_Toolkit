@@ -124,6 +124,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compute\CloneType.cs" />
     <Compile Include="Compute\SortByPerformance.cs" />
     <Compile Include="Create\Config\RevitPushConfig.cs" />
     <Compile Include="Create\Config\RevitPullConfig.cs" />

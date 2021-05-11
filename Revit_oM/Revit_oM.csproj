@@ -92,6 +92,7 @@
     <Compile Include="Enums\NumberComparisonType.cs" />
     <Compile Include="Enums\RevitViewType.cs" />
     <Compile Include="Enums\TextComparisonType.cs" />
+    <Compile Include="Misc\ClonedType.cs" />
     <Compile Include="Misc\RevitGeometry.cs" />
     <Compile Include="Misc\RevitMaterialTakeOff.cs" />
     <Compile Include="Misc\RevitRepresentation.cs" />
