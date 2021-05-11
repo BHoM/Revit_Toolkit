@@ -35,9 +35,11 @@ namespace BH.Engine.Adapters.Revit
         /****              Public Methods               ****/
         /***************************************************/
 
-        //[Description("Groups and sorts IRequests by their estimated execution time in order to execute fastest first. Order from slowest to fastest: IParameterRequest, IlogicalRequests, others. ")]
-        //[Input("requests", "A collection of IRequests to be sorted.")]
-        //[Output("sortedRequests")]
+        [Description("Creates a ClonedType object based on a pulled Revit element (extracts its type then) or element type.\n" + 
+                     "ClonedType can be pushed to Revit in order to clone the source type.")]
+        [Input("sourceRevitObject", "Source Revit object, which type is meant to be cloned.")]
+        [Input("newName", "Name to be assigned to the cloned type in Revit.")]
+        [Output("clonedType", "BHoM object representing a cloned Revit element type, to be pushed in order to create a new type.")]
         public static ClonedType CloneType(this IBHoMObject sourceRevitObject, string newName)
         {
             if (sourceRevitObject == null)
