@@ -255,7 +255,7 @@ namespace BH.Revit.Engine.Core
                         if (value is int)
                             return parameter.Set((int)value);
                         else if (value is sbyte || value is byte || value is short || value is ushort || value is int || value is uint || value is long || value is ulong || value is float || value is double || value is decimal)
-                            parameter.Set(System.Convert.ToInt32(value));
+                            return parameter.Set(System.Convert.ToInt32(value));
                         else if (value is bool)
                         {
                             if ((bool)value)
@@ -305,8 +305,13 @@ namespace BH.Revit.Engine.Core
                                     }
                                 }
 
-                                parameter.Set(current);
+                                return parameter.Set(current);
                             }
+                        }
+                        else if (value is System.Drawing.Color)
+                        {
+                            System.Drawing.Color color = (System.Drawing.Color)value;
+                            return parameter.Set(color.R << 16 | color.G << 8 | color.B);
                         }
                         break;
                     }
