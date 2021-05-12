@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            Definition definition = Create.Parameter(document, parameterDefinition.Name, parameterDefinition.GroupName, parameterDefinition.ParameterType, parameterDefinition.ParameterGroup, parameterDefinition.Instance, parameterDefinition.Categories, parameterDefinition.Shared);
+            Definition definition = Create.Parameter(document, parameterDefinition.Name, parameterDefinition.ParameterType, parameterDefinition.ParameterGroup, parameterDefinition.Instance, parameterDefinition.Categories, parameterDefinition.Shared);
 
             if (definition is ExternalDefinition)
                 parameterElement = SharedParameterElement.Lookup(document, ((ExternalDefinition)definition).GUID);

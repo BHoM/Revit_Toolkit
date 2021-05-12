@@ -32,7 +32,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Definition ProjectParameter(Document document, string parameterName, string groupName, ParameterType parameterType, BuiltInParameterGroup parameterGroup, bool instance, IEnumerable<Category> categories)
+        public static Definition ProjectParameter(Document document, string parameterName, ParameterType parameterType, BuiltInParameterGroup parameterGroup, bool instance, IEnumerable<Category> categories)
         {
             // Inspired by https://github.com/DynamoDS/DynamoRevit/blob/master/src/Libraries/RevitNodes/Elements/Parameter.cs
 
@@ -50,11 +50,11 @@ namespace BH.Revit.Engine.Core
             {
                 if (document.ParameterBindings.Contains(def))
                 {
-                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} already exists in group {groupName}. It already has category bindings, they were not updated - please make sure they are correct.");
+                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} already exists in group {LabelUtils.GetLabelFor(parameterGroup)}. It already has category bindings, they were not updated - please make sure they are correct.");
                     bindings = true;
                 }
                 else
-                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} already exists in group {groupName}. It did not have any category bindings, so input bindings were applied.");
+                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} already exists in group {LabelUtils.GetLabelFor(parameterGroup)}. It did not have any category bindings, so input bindings were applied.");
             }
             else
             {
@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
                 
                 // Create a new shared parameter, since the file is empty everything has to be created from scratch
                 def = document.Application.OpenSharedParameterFile()
-                    .Groups.Create(groupName).Definitions.Create(
+                    .Groups.Create("TempParameterGroup").Definitions.Create(
                     new ExternalDefinitionCreationOptions(parameterName, parameterType)) as ExternalDefinition;
 
                 // apply old shared parameter file

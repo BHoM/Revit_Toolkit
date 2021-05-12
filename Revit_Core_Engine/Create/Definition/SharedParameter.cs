@@ -32,7 +32,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Definition SharedParameter(Document document, string parameterName, string groupName, ParameterType parameterType, BuiltInParameterGroup parameterGroup, bool instance, IEnumerable<Category> categories)
+        public static Definition SharedParameter(Document document, string parameterName, ParameterType parameterType, string parameterGroup, bool instance, IEnumerable<Category> categories)
         {
             // Inspired by https://github.com/DynamoDS/DynamoRevit/blob/master/src/Libraries/RevitNodes/Elements/Parameter.cs
 
@@ -53,13 +53,13 @@ namespace BH.Revit.Engine.Core
             }
 
             // Create new parameter group if it does not exist yet
-            DefinitionGroup groupDef = document.Application.OpenSharedParameterFile().Groups.get_Item(groupName);
+            DefinitionGroup groupDef = document.Application.OpenSharedParameterFile().Groups.get_Item(parameterGroup);
 
             if (groupDef == null)
             {
                 try
                 {
-                    groupDef = document.Application.OpenSharedParameterFile().Groups.Create(groupName);
+                    groupDef = document.Application.OpenSharedParameterFile().Groups.Create(parameterGroup);
                 }
                 catch
                 {
@@ -75,11 +75,11 @@ namespace BH.Revit.Engine.Core
             {
                 if (document.ParameterBindings.Contains(def))
                 {
-                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} already exists in group {groupName}. It already has category bindings, they were not updated - please make sure they are correct.");
+                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} already exists in group {parameterGroup}. It already has category bindings, they were not updated - please make sure they are correct.");
                     bindings = true;
                 }
                 else
-                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} already exists in group {groupName}. It did not have any category bindings, so input bindings were applied.");
+                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} already exists in group {parameterGroup}. It did not have any category bindings, so input bindings were applied.");
             }
             else
                 def = groupDef.Definitions.Create(new ExternalDefinitionCreationOptions(parameterName, parameterType)) as ExternalDefinition;
@@ -93,7 +93,7 @@ namespace BH.Revit.Engine.Core
                     (Binding)document.Application.Create.NewInstanceBinding(paramCategories) :
                     (Binding)document.Application.Create.NewTypeBinding(paramCategories);
 
-                document.ParameterBindings.Insert(def, bin, parameterGroup);
+                document.ParameterBindings.Insert(def, bin);
             }
 
             return def;

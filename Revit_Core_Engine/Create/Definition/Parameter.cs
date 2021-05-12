@@ -33,28 +33,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Definition Parameter(Document document, string parameterName, string groupName, string typeName, string group, bool instance, IEnumerable<string> categoryNames, bool shared)
+        public static Definition Parameter(Document document, string parameterName, string typeName, string groupName, bool instance, IEnumerable<string> categoryNames, bool shared)
         {
             var parameterType = ParameterType.Text;
             if (!System.Enum.TryParse(typeName, out parameterType))
             {
                 BH.Engine.Reflection.Compute.RecordError($"Parameter type named {typeName} does not exist.");
-                return null;
-            }
-
-            BuiltInParameterGroup parameterGroup = BuiltInParameterGroup.INVALID;
-            foreach (BuiltInParameterGroup bpg in System.Enum.GetValues(typeof(BuiltInParameterGroup)))
-            {
-                if (LabelUtils.GetLabelFor(bpg) == group)
-                {
-                    parameterGroup = bpg;
-                    break;
-                }
-            }
-
-            if (parameterGroup == BuiltInParameterGroup.INVALID)
-            {
-                BH.Engine.Reflection.Compute.RecordError($"Parameter group named {group} does not exist.");
                 return null;
             }
 
@@ -74,9 +58,27 @@ namespace BH.Revit.Engine.Core
             }
 
             if (shared)
-                return Create.SharedParameter(document, parameterName, groupName, parameterType, parameterGroup, instance, categories);
+                return Create.SharedParameter(document, parameterName, parameterType, groupName, instance, categories);
             else
-                return Create.ProjectParameter(document, parameterName, groupName, parameterType, parameterGroup, instance, categories);
+            {
+                BuiltInParameterGroup parameterGroup = BuiltInParameterGroup.INVALID;
+                foreach (BuiltInParameterGroup bpg in System.Enum.GetValues(typeof(BuiltInParameterGroup)))
+                {
+                    if (LabelUtils.GetLabelFor(bpg) == groupName)
+                    {
+                        parameterGroup = bpg;
+                        break;
+                    }
+                }
+
+                if (parameterGroup == BuiltInParameterGroup.INVALID)
+                {
+                    BH.Engine.Reflection.Compute.RecordError($"Parameter group named {groupName} does not exist.");
+                    return null;
+                }
+
+                return Create.ProjectParameter(document, parameterName, parameterType, parameterGroup, instance, categories);
+            }
         }
 
         /***************************************************/
