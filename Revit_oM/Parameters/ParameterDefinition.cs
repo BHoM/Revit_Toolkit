@@ -9,7 +9,6 @@ namespace BH.oM.Revit.Parameters
 {
     public class ParameterDefinition : BHoMObject
     {
-        public virtual string GroupName { get; set; } = ""; //TODO: only relevant to shared - split into 2 different? or merge this with paramGroup better!
         public virtual string ParameterGroup { get; set; } = "";
         public virtual string ParameterType { get; set; } = "";
         public virtual bool Instance { get; set; } = true;
