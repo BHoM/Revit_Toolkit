@@ -116,7 +116,7 @@ namespace BH.Revit.Engine.Core
 
         public static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, IBHoMObject obj, Element value)
         {
-            if (obj == null)
+            if (obj == null || value == null)
                 return;
 
             refObjects.AddOrReplace(obj.BHoM_Guid, value.Id.IntegerValue);
