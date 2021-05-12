@@ -33,13 +33,40 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Definition Parameter(Document document, string parameterName, string typeName, string groupName, bool instance, IEnumerable<string> categoryNames, bool shared)
+        public static Definition Parameter(Document document, string parameterName, string typeName, string groupName, bool instance, IEnumerable<string> categoryNames, bool shared, string discipline = "")
         {
-            var parameterType = ParameterType.Text;
-            if (!System.Enum.TryParse(typeName, out parameterType))
+            List<ParameterType> parameterTypes = new List<ParameterType>();
+            foreach (ParameterType pt in Enum.GetValues(typeof(ParameterType)))
+            {
+                try
+                {
+                    if (LabelUtils.GetLabelFor(pt) == typeName)
+                        parameterTypes.Add(pt);
+                }
+                catch
+                {
+
+                }
+            }
+            
+            ParameterType parameterType = ParameterType.Invalid;
+            if (parameterTypes.Count == 0)
             {
                 BH.Engine.Reflection.Compute.RecordError($"Parameter type named {typeName} does not exist.");
                 return null;
+            }
+            else if (parameterTypes.Count == 1)
+                parameterType = parameterTypes[0];
+            else
+            {
+                if (!string.IsNullOrWhiteSpace(discipline))
+                    parameterType = parameterTypes.FirstOrDefault(x => x.ToString().StartsWith(discipline));
+
+                if (parameterType == ParameterType.Invalid)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("The parameter type with given name exists in more than one discipline, therefore the parameter could not be created. To successfully create the parameter, please specify it using one of the following: HVAC, Piping, Electrical, Structural.");
+                    return null;
+                }
             }
 
             List<string> distinctCategoryNames = categoryNames.Distinct().ToList();

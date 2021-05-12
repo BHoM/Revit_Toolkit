@@ -11,9 +11,9 @@ namespace BH.oM.Revit.Parameters
     {
         public virtual string ParameterGroup { get; set; } = "";
         public virtual string ParameterType { get; set; } = "";
+        public virtual string Discipline { get; set; } = "";
         public virtual bool Instance { get; set; } = true;
         public virtual List<string> Categories { get; set; } = null;
         public virtual bool Shared { get; set; } = false;
-        //TODO: add discipline!
     }
 }
