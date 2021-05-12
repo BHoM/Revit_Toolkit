@@ -324,9 +324,14 @@
     <Compile Include="Convert\Revit\FromRevit\ModelInstance.cs" />
     <Compile Include="Convert\Revit\Internal\ToSolid.cs" />
     <Compile Include="Convert\Physical\ToRevit\Rebar.cs" />
+    <Compile Include="Convert\Revit\ToRevit\ParameterElement.cs" />
+    <Compile Include="Create\CategorySet.cs" />
+    <Compile Include="Create\Definition\Parameter.cs" />
     <Compile Include="Create\FamilyInstance\AdaptiveComponent.cs" />
     <Compile Include="Create\FamilyInstance\FamilyInstance.cs" />
     <Compile Include="Create\BoundingRectangle.cs" />
+    <Compile Include="Create\Definition\ProjectParameter.cs" />
+    <Compile Include="Create\Definition\SharedParameter.cs" />
     <Compile Include="Create\ReferencePlane.cs" />
     <Compile Include="Create\SectionBoundingBox.cs" />
     <Compile Include="Create\View\View3D.cs" />
@@ -335,6 +340,7 @@
     <Compile Include="Modify\SetViewDetailLevel.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
+    <Compile Include="Query\CategoriesWithBoundParameters.cs" />
     <Compile Include="Query\DuctSectionProfile.cs" />
     <Compile Include="Query\DuctSectionProperty.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByScopeBox.cs" />

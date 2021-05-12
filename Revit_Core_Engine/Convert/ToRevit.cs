@@ -26,6 +26,7 @@ using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Revit.Parameters;
 using System;
 using System.Collections.Generic;
 
@@ -185,6 +186,13 @@ namespace BH.Revit.Engine.Core
         public static Element ToRevit(this ClonedType clonedType, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             return clonedType.ToRevitElementType(document, settings, refObjects);
+        }
+
+        /***************************************************/
+
+        public static Element ToRevit(this ParameterDefinition parameterDefinition, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            return parameterDefinition.ToRevitParameterElement(document, settings, refObjects);
         }
 
 
