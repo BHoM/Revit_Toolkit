@@ -28,6 +28,8 @@ using System.Collections.Generic;
 using BH.Engine.Reflection;
 using BH.oM.Physical.FramingProperties;
 using BH.oM.Spatial.ShapeProfiles;
+using BH.oM.Geometry;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -62,7 +64,7 @@ namespace BH.Revit.Engine.Core
             }
 
             //Make a new family (not implemented)
-            familySymbol = NewFamily(framingElementProperty as ConstantFramingProperty, document, categories, settings);
+            familySymbol = NewFramingFamily(framingElementProperty as ConstantFramingProperty, document, categories, settings); //categories will show whether this is a column or beam or other - this will contain ALL relevant categories to the family
             if (familySymbol != null)
                 return familySymbol;
 
@@ -98,44 +100,113 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static FamilySymbol NewColumnFamily(ConstantFramingProperty framingElementProperty, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null)
+        //public static FamilySymbol NewStickFamily(ConstantFramingProperty framingElementProperty, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null)
+        //{
+        //    //decide which method to use
+        //}
+
+        /***************************************************/
+        public static FamilySymbol NewFramingFamily(ConstantFramingProperty framingElementProperty, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null)
         {
             //Create a new family Document
             Autodesk.Revit.ApplicationServices.Application app = document.Application;
             
-            Document familyDoc = app.NewFamilyDocument("myFavoriteColumnTemplate"); //what family template to grab?
+            Document familyDoc = app.NewFamilyDocument(System.IO.Path.Combine(app.FamilyTemplatePath, "Metric Structural Framing - Beams and Braces.rft")); //stick a copy of this family template in the resources folder, point to full path
 
             string name = framingElementProperty.Name;
 
-            //Get the profile curve and convert to Revit craps
-            FreeFormProfile profile = framingElementProperty.Profile as FreeFormProfile;
-            CurveArray curves = new CurveArray() { };
-            foreach(Curve curve in profile.Edges)
-            {
-                curves.Append(curve);
-            }
-            CurveArrArray profileCurves = new CurveArrArray() { };
-            profileCurves.Append(curves);
+            //Get the profile curve and convert to Revit Curve Array Array
+            //FreeFormProfile profile = framingElementProperty.Profile as FreeFormProfile;
+            //List<PolyCurve> profileCurves = BH.Engine.Geometry.Compute.IJoin(profile.Edges.ToList());            
+            //CurveArrArray sketchCurves = new CurveArrArray();
+            //foreach (PolyCurve pcurve in profileCurves)
+            //{
+            //    CurveArray thisCurves = new CurveArray();
+            //    foreach (ICurve crv in pcurve.Curves)
+            //    {
+            //        thisCurves.Append(crv as Curve);
+            //    }
+            //    sketchCurves.Append(thisCurves);
+            //}
 
-            //Add the other bits
-            SketchPlane lowerRefLevel = null;
-            SketchPlane upperRefLevel = null;
-            View sideView = null;
-            double height = 1;
+            //familyDoc.Delete(new ElementId(999)); // delete the extrusion
+            //Extrusion extrusion = familyDoc.GetElement("999") as Extrusion; //get the extrusion
+
+            //double length = 1;
+
+            //SketchPlane centerPlane = SketchPlane.Create(familyDoc, new ElementId(48)); //it might get it?]
 
             //Create the Extrusion
-            Extrusion unitColumn = familyDoc.FamilyCreate.NewExtrusion(true, profileCurves, lowerRefLevel, height);
-            familyDoc.FamilyCreate.NewAlignment(sideView, unitColumn.top, upperRefLevel); //get top reference of extrusion?
+            //Autodesk.Revit.DB.Extrusion extrusion = familyDoc.FamilyCreate.NewExtrusion(true, sketchCurves, centerPlane, length);
+            //familyDoc.FamilyCreate.NewAlignment(sideView, unitColumn.End, sketchJend); //get end reference of extrusion?
+            //extrusion.SetVisibility( new FamilyElementVisibility(FamilyElementVisibilityType.Model) 
+            //{ 
+            //    IsShownInCoarse = false, 
+            //    IsShownInMedium = true, 
+            //    IsShownInFine = true, 
+            //    IsShownInFrontBack = true, 
+            //    IsShownInLeftRight = true, 
+            //    IsShownInPlanRCPCut = true, 
+            //    IsShownInTopBottom = true, 
+            //    IsShownOnlyWhenCut = false
+            //});
 
-            FamilyManager famMgr = familyDoc.FamilyManager;
-            famMgr.NewType(name);
+            //FamilyManager famMgr = familyDoc.FamilyManager;
+            //famMgr.NewType(name); //this breaks because it is not a sub-transaction?
 
-            Family fam = document.LoadFamily(familyDoc);
-            FamilySymbol familySymbol = null; // get familySymbol from loaded family?
+            //Load new family into the project and return the FamilySymbol
+            //need to close the transaction(?) first.
+            Family fam = familyDoc.LoadFamily(document);
             familyDoc.Close();
+
+            //try to return the family symbol- not sure if this is the right method.
+            FamilySymbol familySymbol = framingElementProperty.ElementType(document, categories, settings) as FamilySymbol;
 
             return familySymbol;
         }
+       
+        /***************************************************/
+
+        //public static FamilySymbol NewColumnFamily(ConstantFramingProperty framingElementProperty, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null)
+        //{
+        //    //Create a new family Document
+        //    Autodesk.Revit.ApplicationServices.Application app = document.Application;
+
+        //    Document familyDoc = app.NewFamilyDocument("myFavoriteColumnTemplate"); //what family template to grab?
+
+        //    string name = framingElementProperty.Name;
+
+        //    //Get the profile curve and convert to Revit craps
+        //    FreeFormProfile profile = framingElementProperty.Profile as FreeFormProfile;
+        //    CurveArray curves = new CurveArray() { };
+        //    foreach (Curve curve in profile.Edges)
+        //    {
+        //        curves.Append(curve);
+        //    }
+        //    CurveArrArray profileCurves = new CurveArrArray() { };
+        //    profileCurves.Append(curves);
+
+        //    //Add the other bits
+        //    SketchPlane lowerRefLevel = null;
+        //    SketchPlane upperRefLevel = null;
+        //    View sideView = null;
+        //    double height = 1;
+
+        //    //Create the Extrusion
+        //    Extrusion unitColumn = familyDoc.FamilyCreate.NewExtrusion(true, profileCurves, lowerRefLevel, height);
+        //    familyDoc.FamilyCreate.NewAlignment(sideView, unitColumn.top, upperRefLevel); //get top reference of extrusion?
+
+        //    FamilyManager famMgr = familyDoc.FamilyManager;
+        //    famMgr.NewType(name);
+
+        //    Family fam = document.LoadFamily(familyDoc);
+        //    FamilySymbol familySymbol = null; // get familySymbol from loaded family?
+        //    familyDoc.Close();
+
+        //    return familySymbol;
+        //}
+
+        /***************************************************/
     }
 }
 
