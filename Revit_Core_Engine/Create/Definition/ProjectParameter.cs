@@ -45,16 +45,16 @@ namespace BH.Revit.Engine.Core
             // Look for existing parameter definition
             bool bindings = false;
             IEnumerable<Definition> existingDefs = new FilteredElementCollector(document).OfClass(typeof(SharedParameterElement)).Cast<SharedParameterElement>().Select(x => x.GetDefinition());
-            Definition def = existingDefs.FirstOrDefault(x => x.Name == parameterName && x.ParameterType == parameterType && x.ParameterGroup == parameterGroup);
+            Definition def = existingDefs.FirstOrDefault(x => x.Name == parameterName && x.ParameterGroup == parameterGroup);
             if (def != null)
             {
                 if (document.ParameterBindings.Contains(def))
                 {
-                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} already exists in group {LabelUtils.GetLabelFor(parameterGroup)}. It already has category bindings, they were not updated - please make sure they are correct.");
+                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} already exists in group {LabelUtils.GetLabelFor(parameterGroup)}. It already has category bindings, they were not updated - please make sure they are correct.");
                     bindings = true;
                 }
                 else
-                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} already exists in group {LabelUtils.GetLabelFor(parameterGroup)}. It did not have any category bindings, so input bindings were applied.");
+                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} already exists in group {LabelUtils.GetLabelFor(parameterGroup)}. It did not have any category bindings, so input bindings were applied.");
             }
             else
             {
