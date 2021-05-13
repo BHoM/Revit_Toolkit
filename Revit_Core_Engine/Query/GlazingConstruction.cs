@@ -21,9 +21,9 @@
  */
 
 using System.Collections.Generic;
+using System.Linq;
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Analysis;
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Physical.Constructions;
@@ -42,22 +42,42 @@ namespace BH.Revit.Engine.Core
             if (familyInstance == null)
                 return null;
 
-            //Try to get glazing material name from parameters
-            string constName = "Default Glazing Construction";
-            BH.oM.Physical.Materials.Material bhomMat = new oM.Physical.Materials.Material { Name = "Default Glazing Material" };          
+            BH.oM.Physical.Materials.Material bhomMat = null;
+            string constName = "";
 
+            //Try to get glazing material name from parameters
             ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
+            List<string> materialParams = new List<string>();
+
+            // Try to find the glazing material based on params that may contain it. Expected param to contain glazing material varies
+            // depending on if it is a system panel with a single material, or any other type with potentially many materials applied.
+            if (familyInstance.Symbol.Family.Name.Contains("System"))
+            {
+                materialParams = new List<string> { "Material" };
+            }
+            else
+            {
+                materialParams = new List<string> { "Glass", "Glazing" };
+            }
+
             foreach (Parameter p in elementType.Parameters)
             {
-                //Gets first material that is applied to a parameter containing glass in the string. This covers default Revit parameters and most other cases, but not all cases as the parameter may havea different name.
-                if (p.Definition.Name.Contains("Glass") && p.StorageType == StorageType.ElementId && familyInstance.Document.GetElement(p.AsElementId()) is Material)
-                {
-                    Material materialElem = familyInstance.Document.GetElement(p.AsElementId()) as Material;
-                    bhomMat = materialElem.MaterialFromRevit();
-                    break;
-                }
+                    if (materialParams.Any(p.Definition.Name.Contains) && p.StorageType == StorageType.ElementId && familyInstance.Document.GetElement(p.AsElementId()) is Material)
+                    {
+                        Material materialElem = familyInstance.Document.GetElement(p.AsElementId()) as Material;
+                        bhomMat = materialElem.MaterialFromRevit();
+                        constName = bhomMat.Name;
+                        break;
+                    }
             }
-            List<Layer> bhomLayers = new List<Layer> { new Layer { Name = constName, Material = bhomMat, Thickness = 0.01 } };
+
+            if (bhomMat == null)
+            {
+                constName = "Default Glazing Construction";
+                bhomMat = new oM.Physical.Materials.Material { Name = "Default Glazing Material" };
+            }
+
+            List<Layer> bhomLayers = new List<Layer> { new Layer { Name = constName, Material = bhomMat, Thickness = 0 } };
 
             BH.oM.Physical.Constructions.Construction glazingConstruction = new oM.Physical.Constructions.Construction { Name = constName, Layers = bhomLayers };
 

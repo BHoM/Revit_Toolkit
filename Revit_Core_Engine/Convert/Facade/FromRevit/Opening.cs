@@ -59,23 +59,7 @@ namespace BH.Revit.Engine.Core
             if (opening != null)
                 return opening;
 
-            // Create FrameEdgeProperties, currently only using default
-            List<oM.Physical.FramingProperties.ConstantFramingProperty> frameEdgeSectionProps = new List<oM.Physical.FramingProperties.ConstantFramingProperty>();
-            oM.Physical.Materials.Material alumMullion = new oM.Physical.Materials.Material { Name = "Aluminum" };
-            BH.oM.Spatial.ShapeProfiles.RectangleProfile rect = BH.Engine.Spatial.Create.RectangleProfile(0.1, 0.2);
-
-            Vector offsetVector = new Vector { X = 0.1 };
-            List<ICurve> mullionCrvs = new List<ICurve>();
-            foreach (ICurve crv in rect.Edges)
-            {
-                mullionCrvs.Add(crv.ITranslate(offsetVector));
-            }
-
-            oM.Spatial.ShapeProfiles.FreeFormProfile edgeProf = BH.Engine.Spatial.Create.FreeFormProfile(mullionCrvs, false);
-            oM.Physical.FramingProperties.ConstantFramingProperty frameEdgeProp = new oM.Physical.FramingProperties.ConstantFramingProperty { Name = "Default Frame Edge Section Prop", Material = alumMullion, Profile = edgeProf };
-            frameEdgeSectionProps.Add(frameEdgeProp);
-            FrameEdgeProperty defaultEdgeProp = new FrameEdgeProperty { Name = "Default Edge Property", SectionProperties = frameEdgeSectionProps };
-
+            FrameEdgeProperty frameEdgeProperty = familyInstance.FrameEdgeProperty(settings, refObjects);
             BH.oM.Geometry.ISurface location = familyInstance.OpeningSurface(host, settings);
 
             List<FrameEdge> edges = new List<FrameEdge>();
@@ -94,18 +78,30 @@ namespace BH.Revit.Engine.Core
             else
             {
                 List<ICurve> extCrvs = location.IExternalEdges().SelectMany(x => x.ISubParts()).ToList();
-                edges = extCrvs.Select( x => new FrameEdge { Curve = x, FrameEdgeProperty = defaultEdgeProp }).ToList();
+                edges = extCrvs.Select( x => new FrameEdge { Curve = x, FrameEdgeProperty = frameEdgeProperty }).ToList();
             }
 
-            //Create default constructions for initial facade elem creation
-            oM.Physical.Constructions.Construction glazingConst = familyInstance.GlazingConstruction();
+            int category = familyInstance.Category.Id.IntegerValue;
+            oM.Physical.Constructions.Construction glazingConstruction = null;
+            if (category == (int)BuiltInCategory.OST_Walls)
+            {
+                HostObjAttributes hostObjAttributes = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as HostObjAttributes;
+                string materialGrade = familyInstance.MaterialGrade(settings);
+                glazingConstruction = hostObjAttributes.ConstructionFromRevit(materialGrade, settings, refObjects);
+            }
+            else
+            {
+                glazingConstruction = familyInstance.GlazingConstruction();
+            }
 
-            opening = new BH.oM.Facade.Elements.Opening { Name = familyInstance.FamilyTypeFullName(), Edges = edges, OpeningConstruction = glazingConst };
+            opening = new BH.oM.Facade.Elements.Opening { Name = familyInstance.FamilyTypeFullName(), Edges = edges, OpeningConstruction = glazingConstruction };
 
-            if (familyInstance.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Windows)
+            if (category == (int)BuiltInCategory.OST_Windows || category == (int)BuiltInCategory.OST_CurtainWallPanels)
                 opening.Type = OpeningType.Window;
-            if (familyInstance.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors)
+            else if (category == (int)BuiltInCategory.OST_Doors)
                 opening.Type = OpeningType.Door;
+            else if (category == (int)BuiltInCategory.OST_Walls)
+                opening.Type = OpeningType.Undefined;
 
             //Set identifiers, parameters & custom data
             opening.SetIdentifiers(familyInstance);

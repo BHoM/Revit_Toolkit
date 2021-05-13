@@ -21,56 +21,50 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
-using BH.Engine.Facade;
-using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Spatial.ShapeProfiles;
-using BH.oM.Geometry;
 using BH.oM.Physical.FramingProperties;
-using BH.oM.Facade.Elements;
 using BH.oM.Facade.SectionProperties;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using BH.oM.Geometry;
+using BH.Engine.Geometry;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public static oM.Facade.Elements.FrameEdge FrameEdgeFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static FrameEdgeProperty FrameEdgeProperty(this FamilyInstance familyInstance, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            Mullion mullion = familyInstance as Mullion;            
-            if (mullion == null)
+            if (familyInstance == null )
                 return null;
 
-            settings = settings.DefaultIfNull();
+            // Create FrameEdgeProperties, currently only using default
+            List<oM.Physical.FramingProperties.ConstantFramingProperty> frameEdgeSectionProps = new List<oM.Physical.FramingProperties.ConstantFramingProperty>();
+            oM.Physical.Materials.Material alumMullion = new oM.Physical.Materials.Material { Name = "Aluminum" };
+            BH.oM.Spatial.ShapeProfiles.RectangleProfile rect = BH.Engine.Spatial.Create.RectangleProfile(0.1, 0.2);
 
-            FrameEdge bHoMFrameEdge = refObjects.GetValue<FrameEdge>(mullion.Id);
-            if (bHoMFrameEdge != null)
-                return bHoMFrameEdge;
-
-            BH.oM.Geometry.ICurve location = mullion.LocationCurve.IFromRevit();
-            if (location == null)
+            Vector offsetVector = new Vector { X = 0.1 };
+            List<ICurve> mullionCrvs = new List<ICurve>();
+            foreach (ICurve crv in rect.Edges)
             {
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Location of the frame edge could not be retrieved from the model. A frame edge without location has been returned. Revit ElementId: {0}", mullion.Id.IntegerValue));
+                mullionCrvs.Add(crv.ITranslate(offsetVector));
             }
 
-            FrameEdgeProperty prop = mullion.MullionElementProperty(settings, refObjects);
+            oM.Spatial.ShapeProfiles.FreeFormProfile edgeProf = BH.Engine.Spatial.Create.FreeFormProfile(mullionCrvs, false);
+            oM.Physical.FramingProperties.ConstantFramingProperty frameEdgeProp = new oM.Physical.FramingProperties.ConstantFramingProperty { Name = "Default Frame Edge Section Prop", Material = alumMullion, Profile = edgeProf };
+            frameEdgeSectionProps.Add(frameEdgeProp);
+            FrameEdgeProperty defaultEdgeProp = new FrameEdgeProperty { Name = "Default Edge Property", SectionProperties = frameEdgeSectionProps };
 
-            bHoMFrameEdge = new FrameEdge { Curve = location, FrameEdgeProperty = prop, Name = mullion.FamilyTypeFullName() };
+            FrameEdgeProperty frameEdgeProperty = defaultEdgeProp;
 
-            //Set identifiers, parameters & custom data
-            bHoMFrameEdge.SetIdentifiers(mullion);
-            bHoMFrameEdge.CopyParameters(mullion, settings.ParameterSettings);
-            bHoMFrameEdge.SetProperties(mullion, settings.ParameterSettings);
-
-            refObjects.AddOrReplace(mullion.Id, bHoMFrameEdge);
-            return bHoMFrameEdge;
+            return frameEdgeProperty;
         }
 
         /***************************************************/

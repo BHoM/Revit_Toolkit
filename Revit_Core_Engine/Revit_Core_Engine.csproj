@@ -344,6 +344,8 @@
     <Compile Include="Query\CurtainWallCurves.cs" />
     <Compile Include="Query\FacadeCurtainPanels.cs" />
     <Compile Include="Query\CurtainWallMullions.cs" />
+    <Compile Include="Query\FrameEdgeProperty.cs" />
+    <Compile Include="Query\MullionElementProperty.cs" />
     <Compile Include="Query\GlazingConstruction.cs" />
     <Compile Include="Query\DuctSectionProfile.cs" />
     <Compile Include="Query\DuctSectionProperty.cs" />
