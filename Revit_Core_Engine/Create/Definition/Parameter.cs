@@ -59,7 +59,12 @@ namespace BH.Revit.Engine.Core
                 parameterType = parameterTypes[0];
             else
             {
-                if (!string.IsNullOrWhiteSpace(discipline))
+                if (discipline == "Common")
+                {
+                    string[] forbidden = { "Electrical", "HVAC", "Piping", "Structural" };
+                    parameterType = parameterTypes.FirstOrDefault(x => forbidden.All(y => !x.ToString().StartsWith(y)));
+                }
+                else if (!string.IsNullOrWhiteSpace(discipline))
                     parameterType = parameterTypes.FirstOrDefault(x => x.ToString().StartsWith(discipline));
 
                 if (parameterType == ParameterType.Invalid)

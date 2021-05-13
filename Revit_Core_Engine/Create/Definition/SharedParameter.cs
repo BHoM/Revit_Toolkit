@@ -75,11 +75,11 @@ namespace BH.Revit.Engine.Core
             {
                 if (document.ParameterBindings.Contains(def))
                 {
-                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} already exists in group {parameterGroup}. It already has category bindings, they were not updated - please make sure they are correct.");
+                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} already exists in group {parameterGroup}. It already has category bindings, they were not updated - please make sure they are correct.");
                     bindings = true;
                 }
                 else
-                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} already exists in group {parameterGroup}. It did not have any category bindings, so input bindings were applied.");
+                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} already exists in group {parameterGroup}. It did not have any category bindings, so input bindings were applied.");
             }
             else
                 def = groupDef.Definitions.Create(new ExternalDefinitionCreationOptions(parameterName, parameterType)) as ExternalDefinition;

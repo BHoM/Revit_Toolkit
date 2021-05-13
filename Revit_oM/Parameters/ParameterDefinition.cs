@@ -40,7 +40,7 @@ namespace BH.oM.Revit.Parameters
         public virtual string ParameterType { get; set; } = "";
 
         [Description("Discipline, to which the Revit parameter represented by this object belongs. Only relevant in case if there is more than one types with the same name (e.g. piping, HVAC and structural Velocity).\n" +
-                     "Four sensible values can be applied: HVAC, Piping, Electrical and Structural.")]
+                     "Five sensible values can be applied: Common, Electrical, HVAC, Piping and Structural.")]
         public virtual string Discipline { get; set; } = "";
 
         [Description("If true, the Revit parameter represented by this object is an instance parameter, otherwise it is a type parameter.")]
