@@ -311,7 +311,7 @@ namespace BH.Revit.Engine.Core
                         else if (value is System.Drawing.Color)
                         {
                             System.Drawing.Color color = (System.Drawing.Color)value;
-                            return parameter.Set(color.R << 16 | color.G << 8 | color.B);
+                            return parameter.Set(color.R | color.G << 8 | color.B << 16);
                         }
                         break;
                     }
