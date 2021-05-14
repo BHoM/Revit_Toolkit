@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
             if (bHoMPanel != null)
                 return bHoMPanel;
 
-            if (wall.StackedWallOwnerId != null && wall.StackedWallOwnerId != ElementId.InvalidElementId)
+            if (wall.StackedWallOwnerId != null && wall.StackedWallOwnerId != ElementId.InvalidElementId && wall.IsStackedWallMember)
                 return null;
 
             ISurface location = null;
