@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Creates and returns a new Section view in the current Revit file.")]
-        [Input("uiDoc", "Revit current UI document to be processed.")]
+        [Input("document", "Revit current UI document to be processed.")]
         [Input("boundingBoxXyz", "The BoundingBoxXYZ to fit the section to.")]
         [Input("viewName", "Optional, name of the new view.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]

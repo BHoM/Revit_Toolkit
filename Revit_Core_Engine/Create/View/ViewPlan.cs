@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Creates and returns a new Floor Plan view in the current Revit file.")]
-        [Input("uiDoc", "Revit current UI document to be processed.")]
+        [Input("document", "Revit current document to be processed.")]
         [Input("level", "The level that the created Floor Plan refers to.")]
         [Input("viewName", "Optional, name of the new view.")]
         [Input("cropBox", "Optional, the crop region to attempt to apply to the newly created view.")]
