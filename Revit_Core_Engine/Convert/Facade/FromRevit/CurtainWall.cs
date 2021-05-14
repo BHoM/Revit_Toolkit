@@ -85,6 +85,7 @@ namespace BH.Revit.Engine.Core
             bHoMCurtainWall.SetProperties(wall, settings.ParameterSettings);
 
             refObjects.AddOrReplace(wall.Id, bHoMCurtainWall);
+
             return bHoMCurtainWall;
         }
 
