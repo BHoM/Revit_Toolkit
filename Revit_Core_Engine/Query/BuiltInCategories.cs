@@ -140,6 +140,14 @@ namespace BH.Revit.Engine.Core
                 }
             },
             {
+                typeof (BH.oM.MEP.System.Fittings.GenericFitting), new BuiltInCategory[]
+                {
+                    Autodesk.Revit.DB.BuiltInCategory.OST_DuctFitting,
+                    Autodesk.Revit.DB.BuiltInCategory.OST_PipeFitting,
+                    Autodesk.Revit.DB.BuiltInCategory.OST_CableTrayFitting
+                }
+            },
+            {
                 typeof (BH.oM.Environment.Elements.Panel), new BuiltInCategory[]
                 {
                     Autodesk.Revit.DB.BuiltInCategory.OST_Doors,

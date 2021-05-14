@@ -32,6 +32,7 @@ using BH.oM.MEP.System.ConnectionProperties;
 using BH.oM.MEP.System;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Geometry;
+using BH.oM.MEP.System.Fittings;
 
 namespace BH.Revit.Engine.Core
 {
@@ -46,50 +47,29 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("cableTrays", "BHoM cable tray objects converted from a Revit cable tray elements.")]
-        public static List<BH.oM.MEP.System.CableTray> CableTrayFromRevit(this Autodesk.Revit.DB.Electrical.CableTray revitCableTray, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static BH.oM.MEP.System.Fittings.GenericFitting MEPFittingFromRevit(this FamilyInstance revitMepFamilyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
             // Reuse a BHoM cable tray from refObjects if it has been converted before
-            List<BH.oM.MEP.System.CableTray> bhomCableTrays = refObjects.GetValues<BH.oM.MEP.System.CableTray>(revitCableTray.Id);
-            if (bhomCableTrays != null)
+            // Reuse a BHoM duct from refObjects it it has been converted before
+            BH.oM.MEP.System.Fittings.GenericFitting bhomFitting = refObjects.GetValue<BH.oM.MEP.System.Fittings.GenericFitting>(revitMepFamilyInstance.Id);
+            if (bhomFitting != null)
+                return bhomFitting;
+
+            bhomFitting = new GenericFitting()
             {
-                return bhomCableTrays;
-            }
-            else
-            {
-                bhomCableTrays = new List<BH.oM.MEP.System.CableTray>();
-            }
+                Origin = ((revitMepFamilyInstance.Location) as LocationPoint).Point.PointFromRevit(),
+                Connections = Query.MEPConnectors(revitMepFamilyInstance)
+            };
 
-            // Section properties
-            BH.oM.MEP.System.SectionProperties.CableTraySectionProperty sectionProperty = BH.Revit.Engine.Core.Query.CableTraySectionProperty(revitCableTray, settings);
+            //Set identifiers, parameters & custom data
+            bhomFitting.SetIdentifiers(revitMepFamilyInstance);
+            bhomFitting.CopyParameters(revitMepFamilyInstance, settings.ParameterSettings);
+            bhomFitting.SetProperties(revitMepFamilyInstance, settings.ParameterSettings);
 
-            // Orientation angle
-            double orientationAngle = revitCableTray.OrientationAngle(settings);
-
-            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitCableTray, settings);
-
-            for (int i = 0; i < queried.Count; i++)
-            {
-                BH.oM.Geometry.Line segment = queried[i];
-                BH.oM.MEP.System.CableTray thisSegment = new CableTray
-                {
-                    StartPoint = segment.StartPoint(),
-                    EndPoint = segment.EndPoint(),
-                    SectionProperty = sectionProperty,
-                    ConnectionProperty = new CableTrayConnectionProperty(),
-                    OrientationAngle = orientationAngle
-                };
-
-                //Set identifiers, parameters & custom data
-                thisSegment.SetIdentifiers(revitCableTray);
-                thisSegment.CopyParameters(revitCableTray, settings.ParameterSettings);
-                thisSegment.SetProperties(revitCableTray, settings.ParameterSettings);
-                bhomCableTrays.Add(thisSegment);
-            }
-
-            refObjects.AddOrReplace(revitCableTray.Id, bhomCableTrays);
-            return bhomCableTrays;
+            refObjects.AddOrReplace(revitMepFamilyInstance.Id, bhomFitting);
+            return bhomFitting;
         }
         
         /***************************************************/
