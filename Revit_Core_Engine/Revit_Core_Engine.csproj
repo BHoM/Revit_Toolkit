@@ -312,7 +312,6 @@
     <Compile Include="Convert\Facade\FromRevit\FrameEdge.cs" />
     <Compile Include="Convert\MEP\FromRevit\CableTray.cs" />
     <Compile Include="Convert\MEP\FromRevit\Duct.cs" />
-    <Compile Include="Convert\MEP\FromRevit\MEPFitting.cs" />
     <Compile Include="Convert\MEP\FromRevit\Pipe.cs" />
     <Compile Include="Convert\Geometry\FromRevit\Basis.cs" />
     <Compile Include="Convert\Geometry\FromRevit\Transform.cs" />
@@ -345,7 +344,6 @@
     <Compile Include="Query\LinkInstance.cs" />
     <Compile Include="Query\LinkPanelFaces.cs" />
     <Compile Include="Query\LinkTransform.cs" />
-    <Compile Include="Query\MEPConnectors.cs" />
     <Compile Include="Query\Shape.cs" />
     <Compile Include="Query\MaterialTakeOff.cs" />
     <Compile Include="Query\PipeSectionProperty.cs" />

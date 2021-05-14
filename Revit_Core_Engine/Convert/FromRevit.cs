@@ -38,7 +38,6 @@ using BH.oM.Structure.Elements;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using BH.oM.MEP.System.Fittings;
 
 namespace BH.Revit.Engine.Core
 {
@@ -98,9 +97,6 @@ namespace BH.Revit.Engine.Core
                             result = familyInstance.BarsFromRevit(settings, refObjects);
                         break;
                     case Discipline.Physical:
-                        if (typeof(GenericFitting).BuiltInCategories().Contains((BuiltInCategory) familyInstance.Category.Id.IntegerValue))
-                            result = new List<IElement> { familyInstance.MEPFittingFromRevit(settings, refObjects) };
-                        break;
                     case Discipline.Architecture:
                         if (typeof(BH.oM.Physical.Elements.Window).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
                             result = new List<IElement> { familyInstance.WindowFromRevit(settings, refObjects) };
