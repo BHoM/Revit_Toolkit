@@ -96,7 +96,7 @@ namespace BH.Revit.Engine.Core
         [Description("Creates and returns a new PERSPECTIVE 3D view in the current Revit file based on the view's constructed bounding box and orientation.")]
         [Input("document", "Revit current document to be processed.")]
         [Input("viewName", "Optional, name of the new view.")]
-        [Input("boundingBoxXyz", "Optional, the BoundingBoxXYZ to fit the perspective view")]
+        [Input("boundingBoxXyz", "Optional, the BoundingBoxXYZ to fit the perspective view.")]
         [Input("viewOrientation3D", "Optional, the orientation to which the perspective view will be set.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
         [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]        
