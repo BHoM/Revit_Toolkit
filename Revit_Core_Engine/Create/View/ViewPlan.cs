@@ -48,7 +48,18 @@ namespace BH.Revit.Engine.Core
             ViewFamilyType vft = Query.ViewFamilyType(document, ViewFamily.FloorPlan);
 
             result = Autodesk.Revit.DB.ViewPlan.Create(document, vft.Id, level.Id);
-            result.DetailLevel = viewDetailLevel;
+            
+            if (result.ViewTemplateId != ElementId.InvalidElementId)
+            {
+                View viewTemplate = document.GetElement(viewTemplateId) as View;
+                Parameter detailLevelParameter = viewTemplate.get_Parameter(BuiltInParameter.VIEW_DETAIL_LEVEL);
+                if(detailLevelParameter.UserModifiable)
+                    result.DetailLevel = viewDetailLevel;
+            }
+            else
+            {
+                result.DetailLevel = viewDetailLevel;
+            }
             
             if (cropBox != null)
             {

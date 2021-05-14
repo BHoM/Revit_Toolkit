@@ -47,7 +47,18 @@ namespace BH.Revit.Engine.Core
             ViewFamilyType vft = Query.ViewFamilyType(document, ViewFamily.Section);
 
             result = Autodesk.Revit.DB.ViewSection.CreateSection(document, vft.Id, boundingBoxXyz);
-            result.DetailLevel = viewDetailLevel;
+            
+            if (result.ViewTemplateId != ElementId.InvalidElementId)
+            {
+                View viewTemplate = document.GetElement(viewTemplateId) as View;
+                Parameter detailLevelParameter = viewTemplate.get_Parameter(BuiltInParameter.VIEW_DETAIL_LEVEL);
+                if(detailLevelParameter.UserModifiable)
+                    result.DetailLevel = viewDetailLevel;
+            }
+            else
+            {
+                result.DetailLevel = viewDetailLevel;
+            }
 
             if (viewTemplateId != null)
             {
