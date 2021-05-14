@@ -342,6 +342,7 @@
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\CategoriesWithBoundParameters.cs" />
     <Compile Include="Query\CurtainWallCurves.cs" />
+    <Compile Include="Query\FacadePanelAsOpening.cs" />
     <Compile Include="Query\FacadeCurtainPanels.cs" />
     <Compile Include="Query\CurtainWallMullions.cs" />
     <Compile Include="Query\FrameEdgeProperty.cs" />

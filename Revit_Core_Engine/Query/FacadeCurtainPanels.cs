@@ -25,7 +25,6 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Dimensional;
 using BH.oM.Geometry;
-using BH.oM.Physical.Elements;
 using BH.oM.Facade.Elements;
 using BH.Engine.Facade;
 using System;
@@ -40,7 +39,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<BH.oM.Facade.Elements.Opening> FacadeCurtainPanels(this CurtainGrid curtainGrid, Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null, BH.oM.Adapters.Revit.Enums.Discipline discipline = oM.Adapters.Revit.Enums.Discipline.Physical)
+        public static List<oM.Facade.Elements.Opening> FacadeCurtainPanels(this CurtainGrid curtainGrid, Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null, BH.oM.Adapters.Revit.Enums.Discipline discipline = oM.Adapters.Revit.Enums.Discipline.Physical)
         {
             if (curtainGrid == null)
                 return null;
@@ -55,13 +54,37 @@ namespace BH.Revit.Engine.Core
 
             for (int i = 0; i < panels.Count; i++)
             {
-                FamilyInstance panel = panels[i] as FamilyInstance;
-                if (panel == null || panel.get_BoundingBox(null) == null)
-                    continue;
+                Element element = panels[i];
+                Autodesk.Revit.DB.Panel panel = element as Autodesk.Revit.DB.Panel;
+                List<PolyCurve> pcs = new List<PolyCurve>();
+                if (panel == null)
+                { continue; }
+                try
+                { pcs = cells[i].CurveLoops.FromRevit(); }
+                catch
+                { continue; }
 
-                foreach (PolyCurve pc in cells[i].CurveLoops.FromRevit())
+                foreach (PolyCurve pc in pcs)
                 {
-                    oM.Facade.Elements.Opening bHoMOpening = panel.FacadeOpeningFromRevit(settings, refObjects);
+                    BH.oM.Facade.Elements.Opening bHoMOpening = null;
+                    // If panel is a basic wall, the panel is not the actual element, it is an empty panel that hosts the
+                    // actual element, so we assign it a null construction and separately return the wall
+                    ElementId hostId = panel.FindHostPanel();
+                    if (hostId.IntegerValue > 0)
+                    {
+                        Wall hostElement = document.GetElement(hostId) as Wall;
+                        if (hostElement == null)
+                            continue;
+                        else
+                        {
+                            BH.oM.Facade.Elements.Panel bHoMCWPanel = hostElement.FacadePanelFromRevit(settings, refObjects);
+                            bHoMOpening = bHoMCWPanel.FacadePanelAsOpening(hostElement.Id.ToString(), refObjects);
+                        }
+
+                    }
+                    else
+                    { bHoMOpening = panel.FacadeOpeningFromRevit(settings, refObjects); }
+
                     List<FrameEdge> edges = bHoMOpening.Edges;
                     foreach  (FrameEdge edge in edges)
                     {
@@ -73,7 +96,7 @@ namespace BH.Revit.Engine.Core
                     }
                     bHoMOpening.Edges = edges;
 
-                    result.Add(panel.FacadeOpeningFromRevit(settings, refObjects));
+                    result.Add(bHoMOpening);
                 }
             }
             
