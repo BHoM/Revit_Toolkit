@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
         [Input("view", "The view to change the Detail Level.")]
         [Input("viewDetailLevel", "The Detail Level to change in the view.")]
         [Output("setViewDetailLevel", "The modified view.")] 
-        public static View SetViewDetailLevel(this View view, ViewDetailLevel viewDetailLevel)
+        public static void SetViewDetailLevel(this View view, ViewDetailLevel viewDetailLevel)
         {
             if (view.ViewTemplateId != ElementId.InvalidElementId)
             {
@@ -53,8 +53,6 @@ namespace BH.Revit.Engine.Core
             {
                 view.DetailLevel = viewDetailLevel;
             }
-
-            return view;
         }
 
         /***************************************************/

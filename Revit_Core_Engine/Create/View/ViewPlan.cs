@@ -51,7 +51,7 @@ namespace BH.Revit.Engine.Core
             
             if (result.ViewTemplateId != ElementId.InvalidElementId)
             {
-                result = Modify.SetViewDetailLevel(result, viewDetailLevel);
+                Modify.SetViewDetailLevel(result, viewDetailLevel);
             }
             else
             {
