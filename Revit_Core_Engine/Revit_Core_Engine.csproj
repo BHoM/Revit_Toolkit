@@ -332,6 +332,7 @@
     <Compile Include="Create\View\View3D.cs" />
     <Compile Include="Create\View\ViewPlan.cs" />
     <Compile Include="Create\View\ViewSection.cs" />
+    <Compile Include="Modify\SetViewDetailLevel.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\DuctSectionProfile.cs" />
