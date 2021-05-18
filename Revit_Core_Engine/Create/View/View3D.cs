@@ -47,15 +47,8 @@ namespace BH.Revit.Engine.Core
             ViewFamilyType vft = Query.ViewFamilyType(document, ViewFamily.ThreeDimensional);
 
             result = Autodesk.Revit.DB.View3D.CreateIsometric(document, vft.Id);
-
-            if (result.ViewTemplateId != ElementId.InvalidElementId)
-            {
-                Modify.SetViewDetailLevel(result, viewDetailLevel);
-            }
-            else
-            {
-                result.DetailLevel = viewDetailLevel;
-            }
+            
+            Modify.SetViewDetailLevel(result, viewDetailLevel);
 
             if (viewTemplateId != null)
             {
@@ -109,17 +102,7 @@ namespace BH.Revit.Engine.Core
 
             result = Autodesk.Revit.DB.View3D.CreatePerspective(document, vft.Id);
             
-            if (result.ViewTemplateId != ElementId.InvalidElementId)
-            {
-                View viewTemplate = document.GetElement(viewTemplateId) as View;
-                Parameter detailLevelParameter = viewTemplate.get_Parameter(BuiltInParameter.VIEW_DETAIL_LEVEL);
-                if(detailLevelParameter.UserModifiable)
-                    result.DetailLevel = viewDetailLevel;
-            }
-            else
-            {
-                result.DetailLevel = viewDetailLevel;
-            }
+            Modify.SetViewDetailLevel(result, viewDetailLevel);
             
             if (!string.IsNullOrEmpty(viewName))
             {

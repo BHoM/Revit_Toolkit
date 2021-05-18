@@ -49,14 +49,7 @@ namespace BH.Revit.Engine.Core
 
             result = Autodesk.Revit.DB.ViewPlan.Create(document, vft.Id, level.Id);
             
-            if (result.ViewTemplateId != ElementId.InvalidElementId)
-            {
-                Modify.SetViewDetailLevel(result, viewDetailLevel);
-            }
-            else
-            {
-                result.DetailLevel = viewDetailLevel;
-            }
+            Modify.SetViewDetailLevel(result, viewDetailLevel);
             
             if (cropBox != null)
             {
