@@ -48,14 +48,7 @@ namespace BH.Revit.Engine.Core
 
             result = Autodesk.Revit.DB.ViewSection.CreateSection(document, vft.Id, boundingBoxXyz);
             
-            if (result.ViewTemplateId != ElementId.InvalidElementId)
-            {
-                Modify.SetViewDetailLevel(result, viewDetailLevel);
-            }
-            else
-            {
-                result.DetailLevel = viewDetailLevel;
-            }
+            Modify.SetViewDetailLevel(result, viewDetailLevel);
 
             if (viewTemplateId != null)
             {
