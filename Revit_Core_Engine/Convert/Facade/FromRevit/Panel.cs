@@ -53,6 +53,9 @@ namespace BH.Revit.Engine.Core
 
         public static oM.Facade.Elements.Panel FacadePanelFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (wall == null)
+                return null; 
+            
             settings = settings.DefaultIfNull();
 
             oM.Facade.Elements.Panel bHoMPanel = refObjects.GetValue<oM.Facade.Elements.Panel>(wall.Id);

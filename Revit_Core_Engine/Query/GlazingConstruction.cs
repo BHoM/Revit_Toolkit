@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -73,6 +74,7 @@ namespace BH.Revit.Engine.Core
 
             if (bhomMat == null)
             {
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("The Construction of this Opening could not be found, and a default construction has been used. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
                 constName = "Default Glazing Construction";
                 bhomMat = new oM.Physical.Materials.Material { Name = "Default Glazing Material" };
             }
