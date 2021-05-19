@@ -60,22 +60,20 @@ namespace BH.Revit.Engine.Core
 
             IEnumerable<oM.Facade.Elements.Opening> curtainPanels = wall.CurtainGrid.FacadeCurtainPanels(wall.Document, settings, refObjects);
 
+            if (curtainPanels == null || !curtainPanels.Any())
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {0}", wall.Id.IntegerValue));
+
+
             // Get external edges of whole curtain wall
             List<FrameEdge> extEdges = new List<FrameEdge>();
             List<IElement1D> cwEdgeCrvs = curtainPanels.ExternalEdges();
             foreach (ICurve crv in cwEdgeCrvs)
             {
                 FrameEdge frameEdge = new FrameEdge { Curve = crv };
-                if (frameEdge != null)
-                    extEdges.Add(frameEdge);
+                extEdges.Add(frameEdge);
             }
 
-            if (curtainPanels == null || curtainPanels.ToList().Count == 0)
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {0}", wall.Id.IntegerValue));
-
             bHoMCurtainWall = new CurtainWall { ExternalEdges = extEdges, Openings = curtainPanels.ToList(), Name = wall.WallType.Name };
-            if (bHoMCurtainWall == null)
-                return null;
 
             bHoMCurtainWall.Name = wall.FamilyTypeFullName();
 

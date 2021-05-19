@@ -235,6 +235,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         private static List<ISurface> GetUnhostedOpeningGeometry(this FamilyInstance familyInstance, Document doc, RevitSettings settings = null)
         {
+            BH.Engine.Reflection.Compute.RecordWarning(String.Format("Geometry extraction of unhosted Windows is not currently supported. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
             List<ISurface> surfaces = new List<ISurface>();
             return surfaces;
         }

@@ -39,18 +39,20 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<oM.Facade.Elements.Opening> FacadeCurtainPanels(this CurtainGrid curtainGrid, Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null, BH.oM.Adapters.Revit.Enums.Discipline discipline = oM.Adapters.Revit.Enums.Discipline.Physical)
+        public static List<oM.Facade.Elements.Opening> FacadeCurtainPanels(this CurtainGrid curtainGrid, Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (curtainGrid == null)
+                return null;
+
+            List<Element> panels = curtainGrid.GetPanelIds().Select(x => document.GetElement(x)).ToList();
+            List<CurtainCell> cells = curtainGrid.GetCurtainCells().ToList();
+
+            if (panels.Count != cells.Count)
                 return null;
 
             List<IElement1D> cwMullions = curtainGrid.CurtainWallMullions(document, settings, refObjects).Select(x => x as IElement1D).ToList();
 
             List<oM.Facade.Elements.Opening> result = new List<oM.Facade.Elements.Opening>();
-            List<Element> panels = curtainGrid.GetPanelIds().Select(x => document.GetElement(x)).ToList();
-            List<CurtainCell> cells = curtainGrid.GetCurtainCells().ToList();
-            if (panels.Count != cells.Count)
-                return null;
 
             for (int i = 0; i < panels.Count; i++)
             {
@@ -58,11 +60,15 @@ namespace BH.Revit.Engine.Core
                 Autodesk.Revit.DB.Panel panel = element as Autodesk.Revit.DB.Panel;
                 List<PolyCurve> pcs = new List<PolyCurve>();
                 if (panel == null)
-                { continue; }
+                    continue;
                 try
-                { pcs = cells[i].CurveLoops.FromRevit(); }
-                catch
-                { continue; }
+                { 
+                    pcs = cells[i].CurveLoops.FromRevit(); 
+                }
+                catch  // This catches when CurveLoops throws an exception due to the cell having no loops, meaning in Revit it exists in the database but is no longer on the CurtainWall with any corresponding Curves
+                { 
+                    continue; 
+                }
 
                 foreach (PolyCurve pc in pcs)
                 {
@@ -80,10 +86,9 @@ namespace BH.Revit.Engine.Core
                             BH.oM.Facade.Elements.Panel bHoMCWPanel = hostElement.FacadePanelFromRevit(settings, refObjects);
                             bHoMOpening = bHoMCWPanel.FacadePanelAsOpening(hostElement.Id.ToString(), refObjects);
                         }
-
                     }
                     else
-                    { bHoMOpening = panel.FacadeOpeningFromRevit(settings, refObjects); }
+                        bHoMOpening = panel.FacadeOpeningFromRevit(settings, refObjects);
 
                     List<FrameEdge> edges = bHoMOpening.Edges;
                     foreach  (FrameEdge edge in edges)
