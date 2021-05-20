@@ -56,8 +56,7 @@ namespace BH.Revit.Engine.Core
 
             for (int i = 0; i < panels.Count; i++)
             {
-                Element element = panels[i];
-                Autodesk.Revit.DB.Panel panel = element as Autodesk.Revit.DB.Panel;
+                FamilyInstance panel = panels[i] as FamilyInstance;
                 List<PolyCurve> pcs = new List<PolyCurve>();
                 if (panel == null)
                     continue;
@@ -75,10 +74,9 @@ namespace BH.Revit.Engine.Core
                     BH.oM.Facade.Elements.Opening bHoMOpening = null;
                     // If panel is a basic wall, the panel is not the actual element, it is an empty panel that hosts the
                     // actual element, so we assign it a null construction and separately return the wall
-                    ElementId hostId = panel.FindHostPanel();
-                    if (hostId.IntegerValue > 0)
+                    if (panel is Autodesk.Revit.DB.Panel elemPanel && elemPanel.FindHostPanel().IntegerValue > 0)
                     {
-                        Wall hostElement = document.GetElement(hostId) as Wall;
+                        Wall hostElement = document.GetElement(elemPanel.FindHostPanel()) as Wall;
                         if (hostElement == null)
                             continue;
                         else
