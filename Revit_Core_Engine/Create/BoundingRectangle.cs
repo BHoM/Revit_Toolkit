@@ -20,12 +20,17 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
+using Autodesk.Revit.DB;
+using BH.Engine.Geometry;
+using BH.Engine.Spatial;
+using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
+using Line = BH.oM.Geometry.Line;
+using Point = BH.oM.Geometry.Point;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
     public static partial class Create
     {
@@ -33,17 +38,32 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates IRequest that filters elements based on given integer parameter value criterion.")]
-        [InputFromProperty("parameterName")]
-        [InputFromProperty("numberComparisonType")]
-        [InputFromProperty("value")]
-        [Output("request", "Created request.")]
-        public static FilterByParameterInteger FilterByParameterInteger(string parameterName, NumberComparisonType numberComparisonType, int value)
+        [Description("Creates a rectangular CurveLoop by querying an element's bounding box and getting its bottom perimeter.")]
+        [Input("element", "The element to query the bounding box for its rectangular bound.")]
+        [Input("offset", "The offset value to apply to the resulting bounding box, enlarging or shrinking it.")]
+        [Output("RectangleBounding", "A rectangular CurveLoop that fits the element in the horizontal plane.")]
+        public static CurveLoop BoundingRectangle(Element element, double offset = 0)
         {
-            return new FilterByParameterInteger { ParameterName = parameterName, NumberComparisonType = numberComparisonType, Value = value };
+            BoundingBoxXYZ bb = element.get_BoundingBox(element.Document.ActiveView);
+
+            Point p1 = new XYZ(bb.Min.X, bb.Min.Y, bb.Min.Z).PointFromRevit();
+            Point p2 = new XYZ(bb.Min.X, bb.Max.Y, bb.Min.Z).PointFromRevit();
+            Point p3 = new XYZ(bb.Max.X, bb.Max.Y, bb.Min.Z).PointFromRevit();
+            Point p4 = new XYZ(bb.Max.X, bb.Min.Y, bb.Min.Z).PointFromRevit();
+
+            List<Point> points = new List<Point>();
+            points.Add(p1);
+            points.Add(p2);
+            points.Add(p3);
+            points.Add(p4);
+            points.Add(p1);
+
+            Polyline polyline = BH.Engine.Geometry.Create.Polyline(points).Offset(offset);
+            
+            return polyline.ToRevitCurveLoop();
         }
 
         /***************************************************/
+
     }
 }
-

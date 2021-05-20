@@ -60,7 +60,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Couldn't find a View under ElementId {0}", viewId));
+                BH.Engine.Reflection.Compute.RecordError($"Couldn't find a View under ElementId {viewId} in document {document.Title}.");
                 return new HashSet<ElementId>();
             }
         }

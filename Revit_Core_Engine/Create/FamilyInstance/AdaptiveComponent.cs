@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -20,12 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
+using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
+using System.Collections.Generic;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
     public static partial class Create
     {
@@ -33,17 +33,37 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates IRequest that filters elements based on given text parameter value criterion.")]
-        [InputFromProperty("parameterName")]
-        [InputFromProperty("textComparisonType")]
-        [InputFromProperty("value")]
-        [Output("request", "Created request.")]
-        public static FilterByParameterText FilterByParameterText(string parameterName, TextComparisonType textComparisonType, string value)
+        public static FamilyInstance AdaptiveComponent(Document document, FamilySymbol familySymbol, List<XYZ> points, RevitSettings settings = null)
         {
-            return new FilterByParameterText { ParameterName = parameterName, TextComparisonType = textComparisonType, Value = value };
+            if (document == null || familySymbol == null || points == null)
+                return null;
+
+            settings = settings.DefaultIfNull();
+
+            FamilyInstance adaptiveComponent = AdaptiveComponentInstanceUtils.CreateAdaptiveComponentInstance(document, familySymbol);
+            IList<ElementId> pointIds = AdaptiveComponentInstanceUtils.GetInstancePointElementRefIds(adaptiveComponent);
+            if (pointIds.Count != points.Count)
+                pointIds = AdaptiveComponentInstanceUtils.GetInstancePlacementPointElementRefIds(adaptiveComponent);
+
+            if (pointIds.Count != points.Count)
+            {
+                BH.Engine.Reflection.Compute.RecordError($"An adaptive component could not be created based on the given ModelInstance because its definition requires different number of points than provided.");
+                document.Delete(adaptiveComponent.Id);
+                return null;
+            }
+
+            for (int i = 0; i < pointIds.Count; i++)
+            {
+                ReferencePoint rp = (ReferencePoint)document.GetElement(pointIds[i]);
+                Transform t = Transform.CreateTranslation(points[i]);
+                rp.SetCoordinateSystem(t);
+            }
+
+            return adaptiveComponent;
         }
 
         /***************************************************/
     }
 }
+
 

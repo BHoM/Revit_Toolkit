@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -20,25 +20,31 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
+using Autodesk.Revit.DB;
+using System.Linq;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
-    public static partial class Create
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates IRequest that filters all views of given type.")]
-        [InputFromProperty("revitViewType")]
-        [Output("request", "Created request.")]
-        public static FilterViewsByType FilterViewsByType(RevitViewType revitViewType)
+        public static RevitLinkInstance LinkInstance(this Document linkDocument)
         {
-            return new FilterViewsByType { RevitViewType = revitViewType };
+            Document mainDoc = linkDocument.HostDocument();
+            if (linkDocument == mainDoc)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning($"The document under path {linkDocument.PathName} is a host document.");
+                return null;
+            }
+
+            RevitLinkInstance linkInstance = new FilteredElementCollector(mainDoc).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().FirstOrDefault(x => x.GetLinkDocument().PathName == linkDocument.PathName);
+            if (linkInstance == null)
+                BH.Engine.Reflection.Compute.RecordError($"The link pointing to path {linkDocument.PathName} could not be found in active Revit document.");
+
+            return linkInstance;
         }
 
         /***************************************************/

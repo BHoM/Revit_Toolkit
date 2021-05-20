@@ -33,12 +33,7 @@ namespace BH.Revit.Engine.Core
 
         public static Transform LinkTransform(this Document linkDocument)
         {
-            Document mainDoc = linkDocument.HostDocument();
-            if (linkDocument == mainDoc)
-                return Transform.Identity;
-
-            RevitLinkInstance linkInstance = new FilteredElementCollector(mainDoc).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().FirstOrDefault(x => x.GetLinkDocument().PathName == linkDocument.PathName);
-            return linkInstance.GetTotalTransform();
+            return linkDocument.LinkInstance()?.GetTotalTransform();
         }
 
         /***************************************************/

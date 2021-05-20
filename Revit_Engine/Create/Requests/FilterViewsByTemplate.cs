@@ -35,14 +35,14 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates IRequest that filters views that implement a given template.")]
-        [Input("bHoMObject", "BHoMObject that contains (in its RevitIdentifiers) an ElementId of a correspondent Revit element that has been previously pulled.")]
+        [Input("viewTemplate", "BHoMObject that represents the pulled Revit view template (contains its ElementId in RevitIdentifiers).")]
         [Output("request", "Created request.")]
-        public static FilterViewsByTemplate FilterViewsByTemplate(IBHoMObject bHoMObject)
+        public static FilterViewsByTemplate FilterViewsByTemplate(IBHoMObject viewTemplate)
         {
-            int elementId = bHoMObject.ElementId();
+            int elementId = viewTemplate.ElementId();
             if (elementId == -1)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", viewTemplate.BHoM_Guid));
                 return null;
             }
             else

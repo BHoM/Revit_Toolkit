@@ -39,6 +39,8 @@ namespace BH.oM.Adapters.Revit.Enums
         Architecture,
         [Description("Elements to be converted to types from BH.oM.Physical. If no suitable conversion exists, default discipline to be used.")]
         Physical,
+        [Description("Elements to be converted to types from BH.oM.Facade. If no suitable conversion exists, default discipline to be used.")]
+        Facade,
     }
 
     /***************************************************/

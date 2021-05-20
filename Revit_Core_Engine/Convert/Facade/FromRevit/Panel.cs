@@ -20,24 +20,39 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
+using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
+using BH.Engine.Facade;
+using BH.Engine.Geometry;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Geometry;
+using BH.oM.Physical.Constructions;
+using BH.oM.Facade.Elements;
+using BH.oM.Facade.SectionProperties;
+using System;
+using System.Collections.Generic;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
-    public static partial class Create
+    public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Creates IRequest that filters all elements of given Autodesk.Revit.DB type. Information about types can be found in the Revit API documentation.")]
-        [InputFromProperty("typeName")]
-        [Output("request", "Created request.")]
-        public static FilterByDBTypeName FilterByDBTypeName(string typeName)
+        public static oM.Facade.Elements.Panel FacadePanelFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            return new FilterByDBTypeName { TypeName = typeName };
+            BH.Engine.Reflection.Compute.RecordError("Conversion of Panels from Revit for the Facade discipline is not yet implemented.");
+            return null;
+        }
+
+        /***************************************************/
+
+        public static oM.Facade.Elements.Panel FacadePanelFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            BH.Engine.Reflection.Compute.RecordError("Conversion of Panels from Revit for the Facade discipline is not yet implemented.");
+            return null;
         }
 
         /***************************************************/

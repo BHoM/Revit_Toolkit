@@ -20,31 +20,32 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Reflection.Attributes;
+using Autodesk.Revit.DB;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using BH.oM.Reflection.Attributes;
 
-namespace BH.Engine.Adapters.Revit
+
+namespace BH.Revit.Engine.Core
 {
-    public static partial class Create
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates IRequest that filters elements based on given floating point number parameter value criterion.")]
-        [InputFromProperty("parameterName")]
-        [InputFromProperty("numberComparisonType")]
-        [InputFromProperty("value")]
-        [InputFromProperty("tolerance")]
-        [Output("request", "Created request.")]
-        public static FilterByParameterNumber FilterByParameterNumber(string parameterName, NumberComparisonType numberComparisonType, double value, double tolerance)
+        [Description("Queries a Revit document to find the first available ViewFamilyType of a given ViewFamily. Useful for RevitAPI methods to create new Views.")]
+        [Input("document", "The document to look for the ViewFamilyType.")]
+        [Input("viewFamily", "The ViewFamily to look for the ViewFamilyType.")]
+        [Output("viewFamilyType","The the first available ViewFamilyType of a given ViewFamily.")]
+        public static ViewFamilyType ViewFamilyType(this Document document, ViewFamily viewFamily)
         {
-            return new FilterByParameterNumber { ParameterName = parameterName, NumberComparisonType = numberComparisonType, Value = value, Tolerance = tolerance };
+            return new FilteredElementCollector(document).OfClass(typeof(ViewFamilyType)).Cast<ViewFamilyType>().FirstOrDefault<ViewFamilyType>(x => viewFamily == x.ViewFamily);
         }
 
         /***************************************************/
     }
 }
+
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -21,9 +21,12 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Adapter.Revit;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,52 +39,32 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static ViewPlan ToRevitViewPlan(this oM.Adapters.Revit.Elements.ViewPlan viewPlan, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static ModelInstance ModelInstanceFromRevit(this FamilyInstance adaptiveComponent, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (viewPlan == null || string.IsNullOrEmpty(viewPlan.LevelName) || string.IsNullOrEmpty(viewPlan.ViewName))
-                return null;
-
-            ViewPlan revitViewPlan = refObjects.GetValue<ViewPlan>(document, viewPlan.BHoM_Guid);
-            if (revitViewPlan != null)
-                return revitViewPlan;
-
             settings = settings.DefaultIfNull();
 
-            ElementId levelElementID = null;
-
-            List<Level> levels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
-            if (levels == null || levels.Count < 1)
-                return null;
-
-            Level level = levels.Find(x => x.Name == viewPlan.LevelName);
-            if (level == null)
-                return null;
-
-            levelElementID = level.Id;
+            ModelInstance modelInstance = refObjects.GetValue<ModelInstance>(adaptiveComponent.Id);
+            if (modelInstance != null)
+                return modelInstance;
             
-            ElementId viewTemplateId = ElementId.InvalidElementId;
-            
-            if (!string.IsNullOrWhiteSpace(viewPlan.TemplateName))
-            {
-                IEnumerable<ViewPlan> viewPlans = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).Cast<ViewPlan>();
-                ViewPlan viewPlanTemplate = viewPlans.FirstOrDefault(x => x.IsTemplate && viewPlan.TemplateName == x.Name);
-                if (viewPlanTemplate == null)
-                    Compute.ViewTemplateNotExistsWarning(viewPlan);
-                else
-                    viewTemplateId = viewPlanTemplate.Id;
-            }
+            ElementType elementType = adaptiveComponent.Document.GetElement(adaptiveComponent.GetTypeId()) as ElementType;
+            InstanceProperties instanceProperties = elementType.InstancePropertiesFromRevit(settings, refObjects) as InstanceProperties;
 
-            revitViewPlan = Create.ViewPlan(document, level, viewPlan.ViewName, null, viewTemplateId) as ViewPlan;
+            IEnumerable<BH.oM.Geometry.Point> pts = AdaptiveComponentInstanceUtils.GetInstancePointElementRefIds(adaptiveComponent).Select(x => ((ReferencePoint)adaptiveComponent.Document.GetElement(x)).Position.PointFromRevit());
+            modelInstance = new ModelInstance { Properties = instanceProperties, Location = new CompositeGeometry { Elements = new List<IGeometry>(pts) } };
+            modelInstance.Name = adaptiveComponent.Name;
 
+            //Set identifiers, parameters & custom data
+            modelInstance.SetIdentifiers(adaptiveComponent);
+            modelInstance.CopyParameters(adaptiveComponent, settings.ParameterSettings);
+            modelInstance.SetProperties(adaptiveComponent, settings.ParameterSettings);
 
-            // Copy parameters from BHoM object to Revit element
-            revitViewPlan.CopyParameters(viewPlan, settings);
-
-            refObjects.AddOrReplace(viewPlan, revitViewPlan);
-            return revitViewPlan;
+            refObjects.AddOrReplace(adaptiveComponent.Id, modelInstance);
+            return modelInstance;
         }
 
         /***************************************************/
     }
 }
+
 

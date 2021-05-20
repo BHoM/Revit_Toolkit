@@ -19,12 +19,13 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
+
 using Autodesk.Revit.DB;
 using BH.Engine.Data;
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
+using BH.Revit.Engine.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -44,13 +45,12 @@ namespace BH.Engine.Adapters.Revit
         [Output("splitRequests", "A dictionary of Revit documents (both host and linked) and the IRequests relevant to them, which in total represents the same request as the input IRequest.")]
         public static Dictionary<Document, IRequest> SplitRequestTreeByLinks(this IRequest request, Document document)
         {
-            List<RevitLinkInstance> linkInstances = new FilteredElementCollector(document).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().ToList();
 
             Dictionary<Document, IRequest> requestsByLinks = new Dictionary<Document, IRequest>();
             List<IRequest> splitPerDoc = request.SplitRequestTreeByType(typeof(FilterByLink));
             foreach (IRequest splitRequest in splitPerDoc)
             {
-                if (!splitRequest.TryOrganizeByLink(document, linkInstances, requestsByLinks))
+                if (!splitRequest.TryOrganizeByLink(document, requestsByLinks))
                     return null;
             }
 
@@ -62,7 +62,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static bool TryOrganizeByLink(this IRequest request, Document document, List<RevitLinkInstance> linkInstances, Dictionary<Document, IRequest> requestsByLinks)
+        private static bool TryOrganizeByLink(this IRequest request, Document document, Dictionary<Document, IRequest> requestsByLinks)
         {
             if (request == null)
                 return false;
@@ -83,64 +83,23 @@ namespace BH.Engine.Adapters.Revit
             }
             else if (linkRequests.Count == 1)
             {
-                if (request.AllRequestsOfType(typeof(SelectionRequest)).Count != 0)
-                {
-                    BH.Engine.Reflection.Compute.RecordError("It is not allowed to combine selection requests with link requests - Revit selection does not work with links.");
-                    return false;
-                }
-
-                if (request.AllRequestsOfType(typeof(FilterByActiveWorkset)).Count != 0)
-                {
-                    BH.Engine.Reflection.Compute.RecordError("It is not allowed to combine active workset requests with link requests - Revit selection does not work with links.");
-                    return false;
-                }
-
-                if (request.AllRequestsOfType(typeof(FilterActiveView)).Count != 0)
-                {
-                    BH.Engine.Reflection.Compute.RecordError("It is not allowed to combine active view requests with link requests - Revit selection does not work with links.");
-                    return false;
-                }
-
                 FilterByLink linkRequest = (FilterByLink)linkRequests[0];
-                string linkName = linkRequest.LinkName.ToLower();
-                if (!linkName.EndsWith(".rvt"))
-                {
-                    BH.Engine.Reflection.Compute.RecordWarning($"Link name {linkName} inside a link request does not end with .rvt - the suffix has been added.");
-                    linkName += ".rvt";
-                }
+                List<ElementId> linkInstanceIds = document.ElementIdsOfLinkInstances(linkRequest.LinkName, linkRequest.CaseSensitive);
 
-                bool fullPath = linkName.Contains("\\");
-                List<RevitLinkInstance> validLinks;
-                if (fullPath)
-                    validLinks = linkInstances.Where(x => x.GetLinkDocument().PathName.ToLower() == linkName).ToList();
+                if (linkInstanceIds.Count == 1)
+                {
+                    request.RemoveSubRequest(linkRequest);
+                    request = request.SimplifyRequestTree();
+                    requestsByLinks.AddRequestByLink(request, ((RevitLinkInstance)document.GetElement(linkInstanceIds[0])).GetLinkDocument());
+                    return true;
+                }
+                else if (linkInstanceIds.Count == 0)
+                    BH.Engine.Reflection.Compute.RecordError($"Active Revit document does not contain links with neither name nor path nor ElementId equal to {linkRequest.LinkName}.");
                 else
-                    validLinks = linkInstances.Where(x => (document.GetElement(x.GetTypeId()) as RevitLinkType)?.Name?.ToLower() == linkName).ToList();
-
-                if (validLinks.Count == 0)
-                {
-                    if (fullPath)
-                        BH.Engine.Reflection.Compute.RecordError($"Active Revit document does not contain link under path {linkRequest.LinkName}.");
-                    else
-                        BH.Engine.Reflection.Compute.RecordError($"Active Revit document does not contain link named {linkRequest.LinkName}.");
-
-                    return false;
-                }
-                else if (validLinks.Count != 1)
-                {
-                    BH.Engine.Reflection.Compute.RecordError($"There is more than one link document named {linkName} - please use full link path in request instead of link name to pull.");
-                    return false;
-                }
-
-                Document linkDoc = validLinks[0].GetLinkDocument();
-
-                request.RemoveSubRequest(linkRequest);
-                request = request.SimplifyRequestTree();
-                requestsByLinks.AddRequestByLink(request, linkDoc);
-
-                return true;
+                    BH.Engine.Reflection.Compute.RecordError($"There is more than one link document named {linkRequest.LinkName} - please use full link path or its ElementId instead of link name to pull.");
             }
-            else
-                return false;
+
+            return false;
         }
 
         /***************************************************/

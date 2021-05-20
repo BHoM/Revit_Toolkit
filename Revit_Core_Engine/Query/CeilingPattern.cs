@@ -39,12 +39,6 @@ namespace BH.Revit.Engine.Core
 
         public static List<BH.oM.Geometry.Line> CeilingPattern(this Ceiling ceiling, RevitSettings settings, PlanarSurface surface = null)
         {
-            if (ceiling.Document.IsLinked)
-            {
-                BH.Engine.Reflection.Compute.RecordWarning($"It is not allowed to pull the ceiling patterns from linked models - please open the document {ceiling.Document.PathName} and pull directly from it instead.");
-                return new List<oM.Geometry.Line>();
-            }
-
             CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
             CompoundStructure comStruct = ceilingType.GetCompoundStructure();
 
@@ -245,6 +239,10 @@ namespace BH.Revit.Engine.Core
 
             Options o = new Options();
             o.ComputeReferences = true;
+            Document hostDoc = doc.IsLinked ? doc.HostDocument() : doc;
+            RevitLinkInstance linkInstance = doc.IsLinked ? doc.LinkInstance() : null;
+            Transform linkTransform = linkInstance == null ? Transform.Identity : linkInstance.GetTotalTransform();
+
             foreach (GeometryObject go in ceiling.get_Geometry(o))
             {
                 if (go is Solid)
@@ -257,37 +255,35 @@ namespace BH.Revit.Engine.Core
 
                         if (1 + pf.FaceNormal.DotProduct(XYZ.BasisZ) > settings.AngleTolerance)
                             continue;
-                        
+
+                        Reference faceRef = f.Reference;
+                        if (doc.IsLinked)
+                            faceRef = faceRef.CreateLinkReference(linkInstance).PrepareForLinkDimensioning(hostDoc);
+
+                        string stableRef = faceRef.ConvertToStableRepresentation(hostDoc);
+
                         ReferenceArray horR = new ReferenceArray();
-                        string stable = f.Reference.ConvertToStableRepresentation(doc) + "/2";
-                        Reference href = Reference.ParseFromStableRepresentation(doc, stable);
-                        horR.Append(href);
-
-                        stable = f.Reference.ConvertToStableRepresentation(doc) + "/" + (2 + fp.GridCount * 2).ToString();
-                        href = Reference.ParseFromStableRepresentation(doc, stable);
-                        horR.Append(href);
-
-                        ReferenceArray verR = new ReferenceArray();
-                        stable = f.Reference.ConvertToStableRepresentation(doc) + "/1";
-                        href = Reference.ParseFromStableRepresentation(doc, stable);
-                        verR.Append(href);
-
-                        stable = f.Reference.ConvertToStableRepresentation(doc) + "/" + (1 + fp.GridCount * 2).ToString();
-                        href = Reference.ParseFromStableRepresentation(doc, stable);
-                        verR.Append(href);
+                        horR.Append(Reference.ParseFromStableRepresentation(hostDoc, stableRef + "/2"));
+                        horR.Append(Reference.ParseFromStableRepresentation(hostDoc, stableRef + "/" + (2 + fp.GridCount * 2).ToString()));
                         
-                        using (Transaction t = new Transaction(doc, "temp dim"))
+                        ReferenceArray verR = new ReferenceArray();
+                        verR.Append(Reference.ParseFromStableRepresentation(hostDoc, stableRef + "/1"));
+                        verR.Append(Reference.ParseFromStableRepresentation(hostDoc, stableRef + "/" + (1 + fp.GridCount * 2).ToString()));
+                        
+                        using (Transaction t = new Transaction(hostDoc, "temp dim"))
                         {
                             t.Start();
-                            Dimension horDim = doc.Create.NewDimension(doc.ActiveView, Autodesk.Revit.DB.Line.CreateBound(XYZ.Zero, pf.XVector), horR);
-                            Dimension verDim = doc.Create.NewDimension(doc.ActiveView, Autodesk.Revit.DB.Line.CreateBound(XYZ.Zero, pf.YVector), verR);
-                            ElementTransformUtils.MoveElement(doc, horDim.Id, XYZ.BasisX);
-                            ElementTransformUtils.MoveElement(doc, verDim.Id, XYZ.BasisX);
+                            Dimension horDim = hostDoc.Create.NewDimension(hostDoc.ActiveView, Autodesk.Revit.DB.Line.CreateBound(XYZ.Zero, pf.XVector), horR);
+                            Dimension verDim = hostDoc.Create.NewDimension(hostDoc.ActiveView, Autodesk.Revit.DB.Line.CreateBound(XYZ.Zero, pf.YVector), verR);
+                            ElementTransformUtils.MoveElement(hostDoc, horDim.Id, XYZ.BasisX);
+                            ElementTransformUtils.MoveElement(hostDoc, verDim.Id, XYZ.BasisX);
 
                             rotation = -(horDim.Curve as Autodesk.Revit.DB.Line).Direction.AngleOnPlaneTo(XYZ.BasisX, XYZ.BasisZ);
+                            rotation += linkTransform.BasisX.AngleOnPlaneTo(XYZ.BasisX, XYZ.BasisZ);
                             Transform tr = Transform.CreateRotation(XYZ.BasisZ, rotation);
-                            double x = tr.Inverse.OfPoint(horDim.Origin).X;
-                            double y = tr.Inverse.OfPoint(verDim.Origin).Y;
+
+                            double x = tr.Inverse.OfPoint(linkTransform.Inverse.OfPoint(horDim.Origin)).X;
+                            double y = tr.Inverse.OfPoint(linkTransform.Inverse.OfPoint(verDim.Origin)).Y;
                             t.RollBack();
 
                             foreach (FillGrid fg in fp.GetFillGrids())

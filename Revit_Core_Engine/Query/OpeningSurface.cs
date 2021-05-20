@@ -21,7 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.IFC;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Parameters;
@@ -44,9 +43,7 @@ namespace BH.Revit.Engine.Core
             if (familyInstance == null)
                 return null;
 
-            BoundingBoxXYZ bbox = familyInstance.get_BoundingBox(null);
-            if (bbox == null)
-                return null;
+            settings = settings.DefaultIfNull();
 
             // Get parent element if this family instance is a nested instance
             Element parentElem = familyInstance.SuperComponent;
@@ -54,21 +51,50 @@ namespace BH.Revit.Engine.Core
             if (parentElem != null)
                 parentId = familyInstance.SuperComponent.Id.IntegerValue;
 
-            settings = settings.DefaultIfNull();
             List<HostObject> hosts;
 
             if (host != null)
                 hosts = new List<HostObject> { host };
             else
             {
+                BoundingBoxXYZ bbox = familyInstance.get_BoundingBox(null);
+                if (bbox == null)
+                    return null;
+
                 BoundingBoxIntersectsFilter bbif = new BoundingBoxIntersectsFilter(new Outline(bbox.Min, bbox.Max));
                 hosts = new FilteredElementCollector(familyInstance.Document).OfClass(typeof(HostObject)).WherePasses(bbif).Cast<HostObject>().ToList();
                 hosts = hosts.Where(x => x.FindInserts(true, true, true, true).Any(y => (y.IntegerValue == familyInstance.Id.IntegerValue) || (y.IntegerValue == parentId))).ToList();
             }
 
+            List<ISurface> surfaces;
+            if (!familyInstance.Document.IsLinked)
+                surfaces = familyInstance.OpeningSurfaces_HostDocument(hosts, parentElem, settings);
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("Pulling panels and openings from Revit link documents is simplified compared to pulling directly from the host document, therefore it may result in degraded output.\n" +
+                                                           "In case of requirement for best possible outcome, it is recommended to open the link document in Revit and pull the elements directly from there.");
+
+                surfaces = familyInstance.OpeningSurfaces_LinkDocument(hosts, parentElem, settings);
+            }
+
+            if (surfaces == null || surfaces.Count == 0)
+                return null;
+            else if (surfaces.Count == 1)
+                return surfaces[0];
+            else
+                return new PolySurface { Surfaces = surfaces };
+        }
+
+
+        /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
+
+        private static List<ISurface> OpeningSurfaces_HostDocument(this FamilyInstance familyInstance, List<HostObject> hosts, Element parentElement, RevitSettings settings = null)
+        {
             List<ISurface> surfaces = new List<ISurface>();
 
-            if (parentElem != null) // Indicates element is a nested instance and needs different approach to extract location
+            if (parentElement != null) // Indicates element is a nested instance and needs different approach to extract location
             {
                 Document doc = familyInstance.Document;
                 Transaction t = new Transaction(doc);
@@ -79,49 +105,15 @@ namespace BH.Revit.Engine.Core
                 // Create dummy instance of nested element with matching parameters
                 LocationPoint locPt = familyInstance.Location as LocationPoint;
                 Element dummyInstance = doc.Create.NewFamilyInstance(locPt.Point, familyInstance.Symbol, hosts.First() as Element, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                IEnumerable <BuiltInParameter> paramsToSkip= new List<BuiltInParameter> { BuiltInParameter.INSTANCE_HEAD_HEIGHT_PARAM, BuiltInParameter.INSTANCE_SILL_HEIGHT_PARAM };
+                IEnumerable<BuiltInParameter> paramsToSkip = new List<BuiltInParameter> { BuiltInParameter.INSTANCE_HEAD_HEIGHT_PARAM, BuiltInParameter.INSTANCE_SILL_HEIGHT_PARAM };
                 familyInstance.CopyParameters(dummyInstance, paramsToSkip);
 
                 doc.Delete(inserts);
                 doc.Regenerate();
 
-                surfaces = GetOpeningGeometry(t, doc, hosts, inserts, familyInstance, settings);
+                return GetOpeningGeometry(t, doc, hosts, inserts, familyInstance, settings);
             }
-
-            else if (hosts.Count == 0)
-            {
-                HostObject curtainHost = familyInstance.Host as HostObject;
-                if (curtainHost == null)
-                    return null;
-
-                List<CurtainGrid> curtainGrids = curtainHost.ICurtainGrids();
-                if (curtainGrids.Count != 0)
-                {
-                    foreach (CurtainGrid cg in curtainGrids)
-                    {
-                        List<ElementId> ids = cg.GetPanelIds().ToList();
-                        List<CurtainCell> cells = cg.GetCurtainCells().ToList();
-                        if (ids.Count != cells.Count)
-                            return null;
-
-                        for (int i = 0; i < ids.Count; i++)
-                        {
-                            if (ids[i].IntegerValue == familyInstance.Id.IntegerValue)
-                            {
-                                foreach (PolyCurve curve in cells[i].CurveLoops.FromRevit())
-                                {
-                                    PlanarSurface surface = new PlanarSurface(curve, null);
-                                    if (surface == null)
-                                        return null;
-
-                                    surfaces.Add(surface);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else
+            else if (hosts.Count != 0)
             {
                 Document doc = familyInstance.Document;
                 Transaction t = new Transaction(doc);
@@ -141,20 +133,97 @@ namespace BH.Revit.Engine.Core
 
                 }
 
-                surfaces = GetOpeningGeometry(t, doc, hosts, inserts, familyInstance, settings);
+                return GetOpeningGeometry(t, doc, hosts, inserts, familyInstance, settings);
             }
-
-            if (surfaces.Count == 0)
-                return null;
-            else if (surfaces.Count == 1)
-                return surfaces[0];
             else
-                return new PolySurface { Surfaces = surfaces };
+                return familyInstance.OpeningSurfaces_Curtain();
         }
 
+        /***************************************************/
+
+        private static List<ISurface> OpeningSurfaces_LinkDocument(this FamilyInstance familyInstance, List<HostObject> hosts, Element parentElement, RevitSettings settings = null)
+        {
+            if (parentElement != null)
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Pull of nested families from link documents is currently not implemented. Please consider opening the document {familyInstance.Document.PathName} and pulling directly from it.");
+                return new List<ISurface>();
+            }
+            else if (hosts.Count != 0)
+            {
+                List<PolyCurve> outlines = new List<PolyCurve>();
+                foreach (HostObject host in hosts)
+                {
+                    List<Autodesk.Revit.DB.Face> panelFaces = host.ILinkPanelFaces(settings);
+                    List<Autodesk.Revit.DB.Face> edgeFaces = host.Faces(new Options(), settings).Where(x => host.GetGeneratingElementIds(x).Any(y => y.IntegerValue == familyInstance.Id.IntegerValue)).ToList();
+                    List<Curve> edgeCurves = new List<Curve>();
+                    foreach (Autodesk.Revit.DB.Face face in panelFaces)
+                    {
+                        foreach (EdgeArray ea in face.EdgeLoops)
+                        {
+                            foreach (Edge e in ea)
+                            {
+                                Curve crv = e.AsCurve();
+                                if (crv.IsEdge(edgeFaces, settings))
+                                    edgeCurves.Add(crv);
+                            }
+                        }
+                    }
+
+                    List<ICurve> bHoMCurves = edgeCurves.Select(x => x.IFromRevit()).ToList();
+                    outlines.AddRange(bHoMCurves.IJoin(settings.DistanceTolerance));
+                }
+
+                foreach (PolyCurve pc in outlines)
+                {
+                    if (!pc.IsClosed(settings.DistanceTolerance))
+                        pc.Curves.Add(new BH.oM.Geometry.Line { Start = pc.EndPoint(), End = pc.StartPoint() });
+                }
+
+                return new List<ISurface>(outlines.Select(x => new PlanarSurface(x, new List<ICurve>())));
+            }
+            else
+                return familyInstance.OpeningSurfaces_Curtain();
+        }
 
         /***************************************************/
-        /****              Private Methods              ****/
+
+        private static List<ISurface> OpeningSurfaces_Curtain(this FamilyInstance familyInstance)
+        {
+            List<ISurface> surfaces = new List<ISurface>();
+            HostObject curtainHost = familyInstance.Host as HostObject;
+            if (curtainHost == null)
+                return null;
+
+            List<CurtainGrid> curtainGrids = curtainHost.ICurtainGrids();
+            if (curtainGrids.Count != 0)
+            {
+                foreach (CurtainGrid cg in curtainGrids)
+                {
+                    List<ElementId> ids = cg.GetPanelIds().ToList();
+                    List<CurtainCell> cells = cg.GetCurtainCells().ToList();
+                    if (ids.Count != cells.Count)
+                        return null;
+
+                    for (int i = 0; i < ids.Count; i++)
+                    {
+                        if (ids[i].IntegerValue == familyInstance.Id.IntegerValue)
+                        {
+                            foreach (PolyCurve curve in cells[i].CurveLoops.FromRevit())
+                            {
+                                PlanarSurface surface = new PlanarSurface(curve, null);
+                                if (surface == null)
+                                    return null;
+
+                                surfaces.Add(surface);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return surfaces;
+        }
+
         /***************************************************/
 
         private static List<ISurface> GetOpeningGeometry(Transaction t, Document doc, List<HostObject> hosts, List<ElementId> inserts, FamilyInstance familyInstance, RevitSettings settings = null)
@@ -224,6 +293,21 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Reflection.Compute.RecordWarning(String.Format("Geometrical processing of a Revit element failed due to an internal Revit error. Converted opening might be missing one or more of its surfaces. Revit ElementId: {0}", familyInstance.Id));
 
             return surfaces;
+        }
+
+        /***************************************************/
+
+        private static bool IsEdge(this Curve crv, List<Autodesk.Revit.DB.Face> edgeFaces, RevitSettings settings)
+        {
+            XYZ mid = crv.Evaluate(0.5, true);
+            foreach (Autodesk.Revit.DB.Face f in edgeFaces)
+            {
+                IntersectionResult ir = f.Project(mid);
+                if (ir != null && ir.Distance <= settings.DistanceTolerance)
+                    return true;
+            }
+
+            return false;
         }
 
         /***************************************************/

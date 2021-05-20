@@ -169,6 +169,16 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Environment_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Facade_Engine">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Facade_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Facade_oM">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Facade_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Geometry_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
       <Private>False</Private>
@@ -296,8 +306,10 @@
   <ItemGroup>
     <Compile Include="Compute\Activate.cs" />
     <Compile Include="Compute\Errors.cs" />
+    <Compile Include="Compute\PrepareForLinkDimensioning.cs" />
     <Compile Include="Compute\SplitRequestTreeByLinks.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Room.cs" />
+    <Compile Include="Convert\Facade\FromRevit\FrameEdge.cs" />
     <Compile Include="Convert\MEP\FromRevit\CableTray.cs" />
     <Compile Include="Convert\MEP\FromRevit\Duct.cs" />
     <Compile Include="Convert\MEP\FromRevit\Pipe.cs" />
@@ -309,18 +321,29 @@
     <Compile Include="Convert\MEP\ToRevit\Duct.cs" />
     <Compile Include="Convert\MEP\ToRevit\ElementType.cs" />
     <Compile Include="Convert\Physical\ToRevit\ElementType.cs" />
+    <Compile Include="Convert\Revit\FromRevit\ModelInstance.cs" />
     <Compile Include="Convert\Revit\Internal\ToSolid.cs" />
     <Compile Include="Convert\Physical\ToRevit\Rebar.cs" />
-    <Compile Include="Create\FamilyInstance.cs" />
+    <Compile Include="Create\FamilyInstance\AdaptiveComponent.cs" />
+    <Compile Include="Create\FamilyInstance\FamilyInstance.cs" />
+    <Compile Include="Create\BoundingRectangle.cs" />
     <Compile Include="Create\ReferencePlane.cs" />
+    <Compile Include="Create\SectionBoundingBox.cs" />
+    <Compile Include="Create\View\View3D.cs" />
+    <Compile Include="Create\View\ViewPlan.cs" />
+    <Compile Include="Create\View\ViewSection.cs" />
+    <Compile Include="Modify\SetViewDetailLevel.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\DuctSectionProfile.cs" />
     <Compile Include="Query\DuctSectionProperty.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByScopeBox.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsOfLinkInstances.cs" />
     <Compile Include="Query\HostDocument.cs" />
     <Compile Include="Query\IsInside.cs" />
     <Compile Include="Query\IsOnFace.cs" />
+    <Compile Include="Query\LinkInstance.cs" />
+    <Compile Include="Query\LinkPanelFaces.cs" />
     <Compile Include="Query\LinkTransform.cs" />
     <Compile Include="Query\Passes.cs" />
     <Compile Include="Query\Shape.cs" />
@@ -395,11 +418,15 @@
     <Compile Include="Query\LocationCurve.cs" />
     <Compile Include="Query\ReferenceIdentifier.cs" />
     <Compile Include="Query\StructuralType.cs" />
+    <Compile Include="Query\ViewFamilyType.cs" />
     <Compile Include="Query\Workset.cs" />
     <Compile Include="Create\CurveArray.cs" />
     <Compile Include="Create\Options.cs" />
     <Compile Include="Compute\LoadFamily.cs" />
     <Compile Include="Modify\AddOrReplace.cs" />
+    <Compile Include="Convert\Facade\FromRevit\Opening.cs" />
+    <Compile Include="Convert\Facade\FromRevit\Panel.cs" />
+    <Compile Include="Convert\Facade\FromRevit\CurtainWall.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Ceiling.cs" />
     <Compile Include="Convert\Revit\FromRevit\ViewPlan.cs" />
     <Compile Include="Convert\Structure\FromRevit\MaterialFragment.cs" />
@@ -541,7 +568,6 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>

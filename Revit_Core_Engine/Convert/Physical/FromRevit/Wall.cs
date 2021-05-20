@@ -52,9 +52,9 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             if (wall.CurtainGrid != null)
-                bHoMWall = wall.CurtainWallFromRevit(settings, refObjects);
+                bHoMWall = wall.WallFromRevit_Curtain(settings, refObjects);
             else
-                bHoMWall = wall.SolidWallFromRevit(settings, refObjects);
+                bHoMWall = wall.WallFromRevit_Solid(settings, refObjects);
 
             if (bHoMWall == null)
                 return null;
@@ -80,7 +80,7 @@ namespace BH.Revit.Engine.Core
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static oM.Physical.Elements.Wall SolidWallFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        private static oM.Physical.Elements.Wall WallFromRevit_Solid(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             ISurface location = null;
             List<BH.oM.Physical.Elements.IOpening> openings = new List<oM.Physical.Elements.IOpening>();
@@ -138,7 +138,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static oM.Physical.Elements.Wall CurtainWallFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        private static oM.Physical.Elements.Wall WallFromRevit_Curtain(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             List<BH.oM.Physical.Elements.IOpening> curtainPanels = wall.CurtainGrid.CurtainPanels(wall.Document, settings, refObjects);
             

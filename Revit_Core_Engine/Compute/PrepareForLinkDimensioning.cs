@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -20,23 +20,45 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
+using Autodesk.Revit.DB;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
-    public static partial class Create
+    public static partial class Compute
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****               Internal methods            ****/
         /***************************************************/
 
-        [Description("IRequest that filters all elements in active Revit workset.")]
-        [Output("request", "Created request.")]
-        public static FilterByActiveWorkset FilterByActiveWorkset()
+        public static Reference PrepareForLinkDimensioning(this Reference reference, Document hostDocument)
         {
-            return new FilterByActiveWorkset();
+            if (reference.LinkedElementId.IntegerValue == -1)
+                return null;
+
+            string[] ss = reference.ConvertToStableRepresentation(hostDocument).Split(':');
+            string res = string.Empty;
+            bool first = true;
+            foreach (string s in ss)
+            {
+                string t = s;
+                if (s.Contains("RVTLINK"))
+                {
+                    if (res.EndsWith(":0"))
+                        t = "RVTLINK";
+                    else
+                        t = "0:RVTLINK";
+                }
+
+                if (!first)
+                    res = string.Concat(res, ":", t);
+                else
+                {
+                    res = t;
+                    first = false;
+                }
+            }
+
+            return Reference.ParseFromStableRepresentation(hostDocument, res);
         }
 
         /***************************************************/

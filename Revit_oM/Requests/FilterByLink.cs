@@ -25,15 +25,18 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements from a Revit link with given name or path.")]
+    [Description("IRequest that filters all elements from a Revit link with given file name/path, Name parameter value or ElementId.")]
     public class FilterByLink : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
         /***************************************************/
 
-        [Description("Name of the link file (alternatively whole file path) to pull from, case insensitive.")]
+        [Description("Name of the link file (alternatively whole file path, Name parameter value or ElementId) to pull from, case insensitive.")]
         public virtual string LinkName { get; set; } = "";
+
+        [Description("If true: only perfect, case sensitive text match will be accepted. If false: capitals and small letters will be treated as equal.")]
+        public virtual bool CaseSensitive { get; set; } = true;
 
         /***************************************************/
     }

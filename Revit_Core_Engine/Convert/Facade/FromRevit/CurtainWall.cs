@@ -20,23 +20,31 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
+using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
+using BH.Engine.Facade;
+using BH.Engine.Geometry;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Geometry;
+using BH.oM.Physical.Constructions;
+using BH.oM.Facade.Elements;
+using BH.oM.Facade.SectionProperties;
+using System;
+using System.Collections.Generic;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
-    public static partial class Create
+    public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Creates IRequest that filters all elements that are contained in an energy analysis model.")]
-        [Output("request", "Created request.")]
-        public static EnergyAnalysisModelRequest EnergyAnalysisModelRequest()
+        public static oM.Facade.Elements.CurtainWall CurtainWallFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            return new EnergyAnalysisModelRequest();
+            BH.Engine.Reflection.Compute.RecordError("Conversion of CurtainWalls from Revit for the Facade discipline is not yet implemented."); 
+            return null;
         }
 
         /***************************************************/
