@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -42,21 +43,7 @@ namespace BH.Revit.Engine.Core
         [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByParameterExistence(this Document document, string parameterName, bool parameterExists, IEnumerable<ElementId> ids = null)
         {
-            if (document == null)
-                return null;
-
-            HashSet<ElementId> result = new HashSet<ElementId>();
-            if (ids != null && ids.Count() == 0)
-                return result;
-
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            foreach (Element element in collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))))
-            {
-                if ((element.LookupParameter(parameterName) != null) == parameterExists)
-                    result.Add(element.Id);
-            }
-
-            return result;
+            return document.IElementIdsByParameter(new FilterByParameterExistence { ParameterName = parameterName, ParameterExists = parameterExists }, ids);
         }
 
         /***************************************************/

@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Data.Requests;
 using System;
@@ -30,7 +31,7 @@ namespace BH.Revit.Engine.Core
     public static partial class Query
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Interface methods             ****/
         /***************************************************/
 
         public static bool IPasses(this Element element, IRequest request)
@@ -38,12 +39,134 @@ namespace BH.Revit.Engine.Core
             return Passes(element, request as dynamic);
         }
 
+
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        public static bool Passes(this Element element, FilterByParameterExistence request)
+        {
+            if (element == null || request == null)
+                return false;
+
+            return (element.LookupParameter(request.ParameterName) != null) == request.ParameterExists;
+        }
+
+        /***************************************************/
+
+        public static bool Passes(this Element element, FilterByParameterBool request)
+        {
+            Parameter param = element?.LookupParameter(request?.ParameterName);
+            if (param != null && param.HasValue && param.StorageType == StorageType.Integer && param.Definition.ParameterType == ParameterType.YesNo)
+            {
+                int paramValue = param.AsInteger();
+                return (request.Value && paramValue == 1) || (!request.Value && paramValue == 0);
+            }
+            else
+                return false;
+        }
+
+        /***************************************************/
+
+        public static bool Passes(this Element element, FilterByParameterInteger request)
+        {
+            Parameter param = element?.LookupParameter(request?.ParameterName);
+            if (param != null && param.HasValue && param.StorageType == StorageType.Integer && param.Definition.ParameterType != ParameterType.YesNo)
+            {
+                int paramValue = param.AsInteger();
+                switch (request.NumberComparisonType)
+                {
+                    case NumberComparisonType.Equal:
+                        return paramValue == request.Value;
+                    case NumberComparisonType.Greater:
+                        return paramValue > request.Value;
+                    case NumberComparisonType.GreaterOrEqual:
+                        return paramValue >= request.Value;
+                    case NumberComparisonType.Less:
+                        return paramValue < request.Value;
+                    case NumberComparisonType.LessOrEqual:
+                        return paramValue <= request.Value;
+                    case NumberComparisonType.NotEqual:
+                        return paramValue != request.Value;
+                }
+            }
+
+            return false;
+        }
+
+        /***************************************************/
+
+        public static bool Passes(this Element element, FilterByParameterNumber request)
+        {
+            Parameter param = element?.LookupParameter(request?.ParameterName);
+            if (param != null && param.HasValue && param.StorageType == StorageType.Double)
+            {
+                double comparisonValue = request.Value.FromSI(param.Definition.UnitType);
+                double comparisonTolerance = request.Tolerance.FromSI(param.Definition.UnitType);
+                double paramValue = param.AsDouble();
+
+                switch (request.NumberComparisonType)
+                {
+                    case NumberComparisonType.Equal:
+                        return Math.Abs(paramValue - comparisonValue) <= comparisonTolerance;
+                    case NumberComparisonType.Greater:
+                        return paramValue - comparisonValue > comparisonTolerance;
+                    case NumberComparisonType.GreaterOrEqual:
+                        return paramValue - comparisonValue > -comparisonTolerance;
+                    case NumberComparisonType.Less:
+                        return paramValue - comparisonValue < -comparisonTolerance;
+                    case NumberComparisonType.LessOrEqual:
+                        return paramValue - comparisonValue < comparisonTolerance;
+                    case NumberComparisonType.NotEqual:
+                        return Math.Abs(paramValue - comparisonValue) > comparisonTolerance;
+                }
+            }
+
+            return false;
+        }
+
         /***************************************************/
 
         public static bool Passes(this Element element, FilterByParameterText request)
         {
-            if (request.TextComparisonType == oM.Adapters.Revit.Enums.TextComparisonType.Equal)
-                return element.LookupParameterString(request.ParameterName) == request.Value;
+            Parameter param = element?.LookupParameter(request?.ParameterName);
+            if (param != null && param.HasValue)
+            {
+                string paramValue;
+                if (param.StorageType == StorageType.String)
+                    paramValue = param.AsString();
+                else if (param.StorageType == StorageType.ElementId || (param.StorageType == StorageType.Integer && param.Definition.ParameterType != ParameterType.YesNo))
+                    paramValue = param.AsValueString();
+                else
+                    return false;
+                
+                switch (request.TextComparisonType)
+                {
+                    case TextComparisonType.Contains:
+                        return paramValue.Contains(request.Value);
+                    case TextComparisonType.ContainsNot:
+                        return !paramValue.Contains(request.Value);
+                    case TextComparisonType.EndsWith:
+                        return paramValue.EndsWith(request.Value);
+                    case TextComparisonType.Equal:
+                        return paramValue == request.Value;
+                    case TextComparisonType.NotEqual:
+                        return paramValue != request.Value;
+                    case TextComparisonType.StartsWith:
+                        return paramValue.StartsWith(request.Value);
+                }
+            }
+
+            return false;
+        }
+
+        /***************************************************/
+
+        public static bool Passes(this Element element, FilterByParameterElementId request)
+        {
+            Parameter param = element?.LookupParameter(request?.ParameterName);
+            if (param != null && param.HasValue && param.StorageType == StorageType.ElementId)
+                return param.AsElementId().IntegerValue == request.ElementId;
 
             return false;
         }
@@ -52,6 +175,9 @@ namespace BH.Revit.Engine.Core
 
         public static bool Passes(this Element element, FilterByCategory request)
         {
+            if (element == null || request == null)
+                return false;
+
             string categoryName = element.Category.Name;
             string soughtName = request.CategoryName;
             if (!request.CaseSensitive)

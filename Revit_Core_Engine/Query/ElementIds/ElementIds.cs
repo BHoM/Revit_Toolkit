@@ -129,44 +129,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIds(this FilterByParameterExistence request, Document document, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIds(this IParameterRequest request, Document document, IEnumerable<ElementId> ids = null)
         {
-            return document.ElementIdsByParameterExistence(request.ParameterName, request.ParameterExists, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this FilterByParameterBool request, Document document, IEnumerable<ElementId> ids = null)
-        {
-            return document.ElementIdsByParameter(request.ParameterName, request.Value, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this FilterByParameterElementId request, Document document, IEnumerable<ElementId> ids = null)
-        {
-            return document.ElementIdsByParameter(request.ParameterName, request.ElementId, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this FilterByParameterInteger request, Document document, IEnumerable<ElementId> ids = null)
-        {
-            return document.ElementIdsByParameter(request.ParameterName, request.NumberComparisonType, request.Value, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this FilterByParameterNumber request, Document document, IEnumerable<ElementId> ids = null)
-        {
-            return document.ElementIdsByParameter(request.ParameterName, request.NumberComparisonType, request.Value, request.Tolerance, ids);
-        }
-
-        /***************************************************/
-
-        public static IEnumerable<ElementId> ElementIds(this FilterByParameterText request, Document document, IEnumerable<ElementId> ids = null)
-        {
-            return document.ElementIdsByParameter(request.ParameterName, request.TextComparisonType, request.Value, ids);
+            return document.IElementIdsByParameter(request, ids);
         }
 
         /***************************************************/
