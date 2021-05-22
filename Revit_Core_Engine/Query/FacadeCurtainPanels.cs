@@ -74,10 +74,11 @@ namespace BH.Revit.Engine.Core
                     BH.oM.Facade.Elements.Opening bHoMOpening = null;
                     // If panel is a basic wall, the panel is not the actual element, it is an empty panel that hosts the
                     // actual element, so we assign it a null construction and separately return the wall
-                    if (panel is Autodesk.Revit.DB.Panel elemPanel && document.GetElement(elemPanel.FindHostPanel()) is Wall hostElement)
+                    if (panel is Autodesk.Revit.DB.Panel && document.GetElement((panel as Autodesk.Revit.DB.Panel).FindHostPanel()) is Wall)
                     {
-                            BH.oM.Facade.Elements.Panel bHoMCWPanel = hostElement.FacadePanelFromRevit(settings, refObjects);
-                            bHoMOpening = bHoMCWPanel.FacadePanelAsOpening(hostElement.Id.ToString(), refObjects);
+                        Wall hostElement = document.GetElement((panel as Autodesk.Revit.DB.Panel).FindHostPanel()) as Wall;
+                        BH.oM.Facade.Elements.Panel bHoMCWPanel = hostElement.FacadePanelFromRevit(settings, refObjects);
+                        bHoMOpening = bHoMCWPanel.FacadePanelAsOpening(hostElement.Id.ToString(), refObjects);
                     }
                     else
                         bHoMOpening = panel.FacadeOpeningFromRevit(settings, refObjects);
