@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             ISurface location = null;
-            List <BH.oM.Facade.Elements.Opening > openings = new List<BH.oM.Facade.Elements.Opening>();
+            List <BH.oM.Facade.Elements.Opening> openings = new List<BH.oM.Facade.Elements.Opening>();
 
             Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = null;
             BoundingBoxXYZ bbox = wall.get_BoundingBox(null);
