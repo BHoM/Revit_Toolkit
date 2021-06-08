@@ -99,11 +99,23 @@ namespace BH.Revit.Engine.Core
         public static bool Passes(this Element element, FilterByParameterNumber request)
         {
             Parameter param = element?.LookupParameter(request?.ParameterName);
-            if (param != null && param.HasValue && param.StorageType == StorageType.Double)
+            if (param != null && param.HasValue)
             {
+                double paramValue;
+                if (param.StorageType == StorageType.Double)
+                    paramValue = param.AsDouble();
+                else if (param.StorageType == StorageType.Integer)
+                    paramValue = param.AsInteger();
+                else if (param.StorageType == StorageType.String)
+                {
+                    if (!double.TryParse(param.AsString(), out paramValue))
+                        return false;
+                }
+                else
+                    return false;
+
                 double comparisonValue = request.Value.FromSI(param.Definition.UnitType);
                 double comparisonTolerance = request.Tolerance.FromSI(param.Definition.UnitType);
-                double paramValue = param.AsDouble();
 
                 switch (request.NumberComparisonType)
                 {
