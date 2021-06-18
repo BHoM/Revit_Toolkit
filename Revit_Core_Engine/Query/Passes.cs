@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
 
         public static bool Passes(this Element element, FilterByParameterExistence request)
         {
-            if (element == null || request == null)
+            if (!CheckIfNotNull(element, request))
                 return false;
 
             return (element.LookupParameter(request.ParameterName) != null) == request.ParameterExists;
@@ -187,7 +187,7 @@ namespace BH.Revit.Engine.Core
 
         public static bool Passes(this Element element, FilterByCategory request)
         {
-            if (element == null || request == null)
+            if (!CheckIfNotNull(element, request))
                 return false;
 
             string categoryName = element.Category.Name;
@@ -199,6 +199,38 @@ namespace BH.Revit.Engine.Core
             }
 
             return categoryName == soughtName;
+        }
+
+        /***************************************************/
+
+        public static bool Passes(this Element element, FilterEverything request)
+        {
+            if (!CheckIfNotNull(element, request))
+                return false;
+
+            return true;
+        }
+
+
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        private static bool CheckIfNotNull(Element element, IRequest request)
+        {
+            if (element == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("The element cannot be checked against the request because it is null.");
+                return false;
+            }
+
+            if (request == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("The element cannot be checked against the request because the request is null.");
+                return false;
+            }
+
+            return true;
         }
 
         /***************************************************/

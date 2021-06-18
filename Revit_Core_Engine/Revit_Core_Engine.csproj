@@ -338,6 +338,7 @@
     <Compile Include="Query\DuctSectionProfile.cs" />
     <Compile Include="Query\DuctSectionProperty.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByScopeBox.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsOfEverything.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfLinkInstances.cs" />
     <Compile Include="Query\HostDocument.cs" />
     <Compile Include="Query\IsInside.cs" />

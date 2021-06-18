@@ -262,6 +262,13 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        public static IEnumerable<ElementId> ElementIds(this FilterEverything request, Document document, IEnumerable<ElementId> ids = null)
+        {
+            return document.ElementIdsOfEverything(ids);
+        }
+
+        /***************************************************/
+
 
         public static IEnumerable<ElementId> ElementIds(this LogicalAndRequest request, Document document, IEnumerable<ElementId> ids = null)
         {
