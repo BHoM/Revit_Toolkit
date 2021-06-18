@@ -103,7 +103,7 @@ namespace BH.Revit.Engine.Core
             string familyName, familyTypeName;
             bHoMObject.FamilyAndTypeNames(out familyName, out familyTypeName);
 
-            return document.ElementType(familyName, familyTypeName, builtInCategories);
+            return document.ElementType(familyName, familyTypeName, builtInCategories, settings);
         }
 
         /***************************************************/
