@@ -99,7 +99,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            familyInstance = document.Create.NewFamilyInstance(columnLine, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.Column);
+            familyInstance = document.Create.NewFamilyInstance(columnLine, familySymbol, level, StructuralType.Column);
             document.Regenerate();
 
             familyInstance.CheckIfNullPush(framingElement);
@@ -177,7 +177,10 @@ namespace BH.Revit.Engine.Core
 
             Level level = document.LevelBelow(framingElement.Location, settings);
 
-            FamilySymbol familySymbol = framingElement.Property.ToRevitElementType(document, framingElement.BuiltInCategories(document), settings, refObjects);
+            // Always taking StructuralFraming category because most families belong to it.
+            HashSet<BuiltInCategory> categories = framingElement.BuiltInCategories(document);
+            categories.Add(BuiltInCategory.OST_StructuralFraming);
+            FamilySymbol familySymbol = framingElement.Property.ToRevitElementType(document, categories, settings, refObjects);
             if (familySymbol == null)
                 familySymbol = framingElement.ElementType(document, settings) as FamilySymbol;
 
@@ -195,11 +198,11 @@ namespace BH.Revit.Engine.Core
             }
 
             if (framingElement is Beam)
-                familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.Beam);
+                familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, StructuralType.Beam);
             else if (framingElement is Bracing || framingElement is Cable)
-                familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.Brace);
+                familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, StructuralType.Brace);
             else
-                familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, Autodesk.Revit.DB.Structure.StructuralType.UnknownFraming);
+                familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, StructuralType.UnknownFraming);
 
             document.Regenerate();
 
