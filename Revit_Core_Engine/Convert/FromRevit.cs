@@ -104,7 +104,11 @@ namespace BH.Revit.Engine.Core
                             result = new List<IElement> { familyInstance.DoorFromRevit(settings, refObjects) };
                         else if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue) || familyInstance.StructuralType == StructuralType.Column)
                             result = new List<IElement> { familyInstance.ColumnFromRevit(settings, refObjects) };
-                        else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue) || familyInstance.StructuralType == StructuralType.Brace)
+                        else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue)
+                                || familyInstance.StructuralUsage == StructuralInstanceUsage.Brace
+                                || familyInstance.StructuralUsage == StructuralInstanceUsage.HorizontalBracing
+                                || familyInstance.StructuralUsage == StructuralInstanceUsage.KickerBracing
+                                || familyInstance.StructuralType == StructuralType.Brace)
                             result = new List<IElement> { familyInstance.BracingFromRevit(settings, refObjects) };
                         else if (typeof(BH.oM.Physical.Elements.Beam).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
                             result = new List<IElement> { familyInstance.BeamFromRevit(settings, refObjects) };
