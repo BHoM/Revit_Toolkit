@@ -200,7 +200,24 @@ namespace BH.Revit.Engine.Core
             if (framingElement is Beam)
                 familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, StructuralType.Beam);
             else if (framingElement is Bracing || framingElement is Cable)
+            {
+                Line revitLine = revitCurve as Line;
+                if (revitLine == null)
+                {
+                    BH.Engine.Reflection.Compute.RecordError($"Nonlinear bracing is not allowed, please consider using beam type instead. BHoM_Guid: {framingElement.BHoM_Guid}");
+                    return null;
+                }
+
                 familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, StructuralType.Brace);
+                if (framingElement is Cable)
+                    BH.Engine.Reflection.Compute.RecordWarning($"Revit does not support Cable type, the BHoM cable has been converted to a Revit bracing. BHoM_Guid: {framingElement.BHoM_Guid}, ElementId: {familyInstance.Id}");
+
+                if (Math.Abs(revitLine.Direction.DotProduct(XYZ.BasisZ)) < settings.AngleTolerance)
+                {
+                    familyInstance.StructuralUsage = StructuralInstanceUsage.Other;
+                    BH.Engine.Reflection.Compute.RecordWarning($"The driving curve of a bracing element is horizontal, structural usage of the Revit element has been set to 'Other'. BHoM_Guid: {framingElement.BHoM_Guid}, ElementId: {familyInstance.Id}");
+                }
+            }
             else
                 familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, StructuralType.UnknownFraming);
 
