@@ -162,6 +162,7 @@
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Modify\Transform.cs" />
+    <Compile Include="Query\Description.cs" />
     <Compile Include="Query\HostId.cs" />
     <Compile Include="Query\LinkPath.cs" />
     <Compile Include="Query\RenderMeshes.cs" />
