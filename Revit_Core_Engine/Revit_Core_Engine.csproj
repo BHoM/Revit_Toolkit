@@ -336,6 +336,7 @@
     <Compile Include="Create\SectionBoundingBox.cs" />
     <Compile Include="Create\View\View3D.cs" />
     <Compile Include="Create\View\ViewPlan.cs" />
+    <Compile Include="Create\View\ViewReflectedCeilingPlan.cs" />
     <Compile Include="Create\View\ViewSection.cs" />
     <Compile Include="Modify\SetViewDetailLevel.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
