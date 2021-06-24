@@ -39,114 +39,89 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Returns BHoM family wrapper based on RevitFilePreview and given Revit family type names.")]
-        //[Input("revitFilePreview", "RevitFilePreview to be queried.")]
-        //[Input("familyTypeNames", "Revit family type names sought for.")]
-        //[Output("family")]
-        public static string IDescription(this IRequest request)
-        {
-            //TODO: move to Data_Engine
-            object result;
-            BH.Engine.Reflection.Compute.TryRunExtensionMethod(request, "Description", out result);
-            return result as string;
-        }
-
-        /***************************************************/
-
-        //[Description("Returns BHoM family wrapper based on RevitFilePreview and given Revit family type names.")]
-        //[Input("revitFilePreview", "RevitFilePreview to be queried.")]
-        //[Input("familyTypeNames", "Revit family type names sought for.")]
-        //[Output("family")]
+        [Description("Returns a description of the given FilterEverything request.")]
+        [Input("request", "FilterEverything request to query the description from.")]
+        [Output("description", "Description of the input FilterEverything request.")]
         public static string Description(this FilterEverything request)
         {
-            return "Filter everything.";
+            return "Filter all elements and types.";
         }
 
         /***************************************************/
 
-        //[Description("Returns BHoM family wrapper based on RevitFilePreview and given Revit family type names.")]
-        //[Input("revitFilePreview", "RevitFilePreview to be queried.")]
-        //[Input("familyTypeNames", "Revit family type names sought for.")]
-        //[Output("family")]
+        [Description("Returns a description of the given FilterByCategory request.")]
+        [Input("request", "FilterByCategory request to query the description from.")]
+        [Output("description", "Description of the input FilterByCategory request.")]
         public static string Description(this FilterByCategory request)
         {
-            return $"Filter the elements that belong to the category '{request.CategoryName}'.";
+            return $"Filter the elements and types that belong to the category '{request.CategoryName}'.";
         }
 
         /***************************************************/
 
-        //[Description("Returns BHoM family wrapper based on RevitFilePreview and given Revit family type names.")]
-        //[Input("revitFilePreview", "RevitFilePreview to be queried.")]
-        //[Input("familyTypeNames", "Revit family type names sought for.")]
-        //[Output("family")]
+        [Description("Returns a description of the given FilterByParameterBool request.")]
+        [Input("request", "FilterByParameterBool request to query the description from.")]
+        [Output("description", "Description of the input FilterByParameterBool request.")]
         public static string Description(this FilterByParameterBool request)
         {
-            return $"Filter the elements with value of parameter '{request.ParameterName}' equal to {request.Value}.";
+            return $"Filter the elements and types with value of parameter '{request.ParameterName}' equal to {request.Value}.";
         }
 
         /***************************************************/
 
-        //[Description("Returns BHoM family wrapper based on RevitFilePreview and given Revit family type names.")]
-        //[Input("revitFilePreview", "RevitFilePreview to be queried.")]
-        //[Input("familyTypeNames", "Revit family type names sought for.")]
-        //[Output("family")]
+        [Description("Returns a description of the given FilterByParameterElementId request.")]
+        [Input("request", "FilterByParameterElementId request to query the description from.")]
+        [Output("description", "Description of the input FilterByParameterElementId request.")]
         public static string Description(this FilterByParameterElementId request)
         {
-            return $"Filter the elements with parameter '{request.ParameterName}' referencing to a Revit element with ElementId {request.ElementId}.";
+            return $"Filter the elements and types with parameter '{request.ParameterName}' referencing to a Revit element with ElementId {request.ElementId}.";
         }
 
         /***************************************************/
 
-        //[Description("Returns BHoM family wrapper based on RevitFilePreview and given Revit family type names.")]
-        //[Input("revitFilePreview", "RevitFilePreview to be queried.")]
-        //[Input("familyTypeNames", "Revit family type names sought for.")]
-        //[Output("family")]
+        [Description("Returns a description of the given FilterByParameterExistence request.")]
+        [Input("request", "FilterByParameterExistence request to query the description from.")]
+        [Output("description", "Description of the input FilterByParameterExistence request.")]
         public static string Description(this FilterByParameterExistence request)
         {
-            return $"Filter the elements that {(request.ParameterExists ? "":"do not ")}have parameter named '{request.ParameterName}'.";
+            return $"Filter the elements and types that {(request.ParameterExists ? "":"do not ")}have parameter named '{request.ParameterName}'.";
         }
 
         /***************************************************/
 
-        //[Description("Returns BHoM family wrapper based on RevitFilePreview and given Revit family type names.")]
-        //[Input("revitFilePreview", "RevitFilePreview to be queried.")]
-        //[Input("familyTypeNames", "Revit family type names sought for.")]
-        //[Output("family")]
+        [Description("Returns a description of the given FilterByParameterInteger request.")]
+        [Input("request", "FilterByParameterInteger request to query the description from.")]
+        [Output("description", "Description of the input FilterByParameterInteger request.")]
         public static string Description(this FilterByParameterInteger request)
         {
-            return $"Filter the elements with value of parameter '{request.ParameterName}' {request.NumberComparisonType.ComparisonDescription()} {request.Value}.";
+            return $"Filter the elements and types with value of parameter '{request.ParameterName}' {request.NumberComparisonType.ComparisonDescription()} {request.Value}.";
         }
 
         /***************************************************/
 
-        //[Description("Returns BHoM family wrapper based on RevitFilePreview and given Revit family type names.")]
-        //[Input("revitFilePreview", "RevitFilePreview to be queried.")]
-        //[Input("familyTypeNames", "Revit family type names sought for.")]
-        //[Output("family")]
+        [Description("Returns a description of the given FilterByParameterNumber request.")]
+        [Input("request", "FilterByParameterNumber request to query the description from.")]
+        [Output("description", "Description of the input FilterByParameterNumber request.")]
         public static string Description(this FilterByParameterNumber request)
         {
-            return $"Filter the elements with value of parameter '{request.ParameterName}' {request.NumberComparisonType.ComparisonDescription()} {request.Value}, within tolerance of {request.Tolerance}.";
+            return $"Filter the elements and types with value of parameter '{request.ParameterName}' {request.NumberComparisonType.ComparisonDescription()} {request.Value}, within tolerance of {request.Tolerance}.";
         }
 
         /***************************************************/
 
-        //[Description("Returns BHoM family wrapper based on RevitFilePreview and given Revit family type names.")]
-        //[Input("revitFilePreview", "RevitFilePreview to be queried.")]
-        //[Input("familyTypeNames", "Revit family type names sought for.")]
-        //[Output("family")]
+        [Description("Returns a description of the given FilterByParameterText request.")]
+        [Input("request", "FilterByParameterText request to query the description from.")]
+        [Output("description", "Description of the input FilterByParameterText request.")]
         public static string Description(this FilterByParameterText request)
         {
-            return $"Filter the elements with value of parameter '{request.ParameterName}' {request.TextComparisonType.ComparisonDescription()} '{request.Value}'.";
+            return $"Filter the elements and types with value of parameter '{request.ParameterName}' {request.TextComparisonType.ComparisonDescription()} '{request.Value}'.";
         }
 
+
+        /***************************************************/
+        /****              Private methods              ****/
         /***************************************************/
 
-
-
-        //[Description("Returns BHoM family wrapper based on RevitFilePreview and given Revit family type names.")]
-        //[Input("revitFilePreview", "RevitFilePreview to be queried.")]
-        //[Input("familyTypeNames", "Revit family type names sought for.")]
-        //[Output("family")]
         private static string ComparisonDescription(this NumberComparisonType comparisonType)
         {
             switch (comparisonType)
@@ -168,10 +143,8 @@ namespace BH.Engine.Adapters.Revit
             }
         }
 
-        //[Description("Returns BHoM family wrapper based on RevitFilePreview and given Revit family type names.")]
-        //[Input("revitFilePreview", "RevitFilePreview to be queried.")]
-        //[Input("familyTypeNames", "Revit family type names sought for.")]
-        //[Output("family")]
+        /***************************************************/
+
         private static string ComparisonDescription(this TextComparisonType comparisonType)
         {
             switch (comparisonType)

@@ -24,7 +24,6 @@ using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Reflection.Attributes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -37,13 +36,11 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
-        //[Description("Filters ElementIds of elements and types in a Revit document based on integer number parameter criterion.")]
-        //[Input("document", "Revit document to be processed.")]
-        //[Input("parameterName", "Case sensitive name of the parameter to be used as filter criterion.")]
-        //[Input("numberComparisonType", "NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
-        //[Input("value", "Value to compare the parameter against.")]
-        //[Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
-        //[Output("elementIds", "Collection of filtered ElementIds.")]
+        [Description("Filters ElementIds of elements and types in a Revit document based on parameter request.")]
+        [Input("document", "Revit document to be processed.")]
+        [Input("request", "IParameterRequest containing the information about the filtering criteria to apply.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> IElementIdsByParameter(this Document document, IParameterRequest request, IEnumerable<ElementId> ids = null)
         {
             if (document == null)

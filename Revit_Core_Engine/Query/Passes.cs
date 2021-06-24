@@ -24,7 +24,9 @@ using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Data.Requests;
+using BH.oM.Reflection.Attributes;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,6 +36,10 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
+        [Description("Checks whether a given element passes the filtering criteria contained within the IRequest.")]
+        [Input("element", "Element to be checked against the IRequest.")]
+        [Input("request", "IRequest containing the filtering criteria, against which the element is checked.")]
+        [Output("passes", "True if the element passes the filtering criteria contained within the IRequest, otherwise false.")]
         public static bool IPasses(this Element element, IRequest request)
         {
             return Passes(element, request as dynamic);
@@ -44,6 +50,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterExistence request.")]
+        [Input("element", "Element to be checked against the FilterByParameterExistence request.")]
+        [Input("request", "FilterByParameterExistence request containing the filtering criteria, against which the element is checked.")]
+        [Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterExistence request, otherwise false.")]
         public static bool Passes(this Element element, FilterByParameterExistence request)
         {
             if (!CheckIfNotNull(element, request))
@@ -54,6 +64,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterBool request.")]
+        [Input("element", "Element to be checked against the FilterByParameterBool request.")]
+        [Input("request", "FilterByParameterBool request containing the filtering criteria, against which the element is checked.")]
+        [Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterBool request, otherwise false.")]
         public static bool Passes(this Element element, FilterByParameterBool request)
         {
             Parameter param = element?.LookupParameter(request?.ParameterName);
@@ -68,6 +82,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterInteger request.")]
+        [Input("element", "Element to be checked against the FilterByParameterInteger request.")]
+        [Input("request", "FilterByParameterInteger request containing the filtering criteria, against which the element is checked.")]
+        [Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterInteger request, otherwise false.")]
         public static bool Passes(this Element element, FilterByParameterInteger request)
         {
             Parameter param = element?.LookupParameter(request?.ParameterName);
@@ -96,6 +114,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterNumber request.")]
+        [Input("element", "Element to be checked against the FilterByParameterNumber request.")]
+        [Input("request", "FilterByParameterNumber request containing the filtering criteria, against which the element is checked.")]
+        [Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterNumber request, otherwise false.")]
         public static bool Passes(this Element element, FilterByParameterNumber request)
         {
             Parameter param = element?.LookupParameter(request?.ParameterName);
@@ -139,6 +161,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterText request.")]
+        [Input("element", "Element to be checked against the FilterByParameterText request.")]
+        [Input("request", "FilterByParameterText request containing the filtering criteria, against which the element is checked.")]
+        [Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterText request, otherwise false.")]
         public static bool Passes(this Element element, FilterByParameterText request)
         {
             Parameter param = element?.LookupParameter(request?.ParameterName);
@@ -174,6 +200,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterElementId request.")]
+        [Input("element", "Element to be checked against the FilterByParameterElementId request.")]
+        [Input("request", "FilterByParameterElementId request containing the filtering criteria, against which the element is checked.")]
+        [Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterElementId request, otherwise false.")]
         public static bool Passes(this Element element, FilterByParameterElementId request)
         {
             Parameter param = element?.LookupParameter(request?.ParameterName);
@@ -185,6 +215,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether a given element passes the filtering criteria contained within the FilterByCategory request.")]
+        [Input("element", "Element to be checked against the FilterByCategory request.")]
+        [Input("request", "FilterByCategory request containing the filtering criteria, against which the element is checked.")]
+        [Output("passes", "True if the element passes the filtering criteria contained within the FilterByCategory request, otherwise false.")]
         public static bool Passes(this Element element, FilterByCategory request)
         {
             if (!CheckIfNotNull(element, request))
@@ -203,6 +237,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether a given element passes the filtering criteria contained within the FilterEverything request. Always returns true.")]
+        [Input("element", "Element to be checked against the IRequest.")]
+        [Input("request", "FilterEverything request containing the filtering criteria, against which the element is checked.")]
+        [Output("passes", "Always true.")]
         public static bool Passes(this Element element, FilterEverything request)
         {
             if (!CheckIfNotNull(element, request))
