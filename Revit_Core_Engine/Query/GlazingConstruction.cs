@@ -28,6 +28,7 @@ using Autodesk.Revit.DB;
 
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Physical.Constructions;
+using BH.Engine.Adapters.Revit;
 
 
 namespace BH.Revit.Engine.Core
@@ -40,6 +41,8 @@ namespace BH.Revit.Engine.Core
 
         public static oM.Physical.Constructions.Construction GlazingConstruction(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
+            settings = settings.DefaultIfNull(); 
+            
             if (familyInstance == null)
                 return null;
 
@@ -82,6 +85,12 @@ namespace BH.Revit.Engine.Core
             List<Layer> bhomLayers = new List<Layer> { new Layer { Name = constName, Material = bhomMat, Thickness = 0 } };
 
             BH.oM.Physical.Constructions.Construction glazingConstruction = new oM.Physical.Constructions.Construction { Name = constName, Layers = bhomLayers };
+
+            //Set identifiers, parameters & custom data
+
+            glazingConstruction.SetIdentifiers(familyInstance.Symbol);
+            glazingConstruction.CopyParameters(familyInstance.Symbol, settings.ParameterSettings);
+            glazingConstruction.SetProperties(familyInstance.Symbol, settings.ParameterSettings);
 
             return glazingConstruction;
         }
