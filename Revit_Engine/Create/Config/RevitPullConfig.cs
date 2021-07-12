@@ -47,22 +47,5 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
-        /****            Deprecated methods             ****/
-        /***************************************************/
-
-        [ToBeRemoved("4.0", "Replaced with a new version with updated number and order of parameters.")]
-        [Description("Creates a pull action-specific configuration used for adapter interaction with Revit.")]
-        [InputFromProperty("discipline")]
-        [InputFromProperty("includeClosedWorksets")]
-        [InputFromProperty("geometryConfig")]
-        [InputFromProperty("representationConfig")]
-        [InputFromProperty("includeNestedElements")]
-        [Output("revitPullConfig")]
-        public static RevitPullConfig RevitPullConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, PullGeometryConfig geometryConfig = null, PullRepresentationConfig representationConfig = null, bool includeNestedElements = true)
-        {
-            return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, GeometryConfig = geometryConfig, RepresentationConfig = representationConfig, IncludeNestedElements = includeNestedElements };
-        }
-
-        /***************************************************/
     }
 }

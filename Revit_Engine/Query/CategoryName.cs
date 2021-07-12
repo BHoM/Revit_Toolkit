@@ -51,17 +51,6 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [ToBeRemoved("4.0", "This method has been replaced by a simple property query.")]
-        [Description("Gets Revit category name from RevitFilePreview.")]
-        [Input("revitFilePreview", "RevitFilePreview to be queried.")]
-        [Output("categoryName")]
-        public static string CategoryName(this RevitFilePreview revitFilePreview)
-        {
-            return revitFilePreview?.CategoryName;
-        }
-
-        /***************************************************/
-
         [Description("Gets Revit category name from XDocument.")]
         [Input("xDocument", "XDocument from header of Revit family file (*.rfa).")]
         [Output("categoryName")]

@@ -53,7 +53,7 @@ namespace BH.Engine.Adapters.Revit
 
             List<oM.Adapters.Revit.Properties.InstanceProperties> instanceProperties = new List<oM.Adapters.Revit.Properties.InstanceProperties>();
 
-            List<string> familyTypeNameList = revitFilePreview.FamilyTypeNames();
+            IEnumerable<string> familyTypeNameList = revitFilePreview.FamilyTypeNames;
             if (familyTypeNameList != null)
             {
                 foreach (string familyTypeName in familyTypeNameList)
