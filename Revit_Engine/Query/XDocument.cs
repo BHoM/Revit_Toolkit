@@ -40,8 +40,7 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
-        [ToBeRemoved("4.0", "This method brings no added value plus same effect can be achieved easily by calling XDocument(string).")]
+        
         [Description("Retrieves XDocument from header of a Revit family file (.rfa) wrapped by RevitFilePreview.")]
         [Input("revitFilePreview", "RevitFilePreview to be queried.")]
         [Output("xDocument")]
