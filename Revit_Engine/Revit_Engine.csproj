@@ -185,12 +185,10 @@
     <Compile Include="Query\MapPropertyInfos.cs" />
     <Compile Include="Query\ParameterNames.cs" />
     <Compile Include="Query\ParameterMap.cs" />
-    <Compile Include="Query\Plane.cs" />
     <Compile Include="Query\FamilyTypeName.cs" />
     <Compile Include="Modify\Append.cs" />
     <Compile Include="Modify\RemoveIdentifiers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query\CategoryNames.cs" />
     <Compile Include="Query\FamilyName.cs" />
     <Compile Include="Query\CategoryName.cs" />
     <Compile Include="Query\ElementId.cs" />
