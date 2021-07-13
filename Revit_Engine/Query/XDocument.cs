@@ -51,6 +51,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Retrieves XDocument from header of a Revit family file (.rfa) under a given path.")]
+        [Input("path", "Path to the .rfa file to be queried.")]
+        [Output("xDocument")]
         public static XDocument XDocument(this string path)
         {
             if (string.IsNullOrWhiteSpace(path))
