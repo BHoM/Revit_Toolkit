@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -21,7 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -35,15 +34,20 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Filters ElementIds of elements and types in a Revit document based on parameter existence criterion.")]
+        [Description("Filters all ElementIds that exist in a Revit document.")]
         [Input("document", "Revit document to be processed.")]
-        [Input("parameterName", "Case sensitive name of the parameter to be used as filter criterion.")]
-        [Input("parameterExists", "If true, ids of elements with a parameter under given name will be returned, if false, ids of elements without it.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> ElementIdsByParameterExistence(this Document document, string parameterName, bool parameterExists, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsOfEverything(this Document document, IEnumerable<ElementId> ids = null)
         {
-            return document.IElementIdsByParameter(new FilterByParameterExistence { ParameterName = parameterName, ParameterExists = parameterExists }, ids);
+            if (document == null)
+                return null;
+
+            if (ids != null && ids.Count() == 0)
+                return new List<ElementId>();
+
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+            return collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))).ToElementIds();
         }
 
         /***************************************************/
