@@ -41,6 +41,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Queries a FamilyInstance to find its start and end points.")]
+        [Input("familyInstance", "Revit FamilyInstance to be queried.")]
+        [Input("settings", "Optional, the RevitSettings to be used.")]
+        [Output("locationCurveFraming", "BHoM curve queried from the Family Instance.")]
         public static ICurve LocationCurve(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
@@ -56,6 +60,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         
+        [Description("Queries a FamilyInstance to find its start and end points, intended usage for framings.")]
+        [Input("familyInstance", "Revit FamilyInstance to be queried.")]
+        [Input("settings", "Optional, the RevitSettings to be used.")]
+        [Output("locationCurveFraming", "BHoM curve queried from the Family Instance.")]
         public static ICurve LocationCurveFraming(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
@@ -94,6 +102,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Queries a FamilyInstance to find its start and end points, intended usage for Columns.")]
+        [Input("familyInstance", "Revit FamilyInstance to be queried.")]
+        [Input("settings", "Optional, the RevitSettings to be used.")]
+        [Output("locationCurveColumn", "BHoM line queried from the Family Instance.")]
         public static BH.oM.Geometry.Line LocationCurveColumn(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
@@ -146,6 +158,7 @@ namespace BH.Revit.Engine.Core
         
         [Description("Queries an MEPCurve to find its start and end points, creating multiple lines segments if it contains points in between.")]
         [Input("mepCurve", "Revit MEPCurve to be queried.")]
+        [Input("settings", "Optional, the RevitSettings to be used.")]
         [Output("locationCurveMEP", "BHoM lines list queried from the MEPCurve.")]
         public static List<BH.oM.Geometry.Line> LocationCurveMEP(this MEPCurve mepCurve, RevitSettings settings = null)
         {            
