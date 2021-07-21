@@ -312,6 +312,7 @@
     <Compile Include="Convert\Facade\FromRevit\FrameEdge.cs" />
     <Compile Include="Convert\MEP\FromRevit\CableTray.cs" />
     <Compile Include="Convert\MEP\FromRevit\Duct.cs" />
+    <Compile Include="Convert\MEP\FromRevit\Fitting.cs" />
     <Compile Include="Convert\MEP\FromRevit\Pipe.cs" />
     <Compile Include="Convert\Geometry\FromRevit\Basis.cs" />
     <Compile Include="Convert\Geometry\FromRevit\Transform.cs" />
@@ -347,6 +348,7 @@
     <Compile Include="Query\FacadeCurtainPanels.cs" />
     <Compile Include="Query\CurtainWallMullions.cs" />
     <Compile Include="Query\FrameEdgeProperty.cs" />
+    <Compile Include="Query\MEPConnectorsLocation.cs" />
     <Compile Include="Query\MullionElementProperty.cs" />
     <Compile Include="Query\GlazingConstruction.cs" />
     <Compile Include="Query\DuctSectionProfile.cs" />

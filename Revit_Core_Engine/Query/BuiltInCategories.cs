@@ -177,6 +177,16 @@ namespace BH.Revit.Engine.Core
                     Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallMullions,
                 }
             },
+            {
+                typeof (BH.oM.MEP.System.Fittings.Fitting), new BuiltInCategory[]
+                {
+                    Autodesk.Revit.DB.BuiltInCategory.OST_DuctFitting,
+                    Autodesk.Revit.DB.BuiltInCategory.OST_PipeFitting,
+                    Autodesk.Revit.DB.BuiltInCategory.OST_CableTrayFitting,
+                    Autodesk.Revit.DB.BuiltInCategory.OST_DuctAccessory,
+                    Autodesk.Revit.DB.BuiltInCategory.OST_PipeAccessory,
+                }
+            }
         };
 
         /***************************************************/
