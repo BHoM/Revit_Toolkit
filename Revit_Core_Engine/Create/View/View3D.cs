@@ -37,10 +37,11 @@ namespace BH.Revit.Engine.Core
         [Description("Creates and returns a new ISOMETRIC 3D view in the current Revit file.")]
         [Input("document", "Revit current document to be processed.")]
         [Input("viewName", "Optional, name of the new view.")]
+        [Input("boundingBoxXyz", "Optional, the cuboid BoundingBoxXYZ to fit isometric view.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
         [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]        
         [Output("view3D", "The new view.")]        
-        public static View View3D(this Document document, string viewName = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse)
+        public static View View3D(this Document document, string viewName = null, BoundingBoxXYZ boundingBoxXyz = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse)
         {
             View result = null;
 
@@ -49,6 +50,18 @@ namespace BH.Revit.Engine.Core
             result = Autodesk.Revit.DB.View3D.CreateIsometric(document, vft.Id);
             
             Modify.SetViewDetailLevel(result, viewDetailLevel);
+
+            if (boundingBoxXyz != null)
+            {
+                try
+                {
+                    (result as View3D).SetSectionBox(boundingBoxXyz);
+                }
+                catch (Exception)
+                {
+                    BH.Engine.Reflection.Compute.RecordWarning("Could not apply the custom BoundingboxXYZ the created 3D view, the default global BoundiboxXYZ has been used instead.");
+                }
+            }
 
             if (viewTemplateId != null)
             {
