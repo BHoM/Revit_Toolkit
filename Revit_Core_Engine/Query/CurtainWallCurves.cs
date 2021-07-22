@@ -20,32 +20,48 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
+using BH.oM.Geometry;
+using BH.oM.Dimensional;
+using BH.Engine.Facade;
+using System;
+using System.Collections.Generic;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
-    public static partial class Create
+    public static partial class Query
     {
+
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        [Description("Creates a pull action-specific configuration used for adapter interaction with Revit.")]
-        [InputFromProperty("discipline")]
-        [InputFromProperty("includeClosedWorksets")]
-        [InputFromProperty("includeNestedElements")]
-        [InputFromProperty("geometryConfig")]
-        [InputFromProperty("representationConfig")]
-        [InputFromProperty("pullMaterialTakeOff")]
-        [Output("revitPullConfig")]
-        public static RevitPullConfig RevitPullConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, bool includeNestedElements = true, PullGeometryConfig geometryConfig = null, PullRepresentationConfig representationConfig = null, bool pullMaterialTakeOff = false)
+
+        public static List<ICurve> CurtainWallCurves(this Wall wall)
         {
-            return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, IncludeNestedElements = includeNestedElements, GeometryConfig = geometryConfig, RepresentationConfig = representationConfig, PullMaterialTakeOff = pullMaterialTakeOff };
+            List<ICurve> result = new List<ICurve>();
+            List<IElement1D> allCrvs = new List<IElement1D>();
+
+            PullGeometryConfig geometryConfig = new PullGeometryConfig();
+            Options geometryOptions = Create.Options(Autodesk.Revit.DB.ViewDetailLevel.Fine, geometryConfig.IncludeNonVisible = true, false);
+            List<Curve> objs = wall.Curves(geometryOptions);
+            foreach (Curve crv in objs)
+            {
+                allCrvs.Add(crv.IFromRevit());
+            }
+            
+            //Get only external curves from all curves
+            foreach (ICurve crv in allCrvs)
+            {
+                List<IElement1D> adjElems = crv.AdjacentElements(allCrvs);
+                if (adjElems.Count == 1)
+                    result.Add(crv);
+            }
+
+            return result;
         }
 
         /***************************************************/
+
     }
 }

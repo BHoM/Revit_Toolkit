@@ -103,7 +103,7 @@ namespace BH.Revit.Engine.Core
             string familyName, familyTypeName;
             bHoMObject.FamilyAndTypeNames(out familyName, out familyTypeName);
 
-            return document.ElementType(familyName, familyTypeName, builtInCategories);
+            return document.ElementType(familyName, familyTypeName, builtInCategories, settings);
         }
 
         /***************************************************/
@@ -178,13 +178,8 @@ namespace BH.Revit.Engine.Core
 
         private static void FamilyAndTypeNames(this IBHoMObject bHoMObject, out string familyName, out string familyTypeName)
         {
-            familyName = bHoMObject.FamilyName();
-            if (string.IsNullOrEmpty(familyName))
-                familyName = bHoMObject.Name.FamilyName();
-
-            familyTypeName = bHoMObject.FamilyTypeName();
-            if (string.IsNullOrEmpty(familyTypeName))
-                familyTypeName = bHoMObject.Name.FamilyTypeName();
+            familyName = bHoMObject.Name.FamilyName();
+            familyTypeName = bHoMObject.Name.FamilyTypeName();
 
             if (string.IsNullOrEmpty(familyTypeName))
                 familyTypeName = bHoMObject.Name;

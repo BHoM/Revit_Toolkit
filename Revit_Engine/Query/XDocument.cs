@@ -40,8 +40,7 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
-        [ToBeRemoved("4.0", "This method brings no added value plus same effect can be achieved easily by calling XDocument(string).")]
+        
         [Description("Retrieves XDocument from header of a Revit family file (.rfa) wrapped by RevitFilePreview.")]
         [Input("revitFilePreview", "RevitFilePreview to be queried.")]
         [Output("xDocument")]
@@ -52,6 +51,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Retrieves XDocument from header of a Revit family file (.rfa) under a given path.")]
+        [Input("path", "Path to the .rfa file to be queried.")]
+        [Output("xDocument")]
         public static XDocument XDocument(this string path)
         {
             if (string.IsNullOrWhiteSpace(path))

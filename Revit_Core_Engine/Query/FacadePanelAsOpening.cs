@@ -20,30 +20,37 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
+using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Dimensional;
+using BH.oM.Geometry;
+using BH.oM.Facade.Elements;
+using BH.Engine.Facade;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
-    public static partial class Create
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        [Description("Creates a pull action-specific configuration used for adapter interaction with Revit.")]
-        [InputFromProperty("discipline")]
-        [InputFromProperty("includeClosedWorksets")]
-        [InputFromProperty("includeNestedElements")]
-        [InputFromProperty("geometryConfig")]
-        [InputFromProperty("representationConfig")]
-        [InputFromProperty("pullMaterialTakeOff")]
-        [Output("revitPullConfig")]
-        public static RevitPullConfig RevitPullConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, bool includeNestedElements = true, PullGeometryConfig geometryConfig = null, PullRepresentationConfig representationConfig = null, bool pullMaterialTakeOff = false)
+
+        public static oM.Facade.Elements.Opening FacadePanelAsOpening(this oM.Facade.Elements.Panel panel, string refId = "", Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, IncludeNestedElements = includeNestedElements, GeometryConfig = geometryConfig, RepresentationConfig = representationConfig, PullMaterialTakeOff = pullMaterialTakeOff };
+            if (panel == null)
+                return null;
+;
+            oM.Facade.Elements.Opening opening = refObjects.GetValue<oM.Facade.Elements.Opening>(refId);
+            if (opening != null)
+                return opening;
+
+            opening = new oM.Facade.Elements.Opening { Name = panel.Name, Edges = panel.ExternalEdges, Fragments = panel.Fragments, OpeningConstruction = panel.Construction, Tags = panel.Tags, CustomData = panel.CustomData, Type = oM.Facade.Elements.OpeningType.Undefined };
+            
+            return opening;
         }
 
         /***************************************************/

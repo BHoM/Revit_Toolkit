@@ -57,17 +57,6 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [ToBeRemoved("4.0", "This method has been replaced by a simple property query.")]
-        [Description("Gets all Revit family type names owned by Revit family represented by RevitFilePreview.")]
-        [Input("revitFilePreview", "RevitFilePreview to be queried.")]
-        [Output("familyTypeNames")]
-        public static List<string> FamilyTypeNames(this RevitFilePreview revitFilePreview)
-        {
-            return revitFilePreview?.FamilyTypeNames?.ToList();
-        }
-
-        /***************************************************/
-
         [Description("Gets all Revit family type names in XDocument.")]
         [Input("xDocument", "XDocument from header of Revit family file (*.rfa).")]
         [Output("familyTypeNames")]

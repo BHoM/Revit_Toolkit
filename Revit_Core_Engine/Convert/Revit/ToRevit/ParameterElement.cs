@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -20,32 +20,45 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
+using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Revit.Parameters;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
-    public static partial class Create
+    public static partial class Convert
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****               Public Methods              ****/
         /***************************************************/
-        
-        [Description("Creates a pull action-specific configuration used for adapter interaction with Revit.")]
-        [InputFromProperty("discipline")]
-        [InputFromProperty("includeClosedWorksets")]
-        [InputFromProperty("includeNestedElements")]
-        [InputFromProperty("geometryConfig")]
-        [InputFromProperty("representationConfig")]
-        [InputFromProperty("pullMaterialTakeOff")]
-        [Output("revitPullConfig")]
-        public static RevitPullConfig RevitPullConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, bool includeNestedElements = true, PullGeometryConfig geometryConfig = null, PullRepresentationConfig representationConfig = null, bool pullMaterialTakeOff = false)
+
+        public static ParameterElement ToRevitParameterElement(this ParameterDefinition parameterDefinition, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, IncludeNestedElements = includeNestedElements, GeometryConfig = geometryConfig, RepresentationConfig = representationConfig, PullMaterialTakeOff = pullMaterialTakeOff };
+            if (parameterDefinition == null)
+                return null;
+
+            ParameterElement parameterElement = refObjects.GetValue<ParameterElement>(document, parameterDefinition.BHoM_Guid);
+            if (parameterElement != null)
+                return parameterElement;
+
+            settings = settings.DefaultIfNull();
+
+            Definition definition = Create.Parameter(document, parameterDefinition.Name, parameterDefinition.ParameterType, parameterDefinition.ParameterGroup, parameterDefinition.Instance, parameterDefinition.Categories, parameterDefinition.Shared, parameterDefinition.Discipline);
+
+            if (definition is ExternalDefinition)
+                parameterElement = SharedParameterElement.Lookup(document, ((ExternalDefinition)definition).GUID);
+            else if (definition is InternalDefinition)
+                parameterElement = document.GetElement(((InternalDefinition)definition).Id) as ParameterElement;
+            
+            refObjects.AddOrReplace(parameterDefinition, parameterElement);
+            return parameterElement;
         }
 
         /***************************************************/
     }
 }
+

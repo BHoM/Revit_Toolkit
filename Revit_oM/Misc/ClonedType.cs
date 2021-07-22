@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -20,32 +20,24 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base;
 using System.ComponentModel;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit
 {
-    public static partial class Create
+    [Description("An object representing a cloned Revit type, to be pushed in order to create a new type.")]
+    public class ClonedType : BHoMObject
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
-        
-        [Description("Creates a pull action-specific configuration used for adapter interaction with Revit.")]
-        [InputFromProperty("discipline")]
-        [InputFromProperty("includeClosedWorksets")]
-        [InputFromProperty("includeNestedElements")]
-        [InputFromProperty("geometryConfig")]
-        [InputFromProperty("representationConfig")]
-        [InputFromProperty("pullMaterialTakeOff")]
-        [Output("revitPullConfig")]
-        public static RevitPullConfig RevitPullConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, bool includeNestedElements = true, PullGeometryConfig geometryConfig = null, PullRepresentationConfig representationConfig = null, bool pullMaterialTakeOff = false)
-        {
-            return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, IncludeNestedElements = includeNestedElements, GeometryConfig = geometryConfig, RepresentationConfig = representationConfig, PullMaterialTakeOff = pullMaterialTakeOff };
-        }
+
+        [Description("ElementId of the source Revit type to be cloned.")]
+        public virtual int SourceTypeId { get; set; } = -1;
 
         /***************************************************/
     }
 }
+
+
+

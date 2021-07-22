@@ -25,12 +25,15 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Facade;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using BH.oM.Dimensional;
 using BH.oM.Physical.Constructions;
 using BH.oM.Facade.Elements;
 using BH.oM.Facade.SectionProperties;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
@@ -43,8 +46,45 @@ namespace BH.Revit.Engine.Core
 
         public static oM.Facade.Elements.CurtainWall CurtainWallFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            BH.Engine.Reflection.Compute.RecordError("Conversion of CurtainWalls from Revit for the Facade discipline is not yet implemented."); 
-            return null;
+            if (wall == null)
+                return null;
+
+            settings = settings.DefaultIfNull();
+
+            CurtainWall bHoMCurtainWall = refObjects.GetValue<CurtainWall>(wall.Id);
+            if (bHoMCurtainWall != null)
+                return bHoMCurtainWall;
+
+            if (wall.StackedWallOwnerId != null && wall.StackedWallOwnerId != ElementId.InvalidElementId)
+                return null;
+
+            IEnumerable<oM.Facade.Elements.Opening> curtainPanels = wall.CurtainGrid.FacadeCurtainPanels(wall.Document, settings, refObjects);
+
+            if (curtainPanels == null || !curtainPanels.Any())
+                BH.Engine.Reflection.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {0}", wall.Id.IntegerValue));
+
+
+            // Get external edges of whole curtain wall
+            List<FrameEdge> extEdges = new List<FrameEdge>();
+            List<IElement1D> cwEdgeCrvs = curtainPanels.ExternalEdges();
+            foreach (ICurve crv in cwEdgeCrvs)
+            {
+                FrameEdge frameEdge = new FrameEdge { Curve = crv };
+                extEdges.Add(frameEdge);
+            }
+
+            bHoMCurtainWall = new CurtainWall { ExternalEdges = extEdges, Openings = curtainPanels.ToList(), Name = wall.WallType.Name };
+
+            bHoMCurtainWall.Name = wall.FamilyTypeFullName();
+
+            //Set identifiers, parameters & custom data
+            bHoMCurtainWall.SetIdentifiers(wall);
+            bHoMCurtainWall.CopyParameters(wall, settings.ParameterSettings);
+            bHoMCurtainWall.SetProperties(wall, settings.ParameterSettings);
+
+            refObjects.AddOrReplace(wall.Id, bHoMCurtainWall);
+
+            return bHoMCurtainWall;
         }
 
         /***************************************************/

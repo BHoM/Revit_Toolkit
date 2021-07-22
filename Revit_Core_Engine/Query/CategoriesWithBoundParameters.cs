@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -20,32 +20,30 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
+using Autodesk.Revit.DB;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
-    public static partial class Create
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        [Description("Creates a pull action-specific configuration used for adapter interaction with Revit.")]
-        [InputFromProperty("discipline")]
-        [InputFromProperty("includeClosedWorksets")]
-        [InputFromProperty("includeNestedElements")]
-        [InputFromProperty("geometryConfig")]
-        [InputFromProperty("representationConfig")]
-        [InputFromProperty("pullMaterialTakeOff")]
-        [Output("revitPullConfig")]
-        public static RevitPullConfig RevitPullConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, bool includeNestedElements = true, PullGeometryConfig geometryConfig = null, PullRepresentationConfig representationConfig = null, bool pullMaterialTakeOff = false)
+
+        public static CategorySet CategoriesWithBoundParameters(this Document document)
         {
-            return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, IncludeNestedElements = includeNestedElements, GeometryConfig = geometryConfig, RepresentationConfig = representationConfig, PullMaterialTakeOff = pullMaterialTakeOff };
+            CategorySet result = document.Application.Create.NewCategorySet();
+            foreach (Category cat in document.Settings.Categories)
+            {
+                if (cat.AllowsBoundParameters)
+                    result.Insert(cat);
+            }
+
+            return result;
         }
 
         /***************************************************/
     }
 }
+
+

@@ -20,30 +20,38 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Reflection.Attributes;
-using System.ComponentModel;
+using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Geometry;
+using BH.oM.Facade.Elements;
+using BH.oM.Physical.Elements;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
-    public static partial class Create
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        [Description("Creates a pull action-specific configuration used for adapter interaction with Revit.")]
-        [InputFromProperty("discipline")]
-        [InputFromProperty("includeClosedWorksets")]
-        [InputFromProperty("includeNestedElements")]
-        [InputFromProperty("geometryConfig")]
-        [InputFromProperty("representationConfig")]
-        [InputFromProperty("pullMaterialTakeOff")]
-        [Output("revitPullConfig")]
-        public static RevitPullConfig RevitPullConfig(Discipline discipline = Discipline.Undefined, bool includeClosedWorksets = false, bool includeNestedElements = true, PullGeometryConfig geometryConfig = null, PullRepresentationConfig representationConfig = null, bool pullMaterialTakeOff = false)
+
+        public static List<FrameEdge> CurtainWallMullions(this CurtainGrid curtainGrid, Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            return new RevitPullConfig { Discipline = discipline, IncludeClosedWorksets = includeClosedWorksets, IncludeNestedElements = includeNestedElements, GeometryConfig = geometryConfig, RepresentationConfig = representationConfig, PullMaterialTakeOff = pullMaterialTakeOff };
+            if (curtainGrid == null)
+                return null;
+
+            List<FrameEdge> result = new List<FrameEdge>();
+            List<Element> mullions = curtainGrid.GetMullionIds().Select(x => document.GetElement(x)).ToList();
+
+            foreach (Mullion mullion in mullions)
+            {
+                result.Add(mullion.FrameEdgeFromRevit(settings, refObjects));
+            }
+
+            return result;
         }
 
         /***************************************************/
