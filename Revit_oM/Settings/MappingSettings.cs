@@ -38,7 +38,7 @@ namespace BH.oM.Adapters.Revit.Settings
         public virtual List<ParameterMap> ParameterMaps { get; set; } = new List<ParameterMap>();
 
         //[Description("A collection of entities defining relationships between property names of BHoM types (or RevitParameters attached to objects of these types) and parameter names of correspondent Revit elements.")]
-        public virtual List<string> FamilyMaps { get; set; } = new List<string>();
+        public virtual List<FamilyMap> FamilyMaps { get; set; } = new List<FamilyMap>();
 
         [Description("Name of the Revit parameter to be used as a source (on Pull) and target (on Push) of information for BHoM tags.")]
         public virtual string TagsParameter { get; set; } = "BHE_Tags";
