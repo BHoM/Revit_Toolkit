@@ -60,8 +60,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             construction.SetIdentifiers(hostObjAttributes);
-            construction.CopyParameters(hostObjAttributes, settings.ParameterSettings);
-            construction.SetProperties(hostObjAttributes, settings.ParameterSettings);
+            construction.CopyParameters(hostObjAttributes, settings.MappingSettings);
+            construction.SetProperties(hostObjAttributes, settings.MappingSettings);
 
             refObjects.AddOrReplace(refId, construction);
             return construction;

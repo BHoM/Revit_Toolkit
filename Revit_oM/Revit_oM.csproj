@@ -97,10 +97,10 @@
     <Compile Include="Misc\RevitMaterialTakeOff.cs" />
     <Compile Include="Misc\RevitRepresentation.cs" />
     <Compile Include="Misc\Tolerance.cs" />
-    <Compile Include="Parameters\ElementTypeParameterLink.cs" />
+    <Compile Include="Mapping\ElementTypeParameterLink.cs" />
     <Compile Include="Misc\FamilyLibrary.cs" />
-    <Compile Include="Parameters\ElementParameterLink.cs" />
-    <Compile Include="Parameters\IParameterLink.cs" />
+    <Compile Include="Mapping\ElementParameterLink.cs" />
+    <Compile Include="Mapping\IParameterLink.cs" />
     <Compile Include="Parameters\IRevitParameterFragment.cs" />
     <Compile Include="Parameters\ParameterDefinition.cs" />
     <Compile Include="Parameters\RevitIdentifiers.cs" />
@@ -149,8 +149,8 @@
     <Compile Include="Misc\RevitFilePreview.cs" />
     <Compile Include="Settings\FamilyLoadSettings.cs" />
     <Compile Include="Settings\ConnectionSettings.cs" />
-    <Compile Include="Parameters\ParameterMap.cs" />
-    <Compile Include="Settings\ParameterSettings.cs" />
+    <Compile Include="Mapping\ParameterMap.cs" />
+    <Compile Include="Settings\MappingSettings.cs" />
     <Compile Include="Settings\RevitSettings.cs" />
     <Compile Include="Elements\Sheet.cs" />
   </ItemGroup>

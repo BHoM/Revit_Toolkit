@@ -108,8 +108,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             property2D.SetIdentifiers(hostObjAttributes);
-            property2D.CopyParameters(hostObjAttributes, settings.ParameterSettings);
-            property2D.SetProperties(hostObjAttributes, settings.ParameterSettings);
+            property2D.CopyParameters(hostObjAttributes, settings.MappingSettings);
+            property2D.SetProperties(hostObjAttributes, settings.MappingSettings);
 
             refObjects.AddOrReplace(refId, property2D);
             return property2D;

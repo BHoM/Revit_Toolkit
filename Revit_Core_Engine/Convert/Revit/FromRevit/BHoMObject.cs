@@ -90,8 +90,8 @@ namespace BH.Revit.Engine.Core
 
             iBHoMObject.Name = element.Name;
             iBHoMObject.SetIdentifiers(element);
-            iBHoMObject.CopyParameters(element, settings.ParameterSettings);
-            iBHoMObject.SetProperties(element, settings.ParameterSettings);
+            iBHoMObject.CopyParameters(element, settings.MappingSettings);
+            iBHoMObject.SetProperties(element, settings.MappingSettings);
 
             refObjects.AddOrReplace(element.Id, iBHoMObject);
 

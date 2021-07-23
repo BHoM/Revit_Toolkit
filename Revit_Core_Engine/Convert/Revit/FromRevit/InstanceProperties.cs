@@ -48,8 +48,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             instanceProperties.SetIdentifiers(elementType);
-            instanceProperties.CopyParameters(elementType, settings.ParameterSettings);
-            instanceProperties.SetProperties(elementType, settings.ParameterSettings);
+            instanceProperties.CopyParameters(elementType, settings.MappingSettings);
+            instanceProperties.SetProperties(elementType, settings.MappingSettings);
             
             refObjects.AddOrReplace(elementType.Id, instanceProperties);
             return instanceProperties;
@@ -71,8 +71,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             instanceProperties.SetIdentifiers(graphicStyle);
-            instanceProperties.CopyParameters(graphicStyle, settings.ParameterSettings);
-            instanceProperties.SetProperties(graphicStyle, settings.ParameterSettings);
+            instanceProperties.CopyParameters(graphicStyle, settings.MappingSettings);
+            instanceProperties.SetProperties(graphicStyle, settings.MappingSettings);
             
             refObjects.AddOrReplace(graphicStyle.Id, instanceProperties);
             return instanceProperties;

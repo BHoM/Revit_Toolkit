@@ -56,8 +56,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             modelInstance.SetIdentifiers(adaptiveComponent);
-            modelInstance.CopyParameters(adaptiveComponent, settings.ParameterSettings);
-            modelInstance.SetProperties(adaptiveComponent, settings.ParameterSettings);
+            modelInstance.CopyParameters(adaptiveComponent, settings.MappingSettings);
+            modelInstance.SetProperties(adaptiveComponent, settings.MappingSettings);
 
             refObjects.AddOrReplace(adaptiveComponent.Id, modelInstance);
             return modelInstance;

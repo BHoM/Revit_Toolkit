@@ -20,28 +20,25 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Parameters;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Mapping
 {
-    public static partial class Query
+    [Description("An entity defining the relationship between property names of an object (or names of RevitParameters attached to it) and sets of their correspondent Revit element type parameter names.")]
+    public class ElementTypeParameterLink : BHoMObject, IParameterLink
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Creates an instance of ParameterSettings with all ParameterMaps stored in BHoM/DataSets/Revit/ParameterMaps folder.")]
-        [Output("parameterSettings")]
-        public static ParameterSettings DefaultParameterSettings()
-        {
-            ParameterSettings settings = new ParameterSettings().AddParameterMaps(BH.Engine.Library.Query.Library("ParameterMaps").Where(x => x is ParameterMap).Cast<ParameterMap>());
-            settings.Name = "BH Default Parameter Settings";
-            return settings;
-        }
+        [Description("Name of the property (or RevitParameter) to be linked with Revit parameters.")]
+        public virtual string PropertyName { get; set; } = "";
+
+        [Description("A collecation of Revit element type parameter names to be linked with the type property.")]
+        public virtual HashSet<string> ParameterNames { get; set; } = new HashSet<string>();
 
         /***************************************************/
     }

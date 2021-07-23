@@ -20,25 +20,36 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
-using System;
+using BH.oM.Adapters.Revit.Mapping;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.Engine.Adapters.Revit
 {
-    [Description("An entity defining the relationship between property names of an object (or names of RevitParameters attached to it) and sets of their correspondent Revit element parameter names.")]
-    public class ElementParameterLink : BHoMObject, IParameterLink
+    public static partial class Create
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Name of the property (or RevitParameter) to be linked with Revit parameters.")]
-        public virtual string PropertyName { get; set; } = "";
+        [Description("Creates an entity holding information about parameter and family mapping settings.")]
+        [InputFromProperty("parameterMaps")]
+        [InputFromProperty("tagsParameter")]
+        [InputFromProperty("materialGradeParameter")]
+        [Output("mappingSettings")]
+        public static MappingSettings MappingSettings(IEnumerable<ParameterMap> parameterMaps = null, string tagsParameter = "", string materialGradeParameter = "")
+        {
+            MappingSettings settings = new MappingSettings();
+            if (parameterMaps != null)
+                settings = settings.AddParameterMaps(parameterMaps);
 
-        [Description("A collecation of Revit element parameter names to be linked with the type property.")]
-        public virtual HashSet<string> ParameterNames { get; set; } = new HashSet<string>();
+            settings.TagsParameter = tagsParameter;
+            settings.MaterialGradeParameter = materialGradeParameter;
+
+            return settings;
+        }
 
         /***************************************************/
     }

@@ -21,7 +21,7 @@
  */
 
 using BH.Engine.Base;
-using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using System;
@@ -57,25 +57,25 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Removes links between Revit parameters and object's properties (or name of a RevitParameter attached to it) inside existing ParameterSettings.")]
-        [Input("parameterSettings", "ParameterSettings to be modified.")]
+        [Description("Removes links between Revit parameters and object's properties (or name of a RevitParameter attached to it) inside existing MappingSettings.")]
+        [Input("mappingSettings", "MappingSettings to be modified.")]
         [Input("type", "Type related to ParameterMap meant to be modified.")]
         [Input("propertyNames", "Names of type properties (or RevitParameters), for which the ParameterLinks are meant to be removed.")]
-        [Output("parameterSettings")]
-        public static ParameterSettings RemoveParameterLinks(this ParameterSettings parameterSettings, Type type, IEnumerable<string> propertyNames)
+        [Output("mappingSettings")]
+        public static MappingSettings RemoveParameterLinks(this MappingSettings mappingSettings, Type type, IEnumerable<string> propertyNames)
         {
-            if (parameterSettings == null)
+            if (mappingSettings == null)
                 return null;
 
             if (type == null || propertyNames == null || propertyNames.Count() == 0)
-                return parameterSettings;
+                return mappingSettings;
 
-            ParameterMap parameterMap = parameterSettings.ParameterMaps.Find(x => x.Type == type);
+            ParameterMap parameterMap = mappingSettings.ParameterMaps.Find(x => x.Type == type);
             if (parameterMap == null)
-                return parameterSettings;
+                return mappingSettings;
 
-            ParameterSettings cloneSettings = parameterSettings.ShallowClone();
-            cloneSettings.ParameterMaps = new List<ParameterMap>(parameterSettings.ParameterMaps);
+            MappingSettings cloneSettings = mappingSettings.ShallowClone();
+            cloneSettings.ParameterMaps = new List<ParameterMap>(mappingSettings.ParameterMaps);
             cloneSettings.ParameterMaps.Remove(parameterMap);
             cloneSettings.ParameterMaps.Add(parameterMap.RemoveParameterLinks(propertyNames));
             return cloneSettings;

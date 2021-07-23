@@ -69,8 +69,8 @@ namespace BH.Revit.Engine.Core
             
             //Set identifiers, parameters & custom data
             window.SetIdentifiers(familyInstance);
-            window.CopyParameters(familyInstance, settings.ParameterSettings);
-            window.SetProperties(familyInstance, settings.ParameterSettings);
+            window.CopyParameters(familyInstance, settings.MappingSettings);
+            window.SetProperties(familyInstance, settings.MappingSettings);
 
             refObjects.AddOrReplace(refId, window);
             return window;

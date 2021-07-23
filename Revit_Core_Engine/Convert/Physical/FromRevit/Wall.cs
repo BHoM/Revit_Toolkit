@@ -68,8 +68,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             bHoMWall.SetIdentifiers(wall);
-            bHoMWall.CopyParameters(wall, settings.ParameterSettings);
-            bHoMWall.SetProperties(wall, settings.ParameterSettings);
+            bHoMWall.CopyParameters(wall, settings.MappingSettings);
+            bHoMWall.SetProperties(wall, settings.MappingSettings);
 
             refObjects.AddOrReplace(wall.Id, bHoMWall);
             return bHoMWall;

@@ -20,28 +20,28 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Parameters;
-using BH.oM.Base;
-using System.Collections.Generic;
+using BH.oM.Adapters.Revit.Mapping;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
+using System.Linq;
 
-namespace BH.oM.Adapters.Revit.Settings
+namespace BH.Engine.Adapters.Revit
 {
-    [Description("An entity holding information about conversion-specific Revit parameter names as well as relationships between object property names (or names of RevitParameters attached to it) and Revit parameter names.")]
-    public class ParameterSettings : BHoMObject
+    public static partial class Query
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("A collection of entities defining relationships between property names of BHoM types (or RevitParameters attached to objects of these types) and parameter names of correspondent Revit elements.")]
-        public virtual List<ParameterMap> ParameterMaps { get; set; } = new List<ParameterMap>();
-
-        [Description("Name of the Revit parameter to be used as a source (on Pull) and target (on Push) of information for BHoM tags.")]
-        public virtual string TagsParameter { get; set; } = "BHE_Tags";
-
-        [Description("Name of the Revit parameter to be used as a source of information about material grade of a Revit element.")]
-        public virtual string MaterialGradeParameter { get; set; } = "BHE_Material Grade";
+        [Description("Creates an instance of MappingSettings with all ParameterMaps stored in BHoM/DataSets/Revit/ParameterMaps folder.")]
+        [Output("mappingSettings")]
+        public static MappingSettings DefaultMappingSettings()
+        {
+            MappingSettings settings = new MappingSettings().AddParameterMaps(BH.Engine.Library.Query.Library("ParameterMaps").Where(x => x is ParameterMap).Cast<ParameterMap>());
+            settings.Name = "BH Default Mapping Settings";
+            return settings;
+        }
 
         /***************************************************/
     }

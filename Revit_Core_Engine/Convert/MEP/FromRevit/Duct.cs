@@ -79,8 +79,8 @@ namespace BH.Revit.Engine.Core
                 };
                 //Set identifiers, parameters & custom data
                 thisSegment.SetIdentifiers(revitDuct);
-                thisSegment.CopyParameters(revitDuct, settings.ParameterSettings);
-                thisSegment.SetProperties(revitDuct, settings.ParameterSettings);
+                thisSegment.CopyParameters(revitDuct, settings.MappingSettings);
+                thisSegment.SetProperties(revitDuct, settings.MappingSettings);
                 bhomDucts.Add(thisSegment);
             }
 

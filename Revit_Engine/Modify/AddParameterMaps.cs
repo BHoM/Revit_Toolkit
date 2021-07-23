@@ -21,7 +21,7 @@
  */
 
 using BH.Engine.Base;
-using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
@@ -36,20 +36,20 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Adds ParameterMaps to existing ParameterSettings.")]
-        [Input("parameterSettings", "ParameterSettings to be extended.")]
+        [Description("Adds ParameterMaps to existing MappingSettings.")]
+        [Input("mappingSettings", "MappingSettings to be extended.")]
         [Input("parameterMaps", "ParameterMaps to be added.")]
-        [Input("merge", "In case when a ParameterMap with type equal to the input ParameterMap already exists in parameterSettings: if true, parameterMap will be merged into the existing one, if false, it will overwrite it.")]
-        [Output("parameterSettings")]
-        public static ParameterSettings AddParameterMaps(this ParameterSettings parameterSettings, IEnumerable<ParameterMap> parameterMaps, bool merge = true)
+        [Input("merge", "In case when a ParameterMap with type equal to the input ParameterMap already exists in mappingSettings: if true, parameterMap will be merged into the existing one, if false, it will overwrite it.")]
+        [Output("mappingSettings")]
+        public static MappingSettings AddParameterMaps(this MappingSettings mappingSettings, IEnumerable<ParameterMap> parameterMaps, bool merge = true)
         {
-            if (parameterSettings == null)
+            if (mappingSettings == null)
                 return null;
 
             if (parameterMaps == null || parameterMaps.Count() == 0)
-                return parameterSettings;
+                return mappingSettings;
 
-            ParameterSettings cloneSettings = parameterSettings.ShallowClone();
+            MappingSettings cloneSettings = mappingSettings.ShallowClone();
             if (cloneSettings.ParameterMaps == null)
                 cloneSettings.ParameterMaps = new List<ParameterMap>();
             else

@@ -140,8 +140,8 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 bars[i].SetIdentifiers(familyInstance);
-                bars[i].CopyParameters(familyInstance, settings.ParameterSettings);
-                bars[i].SetProperties(familyInstance, settings.ParameterSettings);
+                bars[i].CopyParameters(familyInstance, settings.MappingSettings);
+                bars[i].SetProperties(familyInstance, settings.MappingSettings);
             }
 
             refObjects.AddOrReplace(familyInstance.Id, bars);

@@ -62,8 +62,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             bhomWire.SetIdentifiers(revitWire);
-            bhomWire.CopyParameters(revitWire, settings.ParameterSettings);
-            bhomWire.SetProperties(revitWire, settings.ParameterSettings);
+            bhomWire.CopyParameters(revitWire, settings.MappingSettings);
+            bhomWire.SetProperties(revitWire, settings.MappingSettings);
 
             refObjects.AddOrReplace(revitWire.Id, bhomWire);
 

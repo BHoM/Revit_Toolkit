@@ -56,8 +56,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             viewPort.SetIdentifiers(revitViewPort);
-            viewPort.CopyParameters(revitViewPort, settings.ParameterSettings);
-            viewPort.SetProperties(revitViewPort, settings.ParameterSettings);
+            viewPort.CopyParameters(revitViewPort, settings.MappingSettings);
+            viewPort.SetProperties(revitViewPort, settings.MappingSettings);
 
             refObjects.AddOrReplace(revitViewPort.Id, viewPort);
             return viewPort;

@@ -69,8 +69,8 @@ namespace BH.Revit.Engine.Core
             
             //Set identifiers, parameters & custom data
             door.SetIdentifiers(familyInstance);
-            door.CopyParameters(familyInstance, settings.ParameterSettings);
-            door.SetProperties(familyInstance, settings.ParameterSettings);
+            door.CopyParameters(familyInstance, settings.MappingSettings);
+            door.SetProperties(familyInstance, settings.MappingSettings);
 
             refObjects.AddOrReplace(refId, door);
             return door;

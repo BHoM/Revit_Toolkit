@@ -50,8 +50,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             material.SetIdentifiers(revitMaterial);
-            material.CopyParameters(revitMaterial, settings.ParameterSettings);
-            material.SetProperties(revitMaterial, settings.ParameterSettings);
+            material.CopyParameters(revitMaterial, settings.MappingSettings);
+            material.SetProperties(revitMaterial, settings.MappingSettings);
             
             refObjects.AddOrReplace(refId, material);
             return material;

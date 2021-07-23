@@ -54,7 +54,7 @@ namespace BH.Revit.Engine.Core
                 result.Description = parameter.AsString();
 
             result.CopyCharacteristics(material);
-            result.SetProperties(material, settings.ParameterSettings);
+            result.SetProperties(material, settings.MappingSettings);
 
             refObjects.AddOrReplace(material.Id, result);
             return result;

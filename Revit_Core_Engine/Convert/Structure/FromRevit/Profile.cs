@@ -115,8 +115,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             profile.SetIdentifiers(familySymbol);
-            profile.CopyParameters(familySymbol, settings.ParameterSettings);
-            profile.SetProperties(familySymbol, settings.ParameterSettings);
+            profile.CopyParameters(familySymbol, settings.MappingSettings);
+            profile.SetProperties(familySymbol, settings.MappingSettings);
 
             profile.Name = familySymbol.Name;
             refObjects.AddOrReplace(familySymbol.Id, profile);
