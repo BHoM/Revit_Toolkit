@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using Autodesk.Revit.DB.Structure;
+using BH.Engine.Adapters.Revit;
 using BH.Engine.Architecture;
 using BH.Engine.Physical;
 using BH.Engine.Revit;
@@ -75,7 +76,47 @@ namespace BH.Revit.Engine.Core
 
         public static IEnumerable<IBHoMObject> FromRevit(this FamilyInstance familyInstance, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (AdaptiveComponentInstanceUtils.IsAdaptiveComponentInstance(familyInstance))
+            string familyName = familyInstance?.Symbol?.FamilyName;
+            BuiltInCategory category = (BuiltInCategory)familyInstance.Category.Id.IntegerValue;
+
+            IEnumerable<IElement> result = null;
+            switch (discipline)
+            {
+                case Discipline.Structural:
+                    if (typeof(Bar).BuiltInCategories().Contains(category)) ;
+                    result = familyInstance.BarsFromRevit(settings, refObjects);
+                    break;
+                case Discipline.Physical:
+                case Discipline.Architecture:
+                    if (typeof(BH.oM.Physical.Elements.Window).BuiltInCategories().Contains(category))
+                        result = new List<IElement> { familyInstance.WindowFromRevit(settings, refObjects) };
+                    else if (typeof(BH.oM.Physical.Elements.Door).BuiltInCategories().Contains(category))
+                        result = new List<IElement> { familyInstance.DoorFromRevit(settings, refObjects) };
+                    else if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains(category) || familyInstance.StructuralType == StructuralType.Column)
+                        result = new List<IElement> { familyInstance.ColumnFromRevit(settings, refObjects) };
+                    else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains(category)
+                            || familyInstance.StructuralUsage == StructuralInstanceUsage.Brace
+                            || familyInstance.StructuralUsage == StructuralInstanceUsage.HorizontalBracing
+                            || familyInstance.StructuralUsage == StructuralInstanceUsage.KickerBracing
+                            || familyInstance.StructuralType == StructuralType.Brace)
+                        result = new List<IElement> { familyInstance.BracingFromRevit(settings, refObjects) };
+                    else if (typeof(BH.oM.Physical.Elements.Beam).BuiltInCategories().Contains(category))
+                        result = new List<IElement> { familyInstance.BeamFromRevit(settings, refObjects) };
+                    else if (typeof(BH.oM.Architecture.BuildersWork.Opening).BuiltInCategories().Contains(category) && settings.MappingSettings.MappedFamilyNames(typeof(BH.oM.Architecture.BuildersWork.Opening)).Contains(familyName))
+                        result = new List<IElement> { familyInstance.OpeningFromRevit(settings, refObjects) };
+                    break;
+                case Discipline.Environmental:
+                    result = new List<IElement> { familyInstance.EnvironmentPanelFromRevit(settings, refObjects) };
+                    break;
+                case Discipline.Facade:
+                    if (typeof(BH.oM.Facade.Elements.Opening).BuiltInCategories().Contains(category))
+                        result = new List<IElement> { familyInstance.FacadeOpeningFromRevit(settings, refObjects) };
+                    else if (typeof(BH.oM.Facade.Elements.FrameEdge).BuiltInCategories().Contains(category))
+                        result = new List<IElement> { familyInstance.FrameEdgeFromRevit(settings, refObjects) };
+                    break;
+            }
+
+            if (result == null && AdaptiveComponentInstanceUtils.IsAdaptiveComponentInstance(familyInstance))
             {
                 BH.oM.Adapters.Revit.Elements.ModelInstance instance = familyInstance.ModelInstanceFromRevit(settings, refObjects);
 
@@ -87,51 +128,15 @@ namespace BH.Revit.Engine.Core
 
                 return new List<IBHoMObject> { instance };
             }
-            else
+
+            if (result != null && transform?.IsIdentity == false)
             {
-                IEnumerable<IElement> result = null;
-                switch (discipline)
-                {
-                    case Discipline.Structural:
-                        if (typeof(Bar).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                            result = familyInstance.BarsFromRevit(settings, refObjects);
-                        break;
-                    case Discipline.Physical:
-                    case Discipline.Architecture:
-                        if (typeof(BH.oM.Physical.Elements.Window).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                            result = new List<IElement> { familyInstance.WindowFromRevit(settings, refObjects) };
-                        else if (typeof(BH.oM.Physical.Elements.Door).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                            result = new List<IElement> { familyInstance.DoorFromRevit(settings, refObjects) };
-                        else if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue) || familyInstance.StructuralType == StructuralType.Column)
-                            result = new List<IElement> { familyInstance.ColumnFromRevit(settings, refObjects) };
-                        else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue)
-                                || familyInstance.StructuralUsage == StructuralInstanceUsage.Brace
-                                || familyInstance.StructuralUsage == StructuralInstanceUsage.HorizontalBracing
-                                || familyInstance.StructuralUsage == StructuralInstanceUsage.KickerBracing
-                                || familyInstance.StructuralType == StructuralType.Brace)
-                            result = new List<IElement> { familyInstance.BracingFromRevit(settings, refObjects) };
-                        else if (typeof(BH.oM.Physical.Elements.Beam).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                            result = new List<IElement> { familyInstance.BeamFromRevit(settings, refObjects) };
-                        break;
-                    case Discipline.Environmental:
-                        result = new List<IElement> { familyInstance.EnvironmentPanelFromRevit(settings, refObjects) };
-                        break;
-                    case Discipline.Facade:
-                        if (typeof(BH.oM.Facade.Elements.Opening).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                            result = new List<IElement> { familyInstance.FacadeOpeningFromRevit(settings, refObjects) };
-                        else if (typeof(BH.oM.Facade.Elements.FrameEdge).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
-                            result = new List<IElement> { familyInstance.FrameEdgeFromRevit(settings, refObjects) };
-                        break;
-                }
-
-                if (result != null && transform?.IsIdentity == false)
-                {
-                    TransformMatrix bHoMTransform = transform.FromRevit();
-                    result = result.Select(x => x?.ITransform(bHoMTransform));
-                }
-
-                return result?.Cast<IBHoMObject>().ToList();
+                TransformMatrix bHoMTransform = transform.FromRevit();
+                result = result.Select(x => x?.ITransform(bHoMTransform));
             }
+
+            return result?.Cast<IBHoMObject>().ToList();
+
         }
 
         /***************************************************/

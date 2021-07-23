@@ -177,6 +177,12 @@ namespace BH.Revit.Engine.Core
                     Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallMullions,
                 }
             },
+            {
+                typeof (BH.oM.Architecture.BuildersWork.Opening), new BuiltInCategory[]
+                {
+                    Autodesk.Revit.DB.BuiltInCategory.OST_GenericModel,
+                }
+            },
         };
 
         /***************************************************/
