@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Base;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Geometry;
@@ -47,7 +48,7 @@ namespace BH.Engine.Revit
                 return null;
             }
 
-            IInstance result = instance.GetShallowClone() as IInstance;
+            IInstance result = instance.ShallowClone() as IInstance;
             result.Location = result.Location?.ITransform(transform);
             result.Orientation = result.Orientation?.Transform(transform);
             return result;
