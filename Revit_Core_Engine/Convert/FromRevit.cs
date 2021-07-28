@@ -571,7 +571,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Converts a Revit GraphicsStyle to a BHoM object based on its discipline.")]
-        [Input("graphicsStyle", "Revit GraphicsStyle to be converted.")]
+        [Input("graphicStyle", "Revit GraphicsStyle to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
         [Input("settings", "Optional, Revit adapter settings.")]
@@ -876,10 +876,6 @@ namespace BH.Revit.Engine.Core
 
         [Description("Fallback method when no suitable FromRevit for Location is found, e.g. when it's not LocationPoint nor LocationCurve.")]
         [Input("location", "Revit Location to be converted.")]
-        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        [Input("transform", "Optional, a transform to apply to the converted object.")]
-        [Input("settings", "Optional, Revit adapter settings.")]
-        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("fromRevit", "Null resulted from no suitable Location FromRevit method.")]
         public static IGeometry FromRevit(this Location location)
         {
@@ -926,10 +922,6 @@ namespace BH.Revit.Engine.Core
 
         [Description("Interface method that tries to find a suitable FromRevit convert for a Revit Location.")]
         [Input("location", "Revit Location to be converted.")]
-        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        [Input("transform", "Optional, a transform to apply to the converted object.")]
-        [Input("settings", "Optional, Revit adapter settings.")]
-        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("fromRevit", "Resulted BHoM object converted from a Revit Location.")]
         public static IGeometry IFromRevit(this Location location)
         {
