@@ -52,8 +52,8 @@ namespace BH.Revit.Engine.Core
 
             bhomFitting = new BH.oM.MEP.System.Fittings.Fitting()
             {
-                Location = ((revitMepFitting.Location) as LocationPoint).Point.PointFromRevit(),
-                ConnectionsLocation = Query.MEPConnectorsLocation(revitMepFitting)
+                Location = (revitMepFitting.Location as LocationPoint)?.Point?.PointFromRevit(),
+                ConnectionsLocation = revitMepFitting.MEPConnectorsLocation()
             };
 
             //Set identifiers, parameters & custom data
