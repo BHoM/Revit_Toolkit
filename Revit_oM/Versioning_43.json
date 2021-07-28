@@ -21,12 +21,10 @@
   },
   "Method": {
     "ToNew": {
-	"BH.Engine.Adapters.Revit.Query.DefaultParameterSettings": "BH.Engine.Adapters.Revit.Query.DefaultMappingSettings",
-	"BH.Engine.Adapters.Revit.Create.ParameterSettings(System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Mapping.ParameterMap>, System.String, System.String)": "BH.Engine.Adapters.Revit.Create.MappingSettings(System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Mapping.ParameterMap>, System.String, System.String)"
+
     },
     "ToOld": {
-	"BH.Engine.Adapters.Revit.Query.DefaultMappingSettings": "BH.Engine.Adapters.Revit.Query.DefaultParameterSettings",
-	"BH.Engine.Adapters.Revit.Create.MappingSettings(System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Mapping.ParameterMap>, System.String, System.String)": "BH.Engine.Adapters.Revit.Create.ParameterSettings(System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Mapping.ParameterMap>, System.String, System.String)"
+
     }
   },
   "Property": {

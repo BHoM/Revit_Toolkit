@@ -34,6 +34,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("4.3", "BH.Engine.Adapters.Revit.Query.DefaultParameterSettings()")]
         [Description("Creates an instance of MappingSettings with all ParameterMaps stored in BHoM/DataSets/Revit/ParameterMaps folder.")]
         [Output("mappingSettings")]
         public static MappingSettings DefaultMappingSettings()

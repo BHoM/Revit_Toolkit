@@ -34,6 +34,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("4.3", "BH.Engine.Adapters.Revit.Create.ParameterSettings(System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Parameters.ParameterMap>, System.String, System.String)")]
         [Description("Creates an entity holding information about parameter and family mapping settings.")]
         [InputFromProperty("parameterMaps")]
         [InputFromProperty("tagsParameter")]
