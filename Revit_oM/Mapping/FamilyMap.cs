@@ -27,17 +27,17 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Mapping
 {
-    //[Description("An entity defining the relationship between object's property names (or names of RevitParameters attached to it) and parameter names of correspondent Revit elements.")]
+    [Description("An entity defining the relationship relationship between Revit families and BHoM type, to which these families are meant to be converted on Pull.")]
     public class FamilyMap : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        //[Description("Type, which property names (or names of RevitParameters) are being mapped with Revit element parameters.")]
+        [Description("BHoM type, to which the Revit families are meant to be converted on Pull.")]
         public virtual Type Type { get; set; } = null;
 
-        //[Description("A collection of type property names (or names of RevitParameters) and sets of their correspondent Revit parameter names.")]
+        [Description("Names of the families to be converted to a given BHoM type on Pull.")]
         public virtual List<string> FamilyNames { get; set; } = new List<string>();
 
         /***************************************************/

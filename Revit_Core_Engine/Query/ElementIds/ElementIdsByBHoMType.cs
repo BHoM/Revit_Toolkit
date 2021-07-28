@@ -101,7 +101,7 @@ namespace BH.Revit.Engine.Core
                     elementIds.UnionWith(applicable);
 
                     if (matching.Count != applicable.Count)
-                        BH.Engine.Reflection.Compute.RecordWarning($"Some of the Revit elements were linked with BHoM type {type} through family mapping settings, but were excluded from selection due to the lack of applicable convert method.");
+                        BH.Engine.Reflection.Compute.RecordWarning($"Some of the Revit elements were linked with BHoM type {type.Name} through family mapping settings, but were excluded from selection due to the lack of applicable convert method.");
                 }
             }
 

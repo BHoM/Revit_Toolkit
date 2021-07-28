@@ -20,15 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using System;
-using System.ComponentModel;
-using BH.Engine.Data;
 using System.Collections.Generic;
-using BH.oM.Adapters.Revit.Settings;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
@@ -39,9 +35,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Gets the discipline to which a given BHoM type belongs. The result is based on the namespace in which the type is declared, e.g. BH.oM.Structure.Elements.Bar will return oM.Adapters.Revit.Enums.Discipline.Structural.")]
-        //[Input("type", "BHoM type to be queried.")]
-        //[Output("discipline")]
+        [Description("Gets names of the Revit families explicitly instructed to be converted to a given BHoM type.")]
+        [Input("settings", "MappingSettings containing the information about Revit family vs BHoM type mapping.")]
+        [Input("type", "BHoM type, against which the family names are queried.")]
+        [Output("familyNames")]
         public static List<string> MappedFamilyNames(this MappingSettings settings, Type bHoMType)
         {
             if (settings == null)

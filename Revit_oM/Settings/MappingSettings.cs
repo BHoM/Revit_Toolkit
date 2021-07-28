@@ -27,7 +27,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Settings
 {
-    //[Description("An entity holding information about conversion-specific Revit parameter names as well as relationships between object property names (or names of RevitParameters attached to it) and Revit parameter names.")]
+    [Description("An entity holding information about the enforced convert relationships between Revit families and BHoM types on Pull as well as mapping between Revit parameters and BHoM object properties.")]
     public class MappingSettings : BHoMObject
     {
         /***************************************************/
@@ -37,7 +37,7 @@ namespace BH.oM.Adapters.Revit.Settings
         [Description("A collection of entities defining relationships between property names of BHoM types (or RevitParameters attached to objects of these types) and parameter names of correspondent Revit elements.")]
         public virtual List<ParameterMap> ParameterMaps { get; set; } = new List<ParameterMap>();
 
-        //[Description("A collection of entities defining relationships between property names of BHoM types (or RevitParameters attached to objects of these types) and parameter names of correspondent Revit elements.")]
+        [Description("A collection of entities defining relationships between Revit families and BHoM types, to which these families are meant to be converted on Pull.")]
         public virtual List<FamilyMap> FamilyMaps { get; set; } = new List<FamilyMap>();
 
         [Description("Name of the Revit parameter to be used as a source (on Pull) and target (on Push) of information for BHoM tags.")]
