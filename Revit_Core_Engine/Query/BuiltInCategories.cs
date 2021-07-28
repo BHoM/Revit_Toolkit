@@ -56,7 +56,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Queries a BHoM generic object for its Revit BuiltInCategory.")]
-        [Input("family", "BHoM object to be queried.")]
+        [Input("bHoMObject", "BHoM object to be queried.")]
         [Input("document", "Revit current document to be processed.")]
         [Input("caseSensitive", "Optional, whether the lookup is case sensitive or not.")]
         [Output("builtInCategories", "Resulted HashSet list of Revit BuiltInCategory.")]
@@ -72,9 +72,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Queries a BHoM Type for its matching Revit BuiltInCategory.")]
-        [Input("family", "Type to be queried.")]
-        [Input("document", "Revit current document to be processed.")]
-        [Input("caseSensitive", "Optional, whether the lookup is case sensitive or not.")]
+        [Input("bHoMType", "BHoM Type to be queried.")]
         [Output("builtInCategories", "Resulted HashSet list of Revit BuiltInCategory.")]
         public static HashSet<BuiltInCategory> BuiltInCategories(this Type bHoMType)
         {
