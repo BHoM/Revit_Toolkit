@@ -156,6 +156,7 @@
     <Compile Include="Elements\Sheet.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Versioning_43.json" />
     <None Include="Versioning_40.json" />
     <None Include="Versioning_32.json" />
   </ItemGroup>

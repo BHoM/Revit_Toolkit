@@ -1,0 +1,46 @@
+﻿{
+  "Namespace": {
+    "ToNew": {
+    },
+    "ToOld": {
+    }
+  },
+  "Type": {
+    "ToNew": {
+      "BH.oM.Adapters.Revit.Parameters.ParameterMap": "BH.oM.Adapters.Revit.Mapping.ParameterMap",
+      "BH.oM.Adapters.Revit.Parameters.IParameterLink": "BH.oM.Adapters.Revit.Mapping.IParameterLink",
+      "BH.oM.Adapters.Revit.Parameters.ElementTypeParameterLink": "BH.oM.Adapters.Revit.Mapping.ElementTypeParameterLink",
+      "BH.oM.Adapters.Revit.Parameters.ElementParameterLink": "BH.oM.Adapters.Revit.Mapping.ElementParameterLink"
+    },
+    "ToOld": {
+      "BH.oM.Adapters.Revit.Mapping.ParameterMap": "BH.oM.Adapters.Revit.Parameters.ParameterMap",
+      "BH.oM.Adapters.Revit.Mapping.IParameterLink": "BH.oM.Adapters.Revit.Parameters.IParameterLink",
+      "BH.oM.Adapters.Revit.Mapping.ElementTypeParameterLink": "BH.oM.Adapters.Revit.Parameters.ElementTypeParameterLink",
+      "BH.oM.Adapters.Revit.Mapping.ElementParameterLink": "BH.oM.Adapters.Revit.Parameters.ElementParameterLink"
+    }
+  },
+  "Method": {
+    "ToNew": {
+	"BH.Engine.Adapters.Revit.Query.DefaultParameterSettings": "BH.Engine.Adapters.Revit.Query.DefaultMappingSettings",
+	"BH.Engine.Adapters.Revit.Create.ParameterSettings(System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Mapping.ParameterMap>, System.String, System.String)": "BH.Engine.Adapters.Revit.Create.MappingSettings(System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Mapping.ParameterMap>, System.String, System.String)"
+    },
+    "ToOld": {
+	"BH.Engine.Adapters.Revit.Query.DefaultMappingSettings": "BH.Engine.Adapters.Revit.Query.DefaultParameterSettings",
+	"BH.Engine.Adapters.Revit.Create.MappingSettings(System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Mapping.ParameterMap>, System.String, System.String)": "BH.Engine.Adapters.Revit.Create.ParameterSettings(System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Mapping.ParameterMap>, System.String, System.String)"
+    }
+  },
+  "Property": {
+    "ToNew": {
+      "BH.oM.Adapters.Revit.Settings.RevitSettings.ParameterSettings": "BH.oM.Adapters.Revit.Settings.RevitSettings.MappingSettings"
+    },
+    "ToOld": {
+      "BH.oM.Adapters.Revit.Settings.RevitSettings.MappingSettings": "BH.oM.Adapters.Revit.Settings.RevitSettings.ParameterSettings"
+    }
+  },
+  "MessageForDeleted": {
+
+  },
+  "MessageForNoUpgrade": {
+
+  }
+}
