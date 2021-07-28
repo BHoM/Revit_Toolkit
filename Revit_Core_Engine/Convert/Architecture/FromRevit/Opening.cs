@@ -37,6 +37,12 @@ namespace BH.Revit.Engine.Core
 
         public static oM.Architecture.BuildersWork.Opening OpeningFromRevit(this FamilyInstance instance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
+            if (instance == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError($"The convert from Revit element of type {typeof(FamilyInstance).Name} to {typeof(oM.Architecture.BuildersWork.Opening).Name} failed because the input element is null.");
+                return null;
+            }
+
             settings = settings.DefaultIfNull();
 
             oM.Architecture.BuildersWork.Opening opening = refObjects.GetValue<oM.Architecture.BuildersWork.Opening>(instance.Id);
