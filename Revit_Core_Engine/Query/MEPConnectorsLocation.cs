@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 
@@ -41,18 +42,29 @@ namespace BH.Revit.Engine.Core
         [Output("mepConnectorsLocation", "The list of points representing the connector's location points.")]
         public static List<BH.oM.Geometry.Point> MEPConnectorsLocation(this FamilyInstance mepInstance, RevitSettings settings = null)
         {
+            settings = settings.DefaultIfNull();
             MEPModel mepModel = mepInstance.MEPModel;
 
-            if (mepModel != null)
+            if (mepModel == null)
             {
-                ConnectorManager connectorManager = mepModel.ConnectorManager;
-                ConnectorSet connectorSet = connectorManager.Connectors;
-                List<Connector> connectors = connectorSet.Cast<Connector>().ToList();
-                return connectors.Select(x => x.Origin.PointFromRevit()).ToList();
+                BH.Engine.Reflection.Compute.RecordError("The input fitting does not have any connectors.");
+                return null;
             }
 
-            return new List<BH.oM.Geometry.Point>();
+            ConnectorManager connectorManager = mepModel.ConnectorManager;
+            if (connectorManager == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("The input fitting does not have any connectors.");
+                return null;
+            }
+                    
+            ConnectorSet connectorSet = connectorManager.Connectors;
+            List<Connector> connectors = connectorSet.Cast<Connector>().ToList();
+            
+            return connectors.Select(x => x.Origin.PointFromRevit()).ToList();
+            
         }
+        
         /***************************************************/
     }
 }
