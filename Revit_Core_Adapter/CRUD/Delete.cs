@@ -63,7 +63,7 @@ namespace BH.Revit.Adapter.Core
             if (!removeConfig.IncludeClosedWorksets)
                 worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
 
-            IEnumerable<ElementId> elementIds = request.IElementIds(document, worksetPrefilter).RemoveGridSegmentIds(document);
+            IEnumerable<ElementId> elementIds = request.IElementIds(document, RevitSettings.DefaultIfNull(), worksetPrefilter).RemoveGridSegmentIds(document);
 
             List<ElementId> deletedIds = Delete(elementIds, document, removeConfig.RemovePinned);
             if (deletedIds == null)

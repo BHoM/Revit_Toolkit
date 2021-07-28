@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Properties;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Physical.Elements;
 using BH.oM.Physical.FramingProperties;
@@ -39,10 +41,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIdsByBHoMType(this Document document, Type type, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsByBHoMType(this Document document, Type type, RevitSettings settings, IEnumerable<ElementId> ids = null)
         {
             if (document == null || type == null)
                 return null;
+
+            settings = settings.DefaultIfNull();
 
             HashSet<ElementId> elementIds = new HashSet<ElementId>();
             if (!typeof(IBHoMObject).IsAssignableFrom(type))
@@ -68,7 +72,13 @@ namespace BH.Revit.Engine.Core
 
             // Special case - filter drafting instances
             if (type == typeof(DraftingInstance))
-                return new FilteredElementCollector(document).WhereElementIsNotElementType().WherePasses(new ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_SketchLines, true)).Where(x => x.ViewSpecific && (x is FilledRegion || x.Location is LocationPoint || x.Location is LocationCurve)).Select(x => x.Id);
+            {
+                elementIds.UnionWith(new FilteredElementCollector(document).WhereElementIsNotElementType().WherePasses(new ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_SketchLines, true)).Where(x => x.ViewSpecific && (x is FilledRegion || x.Location is LocationPoint || x.Location is LocationCurve)).Select(x => x.Id));
+                if (ids != null)
+                    elementIds.IntersectWith(ids);
+
+                return elementIds;
+            }
             
             // Else go the regular way
             List<ElementFilter> filters = new List<ElementFilter>();
@@ -78,6 +88,21 @@ namespace BH.Revit.Engine.Core
             {
                 BH.Engine.Reflection.Compute.RecordError(String.Format("Type {0} is not coupled with any Revit type that could be converted.", type));
                 return elementIds;
+            }
+
+            // Try getting the elementIds based on family names from relevant ParameterMaps
+            IEnumerable<string> familyNames = settings.MappingSettings?.FamilyMaps.Where(x => x.Type == type)?.SelectMany(x => x.FamilyNames)?.Where(x => !string.IsNullOrWhiteSpace(x));
+            if (familyNames != null && familyNames.Any())
+            {
+                foreach (string familyName in familyNames)
+                {
+                    List<ElementId> matching = document.ElementIdsByFamilyAndType(familyName, null, true).ToList();
+                    List<ElementId> applicable = matching.Where(x => types.Any(y => y.IsAssignableFrom(document.GetElement(x).GetType()))).ToList();
+                    elementIds.UnionWith(applicable);
+
+                    if (matching.Count != applicable.Count)
+                        BH.Engine.Reflection.Compute.RecordWarning($"Some of the Revit elements were linked with BHoM type {type} through family mapping settings, but were excluded from selection due to the lack of applicable convert method.");
+                }
             }
 
             foreach (Type t in types)
@@ -103,6 +128,9 @@ namespace BH.Revit.Engine.Core
             {
                 elementIds.UnionWith(collector.OfClass(unsupportedAPIType.Item2).Where(x => x.GetType() == unsupportedAPIType.Item1).Select(x => x.Id));
             }
+
+            if (ids != null)
+                elementIds.IntersectWith(ids);
             
             // Filter only structural bars
             if (type == typeof(BH.oM.Structure.Elements.Bar))

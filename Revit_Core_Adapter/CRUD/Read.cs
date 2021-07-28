@@ -114,7 +114,7 @@ namespace BH.Revit.Adapter.Core
             if (!pullConfig.IncludeClosedWorksets)
                 worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
 
-            List<ElementId> elementIds = request.IElementIds(document, worksetPrefilter).RemoveGridSegmentIds(document)?.ToList();
+            List<ElementId> elementIds = request.IElementIds(document, settings, worksetPrefilter).RemoveGridSegmentIds(document)?.ToList();
             if (elementIds == null)
                 return new List<IBHoMObject>();
 
@@ -152,7 +152,7 @@ namespace BH.Revit.Adapter.Core
             if (linkTransform?.IsIdentity == false)
                 bHoMTransform = linkTransform.FromRevit();
 
-                List<IBHoMObject> result = new List<IBHoMObject>();
+            List<IBHoMObject> result = new List<IBHoMObject>();
             foreach (ElementId id in elementIds)
             {
                 Element element = document.GetElement(id);
