@@ -115,7 +115,7 @@ namespace BH.Revit.Engine.Core
             object converted;
 
             //TODO: use BHoM methods to get types - avoid duplication!
-            Type targetBHoMType = element.BHoMType(discipline, settings);
+            Type targetBHoMType = element.IBHoMType(discipline, settings);
             if (targetBHoMType == null)
             {
                 BH.Engine.Reflection.Compute.RecordWarning($"Revit element of type {element.GetType().Name} does not have a correspondent BHoM type for discipline {discipline}. It has been converted to a generic ModelInstance or DraftingInstance.");
@@ -124,7 +124,7 @@ namespace BH.Revit.Engine.Core
             else
             {
                 MethodInfo convertMethod = element.ConvertMethod(targetBHoMType);
-                converted = convertMethod.Invoke(element, new object[] { settings, refObjects });
+                converted = convertMethod.Invoke(null, new object[] { element, settings, refObjects });
 
                 if (converted == null || (typeof(IEnumerable<object>).IsAssignableFrom(converted.GetType()) && ((IEnumerable<object>)converted).Count(x => x != null) == 0))
                 {
@@ -150,7 +150,7 @@ namespace BH.Revit.Engine.Core
         [Description("Fallback method when no suitable FromRevit for Location is found, e.g. when it's not LocationPoint nor LocationCurve.")]
         [Input("location", "Revit Location to be converted.")]
         [Output("fromRevit", "Null resulted from no suitable Location FromRevit method.")]
-        public static IGeometry FromRevit(this Location location)
+        private static IGeometry FromRevit(this Location location)
         {
             return null;
         }
