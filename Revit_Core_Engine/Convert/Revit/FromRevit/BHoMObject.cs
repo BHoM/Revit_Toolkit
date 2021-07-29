@@ -21,9 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Adapter.Revit;
 using BH.Engine.Adapters.Revit;
-using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Properties;
@@ -31,6 +29,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -48,7 +47,18 @@ namespace BH.Revit.Engine.Core
             if (iBHoMObject != null)
                 return iBHoMObject;
 
-            IGeometry iGeometry = element.Location.IFromRevit();
+            IGeometry iGeometry = null;
+
+            FamilyInstance familyInstance = element as FamilyInstance;
+            if (familyInstance != null && AdaptiveComponentInstanceUtils.IsAdaptiveComponentInstance(familyInstance))
+            {
+                IEnumerable<BH.oM.Geometry.Point> pts = AdaptiveComponentInstanceUtils.GetInstancePointElementRefIds(familyInstance).Select(x => ((ReferencePoint)familyInstance.Document.GetElement(x)).Position.PointFromRevit());
+                iGeometry = new CompositeGeometry { Elements = new List<IGeometry>(pts) };
+            }
+
+            if (iGeometry == null)
+                iGeometry = element.Location.IFromRevit();
+
             if (iGeometry != null)
             {
                 ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
