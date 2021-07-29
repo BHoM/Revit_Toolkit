@@ -201,6 +201,12 @@ namespace BH.Revit.Engine.Core
                     Autodesk.Revit.DB.BuiltInCategory.OST_DuctAccessory,
                     Autodesk.Revit.DB.BuiltInCategory.OST_PipeAccessory,
                 }
+            },
+            {
+                typeof (BH.oM.Architecture.BuildersWork.Opening), new BuiltInCategory[]
+                {
+                    Autodesk.Revit.DB.BuiltInCategory.OST_GenericModel,
+                }
             }
         };
 

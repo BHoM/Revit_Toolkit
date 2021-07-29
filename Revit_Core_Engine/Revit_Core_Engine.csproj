@@ -308,6 +308,7 @@
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Compute\PrepareForLinkDimensioning.cs" />
     <Compile Include="Compute\SplitRequestTreeByLinks.cs" />
+    <Compile Include="Convert\Architecture\FromRevit\Opening.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Room.cs" />
     <Compile Include="Convert\Facade\FromRevit\FrameEdge.cs" />
     <Compile Include="Convert\MEP\FromRevit\CableTray.cs" />
@@ -346,6 +347,7 @@
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\CategoriesWithBoundParameters.cs" />
     <Compile Include="Query\ConvertMethod.cs" />
+    <Compile Include="Query\CoordinateSystem.cs" />
     <Compile Include="Query\CurtainWallCurves.cs" />
     <Compile Include="Query\FacadePanelAsOpening.cs" />
     <Compile Include="Query\FacadeCurtainPanels.cs" />
