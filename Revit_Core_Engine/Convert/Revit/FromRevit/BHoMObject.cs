@@ -28,6 +28,7 @@ using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -39,7 +40,7 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static IBHoMObject ObjectFromRevit(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IBHoMObject ObjectFromRevit(this Element element, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
