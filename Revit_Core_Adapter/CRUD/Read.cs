@@ -21,7 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.Engine.Graphics;
@@ -114,7 +113,7 @@ namespace BH.Revit.Adapter.Core
             if (!pullConfig.IncludeClosedWorksets)
                 worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
 
-            List<ElementId> elementIds = request.IElementIds(document, worksetPrefilter).RemoveGridSegmentIds(document)?.ToList();
+            List<ElementId> elementIds = request.IElementIds(document, discipline, settings, worksetPrefilter).RemoveGridSegmentIds(document)?.ToList();
             if (elementIds == null)
                 return new List<IBHoMObject>();
 
