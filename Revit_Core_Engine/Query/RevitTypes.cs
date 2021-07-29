@@ -20,11 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace BH.Revit.Engine.Core
 {
@@ -39,26 +37,8 @@ namespace BH.Revit.Engine.Core
             if (m_revitTypes.ContainsKey(type))
                 return m_revitTypes[type];
 
-            HashSet<Type> revitTypes = new HashSet<Type>();
-            BindingFlags bindingBHoM = BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static;
-            foreach (Type t in Assembly.GetExecutingAssembly().GetTypes())
-            {
-                if (t.IsInterface || !t.IsAbstract || t.Name != "Convert")
-                    continue;
-
-                MethodInfo[] typeMethods = t.GetMethods(bindingBHoM);
-                Type ienumType = typeof(IEnumerable<>).MakeGenericType(type);
-                foreach (MethodInfo mi in typeMethods.Where(x => x.Name.EndsWith("FromRevit")))
-                {
-                    if (type.IsAssignableFrom(mi.ReturnType) || ienumType.IsAssignableFrom(mi.ReturnType))
-                    {
-                        Type parameterType = mi.GetParameters().First().ParameterType;
-                        if (parameterType != typeof(Element) && typeof(Element).IsAssignableFrom(parameterType))
-                            revitTypes.Add(parameterType);
-                    }
-                }
-            }
-
+            Type ienumType = typeof(IEnumerable<>).MakeGenericType(type);
+            HashSet<Type> revitTypes = new HashSet<Type>(AllConvertMethods().Where(x => type.IsAssignableFrom(x.Key.Item2) || ienumType.IsAssignableFrom(x.Key.Item2)).Select(x => x.Key.Item1));
             m_revitTypes.Add(type, revitTypes);
             return revitTypes;
         }
