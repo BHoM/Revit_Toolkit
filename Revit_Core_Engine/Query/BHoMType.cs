@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using Autodesk.Revit.DB.Structure;
+using BH.Engine.Adapters.Revit;
 using BH.Engine.Architecture;
 using BH.Engine.Physical;
 using BH.Engine.Revit;
@@ -93,42 +94,48 @@ namespace BH.Revit.Engine.Core
         //[Output("fromRevit", "Resulted BHoM object converted from a Revit FamilyInstance.")]
         public static Type BHoMType(this FamilyInstance familyInstance, Discipline discipline, RevitSettings settings = null)
         {
+            string familyName = familyInstance?.Symbol?.FamilyName;
+            BuiltInCategory category = (BuiltInCategory)familyInstance.Category.Id.IntegerValue;
+
             switch (discipline)
             {
                 case Discipline.Structural:
                     if (familyInstance.StructuralType != Autodesk.Revit.DB.Structure.StructuralType.NonStructural
-                        && typeof(Bar).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                        && typeof(Bar).BuiltInCategories().Contains(category))
                         return typeof(Bar);
                     break;
                 case Discipline.Physical:
                 case Discipline.Architecture:
-                    if (typeof(BH.oM.Physical.Elements.Window).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                    if (typeof(BH.oM.Physical.Elements.Window).BuiltInCategories().Contains(category))
                         return typeof(BH.oM.Physical.Elements.Window);
-                    else if (typeof(BH.oM.Physical.Elements.Door).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                    else if (typeof(BH.oM.Physical.Elements.Door).BuiltInCategories().Contains(category))
                         return typeof(BH.oM.Physical.Elements.Door);
-                    else if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue)
+                    else if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains(category)
                             || familyInstance.StructuralType == Autodesk.Revit.DB.Structure.StructuralType.Column)
                         return typeof(BH.oM.Physical.Elements.Column);
-                    else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue)
+                    else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains(category)
                             || familyInstance.StructuralUsage == StructuralInstanceUsage.Brace
                             || familyInstance.StructuralUsage == StructuralInstanceUsage.HorizontalBracing
                             || familyInstance.StructuralUsage == StructuralInstanceUsage.KickerBracing
                             || familyInstance.StructuralType == Autodesk.Revit.DB.Structure.StructuralType.Brace)
                         return typeof(BH.oM.Physical.Elements.Bracing);
-                    else if (typeof(BH.oM.Physical.Elements.Beam).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                    else if (typeof(BH.oM.Physical.Elements.Beam).BuiltInCategories().Contains(category))
                         return typeof(BH.oM.Physical.Elements.Beam);
-                    else if (typeof(BH.oM.MEP.System.Fittings.Fitting).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                    else if (typeof(BH.oM.MEP.System.Fittings.Fitting).BuiltInCategories().Contains(category))
                         return typeof(BH.oM.MEP.System.Fittings.Fitting);
+                    else if (typeof(BH.oM.Architecture.BuildersWork.Opening).BuiltInCategories().Contains(category)
+                            && settings.ParameterSettings.MappedFamilyNames(typeof(BH.oM.Architecture.BuildersWork.Opening)).Contains(familyName))
+                        return typeof(BH.oM.Architecture.BuildersWork.Opening);
                     break;
                 case Discipline.Environmental:
-                    if (typeof(BH.oM.MEP.System.Fittings.Fitting).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                    if (typeof(BH.oM.MEP.System.Fittings.Fitting).BuiltInCategories().Contains(category))
                         return typeof(BH.oM.MEP.System.Fittings.Fitting);
                     else
                         return typeof(BH.oM.Environment.Elements.Panel);
                 case Discipline.Facade:
-                    if (typeof(BH.oM.Facade.Elements.Opening).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                    if (typeof(BH.oM.Facade.Elements.Opening).BuiltInCategories().Contains(category))
                         return typeof(BH.oM.Facade.Elements.Opening);
-                    else if (typeof(BH.oM.Facade.Elements.FrameEdge).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                    else if (typeof(BH.oM.Facade.Elements.FrameEdge).BuiltInCategories().Contains(category))
                         return typeof(BH.oM.Facade.Elements.FrameEdge);
                     break;
             }
