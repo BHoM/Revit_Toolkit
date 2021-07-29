@@ -364,6 +364,7 @@
     <Compile Include="Query\LinkInstance.cs" />
     <Compile Include="Query\LinkPanelFaces.cs" />
     <Compile Include="Query\LinkTransform.cs" />
+    <Compile Include="Query\Passes.cs" />
     <Compile Include="Query\Shape.cs" />
     <Compile Include="Query\MaterialTakeOff.cs" />
     <Compile Include="Query\PipeSectionProperty.cs" />
@@ -502,7 +503,6 @@
     <Compile Include="Query\ElementIds\ElementIdsByIdObjects.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByInts.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByParameter.cs" />
-    <Compile Include="Query\ElementIds\ElementIdsByParameterExistence.cs" />
     <Compile Include="Query\ElementIds\ElementIdsBySelectionSet.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByUniqueIds.cs" />
     <Compile Include="Query\ElementIds\ElementIdsByWorksets.cs" />

@@ -21,12 +21,13 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Data;
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Requests;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Data.Requests;
 using BH.Revit.Engine.Core;
@@ -56,14 +57,20 @@ namespace BH.Revit.Adapter.Core
                 return 0;
             }
 
+            RevitSettings settings = RevitSettings.DefaultIfNull();
+
             Document document = this.Document;
             RevitRemoveConfig removeConfig = actionConfig as RevitRemoveConfig;
+
+            Discipline discipline = request.Discipline(Discipline.Undefined).Value;
+            if (discipline == Discipline.Undefined)
+                discipline = Discipline.Physical;
 
             IEnumerable<ElementId> worksetPrefilter = null;
             if (!removeConfig.IncludeClosedWorksets)
                 worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
 
-            IEnumerable<ElementId> elementIds = request.IElementIds(document, worksetPrefilter).RemoveGridSegmentIds(document);
+            IEnumerable<ElementId> elementIds = request.IElementIds(document, discipline, settings, worksetPrefilter).RemoveGridSegmentIds(document);
 
             List<ElementId> deletedIds = Delete(elementIds, document, removeConfig.RemovePinned);
             if (deletedIds == null)
