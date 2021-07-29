@@ -20,11 +20,13 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,6 +36,30 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Creates an entity holding information about the enforced convert relationships between Revit families and BHoM types on Pull as well as mapping between Revit parameters and BHoM object properties.")]
+        [InputFromProperty("parameterMaps")]
+        [InputFromProperty("familyMaps")]
+        [InputFromProperty("tagsParameter")]
+        [InputFromProperty("materialGradeParameter")]
+        [Output("parameterSettings")]
+        public static ParameterSettings ParameterSettings(IEnumerable<ParameterMap> parameterMaps = null, IEnumerable<FamilyMap> familyMaps = null, string tagsParameter = "", string materialGradeParameter = "")
+        {
+            ParameterSettings parameterSettings = new ParameterSettings();
+            if (parameterMaps != null)
+                parameterSettings = parameterSettings.AddParameterMaps(parameterMaps);
+
+            if (familyMaps != null)
+                parameterSettings.FamilyMaps = familyMaps.ToList();
+
+            parameterSettings.TagsParameter = tagsParameter;
+            parameterSettings.MaterialGradeParameter = materialGradeParameter;
+
+            return parameterSettings;
+        }
+
+        /***************************************************/
+
+        [Deprecated("4.3", "More up to date version with a larger number of parameters has been added.")]
         [Description("Created an entity holding information about conversion-specific Revit parameter names as well as relationships between object's property names (or names of RevitParameters attached to it) and Revit parameter names.")]
         [InputFromProperty("parameterMaps")]
         [InputFromProperty("tagsParameter")]

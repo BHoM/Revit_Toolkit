@@ -20,9 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
@@ -34,11 +36,15 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates an instance of ParameterSettings with all ParameterMaps stored in BHoM/DataSets/Revit/ParameterMaps folder.")]
+        [Description("Creates an instance of ParameterSettings with all ParameterMaps and FamilyMaps stored in BHoM/DataSets/Revit/ParameterMaps folder.")]
         [Output("parameterSettings")]
         public static ParameterSettings DefaultParameterSettings()
         {
             ParameterSettings settings = new ParameterSettings().AddParameterMaps(BH.Engine.Library.Query.Library("ParameterMaps").Where(x => x is ParameterMap).Cast<ParameterMap>());
+            List<FamilyMap> familyMaps = BH.Engine.Library.Query.Library("FamilyMaps").Where(x => x is FamilyMap).Cast<FamilyMap>()?.ToList();
+            if (familyMaps != null)
+                settings.FamilyMaps = familyMaps;
+            
             settings.Name = "BH Default Parameter Settings";
             return settings;
         }

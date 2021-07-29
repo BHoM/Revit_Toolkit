@@ -92,6 +92,7 @@
     <Compile Include="Enums\NumberComparisonType.cs" />
     <Compile Include="Enums\RevitViewType.cs" />
     <Compile Include="Enums\TextComparisonType.cs" />
+    <Compile Include="Mapping\FamilyMap.cs" />
     <Compile Include="Misc\ClonedType.cs" />
     <Compile Include="Misc\RevitGeometry.cs" />
     <Compile Include="Misc\RevitMaterialTakeOff.cs" />
@@ -158,6 +159,7 @@
     <None Include="Versioning_40.json" />
     <None Include="Versioning_32.json" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
