@@ -33,7 +33,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static MethodInfo ConvertMethod(this Element from, Type bHoMType)
+        public static MethodInfo ConvertMethod(this Element from, Type targetBHoMType)
         {
             if (from == null)
             {
@@ -41,16 +41,16 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            if (bHoMType == null)
+            if (targetBHoMType == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Unable to extract convert method for a null BHoM type.");
+                BH.Engine.Reflection.Compute.RecordError("Unable to extract convert method for a null target BHoM type.");
                 return null;
             }
 
             Type revitType = from.GetType();
             foreach (KeyValuePair<Tuple<Type, Type>, MethodInfo> kvp in AllConvertMethods())
             {
-                if (kvp.Key.Item1.IsAssignableFrom(revitType) && kvp.Key.Item2.IsAssignableFrom(bHoMType))
+                if (kvp.Key.Item1.IsAssignableFrom(revitType) && kvp.Key.Item2.IsAssignableFrom(targetBHoMType))
                     return kvp.Value;
             }
 
