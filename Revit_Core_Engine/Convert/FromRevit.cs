@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
         /****      Convert Revit elements to BHoM       ****/
         /***************************************************/
 
-        [Description("Converts a Revit ProjectInfo to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit ProjectInfo to a BHoM object based on the requested engineering discipline.")]
         [Input("projectInfo", "Revit ProjectInfo to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -67,7 +67,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit EnergyAnalysisDetailModel to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit EnergyAnalysisDetailModel to a BHoM object based on the requested engineering discipline.")]
         [Input("energyAnalysisModel", "Revit EnergyAnalysisDetailModel to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -162,7 +162,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit FamilySymbol to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit FamilySymbol to a BHoM object based on the requested engineering discipline.")]
         [Input("familySymbol", "Revit FamilySymbol to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -183,7 +183,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit Wall to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit Wall to a BHoM object based on the requested engineering discipline.")]
         [Input("wall", "Revit Wall to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -224,7 +224,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit Ceiling to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit Ceiling to a BHoM object based on the requested engineering discipline.")]
         [Input("ceiling", "Revit Ceiling to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -257,7 +257,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit Floor to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit Floor to a BHoM object based on the requested engineering discipline.")]
         [Input("floor", "Revit Floor to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -293,7 +293,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit RoofBase to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit RoofBase to a BHoM object based on the requested engineering discipline.")]
         [Input("roofBase", "Revit RoofBase to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -329,7 +329,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit HostObjAttributes to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit HostObjAttributes to a BHoM object based on the requested engineering discipline.")]
         [Input("hostObjAttributes", "Revit HostObjAttributes to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -354,7 +354,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit CableTray to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit CableTray to a BHoM object based on the requested engineering discipline.")]
         [Input("cableTray", "Revit CableTray to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -384,7 +384,7 @@ namespace BH.Revit.Engine.Core
         
         /***************************************************/
 
-        [Description("Converts a Revit Duct to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit Duct to a BHoM object based on the requested engineering discipline.")]
         [Input("duct", "Revit Duct to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -414,7 +414,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         
-        [Description("Converts a Revit Pipe to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit Pipe to a BHoM object based on the requested engineering discipline.")]
         [Input("pipe", "Revit Pipe to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -444,7 +444,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit Wire to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit Wire to a BHoM object based on the requested engineering discipline.")]
         [Input("wire", "Revit Wire to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -474,7 +474,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit Level to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit Level to a BHoM object based on the requested engineering discipline.")]
         [Input("level", "Revit Level to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -496,7 +496,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit Grid to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit Grid to a BHoM object based on the requested engineering discipline.")]
         [Input("grid", "Revit Grid to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -524,7 +524,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit MultiSegmentGrid to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit MultiSegmentGrid to a BHoM object based on the requested engineering discipline.")]
         [Input("grid", "Revit MultiSegmentGrid to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -552,7 +552,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit ElementType to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit ElementType to a BHoM object based on the requested engineering discipline.")]
         [Input("elementType", "Revit ElementType to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -570,7 +570,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit GraphicsStyle to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit GraphicsStyle to a BHoM object based on the requested engineering discipline.")]
         [Input("graphicStyle", "Revit GraphicsStyle to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -588,7 +588,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit SpatialElement to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit SpatialElement to a BHoM object based on the requested engineering discipline.")]
         [Input("spatialElement", "Revit SpatialElement to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -621,7 +621,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit EnergyAnalysisSpace to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit EnergyAnalysisSpace to a BHoM object based on the requested engineering discipline.")]
         [Input("energyAnalysisSpace", "Revit EnergyAnalysisSpace to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -652,7 +652,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit EnergyAnalysisSurface to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit EnergyAnalysisSurface to a BHoM object based on the requested engineering discipline.")]
         [Input("energyAnalysisSurface", "Revit EnergyAnalysisSurface to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -683,7 +683,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit EnergyAnalysisOpening to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit EnergyAnalysisOpening to a BHoM object based on the requested engineering discipline.")]
         [Input("energyAnalysisOpening", "Revit EnergyAnalysisOpening to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -714,7 +714,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit ViewSheet to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit ViewSheet to a BHoM object based on the requested engineering discipline.")]
         [Input("viewSheet", "Revit ViewSheet to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -732,7 +732,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         
-        [Description("Converts a Revit Viewport to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit Viewport to a BHoM object based on the requested engineering discipline.")]
         [Input("viewport", "Revit Viewport to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -750,7 +750,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit ViewPlan to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit ViewPlan to a BHoM object based on the requested engineering discipline.")]
         [Input("viewPlan", "Revit ViewPlan to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -768,7 +768,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit Material to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit Material to a BHoM object based on the requested engineering discipline.")]
         [Input("material", "Revit Material to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -793,7 +793,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit Family to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit Family to a BHoM object based on the requested engineering discipline.")]
         [Input("family", "Revit Family to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -811,7 +811,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit CurveElement to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit CurveElement to a BHoM object based on the requested engineering discipline.")]
         [Input("curveElement", "Revit CurveElement to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]
@@ -839,7 +839,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit FilledRegion to a BHoM object based on its discipline.")]
+        [Description("Converts a Revit FilledRegion to a BHoM object based on the requested engineering discipline.")]
         [Input("filledRegion", "Revit FilledRegion to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("transform", "Optional, a transform to apply to the converted object.")]

@@ -43,6 +43,13 @@ namespace BH.Revit.Engine.Core
         public static List<BH.oM.Geometry.Point> MEPConnectorsLocation(this FamilyInstance mepInstance, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
+
+            if (mepInstance == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Input mepInstance is null or empty.");
+                return null;
+            }
+            
             MEPModel mepModel = mepInstance.MEPModel;
 
             if (mepModel == null)
