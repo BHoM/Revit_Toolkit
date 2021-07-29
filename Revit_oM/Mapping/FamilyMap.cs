@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -20,32 +20,25 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Mapping;
-using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Settings
+namespace BH.oM.Adapters.Revit.Mapping
 {
-    [Description("An entity holding information about the enforced convert relationships between Revit families and BHoM types on Pull as well as mapping between Revit parameters and BHoM object properties.")]
-    public class ParameterSettings : BHoMObject
+    [Description("An entity defining the relationship relationship between Revit families and BHoM type, to which these families are meant to be converted on Pull.")]
+    public class FamilyMap : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("A collection of entities defining relationships between property names of BHoM types (or RevitParameters attached to objects of these types) and parameter names of correspondent Revit elements.")]
-        public virtual List<ParameterMap> ParameterMaps { get; set; } = new List<ParameterMap>();
+        [Description("BHoM type, to which the Revit families are meant to be converted on Pull.")]
+        public virtual Type Type { get; set; } = null;
 
-        [Description("A collection of entities defining relationships between Revit families and BHoM types, to which these families are meant to be converted on Pull.")]
-        public virtual List<FamilyMap> FamilyMaps { get; set; } = new List<FamilyMap>();
-
-        [Description("Name of the Revit parameter to be used as a source (on Pull) and target (on Push) of information for BHoM tags.")]
-        public virtual string TagsParameter { get; set; } = "BHE_Tags";
-
-        [Description("Name of the Revit parameter to be used as a source of information about material grade of a Revit element.")]
-        public virtual string MaterialGradeParameter { get; set; } = "BHE_Material Grade";
+        [Description("Names of the families to be converted to a given BHoM type on Pull.")]
+        public virtual List<string> FamilyNames { get; set; } = new List<string>();
 
         /***************************************************/
     }
