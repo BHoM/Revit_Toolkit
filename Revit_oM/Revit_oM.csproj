@@ -157,8 +157,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Versioning_43.json" />
-    <None Include="Versioning_40.json" />
-    <None Include="Versioning_32.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
