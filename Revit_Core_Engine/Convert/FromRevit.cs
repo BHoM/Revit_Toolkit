@@ -113,12 +113,11 @@ namespace BH.Revit.Engine.Core
             }
 
             object converted;
-
-            //TODO: use BHoM methods to get types - avoid duplication!
+            
             Type targetBHoMType = element.IBHoMType(discipline, settings);
             if (targetBHoMType == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning($"Revit element of type {element.GetType().Name} does not have a correspondent BHoM type for discipline {discipline}. It has been converted to a generic ModelInstance or DraftingInstance.");
+                BH.Engine.Reflection.Compute.RecordWarning($"Given Revit element of type {element.GetType().Name} does not have a correspondent BHoM type for discipline {discipline}. It has been converted to a generic ModelInstance or DraftingInstance. ElementId: {element.Id}");
                 converted = element.ObjectFromRevit(discipline, settings, refObjects);
             }
             else
