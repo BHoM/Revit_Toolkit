@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
         [Input("family", "BHoM family to be queried.")]
         [Input("document", "Revit current document to be processed.")]
         [Input("caseSensitive", "Optional, whether the lookup is case sensitive or not.")]
-        [Output("builtInCategories", "Resulted HashSet list of Revit BuiltInCategory.")]
+        [Output("builtInCategories", "Resulted collection of Revit BuiltInCategory.")]
         public static HashSet<BuiltInCategory> BuiltInCategories(this oM.Adapters.Revit.Elements.Family family, Document document, bool caseSensitive = true)
         {
             if (family?.PropertiesList == null)
@@ -55,11 +55,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Queries a BHoM generic object for its Revit BuiltInCategory.")]
+        [Description("Queries a BHoM IBHoMObject for its Revit BuiltInCategory.")]
         [Input("bHoMObject", "BHoM object to be queried.")]
         [Input("document", "Revit current document to be processed.")]
         [Input("caseSensitive", "Optional, whether the lookup is case sensitive or not.")]
-        [Output("builtInCategories", "Resulted HashSet list of Revit BuiltInCategory.")]
+        [Output("builtInCategories", "Resulted collection of Revit BuiltInCategory.")]
         public static HashSet<BuiltInCategory> BuiltInCategories(this IBHoMObject bHoMObject, Document document, bool caseSensitive = true)
         {
             BuiltInCategory category = document.BuiltInCategory(bHoMObject.CategoryName(), caseSensitive);
@@ -71,9 +71,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Queries a BHoM Type for its matching Revit BuiltInCategory.")]
+        [Description("Queries a BHoM Type for its correspondent Revit BuiltInCategory.")]
         [Input("bHoMType", "BHoM Type to be queried.")]
-        [Output("builtInCategories", "Resulted HashSet list of Revit BuiltInCategory.")]
+        [Output("builtInCategories", "Resulted collection of Revit BuiltInCategory.")]
         public static HashSet<BuiltInCategory> BuiltInCategories(this Type bHoMType)
         {
             HashSet<BuiltInCategory> result = new HashSet<BuiltInCategory>();
@@ -93,7 +93,7 @@ namespace BH.Revit.Engine.Core
         /****             Public dictionary             ****/
         /***************************************************/
 
-        [Description("A dictiory that relates BHoM types with Revit BuiltInCategories.")]
+        [Description("A dictionary that relates BHoM types with Revit BuiltInCategories.")]
         public static readonly Dictionary<Type, BuiltInCategory[]> BuiltInCategoryTable = new Dictionary<Type, BuiltInCategory[]>
         {
             {
