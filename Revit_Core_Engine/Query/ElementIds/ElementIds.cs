@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
             }
 
             if (request.Type != null)
-                elementIds = document.ElementIdsByBHoMType(request.Type, elementIds);
+                elementIds = document.ElementIdsByBHoMType(request.Type, settings, elementIds);
 
             if (!string.IsNullOrWhiteSpace(request.Tag))
                 BH.Engine.Reflection.Compute.RecordError("Filtering based on tag declared in FilterRequest is currently not supported. The tag-related filter has not been applied.");

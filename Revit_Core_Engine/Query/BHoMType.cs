@@ -96,7 +96,8 @@ namespace BH.Revit.Engine.Core
             switch (discipline)
             {
                 case Discipline.Structural:
-                    if (typeof(Bar).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+                    if (familyInstance.StructuralType != Autodesk.Revit.DB.Structure.StructuralType.NonStructural
+                        && typeof(Bar).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
                         return typeof(Bar);
                     break;
                 case Discipline.Physical:
@@ -105,7 +106,8 @@ namespace BH.Revit.Engine.Core
                         return typeof(BH.oM.Physical.Elements.Window);
                     else if (typeof(BH.oM.Physical.Elements.Door).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
                         return typeof(BH.oM.Physical.Elements.Door);
-                    else if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue) || familyInstance.StructuralType == Autodesk.Revit.DB.Structure.StructuralType.Column)
+                    else if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue)
+                            || familyInstance.StructuralType == Autodesk.Revit.DB.Structure.StructuralType.Column)
                         return typeof(BH.oM.Physical.Elements.Column);
                     else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue)
                             || familyInstance.StructuralUsage == StructuralInstanceUsage.Brace
@@ -171,7 +173,9 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Environmental:
                     return typeof(BH.oM.Environment.Elements.Panel);
                 case Discipline.Structural:
-                    return typeof(BH.oM.Structure.Elements.Panel);
+                    if (wall.LookupParameterInteger(BuiltInParameter.WALL_STRUCTURAL_SIGNIFICANT) == 0)
+                        return typeof(BH.oM.Structure.Elements.Panel);
+                    break;
                 case Discipline.Facade:
                     if (wall.CurtainGrid != null)
                         return typeof(BH.oM.Facade.Elements.CurtainWall);
@@ -225,7 +229,9 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Environmental:
                     return typeof(BH.oM.Environment.Elements.Panel);
                 case Discipline.Structural:
-                    return typeof(BH.oM.Structure.Elements.Panel);
+                    if (floor.LookupParameterInteger(BuiltInParameter.FLOOR_PARAM_IS_STRUCTURAL) == 0)
+                        return typeof(BH.oM.Structure.Elements.Panel);
+                    break;
                 case Discipline.Facade:
                 case Discipline.Architecture:
                 case Discipline.Physical:

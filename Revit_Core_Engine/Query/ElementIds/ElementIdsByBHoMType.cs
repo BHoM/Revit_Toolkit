@@ -21,8 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Properties;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Physical.Elements;
 using BH.oM.Physical.FramingProperties;
@@ -39,10 +42,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<ElementId> ElementIdsByBHoMType(this Document document, Type type, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsByBHoMType(this Document document, Type type, RevitSettings settings, IEnumerable<ElementId> ids = null)
         {
             if (document == null || type == null)
                 return null;
+
+            settings = settings.DefaultIfNull();
 
             HashSet<ElementId> elementIds = new HashSet<ElementId>();
             if (!typeof(IBHoMObject).IsAssignableFrom(type))
@@ -66,13 +71,16 @@ namespace BH.Revit.Engine.Core
             if (ids != null && ids.Count() == 0)
                 return elementIds;
 
-            // Special case - filter drafting instances
+            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+
+            //Special case - filter drafting instances
             if (type == typeof(DraftingInstance))
-                return new FilteredElementCollector(document).WhereElementIsNotElementType().WherePasses(new ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_SketchLines, true)).Where(x => x.ViewSpecific && (x is FilledRegion || x.Location is LocationPoint || x.Location is LocationCurve)).Select(x => x.Id);
-            
+            {
+                elementIds.UnionWith(collector.WhereElementIsNotElementType().WherePasses(new ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_SketchLines, true)).Where(x => x.ViewSpecific && (x is FilledRegion || x.Location is LocationPoint || x.Location is LocationCurve)).Select(x => x.Id));
+                return elementIds;
+            }
+
             // Else go the regular way
-            List<ElementFilter> filters = new List<ElementFilter>();
-            List<Tuple<Type, Type>> unsupportedAPITypes = new List<Tuple<Type, Type>>();
             IEnumerable<Type> types = type.RevitTypes();
             if (types == null || types.Count() == 0)
             {
@@ -80,37 +88,28 @@ namespace BH.Revit.Engine.Core
                 return elementIds;
             }
 
+            Discipline discipline = type.Discipline();
+            if (discipline == Discipline.Undefined)
+                discipline = Discipline.Physical;
+
+            List<ElementFilter> filters = new List<ElementFilter>();
+            List<Tuple<Type, Type>> unsupportedAPITypes = new List<Tuple<Type, Type>>();
             foreach (Type t in types)
             {
-                if (t == typeof(FamilyInstance) || t == typeof(FamilySymbol))
-                {
-                    IEnumerable<BuiltInCategory> builtInCategories = type.BuiltInCategories();
-                    ElementFilter filter = new LogicalAndFilter(new ElementClassFilter(t), new LogicalOrFilter(builtInCategories.Select(x => new ElementCategoryFilter(x) as ElementFilter).ToList()));
-
-                    // Accommodate the fact that bracing can sit in category OST_StructuralFraming etc.
-                    filter = filter.StructuralTypeFilter(type);
-                    filters.Add(filter);
-                }
-                else if (t.IsSupportedAPIType())
+                if (t.IsSupportedAPIType())
                     filters.Add(new ElementClassFilter(t));
                 else
                     unsupportedAPITypes.Add(new Tuple<Type, Type>(t, t.SupportedAPIType()));
             }
-
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
+            
             elementIds.UnionWith(collector.WherePasses(new LogicalOrFilter(filters)).ToElementIds());
             foreach (Tuple<Type, Type> unsupportedAPIType in unsupportedAPITypes)
             {
                 elementIds.UnionWith(collector.OfClass(unsupportedAPIType.Item2).Where(x => x.GetType() == unsupportedAPIType.Item1).Select(x => x.Id));
             }
-            
-            // Filter only structural bars
-            if (type == typeof(BH.oM.Structure.Elements.Bar))
-                elementIds = elementIds.RemoveNonStructuralFraming(document);
 
-            // Filter only structural panels
-            if (type == typeof(BH.oM.Structure.Elements.Panel))
-                elementIds = elementIds.RemoveNonStructuralPanels(document);
+            // Only take the Revit elements that will actually be converted to requested BHoM type
+            elementIds = new HashSet<ElementId>(elementIds.Where(x => type.IsAssignableFrom(document.GetElement(x).IBHoMType(discipline, settings))));
 
             // Filter out analytical spaces that are already pulled as non-analytical
             if (type == typeof(BH.oM.Environment.Elements.Space) || type == typeof(BH.oM.Environment.Elements.Panel))
