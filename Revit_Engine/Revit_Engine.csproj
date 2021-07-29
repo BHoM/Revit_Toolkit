@@ -165,6 +165,7 @@
     <Compile Include="Modify\Transform.cs" />
     <Compile Include="Query\HostId.cs" />
     <Compile Include="Query\LinkPath.cs" />
+    <Compile Include="Query\MappedFamilyNames.cs" />
     <Compile Include="Query\RenderMeshes.cs" />
     <Compile Include="Query\Workset.cs" />
     <Compile Include="Query\ZJustifiedCurve.cs" />
