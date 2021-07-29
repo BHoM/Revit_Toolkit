@@ -340,9 +340,12 @@
     <Compile Include="Create\View\ViewReflectedCeilingPlan.cs" />
     <Compile Include="Create\View\ViewSection.cs" />
     <Compile Include="Modify\SetViewDetailLevel.cs" />
+    <Compile Include="Query\AllConvertMethods.cs" />
+    <Compile Include="Query\BHoMType.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\CategoriesWithBoundParameters.cs" />
+    <Compile Include="Query\ConvertMethod.cs" />
     <Compile Include="Query\CurtainWallCurves.cs" />
     <Compile Include="Query\FacadePanelAsOpening.cs" />
     <Compile Include="Query\FacadeCurtainPanels.cs" />
