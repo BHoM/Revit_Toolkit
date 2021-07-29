@@ -322,7 +322,6 @@
     <Compile Include="Convert\MEP\ToRevit\Duct.cs" />
     <Compile Include="Convert\MEP\ToRevit\ElementType.cs" />
     <Compile Include="Convert\Physical\ToRevit\ElementType.cs" />
-    <Compile Include="Convert\Revit\FromRevit\ModelInstance.cs" />
     <Compile Include="Convert\Revit\Internal\ToSolid.cs" />
     <Compile Include="Convert\Physical\ToRevit\Rebar.cs" />
     <Compile Include="Convert\Revit\ToRevit\ParameterElement.cs" />
