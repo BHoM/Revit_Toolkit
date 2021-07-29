@@ -45,7 +45,23 @@ namespace BH.Revit.Engine.Core
     public static partial class Query
     {
         /***************************************************/
-        /****      Convert Revit elements to BHoM       ****/
+        /****             Interface Methods             ****/
+        /***************************************************/
+
+        //[Description("Interface method that tries to find a suitable FromRevit convert for any Revit Element.")]
+        //[Input("element", "Revit Element to be converted.")]
+        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        //[Input("transform", "Optional, a transform to apply to the converted object.")]
+        //[Input("settings", "Optional, Revit adapter settings.")]
+        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        //[Output("fromRevit", "Resulted BHoM object converted from a Revit Element.")]
+        public static Type IBHoMType(this Element element, Discipline discipline, RevitSettings settings = null)
+        {
+            return BHoMType(element as dynamic, discipline, settings);
+        }
+
+        /***************************************************/
+        /****              Public Methods               ****/
         /***************************************************/
 
         //[Description("Converts a Revit ProjectInfo to a BHoM object based on the requested engineering discipline.")]
@@ -65,26 +81,6 @@ namespace BH.Revit.Engine.Core
                     return null;
             }
         }
-
-        /***************************************************/
-
-        //[Description("Converts a Revit EnergyAnalysisDetailModel to a BHoM object based on the requested engineering discipline.")]
-        //[Input("energyAnalysisModel", "Revit EnergyAnalysisDetailModel to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit EnergyAnalysisDetailModel.")]
-        //public static IEnumerable<IBHoMObject> BHoMType(this EnergyAnalysisDetailModel energyAnalysisModel, Discipline discipline, RevitSettings settings = null)
-        //{
-        //    switch (discipline)
-        //    {
-        //        case Discipline.Environmental:
-        //            return energyAnalysisModel.EnergyAnalysisModelFromRevit(settings, refObjects);
-        //        default:
-        //            return null;
-        //    }
-        //}
 
         /***************************************************/
 
@@ -729,26 +725,9 @@ namespace BH.Revit.Engine.Core
         //[Input("settings", "Optional, Revit adapter settings.")]
         //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         //[Output("fromRevit", "Null resulted from no suitable Element FromRevit method.")]
-        public static Type BHoMType(this Element element, Discipline discipline, RevitSettings settings = null)
+        private static Type BHoMType(this Element element, Discipline discipline, RevitSettings settings = null)
         {
             return null;
-        }
-
-
-        /***************************************************/
-        /****             Interface Methods             ****/
-        /***************************************************/
-
-        //[Description("Interface method that tries to find a suitable FromRevit convert for any Revit Element.")]
-        //[Input("element", "Revit Element to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit Element.")]
-        public static Type IBHoMType(this Element element, Discipline discipline, RevitSettings settings = null)
-        {
-            return BHoMType(element as dynamic, discipline, settings);
         }
 
         /***************************************************/

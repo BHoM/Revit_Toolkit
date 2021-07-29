@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using System;
 using System.Collections.Generic;
@@ -50,9 +51,16 @@ namespace BH.Revit.Engine.Core
                     MethodInfo[] typeMethods = t.GetMethods(bindingBHoM);
                     foreach (MethodInfo mi in typeMethods.Where(x => x.Name.EndsWith("FromRevit")))
                     {
-                        Type from = mi.GetParameters()?.FirstOrDefault()?.ParameterType;
                         Type to = mi.ReturnType;
-                        if (typeof(Element).IsAssignableFrom(from) && (typeof(IBHoMObject).IsAssignableFrom(to) || typeof(IEnumerable<IBHoMObject>).IsAssignableFrom(to)))
+                        if (!typeof(IBHoMObject).IsAssignableFrom(to) && !typeof(IEnumerable<IBHoMObject>).IsAssignableFrom(to))
+                            continue;
+
+                        ParameterInfo[] parameters = mi.GetParameters();
+                        if (parameters?.Length != 3)
+                            continue;
+
+                        Type from = parameters[0].ParameterType;
+                        if (typeof(Element).IsAssignableFrom(from) && parameters[1].ParameterType == typeof(RevitSettings) && parameters[2].ParameterType == typeof(Dictionary<string, List<IBHoMObject>>))
                             m_ConvertMethods.Add(new Tuple<Type, Type>(from, to), mi);
                     }
                 }

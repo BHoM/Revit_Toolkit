@@ -41,6 +41,8 @@ namespace BH.Revit.Engine.Core
             return familyInstance.DoorFromRevit(null, settings, refObjects);
         }
 
+        /***************************************************/
+
         public static Door DoorFromRevit(this FamilyInstance familyInstance, HostObject host = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (familyInstance == null)
