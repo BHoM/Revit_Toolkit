@@ -21,12 +21,17 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Requests;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -36,13 +41,20 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
-        [Description("Checks whether a given element passes the filtering criteria contained within the IRequest.")]
-        [Input("element", "Element to be checked against the IRequest.")]
-        [Input("request", "IRequest containing the filtering criteria, against which the element is checked.")]
-        [Output("passes", "True if the element passes the filtering criteria contained within the IRequest, otherwise false.")]
-        public static bool IPasses(this Element element, IRequest request)
+        //[Description("Checks whether a given element passes the filtering criteria contained within the IRequest.")]
+        //[Input("element", "Element to be checked against the IRequest.")]
+        //[Input("request", "IRequest containing the filtering criteria, against which the element is checked.")]
+        //[Output("passes", "True if the element passes the filtering criteria contained within the IRequest, otherwise false.")]
+        public static bool IPasses(this Element element, IRequest request, Discipline discipline = Discipline.Undefined, RevitSettings settings = null)
         {
-            return Passes(element, request as dynamic);
+            return Passes(element, request as dynamic, discipline, settings);
+        }
+
+        /***************************************************/
+
+        public static bool IPasses(this Parameter parameter, IParameterValueRequest request)
+        {
+            return Passes(parameter, request as dynamic);
         }
 
 
@@ -50,30 +62,85 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterExistence request.")]
-        [Input("element", "Element to be checked against the FilterByParameterExistence request.")]
-        [Input("request", "FilterByParameterExistence request containing the filtering criteria, against which the element is checked.")]
-        [Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterExistence request, otherwise false.")]
-        public static bool Passes(this Element element, FilterByParameterExistence request)
+        //[Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterExistence request.")]
+        //[Input("element", "Element to be checked against the FilterByParameterExistence request.")]
+        //[Input("request", "FilterByParameterExistence request containing the filtering criteria, against which the element is checked.")]
+        //[Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterExistence request, otherwise false.")]
+        public static bool Passes(this Element element, FilterByParameterExistence request, Discipline discipline = Discipline.Undefined, RevitSettings settings = null)
         {
             if (!CheckIfNotNull(element, request))
                 return false;
+
+            if (discipline == Discipline.Undefined)
+                discipline = Discipline.Physical;
+
+            settings = settings.DefaultIfNull();
+            
+            Type bHoMType = element.BHoMType(discipline, settings);
+            oM.Adapters.Revit.Parameters.ParameterMap parameterMap = settings?.ParameterSettings?.ParameterMap(bHoMType);
+            if (parameterMap != null)
+                BH.Engine.Reflection.Compute.RecordWarning($"A parameter map has been found for the BHoM type {bHoMType.Name} and discipline {discipline} - FilterByParameterExistence request does not support parameter mapping so it was neglected.");
 
             return (element.LookupParameter(request.ParameterName) != null) == request.ParameterExists;
         }
 
         /***************************************************/
 
-        [Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterBool request.")]
-        [Input("element", "Element to be checked against the FilterByParameterBool request.")]
-        [Input("request", "FilterByParameterBool request containing the filtering criteria, against which the element is checked.")]
-        [Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterBool request, otherwise false.")]
-        public static bool Passes(this Element element, FilterByParameterBool request)
+        //[Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterBool request.")]
+        //[Input("element", "Element to be checked against the FilterByParameterBool request.")]
+        //[Input("request", "FilterByParameterBool request containing the filtering criteria, against which the element is checked.")]
+        //[Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterBool request, otherwise false.")]
+        public static bool Passes(this Element element, IParameterValueRequest request, Discipline discipline = Discipline.Undefined, RevitSettings settings = null)
         {
-            Parameter param = element?.LookupParameter(request?.ParameterName);
-            if (param != null && param.HasValue && param.StorageType == StorageType.Integer && param.Definition.ParameterType == ParameterType.YesNo)
+            if (!CheckIfNotNull(element, request))
+                return false;
+
+            if (discipline == Discipline.Undefined)
+                discipline = Discipline.Physical;
+
+            settings = settings.DefaultIfNull();
+            Parameter param = element.LookupParameter(request.ParameterName);
+            if (param != null)
+                return param.IPasses(request);
+
+            Type bHoMType = element.IBHoMType(discipline, settings);
+            oM.Adapters.Revit.Parameters.ParameterMap parameterMap = settings?.ParameterSettings?.ParameterMap(bHoMType);
+            if (parameterMap != null)
             {
-                int paramValue = param.AsInteger();
+                IEnumerable<string> elementParameterNames = parameterMap.ParameterLinks.Where(x => x is ElementParameterLink && x.PropertyName == request.ParameterName).SelectMany(x => x.ParameterNames);
+                foreach (string parameterName in elementParameterNames)
+                {
+                    param = element.LookupParameter(parameterName);
+                    if (param != null)
+                        return param.IPasses(request);
+                }
+
+                List<string> typeParameterNames = parameterMap.ParameterLinks.Where(x => x is ElementTypeParameterLink && x.PropertyName == request.ParameterName).SelectMany(x => x.ParameterNames).ToList();
+                if (typeParameterNames.Count != 0)
+                {
+                    Element elementType = element.Document.GetElement(element.GetTypeId());
+                    if (elementType != null)
+                    {
+                        foreach (string parameterName in typeParameterNames)
+                        {
+                            param = elementType.LookupParameter(parameterName);
+                            if (param != null)
+                                return param.IPasses(request);
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /***************************************************/
+
+        public static bool Passes(this Parameter parameter, FilterByParameterBool request)
+        {
+            if (parameter != null && parameter.HasValue && parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType == ParameterType.YesNo)
+            {
+                int paramValue = parameter.AsInteger();
                 return (request.Value && paramValue == 1) || (!request.Value && paramValue == 0);
             }
             else
@@ -82,16 +149,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterInteger request.")]
-        [Input("element", "Element to be checked against the FilterByParameterInteger request.")]
-        [Input("request", "FilterByParameterInteger request containing the filtering criteria, against which the element is checked.")]
-        [Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterInteger request, otherwise false.")]
-        public static bool Passes(this Element element, FilterByParameterInteger request)
+        public static bool Passes(this Parameter parameter, FilterByParameterInteger request)
         {
-            Parameter param = element?.LookupParameter(request?.ParameterName);
-            if (param != null && param.HasValue && param.StorageType == StorageType.Integer && param.Definition.ParameterType != ParameterType.YesNo)
+            if (parameter != null && parameter.HasValue && parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType != ParameterType.YesNo)
             {
-                int paramValue = param.AsInteger();
+                int paramValue = parameter.AsInteger();
                 switch (request.NumberComparisonType)
                 {
                     case NumberComparisonType.Equal:
@@ -114,30 +176,25 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterNumber request.")]
-        [Input("element", "Element to be checked against the FilterByParameterNumber request.")]
-        [Input("request", "FilterByParameterNumber request containing the filtering criteria, against which the element is checked.")]
-        [Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterNumber request, otherwise false.")]
-        public static bool Passes(this Element element, FilterByParameterNumber request)
+        public static bool Passes(this Parameter parameter, FilterByParameterNumber request)
         {
-            Parameter param = element?.LookupParameter(request?.ParameterName);
-            if (param != null && param.HasValue)
+            if (parameter != null && parameter.HasValue)
             {
                 double paramValue;
-                if (param.StorageType == StorageType.Double)
-                    paramValue = param.AsDouble();
-                else if (param.StorageType == StorageType.Integer)
-                    paramValue = param.AsInteger();
-                else if (param.StorageType == StorageType.String)
+                if (parameter.StorageType == StorageType.Double)
+                    paramValue = parameter.AsDouble();
+                else if (parameter.StorageType == StorageType.Integer)
+                    paramValue = parameter.AsInteger();
+                else if (parameter.StorageType == StorageType.String)
                 {
-                    if (!double.TryParse(param.AsString(), out paramValue))
+                    if (!double.TryParse(parameter.AsString(), out paramValue))
                         return false;
                 }
                 else
                     return false;
 
-                double comparisonValue = request.Value.FromSI(param.Definition.UnitType);
-                double comparisonTolerance = request.Tolerance.FromSI(param.Definition.UnitType);
+                double comparisonValue = request.Value.FromSI(parameter.Definition.UnitType);
+                double comparisonTolerance = request.Tolerance.FromSI(parameter.Definition.UnitType);
 
                 switch (request.NumberComparisonType)
                 {
@@ -161,23 +218,18 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterText request.")]
-        [Input("element", "Element to be checked against the FilterByParameterText request.")]
-        [Input("request", "FilterByParameterText request containing the filtering criteria, against which the element is checked.")]
-        [Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterText request, otherwise false.")]
-        public static bool Passes(this Element element, FilterByParameterText request)
+        public static bool Passes(this Parameter parameter, FilterByParameterText request)
         {
-            Parameter param = element?.LookupParameter(request?.ParameterName);
-            if (param != null && param.HasValue)
+            if (parameter != null && parameter.HasValue)
             {
                 string paramValue;
-                if (param.StorageType == StorageType.String)
-                    paramValue = param.AsString();
-                else if (param.StorageType == StorageType.ElementId || (param.StorageType == StorageType.Integer && param.Definition.ParameterType != ParameterType.YesNo))
-                    paramValue = param.AsValueString();
+                if (parameter.StorageType == StorageType.String)
+                    paramValue = parameter.AsString();
+                else if (parameter.StorageType == StorageType.ElementId || (parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType != ParameterType.YesNo))
+                    paramValue = parameter.AsValueString();
                 else
                     return false;
-                
+
                 switch (request.TextComparisonType)
                 {
                     case TextComparisonType.Contains:
@@ -200,39 +252,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterElementId request.")]
-        [Input("element", "Element to be checked against the FilterByParameterElementId request.")]
-        [Input("request", "FilterByParameterElementId request containing the filtering criteria, against which the element is checked.")]
-        [Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterElementId request, otherwise false.")]
-        public static bool Passes(this Element element, FilterByParameterElementId request)
+        public static bool Passes(this Parameter parameter, FilterByParameterElementId request)
         {
-            Parameter param = element?.LookupParameter(request?.ParameterName);
-            if (param != null && param.HasValue && param.StorageType == StorageType.ElementId)
-                return param.AsElementId().IntegerValue == request.ElementId;
+            if (parameter != null && parameter.HasValue && parameter.StorageType == StorageType.ElementId)
+                return parameter.AsElementId().IntegerValue == request.ElementId;
 
             return false;
-        }
-
-        /***************************************************/
-
-        [Description("Checks whether a given element passes the filtering criteria contained within the FilterByCategory request.")]
-        [Input("element", "Element to be checked against the FilterByCategory request.")]
-        [Input("request", "FilterByCategory request containing the filtering criteria, against which the element is checked.")]
-        [Output("passes", "True if the element passes the filtering criteria contained within the FilterByCategory request, otherwise false.")]
-        public static bool Passes(this Element element, FilterByCategory request)
-        {
-            if (!CheckIfNotNull(element, request))
-                return false;
-
-            string categoryName = element.Category.Name;
-            string soughtName = request.CategoryName;
-            if (!request.CaseSensitive)
-            {
-                categoryName = categoryName.ToLower();
-                soughtName = soughtName.ToLower();
-            }
-
-            return categoryName == soughtName;
         }
 
 

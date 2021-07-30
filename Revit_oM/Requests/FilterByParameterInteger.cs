@@ -25,7 +25,7 @@ using System.ComponentModel;
 namespace BH.oM.Adapters.Revit.Requests
 {
     [Description("IRequest that filters elements based on given integer parameter value criterion.")]
-    public class FilterByParameterInteger : IParameterRequest
+    public class FilterByParameterInteger : IParameterValueRequest
     {
         /***************************************************/
         /****                Properties                 ****/
