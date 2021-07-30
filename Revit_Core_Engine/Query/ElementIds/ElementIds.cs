@@ -133,7 +133,7 @@ namespace BH.Revit.Engine.Core
 
         public static IEnumerable<ElementId> ElementIds(this IParameterRequest request, Document document, Discipline discipline = Discipline.Undefined, RevitSettings settings = null, IEnumerable<ElementId> ids = null)
         {
-            return document.IElementIdsByParameter(request, ids);
+            return document.IElementIdsByParameter(request, discipline, settings, ids);
         }
         
         /***************************************************/

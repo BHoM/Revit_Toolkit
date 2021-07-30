@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Requests;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -36,12 +37,12 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
-        [Description("Filters ElementIds of elements and types in a Revit document based on parameter request.")]
-        [Input("document", "Revit document to be processed.")]
-        [Input("request", "IParameterRequest containing the information about the filtering criteria to apply.")]
-        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
-        [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> IElementIdsByParameter(this Document document, IParameterRequest request, IEnumerable<ElementId> ids = null)
+        //[Description("Filters ElementIds of elements and types in a Revit document based on parameter request.")]
+        //[Input("document", "Revit document to be processed.")]
+        //[Input("request", "IParameterRequest containing the information about the filtering criteria to apply.")]
+        //[Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        //[Output("elementIds", "Collection of filtered ElementIds.")]
+        public static IEnumerable<ElementId> IElementIdsByParameter(this Document document, IParameterRequest request, Discipline discipline, RevitSettings settings = null, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
@@ -51,7 +52,7 @@ namespace BH.Revit.Engine.Core
 
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
             collector = collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true)));
-            return collector.Where(x => x.IPasses(request)).Select(x => x.Id).ToList();
+            return collector.Where(x => x.IPasses(request, discipline, settings)).Select(x => x.Id).ToList();
         }
         
         /***************************************************/

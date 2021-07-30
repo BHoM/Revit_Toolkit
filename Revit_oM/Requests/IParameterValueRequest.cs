@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -19,29 +19,20 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
+
+using BH.oM.Data.Requests;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters elements based on given floating point number parameter value criterion.")]
-    public class FilterByParameterNumber : IParameterValueRequest
+    [Description("Interface for Requests that filter elements based on parameter value criterion.")]
+    public interface IParameterValueRequest : IParameterRequest
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Case sensitive name of the parameter to be used as filter criterion.")]
-        public virtual string ParameterName { get; set; } = "";
 
-        [Description("NumberComparisonType enum representing comparison type, e.g. equality, greater, smaller etc.")]
-        public virtual Enums.NumberComparisonType NumberComparisonType { get; set; } = Enums.NumberComparisonType.Equal;
-
-        [Description("Value to compare the parameter against.")]
-        public virtual double Value { get; set; } = double.NaN;
-
-        [Description("Numerical tolerance for number comparison.")]
-        public virtual double Tolerance { get; set; } = BH.oM.Geometry.Tolerance.Distance;
 
         /***************************************************/
     }

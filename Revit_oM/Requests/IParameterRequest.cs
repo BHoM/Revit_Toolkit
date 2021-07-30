@@ -25,14 +25,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("Interface for Requests that filter elements based on parameter value criterion.")]
+    [Description("Interface for Requests that filter elements based on parameter existence or value criterion.")]
     public interface IParameterRequest : IRequest
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-
+        string ParameterName { get; set; }
 
         /***************************************************/
     }
