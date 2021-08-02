@@ -23,13 +23,13 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
-using System;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -39,7 +39,12 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****               Public Methods              ****/
         /***************************************************/
-
+        
+        [Description("Converts a Revit Element to a generic BHoM object, either ModelInstance or DraftingInstance (if the element has location in space) or a BHoMObject otherwise.")]
+        [Input("element", "Revit Element to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("object", "BHoM object resulting from converting the given Revit Element.")]
         public static IBHoMObject ObjectFromRevit(this Element element, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();

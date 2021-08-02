@@ -24,8 +24,10 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using BH.oM.Spatial.ShapeProfiles;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -35,6 +37,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit FamilyInstance to an Architecture.BuildersWork.Opening.")]
+        [Input("instance", "Revit FamilyInstance to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("Opening", "Architecture.BuildersWork.Opening resulting from converting the given Revit FamilyInstance.")]
         public static oM.Architecture.BuildersWork.Opening OpeningFromRevit(this FamilyInstance instance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (instance == null)
