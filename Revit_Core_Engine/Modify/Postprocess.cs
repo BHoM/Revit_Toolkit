@@ -129,7 +129,7 @@ namespace BH.Revit.Engine.Core
         /****             Fallback methods              ****/
         /***************************************************/
         
-        private static IBHoMObject Postprocess(this IBHoMObject obj, TransformMatrix transform, RevitSettings settings)
+        private static IObject Postprocess(this IObject obj, Transform transform, RevitSettings settings)
         {
             return obj;
         }
