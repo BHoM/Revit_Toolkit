@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         {
             return familyInstance.WindowFromRevit(null, settings, refObjects);
         }
-        
+
         public static Window WindowFromRevit(this FamilyInstance familyInstance, HostObject host = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (familyInstance == null)

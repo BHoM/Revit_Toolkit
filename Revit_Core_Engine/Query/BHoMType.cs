@@ -49,13 +49,11 @@ namespace BH.Revit.Engine.Core
         /****             Interface Methods             ****/
         /***************************************************/
 
-        //[Description("Interface method that tries to find a suitable FromRevit convert for any Revit Element.")]
-        //[Input("element", "Revit Element to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit Element.")]
+        [Description("Interface method that tries to find a suitable BHoM type to convert the given Revit Element to.")]
+        [Input("element", "Revit Element to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Element to.")]
         public static Type IBHoMType(this Element element, Discipline discipline, RevitSettings settings = null)
         {
             return BHoMType(element as dynamic, discipline, settings);
@@ -65,13 +63,11 @@ namespace BH.Revit.Engine.Core
         /****              Public Methods               ****/
         /***************************************************/
 
-        //[Description("Converts a Revit ProjectInfo to a BHoM object based on the requested engineering discipline.")]
-        //[Input("projectInfo", "Revit ProjectInfo to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit ProjectInfo.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit ProjectInfo to, based on the requested engineering discipline and adapter settings.")]
+        [Input("projectInfo", "Revit ProjectInfo to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit ProjectInfo to.")]
         public static Type BHoMType(this ProjectInfo projectInfo, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -85,13 +81,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit FamilyInstance to a BHoM object based on its discipline, if it's an adaptive component and, more importantly, on its category. A multitude of instances will fall into this converter, therefore a special care is needed with the category enums in the backend.")]
-        //[Input("familyInstance", "Revit FamilyInstance to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit FamilyInstance.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit FamilyInstance to, based on the requested engineering discipline and adapter settings.")]
+        [Input("familyInstance", "Revit FamilyInstance to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit FamilyInstance to.")]
         public static Type BHoMType(this FamilyInstance familyInstance, Discipline discipline, RevitSettings settings = null)
         {
             string familyName = familyInstance?.Symbol?.FamilyName;
@@ -145,13 +139,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit FamilySymbol to a BHoM object based on the requested engineering discipline.")]
-        //[Input("familySymbol", "Revit FamilySymbol to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit FamilySymbol.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit FamilySymbol to, based on the requested engineering discipline and adapter settings.")]
+        [Input("familySymbol", "Revit FamilySymbol to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit FamilySymbol to.")]
         public static Type BHoMType(this FamilySymbol familySymbol, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -166,13 +158,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit Wall to a BHoM object based on the requested engineering discipline.")]
-        //[Input("wall", "Revit Wall to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit Wall.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit Wall to, based on the requested engineering discipline and adapter settings.")]
+        [Input("wall", "Revit Wall to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Wall to.")]
         public static Type BHoMType(this Wall wall, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -198,13 +188,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit Ceiling to a BHoM object based on the requested engineering discipline.")]
-        //[Input("ceiling", "Revit Ceiling to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit Ceiling.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit Ceiling to, based on the requested engineering discipline and adapter settings.")]
+        [Input("ceiling", "Revit Ceiling to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Ceiling to.")]
         public static Type BHoMType(this Ceiling ceiling, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -222,13 +210,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit Floor to a BHoM object based on the requested engineering discipline.")]
-        //[Input("floor", "Revit Floor to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit Floor.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit Floor to, based on the requested engineering discipline and adapter settings.")]
+        [Input("floor", "Revit Floor to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Floor to.")]
         public static Type BHoMType(this Floor floor, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -250,13 +236,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit RoofBase to a BHoM object based on the requested engineering discipline.")]
-        //[Input("roofBase", "Revit RoofBase to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit RoofBase.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit RoofBase to, based on the requested engineering discipline and adapter settings.")]
+        [Input("roofBase", "Revit RoofBase to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit RoofBase to.")]
         public static Type BHoMType(this RoofBase roofBase, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -276,13 +260,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit HostObjAttributes to a BHoM object based on the requested engineering discipline.")]
-        //[Input("hostObjAttributes", "Revit HostObjAttributes to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit HostObjAttributes.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit HostObjAttributes to, based on the requested engineering discipline and adapter settings.")]
+        [Input("hostObjAttributes", "Revit HostObjAttributes to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit HostObjAttributes to.")]
         public static Type BHoMType(this HostObjAttributes hostObjAttributes, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -301,13 +283,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit CableTray to a BHoM object based on the requested engineering discipline.")]
-        //[Input("cableTray", "Revit CableTray to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit CableTray.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit CableTray to, based on the requested engineering discipline and adapter settings.")]
+        [Input("cableTray", "Revit CableTray to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit CableTray to.")]
         public static Type BHoMType(this Autodesk.Revit.DB.Electrical.CableTray cableTray, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -323,13 +303,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit Duct to a BHoM object based on the requested engineering discipline.")]
-        //[Input("duct", "Revit Duct to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit Duct.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit Duct to, based on the requested engineering discipline and adapter settings.")]
+        [Input("duct", "Revit Duct to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Duct to.")]
         public static Type BHoMType(this Autodesk.Revit.DB.Mechanical.Duct duct, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -345,13 +323,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit Pipe to a BHoM object based on the requested engineering discipline.")]
-        //[Input("pipe", "Revit Pipe to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit Pipe.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit Pipe to, based on the requested engineering discipline and adapter settings.")]
+        [Input("pipe", "Revit Pipe to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Pipe to.")]
         public static Type BHoMType(this Autodesk.Revit.DB.Plumbing.Pipe pipe, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -367,13 +343,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit Wire to a BHoM object based on the requested engineering discipline.")]
-        //[Input("wire", "Revit Wire to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit Wire.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit Wire to, based on the requested engineering discipline and adapter settings.")]
+        [Input("wire", "Revit Wire to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Wire to.")]
         public static Type BHoMType(this Autodesk.Revit.DB.Electrical.Wire wire, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -389,13 +363,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit Level to a BHoM object based on the requested engineering discipline.")]
-        //[Input("level", "Revit Level to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit Level.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit Level to, based on the requested engineering discipline and adapter settings.")]
+        [Input("level", "Revit Level to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Level to.")]
         public static Type BHoMType(this Level level, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -409,13 +381,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit Grid to a BHoM object based on the requested engineering discipline.")]
-        //[Input("grid", "Revit Grid to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit Grid.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit Grid to, based on the requested engineering discipline and adapter settings.")]
+        [Input("grid", "Revit Grid to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Grid to.")]
         public static Type BHoMType(this Grid grid, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -429,13 +399,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit MultiSegmentGrid to a BHoM object based on the requested engineering discipline.")]
-        //[Input("grid", "Revit MultiSegmentGrid to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit MultiSegmentGrid.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit MultiSegmentGrid to, based on the requested engineering discipline and adapter settings.")]
+        [Input("grid", "Revit MultiSegmentGrid to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit MultiSegmentGrid to.")]
         public static Type BHoMType(this MultiSegmentGrid grid, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -449,13 +417,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit ElementType to a BHoM object based on the requested engineering discipline.")]
-        //[Input("elementType", "Revit ElementType to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit ElementType.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit ElementType to, based on the requested engineering discipline and adapter settings.")]
+        [Input("elementType", "Revit ElementType to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit ElementType to.")]
         public static Type BHoMType(this ElementType elementType, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -469,13 +435,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit GraphicsStyle to a BHoM object based on the requested engineering discipline.")]
-        //[Input("graphicStyle", "Revit GraphicsStyle to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit GraphicsStyle.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit GraphicsStyle to, based on the requested engineering discipline and adapter settings.")]
+        [Input("graphicStyle", "Revit GraphicsStyle to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit GraphicsStyle to.")]
         public static Type BHoMType(this GraphicsStyle graphicStyle, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -489,13 +453,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit SpatialElement to a BHoM object based on the requested engineering discipline.")]
-        //[Input("spatialElement", "Revit SpatialElement to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit SpatialElement.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit SpatialElement to, based on the requested engineering discipline and adapter settings.")]
+        [Input("spatialElement", "Revit SpatialElement to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit SpatialElement to.")]
         public static Type BHoMType(this SpatialElement spatialElement, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -513,13 +475,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit EnergyAnalysisSpace to a BHoM object based on the requested engineering discipline.")]
-        //[Input("energyAnalysisSpace", "Revit EnergyAnalysisSpace to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit EnergyAnalysisSpace.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit EnergyAnalysisSpace to, based on the requested engineering discipline and adapter settings.")]
+        [Input("energyAnalysisSpace", "Revit EnergyAnalysisSpace to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit EnergyAnalysisSpace to.")]
         public static Type BHoMType(this EnergyAnalysisSpace energyAnalysisSpace, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -536,13 +496,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit EnergyAnalysisSurface to a BHoM object based on the requested engineering discipline.")]
-        //[Input("energyAnalysisSurface", "Revit EnergyAnalysisSurface to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit EnergyAnalysisSurface.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit EnergyAnalysisSurface to, based on the requested engineering discipline and adapter settings.")]
+        [Input("energyAnalysisSurface", "Revit EnergyAnalysisSurface to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit EnergyAnalysisSurface to.")]
         public static Type BHoMType(this EnergyAnalysisSurface energyAnalysisSurface, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -559,13 +517,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit EnergyAnalysisOpening to a BHoM object based on the requested engineering discipline.")]
-        //[Input("energyAnalysisOpening", "Revit EnergyAnalysisOpening to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit EnergyAnalysisOpening.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit EnergyAnalysisOpening to, based on the requested engineering discipline and adapter settings.")]
+        [Input("energyAnalysisOpening", "Revit EnergyAnalysisOpening to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit EnergyAnalysisOpening to.")]
         public static Type BHoMType(this EnergyAnalysisOpening energyAnalysisOpening, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -582,13 +538,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit ViewSheet to a BHoM object based on the requested engineering discipline.")]
-        //[Input("viewSheet", "Revit ViewSheet to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit ViewSheet.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit ViewSheet to, based on the requested engineering discipline and adapter settings.")]
+        [Input("viewSheet", "Revit ViewSheet to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit ViewSheet to.")]
         public static Type BHoMType(this ViewSheet viewSheet, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -602,13 +556,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit Viewport to a BHoM object based on the requested engineering discipline.")]
-        //[Input("viewport", "Revit Viewport to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit Viewport.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit Viewport to, based on the requested engineering discipline and adapter settings.")]
+        [Input("viewport", "Revit Viewport to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Viewport to.")]
         public static Type BHoMType(this Viewport viewport, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -622,13 +574,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit ViewPlan to a BHoM object based on the requested engineering discipline.")]
-        //[Input("viewPlan", "Revit ViewPlan to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit ViewPlan.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit ViewPlan to, based on the requested engineering discipline and adapter settings.")]
+        [Input("viewPlan", "Revit ViewPlan to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit ViewPlan to.")]
         public static Type BHoMType(this ViewPlan viewPlan, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -642,13 +592,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit Material to a BHoM object based on the requested engineering discipline.")]
-        //[Input("material", "Revit Material to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit Material.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit Material to, based on the requested engineering discipline and adapter settings.")]
+        [Input("material", "Revit Material to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Material to.")]
         public static Type BHoMType(this Material material, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -668,13 +616,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit Family to a BHoM object based on the requested engineering discipline.")]
-        //[Input("family", "Revit Family to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit Family.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit Family to, based on the requested engineering discipline and adapter settings.")]
+        [Input("family", "Revit Family to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Family to.")]
         public static Type BHoMType(this Family family, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -688,13 +634,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit CurveElement to a BHoM object based on the requested engineering discipline.")]
-        //[Input("curveElement", "Revit CurveElement to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit CurveElement.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit CurveElement to, based on the requested engineering discipline and adapter settings.")]
+        [Input("curveElement", "Revit CurveElement to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit CurveElement to.")]
         public static Type BHoMType(this CurveElement curveElement, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -708,13 +652,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit FilledRegion to a BHoM object based on the requested engineering discipline.")]
-        //[Input("filledRegion", "Revit FilledRegion to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Resulted BHoM object converted from a Revit FilledRegion.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit FilledRegion to, based on the requested engineering discipline and adapter settings.")]
+        [Input("filledRegion", "Revit FilledRegion to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit FilledRegion to.")]
         public static Type BHoMType(this FilledRegion filledRegion, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
@@ -731,13 +673,11 @@ namespace BH.Revit.Engine.Core
         /****             Fallback Methods              ****/
         /***************************************************/
 
-        //[Description("Fallback method when no suitable Element FromRevit is found.")]
-        //[Input("element", "Revit Element to be converted.")]
-        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        //[Input("transform", "Optional, a transform to apply to the converted object.")]
-        //[Input("settings", "Optional, Revit adapter settings.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("fromRevit", "Null resulted from no suitable Element FromRevit method.")]
+        [Description("Fallback method when no suitable BHoMType method is found for the given Revit Element.")]
+        [Input("element", "Revit Element to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Element to.")]
         private static Type BHoMType(this Element element, Discipline discipline, RevitSettings settings = null)
         {
             return null;
