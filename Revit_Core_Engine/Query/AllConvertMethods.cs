@@ -64,6 +64,11 @@ namespace BH.Revit.Engine.Core
                             continue;
 
                         Type from = parameters[0].ParameterType;
+
+                        // Skip the fallback ObjectFromRevit method
+                        if (to == typeof(IBHoMObject) && from == typeof(Element))
+                            continue;
+
                         if (typeof(Element).IsAssignableFrom(from) && parameters[1].ParameterType == typeof(RevitSettings) && parameters[2].ParameterType == typeof(Dictionary<string, List<IBHoMObject>>))
                             m_ConvertMethods.Add(new Tuple<Type, Type>(from, to), mi);
                     }

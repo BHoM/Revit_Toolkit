@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
@@ -56,7 +57,7 @@ namespace BH.Revit.Engine.Core
             Type revitType = from.GetType();
             foreach (KeyValuePair<Tuple<Type, Type>, MethodInfo> kvp in AllConvertMethods())
             {
-                if (kvp.Key.Item1.IsAssignableFrom(revitType) && kvp.Key.Item2.IsAssignableFrom(targetBHoMType))
+                if (kvp.Key.Item1.IsAssignableFrom(revitType) && (kvp.Key.Item2.IsAssignableFrom(targetBHoMType) || (typeof(IEnumerable<IBHoMObject>).IsAssignableFrom(kvp.Key.Item2) && kvp.Key.Item2.GetGenericArguments()[0].IsAssignableFrom(targetBHoMType))))
                     return kvp.Value;
             }
 
