@@ -23,8 +23,10 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -36,6 +38,8 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Find all relevant convert methods from Revit to BHoM, which return a BHoM object or a collection of them, and take Revit Element, RevitSettings and refObjects (in this exact order).")]
+        [Output("methods", "All relevant Revit => BHoM convert methods.")]
         public static Dictionary<Tuple<Type, Type>, MethodInfo> AllConvertMethods()
         {
             if (m_ConvertMethods == null)
