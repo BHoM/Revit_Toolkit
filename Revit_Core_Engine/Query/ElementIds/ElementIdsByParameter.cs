@@ -37,11 +37,13 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
-        //[Description("Filters ElementIds of elements and types in a Revit document based on parameter request.")]
-        //[Input("document", "Revit document to be processed.")]
-        //[Input("request", "IParameterRequest containing the information about the filtering criteria to apply.")]
-        //[Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
-        //[Output("elementIds", "Collection of filtered ElementIds.")]
+        [Description("Finds the ElementIds of all elements within the Revit document that pass the filtering criteria set in the given IParameterRequest.")]
+        [Input("document", "Revit Document queried for the filtered elements.")]
+        [Input("request", "IParameterRequest containing the filtering criteria, against which the elements in the Revit document are checked.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while evaluating the elements against the filtering criteria.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered Revit ElementIds.")]
         public static IEnumerable<ElementId> IElementIdsByParameter(this Document document, IParameterRequest request, Discipline discipline, RevitSettings settings = null, IEnumerable<ElementId> ids = null)
         {
             if (document == null)

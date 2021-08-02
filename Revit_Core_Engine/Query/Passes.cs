@@ -41,10 +41,12 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
-        //[Description("Checks whether a given element passes the filtering criteria contained within the IRequest.")]
-        //[Input("element", "Element to be checked against the IRequest.")]
-        //[Input("request", "IRequest containing the filtering criteria, against which the element is checked.")]
-        //[Output("passes", "True if the element passes the filtering criteria contained within the IRequest, otherwise false.")]
+        [Description("Checks whether a given Revit Element passes the filtering criteria contained within the IRequest.")]
+        [Input("element", "Revit Element to be checked against the IRequest.")]
+        [Input("request", "IRequest containing the filtering criteria, against which the Revit element is checked.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while evaluating the element against the filtering criteria.")]
+        [Output("passes", "True if the input Revit Element passes the filtering criteria contained within the IRequest, otherwise false.")]
         public static bool IPasses(this Element element, IRequest request, Discipline discipline = Discipline.Undefined, RevitSettings settings = null)
         {
             return Passes(element, request as dynamic, discipline, settings);
@@ -52,6 +54,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the IParameterValueRequest.")]
+        [Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
+        [Input("request", "IParameterValueRequest containing the filtering criteria, against which the Revit Parameter is checked.")]
+        [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the IParameterValueRequest, otherwise false.")]
         public static bool IPasses(this Parameter parameter, IParameterValueRequest request)
         {
             return Passes(parameter, request as dynamic);
@@ -62,10 +68,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterExistence request.")]
-        //[Input("element", "Element to be checked against the FilterByParameterExistence request.")]
-        //[Input("request", "FilterByParameterExistence request containing the filtering criteria, against which the element is checked.")]
-        //[Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterExistence request, otherwise false.")]
+        [Description("Checks whether a given Revit Element passes the filtering criteria contained within the FilterByParameterExistence request.")]
+        [Input("element", "Revit Element to be checked against the IRequest.")]
+        [Input("request", "FilterByParameterExistence request containing the filtering criteria, against which the Revit element is checked.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while evaluating the element against the filtering criteria.")]
+        [Output("passes", "True if the input Revit Element passes the filtering criteria contained within the FilterByParameterExistence request, otherwise false.")]
         public static bool Passes(this Element element, FilterByParameterExistence request, Discipline discipline = Discipline.Undefined, RevitSettings settings = null)
         {
             if (!CheckIfNotNull(element, request))
@@ -86,10 +94,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Checks whether a given element passes the filtering criteria contained within the FilterByParameterBool request.")]
-        //[Input("element", "Element to be checked against the FilterByParameterBool request.")]
-        //[Input("request", "FilterByParameterBool request containing the filtering criteria, against which the element is checked.")]
-        //[Output("passes", "True if the element passes the filtering criteria contained within the FilterByParameterBool request, otherwise false.")]
+        [Description("Checks whether a given Revit Element passes the filtering criteria contained within the IParameterValueRequest.")]
+        [Input("element", "Revit Element to be checked against the IRequest.")]
+        [Input("request", "IParameterValueRequest containing the filtering criteria, against which the Revit element is checked.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while evaluating the element against the filtering criteria.")]
+        [Output("passes", "True if the input Revit Element passes the filtering criteria contained within the IParameterValueRequest, otherwise false.")]
         public static bool Passes(this Element element, IParameterValueRequest request, Discipline discipline = Discipline.Undefined, RevitSettings settings = null)
         {
             if (!CheckIfNotNull(element, request))
@@ -136,6 +146,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterBool request.")]
+        [Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
+        [Input("request", "FilterByParameterBool request containing the filtering criteria, against which the Revit Parameter is checked.")]
+        [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterBool request, otherwise false.")]
         public static bool Passes(this Parameter parameter, FilterByParameterBool request)
         {
             if (parameter != null && parameter.HasValue && parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType == ParameterType.YesNo)
@@ -149,6 +163,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterInteger request.")]
+        [Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
+        [Input("request", "FilterByParameterInteger request containing the filtering criteria, against which the Revit Parameter is checked.")]
+        [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterInteger request, otherwise false.")]
         public static bool Passes(this Parameter parameter, FilterByParameterInteger request)
         {
             if (parameter != null && parameter.HasValue && parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType != ParameterType.YesNo)
@@ -176,6 +194,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterNumber request.")]
+        [Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
+        [Input("request", "FilterByParameterNumber request containing the filtering criteria, against which the Revit Parameter is checked.")]
+        [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterNumber request, otherwise false.")]
         public static bool Passes(this Parameter parameter, FilterByParameterNumber request)
         {
             if (parameter != null && parameter.HasValue)
@@ -218,6 +240,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterText request.")]
+        [Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
+        [Input("request", "FilterByParameterText request containing the filtering criteria, against which the Revit Parameter is checked.")]
+        [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterText request, otherwise false.")]
         public static bool Passes(this Parameter parameter, FilterByParameterText request)
         {
             if (parameter != null && parameter.HasValue)
@@ -252,6 +278,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterElementId request.")]
+        [Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
+        [Input("request", "FilterByParameterElementId request containing the filtering criteria, against which the Revit Parameter is checked.")]
+        [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterElementId request, otherwise false.")]
         public static bool Passes(this Parameter parameter, FilterByParameterElementId request)
         {
             if (parameter != null && parameter.HasValue && parameter.StorageType == StorageType.ElementId)
@@ -265,6 +295,10 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
+        [Description("Checks whether either of the given Revit element and IRequest is null and raises error if so.")]
+        [Input("element", "Revit Element to be checked against null value.")]
+        [Input("request", "IRequest to be checked against null value.")]
+        [Output("notNull", "If true, neither the input Revit Element nor the IRequest is null. Otherwise false.")]
         private static bool CheckIfNotNull(Element element, IRequest request)
         {
             if (element == null)

@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace BH.Revit.Engine.Core
@@ -33,6 +35,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Find a relevant Revit => BHoM convert method for a given Revit Element and target BHoM type.")]
+        [Input("from", "Revit Element to find a convert method for.")]
+        [Input("targetBHoMType", "BHoM type, to which the Revit Element is meant to be converted.")]
+        [Output("method", "Relevant Revit => BHoM convert method for a given Revit Element and target BHoM type.")]
         public static MethodInfo ConvertMethod(this Element from, Type targetBHoMType)
         {
             if (from == null)
