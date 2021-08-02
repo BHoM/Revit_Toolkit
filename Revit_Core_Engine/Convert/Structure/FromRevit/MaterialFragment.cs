@@ -37,6 +37,13 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        public static IMaterialFragment MaterialFragmentFromRevit(this Material material, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            return material.MaterialFragmentFromRevit(null, settings, refObjects);
+        }
+
+        /***************************************************/
+
         public static IMaterialFragment MaterialFragmentFromRevit(this Material material, string grade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (material == null)

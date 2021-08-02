@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
                     if (materialParams.Any(p.Definition.Name.Contains) && p.StorageType == StorageType.ElementId && familyInstance.Document.GetElement(p.AsElementId()) is Material)
                     {
                         Material materialElem = familyInstance.Document.GetElement(p.AsElementId()) as Material;
-                        bhomMat = materialElem.MaterialFromRevit();
+                        bhomMat = materialElem.MaterialFromRevit(settings);
                         constName = bhomMat.Name;
                         break;
                     }
