@@ -37,8 +37,8 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Gets names of the Revit families explicitly instructed to be converted to a given BHoM type.")]
         [Input("settings", "ParameterSettings containing the information about Revit family vs BHoM type mapping.")]
-        [Input("type", "BHoM type, against which the family names are queried.")]
-        [Output("familyNames")]
+        [Input("bHoMType", "BHoM type queried for its mapped family names.")]
+        [Output("familyNames", "Names of the Revit families explicitly instructed to be converted to the input BHoM type.")]
         public static List<string> MappedFamilyNames(this ParameterSettings settings, Type bHoMType)
         {
             if (settings == null)

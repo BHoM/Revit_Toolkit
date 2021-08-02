@@ -47,7 +47,6 @@ namespace BH.Revit.Engine.Core
         [Description("Finds the ElementIds of all elements within the Revit document that will be converted to a given BHoM type for given discipline.")]
         [Input("document", "Revit Document queried for the filtered elements.")]
         [Input("type", "Target BHoM type, to which all filtered Revit elements will be converted.")]
-        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("settings", "Revit adapter settings to be used while evaluating the elements.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered Revit ElementIds.")]
