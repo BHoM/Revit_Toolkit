@@ -37,6 +37,13 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        public static ISurfaceProperty SurfacePropertyFromRevit(this HostObjAttributes hostObjAttributes, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            return hostObjAttributes.SurfacePropertyFromRevit(null, settings, refObjects);
+        }
+
+        /***************************************************/
+
         public static ISurfaceProperty SurfacePropertyFromRevit(this HostObjAttributes hostObjAttributes, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             Document document = hostObjAttributes.Document;

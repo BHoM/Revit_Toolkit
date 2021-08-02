@@ -24,7 +24,6 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Geometry;
 using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
@@ -33,6 +32,13 @@ namespace BH.Revit.Engine.Core
     {
         /***************************************************/
         /****               Public Methods              ****/
+        /***************************************************/
+
+        public static oM.Physical.Constructions.Construction ConstructionFromRevit(this HostObjAttributes hostObjAttributes, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            return hostObjAttributes.ConstructionFromRevit(null, settings, refObjects);
+        }
+
         /***************************************************/
 
         public static oM.Physical.Constructions.Construction ConstructionFromRevit(this HostObjAttributes hostObjAttributes, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)

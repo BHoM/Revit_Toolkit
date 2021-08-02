@@ -34,6 +34,13 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        public static Material MaterialFromRevit(this Autodesk.Revit.DB.Material revitMaterial, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            return revitMaterial.MaterialFromRevit(null, settings, refObjects);
+        }
+
+        /***************************************************/
+
         public static Material MaterialFromRevit(this Autodesk.Revit.DB.Material revitMaterial, string grade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (revitMaterial == null)
