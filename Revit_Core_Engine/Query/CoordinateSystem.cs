@@ -23,6 +23,8 @@
 using Autodesk.Revit.DB;
 using BH.oM.Geometry;
 using BH.oM.Geometry.CoordinateSystem;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +34,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Finds the coordinate system of a given Revit FamilyInstance.")]
+        [Input("familyInstance", "Revit FamilyInstance to be queried for its coordinate system.")]
+        [Output("coordinateSystem", "Coordinate system of the input Revit FamilyInstance.")]
         public static Cartesian CoordinateSystem(this FamilyInstance familyInstance)
         {
             if (familyInstance == null)

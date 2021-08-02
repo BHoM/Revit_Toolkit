@@ -20,8 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -32,14 +34,17 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static IEnumerable<Type> RevitTypes(this Type type)
+        [Description("Finds all Revit API types that can be converted to a given BHoM type.")]
+        [Input("bHoMType", "BHoM type to find correspondent Revit API types for.")]
+        [Output("revitTypes", "All Revit API types that can be converted to the input BHoM type.")]
+        public static IEnumerable<Type> RevitTypes(this Type bHoMType)
         {
-            if (m_revitTypes.ContainsKey(type))
-                return m_revitTypes[type];
+            if (m_revitTypes.ContainsKey(bHoMType))
+                return m_revitTypes[bHoMType];
 
-            Type ienumType = typeof(IEnumerable<>).MakeGenericType(type);
-            HashSet<Type> revitTypes = new HashSet<Type>(AllConvertMethods().Where(x => type.IsAssignableFrom(x.Key.Item2) || ienumType.IsAssignableFrom(x.Key.Item2)).Select(x => x.Key.Item1));
-            m_revitTypes.Add(type, revitTypes);
+            Type ienumType = typeof(IEnumerable<>).MakeGenericType(bHoMType);
+            HashSet<Type> revitTypes = new HashSet<Type>(AllConvertMethods().Where(x => bHoMType.IsAssignableFrom(x.Key.Item2) || ienumType.IsAssignableFrom(x.Key.Item2)).Select(x => x.Key.Item1));
+            m_revitTypes.Add(bHoMType, revitTypes);
             return revitTypes;
         }
 

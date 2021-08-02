@@ -30,8 +30,10 @@ using BH.oM.Base;
 using BH.oM.Physical.Elements;
 using BH.oM.Physical.FramingProperties;
 using BH.oM.Physical.Materials;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -42,6 +44,13 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Finds the ElementIds of all elements within the Revit document that will be converted to a given BHoM type for given discipline.")]
+        [Input("document", "Revit Document queried for the filtered elements.")]
+        [Input("type", "Target BHoM type, to which all filtered Revit elements will be converted.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while evaluating the elements.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered Revit ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsByBHoMType(this Document document, Type type, RevitSettings settings, IEnumerable<ElementId> ids = null)
         {
             if (document == null || type == null)

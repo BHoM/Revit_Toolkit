@@ -24,22 +24,12 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
-using BH.Engine.Architecture;
-using BH.Engine.Physical;
-using BH.Engine.Revit;
-using BH.Engine.Spatial;
-using BH.Engine.Structure;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Dimensional;
-using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Structure.Elements;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
